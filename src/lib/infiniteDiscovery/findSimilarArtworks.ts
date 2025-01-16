@@ -10,8 +10,8 @@ interface FindSimilarArtworksOptions {
   weights?: number[]
 }
 
-const DEFAULT_FETCH_SIZE = 5
-const OVERFETCH = 10
+const DEFAULT_BATCH_SIZE = 5
+const EXTRA_FETCH_SIZE = 10
 
 /**
  * Perform kNN operation to find artworks similar to a vector embedding
@@ -26,14 +26,14 @@ export const findSimilarArtworks = async (
 ) => {
   const {
     vectorEmbedding,
-    size = DEFAULT_FETCH_SIZE,
+    size = DEFAULT_BATCH_SIZE,
     likedArtworkIds = [],
     excludeArtworkIds = [],
     fields = [],
     weights,
   } = options
 
-  const sizeWithOverfetch = size + OVERFETCH
+  const sizeWithOverfetch = size + EXTRA_FETCH_SIZE
 
   const mltQuery = {
     more_like_this: {

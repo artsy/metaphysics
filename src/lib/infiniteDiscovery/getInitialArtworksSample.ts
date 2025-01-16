@@ -1,6 +1,6 @@
 import { opensearch } from "lib/apis/opensearch"
 
-const OVERFETCH = 10
+const EXTRA_FETCH_SIZE = 10
 
 export const getInitialArtworksSample = async (
   limit,
@@ -15,7 +15,7 @@ export const getInitialArtworksSample = async (
   const curatorsPicks = await opensearch(`/${indexName}/_search`, undefined, {
     method: "POST",
     body: JSON.stringify({
-      size: limit + OVERFETCH,
+      size: limit + EXTRA_FETCH_SIZE,
       query: {
         function_score: {
           query: {

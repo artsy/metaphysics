@@ -46,7 +46,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     initialArtworksIndexName: {
       type: GraphQLString,
       description: "Which index to use to display initial batch of artworks",
-      defaultValue: config.OPENSEARCH_ARTWORKS_INFINITE_DISCOVERY_INITIAL_INDEX,
+      defaultValue: config.OPENSEARCH_ARTWORKS_INFINITE_DISCOVERY_CURATED_INDEX,
     },
   }),
   resolve: async (_root, args, { artworksLoader }) => {
