@@ -12,6 +12,7 @@ import { pageable } from "relay-cursor-paging"
 import { getInitialArtworksSample } from "lib/infiniteDiscovery/getInitialArtworksSample"
 import { calculateMeanArtworksVector } from "lib/infiniteDiscovery/calculateMeanArtworksVector"
 import { findSimilarArtworks } from "lib/infiniteDiscovery/findSimilarArtworks"
+import config from "config"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
@@ -45,7 +46,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     initialArtworksIndexName: {
       type: GraphQLString,
       description: "Which index to use to display initial batch of artworks",
-      defaultValue: "infinite_discovery_initial_artworks",
+      defaultValue: config.OPENSEARCH_ARTWORKS_INFINITE_DISCOVERY_INITIAL_INDEX,
     },
   }),
   resolve: async (_root, args, { artworksLoader }) => {
