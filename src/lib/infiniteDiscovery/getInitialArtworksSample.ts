@@ -1,5 +1,7 @@
 import { opensearch } from "lib/apis/opensearch"
 
+const EXTRA_FETCH_SIZE = 10
+
 export const getInitialArtworksSample = async (
   limit,
   excludeArtworkIds,
@@ -13,7 +15,7 @@ export const getInitialArtworksSample = async (
   const curatorsPicks = await opensearch(`/${indexName}/_search`, undefined, {
     method: "POST",
     body: JSON.stringify({
-      size: limit,
+      size: limit + EXTRA_FETCH_SIZE,
       query: {
         function_score: {
           query: {
@@ -39,6 +41,7 @@ export const getInitialArtworksSample = async (
   })
 
   const artworkIds = curatorsPicks.hits?.hits?.map((hit) => hit._id) || []
+  const artworks = await artworksLoader({ ids: artworkIds })
 
-  return await artworksLoader({ ids: artworkIds })
+  return artworks.slice(0, limit)
 }
