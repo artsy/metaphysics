@@ -11493,10 +11493,10 @@ type HomeViewSectionNavigationPills implements HomeViewSectionGeneric & Node {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  navigationPills: [NavigationPill]!
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
+  quickLinks: [NavigationPill]!
 }
 
 # A sales (auctions) section in the home view

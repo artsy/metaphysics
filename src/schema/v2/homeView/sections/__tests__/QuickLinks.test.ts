@@ -1,18 +1,18 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
-describe("NavigationPills", () => {
+describe("QuickLinks", () => {
   it("returns the section's data", async () => {
     const query = gql`
       {
         homeView {
-          section(id: "home-view-section-navigation-pills") {
+          section(id: "home-view-section-quick-links") {
             __typename
             internalID
             contextModule
             ownerType
             ... on HomeViewSectionNavigationPills {
-              navigationPills {
+              quickLinks {
                 title
                 href
                 ownerType
@@ -34,8 +34,9 @@ describe("NavigationPills", () => {
       {
         "__typename": "HomeViewSectionNavigationPills",
         "contextModule": "quickLinks",
-        "internalID": "home-view-section-navigation-pills",
-        "navigationPills": [
+        "internalID": "home-view-section-quick-links",
+        "ownerType": "quickLinks",
+        "quickLinks": [
           {
             "contextScreenOwnerId": null,
             "href": "/favorites",
@@ -73,7 +74,6 @@ describe("NavigationPills", () => {
             "title": "Editorial",
           },
         ],
-        "ownerType": "quickLinks",
       }
     `)
   })
