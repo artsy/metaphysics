@@ -109,6 +109,10 @@ export const jobType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ departmentName }) => cleanDepartmentName(departmentName),
     },
+    teamName: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ teamName }) => teamName,
+    },
   },
 })
 
