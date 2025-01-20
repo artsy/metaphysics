@@ -286,6 +286,9 @@ type Alert {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -1669,6 +1672,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -2145,6 +2151,9 @@ type ArtistSeries implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -9431,6 +9440,9 @@ interface EntityWithFilterArtworksConnectionInterface {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -9671,6 +9683,9 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -10177,6 +10192,9 @@ input FilterArtworksInput {
   extraAggregationGeneIDs: [String]
   first: Int
   forSale: Boolean
+
+  # When true, will only return framed artworks.
+  framed: Boolean
   geneID: String
   geneIDs: [String]
   height: String
@@ -10629,6 +10647,9 @@ type Gene implements Node & Searchable {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -12501,6 +12522,9 @@ type MarketingCollection implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -15018,6 +15042,9 @@ type Partner implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -16515,6 +16542,9 @@ type Query {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -18856,6 +18886,9 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -19342,6 +19375,9 @@ type Tag implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -21282,6 +21318,9 @@ type Viewer {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
