@@ -41,14 +41,14 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         const { collectionArtworksLoader } = context
         if (!collectionArtworksLoader) return null
 
-        const { id } = parent
-        const { userID } = context
+        const { id, userID: injectedUserID } = parent
+        const { userID: currentUserID } = context
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
         const gravityOptions = {
           page,
           size,
-          user_id: userID,
+          user_id: injectedUserID ?? currentUserID, // Prefer injected user ID if provided (e.g. in the case of a public collection)
           private: true,
           sort: args.sort,
           total_count: true,
