@@ -14509,9 +14509,6 @@ type MyLocation {
 }
 
 type NavigationPill {
-  # The owner ID for the context module
-  contextScreenOwnerId: String
-
   # Quick link URL
   href: String!
 

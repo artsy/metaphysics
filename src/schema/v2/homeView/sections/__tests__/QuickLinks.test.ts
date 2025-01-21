@@ -16,7 +16,6 @@ describe("QuickLinks", () => {
                 title
                 href
                 ownerType
-                contextScreenOwnerId
               }
             }
           }
@@ -38,37 +37,31 @@ describe("QuickLinks", () => {
         "ownerType": "quickLinks",
         "quickLinks": [
           {
-            "contextScreenOwnerId": null,
             "href": "/favorites",
             "ownerType": "follows",
             "title": "Follows",
           },
           {
-            "contextScreenOwnerId": null,
             "href": "/auctions",
             "ownerType": "auctions",
             "title": "Auctions",
           },
           {
-            "contextScreenOwnerId": null,
             "href": "/favorites/saves",
             "ownerType": "saves",
             "title": "Saves",
           },
           {
-            "contextScreenOwnerId": "/collect?price_range=*-1000",
             "href": "/collect?price_range=%2A-1000",
             "ownerType": "collect",
             "title": "Art under $1000",
           },
           {
-            "contextScreenOwnerId": null,
             "href": "/price-database",
             "ownerType": "priceDatabase",
             "title": "Price Database",
           },
           {
-            "contextScreenOwnerId": null,
             "href": "/news",
             "ownerType": "articles",
             "title": "Editorial",

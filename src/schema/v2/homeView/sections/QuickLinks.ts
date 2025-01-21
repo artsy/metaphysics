@@ -14,7 +14,6 @@ export const QuickLinks: HomeViewSection = {
 }
 
 export interface QuickLink {
-  contextScreenOwnerId?: string | null
   title: string
   href: string
   ownerType: OwnerType
@@ -28,7 +27,6 @@ const QUICK_LINKS: Array<QuickLink> = [
     title: "Art under $1000",
     href: "/collect?price_range=%2A-1000",
     ownerType: OwnerType.collect,
-    contextScreenOwnerId: "/collect?price_range=*-1000",
   },
   {
     title: "Price Database",

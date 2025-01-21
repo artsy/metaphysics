@@ -26,10 +26,6 @@ const NavigationPillType = new GraphQLObjectType<QuickLink, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: "The context module for analytics",
     },
-    contextScreenOwnerId: {
-      type: GraphQLString,
-      description: "The owner ID for the context module",
-    },
   }),
 })
 
