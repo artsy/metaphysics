@@ -133,11 +133,14 @@ const money = ({ name, resolve }) => ({
   }),
 })
 
+/**
+ * Resolve the major unit of a money object.
+ */
 export const moneyMajorResolver = async (
   { cents, currency },
   { convertTo = null },
   { exchangeRatesLoader }
-) => {
+): Promise<number> => {
   const factor = currencyCodes[currency.toLowerCase()].subunit_to_unit
   // TODO: Should we round or used a fixed precision?
   const major = cents / factor
@@ -150,7 +153,7 @@ export const moneyMajorResolver = async (
     }
     const exchangeRates = await exchangeRatesLoader()
     const convertedToUSD = major / exchangeRates[currency]
-    const truncatedUSD = convertedToUSD.toFixed(2)
+    const truncatedUSD = Number(convertedToUSD.toFixed(2))
     return truncatedUSD
   } else {
     return major
@@ -206,21 +209,41 @@ export const MoneyInput = new GraphQLInputObjectType({
 })
 
 /**
- * Money type resolver for a cents/minor and currency field.
- * See src/schema/v2/partnerOfferToCollector.ts for usage
+ * Money type resolver for either a major or minor money and currency code field.
+ * Note that return values are not exactly what the money fields are due to other
+ * legacy resolvers
  */
-export const resolveMinorAndCurrencyFieldsToMoney = async (
-  { minor, currencyCode }: { minor: number; currencyCode: string },
+export const resolvePriceAndCurrencyFieldsToMoney = async (
+  {
+    currencyCode,
+    ...args
+  }:
+    | { minor: number; major?: undefined; currencyCode: string }
+    | { major: number; minor?: undefined; currencyCode: string },
   _args,
   context,
   _info
 ) => {
   try {
-    const major = await moneyMajorResolver(
-      { cents: minor, currency: currencyCode },
-      {},
-      context
-    )
+    const numericMoneyValue =
+      typeof args.major === "number" || typeof args.minor === "number"
+    if (!numericMoneyValue) {
+      throw new Error("Either major or minor must be provided")
+    }
+
+    const major =
+      typeof args.major === "number"
+        ? args.major
+        : await moneyMajorResolver(
+            { cents: args.minor as number, currency: currencyCode },
+            {},
+            context
+          )
+
+    const minor =
+      typeof args.minor === "number"
+        ? args.minor
+        : major * currencyCodes[currencyCode.toLowerCase()].subunit_to_unit
 
     return {
       major,

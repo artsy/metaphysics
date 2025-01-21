@@ -1,4 +1,4 @@
-import { amount } from "../money"
+import { amount, resolvePriceAndCurrencyFieldsToMoney } from "../money"
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
@@ -175,6 +175,7 @@ describe("major(convertTo:)", () => {
     })
   })
 
+  // eslint-disable-next-line jest/no-disabled-tests
   it.skip("only supports USD", async () => {
     expect.assertions(1)
 
@@ -254,5 +255,47 @@ describe("major(convertTo:)", () => {
     expect(result!.artwork.listPrice.major).toEqual(
       expectedPriceAfterConversion
     )
+  })
+})
+
+describe("resolvePriceAndCurrencyFieldsToMoney()", () => {
+  const args = {}
+  const ctx = { exchangeRatesLoader: jest.fn(() => Promise.resolve()) }
+  const info = {}
+  it("returns money fields for major + currencyCode", async () => {
+    const result = await resolvePriceAndCurrencyFieldsToMoney(
+      {
+        major: 1234,
+        currencyCode: "USD",
+      },
+      args,
+      ctx,
+      info
+    )
+    expect(result).toEqual({
+      cents: 123400,
+      major: 1234,
+      display: "US$1,234",
+      currency: "USD",
+    })
+  })
+
+  it("returns money fields for minor + currencyCode", async () => {
+    const result = await resolvePriceAndCurrencyFieldsToMoney(
+      {
+        minor: 123400,
+        currencyCode: "USD",
+      },
+      args,
+      ctx,
+      info
+    )
+
+    expect(result).toEqual({
+      cents: 123400,
+      major: 1234,
+      display: "US$1,234",
+      currency: "USD",
+    })
   })
 })

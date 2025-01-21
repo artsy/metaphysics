@@ -1,20 +1,20 @@
 import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions, connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { priceDisplayText } from "lib/moneyHelpers"
 import { pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "./artwork"
-import { Money } from "./fields/money"
+import { Money, resolvePriceAndCurrencyFieldsToMoney } from "./fields/money"
 
-const moneyResolver = (cents, currency) => {
-  if (!cents) return null
-  return {
-    cents,
-    currency,
-    display: priceDisplayText(cents, currency, ""),
-  }
+const moneyResolver = (minor, currencyCode, args, ctx, info) => {
+  if (!minor) return null
+  return resolvePriceAndCurrencyFieldsToMoney(
+    { minor, currencyCode },
+    args,
+    ctx,
+    info
+  )
 }
 
 const RecentlySoldArtworkType = new GraphQLObjectType<any, ResolverContext>({
@@ -22,18 +22,30 @@ const RecentlySoldArtworkType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     lowEstimate: {
       type: Money,
-      resolve: ({ lowEstimateCents, currency }) =>
-        moneyResolver(lowEstimateCents, currency),
+      resolve: (
+        { lowEstimateCents: minor, currency: currencyCode },
+        args,
+        ctx,
+        info
+      ) => moneyResolver(minor, currencyCode, args, ctx, info),
     },
     highEstimate: {
       type: Money,
-      resolve: ({ highEstimateCents, currency }) =>
-        moneyResolver(highEstimateCents, currency),
+      resolve: (
+        { highEstimateCents: minor, currency: currencyCode },
+        args,
+        ctx,
+        info
+      ) => moneyResolver(minor, currencyCode, args, ctx, info),
     },
     priceRealized: {
       type: Money,
-      resolve: ({ priceRealizedCents, currency }) =>
-        moneyResolver(priceRealizedCents, currency),
+      resolve: (
+        { priceRealizedCents: minor, currency: currencyCode },
+        args,
+        ctx,
+        info
+      ) => moneyResolver(minor, currencyCode, args, ctx, info),
     },
     artwork: {
       type: ArtworkType,

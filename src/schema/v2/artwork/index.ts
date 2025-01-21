@@ -39,7 +39,12 @@ import Fair from "schema/v2/fair"
 import cached from "schema/v2/fields/cached"
 import { listPrice } from "schema/v2/fields/listPrice"
 import { markdown } from "schema/v2/fields/markdown"
-import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
+import {
+  amount,
+  Money,
+  resolvePriceAndCurrencyFieldsToMoney,
+  symbolFromCurrencyCode,
+} from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
   PageCursorsType,
@@ -93,7 +98,6 @@ import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
 import { PartnerOfferType } from "../partnerOffer"
-import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
@@ -1297,11 +1301,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       priceListed: {
         type: Money,
-        resolve: ({ price_listed: price_listed, price_currency: currency }) => {
-          const factor =
-            currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
-          const cents = price_listed * factor
-          return { cents, currency }
+        resolve: (
+          { price_listed: major, price_currency: currencyCode },
+          _args,
+          context,
+          info
+        ) => {
+          if (typeof major !== "number" || !currencyCode) return null
+          return resolvePriceAndCurrencyFieldsToMoney(
+            { major, currencyCode },
+            _args,
+            context,
+            info
+          )
         },
       },
       taxInfo: TaxInfo,
@@ -1363,25 +1375,42 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       domesticShippingFee: {
         type: Money,
         description: "Domestic shipping fee.",
-        resolve: ({
-          domestic_shipping_fee_cents: cents,
-          price_currency: currency,
-        }) => {
-          if (typeof cents !== "number" || !currency) return null
+        resolve: (
+          { domestic_shipping_fee_cents: minor, price_currency: currencyCode },
+          _args,
+          ctx,
+          info
+        ) => {
+          if (typeof minor !== "number" || !currencyCode) return null
 
-          return { cents, currency }
+          return resolvePriceAndCurrencyFieldsToMoney(
+            { minor, currencyCode },
+            _args,
+            ctx,
+            info
+          )
         },
       },
       internationalShippingFee: {
         type: Money,
         description: "International shipping fee.",
-        resolve: ({
-          international_shipping_fee_cents: cents,
-          price_currency: currency,
-        }) => {
-          if (typeof cents !== "number" || !currency) return null
+        resolve: (
+          {
+            international_shipping_fee_cents: minor,
+            price_currency: currencyCode,
+          },
+          _args,
+          ctx,
+          info
+        ) => {
+          if (typeof minor !== "number" || !currencyCode) return null
 
-          return { cents, currency }
+          return resolvePriceAndCurrencyFieldsToMoney(
+            { minor, currencyCode },
+            _args,
+            ctx,
+            info
+          )
         },
       },
       shippingInfo: {
@@ -1542,18 +1571,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: Money,
         description:
           "The price paid for the artwork in a user's 'my collection'",
-        resolve: (artwork) => {
+        resolve: (artwork, args, ctx, info) => {
           const { price_paid_cents } = artwork
           if (!price_paid_cents && price_paid_cents !== 0) return null
           const price_paid_currency = artwork.price_paid_currency || "USD"
-          return {
-            cents: price_paid_cents,
-            currency: price_paid_currency,
-            display: amount(() => price_paid_cents).resolve(artwork, {
-              precision: 0,
-              symbol: symbolFromCurrencyCode(price_paid_currency),
-            }),
-          }
+          return resolvePriceAndCurrencyFieldsToMoney(
+            { minor: price_paid_cents, currencyCode: price_paid_currency },
+            args,
+            ctx,
+            info
+          )
         },
       },
       provenance: markdown(({ provenance }) =>
