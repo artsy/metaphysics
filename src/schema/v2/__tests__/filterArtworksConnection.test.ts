@@ -418,6 +418,50 @@ describe("artworksConnection", () => {
         { node: { slug: "oseberg-norway-queens-ship-0" } },
       ])
     })
+
+    it("returns results using the non personalized loader if there is no user", async () => {
+      context = {
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship-0",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
+              },
+            }),
+        },
+        authenticatedLoaders: {},
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            first: 1
+            after: ""
+            aggregations: [TOTAL, FOLLOWED_ARTISTS]
+            includeArtworksByFollowedArtists: true
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "oseberg-norway-queens-ship-0" } },
+      ])
+    })
   })
 
   describe(`When filtering on a sale and filtering/sorting by price`, () => {
