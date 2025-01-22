@@ -568,7 +568,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             pricePaid: {
-              display: "US$210",
+              display: "$210",
               currencyCode: "USD",
             },
           },
