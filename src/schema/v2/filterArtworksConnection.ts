@@ -156,6 +156,10 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
     type: GraphQLBoolean,
   },
+  framed: {
+    type: GraphQLBoolean,
+    description: "When true, will only return framed artworks.",
+  },
   geneID: {
     type: GraphQLString,
   },
