@@ -347,6 +347,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      hideTotal: {
+        type: GraphQLBoolean,
+        resolve: ({ hide_total }) => hide_total,
+      },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
       initials: initials("name"),
@@ -567,6 +571,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       timeZone: {
         type: GraphQLString,
         resolve: ({ time_zone }) => time_zone,
+      },
+      totalRaisedMinor: {
+        type: GraphQLInt,
+        resolve: ({ total_raised_minor }) => total_raised_minor,
       },
     }
   },
