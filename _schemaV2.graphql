@@ -8182,6 +8182,56 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
+type CreateConversationFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateConversationMutationInput {
+  clientMutationId: String
+
+  # The id of the exchange order.
+  exchangeOrderId: String
+
+  # The email of the user who sent the message.
+  fromEmail: String!
+
+  # The id of the user who sent the message.
+  fromId: String!
+
+  # The name of the user who sent the message.
+  fromName: String!
+
+  # The type of the user who sent the message.
+  fromType: CreateConversationTypeEnum!
+
+  # The initial message in the conversation.
+  initialMessage: String
+
+  # The id of the user who received the message.
+  toId: String!
+
+  # The type of the user who received the message.
+  toType: CreateConversationTypeEnum!
+}
+
+type CreateConversationMutationPayload {
+  clientMutationId: String
+  responseOrError: CreateConversationResponseOrError
+}
+
+union CreateConversationResponseOrError =
+    CreateConversationFailure
+  | CreateConversationSuccess
+
+type CreateConversationSuccess {
+  conversation: Conversation
+}
+
+enum CreateConversationTypeEnum {
+  PARTNER
+  USER
+}
+
 type CreateFeatureFailure {
   mutationError: GravityMutationError
 }
@@ -13783,6 +13833,11 @@ type Mutation {
     # Parameters for CreateSubmissionMutation
     input: CreateSubmissionMutationInput!
   ): CreateSubmissionMutationPayload
+
+  # Create a conversation.
+  createConversation(
+    input: CreateConversationMutationInput!
+  ): CreateConversationMutationPayload
 
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload

@@ -267,6 +267,7 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
+import { createConversationMutation } from "./conversation/createConversationMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -453,6 +454,7 @@ export default new GraphQLSchema({
       createBidderPosition: BidderPositionMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
+      createConversation: createConversationMutation,
       createCreditCard: createCreditCardMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
