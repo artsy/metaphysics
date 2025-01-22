@@ -157,14 +157,17 @@ describe("PricingContext type", () => {
         {
           size_score: 600,
           price_cents: [124, 235],
+          price_currency: "USD",
         },
         {
           size_score: 3000,
           price_cents: [154, 185],
+          price_currency: "USD",
         },
         {
           size_score: 10300,
           price_cents: [12443], // THIS ONE SHOULD BE CHOSEN
+          price_currency: "USD",
         },
       ],
     })
@@ -185,14 +188,17 @@ describe("PricingContext type", () => {
         {
           size_score: 600,
           price_cents: [124, 235],
+          price_currency: "USD",
         },
         {
           size_score: 3000,
           price_cents: [154, 18555], // THIS ONE SHOULD BE CHOSEN
+          price_currency: "USD",
         },
         {
           size_score: 10300,
           price_cents: [12443],
+          price_currency: "USD",
         },
       ],
     })

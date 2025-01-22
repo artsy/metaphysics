@@ -253,7 +253,7 @@ export const resolvePriceAndCurrencyFieldsToMoney = async (
     }
   } catch (error) {
     console.error(
-      "v2/fields/money @resolveMinorAndCurrencyFieldsToMoney: Error:",
+      "v2/fields/money @resolvePriceAndCurrencyFieldsToMoney: Error:",
       error
     )
     return null

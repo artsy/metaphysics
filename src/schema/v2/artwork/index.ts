@@ -1571,15 +1571,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: Money,
         description:
           "The price paid for the artwork in a user's 'my collection'",
-        resolve: (artwork, args, ctx, info) => {
-          const { price_paid_cents } = artwork
+        resolve: async (artwork, args, ctx, info) => {
+          const { price_paid_cents, price_paid_currency = "USD" } = artwork
           if (!price_paid_cents && price_paid_cents !== 0) return null
-          const price_paid_currency = artwork.price_paid_currency || "USD"
-          return resolvePriceAndCurrencyFieldsToMoney(
-            { minor: price_paid_cents, currencyCode: price_paid_currency },
-            args,
-            ctx,
-            info
+          const moneyFields =
+            (await resolvePriceAndCurrencyFieldsToMoney(
+              { minor: price_paid_cents, currencyCode: price_paid_currency },
+              args,
+              ctx,
+              info
+            )) || {}
+          return (
+            moneyFields && {
+              ...moneyFields,
+              // TODO: Display field legacy implementation maintained until we verify
+              // that clients can request the real display field correctly
+              display: amount(() => price_paid_cents).resolve(artwork, {
+                precision: 0,
+                symbol: symbolFromCurrencyCode(price_paid_currency),
+              }),
+            }
           )
         },
       },
