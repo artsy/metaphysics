@@ -544,9 +544,20 @@ const filterArtworksConnectionTypeFactory = (
       requestedPersonalizedAggregation
     ) {
       if (!filterArtworksAuthenticatedLoader) {
-        throw new Error("You must be logged in to request these params.")
+        // TODO: Instead of throwing an error, let's use the unauthenticated loader
+        // without the personalized options if they are specified while unauthenticated.
+        //
+        // throw new Error("You must be logged in to request these params.")
+
+        delete gravityOptions.include_artworks_by_followed_artists
+        gravityOptions.aggregations = gravityOptions.aggregations.filter(
+          (item) => item !== "followed_artists"
+        )
+
+        loader = filterArtworksUnauthenticatedLoader
+      } else {
+        loader = filterArtworksAuthenticatedLoader
       }
-      loader = filterArtworksAuthenticatedLoader
     } else {
       // If filtering by sale and filtering/sorting by price,
       // use the uncached loader to avoid stale data.
