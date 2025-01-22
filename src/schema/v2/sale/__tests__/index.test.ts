@@ -1265,4 +1265,36 @@ describe("Sale type", () => {
       expect(data).toMatchSnapshot()
     })
   })
+
+  describe("total raised", () => {
+    const query = `
+    {
+      sale(id: "foo-foo") {
+        hideTotal
+        totalRaised {
+          display
+          major
+          minor
+          currencyCode
+        }
+      }
+    }`
+
+    it("returns the correct values", async () => {
+      sale.hide_total = true
+      sale.total_raised_minor = 102345
+      sale.currency = "EUR"
+      expect(await execute(query)).toEqual({
+        sale: {
+          hideTotal: true,
+          totalRaised: {
+            display: "€1,023",
+            major: 1023.45,
+            minor: 102345,
+            currencyCode: "EUR",
+          },
+        },
+      })
+    })
+  })
 })

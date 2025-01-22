@@ -18030,7 +18030,7 @@ type Sale implements Node {
   status: String
   symbol: String
   timeZone: String
-  totalRaisedMinor: Int
+  totalRaised: Money
 
   # True if the current user needs to undergo identity verification for this sale, false otherwise
   userNeedsIdentityVerification: Boolean
