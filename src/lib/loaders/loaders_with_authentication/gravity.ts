@@ -373,6 +373,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
+    followMarketingCollectionLoader: gravityLoader(
+      "me/follow/marketing_collection",
+      {},
+      { method: "POST" }
+    ),
     followProfileLoader: gravityLoader(
       "me/follow/profile",
       {},
@@ -408,6 +413,14 @@ export default (accessToken, userID, opts) => {
         paramKey: "genes",
         trackingKey: "is_followed",
         entityKeyPath: "gene",
+      }
+    ),
+    followedMarketingCollectionLoader: trackedEntityLoaderFactory(
+      gravityLoader("me/follow/marketing_collections"),
+      {
+        paramKey: "marketing_collections",
+        trackingKey: "is_followed",
+        entityKeyPath: "marketing_collection",
       }
     ),
     followedFairsLoader: gravityLoader(
@@ -885,6 +898,11 @@ export default (accessToken, userID, opts) => {
     ),
     unfollowGeneLoader: gravityLoader(
       (geneID) => `me/follow/gene/${geneID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    unfollowMarketingCollectionLoader: gravityLoader(
+      (id) => `me/follow/marketing_collection/${id}`,
       {},
       { method: "DELETE" }
     ),

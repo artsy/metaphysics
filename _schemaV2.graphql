@@ -10360,6 +10360,17 @@ type FollowGenePayload {
   gene: Gene
 }
 
+input FollowMarketingCollectionInput {
+  clientMutationId: String
+  marketingCollectionID: String
+  unfollow: Boolean = false
+}
+
+type FollowMarketingCollectionPayload {
+  clientMutationId: String
+  marketingCollection: MarketingCollection
+}
+
 input FollowProfileInput {
   clientMutationId: String
   profileID: String
@@ -12589,6 +12600,7 @@ type MarketingCollection implements Node {
   internalID: ID!
   isDepartment: Boolean!
   isFeaturedArtistContent: Boolean!
+  isFollowed: Boolean
   keyword: String
 
   # Linked Collections
@@ -14004,6 +14016,11 @@ type Mutation {
 
   # Follow (or unfollow) an gene
   followGene(input: FollowGeneInput!): FollowGenePayload
+
+  # Follow (or unfollow) a marketing collection
+  followMarketingCollection(
+    input: FollowMarketingCollectionInput!
+  ): FollowMarketingCollectionPayload
 
   # Follow (or unfollow) a profile
   followProfile(input: FollowProfileInput!): FollowProfilePayload
