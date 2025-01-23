@@ -2577,9 +2577,11 @@ describe("Artwork type", () => {
       }
     `
 
-    it("is set to quoted by seller when domestic shipping fee is null", () => {
+    // Domestic: null, International: null
+    it("is set to quoted by seller when domestic shipping fee is null and arta value is null", () => {
       artwork.domestic_shipping_fee_cents = null
-      artwork.shipping_origin = ["Oslo", "NO"]
+      artwork.artsy_shipping_domestic = null
+      artwork.process_with_artsy_shipping_domestic = null
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -2589,263 +2591,355 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to free domestic shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
-      artwork.domestic_shipping_fee_cents = 0
-      artwork.international_shipping_fee_cents = null
+    it("is set to quoted by seller when domestic shipping fee is null and arta value is false", () => {
+      artwork.domestic_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping, tax, and additional fees quoted by seller",
+          },
+        })
+      })
+    })
+
+    // 1. Domestic: Arta, International:	Arta
+    it("is set to calculated at checkout for both domesic and international arta shipping", () => {
       artwork.shipping_origin = ["Oslo", "NO"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Free shipping within Norway only",
-          },
-        })
-      })
-    })
-
-    it("is set to generic domestic message when origin country is not set", () => {
-      artwork.domestic_shipping_fee_cents = 0
-      artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Free domestic shipping only",
-          },
-        })
-      })
-    })
-
-    it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
-      artwork.domestic_shipping_fee_cents = 0
-      artwork.international_shipping_fee_cents = 0
-      artwork.shipping_origin = ["Oslo", "NO"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Free shipping worldwide",
-          },
-        })
-      })
-    })
-
-    it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = null
-      artwork.shipping_origin = ["Seattle", "WA", "US"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Shipping: $10 within United States only",
-          },
-        })
-      })
-    })
-
-    it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 0
-      artwork.shipping_origin = ["Oslo", "NO"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Shipping: $10 within Norway, free rest of world",
-          },
-        })
-      })
-    })
-
-    it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
-      artwork.domestic_shipping_fee_cents = 0
+      artwork.eu_shipping_origin = true
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 5000
       artwork.international_shipping_fee_cents = 10000
-      artwork.shipping_origin = ["Oslo", "NO"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Shipping: Free within Norway, $100 rest of world",
-          },
-        })
-      })
-    })
+      artwork.artsy_shipping_domestic = true
+      artwork.process_with_artsy_shipping_domestic = true
+      artwork.artsy_shipping_international = true
 
-    it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 2000
-      artwork.shipping_origin = ["Oslo", "NO"]
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Shipping: $10 within Norway, $20 rest of world",
-          },
-        })
-      })
-    })
-
-    it("shows shipping costs in the same currency as list price", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 2000
-      artwork.price_currency = "GBP"
-      artwork.shipping_origin = ["London", "GB"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Shipping: £10 within United Kingdom [U.K.], £20 rest of world",
+              "Domestic: Calculated in checkout \nInternational: Calculated in checkout",
           },
         })
       })
     })
 
-    it("shows proper fallback text when no shipping origin present", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 2000
+    // 2. Domestic: Gallery Flat, International: Gallery Flat
+    // EU location dollar price
+    it("is set to proper display for usd artwork that is shipped from EU country", () => {
+      artwork.shipping_origin = ["Oslo", "NO"]
+      artwork.eu_shipping_origin = true
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 5000
+      artwork.international_shipping_fee_cents = 10000
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: $50 within European Union \nInternational: $100",
+          },
+        })
+      })
+    })
+    // EU location euro price
+    it("is set to proper display for euro artwork that is shipped from EU country", () => {
+      artwork.shipping_origin = ["Oslo", "NO"]
+      artwork.eu_shipping_origin = true
+      artwork.price_currency = "EUR"
+      artwork.domestic_shipping_fee_cents = 300
+      artwork.international_shipping_fee_cents = 7000
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: €3 within European Union \nInternational: €70",
+          },
+        })
+      })
+    })
+    // US location dollar price
+    it("is set to proper display for dollar artwork that is shipped from USA", () => {
+      artwork.shipping_origin = ["Seattle", "WA", "US"]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 3000
+      artwork.international_shipping_fee_cents = 21000
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: $30 within United States \nInternational: $210",
+          },
+        })
+      })
+    })
+    // GB location pound price
+    it("is set to proper display for pound artwork that is shipped from England", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
       artwork.price_currency = "GBP"
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 21000
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: £10 domestic, £20 rest of world",
+            shippingInfo:
+              "Domestic: £10 within United Kingdom [U.K.] \nInternational: £210",
           },
         })
       })
     })
 
-    it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
+    // 3. Domestic: Arta, International: null
+    it("is set to proper display for arta domestic only shipped work", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "GBP"
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = true
       artwork.process_with_artsy_shipping_domestic = true
-      artwork.shipping_origin = ["Oslo", "NO"]
+      artwork.artsy_shipping_international = false
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: Calculated in checkout",
+            shippingInfo:
+              "Domestic: Calculated in checkout \nInternational: Unavailable",
           },
         })
       })
     })
 
-    it("is set to calculated at checkout when artwork will be processed with international Artsy shipping", () => {
+    // 4. Domestic: Free, International:	Free
+    it("is set to proper display for artwork that ships for free", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "GBP"
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 0
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: Free within United Kingdom [U.K.] \nInternational: Free",
+          },
+        })
+      })
+    })
+
+    // 5. Domestic: Free, International:	Gallery Flat
+    it("is set to proper display for artwork that ships free domestically and with international fee", () => {
+      artwork.shipping_origin = ["Kharkiv", "UA"]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 55555
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Domestic: Free within Ukraine \nInternational: $556",
+          },
+        })
+      })
+    })
+
+    // Domestic: Gallery Flat, International: null
+    it("is set to proper display for artwork that only has domestic shipping fee", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 6000
+      artwork.international_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: $60 within United States \nInternational: Unavailable",
+          },
+        })
+      })
+    })
+
+    // Domestic: Gallery Flat, International: Arta
+    it("is set to proper display for artwork with flat domestic shipping and arta international", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 6000
+      artwork.international_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
       artwork.artsy_shipping_international = true
-      artwork.shipping_origin = ["Oslo", "NO"]
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: Calculated in checkout",
+            shippingInfo:
+              "Domestic: $60 within United States \nInternational: Calculated in checkout",
           },
         })
       })
     })
 
-    describe("for artworks located within the EU", () => {
-      beforeEach(() => {
-        artwork.eu_shipping_origin = true
-      })
+    // Domestic: Free, International:	null
+    it("is set to proper display for artwork with free domestic shipping and no international shipping", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
 
-      it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = null
-        artwork.international_shipping_fee_cents = null
-        artwork.shipping_origin = ["Rome", "IT"]
-
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping, tax, and additional fees quoted by seller",
-            },
-          })
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: Free within United States \nInternational: Unavailable",
+          },
         })
       })
+    })
 
-      it("is set to free euro shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = null
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Free shipping within European Union only",
-            },
-          })
+    // Domestic: Free, International:	Arta
+    it("is set to proper display for artwork with free domestic shipping and arta international", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: Free within United States \nInternational: Calculated in checkout",
+          },
         })
       })
+    })
 
-      it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 0
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Free shipping worldwide",
-            },
-          })
+    // Domestic: Arta, International:	Gallery Flat
+    it("is set to proper display for artwork with arta domestic shipping and flat international", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 700
+      artwork.international_shipping_fee_cents = 10000
+      artwork.artsy_shipping_domestic = true
+      artwork.process_with_artsy_shipping_domestic = true
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: Calculated in checkout \nInternational: $100",
+          },
         })
       })
+    })
 
-      it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = null
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Shipping: $10 within European Union only",
-            },
-          })
+    // Domestic:Arta, International: Free
+    it("is set to proper display for artwork with arta domestic shipping and free international", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 700
+      artwork.international_shipping_fee_cents = 0
+      artwork.artsy_shipping_domestic = true
+      artwork.process_with_artsy_shipping_domestic = true
+      artwork.artsy_shipping_international = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: Calculated in checkout \nInternational: Free",
+          },
         })
       })
+    })
 
-      it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 0
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: $10 within European Union, free rest of world",
-            },
-          })
-        })
-      })
+    // Domestic: Gallery Flat, International: Free
+    it("is set to proper display for artwork with flat domestic shipping and free international", () => {
+      artwork.shipping_origin = artwork.shipping_origin = [
+        "New York",
+        "NY",
+        "US",
+      ]
+      artwork.eu_shipping_origin = false
+      artwork.price_currency = "USD"
+      artwork.domestic_shipping_fee_cents = 700
+      artwork.international_shipping_fee_cents = 0
+      artwork.artsy_shipping_domestic = false
+      artwork.process_with_artsy_shipping_domestic = false
+      artwork.artsy_shipping_international = false
 
-      it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 10000
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: Free within European Union, $100 rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.shipping_origin = ["Rome", "IT"]
-        artwork.international_shipping_fee_cents = 2000
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: $10 within European Union, $20 rest of world",
-            },
-          })
-        })
-      })
-
-      it("shows shipping costs in the same currency as list price", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 2000
-        artwork.price_currency = "EUR"
-        artwork.shipping_origin = ["Rome", "IT"]
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: €10 within European Union, €20 rest of world",
-            },
-          })
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Domestic: $7 within United States \nInternational: Free",
+          },
         })
       })
     })
