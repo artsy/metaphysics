@@ -243,7 +243,7 @@ export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionInfoType,
   description: "Info about the current user's my-collection",
   resolve: async (_parent, _options, { userID, collectionLoader }) => {
-    if (!(collectionLoader && userID)) {
+    if (!userID) {
       return null
     }
 

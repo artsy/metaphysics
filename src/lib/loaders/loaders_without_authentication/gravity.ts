@@ -70,6 +70,12 @@ export default (opts) => {
     artworksLoader: gravityLoader("artworks"),
     authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
+    collectionArtworksLoader: gravityLoader(
+      (id) => `collection/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
+    collectionLoader: gravityLoader((id) => `collection/${id}`),
     createInvoicePaymentLoader: gravityLoader(
       (id) => `invoice/${id}/payment`,
       {},

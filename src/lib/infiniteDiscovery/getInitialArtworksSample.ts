@@ -40,6 +40,10 @@ export const getInitialArtworksSample = async (
     }),
   })
 
+  if (curatorsPicks.hits?.hits?.length === 0) {
+    throw Error("Failed to fetch curated artworks")
+  }
+
   const artworkIds = curatorsPicks.hits?.hits?.map((hit) => hit._id) || []
   const artworks = await artworksLoader({ ids: artworkIds })
 
