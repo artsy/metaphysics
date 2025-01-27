@@ -16885,12 +16885,6 @@ type Query {
     # Exclude these artworks from the response
     excludeArtworkIds: [String]
     first: Int
-
-    # Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String
-      @deprecated(
-        reason: "This field is deprecated and will be removed in the future"
-      )
     last: Int
 
     # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
@@ -21555,12 +21549,6 @@ type Viewer {
     # Exclude these artworks from the response
     excludeArtworkIds: [String]
     first: Int
-
-    # Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String
-      @deprecated(
-        reason: "This field is deprecated and will be removed in the future"
-      )
     last: Int
 
     # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response

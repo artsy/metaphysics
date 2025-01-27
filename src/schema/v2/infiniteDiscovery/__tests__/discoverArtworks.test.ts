@@ -4,9 +4,9 @@ import { runQuery } from "schema/v2/test/utils"
 describe("discoverArtworks", () => {
   describe("with no arguments", () => {
     it("should call the artworksDiscoveryLoader with default arguments and return a connection", async () => {
-      const artworksDiscoveryLoader = jest.fn().mockResolvedValue({
-        artworks: [{ id: "artwork-1" }, { id: "artwork-2" }],
-      })
+      const artworksDiscoveryLoader = jest
+        .fn()
+        .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
 
       const context = { artworksDiscoveryLoader }
 
@@ -56,9 +56,9 @@ describe("discoverArtworks", () => {
 
   describe("with arguments", () => {
     it("should call the artworksDiscoveryLoader with the provided arguments", async () => {
-      const artworksDiscoveryLoader = jest.fn().mockResolvedValue({
-        artworks: [{ id: "artwork-1" }, { id: "artwork-2" }],
-      })
+      const artworksDiscoveryLoader = jest
+        .fn()
+        .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
 
       const context = { artworksDiscoveryLoader }
 

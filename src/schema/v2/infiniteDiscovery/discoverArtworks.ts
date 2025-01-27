@@ -38,12 +38,6 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The number of curated artworks to return.",
       defaultValue: 2,
     },
-    initialArtworksIndexName: {
-      type: GraphQLString,
-      description: "Which index to use to display initial batch of artworks",
-      deprecationReason:
-        "This field is deprecated and will be removed in the future",
-    },
   }),
   resolve: async (_root, args, { artworksDiscoveryLoader }) => {
     const gravityArgs = {
@@ -57,6 +51,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     const gravityResponse = await artworksDiscoveryLoader(gravityArgs)
 
-    return connectionFromArray(gravityResponse.artworks, args)
+    return connectionFromArray(gravityResponse, {
+      first: args.limit,
+    })
   },
 }
