@@ -16879,7 +16879,7 @@ type Query {
     after: String
     before: String
 
-    # The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch
+    # The number of curated artworks to return.
     curatedPicksSize: Int = 2
 
     # Exclude these artworks from the response
@@ -16887,12 +16887,15 @@ type Query {
     first: Int
 
     # Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String = "infinite_discovery_initial_artworks"
+    initialArtworksIndexName: String
+      @deprecated(
+        reason: "This field is deprecated and will be removed in the future"
+      )
     last: Int
 
     # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
-    limit: Int
+    limit: Int = 5
 
     # These fields are used for More Like This query
     mltFields: [String] = ["genes", "materials", "tags", "medium"]
@@ -21546,7 +21549,7 @@ type Viewer {
     after: String
     before: String
 
-    # The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch
+    # The number of curated artworks to return.
     curatedPicksSize: Int = 2
 
     # Exclude these artworks from the response
@@ -21554,12 +21557,15 @@ type Viewer {
     first: Int
 
     # Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String = "infinite_discovery_initial_artworks"
+    initialArtworksIndexName: String
+      @deprecated(
+        reason: "This field is deprecated and will be removed in the future"
+      )
     last: Int
 
     # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
-    limit: Int
+    limit: Int = 5
 
     # These fields are used for More Like This query
     mltFields: [String] = ["genes", "materials", "tags", "medium"]

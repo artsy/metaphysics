@@ -9,15 +9,11 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
-import { getInitialArtworksSample } from "lib/infiniteDiscovery/getInitialArtworksSample"
-import { calculateMeanArtworksVector } from "lib/infiniteDiscovery/calculateMeanArtworksVector"
-import { findSimilarArtworks } from "lib/infiniteDiscovery/findSimilarArtworks"
-import config from "config"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   args: pageable({
-    limit: { type: GraphQLInt },
+    limit: { type: GraphQLInt, defaultValue: 5 },
     excludeArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description: "Exclude these artworks from the response",
@@ -39,71 +35,28 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     },
     curatedPicksSize: {
       type: GraphQLInt,
-      description:
-        "The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch",
+      description: "The number of curated artworks to return.",
       defaultValue: 2,
     },
     initialArtworksIndexName: {
       type: GraphQLString,
       description: "Which index to use to display initial batch of artworks",
-      defaultValue: config.OPENSEARCH_ARTWORKS_INFINITE_DISCOVERY_CURATED_INDEX,
+      deprecationReason:
+        "This field is deprecated and will be removed in the future",
     },
   }),
-  resolve: async (_root, args, { artworksLoader }) => {
-    if (!artworksLoader) {
-      new Error("A loader is not available")
+  resolve: async (_root, args, { artworksDiscoveryLoader }) => {
+    const gravityArgs = {
+      limit: args.limit,
+      exclude_artwork_ids: args.excludeArtworkIds,
+      mlt_fields: args.mltFields,
+      liked_artwork_ids: args.likedArtworkIds,
+      os_weights: args.osWeights,
+      curated_picks_size: args.curatedPicksSize,
     }
 
-    const {
-      limit = 5,
-      mltFields,
-      osWeights,
-      curatedPicksSize,
-      initialArtworksIndexName,
-    } = args
+    const gravityResponse = await artworksDiscoveryLoader(gravityArgs)
 
-    const { excludeArtworkIds = [], likedArtworkIds = [] } = args
-
-    let result: any = []
-
-    if (likedArtworkIds.length < 3) {
-      result = await getInitialArtworksSample(
-        limit,
-        excludeArtworkIds,
-        artworksLoader,
-        initialArtworksIndexName
-      )
-    } else {
-      const tasteProfileVector = await calculateMeanArtworksVector(
-        likedArtworkIds
-      )
-      // we don't want to recommend the same artworks that the user already liked
-      excludeArtworkIds.push(...likedArtworkIds)
-
-      const options = {
-        vectorEmbedding: tasteProfileVector,
-        size: limit,
-        likedArtworkIds,
-        excludeArtworkIds,
-        fields: mltFields,
-        weights: osWeights,
-      }
-
-      result = await findSimilarArtworks(options, artworksLoader)
-      result = result.slice(0, limit - curatedPicksSize)
-
-      // backfill with random curated picks if we don't have enough similar artworks
-      const randomArtworks = await getInitialArtworksSample(
-        limit - result.length === curatedPicksSize
-          ? curatedPicksSize
-          : limit - result.length,
-        excludeArtworkIds,
-        artworksLoader,
-        initialArtworksIndexName
-      )
-      result.push(...randomArtworks)
-    }
-
-    return connectionFromArray(result, args)
+    return connectionFromArray(gravityResponse.artworks, args)
   },
 }
