@@ -892,4 +892,54 @@ describe("artworksConnection", () => {
       ])
     })
   })
+
+  describe("filter by signed", () => {
+    const mockFilterArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    it("returns correct artwork", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { signed: true, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          signed: true,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+  })
 })

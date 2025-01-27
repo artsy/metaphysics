@@ -215,6 +215,10 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   size: {
     type: GraphQLInt,
   },
+  signed: {
+    type: GraphQLBoolean,
+    description: "When true, will only return signed artworks.",
+  },
   sort: {
     type: GraphQLString,
   },
