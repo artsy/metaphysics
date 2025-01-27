@@ -20,6 +20,7 @@ describe("Bidder mutation", () => {
     registration_ends_at: null,
     require_bidder_approval: false,
     increment_strategy: "default",
+    total_raised_minor: null,
   }
 
   const bidder = {
@@ -40,6 +41,9 @@ describe("Bidder mutation", () => {
         sale {
           slug
           status
+          totalRaised{
+            minor
+          }
         }
       }
     }
@@ -60,6 +64,7 @@ describe("Bidder mutation", () => {
             sale: {
               slug: "shared-live-mocktion",
               status: "open",
+              totalRaised: null,
             },
           },
         },
