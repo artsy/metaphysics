@@ -1296,5 +1296,16 @@ describe("Sale type", () => {
         },
       })
     })
+
+    it("returns null if total_raised_minor is not present", async () => {
+      sale.hide_total = true
+      sale.total_raised_minor = null
+      expect(await execute(query)).toEqual({
+        sale: {
+          hideTotal: true,
+          totalRaised: null,
+        },
+      })
+    })
   })
 })
