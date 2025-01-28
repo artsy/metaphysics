@@ -7,9 +7,8 @@ describe("discoverArtworks", () => {
       const artworksDiscoveryLoader = jest
         .fn()
         .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
-      const meLoader = jest.fn().mockResolvedValue({ id: "user-id" })
 
-      const context = { artworksDiscoveryLoader, meLoader }
+      const context = { artworksDiscoveryLoader, userID: "user-id" }
 
       const query = gql`
         {
@@ -61,9 +60,8 @@ describe("discoverArtworks", () => {
       const artworksDiscoveryLoader = jest
         .fn()
         .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
-      const meLoader = jest.fn().mockResolvedValue({ id: "user-id" })
 
-      const context = { artworksDiscoveryLoader, meLoader }
+      const context = { artworksDiscoveryLoader, userID: "user-id" }
 
       const query = gql`
         {
