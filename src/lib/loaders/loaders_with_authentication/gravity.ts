@@ -31,6 +31,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artworksDiscoveryLoader: gravityLoader("artworks_discovery"),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
