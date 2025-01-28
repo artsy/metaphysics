@@ -1397,7 +1397,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           let domesticLine = ""
-          let internationalLine = "Unavailable"
+          let internationalLine = "Contact gallery"
 
           const fullCountryName = artwork.shipping_origin
             ? COUNTRIES[

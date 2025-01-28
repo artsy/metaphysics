@@ -2722,7 +2722,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: Calculated in checkout \nInternational: Unavailable",
+              "Domestic: Calculated in checkout \nInternational: Contact gallery",
           },
         })
       })
@@ -2788,7 +2788,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: $60 within United States \nInternational: Unavailable",
+              "Domestic: $60 within United States \nInternational: Contact gallery",
           },
         })
       })
@@ -2838,7 +2838,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: Free within United States \nInternational: Unavailable",
+              "Domestic: Free within United States \nInternational: Contact gallery",
           },
         })
       })
