@@ -39,12 +39,10 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       defaultValue: 2,
     },
   }),
-  resolve: async (_root, args, { artworksDiscoveryLoader, meLoader }) => {
-    if (!meLoader || !artworksDiscoveryLoader) {
+  resolve: async (_root, args, { artworksDiscoveryLoader, userID }) => {
+    if (!artworksDiscoveryLoader || !userID) {
       throw new Error("You need to be signed in to perform this action")
     }
-
-    const me = await meLoader()
 
     const gravityArgs = {
       limit: args.limit,
@@ -53,7 +51,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       liked_artwork_ids: args.likedArtworkIds,
       os_weights: args.osWeights,
       curated_picks_size: args.curatedPicksSize,
-      user_id: me.id,
+      user_id: userID,
     }
 
     const gravityResponse = await artworksDiscoveryLoader(gravityArgs)
