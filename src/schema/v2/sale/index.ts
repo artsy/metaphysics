@@ -584,6 +584,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           context,
           info
         ) => {
+          if (!minor) return null
           return resolveMinorAndCurrencyFieldsToMoney(
             {
               minor,
