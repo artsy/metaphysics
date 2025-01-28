@@ -1389,76 +1389,58 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
+          if (
+            artwork.domestic_shipping_fee_cents == null &&
+            !artwork.process_with_artsy_shipping_domestic
+          ) {
+            return "Shipping, tax, and additional fees quoted by seller"
+          }
+
+          let domesticLine = ""
+          let internationalLine = "Contact gallery"
+
           const fullCountryName = artwork.shipping_origin
             ? COUNTRIES[
                 artwork.shipping_origin[artwork.shipping_origin.length - 1]
               ]
-            : null
+            : "country"
+          const withingCountry = artwork.eu_shipping_origin
+            ? "European Union"
+            : fullCountryName
 
-          if (
-            artwork.process_with_artsy_shipping_domestic ||
-            artwork.artsy_shipping_international
-          ) {
-            return "Shipping: Calculated in checkout"
+          // domestic related
+          if (artwork.process_with_artsy_shipping_domestic) {
+            domesticLine = "Calculated in checkout"
+          } else if (artwork.domestic_shipping_fee_cents === 0) {
+            domesticLine = `Free within ${withingCountry}`
+          } else if (artwork.domestic_shipping_fee_cents > 0) {
+            const formattedPrice = amount(
+              ({ domestic_shipping_fee_cents }) =>
+                domestic_shipping_fee_cents || null
+            ).resolve(artwork, {
+              precision: 0,
+              symbol: symbolFromCurrencyCode(artwork.price_currency),
+            })
+            domesticLine = `${formattedPrice} within ${withingCountry}`
           }
 
-          if (artwork.domestic_shipping_fee_cents == null)
-            return "Shipping, tax, and additional fees quoted by seller"
+          // international related
+          if (artwork.artsy_shipping_international) {
+            internationalLine = "Calculated in checkout"
+          } else if (artwork.international_shipping_fee_cents === 0) {
+            internationalLine = `Free`
+          } else if (artwork.international_shipping_fee_cents > 0) {
+            const formattedPrice = amount(
+              ({ international_shipping_fee_cents }) =>
+                international_shipping_fee_cents || null
+            ).resolve(artwork, {
+              precision: 0,
+              symbol: symbolFromCurrencyCode(artwork.price_currency),
+            })
+            internationalLine = `${formattedPrice}`
+          }
 
-          const domesticShippingOnlyMessage = fullCountryName
-            ? `Free shipping within ${fullCountryName} only`
-            : "Free domestic shipping only"
-
-          if (
-            artwork.domestic_shipping_fee_cents === 0 &&
-            artwork.international_shipping_fee_cents == null
-          )
-            return artwork.eu_shipping_origin
-              ? "Free shipping within European Union only"
-              : domesticShippingOnlyMessage
-
-          if (
-            artwork.domestic_shipping_fee_cents === 0 &&
-            artwork.international_shipping_fee_cents === 0
-          )
-            return "Free shipping worldwide"
-
-          let domesticShipping = amount(
-            ({ domestic_shipping_fee_cents }) =>
-              domestic_shipping_fee_cents || null
-          ).resolve(artwork, {
-            precision: 0,
-            symbol: symbolFromCurrencyCode(artwork.price_currency),
-          })
-
-          let internationalShipping = amount(
-            ({ international_shipping_fee_cents }) =>
-              international_shipping_fee_cents || null
-          ).resolve(artwork, {
-            precision: 0,
-            symbol: symbolFromCurrencyCode(artwork.price_currency),
-          })
-
-          const domesticShippingRegion = fullCountryName
-            ? `within ${fullCountryName}`
-            : "domestic"
-
-          const shippingRegion = artwork.eu_shipping_origin
-            ? "within European Union"
-            : domesticShippingRegion
-
-          if (
-            domesticShipping &&
-            artwork.international_shipping_fee_cents == null
-          )
-            return `Shipping: ${domesticShipping} ${shippingRegion} only`
-
-          if (artwork.domestic_shipping_fee_cents === 0)
-            domesticShipping = "Free"
-          if (artwork.international_shipping_fee_cents === 0)
-            internationalShipping = "free"
-
-          return `Shipping: ${domesticShipping} ${shippingRegion}, ${internationalShipping} rest of world`
+          return `Domestic: ${domesticLine} \nInternational: ${internationalLine}`
         },
       },
       shippingOrigin: {
