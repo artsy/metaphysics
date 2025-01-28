@@ -24,10 +24,10 @@ export const formatMarkdownValue = (
         tables: true,
       })
 
-      return marked(value)
+      return marked(enforceInternalHTTPS(value))
     }
     case "markdown":
-      return value
+      return enforceInternalHTTPS(value)
     case "plain":
       return markdownToPlainText(value)
     default:
@@ -51,4 +51,12 @@ export const markdown = <T>(
       return formatMarkdownValue(value, format)
     },
   }
+}
+
+// Replace any http://www.artsy.net or http://artsy.net links with https://www.artsy.net
+export const enforceInternalHTTPS = (input: string) => {
+  return input.replace(
+    /(http:\/\/www\.artsy\.net|http:\/\/artsy\.net)/g,
+    "https://www.artsy.net"
+  )
 }
