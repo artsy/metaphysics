@@ -8,7 +8,7 @@ describe("discoverArtworks", () => {
         .fn()
         .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
 
-      const context = { artworksDiscoveryLoader }
+      const context = { artworksDiscoveryLoader, userID: "user-id" }
 
       const query = gql`
         {
@@ -31,6 +31,7 @@ describe("discoverArtworks", () => {
         liked_artwork_ids: undefined,
         os_weights: [0.6, 0.4],
         curated_picks_size: 2,
+        user_id: "user-id",
       })
 
       expect(result).toMatchInlineSnapshot(`
@@ -60,7 +61,7 @@ describe("discoverArtworks", () => {
         .fn()
         .mockResolvedValue([{ id: "artwork-1" }, { id: "artwork-2" }])
 
-      const context = { artworksDiscoveryLoader }
+      const context = { artworksDiscoveryLoader, userID: "user-id" }
 
       const query = gql`
         {
@@ -89,6 +90,7 @@ describe("discoverArtworks", () => {
         mlt_fields: ["materials", "tags", "medium"],
         os_weights: [0.5, 0.5],
         curated_picks_size: 3,
+        user_id: "user-id",
       })
 
       expect(result).toMatchInlineSnapshot(`
