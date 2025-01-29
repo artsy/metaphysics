@@ -3,7 +3,6 @@ import { amount } from "schema/v2/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
-import config from "config"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -14,10 +13,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
   return thing.listPrice.minor || thing.listPrice.maxPrice.minor
 }
 
-export const vortexStitchingEnvironment = (
-  localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchema
-) => ({
+export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
     union AnalyticsRankedEntityUnion = Artwork | Show | Artist | ViewingRoom
@@ -338,16 +334,10 @@ export const vortexStitchingEnvironment = (
             typenameWithoutPrefix.charAt(0).toLowerCase() +
             typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
-          let schema = localSchema
-
-          // don't fallback to gravitySchema when USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is true
-          if (!config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
-            schema = fieldName == "viewingRoom" ? gravitySchema : localSchema
-          }
 
           return info.mergeInfo
             .delegateToSchema({
-              schema: schema,
+              schema: localSchema,
               operation: "query",
               fieldName,
               args: {

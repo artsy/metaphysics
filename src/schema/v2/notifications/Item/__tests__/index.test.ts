@@ -1,6 +1,5 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
 describe("NotificationItem", () => {
   const notificationPayload = {
@@ -441,16 +440,7 @@ describe("NotificationItem", () => {
       `)
     })
 
-    // TODO: fails on CI, check later
-    describe.skip("#viewingRoomsConnection", () => {
-      beforeAll(() => {
-        config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-      })
-
-      afterAll(() => {
-        config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-      })
-
+    describe("#viewingRoomsConnection", () => {
       it("returns viewingRoomsConnection", async () => {
         const query = gql`
           {

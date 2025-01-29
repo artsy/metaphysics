@@ -235,7 +235,6 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
-import config from "config"
 import { ViewingRoom } from "./viewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
@@ -267,26 +266,6 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
-
-const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-  ? {
-      viewingRoom: ViewingRoom,
-      viewingRoomsConnection: ViewingRoomsConnection,
-      viewingRooms: ViewingRoomConnection,
-    }
-  : ({} as any)
-
-const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-  ? {
-      createViewingRoom: createViewingRoomMutation,
-      deleteViewingRoom: deleteViewingRoomMutation,
-      publishViewingRoom: publishViewingRoomMutation,
-      unpublishViewingRoom: unpublishViewingRoomMutation,
-      updateViewingRoom: updateViewingRoomMutation,
-      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
-      updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
-    }
-  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -406,9 +385,11 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  viewingRoom: ViewingRoom,
+  viewingRoomsConnection: ViewingRoomsConnection,
+  viewingRooms: ViewingRoomConnection,
   verifyAddress: VerifyAddress,
   verifyUser: VerifyUser,
-  ...viewingRoomUnstitchedRootField,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
@@ -549,7 +530,13 @@ export default new GraphQLSchema({
       deliverSecondFactor: deliverSecondFactorMutation,
       enableSecondFactor: enableSecondFactorMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
-      ...viewingRoomsMutations,
+      createViewingRoom: createViewingRoomMutation,
+      deleteViewingRoom: deleteViewingRoomMutation,
+      publishViewingRoom: publishViewingRoomMutation,
+      unpublishViewingRoom: unpublishViewingRoomMutation,
+      updateViewingRoom: updateViewingRoomMutation,
+      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
+      updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

@@ -8,13 +8,8 @@ import {
   FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import config from "config"
 
-const rootFieldsAllowList = ["agreement"].concat(
-  config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-    ? []
-    : ["viewingRoom", "viewingRooms", "viewingRoomsConnection"]
-)
+const rootFieldsAllowList = ["agreement"]
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -50,43 +45,42 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
-    duplicatedTypes.push("ViewingRoom")
-    duplicatedTypes.push("ViewingRoomsConnection")
-    duplicatedTypes.push("ViewingRoomConnection")
-    duplicatedTypes.push("ViewingRoomsEdge")
-    duplicatedTypes.push("ViewingRoomsEdge")
-    duplicatedTypes.push("ViewingRoomEdge")
-    duplicatedTypes.push("ViewingRoomEdge")
+  // TODO: Get rid of these after cleanup on the Gravity side
+  duplicatedTypes.push("ViewingRoom")
+  duplicatedTypes.push("ViewingRoomsConnection")
+  duplicatedTypes.push("ViewingRoomConnection")
+  duplicatedTypes.push("ViewingRoomsEdge")
+  duplicatedTypes.push("ViewingRoomsEdge")
+  duplicatedTypes.push("ViewingRoomEdge")
+  duplicatedTypes.push("ViewingRoomEdge")
 
-    duplicatedTypes.push("CreateViewingRoomPayload")
-    duplicatedTypes.push("CreateViewingRoomInput")
-    duplicatedTypes.push("DeleteViewingRoomInput")
-    duplicatedTypes.push("DeleteViewingRoomPayload")
-    duplicatedTypes.push("ViewingRoomOrErrorsUnion")
-    duplicatedTypes.push("ViewingRoomAttributes")
-    duplicatedTypes.push("UpdateViewingRoomPayload")
-    duplicatedTypes.push("UpdateViewingRoomInput")
-    duplicatedTypes.push("UpdateViewingRoomArtworksPayload")
-    duplicatedTypes.push("UpdateViewingRoomArtworksInput")
-    duplicatedTypes.push("PublishViewingRoomInput")
-    duplicatedTypes.push("PublishViewingRoomPayload")
-    duplicatedTypes.push("UnpublishViewingRoomInput")
-    duplicatedTypes.push("UnpublishViewingRoomPayload")
-    duplicatedTypes.push("UpdateViewingRoomSubsectionsInput")
-    duplicatedTypes.push("UpdateViewingRoomSubsectionsPayload")
-  }
+  duplicatedTypes.push("CreateViewingRoomPayload")
+  duplicatedTypes.push("CreateViewingRoomInput")
+  duplicatedTypes.push("DeleteViewingRoomInput")
+  duplicatedTypes.push("DeleteViewingRoomPayload")
+  duplicatedTypes.push("ViewingRoomOrErrorsUnion")
+  duplicatedTypes.push("ViewingRoomAttributes")
+  duplicatedTypes.push("UpdateViewingRoomPayload")
+  duplicatedTypes.push("UpdateViewingRoomInput")
+  duplicatedTypes.push("UpdateViewingRoomArtworksPayload")
+  duplicatedTypes.push("UpdateViewingRoomArtworksInput")
+  duplicatedTypes.push("PublishViewingRoomInput")
+  duplicatedTypes.push("PublishViewingRoomPayload")
+  duplicatedTypes.push("UnpublishViewingRoomInput")
+  duplicatedTypes.push("UnpublishViewingRoomPayload")
+  duplicatedTypes.push("UpdateViewingRoomSubsectionsInput")
+  duplicatedTypes.push("UpdateViewingRoomSubsectionsPayload")
 
   const excludedMutations: string[] = []
-  if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
-    excludedMutations.push("createViewingRoom")
-    excludedMutations.push("deleteViewingRoom")
-    excludedMutations.push("publishViewingRoom")
-    excludedMutations.push("unpublishViewingRoom")
-    excludedMutations.push("updateViewingRoom")
-    excludedMutations.push("updateViewingRoomArtworks")
-    excludedMutations.push("updateViewingRoomSubsections")
-  }
+
+  // TODO: Get rid of these after cleanup on the Gravity side
+  excludedMutations.push("createViewingRoom")
+  excludedMutations.push("deleteViewingRoom")
+  excludedMutations.push("publishViewingRoom")
+  excludedMutations.push("unpublishViewingRoom")
+  excludedMutations.push("updateViewingRoom")
+  excludedMutations.push("updateViewingRoomArtworks")
+  excludedMutations.push("updateViewingRoomSubsections")
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

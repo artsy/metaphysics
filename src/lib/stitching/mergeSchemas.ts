@@ -73,9 +73,7 @@ export const incrementalMergeSchemas = (localSchema) => {
   const vortexSchema = executableVortexSchema()
   schemas.push(vortexSchema)
 
-  useStitchingEnvironment(
-    vortexStitchingEnvironmentv2(localSchema, gravitySchema)
-  )
+  useStitchingEnvironment(vortexStitchingEnvironmentv2(localSchema))
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
