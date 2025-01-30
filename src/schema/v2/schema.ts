@@ -79,6 +79,7 @@ import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
 import { dismissTaskMutation } from "./me/dismiss_task_mutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
+import { followMarketingCollection } from "./me/follow_marketing_collection"
 import FollowProfile from "./me/follow_profile"
 import FollowShow from "./me/follow_show"
 import { myCollectionCreateArtworkMutation } from "./me/myCollectionCreateArtworkMutation"
@@ -494,6 +495,7 @@ export default new GraphQLSchema({
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
+      followMarketingCollection: followMarketingCollection,
       followProfile: FollowProfile,
       followShow: FollowShow,
       linkAuthentication: linkAuthenticationMutation,
