@@ -48,6 +48,7 @@ interface InputProps {
   id: string
   name: string
   shareableWithPartners: boolean
+  private: boolean
 }
 
 export const updateCollectionMutation = mutationWithClientMutationId<
@@ -62,8 +63,9 @@ export const updateCollectionMutation = mutationWithClientMutationId<
       description: "The internal ID of the collection",
       type: new GraphQLNonNull(GraphQLString),
     },
-    name: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: GraphQLString },
     shareableWithPartners: { type: GraphQLBoolean },
+    private: { type: GraphQLBoolean },
   },
   outputFields: {
     responseOrError: {
@@ -81,6 +83,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
         name: args.name,
         user_id: context.userID,
         shareable_with_partners: args.shareableWithPartners,
+        private: args.private,
       })
 
       return response

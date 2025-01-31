@@ -6,6 +6,16 @@ describe("AckTaskMutation", () => {
     const mutation = gql`
       mutation {
         ackTask(input: { id: "task-id" }) {
+          homeViewTasksSection {
+            tasksConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  title
+                }
+              }
+            }
+          }
           taskOrError {
             ... on AckTaskSuccess {
               task {
@@ -25,6 +35,13 @@ describe("AckTaskMutation", () => {
 
     const mutationResponse = {
       ackTask: {
+        homeViewTasksSection: {
+          tasksConnection: {
+            edges: [
+              { node: { internalID: "asdf1234", title: "Remaining Task" } },
+            ],
+          },
+        },
         taskOrError: {
           task: {
             internalID: "task-id",
@@ -38,6 +55,10 @@ describe("AckTaskMutation", () => {
       meAckTaskLoader: jest.fn().mockResolvedValue({
         id: "task-id",
         title: "Test Task",
+      }),
+      meTasksLoader: jest.fn().mockResolvedValue({
+        body: [{ id: "asdf1234", title: "Remaining Task" }],
+        headers: { "x-total-count": 1 },
       }),
     }
 

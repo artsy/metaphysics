@@ -4,11 +4,13 @@ import { HTTPError } from "lib/HTTPError"
 
 const mutation = `
   mutation {
-    updateCollection(input: { id: "collection-id", name: "Dining room", shareableWithPartners: true }) {
+    updateCollection(input: { id: "collection-id", name: "Dining room", shareableWithPartners: true, private: false }) {
       responseOrError {
         ... on UpdateCollectionSuccess {
           collection {
             name
+            private
+            slug
             shareableWithPartners
           }
         }
@@ -32,6 +34,8 @@ describe("updateCollection", () => {
       id: "collection-id",
       name: "Dining room",
       shareable_with_partners: true,
+      private: false,
+      slug: "dining-room",
     }
 
     let context: Partial<ResolverContext>
@@ -53,6 +57,7 @@ describe("updateCollection", () => {
           user_id: "user-42",
           name: "Dining room",
           shareable_with_partners: true,
+          private: false,
         }
       )
     })
@@ -66,7 +71,9 @@ describe("updateCollection", () => {
             "responseOrError": {
               "collection": {
                 "name": "Dining room",
+                "private": false,
                 "shareableWithPartners": true,
+                "slug": "dining-room",
               },
             },
           },

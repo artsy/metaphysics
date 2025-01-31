@@ -59,6 +59,7 @@ input AckTaskMutationInput {
 
 type AckTaskMutationPayload {
   clientMutationId: String
+  homeViewTasksSection: HomeViewSectionTasks
 
   # On success: the new state of the Task
   taskOrError: AckTaskResponseOrError!
@@ -285,6 +286,9 @@ type Alert {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -316,6 +320,9 @@ type Alert {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -1668,6 +1675,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -1699,6 +1709,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -1760,6 +1773,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   # Only specific Artists should show a link to auction results.
   isDisplayAuctionLink: Boolean
   isFollowed: Boolean
+
+  # Temporary field to test SEO experiment
+  isInSeoExperiment: Boolean
 
   # Whether the artist has been created by a user.
   isPersonalArtist: Boolean
@@ -2141,6 +2157,9 @@ type ArtistSeries implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -2172,6 +2191,9 @@ type ArtistSeries implements Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -4253,10 +4275,12 @@ type Collection {
 
   # Name of the collection. Has a predictable value for 'standard' collections such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.
   name: String!
+  private: Boolean!
 
   # True if this collection represents artworks explicitly saved by the user, false otherwise.
   saves: Boolean!
   shareableWithPartners: Boolean!
+  slug: String!
 }
 
 enum CollectionArtworkSorts {
@@ -9285,6 +9309,7 @@ input DismissTaskMutationInput {
 
 type DismissTaskMutationPayload {
   clientMutationId: String
+  homeViewTasksSection: HomeViewSectionTasks
 
   # On success: the new state of the Task
   taskOrError: DismissTaskResponseOrError!
@@ -9426,6 +9451,9 @@ interface EntityWithFilterArtworksConnectionInterface {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -9456,6 +9484,9 @@ interface EntityWithFilterArtworksConnectionInterface {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -9666,6 +9697,9 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -9697,6 +9731,9 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -10172,6 +10209,9 @@ input FilterArtworksInput {
   extraAggregationGeneIDs: [String]
   first: Int
   forSale: Boolean
+
+  # When true, will only return framed artworks.
+  framed: Boolean
   geneID: String
   geneIDs: [String]
   height: String
@@ -10202,6 +10242,9 @@ input FilterArtworksInput {
   periods: [String]
   priceRange: String
   saleID: ID
+
+  # When true, will only return signed artworks.
+  signed: Boolean
   size: Int
 
   # Filter results by Artwork sizes
@@ -10624,6 +10667,9 @@ type Gene implements Node & Searchable {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -10655,6 +10701,9 @@ type Gene implements Node & Searchable {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -12186,6 +12235,7 @@ type Job {
   externalURL: String!
   id: ID!
   location: String!
+  teamName: String!
   title: String!
   updatedAt(
     format: String
@@ -12514,6 +12564,9 @@ type MarketingCollection implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -12545,6 +12598,9 @@ type MarketingCollection implements Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -15042,6 +15098,9 @@ type Partner implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -15073,6 +15132,9 @@ type Partner implements Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -16539,6 +16601,9 @@ type Query {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -16570,6 +16635,9 @@ type Query {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -16637,6 +16705,11 @@ type Query {
     # A slug for the city, conforming to Gravity's city slug naming conventions
     slug: String
   ): City
+  collection(
+    # The ID or slug of the Collection
+    id: String!
+    userID: String!
+  ): Collection
 
   # A collector profile.
   collectorProfile(userID: String): CollectorProfileType
@@ -16836,25 +16909,22 @@ type Query {
     after: String
     before: String
 
-    # The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch
+    # The number of curated artworks to return.
     curatedPicksSize: Int = 2
 
-    # (Only for when useOpenSearch is true) Exclude these artworks from the response
+    # Exclude these artworks from the response
     excludeArtworkIds: [String]
     first: Int
-
-    # (Only for when useOpenSearch is true) Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String = "infinite_discovery_initial_artworks"
     last: Int
 
-    # (Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
+    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
-    limit: Int
+    limit: Int = 5
 
-    # (Only for when useOpenSearch is true) These fields are used to calculate the More Like This query
+    # These fields are used for More Like This query
     mltFields: [String] = ["genes", "materials", "tags", "medium"]
 
-    # (Only for when useOpenSearch is true) Weights for the OpenSearch query
+    # Weights for the KNN and MLT query
     osWeights: [Float] = [0.6, 0.4]
   ): ArtworkConnection
 
@@ -17481,6 +17551,9 @@ type Query {
     # Search query to perform. Required.
     query: String!
   ): SearchableConnection
+
+  # A list of artists that are part of the SEO experiment
+  seoExperimentArtists: [String]
   shortcut(id: ID!): Shortcut
 
   # A Show
@@ -17939,6 +18012,7 @@ type Sale implements Node {
 
   # A formatted description of when the auction starts or ends or if it has ended
   formattedStartDateTime: String
+  hideTotal: Boolean
   href: String
 
   # A globally unique ID.
@@ -18013,6 +18087,7 @@ type Sale implements Node {
   status: String
   symbol: String
   timeZone: String
+  totalRaised: Money
 
   # True if the current user needs to undergo identity verification for this sale, false otherwise
   userNeedsIdentityVerification: Boolean
@@ -18877,6 +18952,9 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -18908,6 +18986,9 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -19363,6 +19444,9 @@ type Tag implements Node {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -19394,6 +19478,9 @@ type Tag implements Node {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -21303,6 +21390,9 @@ type Viewer {
     extraAggregationGeneIDs: [String]
     first: Int
     forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
     geneID: String
     geneIDs: [String]
     height: String
@@ -21334,6 +21424,9 @@ type Viewer {
     periods: [String]
     priceRange: String
     saleID: ID
+
+    # When true, will only return signed artworks.
+    signed: Boolean
     size: Int
 
     # Filter results by Artwork sizes
@@ -21387,6 +21480,11 @@ type Viewer {
     # A slug for the city, conforming to Gravity's city slug naming conventions
     slug: String
   ): City
+  collection(
+    # The ID or slug of the Collection
+    id: String!
+    userID: String!
+  ): Collection
 
   # A collector profile.
   collectorProfile(userID: String): CollectorProfileType
@@ -21475,25 +21573,22 @@ type Viewer {
     after: String
     before: String
 
-    # The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch
+    # The number of curated artworks to return.
     curatedPicksSize: Int = 2
 
-    # (Only for when useOpenSearch is true) Exclude these artworks from the response
+    # Exclude these artworks from the response
     excludeArtworkIds: [String]
     first: Int
-
-    # (Only for when useOpenSearch is true) Which index to use to display initial batch of artworks
-    initialArtworksIndexName: String = "infinite_discovery_initial_artworks"
     last: Int
 
-    # (Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
+    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
-    limit: Int
+    limit: Int = 5
 
-    # (Only for when useOpenSearch is true) These fields are used to calculate the More Like This query
+    # These fields are used for More Like This query
     mltFields: [String] = ["genes", "materials", "tags", "medium"]
 
-    # (Only for when useOpenSearch is true) Weights for the OpenSearch query
+    # Weights for the KNN and MLT query
     osWeights: [Float] = [0.6, 0.4]
   ): ArtworkConnection
 
@@ -22067,6 +22162,9 @@ type Viewer {
     # Search query to perform. Required.
     query: String!
   ): SearchableConnection
+
+  # A list of artists that are part of the SEO experiment
+  seoExperimentArtists: [String]
   shortcut(id: ID!): Shortcut
 
   # A Show
@@ -22803,7 +22901,8 @@ input updateCollectionInput {
 
   # The internal ID of the collection
   id: String!
-  name: String!
+  name: String
+  private: Boolean
   shareableWithPartners: Boolean
 }
 

@@ -7,6 +7,10 @@ import { SaleArtworkType } from "schema/v2/sale_artwork"
 import initials from "schema/v2/fields/initials"
 import cached from "schema/v2/fields/cached"
 import date from "schema/v2/fields/date"
+import {
+  Money,
+  resolveMinorAndCurrencyFieldsToMoney,
+} from "schema/v2/fields/money"
 import moment from "moment"
 import { tz } from "moment-timezone"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
@@ -347,6 +351,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      hideTotal: {
+        type: GraphQLBoolean,
+        resolve: ({ hide_total }) => hide_total,
+      },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
       initials: initials("name"),
@@ -567,6 +575,26 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       timeZone: {
         type: GraphQLString,
         resolve: ({ time_zone }) => time_zone,
+      },
+      totalRaised: {
+        type: Money,
+        resolve: (
+          { total_raised_minor: minor, currency: currencyCode },
+          args,
+          context,
+          info
+        ) => {
+          if (!minor) return null
+          return resolveMinorAndCurrencyFieldsToMoney(
+            {
+              minor,
+              currencyCode,
+            },
+            args,
+            context,
+            info
+          )
+        },
       },
     }
   },

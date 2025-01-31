@@ -418,6 +418,50 @@ describe("artworksConnection", () => {
         { node: { slug: "oseberg-norway-queens-ship-0" } },
       ])
     })
+
+    it("returns results using the non personalized loader if there is no user", async () => {
+      context = {
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship-0",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
+              },
+            }),
+        },
+        authenticatedLoaders: {},
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            first: 1
+            after: ""
+            aggregations: [TOTAL, FOLLOWED_ARTISTS]
+            includeArtworksByFollowedArtists: true
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "oseberg-norway-queens-ship-0" } },
+      ])
+    })
   })
 
   describe(`When filtering on a sale and filtering/sorting by price`, () => {
@@ -792,6 +836,106 @@ describe("artworksConnection", () => {
       `
 
       const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+  })
+
+  describe("filter by framed", () => {
+    const mockFilterArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    it("returns correct artwork", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { framed: true, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          framed: true,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+  })
+
+  describe("filter by signed", () => {
+    const mockFilterArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    it("returns correct artwork", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { signed: true, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          signed: true,
+        })
+      )
 
       expect(artworksConnection.edges).toEqual([
         { node: { slug: "kaws-toys" } },
