@@ -1,5 +1,7 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+import { FeaturedFairs } from "../FeaturedFairs"
+import { getSectionURL } from "../QuickLinks"
 
 describe("QuickLinks", () => {
   it("returns the section's data", async () => {
@@ -69,5 +71,13 @@ describe("QuickLinks", () => {
         ],
       }
     `)
+  })
+})
+
+describe("getSectionURL", () => {
+  it("returns the section's URL", () => {
+    expect(getSectionURL(FeaturedFairs)).toBe(
+      "home-view/sections/home-view-section-featured-fairs?sectionType=HomeViewSectionFairs"
+    )
   })
 })
