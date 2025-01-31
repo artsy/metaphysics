@@ -20,7 +20,7 @@ describe("getSections", () => {
 
       expect(sectionIds).toMatchInlineSnapshot(`
         [
-          "home-view-section-navigation-pills",
+          "home-view-section-quick-links",
           "home-view-section-tasks",
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
