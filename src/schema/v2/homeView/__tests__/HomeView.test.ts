@@ -110,7 +110,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionCard",
                   "component": {
-                    "title": "Galleries near You",
+                    "title": "Galleries for You",
                   },
                 },
               },
@@ -280,7 +280,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionCard",
                   "component": {
-                    "title": "Galleries near You",
+                    "title": "Galleries for You",
                   },
                 },
               },
