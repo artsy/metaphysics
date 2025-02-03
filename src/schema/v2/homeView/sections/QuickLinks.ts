@@ -1,6 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import type { NavigationPill } from "../sectionTypes/NavigationPills"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -11,12 +12,6 @@ export const QuickLinks: HomeViewSection = {
   resolver: () => {
     return QUICK_LINKS
   },
-}
-
-export interface NavigationPill {
-  title: string
-  href: string
-  ownerType: OwnerType
 }
 
 const QUICK_LINKS: Array<NavigationPill> = [
