@@ -1,6 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { FeaturedFairs } from "./FeaturedFairs"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -19,6 +20,10 @@ export interface QuickLink {
   ownerType: OwnerType
 }
 
+export const getSectionURL = (section: HomeViewSection) => {
+  return `home-view/sections/${section.id}?sectionType=${section.type}`
+}
+
 const QUICK_LINKS: Array<QuickLink> = [
   { title: "Follows", href: "/favorites", ownerType: OwnerType.follows },
   { title: "Auctions", href: "/auctions", ownerType: OwnerType.auctions },
@@ -34,4 +39,9 @@ const QUICK_LINKS: Array<QuickLink> = [
     ownerType: OwnerType.priceDatabase,
   },
   { title: "Editorial", href: "/news", ownerType: OwnerType.articles },
+  {
+    title: "Featured Fairs",
+    href: getSectionURL(FeaturedFairs),
+    ownerType: OwnerType.fairs,
+  },
 ]
