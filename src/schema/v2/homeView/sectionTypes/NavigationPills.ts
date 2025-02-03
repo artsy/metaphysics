@@ -25,11 +25,11 @@ const NavigationPillType = new GraphQLObjectType<
   fields: () => ({
     title: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Quick link title",
+      description: "Link title",
     },
     href: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Quick link URL",
+      description: "Link URL",
     },
     ownerType: {
       type: new GraphQLNonNull(GraphQLString),
@@ -43,11 +43,11 @@ export const HomeViewNavigationPillsSectionType = new GraphQLObjectType<
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,
-  description: "A selection of quick links in the home view",
+  description: "A selection of navigation links in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-    quickLinks: {
+    navigationPills: {
       type: new GraphQLNonNull(new GraphQLList(NavigationPillType)),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
