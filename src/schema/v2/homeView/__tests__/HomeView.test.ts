@@ -176,6 +176,12 @@ describe("homeView", () => {
             "edges": [
               {
                 "node": {
+                  "__typename": "HomeViewSectionNavigationPills",
+                  "component": null,
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionTasks",
                   "component": {
                     "title": "Act Now",
