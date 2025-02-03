@@ -9,9 +9,12 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
-import { QuickLink } from "../sections/QuickLinks"
+import { NavigationPill } from "../sections/QuickLinks"
 
-const NavigationPillType = new GraphQLObjectType<QuickLink, ResolverContext>({
+const NavigationPillType = new GraphQLObjectType<
+  NavigationPill,
+  ResolverContext
+>({
   name: "NavigationPill",
   fields: () => ({
     title: {

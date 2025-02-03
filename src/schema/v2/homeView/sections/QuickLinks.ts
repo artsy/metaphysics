@@ -13,13 +13,13 @@ export const QuickLinks: HomeViewSection = {
   },
 }
 
-export interface QuickLink {
+export interface NavigationPill {
   title: string
   href: string
   ownerType: OwnerType
 }
 
-const QUICK_LINKS: Array<QuickLink> = [
+const QUICK_LINKS: Array<NavigationPill> = [
   { title: "Follows", href: "/favorites", ownerType: OwnerType.follows },
   { title: "Auctions", href: "/auctions", ownerType: OwnerType.auctions },
   { title: "Saves", href: "/favorites/saves", ownerType: OwnerType.saves },
