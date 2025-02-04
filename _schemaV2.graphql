@@ -12698,6 +12698,16 @@ enum MarketingCollectionGroupTypeEnum {
   OtherCollections
 }
 
+type MarketingCollectionHitNotificationItem {
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+  marketingCollection: MarketingCollection
+}
+
 type MarketingCollectionQuery {
   artistIDs: [String]
   geneIDs: [String]
@@ -14666,7 +14676,9 @@ union NotificationItem =
   | ArticleFeaturedArtistNotificationItem
   | ArtworkPublishedNotificationItem
   | CollectorProfileUpdatePromptNotificationItem
+  | MarketingCollectionHitNotificationItem
   | PartnerOfferCreatedNotificationItem
+  | SavedArtworkChangesNotificationItem
   | ShowOpenedNotificationItem
   | ViewingRoomPublishedNotificationItem
 
@@ -14690,8 +14702,10 @@ enum NotificationTypesEnum {
   ARTWORK_ALERT
   ARTWORK_PUBLISHED
   COLLECTOR_PROFILE_UPDATE_PROMPT
+  MARKETING_COLLECTION_HIT
   PARTNER_OFFER_CREATED
   PARTNER_SHOW_OPENED
+  SAVED_ARTWORK_CHANGES
   VIEWING_ROOM_PUBLISHED
 }
 
@@ -18541,6 +18555,16 @@ type SaveArtworkPayload {
   artwork: Artwork
   clientMutationId: String
   me: Me!
+}
+
+type SavedArtworkChangesNotificationItem {
+  artwork: Artwork
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
 }
 
 # A connection to a list of items.
