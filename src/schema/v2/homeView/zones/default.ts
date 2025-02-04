@@ -25,8 +25,10 @@ import { Tasks } from "../sections/Tasks"
 import { TrendingArtists } from "../sections/TrendingArtists"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
+import { QuickLinks } from "../sections/QuickLinks"
 
 const SECTIONS: HomeViewSection[] = [
+  QuickLinks,
   Tasks,
   LatestActivity,
   NewWorksForYou,
