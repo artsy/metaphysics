@@ -39,7 +39,7 @@ describe("GalleriesNearYou", () => {
         "component": {
           "behaviors": null,
           "description": "Follow these local galleries for updates on artists you love.",
-          "title": "Galleries near You",
+          "title": "Galleries for You",
         },
         "contextModule": "galleriesForYouBanner",
         "internalID": "home-view-section-galleries-near-you",
@@ -84,7 +84,7 @@ describe("GalleriesNearYou", () => {
             "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
           },
           "subtitle": "Follow these local galleries for updates on artists you love.",
-          "title": "Galleries near You",
+          "title": "Galleries for You",
         },
       }
     `)
