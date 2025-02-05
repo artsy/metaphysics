@@ -946,6 +946,43 @@ describe("artworksConnection", () => {
         { node: { slug: "kaws-toys" } },
       ])
     })
+
+    it("returns correct artwork for published=true", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { published: true, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          aggregations: ["total"],
+          offset: 0,
+          page: 1,
+          published: true,
+          size: 10,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
   })
 
   describe("filter by signed", () => {
