@@ -9,18 +9,27 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
-import { QuickLink } from "../sections/QuickLinks"
+import { OwnerType } from "@artsy/cohesion"
 
-const NavigationPillType = new GraphQLObjectType<QuickLink, ResolverContext>({
+export interface NavigationPill {
+  title: string
+  href: string
+  ownerType: OwnerType
+}
+
+const NavigationPillType = new GraphQLObjectType<
+  NavigationPill,
+  ResolverContext
+>({
   name: "NavigationPill",
   fields: () => ({
     title: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Quick link title",
+      description: "Link title",
     },
     href: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Quick link URL",
+      description: "Link URL",
     },
     ownerType: {
       type: new GraphQLNonNull(GraphQLString),
@@ -34,11 +43,11 @@ export const HomeViewNavigationPillsSectionType = new GraphQLObjectType<
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,
-  description: "A selection of quick links in the home view",
+  description: "A selection of navigation links in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-    quickLinks: {
+    navigationPills: {
       type: new GraphQLNonNull(new GraphQLList(NavigationPillType)),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
