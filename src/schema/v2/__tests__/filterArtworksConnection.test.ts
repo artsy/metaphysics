@@ -893,6 +893,61 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("filter by published", () => {
+    const mockFilterArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    it("returns correct artwork for published=false", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { published: false, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          aggregations: ["total"],
+          include_unpublished: true,
+          offset: 0,
+          page: 1,
+          published: false,
+          size: 10,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+  })
+
   describe("filter by signed", () => {
     const mockFilterArtworksLoader = jest.fn(() => {
       return Promise.resolve({

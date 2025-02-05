@@ -554,6 +554,10 @@ const filterArtworksConnectionTypeFactory = (
       delete gravityOptions.medium
     }
 
+    if (gravityOptions.published === false) {
+      gravityOptions.include_unpublished = true
+    }
+
     removeNulls(gravityOptions)
 
     let loader
