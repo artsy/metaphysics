@@ -654,7 +654,7 @@ describe("Artwork type", () => {
               maxPrice: {
                 minor: 42000,
                 major: 420,
-                display: null,
+                display: "US$420",
                 currencyCode: "USD",
               },
             },
@@ -676,7 +676,7 @@ describe("Artwork type", () => {
               minPrice: {
                 minor: 42000,
                 major: 420,
-                display: null,
+                display: "US$420",
                 currencyCode: "USD",
               },
               maxPrice: null,
