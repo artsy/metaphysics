@@ -9,7 +9,7 @@ export const GalleriesNearYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionCard,
   contextModule: ContextModule.galleriesForYouBanner,
   component: {
-    title: "Galleries near You",
+    title: "Galleries for You",
     description:
       "Follow these local galleries for updates on artists you love.",
   },

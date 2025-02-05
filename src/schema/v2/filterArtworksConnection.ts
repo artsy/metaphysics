@@ -98,9 +98,6 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
     type: GraphQLBoolean,
   },
-  offerable: {
-    type: GraphQLBoolean,
-  },
   additionalGeneIDs: {
     type: new GraphQLList(GraphQLString),
   },
@@ -119,21 +116,26 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistNationalities: {
     type: GraphQLList(GraphQLString),
   },
+  artistSeriesID: {
+    type: GraphQLString,
+  },
+  artistSeriesIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
   atAuction: {
     type: GraphQLBoolean,
   },
   attributionClass: {
     type: new GraphQLList(GraphQLString),
   },
+  availability: {
+    type: GraphQLString,
+  },
   color: {
     type: GraphQLString,
   },
   colors: {
     type: new GraphQLList(GraphQLString),
-  },
-  sizes: {
-    type: new GraphQLList(ArtworkSizes),
-    description: "Filter results by Artwork sizes",
   },
   dimensionRange: {
     type: GraphQLString,
@@ -143,15 +145,6 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   extraAggregationGeneIDs: {
     type: new GraphQLList(GraphQLString),
-  },
-  includeArtworksByFollowedArtists: {
-    type: GraphQLBoolean,
-  },
-  includeMediumFilterInAggregation: {
-    type: GraphQLBoolean,
-  },
-  inquireableOnly: {
-    type: GraphQLBoolean,
   },
   forSale: {
     type: GraphQLBoolean,
@@ -169,13 +162,35 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   height: {
     type: GraphQLString,
   },
-  width: {
+  includeArtworksByFollowedArtists: {
+    type: GraphQLBoolean,
+  },
+  includeMediumFilterInAggregation: {
+    type: GraphQLBoolean,
+  },
+  inquireableOnly: {
+    type: GraphQLBoolean,
+  },
+  keyword: {
     type: GraphQLString,
+  },
+  keywordMatchExact: {
+    type: GraphQLBoolean,
+    description: "When true, will only return exact keyword match",
+  },
+  locationCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  majorPeriods: {
+    type: new GraphQLList(GraphQLString),
   },
   marketable: {
     type: GraphQLBoolean,
     description:
       "When true, will only return `marketable` works (not nude or provocative).",
+  },
+  marketingCollectionID: {
+    type: GraphQLString,
   },
   materialsTerms: {
     type: GraphQLList(GraphQLString),
@@ -185,13 +200,13 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "A string from the list of allocations, or * to denote all mediums",
   },
-  period: {
-    type: GraphQLString,
+  offerable: {
+    type: GraphQLBoolean,
   },
-  periods: {
-    type: new GraphQLList(GraphQLString),
+  page: {
+    type: GraphQLInt,
   },
-  majorPeriods: {
+  partnerCities: {
     type: new GraphQLList(GraphQLString),
   },
   partnerID: {
@@ -200,24 +215,34 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   partnerIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  partnerCities: {
+  period: {
+    type: GraphQLString,
+  },
+  periods: {
     type: new GraphQLList(GraphQLString),
   },
   priceRange: {
     type: GraphQLString,
   },
-  page: {
-    type: GraphQLInt,
+  published: {
+    type: GraphQLBoolean,
   },
   saleID: {
     type: GraphQLID,
   },
-  size: {
-    type: GraphQLInt,
+  sold: {
+    type: GraphQLBoolean,
   },
   signed: {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
+  },
+  size: {
+    type: GraphQLInt,
+  },
+  sizes: {
+    type: new GraphQLList(ArtworkSizes),
+    description: "Filter results by Artwork sizes",
   },
   sort: {
     type: GraphQLString,
@@ -225,23 +250,10 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   tagID: {
     type: GraphQLString,
   },
-  keyword: {
+  width: {
     type: GraphQLString,
   },
-  keywordMatchExact: {
-    type: GraphQLBoolean,
-    description: "When true, will only return exact keyword match",
-  },
-  artistSeriesID: {
-    type: GraphQLString,
-  },
-  artistSeriesIDs: {
-    type: new GraphQLList(GraphQLString),
-  },
-  locationCities: {
-    type: new GraphQLList(GraphQLString),
-  },
-  marketingCollectionID: {
+  visibility_level: {
     type: GraphQLString,
   },
 }
@@ -420,27 +432,28 @@ const convertFilterArgs = ({
   artistSeriesIDs,
   atAuction,
   attributionClass,
-  sizes,
   dimensionRange,
   excludeArtworkIDs,
   extraAggregationGeneIDs,
-  includeArtworksByFollowedArtists,
-  includeMediumFilterInAggregation,
-  inquireableOnly,
   forSale,
   geneID,
   geneIDs,
+  includeArtworksByFollowedArtists,
+  includeMediumFilterInAggregation,
+  inquireableOnly,
+  keywordMatchExact,
+  locationCities,
   majorPeriods,
   marketingCollectionID,
   materialsTerms,
+  partnerCities,
   partnerID,
   partnerIDs,
-  partnerCities,
   priceRange,
   saleID,
+  sizes,
   tagID,
-  keywordMatchExact,
-  locationCities,
+  visibilityLevel,
   ..._options
 }) => {
   return {
@@ -453,27 +466,28 @@ const convertFilterArgs = ({
     artist_series_ids: artistSeriesIDs,
     at_auction: atAuction,
     attribution_class: attributionClass,
-    sizes: sizes,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
     extra_aggregation_gene_ids: extraAggregationGeneIDs,
-    include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-    include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
-    inquireable_only: inquireableOnly,
     for_sale: forSale,
     gene_id: geneID,
     gene_ids: geneIDs,
+    include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+    include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+    inquireable_only: inquireableOnly,
+    keyword_match_exact: keywordMatchExact,
+    location_cities: locationCities,
     major_periods: majorPeriods,
     marketing_collection_id: marketingCollectionID,
     materials_terms: materialsTerms,
+    partner_cities: partnerCities,
     partner_id: partnerID,
     partner_ids: partnerIDs,
-    partner_cities: partnerCities,
     price_range: priceRange,
     sale_id: saleID,
+    sizes: sizes,
     tag_id: tagID,
-    keyword_match_exact: keywordMatchExact,
-    location_cities: locationCities,
+    visibility_level: visibilityLevel,
     ..._options,
   }
 }
@@ -538,6 +552,10 @@ const filterArtworksConnectionTypeFactory = (
     // making the graphQL queries between all and a subset of mediums the same shape.
     if (gravityOptions.medium === "*" || !gravityOptions.medium) {
       delete gravityOptions.medium
+    }
+
+    if (gravityOptions.published === false) {
+      gravityOptions.include_unpublished = true
     }
 
     removeNulls(gravityOptions)
