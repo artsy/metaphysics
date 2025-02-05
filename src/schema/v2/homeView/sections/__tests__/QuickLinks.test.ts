@@ -12,7 +12,7 @@ describe("QuickLinks", () => {
             contextModule
             ownerType
             ... on HomeViewSectionNavigationPills {
-              quickLinks {
+              navigationPills {
                 title
                 href
                 ownerType
@@ -34,8 +34,7 @@ describe("QuickLinks", () => {
         "__typename": "HomeViewSectionNavigationPills",
         "contextModule": "quickLinks",
         "internalID": "home-view-section-quick-links",
-        "ownerType": "quickLinks",
-        "quickLinks": [
+        "navigationPills": [
           {
             "href": "/favorites",
             "ownerType": "follows",
@@ -67,6 +66,7 @@ describe("QuickLinks", () => {
             "title": "Editorial",
           },
         ],
+        "ownerType": "quickLinks",
       }
     `)
   })
