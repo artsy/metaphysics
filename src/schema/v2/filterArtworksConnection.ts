@@ -168,6 +168,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   includeMediumFilterInAggregation: {
     type: GraphQLBoolean,
   },
+  includeUnpublished: {
+    type: GraphQLBoolean,
+  },
   inquireableOnly: {
     type: GraphQLBoolean,
   },
@@ -226,6 +229,8 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   published: {
     type: GraphQLBoolean,
+    description:
+      "When false, will only return unpublished artworks for authorized users.",
   },
   saleID: {
     type: GraphQLID,
@@ -253,7 +258,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   width: {
     type: GraphQLString,
   },
-  visibility_level: {
+  visibilityLevel: {
     type: GraphQLString,
   },
 }
@@ -440,6 +445,7 @@ const convertFilterArgs = ({
   geneIDs,
   includeArtworksByFollowedArtists,
   includeMediumFilterInAggregation,
+  includeUnpublished,
   inquireableOnly,
   keywordMatchExact,
   locationCities,
@@ -474,6 +480,7 @@ const convertFilterArgs = ({
     gene_ids: geneIDs,
     include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+    include_unpublished: includeUnpublished,
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
     location_cities: locationCities,
@@ -525,6 +532,7 @@ const filterArtworksConnectionTypeFactory = (
       before,
       size,
       include_artworks_by_followed_artists,
+      visibility_level,
       aggregations: aggregationOptions = [],
     } = options
 
@@ -547,6 +555,17 @@ const filterArtworksConnectionTypeFactory = (
       aggregations: aggregationOptions,
     }
 
+    // We need to set `include_unpublished` when filtering for only unpublished works.
+    if (gravityOptions.published === false) {
+      gravityOptions.include_unpublished = true
+    }
+
+    const requestedAuthorizedFilters = !!(
+      gravityOptions.include_unpublished ||
+      include_artworks_by_followed_artists ||
+      visibility_level
+    )
+
     // Support queries that show all mediums using the medium param.
     // If you specify "*" it results in metaphysics removing the query option
     // making the graphQL queries between all and a subset of mediums the same shape.
@@ -554,17 +573,10 @@ const filterArtworksConnectionTypeFactory = (
       delete gravityOptions.medium
     }
 
-    if (gravityOptions.published === false) {
-      gravityOptions.include_unpublished = true
-    }
-
     removeNulls(gravityOptions)
 
     let loader
-    if (
-      include_artworks_by_followed_artists ||
-      requestedPersonalizedAggregation
-    ) {
+    if (requestedPersonalizedAggregation || requestedAuthorizedFilters) {
       if (!filterArtworksAuthenticatedLoader) {
         // TODO: Instead of throwing an error, let's use the unauthenticated loader
         // without the personalized options if they are specified while unauthenticated.
@@ -572,6 +584,8 @@ const filterArtworksConnectionTypeFactory = (
         // throw new Error("You must be logged in to request these params.")
 
         delete gravityOptions.include_artworks_by_followed_artists
+        delete gravityOptions.include_unpublished
+        delete gravityOptions.visibility_level
         gravityOptions.aggregations = gravityOptions.aggregations.filter(
           (item) => item !== "followed_artists"
         )
