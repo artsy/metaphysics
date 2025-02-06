@@ -31,7 +31,6 @@ describe("getSections", () => {
           "home-view-section-infinite-discovery",
           "home-view-section-explore-by-category",
           "home-view-section-hero-units",
-          "home-view-section-active-bids",
           "home-view-section-auction-lots-for-you",
           "home-view-section-auctions",
           "home-view-section-latest-auction-results",

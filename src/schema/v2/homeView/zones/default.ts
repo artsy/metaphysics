@@ -1,7 +1,6 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
-import { ActiveBids } from "../sections/ActiveBids"
 import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { Auctions } from "../sections/Auctions"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
@@ -39,7 +38,6 @@ const SECTIONS: HomeViewSection[] = [
   InfiniteDiscovery,
   ExploreByCategory,
   HeroUnits,
-  ActiveBids,
   AuctionLotsForYou,
   Auctions,
   LatestAuctionResults,

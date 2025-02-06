@@ -545,7 +545,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description: "The depth as expressed by the original input metric",
         type: GraphQLString,
       },
+      depthCm: {
+        type: GraphQLFloat,
+        resolve: ({ depth_cm }) => depth_cm,
+      },
       description: markdown(({ blurb }) => blurb),
+      diameterCm: {
+        type: GraphQLFloat,
+        resolve: ({ diameter_cm }) => diameter_cm,
+      },
       dimensions: Dimensions,
       dominantColors: {
         type: new GraphQLNonNull(
@@ -1322,6 +1330,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ artsy_shipping_international }) =>
           artsy_shipping_international,
       },
+      shippingWeight: {
+        type: GraphQLFloat,
+        resolve: ({ shipping_weight }) => shipping_weight,
+      },
+      shippingWeightMetric: {
+        type: GraphQLString,
+        description: "The unit of measurement for the shipping weight",
+        resolve: ({ shipping_weight_metric }) => shipping_weight_metric,
+      },
       processWithArtsyShippingDomestic: {
         type: GraphQLBoolean,
         description:
@@ -1816,11 +1833,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       framedMetric: {
         type: GraphQLString,
+        description: "The unit of measurement for the framed dimensions",
         resolve: ({ framed_metric }) => framed_metric,
       },
       framedWidth: {
         type: GraphQLString,
         resolve: ({ framed_width }) => framed_width,
+      },
+      framedDiameter: {
+        type: GraphQLFloat,
+        resolve: ({ framed_diameter }) => framed_diameter,
       },
       signatureInfo: {
         type: ArtworkInfoRowType,
@@ -1877,6 +1899,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+
       hasCertificateOfAuthenticity: {
         type: GraphQLBoolean,
         description:
