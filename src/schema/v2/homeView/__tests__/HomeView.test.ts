@@ -254,14 +254,6 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
-                    "title": "Your Active Bids",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
                     "title": "Auction Lots for You",
                   },
                 },
