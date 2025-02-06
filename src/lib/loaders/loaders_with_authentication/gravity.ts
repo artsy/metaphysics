@@ -26,6 +26,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
+    artworkImportRowsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/rows`,
+      {},
+      { headers: true }
+    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
@@ -70,6 +76,11 @@ export default (accessToken, userID, opts) => {
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
     createArtistCareerHighlightLoader: gravityLoader(
       "artist_career_highlight",
+      {},
+      { method: "POST" }
+    ),
+    createArtworkImportLoader: gravityLoader(
+      "artwork_import",
       {},
       { method: "POST" }
     ),
