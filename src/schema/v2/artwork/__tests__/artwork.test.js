@@ -5502,4 +5502,92 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("shippingWeight and shippingWeightMetric", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingWeight
+          shippingWeightMetric
+        }
+      }
+    `
+    it("returns the artwork shipping weight and metric", async () => {
+      artwork.shipping_weight = 10
+      artwork.shipping_weight_metric = "kg"
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          shippingWeight: 10,
+          shippingWeightMetric: "kg",
+        },
+      })
+    })
+  })
+
+  describe("framed height/width/depth/diameter/metric", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          framedHeight
+          framedWidth
+          framedDepth
+          framedDiameter
+          framedMetric
+        }
+      }
+    `
+    it("returns the artwork framed dimensions", async () => {
+      artwork.framed_height = 10
+      artwork.framed_width = 20
+      artwork.framed_depth = 30
+      artwork.framed_diameter = 40
+      artwork.framed_metric = "cm"
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          framedHeight: "10",
+          framedWidth: "20",
+          framedDepth: "30",
+          framedDiameter: 40,
+          framedMetric: "cm",
+        },
+      })
+    })
+  })
+
+  describe("unframed height/width/depth/diameter in cm", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          heightCm
+          widthCm
+          depthCm
+          diameterCm
+        }
+      }
+    `
+
+    it("returns the artwork dimensions in cm", async () => {
+      artwork.height_cm = 10
+      artwork.width_cm = 20
+      artwork.depth_cm = 30
+      artwork.diameter_cm = 40
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          heightCm: 10,
+          widthCm: 20,
+          depthCm: 30,
+          diameterCm: 40,
+        },
+      })
+    })
+  })
 })
