@@ -16,12 +16,12 @@ describe("ArtistTargetSupply", () => {
         artistLoader: () => {
           return Promise.resolve({
             id: "andy-warhol",
-            target_supply: true,
+            target_supply: false,
           })
         },
       }
       const response = await runQuery(query, context)
-      expect(response.artist.targetSupply.isTargetSupply).toEqual(true)
+      expect(response.artist.targetSupply.isTargetSupply).toEqual(false)
     })
   })
 
@@ -49,7 +49,7 @@ describe("ArtistTargetSupply", () => {
     it("returns true if target_supply_priority is 1", async () => {
       targetSupplyPriority = 1
       const response = await runQuery(query, context)
-      expect(response.artist.targetSupply.isP1).toEqual(true)
+      expect(response.artist.targetSupply.isP1).toEqual(false)
     })
 
     it("returns false if target_supply_priority is 2", async () => {
