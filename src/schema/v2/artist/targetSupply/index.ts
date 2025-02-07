@@ -50,13 +50,15 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
     isTargetSupply: {
       description: "True if artist is in target supply list.",
       type: GraphQLBoolean,
-      resolve: (artist) => artist.target_supply,
+      // TODO: Revert this change after removing SWA from App and Web
+      resolve: () => false,
     },
     isP1: {
       deprecationReason: 'Use "priority" field instead.',
       description: "True if an artist is a P1 artist.",
       type: GraphQLBoolean,
-      resolve: (artist) => artist.target_supply_priority === 1,
+      resolve: () => false,
+      // resolve: (artist) => artist.target_supply_priority === 1,
     },
     isInMicrofunnel: {
       description: "True if an artist is in the microfunnel list.",
