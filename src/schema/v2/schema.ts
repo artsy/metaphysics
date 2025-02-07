@@ -267,6 +267,8 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
+import { CreateArtworkImportMutation } from "./ArtworkImport/createArtworkImportMutation"
+import { ArtworkImport } from "./ArtworkImport/artworkImport"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -318,6 +320,7 @@ const rootFields = {
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
+  artworkImport: ArtworkImport,
   artworkResult: ArtworkResult,
   artworks: Artworks,
   artworksConnection: filterArtworksConnection(),
@@ -441,6 +444,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createArtworkImport: CreateArtworkImportMutation,
       createInvoicePayment: createInvoicePaymentMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
