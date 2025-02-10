@@ -275,6 +275,7 @@ import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtwo
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
+import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -332,6 +333,7 @@ const rootFields = {
   fairs: Fairs,
   fairsConnection,
   feature: Feature,
+  featuredFairs: FeaturedFairs,
   featuredLinksConnection: FeaturedLinksConnection,
   featuresConnection: FeaturesConnection,
   filterPartners: FilterPartners,
