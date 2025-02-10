@@ -17136,6 +17136,15 @@ type Query {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+
+  # A connection of featured currently running fairs, backfilled with past fairs. Fairs are sorted by start_at in descending order.
+  featuredFairsConnection(
+    after: String
+    before: String
+    first: Int
+    includeBackfill: Boolean!
+    last: Int
+  ): FairConnection
   featuredLinksConnection(
     after: String
     before: String
@@ -21822,6 +21831,15 @@ type Viewer {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+
+  # A connection of featured currently running fairs, backfilled with past fairs. Fairs are sorted by start_at in descending order.
+  featuredFairsConnection(
+    after: String
+    before: String
+    first: Int
+    includeBackfill: Boolean!
+    last: Int
+  ): FairConnection
   featuredLinksConnection(
     after: String
     before: String

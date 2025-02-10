@@ -1,10 +1,8 @@
 import { ContextModule } from "@artsy/cohesion"
+import { FeaturedFairsConnection } from "schema/v2/FeaturedFairs/featuredFairsConnection"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { HomePageFairsModuleType } from "schema/v2/home/home_page_fairs_module"
-import { connectionFromArray } from "graphql-relay"
-import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const FeaturedFairs: HomeViewSection = {
   id: "home-view-section-featured-fairs",
@@ -18,14 +16,17 @@ export const FeaturedFairs: HomeViewSection = {
   requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    const { results: resolver } = HomePageFairsModuleType.getFields()
-
-    if (!resolver?.resolve) {
-      return emptyConnection
+    const finalArgs = {
+      includeBackfill: true,
+      ...args,
     }
+    const result = await FeaturedFairsConnection.resolve!(
+      parent,
+      finalArgs,
+      context,
+      info
+    )
 
-    const result = await resolver.resolve(parent, args, context, info)
-
-    return connectionFromArray(result, args)
+    return result
   }),
 }
