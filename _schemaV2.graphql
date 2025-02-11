@@ -11304,6 +11304,7 @@ type HomeViewCard {
   buttonText: String
   entityID: String
   entityType: String
+  hint: String
   href: String
   image: Image
   subtitle: String

@@ -69,6 +69,7 @@ describe("InfiniteDiscovery", () => {
                   title
                   subtitle
                   href
+                  hint
                   image {
                     imageURL
                   }
@@ -92,6 +93,7 @@ describe("InfiniteDiscovery", () => {
           "card": {
             "entityID": "infiniteDiscovery",
             "entityType": "Page",
+            "hint": "New",
             "href": null,
             "image": {
               "imageURL": "https://files.artsy.net/images/infinite_discovery.png",
