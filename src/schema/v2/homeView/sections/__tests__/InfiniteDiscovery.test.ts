@@ -66,10 +66,10 @@ describe("InfiniteDiscovery", () => {
             section(id: "home-view-section-infinite-discovery") {
               ... on HomeViewSectionCard {
                 card {
+                  badgeText
                   title
                   subtitle
                   href
-                  hint
                   image {
                     imageURL
                   }
@@ -91,9 +91,9 @@ describe("InfiniteDiscovery", () => {
       expect(homeView.section).toMatchInlineSnapshot(`
         {
           "card": {
+            "badgeText": "New",
             "entityID": "infiniteDiscovery",
             "entityType": "Page",
-            "hint": "New",
             "href": null,
             "image": {
               "imageURL": "https://files.artsy.net/images/infinite_discovery.png",

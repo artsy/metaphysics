@@ -11,7 +11,7 @@ export type HomeViewCard = {
   buttonText?: string
   entityID?: string
   entityType?: string
-  hint?: string
+  badgeText?: string
   href?: string
   image_url?: string
   subtitle?: string
@@ -24,8 +24,8 @@ export const HomeViewCardType = new GraphQLObjectType<
 >({
   name: "HomeViewCard",
   fields: {
+    badgeText: { type: GraphQLString },
     buttonText: { type: GraphQLString },
-    hint: { type: GraphQLString },
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
     entityID: { type: GraphQLString },
