@@ -15,6 +15,7 @@ export interface NavigationPill {
   title: string
   href: string
   ownerType: OwnerType
+  icon?: string
 }
 
 const NavigationPillType = new GraphQLObjectType<
@@ -34,6 +35,10 @@ const NavigationPillType = new GraphQLObjectType<
     ownerType: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The context module for analytics",
+    },
+    icon: {
+      type: GraphQLString,
+      description: "Icon file name",
     },
   }),
 })
