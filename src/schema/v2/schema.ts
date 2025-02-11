@@ -269,6 +269,9 @@ import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
+import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkImportArtists"
+import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworks"
+import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtist"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -439,6 +442,7 @@ export default new GraphQLSchema({
       adminToggleFeatureFlag: toggleFeatureFlagMutation,
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
+      assignArtworkImportArtist: AssignArtworkImportArtistMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
@@ -452,6 +456,7 @@ export default new GraphQLSchema({
       updateCareerHighlight: updateCareerHighlightMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
       createArtist: createArtistMutation,
+      createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
       createCanonicalArtist: createCanonicalArtistMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
@@ -504,6 +509,7 @@ export default new GraphQLSchema({
       markAllNotificationsAsRead: markAllNotificationsAsReadMutation,
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
+      matchArtworkImportArtists: MatchArtworkImportArtistsMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
