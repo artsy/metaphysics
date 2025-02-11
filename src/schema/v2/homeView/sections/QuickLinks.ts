@@ -15,9 +15,24 @@ export const QuickLinks: HomeViewSection = {
 }
 
 const QUICK_LINKS: Array<NavigationPill> = [
-  { title: "Follows", href: "/favorites", ownerType: OwnerType.follows },
-  { title: "Auctions", href: "/auctions", ownerType: OwnerType.auctions },
-  { title: "Saves", href: "/favorites/saves", ownerType: OwnerType.saves },
+  {
+    title: "Follows",
+    href: "/favorites",
+    ownerType: OwnerType.follows,
+    icon: "FollowArtistIcon",
+  },
+  {
+    title: "Auctions",
+    href: "/auctions",
+    ownerType: OwnerType.auctions,
+    icon: "AuctionIcon",
+  },
+  {
+    title: "Saves",
+    href: "/favorites/saves",
+    ownerType: OwnerType.saves,
+    icon: "HeartIcon",
+  },
   {
     title: "Art under $1000",
     href: "/collect?price_range=%2A-1000",
@@ -28,5 +43,9 @@ const QUICK_LINKS: Array<NavigationPill> = [
     href: "/price-database",
     ownerType: OwnerType.priceDatabase,
   },
-  { title: "Editorial", href: "/news", ownerType: OwnerType.articles },
+  {
+    title: "Editorial",
+    href: "/news",
+    ownerType: OwnerType.articles,
+  },
 ]
