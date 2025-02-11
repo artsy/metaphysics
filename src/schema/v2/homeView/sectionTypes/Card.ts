@@ -8,10 +8,10 @@ import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
 
 export type HomeViewCard = {
+  badgeText?: string
   buttonText?: string
   entityID?: string
   entityType?: string
-  badgeText?: string
   href?: string
   image_url?: string
   subtitle?: string
