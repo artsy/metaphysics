@@ -18,7 +18,7 @@ interface Input {
   id: string
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
-  location: string | null
+  locationId: string | null
 }
 
 const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
@@ -93,7 +93,7 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy international shipping should be enabled",
     },
-    location: {
+    locationId: {
       type: GraphQLString,
       description: "The partner location ID to assign",
     },
@@ -114,13 +114,13 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, artsyShippingDomestic, artsyShippingInternational, location },
+    { id, artsyShippingDomestic, artsyShippingInternational, locationId },
     { updatePartnerArtworksLoader }
   ) => {
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
-      location,
+      location_id: locationId,
     }
 
     if (!updatePartnerArtworksLoader) {
