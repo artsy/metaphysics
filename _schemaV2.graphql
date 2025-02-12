@@ -2340,6 +2340,41 @@ type ArtistsWithAlertCountsEdge {
   totalAlertCount: Int
 }
 
+type ArtsyShippingOptInMutationFailure {
+  mutationError: GravityMutationError
+}
+
+input ArtsyShippingOptInMutationInput {
+  # Whether Artsy domestic shipping should be enabled
+  artsyShippingDomestic: Boolean
+
+  # Whether Artsy international shipping should be enabled
+  artsyShippingInternational: Boolean
+  clientMutationId: String
+
+  # ID of the partner
+  id: String!
+}
+
+type ArtsyShippingOptInMutationPayload {
+  bulkUpdatePartnerArtworksOrError: ArtsyShippingOptInMutationType
+  clientMutationId: String
+}
+
+type ArtsyShippingOptInMutationSuccess {
+  skippedPartnerArtworks: ArtsyShippingOptInResponse
+  updatedPartnerArtworks: ArtsyShippingOptInResponse
+}
+
+union ArtsyShippingOptInMutationType =
+    ArtsyShippingOptInMutationFailure
+  | ArtsyShippingOptInMutationSuccess
+
+type ArtsyShippingOptInResponse {
+  count: Int
+  ids: [String]
+}
+
 type Artwork implements Node & Searchable & Sellable {
   additionalInformation(format: Format): String
   artaShippingEnabled: Boolean
@@ -13798,6 +13833,21 @@ type Mutation {
   assignArtworkImportArtist(
     input: AssignArtworkImportArtistInput!
   ): AssignArtworkImportArtistPayload
+
+  # Update all artworks that belong to the partner
+  bulkOperationArtsyShippingOptIn(
+    input: ArtsyShippingOptInMutationInput!
+  ): ArtsyShippingOptInMutationPayload
+
+  # Opt all eligible artworks into BNMO
+  bulkOperationCommerceOptIn(
+    input: CommerceOptInMutationInput!
+  ): CommerceOptInMutationPayload
+
+  # Generate CommerceOptIn report about artworks eligibility for a given partner
+  bulkOperationCommerceOptInReport(
+    input: CommerceOptInReportMutationInput!
+  ): CommerceOptInReportMutationPayload
 
   # Update all artworks that belong to the partner
   bulkUpdatePartnerArtworks(

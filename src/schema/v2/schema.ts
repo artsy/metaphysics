@@ -235,6 +235,9 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
+// import { artsyShippingOptInMutation } from "./partner/BulkOperations/ArtsyShippingOptIn/artsyShippingOptInMutation"
+// import { artsyShippingOptInMutation } from "./partner/BulkOperations/ArtsyShippingOptIn/artsyShippingOptInMutation"
+import { artsyShippingOptInMutation } from "./partner/BulkOperations/ArtsyShippingOptIn/artsyShippingOptInMutation"
 import config from "config"
 import { ViewingRoom } from "./viewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
@@ -446,6 +449,9 @@ export default new GraphQLSchema({
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
+      bulkOperationCommerceOptIn: commerceOptInMutation,
+      bulkOperationCommerceOptInReport: commerceOptInReportMutation,
+      bulkOperationArtsyShippingOptIn: artsyShippingOptInMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
       createArtworkImport: CreateArtworkImportMutation,

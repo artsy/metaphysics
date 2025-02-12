@@ -18,36 +18,39 @@ interface Input {
   id: string
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
-  location: string | null
 }
 
-const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
+const ArtsyShippingOptInResponseType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksResponse",
+  name: "ArtsyShippingOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
     ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
+const ArtsyShippingOptInMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationSuccess",
+  name: "ArtsyShippingOptInMutationSuccess",
   fields: () => ({
-    updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
-    skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
+    updatedPartnerArtworks: {
+      type: ArtsyShippingOptInResponseType,
+    },
+    skippedPartnerArtworks: {
+      type: ArtsyShippingOptInResponseType,
+    },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
+const ArtsyShippingOptInMutationFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationFailure",
+  name: "ArtsyShippingOptInMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -59,26 +62,26 @@ const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
-  name: "BulkUpdatePartnerArtworksMutationType",
+const ArtsyShippingOptInMutationType = new GraphQLUnionType({
+  name: "ArtsyShippingOptInMutationType",
   types: [
-    BulkUpdatePartnerArtworksMutationSuccessType,
-    BulkUpdatePartnerArtworksMutationFailureType,
+    ArtsyShippingOptInMutationSuccessType,
+    ArtsyShippingOptInMutationFailureType,
   ],
   resolveType: (object) => {
     if (object.mutationError) {
-      return BulkUpdatePartnerArtworksMutationFailureType
+      return ArtsyShippingOptInMutationFailureType
     }
-    return BulkUpdatePartnerArtworksMutationSuccessType
+    return ArtsyShippingOptInMutationSuccessType
   },
 })
 
-export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
+export const artsyShippingOptInMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutation",
+  name: "ArtsyShippingOptInMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {
     id: {
@@ -93,14 +96,10 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy international shipping should be enabled",
     },
-    location: {
-      type: GraphQLString,
-      description: "The partner location ID to assign",
-    },
   },
   outputFields: {
     bulkUpdatePartnerArtworksOrError: {
-      type: BulkUpdatePartnerArtworksMutationType,
+      type: ArtsyShippingOptInMutationType,
       resolve: (result) => {
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
         return {
@@ -114,13 +113,12 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, artsyShippingDomestic, artsyShippingInternational, location },
+    { id, artsyShippingDomestic, artsyShippingInternational },
     { updatePartnerArtworksLoader }
   ) => {
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
-      location,
     }
 
     if (!updatePartnerArtworksLoader) {
@@ -128,7 +126,7 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await updatePartnerArtworksLoader(id, gravityOptions)
+      return await updatePartnerArtworksLoader(id, gravityOptions) // fix
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
