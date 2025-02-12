@@ -13,7 +13,7 @@ export const FeaturedFairsConnection: GraphQLFieldConfig<
   ResolverContext
 > = {
   description:
-    "A connection of featured currently running fairs, backfilled with past fairs. Fairs are sorted by start_at in descending order.",
+    "A connection of featured, currently running fairs, backfilled with past fairs. Fairs are sorted by start date in descending order.",
   type: fairConnection.connectionType,
   args: pageable({
     includeBackfill: { type: new GraphQLNonNull(GraphQLBoolean) },
