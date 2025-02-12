@@ -23,6 +23,7 @@ export const InfiniteDiscovery: HomeViewSection = {
       image_url: "https://files.artsy.net/images/infinite_discovery.png",
       entityType: "Page",
       entityID: parent.ownerType,
+      badgeText: "New",
     }
     return card
   }),

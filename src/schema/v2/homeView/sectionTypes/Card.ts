@@ -8,13 +8,14 @@ import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
 
 export type HomeViewCard = {
-  title?: string
-  subtitle?: string
-  href?: string
+  badgeText?: string
   buttonText?: string
-  image_url?: string
-  entityType?: string
   entityID?: string
+  entityType?: string
+  href?: string
+  image_url?: string
+  subtitle?: string
+  title?: string
 }
 
 export const HomeViewCardType = new GraphQLObjectType<
@@ -23,6 +24,7 @@ export const HomeViewCardType = new GraphQLObjectType<
 >({
   name: "HomeViewCard",
   fields: {
+    badgeText: { type: GraphQLString },
     buttonText: { type: GraphQLString },
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
