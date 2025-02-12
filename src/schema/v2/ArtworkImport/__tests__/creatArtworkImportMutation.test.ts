@@ -11,7 +11,11 @@ describe("CreateArtworkImportMutation", () => {
     const mutation = gql`
       mutation {
         createArtworkImport(
-          input: { partnerID: "partner-1", filePath: "/some/path/file.csv" }
+          input: {
+            partnerID: "partner-1"
+            s3Key: "/some/path/file.csv"
+            s3Bucket: "someBucket"
+          }
         ) {
           artworkImportOrError {
             ... on CreateArtworkImportSuccess {
@@ -30,7 +34,8 @@ describe("CreateArtworkImportMutation", () => {
 
     expect(createArtworkImportLoader).toHaveBeenCalledWith({
       partner_id: "partner-1",
-      file_path: "/some/path/file.csv",
+      s3_key: "/some/path/file.csv",
+      s3_bucket: "someBucket",
     })
 
     expect(result).toEqual({

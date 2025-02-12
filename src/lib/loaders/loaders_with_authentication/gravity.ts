@@ -26,11 +26,29 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworkImportAssignArtistLoader: gravityLoader(
+      (id) => `artwork_import/${id}/assign_artist`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportCreateArtworksLoader: gravityLoader(
+      (id) => `artwork_import/${id}/create_artworks`,
+      {},
+      { method: "POST" }
+    ),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
+    artworkImportMatchArtistsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/match_artists`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportRowsLoader: gravityLoader(
       (id) => `artwork_import/${id}/rows`,
       {},
       { headers: true }
+    ),
+    artworkImportUnmatchedArtistNamesLoader: gravityLoader(
+      (id) => `artwork_import/${id}/unmatched_artist_names`
     ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
