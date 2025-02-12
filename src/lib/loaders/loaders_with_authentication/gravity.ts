@@ -654,8 +654,19 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
+    // In process of deprecating
     optInArtworksIntoCommerceLoader: gravityLoader(
       (id) => `partner/${id}/opt_in_artworks_into_commerce`,
+      {},
+      { method: "PUT" }
+    ),
+    bulkOperationCommerceOptInLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/commerce_opt_in`,
+      {},
+      { method: "PUT" }
+    ),
+    bulkOperationArtsyShippingOptInLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/artsy_shipping_opt_in`,
       {},
       { method: "PUT" }
     ),
