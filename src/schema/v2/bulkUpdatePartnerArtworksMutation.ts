@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -16,10 +17,22 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
+  // these to be migrated out soon by Jackie
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
-  locationId: string | null
+  // ---------------------
+  metadata: { locationId: string | null } | null
 }
+
+const BulkUpdatePartnerArtworksMetadataInput = new GraphQLInputObjectType({
+  name: "BulkUpdatePartnerArtworksMetadataInput",
+  fields: {
+    locationId: {
+      type: GraphQLString,
+      description: "The partner location ID to assign",
+    },
+  },
+})
 
 const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
   any,
@@ -93,9 +106,9 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy international shipping should be enabled",
     },
-    locationId: {
-      type: GraphQLString,
-      description: "The partner location ID to assign",
+    metadata: {
+      type: BulkUpdatePartnerArtworksMetadataInput,
+      description: "Metadata to be updated",
     },
   },
   outputFields: {
@@ -114,13 +127,13 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, artsyShippingDomestic, artsyShippingInternational, locationId },
+    { id, artsyShippingDomestic, artsyShippingInternational, metadata },
     { updatePartnerArtworksLoader }
   ) => {
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
-      location_id: locationId,
+      metadata: metadata,
     }
 
     if (!updatePartnerArtworksLoader) {
