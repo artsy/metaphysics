@@ -6,7 +6,7 @@ import {
   GraphQLBoolean,
   GraphQLList,
 } from "graphql"
-import { InternalIDFields } from "../object_identification"
+import { InternalIDFields, NodeInterface } from "../object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
@@ -59,6 +59,7 @@ const ArtworkImportRowConnectionType = connectionWithCursorInfo({
 
 export const ArtworkImportType = new GraphQLObjectType({
   name: "ArtworkImport",
+  interfaces: [NodeInterface],
   fields: {
     ...InternalIDFields,
     fileName: {
