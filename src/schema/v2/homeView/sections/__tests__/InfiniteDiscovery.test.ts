@@ -66,6 +66,7 @@ describe("InfiniteDiscovery", () => {
             section(id: "home-view-section-infinite-discovery") {
               ... on HomeViewSectionCard {
                 card {
+                  badgeText
                   title
                   subtitle
                   href
@@ -90,6 +91,7 @@ describe("InfiniteDiscovery", () => {
       expect(homeView.section).toMatchInlineSnapshot(`
         {
           "card": {
+            "badgeText": "New",
             "entityID": "infiniteDiscovery",
             "entityType": "Page",
             "href": null,
