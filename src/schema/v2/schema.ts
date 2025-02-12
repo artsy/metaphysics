@@ -269,9 +269,9 @@ import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
-import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkImportArtists"
-import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworks"
-import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtist"
+import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkImportArtistsMutation"
+import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworksMutation"
+import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
