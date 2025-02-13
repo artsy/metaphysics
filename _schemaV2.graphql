@@ -4151,7 +4151,7 @@ scalar BigInt
 
 input BulkUpdatePartnerArtworksMetadataInput {
   # The partner location ID to assign
-  locationId: String
+  location_id: String
 }
 
 type BulkUpdatePartnerArtworksMutationFailure {

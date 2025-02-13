@@ -21,13 +21,13 @@ interface Input {
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
   // ---------------------
-  metadata: { locationId: string | null } | null
+  metadata: { location_id: string | null } | null
 }
 
 const BulkUpdatePartnerArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdatePartnerArtworksMetadataInput",
   fields: {
-    locationId: {
+    location_id: {
       type: GraphQLString,
       description: "The partner location ID to assign",
     },
