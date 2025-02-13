@@ -1,14 +1,9 @@
 import { GraphQLBoolean, GraphQLFieldConfig } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { filter, pick } from "lodash"
-import moment from "moment"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { fairConnection } from "../fair"
-import { createPageCursors } from "../fields/pagination"
-
-const MAX_NUMBER_OF_FAIRS = 30
+import { paginationResolver } from "../fields/pagination"
 
 export const FeaturedFairsConnection: GraphQLFieldConfig<
   void,
@@ -21,67 +16,53 @@ export const FeaturedFairsConnection: GraphQLFieldConfig<
     includeBackfill: { type: GraphQLBoolean, defaultValue: true },
   }),
   resolve: async (_root, args, { fairsLoader }) => {
-    const now = moment.utc()
     const { size, offset, page } = convertConnectionArgsToGravityArgs(args)
 
-    const numberOfFairsToFetch = size + offset
-
-    const gravityOptions = {
+    const sharedOptions = {
       has_full_feature: true,
       sort: "-start_at",
+      total_count: true,
     }
 
-    const { body: unfilteredRunningFairs } = await fairsLoader({
-      ...gravityOptions,
-      active: true,
-      numberOfFairsToFetch,
+    const { body: runningFairs, headers } = await fairsLoader({
+      ...sharedOptions,
+      status: "running",
+      // TODO: We could replace status: "running" with active: true (and add active: false to the backfill)
+      // active: true,
+      size,
+      offset,
     })
 
-    // Gravity returns fairs that are both current and upcoming.
-    // Make sure only the current ones appear in the results list.
-    const runningFairs = filter(unfilteredRunningFairs, (fair) => {
-      const startAt = moment.utc(fair.start_at)
-      return now.isAfter(startAt)
-    })
+    const runningFairsCount = parseInt(headers["x-total-count"] || "0", 10)
 
+    let totalCount = runningFairsCount
     let allFairs = runningFairs
 
-    const backfillSize = numberOfFairsToFetch - runningFairs.length
+    // Backfill with closed fairs
 
-    // If there are less than the number of fairs to fetch to get the current page, get the most recent closed fairs as backfill
-    if (args.includeBackfill && backfillSize > 0) {
-      const { body: unfilteredClosedFairs } = await fairsLoader({
-        ...gravityOptions,
-        status: "closed",
-        active: false,
-        size: backfillSize,
-      })
-
-      const closedFairs = filter(unfilteredClosedFairs, (fair) => {
-        const endAt = moment.utc(fair.end_at)
-        return now.isAfter(endAt)
-      })
+    if (args.includeBackfill) {
+      const { body: closedFairs, headers: backfillHeaders } = await fairsLoader(
+        {
+          ...sharedOptions,
+          status: "closed",
+          size: size - runningFairs.length,
+          offset: runningFairs.length === 0 ? runningFairsCount : 0,
+        }
+      )
 
       allFairs = allFairs.concat(closedFairs)
+
+      totalCount =
+        totalCount + parseInt(backfillHeaders["x-total-count"] || "0", 10)
     }
 
-    // Setting `totalCount` to a fixed maximum number unless there are fewer fairs in total.
-    const totalCount =
-      allFairs.length < numberOfFairsToFetch
-        ? allFairs.length
-        : MAX_NUMBER_OF_FAIRS
-
-    return {
+    return paginationResolver({
       totalCount,
-      pageCursors: createPageCursors({ page, size }, totalCount),
-      ...connectionFromArraySlice(
-        allFairs,
-        pick(args, "before", "after", "first", "last"),
-        {
-          arrayLength: totalCount,
-          sliceStart: offset,
-        }
-      ),
-    }
+      offset,
+      page,
+      size,
+      body: allFairs,
+      args,
+    })
   },
 }
