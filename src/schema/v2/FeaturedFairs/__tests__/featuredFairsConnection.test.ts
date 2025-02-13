@@ -30,7 +30,7 @@ describe("featuredFairsConnection", () => {
 
       expect(fairsLoader).toHaveBeenCalledTimes(1)
 
-      expect(featuredFairsConnection.totalCount).toBe(4)
+      expect(featuredFairsConnection.totalCount).toBe(30)
       expect(featuredFairsConnection.edges).toMatchInlineSnapshot(`
         [
           {
@@ -78,7 +78,7 @@ describe("featuredFairsConnection", () => {
 
         expect(fairsLoader).toHaveBeenCalledTimes(2)
 
-        expect(featuredFairsConnection.totalCount).toBe(4)
+        expect(featuredFairsConnection.totalCount).toBe(30)
         expect(featuredFairsConnection.edges).toMatchInlineSnapshot(`
         [
           {
@@ -162,7 +162,7 @@ describe("featuredFairsConnection", () => {
 
     expect(fairsLoader).toHaveBeenCalledTimes(1)
 
-    expect(featuredFairsConnection.totalCount).toBe(3)
+    expect(featuredFairsConnection.totalCount).toBe(30)
     expect(featuredFairsConnection.edges).toMatchInlineSnapshot(`
         [
           {
