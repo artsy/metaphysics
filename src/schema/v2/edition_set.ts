@@ -31,6 +31,9 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [Sellable],
   fields: {
     ...InternalIDFields,
+    availability: {
+      type: GraphQLString,
+    },
     dimensions: Dimensions,
     displayPriceRange: {
       type: GraphQLBoolean,
@@ -69,6 +72,10 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     price: {
       type: GraphQLString,
+    },
+    priceDisplay: {
+      type: GraphQLString,
+      resolve: ({ price_display }) => price_display,
     },
     priceListed: {
       type: Money,
