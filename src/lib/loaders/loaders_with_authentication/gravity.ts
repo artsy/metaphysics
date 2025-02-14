@@ -50,6 +50,11 @@ export default (accessToken, userID, opts) => {
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),
+    artworkImportUpdateRowLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_row`,
+      {},
+      { method: "PUT" }
+    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
