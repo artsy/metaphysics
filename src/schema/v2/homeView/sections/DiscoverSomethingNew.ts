@@ -6,7 +6,7 @@ import { connectionFromArray } from "graphql-relay"
 const marketingCollectionSlugs = [
   "most-loved",
   "understated",
-  "curators-picks",
+  "art-gifts-under-1000-dollars",
   "transcendent",
   "best-bids",
   "statement-pieces",
