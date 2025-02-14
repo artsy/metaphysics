@@ -865,6 +865,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ display_artist_bio }) => display_artist_bio,
       },
+
       displayPriceRange: {
         type: GraphQLBoolean,
         resolve: ({ display_price_range }) => display_price_range,
@@ -1292,6 +1293,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       priceCurrency: {
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
+      },
+      priceDisplay: {
+        type: GraphQLString,
+        resolve: ({ price_display }) => price_display,
       },
       priceIncludesTax: {
         type: GraphQLBoolean,

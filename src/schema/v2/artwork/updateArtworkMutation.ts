@@ -3,6 +3,9 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
+  GraphQLList,
+  GraphQLInputObjectType,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,11 +14,6 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-
-interface UpdateArtworkMutationInputProps {
-  id: string
-  availability?: boolean
-}
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "updateArtworkSuccess",
@@ -44,6 +42,53 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
+interface UpdateArtworkMutationInputProps {
+  id?: string
+  availability?: boolean
+  ecommerce?: boolean
+  displayPriceRange?: boolean
+  offer?: boolean
+  priceHidden?: boolean
+  priceListed?: string
+  editionSets?: Omit<UpdateArtworkMutationInputProps, "editionSets">[]
+}
+
+const inputFields = {
+  availability: {
+    type: GraphQLString,
+    description: "The availability of the artwork",
+  },
+  ecommerce: {
+    type: GraphQLBoolean,
+    description: "True for `Buy Now` artworks",
+  },
+  displayPriceRange: {
+    type: GraphQLBoolean,
+    description: "Show/Hide the price range of an artwork",
+  },
+  offer: {
+    type: GraphQLBoolean,
+    description: "True for `Make Offer` artworks",
+  },
+  priceHidden: {
+    type: GraphQLBoolean,
+    description: "Show/Hide the price of an artwork",
+  },
+  priceListed: {
+    type: GraphQLString,
+    description: "The price of the artwork",
+  },
+  id: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: "The id of the artwork to update.",
+  },
+}
+
+const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
+  name: "UpdateArtworkEditionSetInput",
+  fields: inputFields,
+})
+
 export const updateArtworkMutation = mutationWithClientMutationId<
   UpdateArtworkMutationInputProps,
   any,
@@ -52,13 +97,10 @@ export const updateArtworkMutation = mutationWithClientMutationId<
   name: "UpdateArtworkMutation",
   description: "Updates an artwork.",
   inputFields: {
-    availability: {
-      type: GraphQLString,
-      description: "The availability of the artwork",
-    },
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the artwork to update.",
+    ...inputFields,
+    editionSets: {
+      type: new GraphQLList(UpdateArtworkEditionSetInput),
+      description: "A list of edition sets for the artwork",
     },
   },
   outputFields: {
@@ -69,20 +111,44 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { availability, id },
-    { updateArtworkLoader }
+    { id, editionSets, ...args },
+    { updateArtworkLoader, updateArtworkEditionSetLoader }
   ) => {
-    if (!updateArtworkLoader) {
+    if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
+    const getGravityArgs = (inputArgs: UpdateArtworkMutationInputProps) => {
+      return {
+        id: inputArgs.id,
+        availability: inputArgs.availability,
+        ecommerce: inputArgs.ecommerce,
+        display_price_range: inputArgs.displayPriceRange,
+        offer: inputArgs.offer,
+        price_hidden: inputArgs.priceHidden,
+        price_listed: inputArgs.priceListed,
+      }
+    }
+
     try {
-      const response = await updateArtworkLoader(id, {
-        availability,
-      })
+      if (editionSets?.length) {
+        await Promise.all(
+          editionSets.map((editionSet) => {
+            return updateArtworkEditionSetLoader({
+              ...getGravityArgs(editionSet),
+              artworkId: id,
+              editionSetId: editionSet.id,
+            })
+          })
+        )
+      }
+
+      const response = await updateArtworkLoader(id, getGravityArgs(args))
+
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
+
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
