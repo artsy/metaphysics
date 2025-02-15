@@ -162,6 +162,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   height: {
     type: GraphQLString,
   },
+  includeAllJSON: {
+    type: GraphQLBoolean,
+  },
   includeArtworksByFollowedArtists: {
     type: GraphQLBoolean,
   },
@@ -443,6 +446,7 @@ const convertFilterArgs = ({
   forSale,
   geneID,
   geneIDs,
+  includeAllJSON,
   includeArtworksByFollowedArtists,
   includeMediumFilterInAggregation,
   includeUnpublished,
@@ -478,6 +482,7 @@ const convertFilterArgs = ({
     for_sale: forSale,
     gene_id: geneID,
     gene_ids: geneIDs,
+    include_all_json: includeAllJSON,
     include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
     include_unpublished: includeUnpublished,
@@ -532,6 +537,7 @@ const filterArtworksConnectionTypeFactory = (
       before,
       size,
       include_artworks_by_followed_artists,
+      include_all_json,
       visibility_level,
       aggregations: aggregationOptions = [],
     } = options
@@ -563,7 +569,8 @@ const filterArtworksConnectionTypeFactory = (
     const requestedAuthorizedFilters = !!(
       gravityOptions.include_unpublished ||
       include_artworks_by_followed_artists ||
-      visibility_level
+      visibility_level ||
+      include_all_json
     )
 
     // Support queries that show all mediums using the medium param.
@@ -586,6 +593,7 @@ const filterArtworksConnectionTypeFactory = (
         delete gravityOptions.include_artworks_by_followed_artists
         delete gravityOptions.include_unpublished
         delete gravityOptions.visibility_level
+        delete gravityOptions.include_json
         gravityOptions.aggregations = gravityOptions.aggregations.filter(
           (item) => item !== "followed_artists"
         )
