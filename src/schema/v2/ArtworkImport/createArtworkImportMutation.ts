@@ -55,6 +55,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     s3Key: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    fileName: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     artworkImportOrError: {
@@ -71,6 +74,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       partner_id: args.partnerID,
       s3_bucket: args.s3Bucket,
       s3_key: args.s3Key,
+      file_name: args.fileName,
     }
 
     try {
