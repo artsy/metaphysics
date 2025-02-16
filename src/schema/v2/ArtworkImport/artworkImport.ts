@@ -130,3 +130,7 @@ export const ArtworkImport: GraphQLFieldConfig<any, ResolverContext> = {
     return artworkImportLoader(id)
   },
 }
+
+export const ArtworkImportsConnectionType = connectionWithCursorInfo({
+  nodeType: ArtworkImportType,
+}).connectionType

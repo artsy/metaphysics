@@ -84,4 +84,56 @@ describe("ArtworkImport", () => {
       rawData: { foo: "baz" },
     })
   })
+
+  it("a partner can fetch their artwork imports", async () => {
+    const artworkImportsLoader = jest.fn().mockResolvedValue({
+      body: [
+        { id: "artwork-import-1", file_name: "import.csv" },
+        { id: "artwork-import-2", file_name: "import2.csv" },
+      ],
+      headers: { "x-total-count": "2" },
+    })
+    const partnerLoader = jest.fn().mockResolvedValue({
+      id: "partner-1",
+    })
+
+    const query = gql`
+      query {
+        partner(id: "partner-1") {
+          artworkImportsConnection(first: 10) {
+            totalCount
+            edges {
+              node {
+                internalID
+                fileName
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = { artworkImportsLoader, partnerLoader }
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(artworkImportsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        size: 10,
+        page: 1,
+        partner_id: "partner-1",
+        total_count: true,
+      })
+    )
+
+    expect(result.partner.artworkImportsConnection.totalCount).toBe(2)
+    expect(result.partner.artworkImportsConnection.edges).toHaveLength(2)
+    expect(result.partner.artworkImportsConnection.edges[0].node).toEqual({
+      internalID: "artwork-import-1",
+      fileName: "import.csv",
+    })
+    expect(result.partner.artworkImportsConnection.edges[1].node).toEqual({
+      internalID: "artwork-import-2",
+      fileName: "import2.csv",
+    })
+  })
 })
