@@ -42,6 +42,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportRowMatchImageLoader: gravityLoader(
+      (id) => `artwork_import/${id}/match_image`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportRowsLoader: gravityLoader(
       (id) => `artwork_import/${id}/rows`,
       {},
