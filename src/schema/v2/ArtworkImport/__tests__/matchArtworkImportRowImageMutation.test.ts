@@ -12,7 +12,6 @@ describe("MatchArtworkImportRowImageMutation", () => {
         matchArtworkImportRowImage(
           input: {
             artworkImportID: "artwork-import-1"
-            rowID: "row-1"
             fileName: "cat.jpg"
             s3Key: "/some/path/cat.jpg"
             s3Bucket: "someBucket"
@@ -35,7 +34,6 @@ describe("MatchArtworkImportRowImageMutation", () => {
     expect(artworkImportRowMatchImageLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
-        row_id: "row-1",
         file_name: "cat.jpg",
         s3_key: "/some/path/cat.jpg",
         s3_bucket: "someBucket",
