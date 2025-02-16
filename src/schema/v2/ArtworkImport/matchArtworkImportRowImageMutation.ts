@@ -49,9 +49,6 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    rowID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     fileName: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -69,7 +66,7 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: (
-    { artworkImportID, rowID, fileName, s3Key, s3Bucket },
+    { artworkImportID, fileName, s3Key, s3Bucket },
     { artworkImportRowMatchImageLoader }
   ) => {
     if (!artworkImportRowMatchImageLoader) {
@@ -77,7 +74,6 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs = {
-      row_id: rowID,
       file_name: fileName,
       s3_key: s3Key,
       s3_bucket: s3Bucket,
