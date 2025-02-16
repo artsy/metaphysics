@@ -47,6 +47,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    artworkImportsLoader: gravityLoader(
+      "artwork_imports",
+      {},
+      { headers: true }
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),

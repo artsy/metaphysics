@@ -211,6 +211,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: AlertType,
     }).connectionType
 
+    const {
+      ArtworkImportsConnectionType,
+    } = require("schema/v2/ArtworkImport/artworkImport")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -700,6 +704,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               args,
             })
           }
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
+      },
+      artworkImportsConnection: {
+        description: "A connection of artwork imports from a Partner.",
+        type: ArtworkImportsConnectionType,
+        args: pageable(),
+        resolve: async ({ id }, args, { artworkImportsLoader }) => {
+          if (!artworkImportsLoader) return null
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body, headers } = await artworkImportsLoader({
+            page,
+            size,
+            total_count: true,
+            partner_id: id,
+          })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           return paginationResolver({
             totalCount,
