@@ -32,6 +32,25 @@ const ArtworkImportRowErrorType = new GraphQLObjectType({
   },
 })
 
+const ArtworkImportRowImageType = new GraphQLObjectType({
+  name: "ArtworkImportRowImage",
+  fields: {
+    ...InternalIDFields,
+    fileName: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ file_name }) => file_name,
+    },
+    s3Key: {
+      type: GraphQLString,
+      resolve: ({ s3_key }) => s3_key,
+    },
+    s3Bucket: {
+      type: GraphQLString,
+      resolve: ({ s3_bucket }) => s3_bucket,
+    },
+  },
+})
+
 const ArtworkImportRowType = new GraphQLObjectType({
   name: "ArtworkImportRow",
   fields: {
@@ -47,8 +66,16 @@ const ArtworkImportRowType = new GraphQLObjectType({
       resolve: ({ raw_data }) => raw_data,
     },
     errors: {
-      type: new GraphQLList(new GraphQLNonNull(ArtworkImportRowErrorType)),
+      type: new GraphQLNonNull(
+        GraphQLList(new GraphQLNonNull(ArtworkImportRowErrorType))
+      ),
       resolve: ({ artwork_import_row_errors }) => artwork_import_row_errors,
+    },
+    images: {
+      type: new GraphQLNonNull(
+        GraphQLList(new GraphQLNonNull(ArtworkImportRowImageType))
+      ),
+      resolve: ({ artwork_import_row_images }) => artwork_import_row_images,
     },
   },
 })
@@ -130,3 +157,7 @@ export const ArtworkImport: GraphQLFieldConfig<any, ResolverContext> = {
     return artworkImportLoader(id)
   },
 }
+
+export const ArtworkImportsConnectionType = connectionWithCursorInfo({
+  nodeType: ArtworkImportType,
+}).connectionType

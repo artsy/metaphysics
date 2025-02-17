@@ -42,13 +42,28 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportRowMatchImageLoader: gravityLoader(
+      (id) => `artwork_import/${id}/match_image`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportRowsLoader: gravityLoader(
       (id) => `artwork_import/${id}/rows`,
       {},
       { headers: true }
     ),
+    artworkImportsLoader: gravityLoader(
+      "artwork_imports",
+      {},
+      { headers: true }
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
+    ),
+    artworkImportUpdateRowLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_row`,
+      {},
+      { method: "PUT" }
     ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",

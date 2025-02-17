@@ -13,8 +13,9 @@ describe("CreateArtworkImportMutation", () => {
         createArtworkImport(
           input: {
             partnerID: "partner-1"
-            s3Key: "/some/path/file.csv"
+            s3Key: "/some/path/uuid.csv"
             s3Bucket: "someBucket"
+            fileName: "import.csv"
           }
         ) {
           artworkImportOrError {
@@ -34,8 +35,9 @@ describe("CreateArtworkImportMutation", () => {
 
     expect(createArtworkImportLoader).toHaveBeenCalledWith({
       partner_id: "partner-1",
-      s3_key: "/some/path/file.csv",
+      s3_key: "/some/path/uuid.csv",
       s3_bucket: "someBucket",
+      file_name: "import.csv",
     })
 
     expect(result).toEqual({

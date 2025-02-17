@@ -272,6 +272,8 @@ import { ArtworkImport } from "./ArtworkImport/artworkImport"
 import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkImportArtistsMutation"
 import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworksMutation"
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
+import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
+import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -510,6 +512,7 @@ export default new GraphQLSchema({
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
       matchArtworkImportArtists: MatchArtworkImportArtistsMutation,
+      matchArtworkImportRowImage: MatchArtworkImportRowImageMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
@@ -528,6 +531,7 @@ export default new GraphQLSchema({
       updateAlert: updateAlertMutation,
       updateArtist: updateArtistMutation,
       updateArtwork: updateArtworkMutation,
+      updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollection: updateCollectionMutation,
       updateMeCollectionsMutation: updateMeCollectionsMutation,

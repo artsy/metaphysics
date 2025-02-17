@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -10,21 +11,20 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportSuccess",
-  isTypeOf: (data) => data.id,
+  name: "MatchArtworkImportRowImageSuccess",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
-    artworkImport: {
-      type: ArtworkImportType,
-      resolve: (result) => result,
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
     },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportFailure",
+  name: "MatchArtworkImportRowImageFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -35,51 +35,52 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportResponseOrError",
+  name: "MatchArtworkImportRowImageResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportMutation = mutationWithClientMutationId<
+export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImport",
+  name: "MatchArtworkImportRowImage",
   inputFields: {
-    partnerID: {
+    artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    s3Bucket: {
+    fileName: {
       type: new GraphQLNonNull(GraphQLString),
     },
     s3Key: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    fileName: {
-      type: GraphQLString,
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
   outputFields: {
-    artworkImportOrError: {
+    matchArtworkImportRowImageOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createArtworkImportLoader }) => {
-    if (!createArtworkImportLoader) {
+  mutateAndGetPayload: (
+    { artworkImportID, fileName, s3Key, s3Bucket },
+    { artworkImportRowMatchImageLoader }
+  ) => {
+    if (!artworkImportRowMatchImageLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     const gravityArgs = {
-      partner_id: args.partnerID,
-      s3_bucket: args.s3Bucket,
-      s3_key: args.s3Key,
-      file_name: args.fileName,
+      file_name: fileName,
+      s3_key: s3Key,
+      s3_bucket: s3Bucket,
     }
 
     try {
-      const result = await createArtworkImportLoader(gravityArgs)
-      return result
+      return artworkImportRowMatchImageLoader(artworkImportID, gravityArgs)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

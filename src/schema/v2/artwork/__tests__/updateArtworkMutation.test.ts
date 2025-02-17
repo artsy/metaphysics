@@ -4,12 +4,27 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("UpdateArtworkMutation", () => {
   const mutation = gql`
     mutation {
-      updateArtwork(input: { id: "25", availability: "sold" }) {
+      updateArtwork(
+        input: {
+          id: "25"
+          availability: "sold"
+          ecommerce: true
+          offer: true
+          priceListed: "1000"
+          priceHidden: false
+          displayPriceRange: false
+        }
+      ) {
         artworkOrError {
           __typename
           ... on updateArtworkSuccess {
             artwork {
               availability
+              isAcquireable
+              isOfferable
+              price
+              priceDisplay
+              displayPriceRange
             }
           }
           ... on updateArtworkFailure {
@@ -26,8 +41,13 @@ describe("UpdateArtworkMutation", () => {
     const context = {
       updateArtworkLoader: () =>
         Promise.resolve({
-          id: "foo",
+          id: "25",
           availability: "sold",
+          acquireable: true,
+          offerable: true,
+          price: "$1000",
+          price_display: "exact",
+          display_price_range: false,
         }),
     }
 
@@ -37,7 +57,14 @@ describe("UpdateArtworkMutation", () => {
       updateArtwork: {
         artworkOrError: {
           __typename: "updateArtworkSuccess",
-          artwork: { availability: "sold" },
+          artwork: {
+            availability: "sold",
+            isAcquireable: true,
+            isOfferable: true,
+            price: "$1000",
+            priceDisplay: "exact",
+            displayPriceRange: false,
+          },
         },
       },
     })
