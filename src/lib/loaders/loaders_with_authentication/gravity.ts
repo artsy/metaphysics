@@ -670,7 +670,7 @@ export default (accessToken, userID, opts) => {
     ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
     optInArtworksIntoCommerceLoader: gravityLoader(
-      (id) => `partner/${id}/opt_in_artworks_into_commerce`,
+      (id) => `partner/${id}/bulk_operations/commerce_opt_in`,
       {},
       { method: "PUT" }
     ),
@@ -985,8 +985,8 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    updatePartnerArtworksLoader: gravityLoader(
-      (id) => `partner/${id}/artworks`,
+    artsyShippingOptInLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/artsy_shipping_opt_in`,
       {},
       { method: "PUT" }
     ),
