@@ -32,6 +32,7 @@ describe("discoverArtworks", () => {
         os_weights: [0.6, 0.4],
         curated_picks_size: 2,
         user_id: "user-id",
+        use_internal_tracking: false,
       })
 
       expect(result).toMatchInlineSnapshot(`
@@ -91,6 +92,7 @@ describe("discoverArtworks", () => {
         os_weights: [0.5, 0.5],
         curated_picks_size: 3,
         user_id: "user-id",
+        use_internal_tracking: false,
       })
 
       expect(result).toMatchInlineSnapshot(`
