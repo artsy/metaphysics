@@ -52,7 +52,7 @@ describe("InfiniteDiscovery", () => {
         {
           "__typename": "HomeViewSectionCard",
           "component": null,
-          "contextModule": "infiniteDiscoveryBanner",
+          "contextModule": "infiniteDiscovery",
           "internalID": "home-view-section-infinite-discovery",
           "ownerType": "infiniteDiscovery",
         }
