@@ -990,6 +990,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerArtworksMetadataLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/update_metadata`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerShowLoader: gravityLoader<
       any,
       { partnerId: string; showId: string }

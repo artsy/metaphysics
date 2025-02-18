@@ -1,5 +1,5 @@
 import {
-  GraphQLBoolean,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -16,39 +16,50 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
-  // these to be migrated out soon by Jackie
-  artsyShippingDomestic: boolean | null
-  artsyShippingInternational: boolean | null
-  // ---------------------
+  metadata: { location_id: string | null } | null
 }
 
-const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
+const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
+  name: "BulkUpdateArtworksMetadataInput",
+  fields: {
+    location_id: {
+      type: GraphQLString,
+      description: "The partner location ID to assign",
+    },
+  },
+})
+
+const BulkUpdateArtworksMetadataResponseType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksResponse",
+  name: "BulkUpdateArtworksMetadataResponse",
   fields: () => ({
     count: { type: GraphQLInt },
     ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
+const BulkUpdateArtworksMetadataMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationSuccess",
+  name: "BulkUpdateArtworksMetadataMutationSuccess",
   fields: () => ({
-    updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
-    skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
+    updatedPartnerArtworks: {
+      type: BulkUpdateArtworksMetadataResponseType,
+    },
+    skippedPartnerArtworks: {
+      type: BulkUpdateArtworksMetadataResponseType,
+    },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
+const BulkUpdateArtworksMetadataMutationFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationFailure",
+  name: "BulkUpdateArtworksMetadataMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -60,44 +71,40 @@ const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
-  name: "BulkUpdatePartnerArtworksMutationType",
+const BulkUpdateArtworksMetadataMutationType = new GraphQLUnionType({
+  name: "BulkUpdateArtworksMetadataMutationType",
   types: [
-    BulkUpdatePartnerArtworksMutationSuccessType,
-    BulkUpdatePartnerArtworksMutationFailureType,
+    BulkUpdateArtworksMetadataMutationSuccessType,
+    BulkUpdateArtworksMetadataMutationFailureType,
   ],
   resolveType: (object) => {
     if (object.mutationError) {
-      return BulkUpdatePartnerArtworksMutationFailureType
+      return BulkUpdateArtworksMetadataMutationFailureType
     }
-    return BulkUpdatePartnerArtworksMutationSuccessType
+    return BulkUpdateArtworksMetadataMutationSuccessType
   },
 })
 
-export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
+export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutation",
+  name: "BulkUpdateArtworksMetadataMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
-    artsyShippingDomestic: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy domestic shipping should be enabled",
-    },
-    artsyShippingInternational: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy international shipping should be enabled",
+    metadata: {
+      type: BulkUpdateArtworksMetadataInput,
+      description: "Metadata to be updated",
     },
   },
   outputFields: {
-    bulkUpdatePartnerArtworksOrError: {
-      type: BulkUpdatePartnerArtworksMutationType,
+    bulkUpdateArtworksMetadataOrError: {
+      type: BulkUpdateArtworksMetadataMutationType,
       resolve: (result) => {
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
         return {
@@ -111,20 +118,19 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, artsyShippingDomestic, artsyShippingInternational },
-    { updatePartnerArtworksLoader }
+    { id, metadata },
+    { updatePartnerArtworksMetadataLoader }
   ) => {
     const gravityOptions = {
-      artsy_shipping_domestic: artsyShippingDomestic,
-      artsy_shipping_international: artsyShippingInternational,
+      metadata: metadata,
     }
 
-    if (!updatePartnerArtworksLoader) {
+    if (!updatePartnerArtworksMetadataLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await updatePartnerArtworksLoader(id, gravityOptions)
+      return await updatePartnerArtworksMetadataLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
