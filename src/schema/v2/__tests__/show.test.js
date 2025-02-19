@@ -3,7 +3,6 @@ import moment from "moment"
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
-import config from "config"
 
 describe("Show type", () => {
   let showData = null
@@ -222,16 +221,7 @@ describe("Show type", () => {
     })
   })
 
-  // TODO: fails on CI, check later
-  describe.skip("#viewingRoomsConnection", () => {
-    beforeAll(() => {
-      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-    })
-
-    afterAll(() => {
-      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-    })
-
+  describe("#viewingRoomsConnection", () => {
     it("returns viewingRoomsConnection field", async () => {
       const query = gql`
         {

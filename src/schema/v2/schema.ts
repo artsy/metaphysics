@@ -236,7 +236,6 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
-import config from "config"
 import { ViewingRoom } from "./viewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
@@ -259,6 +258,7 @@ import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/delive
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
+import { createUserSeenArtworkMutation } from "./infiniteDiscovery/createUserSeenArtworkMutation"
 import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
@@ -275,26 +275,6 @@ import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtwo
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
-
-const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-  ? {
-      viewingRoom: ViewingRoom,
-      viewingRoomsConnection: ViewingRoomsConnection,
-      viewingRooms: ViewingRoomConnection,
-    }
-  : ({} as any)
-
-const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-  ? {
-      createViewingRoom: createViewingRoomMutation,
-      deleteViewingRoom: deleteViewingRoomMutation,
-      publishViewingRoom: publishViewingRoomMutation,
-      unpublishViewingRoom: unpublishViewingRoomMutation,
-      updateViewingRoom: updateViewingRoomMutation,
-      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
-      updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
-    }
-  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -415,9 +395,11 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  viewingRoom: ViewingRoom,
+  viewingRoomsConnection: ViewingRoomsConnection,
+  viewingRooms: ViewingRoomConnection,
   verifyAddress: VerifyAddress,
   verifyUser: VerifyUser,
-  ...viewingRoomUnstitchedRootField,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
@@ -477,6 +459,7 @@ export default new GraphQLSchema({
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
       createUserAdminNote: createUserAdminNoteMutation,
+      createUserSeenArtwork: createUserSeenArtworkMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
       createUserInterests: createUserInterestsMutation,
@@ -565,7 +548,13 @@ export default new GraphQLSchema({
       deliverSecondFactor: deliverSecondFactorMutation,
       enableSecondFactor: enableSecondFactorMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
-      ...viewingRoomsMutations,
+      createViewingRoom: createViewingRoomMutation,
+      deleteViewingRoom: deleteViewingRoomMutation,
+      publishViewingRoom: publishViewingRoomMutation,
+      unpublishViewingRoom: unpublishViewingRoomMutation,
+      updateViewingRoom: updateViewingRoomMutation,
+      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
+      updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
