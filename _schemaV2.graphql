@@ -14289,7 +14289,7 @@ type Mutation {
     input: CreateUserSaleProfileMutationInput!
   ): CreateUserSaleProfileMutationPayload
 
-  # Creates User Seen Artwork.
+  # Marks an artwork as seen when a user swipes through Infinite Discovery.
   createUserSeenArtwork(
     input: CreateUserSeenArtworkInput!
   ): CreateUserSeenArtworkPayload

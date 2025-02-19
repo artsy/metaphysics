@@ -57,7 +57,8 @@ export const createUserSeenArtworkMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateUserSeenArtwork",
-  description: "Creates User Seen Artwork.",
+  description:
+    "Marks an artwork as seen when a user swipes through Infinite Discovery.",
   inputFields,
   outputFields: {
     userSeenArtworkOrError: {
