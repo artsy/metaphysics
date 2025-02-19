@@ -1,4 +1,3 @@
-import config from "config"
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
@@ -8,14 +7,6 @@ describe("updateViewingRoomArtworksMutation", () => {
   const context = {
     updateViewingRoomArtworksLoader: mockUpdateViewingRoomArtworksLoader,
   }
-
-  beforeAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-  })
-
-  afterAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-  })
 
   beforeEach(() => {
     mockUpdateViewingRoomArtworksLoader.mockResolvedValue(

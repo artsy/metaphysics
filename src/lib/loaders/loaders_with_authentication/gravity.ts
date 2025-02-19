@@ -132,6 +132,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createUserSeenArtworkLoader: gravityLoader(
+      "artworks_discovery/artworks/seen",
+      {},
+      { method: "POST" }
+    ),
     deliverSecondFactor: gravityLoader(
       (id) => `me/second_factors/${id}/deliver`,
       {},

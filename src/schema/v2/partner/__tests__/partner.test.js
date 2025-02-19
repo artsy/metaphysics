@@ -1,7 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import config from "config"
 
 describe("Partner type", () => {
   let partnerData = null
@@ -157,16 +156,7 @@ describe("Partner type", () => {
     })
   })
 
-  // TODO: fails on CI, check later
-  describe.skip("#viewingRoomsConnection", () => {
-    beforeAll(() => {
-      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-    })
-
-    afterAll(() => {
-      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-    })
-
+  describe("#viewingRoomsConnection", () => {
     it("returns viewingRoomsConnection field", async () => {
       const query = gql`
         {
