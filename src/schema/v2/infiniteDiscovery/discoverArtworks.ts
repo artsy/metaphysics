@@ -4,6 +4,7 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
@@ -17,6 +18,11 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     excludeArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description: "Exclude these artworks from the response",
+    },
+    useInternalTracking: {
+      type: GraphQLBoolean,
+      description: "Internal Redis tracking for the user seen artworks",
+      defaultValue: false,
     },
     mltFields: {
       type: new GraphQLList(GraphQLString),
@@ -52,6 +58,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       os_weights: args.osWeights,
       curated_picks_size: args.curatedPicksSize,
       user_id: userID,
+      use_internal_tracking: args.useInternalTracking,
     }
 
     const gravityResponse = await artworksDiscoveryLoader(gravityArgs)
