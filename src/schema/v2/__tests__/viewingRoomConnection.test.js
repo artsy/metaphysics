@@ -1,16 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import config from "config"
 
 describe("ViewingRoomConnection", () => {
-  beforeAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-  })
-
-  afterAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-  })
-
   const viewingRooms = [
     {
       id: "viewing-room-1",

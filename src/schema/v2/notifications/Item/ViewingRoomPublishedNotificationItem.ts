@@ -1,4 +1,3 @@
-import config from "config"
 import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -34,45 +33,43 @@ export const ViewingRoomPublishedNotificationItemType = new GraphQLObjectType<
         },
       },
 
-      ...(config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA && {
-        viewingRoomsConnection: {
-          type: ViewingRoomsConnection.type,
-          args: pageable(),
-          resolve: async (
-            { object_ids: viewing_room_ids },
+      viewingRoomsConnection: {
+        type: ViewingRoomsConnection.type,
+        args: pageable(),
+        resolve: async (
+          { object_ids: viewing_room_ids },
+          args,
+          { viewingRoomsLoader }
+        ) => {
+          if (!viewing_room_ids || viewing_room_ids.length === 0) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityArgs = {
+            ids: viewing_room_ids,
+            page,
+            size,
+            total_count: true,
+          }
+
+          const { body, headers } = await viewingRoomsLoader(gravityArgs)
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
             args,
-            { viewingRoomsLoader }
-          ) => {
-            if (!viewing_room_ids || viewing_room_ids.length === 0) {
-              return null
-            }
-
-            const { page, size, offset } = convertConnectionArgsToGravityArgs(
-              args
-            )
-
-            const gravityArgs = {
-              ids: viewing_room_ids,
-              page,
-              size,
-              total_count: true,
-            }
-
-            const { body, headers } = await viewingRoomsLoader(gravityArgs)
-
-            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-            return paginationResolver({
-              args,
-              body,
-              offset,
-              page,
-              size,
-              totalCount,
-            })
-          },
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
         },
-      }),
+      },
     }
   },
 })

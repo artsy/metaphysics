@@ -1,16 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import config from "config"
 
 describe("ViewingRoomSubsection", () => {
-  beforeAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-  })
-
-  afterAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-  })
-
   const query = gql`
     {
       viewingRoom(id: "example-viewing-room") {

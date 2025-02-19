@@ -1,17 +1,8 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
-import config from "config"
 
 describe("ViewingRoom", () => {
-  beforeAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
-  })
-
-  afterAll(() => {
-    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
-  })
-
   describe("all fields", () => {
     const query = gql`
       {
