@@ -16,36 +16,55 @@ export const QuickLinks: HomeViewSection = {
 
 const QUICK_LINKS: Array<NavigationPill> = [
   {
-    title: "Follows",
-    href: "/favorites",
-    ownerType: OwnerType.follows,
-    icon: "FollowArtistIcon",
+    title: "Saves",
+    href: "/favorites/saves",
+    ownerType: OwnerType.saves,
+    icon: "HeartStrokeIcon",
   },
   {
     title: "Auctions",
     href: "/auctions",
     ownerType: OwnerType.auctions,
-    icon: "AuctionIcon",
+    icon: "GavelIcon",
   },
   {
-    title: "Saves",
-    href: "/favorites/saves",
-    ownerType: OwnerType.saves,
-    icon: "HeartIcon",
-  },
-  {
-    title: "Art under $1000",
-    href: "/collect?price_range=%2A-1000",
-    ownerType: OwnerType.collect,
-  },
-  {
-    title: "Price Database",
-    href: "/price-database",
-    ownerType: OwnerType.priceDatabase,
+    title: "New This Week",
+    href: "/collection/new-this-week",
+    ownerType: OwnerType.collection, // TODO: collection id?
+    icon: undefined,
   },
   {
     title: "Editorial",
-    href: "/news",
+    href: "/articles",
     ownerType: OwnerType.articles,
+    icon: "PublicationIcon",
   },
+  {
+    title: "Statement Pieces",
+    href: "/collection/statement-pieces",
+    ownerType: OwnerType.collection, // TODO: collection id?
+    icon: undefined,
+  },
+
+  // TODO: enable once navigation is sorted out
+  // {
+  //   title: "Medium",
+  //   href: "/collections-by-category/Medium",
+  //   ownerType: OwnerType.collectionsCategory, // TODO: category id?
+  //   icon: "ArtworkIcon",
+  // },
+  {
+    title: "Shows for You",
+    href: "/shows-for-you",
+    ownerType: OwnerType.shows, // TODO: use updated Cohesion type
+    icon: undefined,
+  },
+
+  // TODO: enable once eigen/11476 is merged
+  // {
+  //   title: "Featured Fairs",
+  //   href: "/featured-fairs",
+  //   ownerType: OwnerType.fairs, // TODO: use updated Cohesion type
+  //   icon: "FairIcon",
+  // },
 ]
