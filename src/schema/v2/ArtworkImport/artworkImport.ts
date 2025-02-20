@@ -65,6 +65,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
     },
+    transformedData: {
+      type: new GraphQLNonNull(GraphQLJSON),
+      resolve: ({ transformed_data }) => transformed_data,
+    },
     errors: {
       type: new GraphQLNonNull(
         GraphQLList(new GraphQLNonNull(ArtworkImportRowErrorType))
@@ -89,6 +93,11 @@ export const ArtworkImportType = new GraphQLObjectType({
   interfaces: [NodeInterface],
   fields: {
     ...InternalIDFields,
+    columns: {
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
+      description:
+        "Columns to display for an import, will exist in a row's `transformedData`",
+    },
     fileName: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
