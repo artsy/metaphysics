@@ -145,7 +145,7 @@ import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
-import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
+import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
@@ -429,7 +429,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       assignArtworkImportArtist: AssignArtworkImportArtistMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
-      bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
+      artsyShippingOptIn: artsyShippingOptInMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,

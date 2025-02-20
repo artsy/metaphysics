@@ -16,39 +16,37 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
-  // these to be migrated out soon by Jackie
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
-  // ---------------------
 }
 
-const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
+const ArtsyShippingOptInResponseType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksResponse",
+  name: "ArtsyShippingOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
     ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
+const ArtsyShippingOptInMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationSuccess",
+  name: "ArtsyShippingOptInMutationSuccess",
   fields: () => ({
-    updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
-    skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
+    updatedPartnerArtworks: { type: ArtsyShippingOptInResponseType },
+    skippedPartnerArtworks: { type: ArtsyShippingOptInResponseType },
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
+const ArtsyShippingOptInMutationFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutationFailure",
+  name: "ArtsyShippingOptInMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -60,26 +58,26 @@ const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
   }),
 })
 
-const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
-  name: "BulkUpdatePartnerArtworksMutationType",
+const ArtsyShippingOptInMutationType = new GraphQLUnionType({
+  name: "ArtsyShippingOptInMutationType",
   types: [
-    BulkUpdatePartnerArtworksMutationSuccessType,
-    BulkUpdatePartnerArtworksMutationFailureType,
+    ArtsyShippingOptInMutationSuccessType,
+    ArtsyShippingOptInMutationFailureType,
   ],
   resolveType: (object) => {
     if (object.mutationError) {
-      return BulkUpdatePartnerArtworksMutationFailureType
+      return ArtsyShippingOptInMutationFailureType
     }
-    return BulkUpdatePartnerArtworksMutationSuccessType
+    return ArtsyShippingOptInMutationSuccessType
   },
 })
 
-export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
+export const artsyShippingOptInMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "BulkUpdatePartnerArtworksMutation",
+  name: "ArtsyShippingOptInMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {
     id: {
@@ -96,8 +94,8 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    bulkUpdatePartnerArtworksOrError: {
-      type: BulkUpdatePartnerArtworksMutationType,
+    ArtsyShippingOptInOrError: {
+      type: ArtsyShippingOptInMutationType,
       resolve: (result) => {
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
         return {
@@ -112,19 +110,19 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { id, artsyShippingDomestic, artsyShippingInternational },
-    { updatePartnerArtworksLoader }
+    { artsyShippingOptInLoader }
   ) => {
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
     }
 
-    if (!updatePartnerArtworksLoader) {
+    if (!artsyShippingOptInLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await updatePartnerArtworksLoader(id, gravityOptions)
+      return await artsyShippingOptInLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
