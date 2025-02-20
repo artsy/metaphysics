@@ -30,7 +30,7 @@ const QUICK_LINKS: Array<NavigationPill> = [
   {
     title: "New This Week",
     href: "/collection/new-this-week",
-    ownerType: OwnerType.collection, // TODO: collection id?
+    ownerType: OwnerType.collection,
     icon: undefined,
   },
   {
@@ -42,7 +42,7 @@ const QUICK_LINKS: Array<NavigationPill> = [
   {
     title: "Statement Pieces",
     href: "/collection/statement-pieces",
-    ownerType: OwnerType.collection, // TODO: collection id?
+    ownerType: OwnerType.collection,
     icon: undefined,
   },
 
@@ -50,13 +50,13 @@ const QUICK_LINKS: Array<NavigationPill> = [
   // {
   //   title: "Medium",
   //   href: "/collections-by-category/Medium",
-  //   ownerType: OwnerType.collectionsCategory, // TODO: category id?
+  //   ownerType: OwnerType.collectionsCategory,
   //   icon: "ArtworkIcon",
   // },
   {
     title: "Shows for You",
     href: "/shows-for-you",
-    ownerType: OwnerType.shows, // TODO: use updated Cohesion type
+    ownerType: OwnerType.shows,
     icon: undefined,
   },
 
@@ -64,7 +64,7 @@ const QUICK_LINKS: Array<NavigationPill> = [
   // {
   //   title: "Featured Fairs",
   //   href: "/featured-fairs",
-  //   ownerType: OwnerType.fairs, // TODO: use updated Cohesion type
+  //   ownerType: OwnerType.fairs,
   //   icon: "FairIcon",
   // },
 ]
