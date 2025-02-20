@@ -64,7 +64,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
               artist
             )} - Biography, Shows, Articles & More | Artsy`
           case "ARTWORKS": {
-            if (EXPERIMENT_GROUP.includes(artist.slug)) {
+            if (EXPERIMENT_GROUP.includes(artist.id)) {
               return metaName(artist)
             }
 
