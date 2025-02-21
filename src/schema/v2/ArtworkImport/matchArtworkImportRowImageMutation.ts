@@ -11,6 +11,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "MatchArtworkImportRowImageSuccess",
@@ -19,6 +20,13 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     success: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: () => true,
+    },
+    artworkImport: {
+      type: ArtworkImportType,
+      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
+        if (!artworkImportLoader) return null
+        return artworkImportLoader(artworkImportID)
+      },
     },
   }),
 })
@@ -65,7 +73,7 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (
+  mutateAndGetPayload: async (
     { artworkImportID, fileName, s3Key, s3Bucket },
     { artworkImportRowMatchImageLoader }
   ) => {
@@ -80,7 +88,13 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     }
 
     try {
-      return artworkImportRowMatchImageLoader(artworkImportID, gravityArgs)
+      return {
+        ...(await artworkImportRowMatchImageLoader(
+          artworkImportID,
+          gravityArgs
+        )),
+        artworkImportID,
+      }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

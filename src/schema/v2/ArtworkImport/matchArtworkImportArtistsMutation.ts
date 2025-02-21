@@ -11,6 +11,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "MatchArtworkImportArtistsSuccess",
@@ -24,6 +25,13 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     },
     unmatched: {
       type: new GraphQLNonNull(GraphQLInt),
+    },
+    artworkImport: {
+      type: ArtworkImportType,
+      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
+        if (!artworkImportLoader) return null
+        return artworkImportLoader(artworkImportID)
+      },
     },
   }),
 })
