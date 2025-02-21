@@ -5,7 +5,7 @@ import { HomeViewCard } from "../sectionTypes/Card"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
 export const InfiniteDiscovery: HomeViewSection = {
-  contextModule: ContextModule.infiniteDiscoveryBanner,
+  contextModule: ContextModule.infiniteDiscovery,
   featureFlag: "diamond_home-view-infinite-discovery",
   id: "home-view-section-infinite-discovery",
   requiresAuthentication: false,
