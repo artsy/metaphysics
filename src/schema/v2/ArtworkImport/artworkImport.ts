@@ -150,6 +150,9 @@ export const ArtworkImportType = new GraphQLObjectType({
         errorTypes: {
           type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
         },
+        blockersOnly: {
+          type: GraphQLBoolean,
+        },
       }),
       resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -158,6 +161,7 @@ export const ArtworkImportType = new GraphQLObjectType({
           offset,
           has_errors: args.hasErrors,
           error_types: args.errorTypes,
+          blockers_only: args.blockers_only,
           total_count: true,
         })
 
