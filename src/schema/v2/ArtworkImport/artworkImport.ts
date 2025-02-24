@@ -125,6 +125,9 @@ export const ArtworkImportType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
     },
+    state: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
     unmatchedArtistNames: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: async (
