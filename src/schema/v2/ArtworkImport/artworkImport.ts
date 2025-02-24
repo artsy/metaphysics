@@ -17,6 +17,7 @@ import { pageable } from "relay-cursor-paging"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
 import { ArtworkType } from "../artwork"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 
 const ArtworkImportRowErrorType = new GraphQLObjectType({
   name: "ArtworkImportRowError",
@@ -61,6 +62,25 @@ const ArtworkImportRowType = new GraphQLObjectType({
     artists: {
       type: new GraphQLList(new GraphQLNonNull(ArtistType)),
     },
+    priceListed: {
+      type: Money,
+      resolve: (
+        { price_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
     rawData: {
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
@@ -98,6 +118,9 @@ export const ArtworkImportType = new GraphQLObjectType({
       description:
         "Columns to display for an import, will exist in a row's `transformedData`",
     },
+    currency: {
+      type: GraphQLString,
+    },
     fileName: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
@@ -127,14 +150,18 @@ export const ArtworkImportType = new GraphQLObjectType({
         errorTypes: {
           type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
         },
+        blockersOnly: {
+          type: GraphQLBoolean,
+        },
       }),
-      resolve: async ({ id }, args, { artworkImportRowsLoader }) => {
+      resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
         const { body, headers } = await artworkImportRowsLoader(id, {
           size,
           offset,
           has_errors: args.hasErrors,
           error_types: args.errorTypes,
+          blockers_only: args.blockers_only,
           total_count: true,
         })
 
@@ -145,7 +172,10 @@ export const ArtworkImportType = new GraphQLObjectType({
           offset,
           page,
           size,
-          body,
+          body: body.map((row) => ({
+            ...row,
+            currency,
+          })),
           args,
         })
       },
