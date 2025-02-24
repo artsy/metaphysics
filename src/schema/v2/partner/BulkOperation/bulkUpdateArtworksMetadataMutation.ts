@@ -4,6 +4,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLFloat,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -16,7 +17,11 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
-  metadata: { location_id: string | null } | null
+  metadata: {
+    location_id: string | null
+    category: string | null
+    price_listed: number | null
+  } | null
 }
 
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
@@ -25,6 +30,14 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     location_id: {
       type: GraphQLString,
       description: "The partner location ID to assign",
+    },
+    category: {
+      type: GraphQLString,
+      description: "The category (medium type) to be assigned",
+    },
+    price_listed: {
+      type: GraphQLFloat,
+      description: "The price for the artworks",
     },
   },
 })
