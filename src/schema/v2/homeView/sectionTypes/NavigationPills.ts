@@ -17,6 +17,11 @@ export interface NavigationPill {
   href: string
   ownerType: OwnerType
   icon?: string
+
+  /**
+   * The implementing section must enforce this check.
+   * See QuickLinks for an example
+   */
   minimumEigenVersion?: SemanticVersionNumber
 }
 
