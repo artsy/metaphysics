@@ -10,12 +10,14 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import { OwnerType } from "@artsy/cohesion"
+import { SemanticVersionNumber } from "lib/semanticVersioning"
 
 export interface NavigationPill {
   title: string
   href: string
   ownerType: OwnerType
   icon?: string
+  minimumEigenVersion?: SemanticVersionNumber
 }
 
 const NavigationPillType = new GraphQLObjectType<
