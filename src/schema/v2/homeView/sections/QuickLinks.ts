@@ -2,6 +2,8 @@ import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import type { NavigationPill } from "../sectionTypes/NavigationPills"
+import { ResolverContext } from "types/graphql"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -9,12 +11,28 @@ export const QuickLinks: HomeViewSection = {
   ownerType: OwnerType.quickLinks,
   type: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,
   requiresAuthentication: true,
-  resolver: () => {
-    return QUICK_LINKS
+  resolver: (_parent, _args, context, _info) => {
+    return getDisplayableQuickLinks(context)
   },
 }
 
-const QUICK_LINKS: Array<NavigationPill> = [
+function getDisplayableQuickLinks(context: ResolverContext) {
+  return QUICK_LINKS.filter((quickLink) => {
+    let isDisplayable = true
+    const actualEigenVersion = getEigenVersionNumber(
+      context.userAgent as string
+    )
+    if (actualEigenVersion && quickLink.minimumEigenVersion) {
+      isDisplayable = isAtLeastVersion(
+        actualEigenVersion,
+        quickLink.minimumEigenVersion
+      )
+    }
+    return isDisplayable
+  })
+}
+
+export const QUICK_LINKS: Array<NavigationPill> = [
   {
     title: "Saves",
     href: "/favorites/saves",
@@ -46,7 +64,7 @@ const QUICK_LINKS: Array<NavigationPill> = [
     icon: undefined,
   },
 
-  // TODO: enable once navigation is sorted out
+  // TODO: enable once navigation is sorted out, via minimumEigenVersion
   // {
   //   title: "Medium",
   //   href: "/collections-by-category/Medium",
@@ -60,7 +78,7 @@ const QUICK_LINKS: Array<NavigationPill> = [
     icon: undefined,
   },
 
-  // TODO: enable once eigen/11476 is merged
+  // TODO: enable once eigen/11476 is merged, via minimumEigenVersion
   // {
   //   title: "Featured Fairs",
   //   href: "/featured-fairs",
