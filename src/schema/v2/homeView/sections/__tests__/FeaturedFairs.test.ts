@@ -79,25 +79,26 @@ describe("FeaturedFairs", () => {
         }
       `
 
-      const fairs = {
-        body: [
-          {
-            id: "fair-1",
-            name: "Fair 1",
-            start_at: "2024-05-23T11:00:00+00:00",
-            end_at: "2024-06-23T11:00:00+00:00",
-          },
-          {
-            id: "fair-2",
-            name: "Fair 2",
-            start_at: "2024-05-23T11:00:00+00:00",
-            end_at: "2024-06-23T11:00:00+00:00",
-          },
-        ],
-      }
+      const fairs = [
+        {
+          id: "fair-1",
+          name: "Fair 1",
+          start_at: "2024-05-23T11:00:00+00:00",
+          end_at: "2024-06-23T11:00:00+00:00",
+        },
+        {
+          id: "fair-2",
+          name: "Fair 2",
+          start_at: "2024-05-23T11:00:00+00:00",
+          end_at: "2024-06-23T11:00:00+00:00",
+        },
+      ]
 
       const context = {
-        fairsLoader: jest.fn().mockResolvedValue(fairs),
+        fairsLoader: jest.fn().mockResolvedValue({
+          body: fairs,
+          headers: {},
+        }),
       }
 
       const { homeView } = await runQuery(query, context)

@@ -70,6 +70,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
+        if (!minor || !currencyCode) return null
         return resolveMinorAndCurrencyFieldsToMoney(
           {
             minor,
@@ -143,6 +144,10 @@ export const ArtworkImportType = new GraphQLObjectType({
 
         return unmatched_artist_names
       },
+    },
+    rawDataMapping: {
+      type: new GraphQLNonNull(GraphQLJSON),
+      resolve: ({ raw_data_mapping }) => raw_data_mapping,
     },
     rowsConnection: {
       type: ArtworkImportRowConnectionType,
