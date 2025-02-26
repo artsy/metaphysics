@@ -18,6 +18,7 @@ import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
 import { ArtworkType } from "../artwork"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
+import { date } from "schema/v2/fields/date"
 
 const ArtworkImportRowErrorType = new GraphQLObjectType({
   name: "ArtworkImportRowError",
@@ -119,8 +120,10 @@ export const ArtworkImportType = new GraphQLObjectType({
       description:
         "Columns to display for an import, will exist in a row's `transformedData`",
     },
+    createdAt: date(),
     createdBy: {
       type: GraphQLString,
+      resolve: ({ created_by }) => created_by,
     },
     currency: {
       type: GraphQLString,

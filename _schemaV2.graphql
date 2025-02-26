@@ -2949,6 +2949,12 @@ union ArtworkHighlight = Article | Show
 type ArtworkImport implements Node {
   # Columns to display for an import, will exist in a row's `transformedData`
   columns: [String!]!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   createdBy: String
   currency: String
   fileName: String!
