@@ -119,7 +119,7 @@ export const ArtworkImportType = new GraphQLObjectType({
       description:
         "Columns to display for an import, will exist in a row's `transformedData`",
     },
-    created_by: {
+    createdBy: {
       type: GraphQLString,
     },
     currency: {
