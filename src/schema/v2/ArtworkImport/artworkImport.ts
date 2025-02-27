@@ -110,10 +110,10 @@ const ArtworkImportRowConnectionType = connectionWithCursorInfo({
   nodeType: ArtworkImportRowType,
 }).connectionType
 
-export const ArtworkImportType = new GraphQLObjectType({
+export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkImport",
   interfaces: [NodeInterface],
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
     columns: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
@@ -169,6 +169,12 @@ export const ArtworkImportType = new GraphQLObjectType({
         },
       }),
       resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
+        if (!artworkImportRowsLoader) {
+          throw new Error(
+            "A X-Access-Token header is required to perform this action."
+          )
+        }
+
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
         const { body, headers } = await artworkImportRowsLoader(id, {
           size,
@@ -194,7 +200,7 @@ export const ArtworkImportType = new GraphQLObjectType({
         })
       },
     },
-  },
+  }),
 })
 
 export const ArtworkImport: GraphQLFieldConfig<any, ResolverContext> = {
