@@ -24,7 +24,7 @@ import { IDFields, NodeInterface } from "../object_identification"
 import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
-import Image, { normalizeImageData } from "../image"
+import Image, { getDefault, normalizeImageData } from "../image"
 import { NormalizedImageData } from "../image/normalize"
 
 const NotificationTypesEnum = new GraphQLEnumType({
@@ -162,8 +162,9 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
             const artworks = await artworksLoader({
               ids: slicedObjectIds,
             })
-
-            images = artworks.map((artwork) => artwork.images?.[0])
+            images = artworks.map((artwork) =>
+              normalizeImageData(getDefault(artwork.images))
+            )
           }
         }
 
