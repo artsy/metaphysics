@@ -178,6 +178,9 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         blockersOnly: {
           type: GraphQLBoolean,
         },
+        createdOnly: {
+          type: GraphQLBoolean,
+        },
       }),
       resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
         if (!artworkImportRowsLoader) {
@@ -192,7 +195,8 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           offset,
           has_errors: args.hasErrors,
           error_types: args.errorTypes,
-          blockers_only: args.blockers_only,
+          blockers_only: args.blockersOnly,
+          created_only: args.createdOnly,
           total_count: true,
         })
 
