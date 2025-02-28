@@ -20,6 +20,17 @@ import { ArtworkType } from "../artwork"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
 
+const ArtworkImportCreatedBy = new GraphQLObjectType({
+  name: "ArtworkImportCreatedBy",
+  fields: {
+    ...InternalIDFields,
+    name: {
+      type: GraphQLString,
+      resolve: ({ name }) => name,
+    },
+  },
+})
+
 const ArtworkImportRowErrorType = new GraphQLObjectType({
   name: "ArtworkImportRowError",
   fields: {
@@ -122,7 +133,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     createdAt: date(),
     createdBy: {
-      type: GraphQLString,
+      type: ArtworkImportCreatedBy,
       resolve: ({ created_by }) => created_by,
     },
     currency: {
