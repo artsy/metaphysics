@@ -63,26 +63,23 @@ export const QUICK_LINKS: Array<NavigationPill> = [
     ownerType: OwnerType.collection,
     icon: undefined,
   },
-
-  // TODO: enable once navigation is sorted out, via minimumEigenVersion
-  // {
-  //   title: "Medium",
-  //   href: "/collections-by-category/Medium",
-  //   ownerType: OwnerType.collectionsCategory,
-  //   icon: "ArtworkIcon",
-  // },
+  {
+    title: "Medium",
+    href:
+      "/collections-by-category/Medium?homeViewSectionId=home-view-section-explore-by-category&entityID=Medium",
+    ownerType: OwnerType.collectionsCategory,
+    icon: "ArtworkIcon",
+  },
   {
     title: "Shows for You",
     href: "/shows-for-you",
     ownerType: OwnerType.shows,
     icon: undefined,
   },
-
-  // TODO: enable once eigen/11476 is merged, via minimumEigenVersion
-  // {
-  //   title: "Featured Fairs",
-  //   href: "/featured-fairs",
-  //   ownerType: OwnerType.fairs,
-  //   icon: "FairIcon",
-  // },
+  {
+    title: "Featured Fairs",
+    href: "/featured-fairs",
+    ownerType: OwnerType.featuredFairs,
+    icon: "FairIcon",
+  },
 ]
