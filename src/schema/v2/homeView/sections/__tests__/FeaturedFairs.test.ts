@@ -55,7 +55,7 @@ describe("FeaturedFairs", () => {
           },
           "contextModule": "fairRail",
           "internalID": "home-view-section-featured-fairs",
-          "ownerType": null,
+          "ownerType": "featuredFairs",
         }
       `)
     })
