@@ -12,9 +12,12 @@ interface GraphQLArgs {
 }
 
 export const exchangeLoaders = (accessToken, opts) => {
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+  const {
+    gravityLoaderWithAuthenticationFactory,
+    exchangeLoaderWithAuthenticationFactory,
+  } = factories(opts)
 
-  const { gravityLoaderWithAuthenticationFactory } = factories(opts)
+  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
@@ -27,11 +30,20 @@ export const exchangeLoaders = (accessToken, opts) => {
     { method: "POST" }
   )
 
+  const exchangeAccessTokenLoader = () =>
+    exchangeTokenLoader().then(({ token }) => token)
+
+  const exchangeLoader = exchangeLoaderWithAuthenticationFactory(
+    exchangeAccessTokenLoader
+  )
+
+  const meOrderLoader = exchangeLoader((id) => `me/orders/${id}`)
+
   const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
   }: GraphQLArgs): Promise<Record<string, R>> => {
-    const { token } = await exchangeTokenLoader()
+    const token = await exchangeAccessTokenLoader()
 
     const body = JSON.stringify({
       query,
@@ -64,5 +76,6 @@ export const exchangeLoaders = (accessToken, opts) => {
   return {
     exchangeTokenLoader,
     exchangeGraphQLLoader,
+    meOrderLoader,
   }
 }
