@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { FeaturedFairs as FeaturedFairsType } from "schema/v2/FeaturedFairs/featuredFairs"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -16,6 +16,7 @@ export const FeaturedFairs: HomeViewSection = {
   },
   featureFlag: "onyx_enable-home-view-section-featured-fairs",
   requiresAuthentication: false,
+  ownerType: OwnerType.featuredFairs,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const { size } = convertConnectionArgsToGravityArgs(args)
