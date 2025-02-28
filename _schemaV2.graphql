@@ -13514,6 +13514,7 @@ type Me implements Node {
     # The ID of the Notification
     id: String!
   ): Notification
+  order(id: String!): MeOrder
   orders(
     after: String
     before: String
@@ -13742,6 +13743,14 @@ type MeCounts {
   followedProfiles: Int!
   savedArtworks: Int!
   savedSearches: Int!
+}
+
+type MeOrder {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
 }
 
 type MergeArtistsFailure {

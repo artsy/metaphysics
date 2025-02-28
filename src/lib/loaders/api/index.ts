@@ -3,6 +3,7 @@ import config from "config"
 import convection from "lib/apis/convection"
 import delta from "lib/apis/delta"
 import diffusion from "lib/apis/diffusion"
+import exchange from "lib/apis/exchange"
 import galaxy from "lib/apis/galaxy"
 import geodata from "lib/apis/geodata"
 import gravity from "lib/apis/gravity"
@@ -82,6 +83,15 @@ export default (opts) => ({
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
       requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
+    }
+  ),
+
+  exchangeLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    exchange,
+    "exchange",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
     }
   ),
 
