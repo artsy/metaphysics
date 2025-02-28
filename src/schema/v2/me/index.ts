@@ -26,7 +26,11 @@ import Conversations from "schema/v2/conversation/conversations"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { createPageCursors } from "schema/v2/fields/pagination"
-import { IDFields, NodeInterface } from "schema/v2/object_identification"
+import {
+  IDFields,
+  InternalIDFields,
+  NodeInterface,
+} from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   AlertType,
@@ -471,6 +475,25 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     initials: initials("name"),
+    order: {
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "MeOrder",
+        fields: {
+          ...InternalIDFields,
+        },
+      }),
+      resolve: async (_root, { id }, { meOrderLoader }) => {
+        if (!meOrderLoader) return null
+        const order = await meOrderLoader(id)
+        console.log("order", order)
+        return order
+      },
+    },
     paddleNumber: {
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
