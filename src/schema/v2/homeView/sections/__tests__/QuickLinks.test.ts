@@ -69,10 +69,22 @@ describe("QuickLinks", () => {
             "title": "Statement Pieces",
           },
           {
+            "href": "/collections-by-category/Medium?homeViewSectionId=home-view-section-explore-by-category&entityID=Medium",
+            "icon": "ArtworkIcon",
+            "ownerType": "collectionsCategory",
+            "title": "Medium",
+          },
+          {
             "href": "/shows-for-you",
             "icon": null,
             "ownerType": "shows",
             "title": "Shows for You",
+          },
+          {
+            "href": "/featured-fairs",
+            "icon": "FairIcon",
+            "ownerType": "featuredFairs",
+            "title": "Featured Fairs",
           },
         ],
         "ownerType": "quickLinks",
