@@ -100,6 +100,7 @@ import {
   SecondFactorInterface,
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
+import { Order, OrderType } from "../order"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -475,25 +476,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     initials: initials("name"),
-    order: {
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLString),
-        },
-      },
-      type: new GraphQLObjectType<any, ResolverContext>({
-        name: "MeOrder",
-        fields: {
-          ...InternalIDFields,
-        },
-      }),
-      resolve: async (_root, { id }, { meOrderLoader }) => {
-        if (!meOrderLoader) return null
-        const order = await meOrderLoader(id)
-        console.log("order", order)
-        return order
-      },
-    },
+    order: Order,
     paddleNumber: {
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,

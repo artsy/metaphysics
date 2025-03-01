@@ -12604,6 +12604,19 @@ enum LengthUnitPreference {
   IN
 }
 
+# A line item in an order
+type LineItem {
+  artwork: Artwork
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  shippingCountry: String
+  shippingRates: [ShippingRate]
+}
+
 input LinkAuthenticationMutationInput {
   # Unique Apple user id. **Required** for Apple authentication.
   appleUid: String
@@ -13514,7 +13527,7 @@ type Me implements Node {
     # The ID of the Notification
     id: String!
   ): Notification
-  order(id: String!): MeOrder
+  order(id: String!): Order
   orders(
     after: String
     before: String
@@ -13743,14 +13756,6 @@ type MeCounts {
   followedProfiles: Int!
   savedArtworks: Int!
   savedSearches: Int!
-}
-
-type MeOrder {
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
 }
 
 type MergeArtistsFailure {
@@ -15163,6 +15168,19 @@ type OpeningHoursText {
 }
 
 union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
+
+# Buyer's representation of an order
+type Order {
+  # Phone number of the buyer
+  buyerPhoneNumber: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  lineItems: [LineItem]
+}
 
 union OrderParty = Partner | User
 
@@ -19325,6 +19343,12 @@ type SendIdentityVerificationEmailMutationPayload {
 type Services {
   convection: ConvectionService!
   metaphysics: MetaphysicsService!
+}
+
+type ShippingRate {
+  amount: Money
+  id: String!
+  quoteId: String
 }
 
 type Shortcut {
