@@ -1,6 +1,11 @@
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql"
+
 import { ResolverContext } from "types/graphql"
 import { Money } from "../fields/money"
+
+// TODO: Actual country code lists
+const EU_COUNTRY_CODES = ["FR", "DE", "IT", "ES"]
+const ALL_COUNTRY_CODES = ["US", "BR", "GB", "FR", "DE", "IT", "ES"]
 
 export const ShippingRateType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShippingRate",
@@ -32,13 +37,16 @@ interface ShippingRateResult {
     | "DOMESTIC_CALCULATED"
     | "INTERNATIONAL_FLAT"
     | "INTERNATIONAL_CALCULATED"
+    | "CALCULATING"
   quoteId?: string
-  amount: { minor: number }
+
+  // TODO: Construct full money-resolvable type, not just cents (minor)
+  amount: { cents: number } | null
 }
 
 const PICKUP_RATE = {
   id: ShippingRate.PICKUP,
-  amount: { minor: 0 },
+  amount: { cents: 0 },
 }
 
 export const resolveShippingRates = ({ lineItem, artwork, order }) => {
@@ -48,7 +56,8 @@ export const resolveShippingRates = ({ lineItem, artwork, order }) => {
 
   const shippingRules = calculateShippingRules(artwork)
 
-  if (shipsTo && shippingRules.availableShippingCountries.includes(shipsTo)) {
+  console.log({ shippingRules })
+  if (shipsTo) {
     if (shippingRules.domesticShippingCountries.includes(shipsTo)) {
       const rate = shippingRules.domesticShipping
       if (rate === "ARTSY_SHIPPING") {
@@ -56,13 +65,13 @@ export const resolveShippingRates = ({ lineItem, artwork, order }) => {
         rates.push({
           id: ShippingRate.DOMESTIC_CALCULATED,
           quoteId: "domestic-calculated",
-          amount: { minor: 0 },
+          amount: { cents: 0 },
         })
       }
       if (typeof rate === "number") {
         rates.push({
           id: ShippingRate.DOMESTIC_FLAT,
-          amount: { minor: rate },
+          amount: { cents: rate },
         })
       }
     } else {
@@ -72,15 +81,20 @@ export const resolveShippingRates = ({ lineItem, artwork, order }) => {
         rates.push({
           id: ShippingRate.INTERNATIONAL_CALCULATED,
           quoteId: "international-calculated",
-          amount: { minor: 0 },
+          amount: { cents: 0 },
         })
       } else if (typeof rate === "number") {
         rates.push({
           id: ShippingRate.INTERNATIONAL_FLAT,
-          amount: { minor: rate },
+          amount: { cents: rate },
         })
       }
     }
+  } else {
+    rates.push({
+      id: "CALCULATING",
+      amount: null,
+    })
   }
   if (shippingRules.pickupAvailable) {
     rates.unshift(PICKUP_RATE)
@@ -130,5 +144,6 @@ const calculateShippingRules = (artwork) => {
     shipsFrom,
     domesticShipping,
     internationalShipping,
+    onlyShipsDomestically,
   }
 }
