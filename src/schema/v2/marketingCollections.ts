@@ -164,6 +164,16 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     type: GraphQLString,
     resolve: ({ representative_artwork_id }) => representative_artwork_id,
   },
+  isFollowed: {
+    type: GraphQLBoolean,
+    resolve: ({ id }, _args, { followedMarketingCollectionLoader }) => {
+      if (!followedMarketingCollectionLoader) return false
+
+      return followedMarketingCollectionLoader(id).then(
+        ({ is_followed }) => is_followed
+      )
+    },
+  },
 }
 
 export const MarketingCollectionType = new GraphQLObjectType<
