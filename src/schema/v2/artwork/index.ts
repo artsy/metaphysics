@@ -99,6 +99,7 @@ import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
 import { ArtistSeriesConnectionType } from "../artistSeries"
+import { ContextMatch } from "schema/v2/artwork/contextMatch"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -525,6 +526,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       context: Context,
+      contextMatch: ContextMatch,
       contextGrids: ArtworkContextGrids,
       costCurrencyCode: {
         description: "The currency code used to pay for the artwork",

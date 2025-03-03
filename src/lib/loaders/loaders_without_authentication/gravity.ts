@@ -232,9 +232,7 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    relatedFairsLoader: gravityLoader<{ has_full_feature: boolean }[]>(
-      "related/fairs"
-    ),
+    relatedFairsLoader: gravityLoader<any[]>("related/fairs"),
     relatedGenesLoader: gravityLoader("related/genes"),
     relatedLayerArtworksLoader: gravityLoader<
       any,

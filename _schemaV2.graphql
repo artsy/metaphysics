@@ -2467,6 +2467,15 @@ type Artwork implements Node & Searchable & Sellable {
     includeRelatedArtworks: Boolean! = true
   ): [ArtworkContextGrid]
 
+  # Returns a specific Fair/Sale/Show context if it exists
+  contextMatch(
+    # The ID of the context to return
+    id: String!
+
+    # The type of context to return
+    type: ArtworkContextEnum!
+  ): ArtworkContext
+
   # The currency code used to pay for the artwork
   costCurrencyCode: String
 
@@ -2906,6 +2915,12 @@ enum ArtworkConsignmentSubmissionState {
 }
 
 union ArtworkContext = Fair | Sale | Show
+
+enum ArtworkContextEnum {
+  FAIR
+  SALE
+  SHOW
+}
 
 # A specific grid.
 interface ArtworkContextGrid {
