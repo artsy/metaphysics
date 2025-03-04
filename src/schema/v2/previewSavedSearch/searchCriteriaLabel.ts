@@ -11,7 +11,7 @@ import { toTitleCase } from "@artsy/to-title-case"
 import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
-import { round } from "lodash"
+import { compact, round } from "lodash"
 import { DEFAULT_LENGTH_UNIT_PREFERENCE, camelCaseKeys } from "lib/helpers"
 import { previewSavedSearchArgs } from "./previewSavedSearch"
 
@@ -516,16 +516,26 @@ async function getArtistSeriesLabels(
 ) {
   if (!artistSeriesLoader || !artistSeriesIDs?.length) return []
 
-  return Promise.all(
+  const result = await Promise.all(
     artistSeriesIDs.map(async (id) => {
-      const { title } = await artistSeriesLoader(id)
+      try {
+        const { title } = await artistSeriesLoader(id)
 
-      return {
-        name: "Artist Series",
-        displayValue: title,
-        field: "artistSeriesIDs",
-        value: id,
+        return {
+          name: "Artist Series",
+          displayValue: title,
+          field: "artistSeriesIDs",
+          value: id,
+        }
+      } catch (error) {
+        if (error.statusCode === 404) {
+          console.warn("Artist Series", id, "not found, skipping.")
+        } else {
+          throw error
+        }
       }
     })
   )
+
+  return compact(result)
 }
