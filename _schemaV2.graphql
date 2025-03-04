@@ -9642,6 +9642,12 @@ type DoNotUseThisPartner {
   subscription_state: String @deprecated(reason: "Use subscriptionState")
 }
 
+type DomesticFlatFulfillmentOption implements FulfillmentOptionInterface {
+  amount: Money
+  selected: Boolean
+  type: FulfillmentOptionTypeEnum
+}
+
 input EditableLocation {
   # First line of an address
   address: String
@@ -10960,6 +10966,25 @@ type FormattedDaySchedules {
 
 # The `FormattedNumber` type represents a number that can optionally be returnedas a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
+
+interface FulfillmentOptionInterface {
+  amount: Money
+  selected: Boolean
+  type: FulfillmentOptionTypeEnum
+}
+
+enum FulfillmentOptionTypeEnum {
+  DOMESTIC_FLAT
+  INTERNATIONAL_FLAT
+  PICKUP
+  SHIPPING_TBD
+}
+
+union FulfillmentOptionUnion =
+    DomesticFlatFulfillmentOption
+  | InternationalFlatFulfillmentOption
+  | PickupFulfillmentOption
+  | ShippingTBDFulfillmentOption
 
 # An entry from gemini
 type GeminiEntry {
@@ -12395,6 +12420,12 @@ enum Intents {
   SELL_ART_AND_DESIGN
 }
 
+type InternationalFlatFulfillmentOption implements FulfillmentOptionInterface {
+  amount: Money
+  selected: Boolean
+  type: FulfillmentOptionTypeEnum
+}
+
 type InventoryHold {
   capturedAt: String
   id: ID!
@@ -12607,14 +12638,15 @@ enum LengthUnitPreference {
 # A line item in an order
 type LineItem {
   artwork: Artwork
+  artworkVersion: ArtworkVersion
 
   # A globally unique ID.
   id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  shippingCountry: String
-  shippingRates: [ShippingRate]
+  listPrice: Money
+  quantity: Int!
 }
 
 input LinkAuthenticationMutationInput {
@@ -15173,6 +15205,7 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 type Order {
   # Phone number of the buyer
   buyerPhoneNumber: String
+  fulfillmentOptions: [FulfillmentOptionUnion]
 
   # A globally unique ID.
   id: ID!
@@ -16435,6 +16468,12 @@ type PhoneNumberType {
   isValid: Boolean
   originalNumber: String
   regionCode: String
+}
+
+type PickupFulfillmentOption implements FulfillmentOptionInterface {
+  amount: Money
+  selected: Boolean
+  type: FulfillmentOptionTypeEnum
 }
 
 type PreviewSavedSearch {
@@ -19345,10 +19384,10 @@ type Services {
   metaphysics: MetaphysicsService!
 }
 
-type ShippingRate {
+type ShippingTBDFulfillmentOption implements FulfillmentOptionInterface {
   amount: Money
-  id: String!
-  quoteId: String
+  selected: Boolean
+  type: FulfillmentOptionTypeEnum
 }
 
 type Shortcut {

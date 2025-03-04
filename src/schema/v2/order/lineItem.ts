@@ -1,15 +1,15 @@
 import {
   GraphQLID,
-  GraphQLList,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { GlobalIDField } from "../object_identification"
-import { resolveShippingRates, ShippingRateType } from "./shippingRates"
 import { toGlobalId } from "graphql-relay"
+import { ArtworkVersionType } from "../artwork_version"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 
 export const LineItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "LineItem",
@@ -24,34 +24,56 @@ export const LineItemType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-
     internalID: {
       description: "A type-specific ID likely used as a database ID.",
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({ lineItem: { id } }) => id,
     },
-
-    shippingCountry: {
-      type: GraphQLString,
-      resolve: ({ lineItem: { shipping_country } }) => shipping_country,
-    },
-
-    shippingRates: {
-      type: new GraphQLList(ShippingRateType),
-      resolve: async ({ lineItem, order }, _args, { artworkLoader }) => {
-        const { artwork_id } = lineItem
-        const artwork = await artworkLoader(artwork_id)
-        const rates = resolveShippingRates({ lineItem, artwork, order })
-        console.log(rates.map((rate) => rate.amount))
-        return rates
-      },
-    },
-
     artwork: {
       type: ArtworkType,
       resolve: ({ lineItem: { artwork_id } }, _args, { artworkLoader }) => {
         return artworkLoader(artwork_id)
       },
+    },
+    artworkVersion: {
+      type: ArtworkVersionType,
+      resolve: (
+        { lineItem: { artwork_version_id } },
+        _args,
+        { authenticatedArtworkVersionLoader }
+      ) =>
+        authenticatedArtworkVersionLoader
+          ? authenticatedArtworkVersionLoader(artwork_version_id)
+          : null,
+    },
+    listPrice: {
+      type: Money,
+      resolve: async (
+        // TODO: Remove USD fallback and include currency_code in the line item json
+        {
+          lineItem: {
+            list_price_cents: minor,
+            currency_code: currencyCode = "USD",
+          },
+        },
+        _args,
+        context,
+        _info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor: minor,
+            currencyCode,
+          },
+          _args,
+          context,
+          _info
+        )
+      },
+    },
+    quantity: {
+      type: GraphQLNonNull(GraphQLInt),
+      resolve: ({ lineItem: { quantity } }) => quantity,
     },
   },
 })
