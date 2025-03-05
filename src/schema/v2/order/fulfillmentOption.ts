@@ -22,7 +22,7 @@ export const FulfillmentOptionType = new GraphQLObjectType({
   name: "FulfillmentOption",
   fields: {
     type: {
-      type: FulfillmentOptionTypeEnum,
+      type: new GraphQLNonNull(FulfillmentOptionTypeEnum),
       resolve: ({ type }) => {
         if (type === "domestic_flat") return "DOMESTIC_FLAT"
         if (type === "international_flat") return "INTERNATIONAL_FLAT"

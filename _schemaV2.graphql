@@ -10964,7 +10964,7 @@ scalar FormattedNumber
 type FulfillmentOption {
   amount: Money
   selected: Boolean
-  type: FulfillmentOptionTypeEnum
+  type: FulfillmentOptionTypeEnum!
 }
 
 enum FulfillmentOptionTypeEnum {
@@ -15185,12 +15185,15 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 # Buyer's representation of an order
 type Order {
+  # List of alpha-2 country codes to which the order can be shipped
+  availableShippingCountries: [String!]!
+
   # Phone number of the buyer
   buyerPhoneNumber: String
 
   # The total amount the buyer is expected to pay
   buyerTotal: Money
-  fulfillmentOptions: [FulfillmentOption]
+  fulfillmentOptions: [FulfillmentOption!]!
 
   # A globally unique ID.
   id: ID!

@@ -16,6 +16,15 @@ export const OrderType = new GraphQLObjectType<any, ResolverContext>({
   description: "Buyer's representation of an order",
   fields: {
     ...InternalIDFields,
+    availableShippingCountries: {
+      description:
+        "List of alpha-2 country codes to which the order can be shipped",
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+      resolve: ({ available_shipping_countries }) =>
+        available_shipping_countries,
+    },
     buyerPhoneNumber: {
       type: GraphQLString,
       description: "Phone number of the buyer",
@@ -39,7 +48,9 @@ export const OrderType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     fulfillmentOptions: {
-      type: new GraphQLList(FulfillmentOptionType),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
+      ),
       resolve: ({ fulfillment_options }) => fulfillment_options,
     },
     lineItems: {

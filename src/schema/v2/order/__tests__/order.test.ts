@@ -23,6 +23,7 @@ describe("Me", () => {
           me {
             order(id: "111") {
               id
+              availableShippingCountries
               buyerPhoneNumber
               buyerTotal {
                 display
@@ -65,6 +66,7 @@ describe("Me", () => {
 
       expect(result.me.order).toEqual({
         id: "T3JkZXI6YjdmZGU5YmEtNTZlYS00NjBhLTk1YzktNzI1MmRhMzg2ZDk2",
+        availableShippingCountries: ["US", "JP"],
         buyerPhoneNumber: null,
         buyerTotal: {
           display: "US$5,000",
