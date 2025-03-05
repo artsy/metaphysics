@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("previewSavedSearch", () => {
@@ -595,6 +596,69 @@ describe("previewSavedSearch", () => {
           },
         ])
       })
+    })
+  })
+
+  describe("with unpublished artist series", () => {
+    it("does not return a label for the unpublished series", async () => {
+      const query = gql`
+        query PreviewSavedSearch($attributes: PreviewSavedSearchAttributes) {
+          previewSavedSearch(attributes: $attributes) {
+            labels {
+              field
+              name
+              displayValue
+              value
+            }
+          }
+        }
+      `
+
+      const variables = {
+        attributes: {
+          artistIDs: ["banksy"],
+          artistSeriesIDs: ["an-unpublished-series", "a-published-series"],
+        },
+      }
+
+      const context: any = {
+        artistLoader: () => Promise.resolve({ name: "Banksy" }),
+
+        artistSeriesLoader: (id) => {
+          if (id === "an-unpublished-series") {
+            return Promise.reject(new HTTPError("Nope", 404))
+          }
+          if (id === "a-published-series") {
+            return Promise.resolve({
+              title: "Published Series",
+              published: true,
+            })
+          }
+        },
+      }
+
+      const { previewSavedSearch } = await runQuery(query, context, variables)
+
+      expect(previewSavedSearch.labels).toEqual([
+        {
+          field: "artistIDs",
+          name: "Artist",
+          displayValue: "Banksy",
+          value: "banksy",
+        },
+        {
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          displayValue: "Published Series",
+          value: "a-published-series",
+        },
+      ])
+
+      expect(previewSavedSearch.labels).not.toContainEqual(
+        expect.objectContaining({
+          value: "an-unpublished-series",
+        })
+      )
     })
   })
 })
