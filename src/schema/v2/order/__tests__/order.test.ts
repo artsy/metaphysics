@@ -24,27 +24,36 @@ describe("Me", () => {
             order(id: "111") {
               id
               buyerPhoneNumber
+              buyerTotal {
+                display
+              }
               fulfillmentOptions {
                 type
-                amount
+                amount {
+                  display
+                }
                 selected
               }
               lineItems {
-                edges {
-                  node {
-                    artworkId
-                    artwork {
-                      title
-                    }
-                  }
+                artwork {
+                  title
                 }
+                artworkVersion {
+                  internalID
+                }
+                listPrice {
+                  display
+                }
+                quantity
               }
             }
           }
         }
       `
 
+      orderJson.buyer_total_cents = 500000
       context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
         artworkLoader: jest.fn().mockResolvedValue(artwork),
         authenticatedArtworkVersionLoader: jest
@@ -52,28 +61,51 @@ describe("Me", () => {
           .mockResolvedValue(artworkVersion),
       }
 
-      const { order: result } = await runAuthenticatedQuery(query, context)
+      const result = await runAuthenticatedQuery(query, context)
 
-      expect(result).toEqual({
-        id: "111",
-        buyerPhoneNumber: "1234567890",
-        fulfillmentOptions: [
-          { type: "pickup", amount: "$0.00" },
-          { type: "domestic_flat", amount: "$100.00", selected: true },
-          { type: "international_flat", amount: "$200" },
-        ],
-        lineItems: {
-          edges: [
-            {
-              node: {
-                artworkId: "222",
-                artwork: {
-                  title: "Artwork Title",
-                },
-              },
-            },
-          ],
+      expect(result.me.order).toEqual({
+        id: "T3JkZXI6YjdmZGU5YmEtNTZlYS00NjBhLTk1YzktNzI1MmRhMzg2ZDk2",
+        buyerPhoneNumber: null,
+        buyerTotal: {
+          display: "US$5,000",
         },
+        fulfillmentOptions: [
+          {
+            type: "PICKUP",
+            amount: {
+              display: "US$0",
+            },
+            selected: null,
+          },
+          {
+            type: "DOMESTIC_FLAT",
+            amount: {
+              display: "US$100",
+            },
+            selected: true,
+          },
+          {
+            type: "INTERNATIONAL_FLAT",
+            amount: {
+              display: "US$200",
+            },
+            selected: null,
+          },
+        ],
+        lineItems: [
+          {
+            artwork: {
+              title: "Artwork Title",
+            },
+            artworkVersion: {
+              internalID: "artwork-version-id-0",
+            },
+            listPrice: {
+              display: "US$100",
+            },
+            quantity: 1,
+          },
+        ],
       })
     })
   })

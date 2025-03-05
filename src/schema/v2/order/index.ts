@@ -8,7 +8,8 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { LineItemType } from "./lineItem"
-import { FulfillmentOptionUnionType } from "./fulfillmentOption"
+import { FulfillmentOptionType } from "./fulfillmentOption"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 
 export const OrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Order",
@@ -20,8 +21,25 @@ export const OrderType = new GraphQLObjectType<any, ResolverContext>({
       description: "Phone number of the buyer",
       resolve: ({ buyer_phone_number }) => buyer_phone_number,
     },
+    buyerTotal: {
+      type: Money,
+      description: "The total amount the buyer is expected to pay",
+      resolve: (
+        { buyer_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     fulfillmentOptions: {
-      type: new GraphQLList(FulfillmentOptionUnionType),
+      type: new GraphQLList(FulfillmentOptionType),
       resolve: ({ fulfillment_options }) => fulfillment_options,
     },
     lineItems: {
@@ -45,9 +63,6 @@ export const Order: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, { id }, { meOrderLoader }) => {
     if (!meOrderLoader) return null
     const order = await meOrderLoader(id)
-    console.log("order", order)
-    // const orderResolver = new OrderResolver(order)
-    // console.log("orderResolver", orderResolver)
 
     return order
   },

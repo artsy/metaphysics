@@ -9642,12 +9642,6 @@ type DoNotUseThisPartner {
   subscription_state: String @deprecated(reason: "Use subscriptionState")
 }
 
-type DomesticFlatFulfillmentOption implements FulfillmentOptionInterface {
-  amount: Money
-  selected: Boolean
-  type: FulfillmentOptionTypeEnum
-}
-
 input EditableLocation {
   # First line of an address
   address: String
@@ -10967,7 +10961,7 @@ type FormattedDaySchedules {
 # The `FormattedNumber` type represents a number that can optionally be returnedas a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
 
-interface FulfillmentOptionInterface {
+type FulfillmentOption {
   amount: Money
   selected: Boolean
   type: FulfillmentOptionTypeEnum
@@ -10979,12 +10973,6 @@ enum FulfillmentOptionTypeEnum {
   PICKUP
   SHIPPING_TBD
 }
-
-union FulfillmentOptionUnion =
-    DomesticFlatFulfillmentOption
-  | InternationalFlatFulfillmentOption
-  | PickupFulfillmentOption
-  | ShippingTBDFulfillmentOption
 
 # An entry from gemini
 type GeminiEntry {
@@ -12418,12 +12406,6 @@ enum Intents {
   READ_ART_MARKET_NEWS
   RESEARCH_ART_PRICES
   SELL_ART_AND_DESIGN
-}
-
-type InternationalFlatFulfillmentOption implements FulfillmentOptionInterface {
-  amount: Money
-  selected: Boolean
-  type: FulfillmentOptionTypeEnum
 }
 
 type InventoryHold {
@@ -15205,7 +15187,10 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 type Order {
   # Phone number of the buyer
   buyerPhoneNumber: String
-  fulfillmentOptions: [FulfillmentOptionUnion]
+
+  # The total amount the buyer is expected to pay
+  buyerTotal: Money
+  fulfillmentOptions: [FulfillmentOption]
 
   # A globally unique ID.
   id: ID!
@@ -16468,12 +16453,6 @@ type PhoneNumberType {
   isValid: Boolean
   originalNumber: String
   regionCode: String
-}
-
-type PickupFulfillmentOption implements FulfillmentOptionInterface {
-  amount: Money
-  selected: Boolean
-  type: FulfillmentOptionTypeEnum
 }
 
 type PreviewSavedSearch {
@@ -19382,12 +19361,6 @@ type SendIdentityVerificationEmailMutationPayload {
 type Services {
   convection: ConvectionService!
   metaphysics: MetaphysicsService!
-}
-
-type ShippingTBDFulfillmentOption implements FulfillmentOptionInterface {
-  amount: Money
-  selected: Boolean
-  type: FulfillmentOptionTypeEnum
 }
 
 type Shortcut {

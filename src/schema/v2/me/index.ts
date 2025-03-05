@@ -26,11 +26,7 @@ import Conversations from "schema/v2/conversation/conversations"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { createPageCursors } from "schema/v2/fields/pagination"
-import {
-  IDFields,
-  InternalIDFields,
-  NodeInterface,
-} from "schema/v2/object_identification"
+import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   AlertType,
@@ -100,7 +96,7 @@ import {
   SecondFactorInterface,
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
-import { Order, OrderType } from "../order"
+import { Order } from "../order"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
