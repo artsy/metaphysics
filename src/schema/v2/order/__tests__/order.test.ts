@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
+import { cond } from "lodash"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 let context, orderJson, artwork, artworkVersion
@@ -24,6 +25,8 @@ describe("Me", () => {
             order(id: "order-id") {
               internalID
               mode
+              source
+              code
               availableShippingCountries
               buyerPhoneNumber
               buyerTotal {
@@ -36,6 +39,11 @@ describe("Me", () => {
                   display
                 }
                 selected
+              }
+              itemsTotal {
+                minor
+                display
+                currencyCode
               }
               lineItems {
                 internalID
@@ -71,10 +79,17 @@ describe("Me", () => {
       expect(result.me.order).toEqual({
         internalID: "order-id",
         mode: "BUY",
+        source: "ARTWORK_PAGE",
+        code: "order-code",
         availableShippingCountries: ["US", "JP"],
         buyerPhoneNumber: null,
         buyerTotal: {
           display: "US$5,000",
+        },
+        itemsTotal: {
+          currencyCode: "USD",
+          display: "US$100",
+          minor: 10000,
         },
         fulfillmentOptions: [
           {
@@ -122,7 +137,7 @@ const baseOrderJson = {
   buyer_total_cents: null,
   code: "order-code",
   currency_code: "USD",
-  items_total_cents: null,
+  items_total_cents: 10000,
   shipping_total_cents: null,
   mode: "buy",
   source: "artwork_page",

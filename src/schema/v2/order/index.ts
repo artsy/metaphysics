@@ -24,11 +24,44 @@ const OrderModeEnum = new GraphQLEnumType({
   },
 })
 
+const OrderSourceEnum = new GraphQLEnumType({
+  name: "OrderSourceEnum",
+  values: {
+    ARTWORK_PAGE: {
+      value: "ARTWORK_PAGE",
+    },
+    INQUIRY: {
+      value: "INQUIRY",
+    },
+    PRIVATE_SALE: {
+      value: "PRIVATE_SALE",
+    },
+    PARTNER_OFFER: {
+      value: "PARTNER_OFFER",
+    },
+  },
+})
+
 export const OrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
   fields: {
     ...InternalIDFields,
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Order code",
+      resolve: ({ code }) => code,
+    },
+    source: {
+      type: new GraphQLNonNull(OrderSourceEnum),
+      description: "Source of the order",
+      resolve: (order) => resolveSource(order),
+    },
+    mode: {
+      type: new GraphQLNonNull(OrderModeEnum),
+      resolve: (order) => resolveMode(order),
+    },
+
     availableShippingCountries: {
       description:
         "List of alpha-2 country codes to which the order can be shipped",
@@ -70,18 +103,55 @@ export const OrderType = new GraphQLObjectType<any, ResolverContext>({
           _currencyCode: currency_code,
         })),
     },
-    lineItems: {
-      type: new GraphQLList(LineItemType),
-      resolve: ({ line_items }) => line_items,
-    },
-    mode: {
-      type: new GraphQLNonNull(OrderModeEnum),
-      resolve: ({ mode }) => {
-        return mode === "offer" ? "OFFER" : "BUY"
+    itemsTotal: {
+      type: Money,
+      description: "The total amount of the line items",
+      resolve: (
+        { items_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
       },
+    },
+    lineItems: {
+      type: new GraphQLNonNull(new GraphQLList(LineItemType)),
+      resolve: ({ line_items }) => line_items,
     },
   },
 })
+
+const resolveSource = ({ source }) => {
+  switch (source) {
+    case "artwork_page":
+      return "ARTWORK_PAGE"
+    case "inquiry":
+      return "INQUIRY"
+    case "private_sale":
+      return "PRIVATE_SALE"
+    case "partner_offer":
+      return "PARTNER_OFFER"
+    default:
+      throw new Error(`Unknown order source: ${source}`)
+  }
+}
+
+const resolveMode = ({ mode }) => {
+  switch (mode) {
+    case "buy":
+      return "BUY"
+    case "offer":
+      return "OFFER"
+    default:
+      throw new Error(`Unknown order mode: ${mode}`)
+  }
+}
 
 export const Order: GraphQLFieldConfig<void, ResolverContext> = {
   args: {

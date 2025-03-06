@@ -15,7 +15,6 @@ export const LineItemType = new GraphQLObjectType<any, ResolverContext>({
   description: "A line item in an order",
   fields: {
     ...InternalIDFields,
-
     artwork: {
       type: ArtworkType,
       resolve: ({ artwork_id }, _args, { artworkLoader }) => {
