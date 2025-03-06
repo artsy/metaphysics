@@ -1,6 +1,5 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { cond } from "lodash"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 let context, orderJson, artwork, artworkVersion
