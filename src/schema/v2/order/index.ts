@@ -1,4 +1,5 @@
 import {
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
@@ -10,6 +11,18 @@ import { InternalIDFields } from "../object_identification"
 import { LineItemType } from "./lineItem"
 import { FulfillmentOptionType } from "./fulfillmentOption"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
+
+const OrderModeEnum = new GraphQLEnumType({
+  name: "OrderModeEnum",
+  values: {
+    BUY: {
+      value: "BUY",
+    },
+    OFFER: {
+      value: "OFFER",
+    },
+  },
+})
 
 export const OrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Order",
@@ -51,15 +64,21 @@ export const OrderType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
       ),
-      resolve: ({ fulfillment_options }) => fulfillment_options,
+      resolve: ({ fulfillment_options, currency_code }) =>
+        fulfillment_options.map((option) => ({
+          ...option,
+          _currencyCode: currency_code,
+        })),
     },
     lineItems: {
       type: new GraphQLList(LineItemType),
-      resolve: ({ line_items, ...order }) =>
-        line_items.map((lineItem) => ({
-          lineItem,
-          order,
-        })),
+      resolve: ({ line_items }) => line_items,
+    },
+    mode: {
+      type: new GraphQLNonNull(OrderModeEnum),
+      resolve: ({ mode }) => {
+        return mode === "offer" ? "OFFER" : "BUY"
+      },
     },
   },
 })

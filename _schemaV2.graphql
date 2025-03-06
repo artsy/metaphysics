@@ -12621,6 +12621,7 @@ enum LengthUnitPreference {
 type LineItem {
   artwork: Artwork
   artworkVersion: ArtworkVersion
+  currencyCode: String!
 
   # A globally unique ID.
   id: ID!
@@ -15201,6 +15202,12 @@ type Order {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   lineItems: [LineItem]
+  mode: OrderModeEnum!
+}
+
+enum OrderModeEnum {
+  BUY
+  OFFER
 }
 
 union OrderParty = Partner | User

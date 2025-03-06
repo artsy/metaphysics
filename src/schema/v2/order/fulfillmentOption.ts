@@ -34,8 +34,8 @@ export const FulfillmentOptionType = new GraphQLObjectType({
     amount: {
       type: Money,
       resolve: (
-        // TODO: Add currency code to fulfillment option json
-        { amount_minor: minor, currencyCode = "USD" },
+        // _currencyCode loaded from parent
+        { amount_minor: minor, _currencyCode: currencyCode },
         _args,
         context,
         _info
