@@ -1,5 +1,4 @@
 import {
-  GraphQLID,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -7,8 +6,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
-import { GlobalIDField, InternalIDFields } from "../object_identification"
-import { toGlobalId } from "graphql-relay"
+import { InternalIDFields } from "../object_identification"
 import { ArtworkVersionType } from "../artwork_version"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 
