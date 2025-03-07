@@ -217,6 +217,9 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         errorTypes: {
           type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
         },
+        excludeErrorTypes: {
+          type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+        },
         blockersOnly: {
           type: GraphQLBoolean,
         },
@@ -237,6 +240,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           offset,
           has_errors: args.hasErrors,
           error_types: args.errorTypes,
+          exclude_error_types: args.excludeErrorTypes,
           blockers_only: args.blockersOnly,
           created_only: args.createdOnly,
           total_count: true,
