@@ -8,7 +8,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { connectionWithCursorInfo } from "./fields/pagination"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+import { Money, resolvePriceAndCurrencyFieldsToMoney } from "./fields/money"
 import { PartnerOfferSourceEnumType } from "./partnerOffer"
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
@@ -48,7 +48,7 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
         context,
         info
       ) => {
-        return resolveMinorAndCurrencyFieldsToMoney(
+        return resolvePriceAndCurrencyFieldsToMoney(
           {
             minor,
             currencyCode,
