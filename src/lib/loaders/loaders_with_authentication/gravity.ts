@@ -211,6 +211,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerArtistLoader: gravityLoader<
+      any,
+      { partnerID: string; artistID: string }
+    >(
+      ({ partnerID, artistID }) => `partner/${partnerID}/artist/${artistID}`,
+      {},
+      { method: "PUT" } // Intentional PUT even though this is a create operation
+    ),
     createPartnerOfferLoader: gravityLoader(
       "partner_offer",
       {},
