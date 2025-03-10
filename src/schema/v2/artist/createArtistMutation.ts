@@ -60,7 +60,8 @@ export const createArtistMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateArtistMutation",
-  description: "Create an artist",
+  description:
+    "Create an artist, used for MyCollection. use CreateCanonicalArtistMutation for all other cases",
   inputFields: {
     birthday: { type: GraphQLString },
     deathday: { type: GraphQLString },
@@ -70,6 +71,11 @@ export const createArtistMutation = mutationWithClientMutationId<
     lastName: { type: GraphQLString },
     middleName: { type: GraphQLString },
     nationality: { type: GraphQLString },
+    partnerID: {
+      type: GraphQLString,
+      description:
+        "When present, will create the partner-artist record as well",
+    },
   },
   outputFields: {
     artistOrError: {
@@ -78,12 +84,19 @@ export const createArtistMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createArtistLoader }) => {
+  mutateAndGetPayload: async (
+    args,
+    { createArtistLoader, createPartnerArtistLoader }
+  ) => {
     if (!createArtistLoader) {
       throw new Error("You need to be logged in to perform this action")
     }
 
-    const { firstName, middleName, lastName, ...otherArgs } = args
+    const { firstName, middleName, lastName, partnerID, ...otherArgs } = args
+
+    if (partnerID && !createPartnerArtistLoader) {
+      throw new Error("You need to be logged in to perform this action")
+    }
 
     const names = {
       first: firstName,
@@ -105,7 +118,19 @@ export const createArtistMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await createArtistLoader(gravityPayload)
+      const createdArtist = await createArtistLoader(gravityPayload)
+
+      if (partnerID) {
+        await createPartnerArtistLoader(
+          {
+            artistID: createdArtist.id,
+            partnerID: partnerID,
+          },
+          { represented_by: false }
+        )
+      }
+
+      return createdArtist
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
