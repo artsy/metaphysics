@@ -99,7 +99,49 @@ const ArtworkImportRowType = new GraphQLObjectType({
       resolve: ({ raw_data }) => raw_data,
     },
     transformedData: {
-      type: new GraphQLNonNull(GraphQLJSON),
+      type: new GraphQLNonNull(
+        new GraphQLObjectType<any, ResolverContext>({
+          name: "ArtworkImportTransformedData",
+          fields: {
+            artistNames: {
+              type: GraphQLString,
+              resolve: ({ ArtistNames }) => ArtistNames,
+            },
+            artworkTitle: {
+              type: GraphQLString,
+              resolve: ({ ArtworkTitle }) => ArtworkTitle,
+            },
+            date: {
+              type: GraphQLString,
+              resolve: ({ Date }) => Date,
+            },
+            depth: {
+              type: GraphQLString,
+              resolve: ({ Depth }) => Depth,
+            },
+            diameter: {
+              type: GraphQLString,
+              resolve: ({ Diameter }) => Diameter,
+            },
+            height: {
+              type: GraphQLString,
+              resolve: ({ Height }) => Height,
+            },
+            imageFileNames: {
+              type: GraphQLString,
+              resolve: ({ ImageFileNames }) => ImageFileNames,
+            },
+            price: {
+              type: GraphQLString,
+              resolve: ({ Price }) => Price,
+            },
+            width: {
+              type: GraphQLString,
+              resolve: ({ Width }) => Width,
+            },
+          },
+        })
+      ),
       resolve: ({ transformed_data }) => transformed_data,
     },
     errors: {
@@ -175,6 +217,9 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         errorTypes: {
           type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
         },
+        excludeErrorTypes: {
+          type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+        },
         blockersOnly: {
           type: GraphQLBoolean,
         },
@@ -195,6 +240,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           offset,
           has_errors: args.hasErrors,
           error_types: args.errorTypes,
+          exclude_error_types: args.excludeErrorTypes,
           blockers_only: args.blockersOnly,
           created_only: args.createdOnly,
           total_count: true,
