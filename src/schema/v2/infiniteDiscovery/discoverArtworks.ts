@@ -9,7 +9,6 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
-import config from "config"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
@@ -53,7 +52,6 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       os_weights: args.osWeights,
       curated_picks_size: args.curatedPicksSize,
       user_id: userID,
-      use_internal_tracking: config.ENABLE_INFINITE_DISCOVERY_INTERNAL_TRACKING,
     }
 
     const gravityResponse = await artworksDiscoveryLoader(gravityArgs)
