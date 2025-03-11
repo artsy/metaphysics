@@ -16,11 +16,11 @@ export const InfiniteDiscovery: HomeViewSection = {
 
   resolver: withHomeViewTimeout(async (parent, _args, _context, _info) => {
     const card: HomeViewCard = {
-      title: "Discover art, tailored to you",
+      title: "Discover Daily",
       subtitle:
-        "Our new feature learns your unique tastes as you explore, delivering personalized recommendations effortlessly.",
-      buttonText: "Explore Art",
-      image_url: "https://files.artsy.net/images/infinite_discovery.png",
+        "Effortless discovery, expert curation - find art you love, one swipe at a time.",
+      buttonText: "Try it",
+      image_url: "https://files.artsy.net/images/DiscoverDaily.png",
       entityType: "Page",
       entityID: parent.ownerType,
       badgeText: "New",
