@@ -98,7 +98,7 @@ describe("InfiniteDiscovery", () => {
             "image": {
               "imageURL": "https://files.artsy.net/images/DiscoverDaily.png",
             },
-            "subtitle": "Effortless discovery, expert curation - find art you love, one swipe at a time.",
+            "subtitle": "Effortless discovery, expert curation — find art you love, one swipe at a time.",
             "title": "Discover Daily",
           },
         }
