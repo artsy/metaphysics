@@ -96,10 +96,10 @@ describe("InfiniteDiscovery", () => {
             "entityType": "Page",
             "href": null,
             "image": {
-              "imageURL": "https://files.artsy.net/images/infinite_discovery.png",
+              "imageURL": "https://files.artsy.net/images/DiscoverDaily.png",
             },
-            "subtitle": "Our new feature learns your unique tastes as you explore, delivering personalized recommendations effortlessly.",
-            "title": "Discover art, tailored to you",
+            "subtitle": "Effortless discovery, expert curation — find art you love, one swipe at a time.",
+            "title": "Discover Daily",
           },
         }
       `)
