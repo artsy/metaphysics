@@ -84,13 +84,7 @@ export const executableGravitySchema = () => {
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
-  const unusedTypes = [
-    "DebitCommissionExemptionInput",
-    "DebitCommissionExemptionPayload",
-    "LotEvent",
-    "RefundCommissionExemptionInput",
-    "RefundCommissionExemptionPayload",
-  ]
+  const unusedTypes = ["LotEvent"]
 
   // Return the new modified schema
   return transformSchema(schema, [
