@@ -237,6 +237,22 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         country: order.shipping_country,
       }),
     },
+    selectedFulfillmentOption: {
+      type: FulfillmentOptionType,
+      description: "The selected fulfillment option for the order",
+      resolve: (order) => {
+        const selectedOption = order.fulfillment_options.find(
+          (option) => option.selected
+        )
+        if (!selectedOption) {
+          return null
+        }
+        return {
+          ...selectedOption,
+          _currencyCode: order.currency_code,
+        }
+      },
+    },
   },
 })
 
