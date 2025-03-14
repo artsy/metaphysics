@@ -277,6 +277,7 @@ import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImp
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
+import { editMeOrderMutation } from "./order"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -503,6 +504,7 @@ export default new GraphQLSchema({
       matchArtworkImportArtists: MatchArtworkImportArtistsMutation,
       matchArtworkImportRowImage: MatchArtworkImportRowImageMutation,
       mergeArtists: mergeArtistsMutation,
+      editMeOrder: editMeOrderMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,

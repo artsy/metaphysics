@@ -1,12 +1,32 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { baseArtwork, baseOrderJson } from "./support"
 
 let context, orderJson, artwork, artworkVersion
 
 describe("Me", () => {
   beforeEach(() => {
-    orderJson = orderJson || { ...baseOrderJson }
+    orderJson = {
+      ...baseOrderJson,
+      id: "order-id",
+      source: "artwork_page",
+      code: "asdf1234",
+      currency_code: "USD",
+      buyer_total_cents: 510000,
+      items_total_cents: 500000,
+      shipping_total_cents: 2000,
+      mode: "BUY",
+      buyer_phone_number: "123-456-7890",
+      buyer_phone_number_country_code: "US",
+      shipping_name: "John Doe",
+      shipping_country: "US",
+      shipping_postal_code: "10001",
+      shipping_region: "NY",
+      shipping_city: "New York",
+      shipping_address_line1: "123 Main St",
+      shipping_address_line2: "Apt 4B",
+    }
     artwork = artwork || {
       ...baseArtwork,
       id: orderJson.line_items[0].artwork_id,
@@ -16,6 +36,7 @@ describe("Me", () => {
       id: orderJson.line_items[0].artwork_version_id,
     }
   })
+
   describe("Order", () => {
     it("returns a buyer's order by id", async () => {
       const query = gql`
@@ -27,7 +48,6 @@ describe("Me", () => {
               source
               code
               availableShippingCountries
-              buyerPhoneNumber
               buyerTotal {
                 display
               }
@@ -39,6 +59,17 @@ describe("Me", () => {
                 }
                 selected
               }
+              # fulfillmentDetails {
+              #   phoneNumber
+              #   phoneNumberCountryCode
+              #   name
+              #   addressLine1
+              #   addressLine2
+              #   city
+              #   region
+              #   country
+              #   postalCode
+              # }
               itemsTotal {
                 minor
                 display
@@ -81,7 +112,6 @@ describe("Me", () => {
         source: "ARTWORK_PAGE",
         code: "order-code",
         availableShippingCountries: ["US", "JP"],
-        buyerPhoneNumber: null,
         buyerTotal: {
           display: "US$5,000",
         },
@@ -128,45 +158,3 @@ describe("Me", () => {
     })
   })
 })
-
-const baseOrderJson = {
-  id: "order-id",
-  buyer_phone_number: null,
-  buyer_phone_number_country_code: null,
-  buyer_total_cents: null,
-  code: "order-code",
-  currency_code: "USD",
-  items_total_cents: 10000,
-  shipping_total_cents: null,
-  mode: "buy",
-  source: "artwork_page",
-  shipping_country: "US",
-  shipping_postal_code: null,
-  shipping_region: null,
-  shipping_city: null,
-  shipping_address_line1: null,
-  shipping_address_line2: null,
-  line_items: [
-    {
-      id: "line-item-id-0",
-      artwork_id: "artwork-id-0",
-      artwork_version_id: "artwork-version-id-0",
-      edition_set_id: null,
-      list_price_cents: 10000,
-      quantity: 1,
-      shipping_total_cents: null,
-      currency_code: "USD",
-    },
-  ],
-  available_shipping_countries: ["US", "JP"],
-  pickup_available: true,
-  fulfillment_options: [
-    { type: "pickup", amount_minor: 0 },
-    { type: "domestic_flat", amount_minor: 10000, selected: true },
-  ],
-}
-
-const baseArtwork = {
-  id: "artwork-id-0",
-  title: "Artwork Title",
-}

@@ -14544,6 +14544,9 @@ type Mutation {
 
   # Updates a Task on the logged in User
   dismissTask(input: DismissTaskMutationInput!): DismissTaskMutationPayload
+
+  # Update an order
+  editMeOrder(input: editMeOrderInput!): editMeOrderPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
 
   # Mark sale as ended.
@@ -15245,9 +15248,6 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 type Order {
   # List of alpha-2 country codes to which the order can be shipped
   availableShippingCountries: [String!]!
-
-  # Phone number of the buyer
-  buyerPhoneNumber: String
 
   # The total amount the buyer is expected to pay
   buyerTotal: Money
@@ -23509,6 +23509,44 @@ type deleteUserRoleSuccess {
 type dimensions {
   cm: String
   in: String
+}
+
+input editMeOrderInput {
+  # Buyer's phone number
+  buyerPhoneNumber: String
+
+  # Buyer's phone number country code
+  buyerPhoneNumberCountryCode: String
+  clientMutationId: String
+
+  # Order id.
+  id: ID!
+
+  # Shipping address line 1
+  shippingAddressLine1: String
+
+  # Shipping address line 2
+  shippingAddressLine2: String
+
+  # Shipping address city
+  shippingCity: String
+
+  # Shipping address country
+  shippingCountry: String
+
+  # Shipping address name
+  shippingName: String
+
+  # Shipping address postal code
+  shippingPostalCode: String
+
+  # Shipping address state/province/region
+  shippingRegion: String
+}
+
+type editMeOrderPayload {
+  clientMutationId: String
+  order: Order
 }
 
 type partnerBiographyBlurb {
