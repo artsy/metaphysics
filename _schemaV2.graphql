@@ -11012,6 +11012,36 @@ type FormattedDaySchedules {
 # The `FormattedNumber` type represents a number that can optionally be returnedas a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
 
+# Buyer fulfillment details for order
+type FulfillmentDetails {
+  # Shipping address line 1
+  addressLine1: String
+
+  # Shipping address line 2
+  addressLine2: String
+
+  # Shipping address city
+  city: String
+
+  # Shipping address country
+  country: String
+
+  # Shipping address name
+  name: String
+
+  # Phone number of the buyer
+  phoneNumber: String
+
+  # Country code of the buyer's phone number
+  phoneNumberCountryCode: String
+
+  # Shipping address postal code
+  postalCode: String
+
+  # Shipping address state/province/region
+  region: String
+}
+
 type FulfillmentOption {
   amount: Money
   selected: Boolean
@@ -15254,6 +15284,9 @@ type Order {
 
   # Order code
   code: String!
+
+  # Buyer fulfillment details for order
+  fulfillmentDetails: FulfillmentDetails
   fulfillmentOptions: [FulfillmentOption!]!
 
   # A globally unique ID.
@@ -15266,6 +15299,9 @@ type Order {
   itemsTotal: Money
   lineItems: [LineItem]!
   mode: OrderModeEnum!
+
+  # The total amount for shipping
+  shippingTotal: Money
 
   # Source of the order
   source: OrderSourceEnum!

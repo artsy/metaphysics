@@ -13,7 +13,6 @@ export const MeOrder: GraphQLFieldConfig<void, ResolverContext> = {
     if (!meOrderLoader) return null
     const order = await meOrderLoader(id)
 
-    console.log(order)
     return order
   },
 }
