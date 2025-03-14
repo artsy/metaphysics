@@ -1,7 +1,16 @@
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { OrderJSON, OrderType } from "./OrderType"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+
+const SUCCESS_FLAG = "SuccessType"
+const ERROR_FLAG = "ErrorType"
 
 interface Input {
   id: string
@@ -15,6 +24,47 @@ interface Input {
   shippingCountry?: string
   shippingPostalCode?: string
 }
+
+const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ExchangeError",
+  fields: {
+    message: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    order: {
+      type: new GraphQLNonNull(OrderType),
+      resolve: (response) => {
+        return response
+      },
+    },
+  }),
+})
+
+const ErrorType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderMutationError",
+  isTypeOf: (data) => {
+    return data._type === ERROR_FLAG
+  },
+  fields: () => ({
+    mutationError: {
+      type: new GraphQLNonNull(ExchangeErrorType),
+      resolve: (err) => (typeof err.message === "object" ? err.message : err),
+    },
+  }),
+})
+
+const ResponseType = new GraphQLUnionType({
+  name: "EditMeOrderResponse",
+  types: [SuccessType, ErrorType],
+  resolveType: (data) => {
+    return data._type === SUCCESS_FLAG ? SuccessType : ErrorType
+  },
+})
 
 export const editMeOrderMutation = mutationWithClientMutationId<
   Input,
@@ -63,8 +113,8 @@ export const editMeOrderMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    order: {
-      type: OrderType,
+    orderOrError: {
+      type: ResponseType,
       resolve: (response) => response,
     },
   },
@@ -73,8 +123,29 @@ export const editMeOrderMutation = mutationWithClientMutationId<
     if (!meOrderEditLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-    const { id, ...updateFields } = input
-    const updatedOrder = await meOrderEditLoader(id, updateFields)
-    return updatedOrder
+    try {
+      const exchangeInputFields = {
+        buyer_phone_number: input.buyerPhoneNumber,
+        buyer_phone_number_country_code: input.buyerPhoneNumberCountryCode,
+        shipping_name: input.shippingName,
+        shipping_address_line1: input.shippingAddressLine1,
+        shipping_address_line2: input.shippingAddressLine2,
+        shipping_city: input.shippingCity,
+        shipping_region: input.shippingRegion,
+        shipping_country: input.shippingCountry,
+        shipping_postal_code: input.shippingPostalCode,
+      }
+      // filter out `undefined` values from the input fields
+      const payload = Object.fromEntries(
+        Object.entries(exchangeInputFields).filter(
+          ([_, value]) => value !== undefined
+        )
+      )
+      const updatedOrder = await meOrderEditLoader(input.id, payload)
+      updatedOrder._type = SUCCESS_FLAG // Set the type for the response
+      return updatedOrder
+    } catch (error) {
+      return { message: error.message, _type: ERROR_FLAG }
+    }
   },
 })

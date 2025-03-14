@@ -9670,6 +9670,8 @@ type DoNotUseThisPartner {
   subscription_state: String @deprecated(reason: "Use subscriptionState")
 }
 
+union EditMeOrderResponse = OrderMutationError | OrderMutationSuccess
+
 input EditableLocation {
   # First line of an address
   address: String
@@ -9888,6 +9890,10 @@ enum EventStatus {
 
   # Start date is in the future
   UPCOMING
+}
+
+type ExchangeError {
+  message: String!
 }
 
 enum ExhibitionPeriodFormat {
@@ -15268,6 +15274,9 @@ type Order {
   lineItems: [LineItem]!
   mode: OrderModeEnum!
 
+  # The selected fulfillment option for the order
+  selectedFulfillmentOption: FulfillmentOption
+
   # The total amount for shipping
   shippingTotal: Money
 
@@ -15278,6 +15287,14 @@ type Order {
 enum OrderModeEnum {
   BUY
   OFFER
+}
+
+type OrderMutationError {
+  mutationError: ExchangeError!
+}
+
+type OrderMutationSuccess {
+  order: Order!
 }
 
 union OrderParty = Partner | User
@@ -23550,7 +23567,7 @@ input editMeOrderInput {
 
 type editMeOrderPayload {
   clientMutationId: String
-  order: Order
+  orderOrError: EditMeOrderResponse
 }
 
 type partnerBiographyBlurb {

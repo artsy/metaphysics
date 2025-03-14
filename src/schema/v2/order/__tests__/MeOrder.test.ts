@@ -78,6 +78,9 @@ describe("Me", () => {
                 country
                 postalCode
               }
+              selectedFulfillmentOption {
+                type
+              }
               lineItems {
                 internalID
                 currencyCode
@@ -154,6 +157,9 @@ describe("Me", () => {
           phoneNumberCountryCode: "US",
           postalCode: "10001",
           region: "NY",
+        },
+        selectedFulfillmentOption: {
+          type: "DOMESTIC_FLAT",
         },
         lineItems: [
           {
