@@ -5,6 +5,7 @@ import {
   GraphQLFieldConfig,
   GraphQLBoolean,
   GraphQLList,
+  GraphQLEnumType,
 } from "graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { ResolverContext } from "types/graphql"
@@ -19,6 +20,33 @@ import { ArtistType } from "../artist"
 import { ArtworkType } from "../artwork"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
+
+export const ArtworkImportErrorType = new GraphQLEnumType({
+  name: "ArtworkImportError",
+  values: {
+    MISSING_TITLE: { value: "missing_title" },
+    MISSING_ARTIST: { value: "missing_artist" },
+    MISSING_PRICE: { value: "missing_price" },
+    MISSING_DATE: { value: "missing_date" },
+    INVALID_PRICE: { value: "invalid_price" },
+    INVALID_HEIGHT: { value: "invalid_height" },
+    INVALID_WIDTH: { value: "invalid_width" },
+    INVALID_DEPTH: { value: "invalid_depth" },
+    INVALID_DIAMETER: { value: "invalid_diameter" },
+    UNMATCHED_IMAGE: { value: "unmatched_image" },
+    ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
+    UNMATCHED_ARTIST: { value: "unmatched_artist" },
+  },
+})
+
+export const ArtworkImportStateType = new GraphQLEnumType({
+  name: "ArtworkImportState",
+  values: {
+    PENDING: { value: "pending" },
+    ARTIST_MATCHING_COMPLETE: { value: "artist_matching_complete" },
+    ARTWORKS_CREATION_COMPLETE: { value: "artworks_creation_complete" },
+  },
+})
 
 const ArtworkImportCreatedBy = new GraphQLObjectType({
   name: "ArtworkImportCreatedBy",
@@ -36,7 +64,7 @@ const ArtworkImportRowErrorType = new GraphQLObjectType({
   fields: {
     ...InternalIDFields,
     errorType: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: ArtworkImportErrorType,
       resolve: ({ error_type }) => error_type,
     },
     metadata: {
@@ -186,7 +214,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ file_name }) => file_name,
     },
     state: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: ArtworkImportStateType,
     },
     unmatchedArtistNames: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
@@ -215,10 +243,10 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           type: GraphQLBoolean,
         },
         errorTypes: {
-          type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+          type: new GraphQLList(ArtworkImportErrorType),
         },
         excludeErrorTypes: {
-          type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+          type: new GraphQLList(ArtworkImportErrorType),
         },
         blockersOnly: {
           type: GraphQLBoolean,
