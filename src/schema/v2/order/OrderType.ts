@@ -10,7 +10,6 @@ import { InternalIDFields } from "../object_identification"
 import { LineItemType } from "./lineItem"
 import { FulfillmentOptionType } from "./fulfillmentOption"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
-import { PhoneNumber } from "../phoneNumber"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
@@ -169,16 +168,6 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
-    fulfillmentOptions: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
-      ),
-      resolve: ({ fulfillment_options, currency_code }) =>
-        fulfillment_options.map((option) => ({
-          ...option,
-          _currencyCode: currency_code,
-        })),
-    },
     itemsTotal: {
       type: Money,
       description: "The total amount of the line items",
@@ -199,25 +188,55 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
+    shippingTotal: {
+      type: Money,
+      description: "The total amount for shipping",
+      resolve: (
+        { shipping_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     lineItems: {
       type: new GraphQLNonNull(new GraphQLList(LineItemType)),
       resolve: ({ line_items }) => line_items,
     },
-    // fulfillmentDetails: {
-    //   type: FulfillmentDetailsType,
-    //   description: "Buyer fulfillment details for order",
-    //   resolve: (order) => ({
-    //     phoneNumber: order.buyer_phone_number,
-    //     phoneNumberCountryCode: order.buyer_phone_number_country_code,
-    //     name: order.shipping_name,
-    //     addressLine1: order.shipping_address_line1,
-    //     addressLine2: order.shipping_address_line2,
-    //     city: order.shipping_city,
-    //     postalCode: order.shipping_postal_code,
-    //     region: order.shipping_region,
-    //     country: order.shipping_country,
-    //   }),
-    // },
+    fulfillmentOptions: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
+      ),
+      resolve: ({ fulfillment_options, currency_code }) =>
+        fulfillment_options.map((option) => ({
+          ...option,
+          _currencyCode: currency_code,
+        })),
+    },
+    fulfillmentDetails: {
+      type: FulfillmentDetailsType,
+      description: "Buyer fulfillment details for order",
+      resolve: (order) => ({
+        phoneNumber: order.buyer_phone_number,
+        phoneNumberCountryCode: order.buyer_phone_number_country_code,
+        name: order.shipping_name,
+        addressLine1: order.shipping_address_line1,
+        addressLine2: order.shipping_address_line2,
+        city: order.shipping_city,
+        postalCode: order.shipping_postal_code,
+        region: order.shipping_region,
+        country: order.shipping_country,
+      }),
+    },
   },
 })
 

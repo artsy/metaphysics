@@ -11,12 +11,12 @@ describe("Me", () => {
       ...baseOrderJson,
       id: "order-id",
       source: "artwork_page",
-      code: "asdf1234",
+      code: "order-code",
+      mode: "buy",
       currency_code: "USD",
-      buyer_total_cents: 510000,
+      buyer_total_cents: null,
       items_total_cents: 500000,
       shipping_total_cents: 2000,
-      mode: "BUY",
       buyer_phone_number: "123-456-7890",
       buyer_phone_number_country_code: "US",
       shipping_name: "John Doe",
@@ -51,6 +51,14 @@ describe("Me", () => {
               buyerTotal {
                 display
               }
+              itemsTotal {
+                minor
+                display
+                currencyCode
+              }
+              shippingTotal {
+                display
+              }
               fulfillmentOptions {
                 type
                 amount {
@@ -59,21 +67,16 @@ describe("Me", () => {
                 }
                 selected
               }
-              # fulfillmentDetails {
-              #   phoneNumber
-              #   phoneNumberCountryCode
-              #   name
-              #   addressLine1
-              #   addressLine2
-              #   city
-              #   region
-              #   country
-              #   postalCode
-              # }
-              itemsTotal {
-                minor
-                display
-                currencyCode
+              fulfillmentDetails {
+                phoneNumber
+                phoneNumberCountryCode
+                name
+                addressLine1
+                addressLine2
+                city
+                region
+                country
+                postalCode
               }
               lineItems {
                 internalID
@@ -117,8 +120,11 @@ describe("Me", () => {
         },
         itemsTotal: {
           currencyCode: "USD",
-          display: "US$100",
-          minor: 10000,
+          display: "US$5,000",
+          minor: 500000,
+        },
+        shippingTotal: {
+          display: "US$20",
         },
         fulfillmentOptions: [
           {
@@ -138,6 +144,17 @@ describe("Me", () => {
             selected: true,
           },
         ],
+        fulfillmentDetails: {
+          addressLine1: "123 Main St",
+          addressLine2: "Apt 4B",
+          city: "New York",
+          country: "US",
+          name: "John Doe",
+          phoneNumber: "123-456-7890",
+          phoneNumberCountryCode: "US",
+          postalCode: "10001",
+          region: "NY",
+        },
         lineItems: [
           {
             internalID: "line-item-id-0",
