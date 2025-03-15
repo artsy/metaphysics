@@ -3,7 +3,7 @@ import { baseArtwork, baseOrderJson } from "./support"
 
 const mockMutation = `
   mutation {
-    editMeOrder(input: {
+    updateOrder(input: {
       id: "order-id",
       buyerPhoneNumber: "123-456-7890",
       buyerPhoneNumberCountryCode: "+1",
@@ -16,12 +16,12 @@ const mockMutation = `
       shippingPostalCode: "10001"
     }) {
       orderOrError {
-        ...on OrderMutationError {
+        ...on UpdateOrderError {
           mutationError {
             message
           }
         }
-        ...on OrderMutationSuccess {
+        ...on UpdateOrderSuccess {
           order {
             internalID
             fulfillmentDetails {
@@ -43,10 +43,10 @@ const mockMutation = `
 `
 
 let context
-describe("editMeOrderMutation", () => {
+describe("updateOrderMutation", () => {
   beforeEach(() => {
     context = {
-      meOrderEditLoader: jest.fn().mockResolvedValue({
+      meOrderUpdateLoader: jest.fn().mockResolvedValue({
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
@@ -77,7 +77,7 @@ describe("editMeOrderMutation", () => {
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
-      editMeOrder: {
+      updateOrder: {
         orderOrError: {
           order: {
             internalID: "order-id",
@@ -97,7 +97,7 @@ describe("editMeOrderMutation", () => {
       },
     })
 
-    expect(context.meOrderEditLoader).toHaveBeenCalledWith("order-id", {
+    expect(context.meOrderUpdateLoader).toHaveBeenCalledWith("order-id", {
       buyer_phone_number: "123-456-7890",
       buyer_phone_number_country_code: "+1",
       shipping_address_line1: "123 Main St",
@@ -114,16 +114,15 @@ describe("editMeOrderMutation", () => {
     const result = await runAuthenticatedQuery(
       `
       mutation {
-        editMeOrder(input: {
+        updateOrder(input: {
           id: "order-id",
           buyerPhoneNumber: null
         }) {
           orderOrError {
-            ...on OrderMutationSuccess {
+            ...on UpdateOrderSuccess {
               order {
                 internalID
-
-              }     
+              }
             }
           }
         }
@@ -132,9 +131,9 @@ describe("editMeOrderMutation", () => {
       context
     )
 
-    expect(result.editMeOrder.orderOrError.order).toBeDefined()
+    expect(result.updateOrder.orderOrError.order).toBeDefined()
     expect(result).toEqual({
-      editMeOrder: {
+      updateOrder: {
         orderOrError: {
           order: {
             internalID: "order-id",
@@ -143,20 +142,20 @@ describe("editMeOrderMutation", () => {
       },
     })
 
-    expect(context.meOrderEditLoader).toHaveBeenCalledWith("order-id", {
+    expect(context.meOrderUpdateLoader).toHaveBeenCalledWith("order-id", {
       buyer_phone_number: null,
     })
   })
 
   it("propagates an error", async () => {
-    context.meOrderEditLoader = jest
+    context.meOrderUpdateLoader = jest
       .fn()
       .mockRejectedValue(new Error("Oops - Error updating order"))
     const result = await runAuthenticatedQuery(mockMutation, context)
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
-      editMeOrder: {
+      updateOrder: {
         orderOrError: {
           mutationError: {
             message: "Oops - Error updating order",

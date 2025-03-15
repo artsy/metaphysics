@@ -1,2 +1,2 @@
 export { MeOrder } from "schema/v2/order/MeOrder"
-export { editMeOrderMutation } from "schema/v2/order/editMeOrderMutation"
+export { updateOrderMutation } from "schema/v2/order/updateOrderMutation"

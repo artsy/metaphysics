@@ -9693,8 +9693,6 @@ type DoNotUseThisPartner {
   subscription_state: String @deprecated(reason: "Use subscriptionState")
 }
 
-union EditMeOrderResponse = OrderMutationError | OrderMutationSuccess
-
 input EditableLocation {
   # First line of an address
   address: String
@@ -11051,6 +11049,10 @@ type FulfillmentDetails {
 type FulfillmentOption {
   amount: Money
   selected: Boolean
+  type: FulfillmentOptionTypeEnum!
+}
+
+input FulfillmentOptionInput {
   type: FulfillmentOptionTypeEnum!
 }
 
@@ -14580,9 +14582,6 @@ type Mutation {
 
   # Updates a Task on the logged in User
   dismissTask(input: DismissTaskMutationInput!): DismissTaskMutationPayload
-
-  # Update an order
-  editMeOrder(input: editMeOrderInput!): editMeOrderPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
 
   # Mark sale as ended.
@@ -14691,6 +14690,11 @@ type Mutation {
   sendIdentityVerificationEmail(
     input: SendIdentityVerificationEmailMutationInput!
   ): SendIdentityVerificationEmailMutationPayload
+
+  # Update an order
+  setOrderFulfillmentOption(
+    input: setOrderFulfillmentOptionInput!
+  ): setOrderFulfillmentOptionPayload
 
   # Start an identity verification flow for a pending identity verification
   startIdentityVerification(
@@ -14808,6 +14812,9 @@ type Mutation {
   updateNotificationPreferences(
     input: updateNotificationPreferencesMutationInput!
   ): updateNotificationPreferencesMutationPayload
+
+  # Update an order
+  updateOrder(input: updateOrderInput!): updateOrderPayload
 
   # updates an ordered set.
   updateOrderedSet(
@@ -15319,14 +15326,6 @@ type Order {
 enum OrderModeEnum {
   BUY
   OFFER
-}
-
-type OrderMutationError {
-  mutationError: ExchangeError!
-}
-
-type OrderMutationSuccess {
-  order: Order!
 }
 
 union OrderParty = Partner | User
@@ -19499,6 +19498,18 @@ type Services {
   metaphysics: MetaphysicsService!
 }
 
+type SetOrderFulfillmentOptionError {
+  mutationError: ExchangeError!
+}
+
+union SetOrderFulfillmentOptionResponse =
+    SetOrderFulfillmentOptionError
+  | SetOrderFulfillmentOptionSuccess
+
+type SetOrderFulfillmentOptionSuccess {
+  order: Order!
+}
+
 type Shortcut {
   # A globally unique ID.
   id: ID!
@@ -20935,6 +20946,16 @@ type UpdateMyProfilePayload {
   me: Me
   user: User
   userOrError: UpdateMyProfileMutation
+}
+
+type UpdateOrderError {
+  mutationError: ExchangeError!
+}
+
+union UpdateOrderResponse = UpdateOrderError | UpdateOrderSuccess
+
+type UpdateOrderSuccess {
+  order: Order!
 }
 
 type UpdateOrderedSetFailure {
@@ -23564,44 +23585,6 @@ type dimensions {
   in: String
 }
 
-input editMeOrderInput {
-  # Buyer's phone number
-  buyerPhoneNumber: String
-
-  # Buyer's phone number country code
-  buyerPhoneNumberCountryCode: String
-  clientMutationId: String
-
-  # Order id.
-  id: ID!
-
-  # Shipping address line 1
-  shippingAddressLine1: String
-
-  # Shipping address line 2
-  shippingAddressLine2: String
-
-  # Shipping address city
-  shippingCity: String
-
-  # Shipping address country
-  shippingCountry: String
-
-  # Shipping address name
-  shippingName: String
-
-  # Shipping address postal code
-  shippingPostalCode: String
-
-  # Shipping address state/province/region
-  shippingRegion: String
-}
-
-type editMeOrderPayload {
-  clientMutationId: String
-  orderOrError: EditMeOrderResponse
-}
-
 type partnerBiographyBlurb {
   text: String
 }
@@ -23612,6 +23595,19 @@ type purchases {
 
   # Total number of private sales
   totalPrivateSaleCount: Int!
+}
+
+input setOrderFulfillmentOptionInput {
+  clientMutationId: String
+  fulfillmentOption: FulfillmentOptionInput!
+
+  # Order id.
+  id: ID!
+}
+
+type setOrderFulfillmentOptionPayload {
+  clientMutationId: String
+  orderOrError: SetOrderFulfillmentOptionResponse
 }
 
 enum sort {
@@ -23725,6 +23721,44 @@ type updateNotificationPreferencesMutationPayload {
   notificationPreferences(
     authenticationToken: String
   ): [NotificationPreference!]!
+}
+
+input updateOrderInput {
+  # Buyer's phone number
+  buyerPhoneNumber: String
+
+  # Buyer's phone number country code
+  buyerPhoneNumberCountryCode: String
+  clientMutationId: String
+
+  # Order id.
+  id: ID!
+
+  # Shipping address line 1
+  shippingAddressLine1: String
+
+  # Shipping address line 2
+  shippingAddressLine2: String
+
+  # Shipping address city
+  shippingCity: String
+
+  # Shipping address country
+  shippingCountry: String
+
+  # Shipping address name
+  shippingName: String
+
+  # Shipping address postal code
+  shippingPostalCode: String
+
+  # Shipping address state/province/region
+  shippingRegion: String
+}
+
+type updateOrderPayload {
+  clientMutationId: String
+  orderOrError: UpdateOrderResponse
 }
 
 input updateQuizMutationInput {

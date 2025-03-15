@@ -5,7 +5,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
-import { OrderJSON, OrderType } from "./OrderType"
+import { ExchangeErrorType, OrderJSON, OrderType } from "./OrderType"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
@@ -25,16 +25,8 @@ interface Input {
   shippingPostalCode?: string
 }
 
-const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ExchangeError",
-  fields: {
-    message: { type: new GraphQLNonNull(GraphQLString) },
-  },
-})
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "OrderMutationSuccess",
-  isTypeOf: (data) => data.id,
+  name: "UpdateOrderSuccess",
   fields: () => ({
     order: {
       type: new GraphQLNonNull(OrderType),
@@ -46,10 +38,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "OrderMutationError",
-  isTypeOf: (data) => {
-    return data._type === ERROR_FLAG
-  },
+  name: "UpdateOrderError",
   fields: () => ({
     mutationError: {
       type: new GraphQLNonNull(ExchangeErrorType),
@@ -59,19 +48,19 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseType = new GraphQLUnionType({
-  name: "EditMeOrderResponse",
+  name: "UpdateOrderResponse",
   types: [SuccessType, ErrorType],
   resolveType: (data) => {
-    return data._type === SUCCESS_FLAG ? SuccessType : ErrorType
+    return data._type === ERROR_FLAG ? ErrorType : SuccessType
   },
 })
 
-export const editMeOrderMutation = mutationWithClientMutationId<
+export const updateOrderMutation = mutationWithClientMutationId<
   Input,
   OrderJSON | null,
   ResolverContext
 >({
-  name: "editMeOrder",
+  name: "updateOrder",
   description: "Update an order",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLID), description: "Order id." },
@@ -119,8 +108,8 @@ export const editMeOrderMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (input, context) => {
-    const { meOrderEditLoader } = context
-    if (!meOrderEditLoader) {
+    const { meOrderUpdateLoader } = context
+    if (!meOrderUpdateLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
     try {
@@ -141,7 +130,7 @@ export const editMeOrderMutation = mutationWithClientMutationId<
           ([_, value]) => value !== undefined
         )
       )
-      const updatedOrder = await meOrderEditLoader(input.id, payload)
+      const updatedOrder = await meOrderUpdateLoader(input.id, payload)
       updatedOrder._type = SUCCESS_FLAG // Set the type for the response
       return updatedOrder
     } catch (error) {
