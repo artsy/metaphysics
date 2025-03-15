@@ -256,6 +256,13 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   },
 })
 
+export const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ExchangeError",
+  fields: {
+    message: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
 const resolveSource = ({ source }) => {
   switch (source) {
     case "artwork_page":

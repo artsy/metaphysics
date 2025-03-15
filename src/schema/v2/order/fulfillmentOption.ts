@@ -8,7 +8,7 @@ import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { GraphQLInputObjectType, GraphQLNonNull } from "graphql"
 
 // Enum for type field
-const FulfillmentOptionTypeEnum = new GraphQLEnumType({
+export const FulfillmentOptionTypeEnum = new GraphQLEnumType({
   name: "FulfillmentOptionTypeEnum",
   values: {
     DOMESTIC_FLAT: { value: "DOMESTIC_FLAT" },
