@@ -20,14 +20,6 @@ interface Input {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "SetOrderFulfillmentOptionSuccess",
-  isTypeOf: (value) => {
-    // Check for both the standard property and anything we've added
-    return Boolean(
-      value &&
-        (value.__typename === "SetOrderFulfillmentOptionSuccess" ||
-          value._type === SUCCESS_FLAG)
-    )
-  },
   fields: () => ({
     order: {
       type: new GraphQLNonNull(OrderType),
@@ -52,13 +44,6 @@ const ResponseType = new GraphQLUnionType({
   name: "SetOrderFulfillmentOptionResponse",
   types: [SuccessType, ErrorType],
   resolveType: (data) => {
-    console.log("Full data in resolveType:", data)
-    if (data.__typename === "SetOrderFulfillmentOptionSuccess") {
-      return SuccessType
-    }
-    if (data.__typename === "SetOrderFulfillmentOptionError") {
-      return ErrorType
-    }
     const result = data._type === ERROR_FLAG ? ErrorType : SuccessType
     console.log("Resolved to:", result.name)
     return result
@@ -88,13 +73,7 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
   outputFields: {
     orderOrError: {
       type: ResponseType,
-      resolve: (response) => {
-        console.log(
-          "Output resolver received:",
-          JSON.stringify(response, null, 2)
-        )
-        return response
-      },
+      resolve: (response) => response,
     },
   },
 
@@ -124,14 +103,12 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
       )
 
       updatedOrder._type = SUCCESS_FLAG
-      updatedOrder.__typename = "SetOrderFulfillmentOptionSuccess"
 
       return updatedOrder
     } catch (error) {
       return {
         message: error.message,
         _type: ERROR_FLAG,
-        __typename: "SetOrderFulfillmentOptionError",
       }
     }
   },
