@@ -39,6 +39,22 @@ export const exchangeLoaders = (accessToken, opts) => {
 
   const meOrderLoader = exchangeLoader((id) => `me/orders/${id}`)
 
+  const meOrderUpdateLoader = exchangeLoader(
+    (id) => `me/orders/${id}`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
+  const meOrderSetFulfillmentOptionLoader = exchangeLoader(
+    (id) => `me/orders/${id}/fulfillment_option`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
@@ -77,5 +93,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     exchangeTokenLoader,
     exchangeGraphQLLoader,
     meOrderLoader,
+    meOrderUpdateLoader,
+    meOrderSetFulfillmentOptionLoader,
   }
 }
