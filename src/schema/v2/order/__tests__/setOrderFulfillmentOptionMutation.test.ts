@@ -39,6 +39,7 @@ describe("setOrderFulfillmentOption", () => {
     context = {
       meOrderSetFulfillmentOptionLoader: jest.fn().mockResolvedValue({
         ...baseOrderJson,
+        id: "order-id", // Ensure the id field is present
         fulfillment_options: [
           {
             type: "DOMESTIC_FLAT",
@@ -53,32 +54,44 @@ describe("setOrderFulfillmentOption", () => {
           },
         ],
       }),
-      artworkLoader: jest.fn().mockResolvedValue({ ...baseArtwork }),
+      artworkLoader: jest
+        .fn()
+        .mockResolvedValue({ ...baseArtwork, id: "artwork-id" }),
       artworkVersionLoader: jest
         .fn()
         .mockResolvedValue({ ...baseArtwork, id: "artwork-version-id" }),
     }
   })
-  it.only("should update fulfillment option", async () => {
+
+  it("should update fulfillment option", async () => {
     const result = await runAuthenticatedQuery(mockMutation, context)
+
+    console.log("Test result:", JSON.stringify(result, null, 2))
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
       setOrderFulfillmentOption: {
         orderOrError: {
           order: {
-            internalID: "order-id",
-            fulfillmentDetails: {
-              phoneNumber: "123-456-7890",
-              phoneNumberCountryCode: "+1",
-              name: "John Doe",
-              addressLine1: "123 Main St",
-              addressLine2: "Apt 4B",
-              city: "New York",
-              region: "NY",
-              country: "US",
-              postalCode: "10001",
-            },
+            id: "order-id",
+            fulfillmentOptions: [
+              {
+                type: "DOMESTIC_FLAT",
+                amount: {
+                  minor: 2000,
+                  currencyCode: "USD",
+                },
+                selected: true,
+              },
+              {
+                type: "PICKUP",
+                amount: {
+                  minor: 0,
+                  currencyCode: "USD",
+                },
+                selected: false,
+              },
+            ],
           },
         },
       },
@@ -97,6 +110,8 @@ describe("setOrderFulfillmentOption", () => {
       .fn()
       .mockRejectedValue(new Error("Oops - Error updating order"))
     const result = await runAuthenticatedQuery(mockMutation, context)
+
+    console.log("Test result:", JSON.stringify(result, null, 2))
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
