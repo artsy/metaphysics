@@ -8,7 +8,6 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { FulfillmentOptionTypeEnum } from "./fulfillmentOption"
 import { OrderType, ExchangeErrorType, OrderJSON } from "./OrderType"
 
 const SUCCESS_FLAG = "SuccessType"
