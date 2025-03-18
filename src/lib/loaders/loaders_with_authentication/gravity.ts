@@ -81,6 +81,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
+    cancelArtworkImportLoader: gravityLoader(
+      (id) => `artwork_import/${id}/cancel`,
+      {},
+      { method: "PUT" }
+    ),
     collectionArtistsLoader: gravityLoader(
       (id) => `collection/${id}/artists`,
       { user_id: userID },
