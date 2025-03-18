@@ -4,6 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
@@ -11,37 +12,11 @@ import { LineItemType } from "./lineItem"
 import { FulfillmentOptionType } from "./fulfillmentOption"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 
-const OrderModeEnum = new GraphQLEnumType({
-  name: "OrderModeEnum",
-  values: {
-    BUY: {
-      value: "BUY",
-    },
-    OFFER: {
-      value: "OFFER",
-    },
-  },
-})
-
-const OrderSourceEnum = new GraphQLEnumType({
-  name: "OrderSourceEnum",
-  values: {
-    ARTWORK_PAGE: {
-      value: "ARTWORK_PAGE",
-    },
-    INQUIRY: {
-      value: "INQUIRY",
-    },
-    PRIVATE_SALE: {
-      value: "PRIVATE_SALE",
-    },
-    PARTNER_OFFER: {
-      value: "PARTNER_OFFER",
-    },
-  },
-})
-
-export interface OrderJSON {
+/**
+ * The order json as received from the exchange REST API.
+ * Used to nudge our our OrderType resolvers
+ */
+interface OrderJSON {
   id: string
   code: string
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
@@ -76,6 +51,36 @@ export interface OrderJSON {
     currency_code: string
   }>
 }
+
+const OrderModeEnum = new GraphQLEnumType({
+  name: "OrderModeEnum",
+  values: {
+    BUY: {
+      value: "BUY",
+    },
+    OFFER: {
+      value: "OFFER",
+    },
+  },
+})
+
+const OrderSourceEnum = new GraphQLEnumType({
+  name: "OrderSourceEnum",
+  values: {
+    ARTWORK_PAGE: {
+      value: "ARTWORK_PAGE",
+    },
+    INQUIRY: {
+      value: "INQUIRY",
+    },
+    PRIVATE_SALE: {
+      value: "PRIVATE_SALE",
+    },
+    PARTNER_OFFER: {
+      value: "PARTNER_OFFER",
+    },
+  },
+})
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -262,10 +267,47 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   },
 })
 
-export const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
+const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
   name: "ExchangeError",
   fields: {
     message: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
+const ErrorType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderMutationError",
+  fields: () => ({
+    mutationError: {
+      type: new GraphQLNonNull(ExchangeErrorType),
+      resolve: (err) => (typeof err.message === "object" ? err.message : err),
+    },
+  }),
+})
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderMutationSuccess",
+  fields: () => ({
+    order: {
+      type: new GraphQLNonNull(OrderType),
+      resolve: (response) => {
+        return response
+      },
+    },
+  }),
+})
+
+export const ORDER_MUTATION_FLAGS = {
+  SUCCESS: "SuccessType",
+  ERROR: "ErrorType",
+} as const
+
+export const OrderMutationResponseType = new GraphQLUnionType({
+  name: "SetOrderFulfillmentOptionResponse",
+  types: [SuccessType, ErrorType],
+  resolveType: (data) => {
+    const result =
+      data._type === ORDER_MUTATION_FLAGS.ERROR ? ErrorType : SuccessType
+    return result
   },
 })
 

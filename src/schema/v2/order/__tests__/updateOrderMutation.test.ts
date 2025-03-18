@@ -16,12 +16,12 @@ const mockMutation = `
       shippingPostalCode: "10001"
     }) {
       orderOrError {
-        ...on UpdateOrderError {
+        ...on OrderMutationError {
           mutationError {
             message
           }
         }
-        ...on UpdateOrderSuccess {
+        ...on OrderMutationSuccess {
           order {
             internalID
             fulfillmentDetails {
@@ -119,7 +119,7 @@ describe("updateOrderMutation", () => {
           buyerPhoneNumber: null
         }) {
           orderOrError {
-            ...on UpdateOrderSuccess {
+            ...on OrderMutationSuccess {
               order {
                 internalID
               }

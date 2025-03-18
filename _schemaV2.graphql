@@ -15342,6 +15342,14 @@ enum OrderModeEnum {
   OFFER
 }
 
+type OrderMutationError {
+  mutationError: ExchangeError!
+}
+
+type OrderMutationSuccess {
+  order: Order!
+}
+
 union OrderParty = Partner | User
 
 enum OrderSourceEnum {
@@ -19512,17 +19520,9 @@ type Services {
   metaphysics: MetaphysicsService!
 }
 
-type SetOrderFulfillmentOptionError {
-  mutationError: ExchangeError!
-}
-
 union SetOrderFulfillmentOptionResponse =
-    SetOrderFulfillmentOptionError
-  | SetOrderFulfillmentOptionSuccess
-
-type SetOrderFulfillmentOptionSuccess {
-  order: Order!
-}
+    OrderMutationError
+  | OrderMutationSuccess
 
 type Shortcut {
   # A globally unique ID.
@@ -20960,16 +20960,6 @@ type UpdateMyProfilePayload {
   me: Me
   user: User
   userOrError: UpdateMyProfileMutation
-}
-
-type UpdateOrderError {
-  mutationError: ExchangeError!
-}
-
-union UpdateOrderResponse = UpdateOrderError | UpdateOrderSuccess
-
-type UpdateOrderSuccess {
-  order: Order!
 }
 
 type UpdateOrderedSetFailure {
@@ -23772,7 +23762,7 @@ input updateOrderInput {
 
 type updateOrderPayload {
   clientMutationId: String
-  orderOrError: UpdateOrderResponse
+  orderOrError: SetOrderFulfillmentOptionResponse
 }
 
 input updateQuizMutationInput {

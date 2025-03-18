@@ -1,53 +1,17 @@
 import {
-  GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLUnionType,
   GraphQLInputObjectType,
   GraphQLID,
   GraphQLEnumType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { OrderType, ExchangeErrorType, OrderJSON } from "./OrderType"
-
-const SUCCESS_FLAG = "SuccessType"
-const ERROR_FLAG = "ErrorType"
+import { OrderMutationResponseType, ORDER_MUTATION_FLAGS } from "./OrderType"
 
 interface Input {
   id: string
   type?: string
 }
-
-const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "SetOrderFulfillmentOptionSuccess",
-  fields: () => ({
-    order: {
-      type: new GraphQLNonNull(OrderType),
-      resolve: (response) => {
-        return response
-      },
-    },
-  }),
-})
-
-const ErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "SetOrderFulfillmentOptionError",
-  fields: () => ({
-    mutationError: {
-      type: new GraphQLNonNull(ExchangeErrorType),
-      resolve: (err) => (typeof err.message === "object" ? err.message : err),
-    },
-  }),
-})
-
-const ResponseType = new GraphQLUnionType({
-  name: "SetOrderFulfillmentOptionResponse",
-  types: [SuccessType, ErrorType],
-  resolveType: (data) => {
-    const result = data._type === ERROR_FLAG ? ErrorType : SuccessType
-    return result
-  },
-})
 
 // Similar to FulfillmentOptionTypeEnum but for input: Expects an all-caps
 // enum and converts back to exchange's lower-cased enum for the API
@@ -73,7 +37,7 @@ const FulfillmentOptionInputType = new GraphQLInputObjectType({
 
 export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
   Input,
-  OrderJSON | null,
+  any,
   ResolverContext
 >({
   name: "setOrderFulfillmentOption",
@@ -86,7 +50,7 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
   },
   outputFields: {
     orderOrError: {
-      type: ResponseType,
+      type: OrderMutationResponseType,
       resolve: (response) => response,
     },
   },
@@ -116,13 +80,13 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
         payload
       )
 
-      updatedOrder._type = SUCCESS_FLAG
+      updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS
 
       return updatedOrder
     } catch (error) {
       return {
         message: error.message,
-        _type: ERROR_FLAG,
+        _type: ORDER_MUTATION_FLAGS.ERROR,
       }
     }
   },

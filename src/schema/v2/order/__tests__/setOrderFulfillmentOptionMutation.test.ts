@@ -10,7 +10,7 @@ const mockMutation = `
       }
     }) {
       orderOrError {
-        ... on SetOrderFulfillmentOptionSuccess {
+        ... on OrderMutationSuccess {
           order {
             internalID
             fulfillmentOptions {
@@ -23,7 +23,7 @@ const mockMutation = `
             }
           }
         }
-        ... on SetOrderFulfillmentOptionError {
+        ... on OrderMutationError {
           mutationError {
             message
           }

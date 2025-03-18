@@ -1,16 +1,7 @@
-import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLObjectType,
-  GraphQLUnionType,
-} from "graphql"
-import { ExchangeErrorType, OrderJSON, OrderType } from "./OrderType"
+import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
+import { ORDER_MUTATION_FLAGS, OrderMutationResponseType } from "./OrderType"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-
-const SUCCESS_FLAG = "SuccessType"
-const ERROR_FLAG = "ErrorType"
 
 interface Input {
   id: string
@@ -25,39 +16,9 @@ interface Input {
   shippingPostalCode?: string
 }
 
-const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateOrderSuccess",
-  fields: () => ({
-    order: {
-      type: new GraphQLNonNull(OrderType),
-      resolve: (response) => {
-        return response
-      },
-    },
-  }),
-})
-
-const ErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateOrderError",
-  fields: () => ({
-    mutationError: {
-      type: new GraphQLNonNull(ExchangeErrorType),
-      resolve: (err) => (typeof err.message === "object" ? err.message : err),
-    },
-  }),
-})
-
-const ResponseType = new GraphQLUnionType({
-  name: "UpdateOrderResponse",
-  types: [SuccessType, ErrorType],
-  resolveType: (data) => {
-    return data._type === ERROR_FLAG ? ErrorType : SuccessType
-  },
-})
-
 export const updateOrderMutation = mutationWithClientMutationId<
   Input,
-  OrderJSON | null,
+  any,
   ResolverContext
 >({
   name: "updateOrder",
@@ -103,7 +64,7 @@ export const updateOrderMutation = mutationWithClientMutationId<
   },
   outputFields: {
     orderOrError: {
-      type: ResponseType,
+      type: OrderMutationResponseType,
       resolve: (response) => response,
     },
   },
@@ -131,10 +92,10 @@ export const updateOrderMutation = mutationWithClientMutationId<
         )
       )
       const updatedOrder = await meOrderUpdateLoader(input.id, payload)
-      updatedOrder._type = SUCCESS_FLAG // Set the type for the response
+      updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
       return updatedOrder
     } catch (error) {
-      return { message: error.message, _type: ERROR_FLAG }
+      return { message: error.message, _type: ORDER_MUTATION_FLAGS.ERROR }
     }
   },
 })
