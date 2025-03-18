@@ -99,7 +99,17 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ day_schedule_text }) => day_schedule_text,
     },
-
+    addressType: {
+      description: "Buisness, temporary, or private address",
+      type: GraphQLString,
+      resolve: ({ address_type }) => address_type,
+    },
+    publiclyViewable: {
+      description:
+        "Boolean flag that denotes whether a location is publicly viewable on Partner's Artsy Profile",
+      type: GraphQLBoolean,
+      resolve: ({ publicly_viewable }) => publicly_viewable,
+    },
     openingHours: {
       type: OpeningHoursUnion,
       resolve: ({ day_schedules, day_schedule_text }) =>

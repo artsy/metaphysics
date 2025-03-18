@@ -521,6 +521,8 @@ describe("Partner type", () => {
           address_2: "",
           postal_code: "10013",
           state: "NY",
+          publicly_viewable: true,
+          address_type: "Buisness",
         },
         {
           city: "Detroit",
@@ -655,6 +657,44 @@ describe("Partner type", () => {
               {
                 node: {
                   city: "Tokyo",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns additional location metadata", async () => {
+      const query = `
+      {
+        partner(id:"bau-xi-gallery") {
+          locationsConnection(first:1) {
+            totalCount
+            edges {
+              node {
+                publiclyViewable
+                addressType
+                display
+              }
+            }
+          }
+        }
+      }
+    `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          locationsConnection: {
+            totalCount: 3,
+            edges: [
+              {
+                node: {
+                  addressType: "Buisness",
+                  publiclyViewable: true,
+                  display: "401 Broadway 26th floor, New York, NY, 10013, US",
                 },
               },
             ],
