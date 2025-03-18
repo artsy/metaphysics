@@ -180,7 +180,7 @@ import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_
 import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
-import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficationEmailMutation"
+import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { NotificationsConnection } from "./notifications"

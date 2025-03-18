@@ -115,7 +115,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       type: GraphQLBoolean,
     },
     saleID: {
-      description: "The ID of the sale where the IDV process was initated",
+      description: "The ID of the sale where the IDV process was initiated",
       type: GraphQLString,
     },
     initiatorID: {
@@ -124,7 +124,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       type: GraphQLString,
     },
     orderID: {
-      description: "The ID of the order where the IDV process was initated",
+      description: "The ID of the order where the IDV process was initiated",
       type: GraphQLString,
     },
   },

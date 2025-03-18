@@ -19489,10 +19489,10 @@ input SendIdentityVerificationEmailMutationInput {
   # The name to be used for the user undergoing identity verification
   name: String
 
-  # The ID of the order where the IDV process was initated
+  # The ID of the order where the IDV process was initiated
   orderID: String
 
-  # The ID of the sale where the IDV process was initated
+  # The ID of the sale where the IDV process was initiated
   saleID: String
 
   # Whether an automated identity verification is sent or not
