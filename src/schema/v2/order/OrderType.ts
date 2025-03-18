@@ -91,7 +91,7 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
     },
     name: {
       type: GraphQLString,
-      description: "Shipping address name",
+      description: "Name line for shipping address",
     },
     addressLine1: {
       type: GraphQLString,
@@ -221,6 +221,12 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           ...option,
           _currencyCode: currency_code,
         })),
+    },
+    buyerPhoneNumber: {
+      type: GraphQLString,
+      description: "Phone number of the buyer",
+      deprecationReason: "Use `order.fulfillmentDetails.phoneNumber` instead",
+      resolve: ({ buyer_phone_number }) => buyer_phone_number,
     },
     fulfillmentDetails: {
       type: FulfillmentDetailsType,

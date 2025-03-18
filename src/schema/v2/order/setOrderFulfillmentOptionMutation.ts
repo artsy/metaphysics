@@ -4,6 +4,7 @@ import {
   GraphQLUnionType,
   GraphQLInputObjectType,
   GraphQLID,
+  GraphQLEnumType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -45,15 +46,29 @@ const ResponseType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
   resolveType: (data) => {
     const result = data._type === ERROR_FLAG ? ErrorType : SuccessType
-    console.log("Resolved to:", result.name)
     return result
+  },
+})
+
+// Similar to FulfillmentOptionTypeEnum but for input: Expects an all-caps
+// enum and converts back to exchange's lower-cased enum for the API
+const FulfillmentOptionTypeInputEnum = new GraphQLEnumType({
+  name: "FulfillmentOptionInputEnum",
+  values: {
+    DOMESTIC_FLAT: { value: "DOMESTIC_FLAT" },
+    DOMESTIC_EXPEDITED: { value: "DOMESTIC_EXPEDITED" },
+    DOMESTIC_PRIORITY: { value: "DOMESTIC_PRIORITY" },
+    INTERNATIONAL_STANDARD: { value: "INTERNATIONAL_STANDARD" },
+    INTERNATIONAL_EXPEDITED: { value: "INTERNATIONAL_EXPEDITED" },
+    PICKUP: { value: "PICKUP" },
+    SHIPPING_TBD: { value: "SHIPPING_TBD" },
   },
 })
 
 const FulfillmentOptionInputType = new GraphQLInputObjectType({
   name: "FulfillmentOptionInput",
   fields: {
-    type: { type: new GraphQLNonNull(FulfillmentOptionTypeEnum) },
+    type: { type: new GraphQLNonNull(FulfillmentOptionTypeInputEnum) },
   },
 })
 

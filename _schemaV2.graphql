@@ -11030,7 +11030,7 @@ type FulfillmentDetails {
   # Shipping address country
   country: String
 
-  # Shipping address name
+  # Name line for shipping address
   name: String
 
   # Phone number of the buyer
@@ -11053,7 +11053,17 @@ type FulfillmentOption {
 }
 
 input FulfillmentOptionInput {
-  type: FulfillmentOptionTypeEnum!
+  type: FulfillmentOptionInputEnum!
+}
+
+enum FulfillmentOptionInputEnum {
+  DOMESTIC_EXPEDITED
+  DOMESTIC_FLAT
+  DOMESTIC_PRIORITY
+  INTERNATIONAL_EXPEDITED
+  INTERNATIONAL_STANDARD
+  PICKUP
+  SHIPPING_TBD
 }
 
 enum FulfillmentOptionTypeEnum {
@@ -15291,6 +15301,10 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 type Order {
   # List of alpha-2 country codes to which the order can be shipped
   availableShippingCountries: [String!]!
+
+  # Phone number of the buyer
+  buyerPhoneNumber: String
+    @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber` instead")
 
   # The total amount the buyer is expected to pay
   buyerTotal: Money

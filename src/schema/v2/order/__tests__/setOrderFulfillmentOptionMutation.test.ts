@@ -12,7 +12,7 @@ const mockMutation = `
       orderOrError {
         ... on SetOrderFulfillmentOptionSuccess {
           order {
-            id
+            internalID
             fulfillmentOptions {
               type
               amount {
@@ -42,14 +42,14 @@ describe("setOrderFulfillmentOption", () => {
         id: "order-id", // Ensure the id field is present
         fulfillment_options: [
           {
-            type: "DOMESTIC_FLAT",
-            amount_cents: 2000,
+            type: "domestic_flat",
+            amount_minor: 2000,
             currency_code: "USD",
             selected: true,
           },
           {
-            type: "PICKUP",
-            amount_cents: 0,
+            type: "pickup",
+            amount_minor: null,
             currency_code: "USD",
           },
         ],
@@ -66,14 +66,12 @@ describe("setOrderFulfillmentOption", () => {
   it("should update fulfillment option", async () => {
     const result = await runAuthenticatedQuery(mockMutation, context)
 
-    console.log("Test result:", JSON.stringify(result, null, 2))
-
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
       setOrderFulfillmentOption: {
         orderOrError: {
           order: {
-            id: "order-id",
+            internalID: "order-id",
             fulfillmentOptions: [
               {
                 type: "DOMESTIC_FLAT",
@@ -85,11 +83,8 @@ describe("setOrderFulfillmentOption", () => {
               },
               {
                 type: "PICKUP",
-                amount: {
-                  minor: 0,
-                  currencyCode: "USD",
-                },
-                selected: false,
+                amount: null,
+                selected: null,
               },
             ],
           },
@@ -100,7 +95,7 @@ describe("setOrderFulfillmentOption", () => {
     expect(context.meOrderSetFulfillmentOptionLoader).toHaveBeenCalledWith(
       "order-id",
       {
-        type: "DOMESTIC_FLAT",
+        type: "domestic_flat",
       }
     )
   })
@@ -110,8 +105,6 @@ describe("setOrderFulfillmentOption", () => {
       .fn()
       .mockRejectedValue(new Error("Oops - Error updating order"))
     const result = await runAuthenticatedQuery(mockMutation, context)
-
-    console.log("Test result:", JSON.stringify(result, null, 2))
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
