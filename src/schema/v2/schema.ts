@@ -277,8 +277,7 @@ import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImp
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
-import { updateOrderMutation } from "./order"
-import { setOrderFulfillmentOptionMutation } from "./order/setOrderFulfillmentOptionMutation"
+import { updateOrderMutation, setOrderFulfillmentOptionMutation } from "./order"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,

@@ -6,14 +6,14 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { OrderMutationResponseType, ORDER_MUTATION_FLAGS } from "./OrderType"
+import { OrderMutationResponseType, ORDER_MUTATION_FLAGS } from "./sharedTypes"
 
 interface Input {
   id: string
   type?: string
 }
 
-// Similar to FulfillmentOptionTypeEnum but for input: Expects an all-caps
+// Similar to `FulfillmentOptionTypeEnum` but for input: Expects an all-caps
 // enum and converts back to exchange's lower-cased enum for the API
 const FulfillmentOptionTypeInputEnum = new GraphQLEnumType({
   name: "FulfillmentOptionInputEnum",

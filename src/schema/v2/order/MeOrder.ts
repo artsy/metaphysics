@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { OrderType } from "schema/v2/order/OrderType"
+import { OrderType } from "schema/v2/order/sharedTypes"
 
 export const MeOrder: GraphQLFieldConfig<void, ResolverContext> = {
   args: {

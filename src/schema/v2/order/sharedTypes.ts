@@ -1,5 +1,7 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -8,9 +10,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
-import { LineItemType } from "./lineItem"
-import { FulfillmentOptionType } from "./fulfillmentOption"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
+import { ArtworkVersionType } from "../artwork_version"
+import { ArtworkType } from "../artwork"
 
 /**
  * The order json as received from the exchange REST API.
@@ -82,6 +84,59 @@ const OrderSourceEnum = new GraphQLEnumType({
   },
 })
 
+// Enum for fulfillment_option.type field
+const FulfillmentOptionTypeEnum = new GraphQLEnumType({
+  name: "FulfillmentOptionTypeEnum",
+  values: {
+    DOMESTIC_FLAT: { value: "DOMESTIC_FLAT" },
+    INTERNATIONAL_FLAT: { value: "INTERNATIONAL_FLAT" },
+    PICKUP: { value: "PICKUP" },
+    SHIPPING_TBD: { value: "SHIPPING_TBD" },
+  },
+})
+
+type FulfillmentOptionJSONWithCurrencyCode = OrderJSON["fulfillment_options"][number] & {
+  _currencyCode: string
+}
+const FulfillmentOptionType = new GraphQLObjectType<
+  FulfillmentOptionJSONWithCurrencyCode,
+  ResolverContext
+>({
+  name: "FulfillmentOption",
+  fields: {
+    type: {
+      type: new GraphQLNonNull(FulfillmentOptionTypeEnum),
+      resolve: ({ type }) => {
+        if (type === "domestic_flat") return "DOMESTIC_FLAT"
+        if (type === "international_flat") return "INTERNATIONAL_FLAT"
+        if (type === "pickup") return "PICKUP"
+        if (type === "shipping_tbd") return "SHIPPING_TBD"
+        throw Error(`Invalid fulfillment option type ${type}`)
+      },
+    },
+    amount: {
+      type: Money,
+      resolve: (
+        // _currencyCode loaded from parent
+        { amount_minor: minor, _currencyCode: currencyCode },
+        _args,
+        context,
+        _info
+      ) => {
+        if (typeof minor !== "number") return null
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          context,
+          _info
+        )
+      },
+    },
+    selected: { type: GraphQLBoolean },
+  },
+})
+
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
   description: "Buyer fulfillment details for order",
@@ -121,6 +176,59 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
     country: {
       type: GraphQLString,
       description: "Shipping address country",
+    },
+  },
+})
+
+const LineItemType = new GraphQLObjectType<any, ResolverContext>({
+  name: "LineItem",
+  description: "A line item in an order",
+  fields: {
+    ...InternalIDFields,
+    artwork: {
+      type: ArtworkType,
+      resolve: ({ artwork_id }, _args, { artworkLoader }) => {
+        return artworkLoader(artwork_id)
+      },
+    },
+    artworkVersion: {
+      type: ArtworkVersionType,
+      resolve: (
+        { artwork_version_id },
+        _args,
+        { authenticatedArtworkVersionLoader }
+      ) =>
+        authenticatedArtworkVersionLoader
+          ? authenticatedArtworkVersionLoader(artwork_version_id)
+          : null,
+    },
+    currencyCode: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ currency_code }) => currency_code,
+    },
+    listPrice: {
+      type: Money,
+      resolve: async (
+        // TODO: Remove USD fallback and include currency_code in the line item json
+        { list_price_cents: minor, currency_code: currencyCode = "USD" },
+        _args,
+        context,
+        _info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor: minor,
+            currencyCode,
+          },
+          _args,
+          context,
+          _info
+        )
+      },
+    },
+    quantity: {
+      type: GraphQLNonNull(GraphQLInt),
+      resolve: ({ quantity }) => quantity,
     },
   },
 })
@@ -221,7 +329,10 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
       ),
-      resolve: ({ fulfillment_options, currency_code }) =>
+      resolve: ({
+        fulfillment_options,
+        currency_code,
+      }): Array<FulfillmentOptionJSONWithCurrencyCode> =>
         fulfillment_options.map((option) => ({
           ...option,
           _currencyCode: currency_code,
@@ -230,7 +341,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     buyerPhoneNumber: {
       type: GraphQLString,
       description: "Phone number of the buyer",
-      deprecationReason: "Use `order.fulfillmentDetails.phoneNumber` instead",
+      deprecationReason: "Use `order.fulfillmentDetails.phoneNumber`",
       resolve: ({ buyer_phone_number }) => buyer_phone_number,
     },
     fulfillmentDetails: {

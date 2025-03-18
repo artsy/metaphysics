@@ -15304,7 +15304,7 @@ type Order {
 
   # Phone number of the buyer
   buyerPhoneNumber: String
-    @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber` instead")
+    @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber`")
 
   # The total amount the buyer is expected to pay
   buyerTotal: Money
