@@ -96,7 +96,7 @@ describe("InfiniteDiscovery", () => {
             "entityType": "Page",
             "href": null,
             "image": {
-              "imageURL": "https://files.artsy.net/images/infinite_disco_large.webp",
+              "imageURL": "https://files.artsy.net/images/discover_daily_cover.webp",
             },
             "subtitle": "Effortless discovery, expert curation — find art you love, one swipe at a time.",
             "title": "Discover Daily",
