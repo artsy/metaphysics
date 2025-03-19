@@ -11057,13 +11057,9 @@ input FulfillmentOptionInput {
 }
 
 enum FulfillmentOptionInputEnum {
-  DOMESTIC_EXPEDITED
   DOMESTIC_FLAT
-  DOMESTIC_PRIORITY
-  INTERNATIONAL_EXPEDITED
-  INTERNATIONAL_STANDARD
+  INTERNATIONAL_FLAT
   PICKUP
-  SHIPPING_TBD
 }
 
 enum FulfillmentOptionTypeEnum {
