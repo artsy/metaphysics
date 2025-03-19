@@ -774,6 +774,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerContactsLoader: gravityLoader(
+      (id) => `partner/${id}/contacts`,
+      {},
+      { headers: true }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
