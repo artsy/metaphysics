@@ -509,6 +509,93 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#contactsConnection", () => {
+    let contactsResponse
+
+    const partnerContactsLoader = jest.fn(() => {
+      return Promise.resolve({
+        body: contactsResponse,
+        headers: {
+          "x-total-count": contactsResponse.length,
+        },
+      })
+    })
+
+    const partnerLoader = jest.fn(() => {
+      return Promise.resolve(partnerData)
+    })
+
+    beforeEach(() => {
+      contactsResponse = [
+        {
+          id: "contact-1",
+          name: "Molly D",
+          email: "md@artsy.net",
+          partner_location: { display: "123 Happy St, NY NY" },
+        },
+        {
+          id: "contact-2",
+          name: "Percy Z",
+          email: "pz@gmail.com",
+        },
+      ]
+    })
+
+    it("returns partner contacts", async () => {
+      context = {
+        partnerContactsLoader,
+        partnerLoader,
+      }
+
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            contactsConnection(first:3) {
+              totalCount
+              edges {
+                node {
+                  name
+                  email
+                  location {
+                    display
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          contactsConnection: {
+            totalCount: 2,
+            edges: [
+              {
+                node: {
+                  name: "Molly D",
+                  email: "md@artsy.net",
+                  location: {
+                    display: "123 Happy St, NY NY",
+                  },
+                },
+              },
+              {
+                node: {
+                  name: "Percy Z",
+                  email: "pz@gmail.com",
+                  location: null,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("#locationsConnection", () => {
     let locationsResponse
 

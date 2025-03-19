@@ -20,7 +20,7 @@ export const InfiniteDiscovery: HomeViewSection = {
       subtitle:
         "Effortless discovery, expert curation — find art you love, one swipe at a time.",
       buttonText: "Try It",
-      image_url: "https://files.artsy.net/images/infinite_disco_large.webp",
+      image_url: "https://files.artsy.net/images/discover_daily_cover.webp",
       entityType: "Page",
       entityID: parent.ownerType,
       badgeText: "New",

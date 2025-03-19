@@ -96,7 +96,7 @@ import {
   SecondFactorInterface,
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
-import { Order } from "../order"
+import { MeOrder } from "../order"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -472,7 +472,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     initials: initials("name"),
-    order: Order,
+    order: MeOrder,
     paddleNumber: {
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
