@@ -756,14 +756,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       contactsConnection: {
         description: "A connection of contacts from a Partner.",
         type: contactsConnection.connectionType,
-        args: pageable({
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
+        args: pageable(),
         resolve: async ({ id }, args, { partnerContactsLoader }) => {
           if (!partnerContactsLoader) return null
 
@@ -771,12 +764,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args
           )
 
-          const { body } = await partnerContactsLoader(id, {
+          const { body, headers } = await partnerContactsLoader(id, {
             page,
             size,
+            total_count: true,
           })
 
-          const totalCount = body.length
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           return paginationResolver({
             totalCount,

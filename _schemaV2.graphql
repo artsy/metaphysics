@@ -15663,8 +15663,6 @@ type Partner implements Node {
     before: String
     first: Int
     last: Int
-    page: Int
-    size: Int
   ): ContactConnection
   counts: PartnerCounts
   defaultProfileID: String
