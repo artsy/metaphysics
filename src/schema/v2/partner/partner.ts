@@ -60,6 +60,7 @@ import {
   ViewingRoomsConnection,
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
+import { contactsConnection } from "schema/Contacts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -751,6 +752,41 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       collectingInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) => collecting_institution,
+      },
+      contactsConnection: {
+        description: "A connection of contacts from a Partner.",
+        type: contactsConnection.connectionType,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        resolve: async ({ id }, args, { partnerContactsLoader }) => {
+          if (!partnerContactsLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body } = await partnerContactsLoader(id, {
+            page,
+            size,
+          })
+
+          const totalCount = body.length
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
       },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
