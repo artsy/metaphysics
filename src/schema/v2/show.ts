@@ -172,6 +172,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
 
           return {
             totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
             ...connectionFromArraySlice(body, options, {
               arrayLength: totalCount,
               sliceStart: offset,
