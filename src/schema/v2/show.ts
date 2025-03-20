@@ -51,6 +51,7 @@ import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
+import { PartnerDocumentsConnection } from "./partner/partnerDocumentsConnection"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -678,6 +679,43 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             totalCount,
+          })
+        },
+      },
+      documentsConnection: {
+        type: PartnerDocumentsConnection.type,
+        description: "Retrieve all documents for this show",
+        args: pageable({}),
+        resolve: async (
+          { partner, id },
+          args,
+          { partnerShowDocumentsLoader }
+        ) => {
+          if (!partnerShowDocumentsLoader) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const gravityOptions = {
+            size,
+            offset,
+            total_count: true,
+          }
+          const { body, headers } = await partnerShowDocumentsLoader(
+            { showID: id, partnerID: partner.id },
+            gravityOptions
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
           })
         },
       },

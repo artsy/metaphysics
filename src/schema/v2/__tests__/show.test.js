@@ -1201,6 +1201,122 @@ describe("Show type", () => {
     })
   })
 
+  describe("#documentsConnection", () => {
+    it("returns documents for a show", async () => {
+      const showDocuments = [
+        {
+          _id: "doc-1",
+          title: "Test Document 1",
+          size: 1024,
+          uri: "documents/test-document-1.pdf",
+        },
+        {
+          _id: "doc-2",
+          title: "Test Document 2",
+          size: 2048,
+          uri: "documents/test-document-2.pdf",
+        },
+      ]
+
+      const mockContext = {
+        showLoader: sinon.stub().returns(Promise.resolve(showData)),
+        partnerShowDocumentsLoader: jest.fn().mockResolvedValue({
+          body: showDocuments,
+          headers: {
+            "x-total-count": "2",
+          },
+        }),
+      }
+
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            documentsConnection(first: 2) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  internalID
+                  title
+                  filesize
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, mockContext)
+      expect(mockContext.partnerShowDocumentsLoader).toBeCalledWith(
+        {
+          showID: "new-museum-1-2015-triennial-surround-audience",
+          partnerID: "new-museum",
+        },
+        { offset: 0, size: 2, total_count: true }
+      )
+
+      expect(data).toEqual({
+        show: {
+          documentsConnection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
+            edges: [
+              {
+                node: {
+                  internalID: "doc-1",
+                  title: "Test Document 1",
+                  filesize: 1024,
+                },
+              },
+              {
+                node: {
+                  internalID: "doc-2",
+                  title: "Test Document 2",
+                  filesize: 2048,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns null if loader is not available", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            documentsConnection(first: 2) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  id
+                  title
+                  filesize
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const emptyContext = {
+        partnerShowDocumentsLoader: null,
+        showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      }
+      const data = await runQuery(query, emptyContext)
+
+      expect(data).toEqual({
+        show: {
+          documentsConnection: null,
+        },
+      })
+    })
+  })
+
   // FIXME: Results in an extra object... I don't full understand this test
   describe.skip("#filteredArtworks", () => {
     it("fetches FilterArtworks using the show id and partner id", async () => {
