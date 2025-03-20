@@ -8860,7 +8860,7 @@ type CreatePartnerContactPayload {
 }
 
 type CreatePartnerContactSuccess {
-  contact: Contact
+  partnerContact: Contact
 }
 
 type CreateSaleAgreementFailure {

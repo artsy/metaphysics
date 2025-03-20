@@ -6,7 +6,10 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ContactType } from "../Contacts"
 
@@ -24,7 +27,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerContactSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    contact: {
+    partnerContact: {
       type: ContactType,
       resolve: (result) => result,
     },
@@ -111,7 +114,12 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
 
       return response
     } catch (error) {
-      throw new Error(`Failed to create partner contact: ${error.message}`)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })
