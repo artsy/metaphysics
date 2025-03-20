@@ -7,14 +7,12 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
-// Check whats required and whats optional
 interface Input {
   partnerID: string
   name?: string
   position?: string
   canContact?: boolean
   email?: string
-  emailConfirmation?: string
   phone?: string
   locationID?: string
 }
@@ -64,11 +62,6 @@ export const createPartnerContactMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Email address of the contact",
     },
-    // Do we need this? is it persisted in the database? What does volt use to read it
-    emailConfirmation: {
-      type: GraphQLString,
-      description: "Confirmation of the email address",
-    },
     phone: {
       type: GraphQLString,
       description: "Phone number of the contact",
@@ -85,16 +78,7 @@ export const createPartnerContactMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    {
-      partnerID,
-      name,
-      position,
-      canContact,
-      email,
-      emailConfirmation,
-      phone,
-      locationID,
-    },
+    { partnerID, name, position, canContact, email, phone, locationID },
     { createPartnerContactLoader }
   ) => {
     if (!createPartnerContactLoader) {
@@ -107,7 +91,6 @@ export const createPartnerContactMutation = mutationWithClientMutationId<
         position,
         can_contact: canContact,
         email,
-        email_confirmation: emailConfirmation,
         phone,
         partner_location_id: locationID,
       })

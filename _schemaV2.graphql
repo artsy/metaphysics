@@ -23500,9 +23500,6 @@ input createPartnerContactInput {
   # Email address of the contact
   email: String
 
-  # Confirmation of the email address
-  emailConfirmation: String
-
   # ID of the contact's partner location
   locationID: String
 
