@@ -926,8 +926,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artworkMediums["Jewelry"].id,
             artworkMediums["NFT"].id,
             artworkMediums["Performance Art"].id,
+            artworkMediums["Sculpture"].id,
             artworkMediums["Video/Film/Animation"].id,
           ]
+
           const categories2D = [
             artworkMediums["Drawing, Collage or other Work on Paper"].id,
             artworkMediums["Painting"].id,
@@ -945,7 +947,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           //   "Mixed Media"
           //   "Ephemera or Merchandise"
-          //   "Sculpture"
           //   "Reproduction"
           //   "Textile arts"
           //   "Other"
