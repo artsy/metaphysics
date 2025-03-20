@@ -3,9 +3,12 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { ContactType } from "../Contacts"
 
 interface Input {
   partnerID: string
@@ -17,28 +20,39 @@ interface Input {
   locationID?: string
 }
 
-const CreatePartnerContactMutationResponseType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "CreatePartnerContactResponse",
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "CreatePartnerContactSuccess",
+  isTypeOf: (data) => data.id,
   fields: () => ({
-    id: { type: new GraphQLNonNull(GraphQLString) },
-    name: { type: GraphQLString },
-    position: { type: GraphQLString },
-    canContact: { type: GraphQLBoolean },
-    email: { type: GraphQLString },
-    phone: { type: GraphQLString },
-    locationID: { type: GraphQLString },
+    contact: {
+      type: ContactType,
+      resolve: (result) => result,
+    },
   }),
 })
 
-export const createPartnerContactMutation = mutationWithClientMutationId<
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "CreatePartnerContactFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "CreatePartnerContactOrError",
+  types: [SuccessType, FailureType],
+})
+
+export const CreatePartnerContactMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "createPartnerContact",
+  name: "CreatePartnerContact",
   description: "Creates a new contact for a partner",
   inputFields: {
     partnerID: {
@@ -72,8 +86,8 @@ export const createPartnerContactMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    partnerContact: {
-      type: CreatePartnerContactMutationResponseType,
+    partnerContactOrError: {
+      type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
