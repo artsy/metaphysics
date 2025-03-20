@@ -756,7 +756,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       contactsConnection: {
         description: "A connection of contacts from a Partner.",
         type: contactsConnection.connectionType,
-        args: pageable(),
+        args: pageable({
+          contactType: {
+            type: new GraphQLEnumType({
+              name: "contactType",
+              values: {
+                PARTNER: { value: "partner" },
+                ADMIN: { value: "admin" },
+              },
+            }),
+          },
+        }),
         resolve: async ({ id }, args, { partnerContactsLoader }) => {
           if (!partnerContactsLoader) return null
 
@@ -768,6 +778,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             total_count: true,
+            contact_type: args.contactType,
           })
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
