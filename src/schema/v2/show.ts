@@ -27,9 +27,11 @@ import Image, { getDefault, normalizeImageData } from "./image"
 import ShowEventType from "./show_event"
 import {
   connectionWithCursorInfo,
+  createPageCursors,
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import { artistConnection } from "./artist"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -116,6 +118,20 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(Artist.type),
         resolve: ({ artists }) => {
           return artists
+        },
+      },
+      artistsConnection: {
+        description: "Connection of Artists included in the show",
+        type: artistConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ artists }, args) => {
+          const { page, size } = convertConnectionArgsToGravityArgs(args)
+          const totalCount = artists.length
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArray(artists, args),
+          }
         },
       },
       artworksConnection: {
