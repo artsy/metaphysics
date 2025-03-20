@@ -23,7 +23,11 @@ import { ExternalPartnerType } from "./external_partner"
 import Fair from "./fair"
 import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
-import Image, { getDefault, normalizeImageData } from "./image"
+import Image, {
+  getDefault,
+  ImageConnectionType,
+  normalizeImageData,
+} from "./image"
 import ShowEventType from "./show_event"
 import {
   connectionWithCursorInfo,
@@ -409,8 +413,38 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
           },
         },
-        resolve: ({ id }, options, { partnerShowImagesLoader }) => {
-          return partnerShowImagesLoader(id, options).then(normalizeImageData)
+        resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
+          const { body } = await partnerShowImagesLoader(id, options)
+
+          return normalizeImageData(body)
+        },
+      },
+      imagesConnection: {
+        type: ImageConnectionType,
+        args: pageable({}),
+        resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+          const gravityOptions = {
+            size,
+            offset,
+            total_count: true,
+          }
+
+          const { body, headers } = await partnerShowImagesLoader(
+            id,
+            gravityOptions
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args: options,
+          })
         },
       },
       hasLocation: {

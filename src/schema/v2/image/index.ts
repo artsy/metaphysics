@@ -20,6 +20,7 @@ import { decode as decodeBlurHash } from "blurhash"
 import UPNG from "upng-js"
 import { encode } from "base64-arraybuffer"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { connectionWithCursorInfo } from "../fields/pagination"
 
 export type OriginalImage = {
   original_width?: number
@@ -195,5 +196,10 @@ const Image: GraphQLFieldConfig<ImageData, ResolverContext> = {
     return normalize(resolvedData)
   },
 }
+
+export const ImageConnectionType = connectionWithCursorInfo({
+  name: "Image",
+  nodeType: ImageType,
+}).connectionType
 
 export default Image

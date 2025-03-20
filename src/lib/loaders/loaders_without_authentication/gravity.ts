@@ -204,7 +204,11 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    partnerShowImagesLoader: gravityLoader((id) => `partner_show/${id}/images`),
+    partnerShowImagesLoader: gravityLoader(
+      (id) => `partner_show/${id}/images`,
+      {},
+      { headers: true }
+    ),
     partnerShowArtistsLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }

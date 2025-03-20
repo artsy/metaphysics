@@ -840,7 +840,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerShowImagesLoader: gravityLoader((id) => `partner_show/${id}/images`),
+    partnerShowImagesLoader: gravityLoader(
+      (id) => `partner_show/${id}/images`,
+      {},
+      { headers: true }
+    ),
     partnerShowDocumentsLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
