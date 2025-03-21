@@ -3,7 +3,7 @@ import { verbose as debug, error } from "./loggers"
 import tracer from "dd-trace"
 import { Tags } from "opentracing"
 
-const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME, PRODUCTION_ENV } = config
+const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
 
 export function init() {
   tracer.init({
@@ -20,7 +20,6 @@ export function init() {
         // Noop
       },
     },
-    debug: !PRODUCTION_ENV,
   })
   tracer.use("express", {
     // We want the root spans of MP to be labelled as just `metaphysics`
