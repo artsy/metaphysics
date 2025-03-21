@@ -6,7 +6,10 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { OrderMutationResponseType, ORDER_MUTATION_FLAGS } from "./sharedTypes"
+import {
+  OrderMutationResponseType,
+  ORDER_MUTATION_FLAGS,
+} from "./sharedOrderTypes"
 
 interface Input {
   id: string

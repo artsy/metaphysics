@@ -278,6 +278,7 @@ import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtwork
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
 import { updateOrderMutation, setOrderFulfillmentOptionMutation } from "./order"
+import { CreatePartnerContactMutation } from "./partner/createPartnerContactMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -459,6 +460,7 @@ export default new GraphQLSchema({
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
       createOrderedSet: createOrderedSetMutation,
+      createPartnerContact: CreatePartnerContactMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
       createSaleAgreement: CreateSaleAgreementMutation,

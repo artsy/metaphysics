@@ -224,6 +224,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" } // Intentional PUT even though this is a create operation
     ),
+    createPartnerContactLoader: gravityLoader(
+      (id) => `partner/${id}/contact`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerOfferLoader: gravityLoader(
       "partner_offer",
       {},
@@ -840,7 +845,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerShowImagesLoader: gravityLoader((id) => `partner_show/${id}/images`),
+    partnerShowImagesLoader: gravityLoader(
+      (id) => `partner_show/${id}/images`,
+      {},
+      { headers: true }
+    ),
     partnerShowDocumentsLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }

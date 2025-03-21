@@ -1,5 +1,8 @@
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
-import { ORDER_MUTATION_FLAGS, OrderMutationResponseType } from "./sharedTypes"
+import {
+  ORDER_MUTATION_FLAGS,
+  OrderMutationResponseType,
+} from "./sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 

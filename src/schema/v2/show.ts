@@ -23,13 +23,19 @@ import { ExternalPartnerType } from "./external_partner"
 import Fair from "./fair"
 import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
-import Image, { getDefault, normalizeImageData } from "./image"
-import ShowEventType from "./show_event"
+import Image, {
+  getDefault,
+  ImageConnectionType,
+  normalizeImageData,
+} from "./image"
+import ShowEventType, { ShowEventConnectionType } from "./show_event"
 import {
   connectionWithCursorInfo,
+  createPageCursors,
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import { artistConnection } from "./artist"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -51,6 +57,7 @@ import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
+import { PartnerDocumentsConnection } from "./partner/partnerDocumentsConnection"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -117,6 +124,20 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return artists
         },
       },
+      artistsConnection: {
+        description: "Connection of Artists included in the show",
+        type: artistConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ artists }, args) => {
+          const { page, size } = convertConnectionArgsToGravityArgs(args)
+          const totalCount = artists.length
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArray(artists, args),
+          }
+        },
+      },
       artworksConnection: {
         description: "The artworks featured in the show.",
         type: artworkConnection.connectionType,
@@ -155,6 +176,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
 
           return {
             totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
             ...connectionFromArraySlice(body, options, {
               arrayLength: totalCount,
               sliceStart: offset,
@@ -341,6 +363,20 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             show_id: id,
           }).then(({ events }) => events),
       },
+      eventsConnection: {
+        description: "Connection of events attached to the show",
+        type: ShowEventConnectionType,
+        args: pageable({}),
+        resolve: ({ events }, args) => {
+          const { page, size } = convertConnectionArgsToGravityArgs(args)
+          const totalCount = events.length
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArray(events, args),
+          }
+        },
+      },
       exhibitionPeriod: {
         type: GraphQLString,
         description: "A formatted description of the start to end dates",
@@ -391,8 +427,38 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
           },
         },
-        resolve: ({ id }, options, { partnerShowImagesLoader }) => {
-          return partnerShowImagesLoader(id, options).then(normalizeImageData)
+        resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
+          const { body } = await partnerShowImagesLoader(id, options)
+
+          return normalizeImageData(body)
+        },
+      },
+      imagesConnection: {
+        type: ImageConnectionType,
+        args: pageable({}),
+        resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+          const gravityOptions = {
+            size,
+            offset,
+            total_count: true,
+          }
+
+          const { body, headers } = await partnerShowImagesLoader(
+            id,
+            gravityOptions
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args: options,
+          })
         },
       },
       hasLocation: {
@@ -678,6 +744,43 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             totalCount,
+          })
+        },
+      },
+      documentsConnection: {
+        type: PartnerDocumentsConnection.type,
+        description: "Retrieve all documents for this show",
+        args: pageable({}),
+        resolve: async (
+          { partner, id },
+          args,
+          { partnerShowDocumentsLoader }
+        ) => {
+          if (!partnerShowDocumentsLoader) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const gravityOptions = {
+            size,
+            offset,
+            total_count: true,
+          }
+          const { body, headers } = await partnerShowDocumentsLoader(
+            { showID: id, partnerID: partner.id },
+            gravityOptions
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
           })
         },
       },
