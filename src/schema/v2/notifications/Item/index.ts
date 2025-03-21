@@ -6,6 +6,8 @@ import { ShowOpenedNotificationItemType } from "./ShowOpenedNotificationItem"
 import { ViewingRoomPublishedNotificationItemType } from "./ViewingRoomPublishedNotificationItem"
 import { PartnerOfferCreatedNotificationItemType } from "./PartnerOfferCreatedNotificationItem"
 import { CollectorProfileUpdatePromptNotificationItemType } from "./CollectorProfileUpdatePromptNotificationItem"
+import { MarketingCollectionHitNotificationItemType } from "./MarketingCollectionHitNotificationItem"
+import { SavedArtworkChangesNotificationItemType } from "./SavedArtworkChangesNotificationItem"
 
 export const NotificationItemType = new GraphQLUnionType({
   name: "NotificationItem",
@@ -17,6 +19,8 @@ export const NotificationItemType = new GraphQLUnionType({
     ViewingRoomPublishedNotificationItemType,
     PartnerOfferCreatedNotificationItemType,
     CollectorProfileUpdatePromptNotificationItemType,
+    MarketingCollectionHitNotificationItemType,
+    SavedArtworkChangesNotificationItemType,
   ],
   resolveType: ({ activity_type }) => {
     switch (activity_type) {
@@ -34,6 +38,10 @@ export const NotificationItemType = new GraphQLUnionType({
         return PartnerOfferCreatedNotificationItemType
       case "CollectorProfileUpdatePromptActivity":
         return CollectorProfileUpdatePromptNotificationItemType
+      case "MarketingCollectionHitActivity":
+        return MarketingCollectionHitNotificationItemType
+      case "SavedArtworkChangesActivity":
+        return SavedArtworkChangesNotificationItemType
       default:
         throw new Error("Unknown notification content type")
     }
