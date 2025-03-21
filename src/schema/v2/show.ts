@@ -28,7 +28,7 @@ import Image, {
   ImageConnectionType,
   normalizeImageData,
 } from "./image"
-import ShowEventType from "./show_event"
+import ShowEventType, { ShowEventConnectionType } from "./show_event"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -362,6 +362,20 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             partner_id: partner.id,
             show_id: id,
           }).then(({ events }) => events),
+      },
+      eventsConnection: {
+        description: "Connection of events attached to the show",
+        type: ShowEventConnectionType,
+        args: pageable({}),
+        resolve: ({ events }, args) => {
+          const { page, size } = convertConnectionArgsToGravityArgs(args)
+          const totalCount = events.length
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArray(events, args),
+          }
+        },
       },
       exhibitionPeriod: {
         type: GraphQLString,
