@@ -60,7 +60,7 @@ import {
   ViewingRoomsConnection,
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
-import { contactsConnection } from "schema/Contacts"
+import { contactsConnection } from "schema/v2/Contacts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"

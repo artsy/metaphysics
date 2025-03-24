@@ -3,6 +3,7 @@ import { GraphQLString, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { dateRange, dateTimeRange } from "lib/date"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
@@ -46,5 +47,10 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
+
+export const ShowEventConnectionType = connectionWithCursorInfo({
+  name: "ShowEvent",
+  nodeType: ShowEventType,
+}).connectionType
 
 export default ShowEventType
