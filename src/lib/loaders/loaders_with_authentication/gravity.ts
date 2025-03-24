@@ -234,6 +234,19 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerShowLoader: gravityLoader(
+      (partnerID) => `partner/${partnerID}/show`,
+      {},
+      { method: "POST" }
+    ),
+    createPartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}/event`,
+      {},
+      { method: "POST" }
+    ),
     createSaleAgreementLoader: gravityLoader(
       "sale_agreements",
       {},
@@ -305,6 +318,23 @@ export default (accessToken, userID, opts) => {
     ),
     deleteDislikedArtworkLoader: gravityLoader(
       (id) => `collection/disliked-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string; eventID: string }
+    >(
+      ({ partnerID, showID, eventID }) =>
+        `partner/${partnerID}/show/${showID}/event/${eventID}`,
       {},
       { method: "DELETE" }
     ),
@@ -1032,6 +1062,15 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; showId: string }
     >(
       ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string; eventId: string }
+    >(
+      ({ partnerId, showId, eventId }) =>
+        `partner/${partnerId}/show/${showId}/event/${eventId}`,
       {},
       { method: "PUT" }
     ),

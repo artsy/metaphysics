@@ -4,10 +4,12 @@ import { ResolverContext } from "types/graphql"
 import { dateRange, dateTimeRange } from "lib/date"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { GravityIDFields } from "./object_identification"
 
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
   fields: {
+    ...GravityIDFields,
     eventType: {
       type: GraphQLString,
       resolve: ({ event_type }) => {
