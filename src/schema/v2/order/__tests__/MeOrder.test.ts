@@ -26,6 +26,7 @@ describe("Me", () => {
       shipping_city: "New York",
       shipping_address_line1: "123 Main St",
       shipping_address_line2: "Apt 4B",
+      tax_total_cents: 4299,
     }
     artwork = artwork || {
       ...baseArtwork,
@@ -57,7 +58,10 @@ describe("Me", () => {
                 currencyCode
               }
               shippingTotal {
-                display
+                minor
+              }
+              taxTotal {
+                minor
               }
               fulfillmentOptions {
                 type
@@ -127,7 +131,10 @@ describe("Me", () => {
           minor: 500000,
         },
         shippingTotal: {
-          display: "US$20",
+          minor: 2000,
+        },
+        taxTotal: {
+          minor: 4299,
         },
         fulfillmentOptions: [
           {
