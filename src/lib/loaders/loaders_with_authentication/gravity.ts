@@ -239,6 +239,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}/document`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerShowEventLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
@@ -326,6 +334,15 @@ export default (accessToken, userID, opts) => {
       { partnerID: string; showID: string }
     >(
       ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string; documentId: string }
+    >(
+      ({ partnerID, showID, documentId }) =>
+        `partner/${partnerID}/show/${showID}/document/${documentId}`,
       {},
       { method: "DELETE" }
     ),
@@ -1062,6 +1079,15 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; showId: string }
     >(
       ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string; documentId: string }
+    >(
+      ({ partnerId, showId, documentId }) =>
+        `partner/${partnerId}/show/${showId}/document/${documentId}`,
       {},
       { method: "PUT" }
     ),
