@@ -105,22 +105,9 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     priceListed: {
       type: Money,
-      resolve: (
-        { price_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
+      resolve: ({ price_minor: minor, currency: currencyCode }) => {
         if (!minor || !currencyCode) return null
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
+        return { minor, currencyCode }
       },
     },
     rawData: {
