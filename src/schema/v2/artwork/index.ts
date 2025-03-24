@@ -1377,6 +1377,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      isFixedShippingFeeOnly: {
+        type: GraphQLBoolean,
+        description: "Is this work has shipping fee set to fixed amount?",
+        resolve: (artwork) => {
+          const domesticShippingFixed =
+            !artwork.process_with_artsy_shipping_domestic &&
+            artwork.domestic_shipping_fee_cents != null
+
+          return Boolean(
+            domesticShippingFixed && !artwork.artsy_shipping_international
+          )
+        },
+      },
       domesticShippingFee: {
         type: Money,
         description: "Domestic shipping fee.",
