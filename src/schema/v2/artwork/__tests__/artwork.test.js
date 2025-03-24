@@ -3213,6 +3213,237 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#isFixedShippingFeeOnly", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          isFixedShippingFeeOnly
+        }
+      }
+    `
+    describe("when artsy domestic shipping enabled", () => {
+      beforeEach(() => {
+        artwork.process_with_artsy_shipping_domestic = true
+      })
+
+      describe("when domestic_shipping_fee_cents and international_shipping_fee is null", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when domestic_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = 100
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when only international_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = 100
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+
+        describe("when only artsy international shipping is present", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = null
+            artwork.international_shipping_fee_cents = null
+            artwork.artsy_shipping_international = true
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  isFixedShippingFeeOnly: false,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when both domesting and international fee set to free", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = 0
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  isFixedShippingFeeOnly: false,
+                },
+              })
+            })
+          })
+        })
+      })
+    })
+
+    describe("when artsy domestic shipping disabled", () => {
+      beforeEach(() => {
+        artwork.process_with_artsy_shipping_domestic = false
+        artwork.artsy_shipping_international = false
+      })
+
+      describe("when domestic_shipping_fee_cents and international_shipping_fee is null", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when domestic_shipping_fee_cents is present and international shipping is not arta", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = 100
+          artwork.artsy_shipping_international = false
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns true", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: true,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when domestic_shipping_fee_cents is present but international shipping is set to arta", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = 100
+          artwork.artsy_shipping_international = true
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when only international_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = 100
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                isFixedShippingFeeOnly: false,
+              },
+            })
+          })
+        })
+
+        describe("when only artsy international shipping is present", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = null
+            artwork.international_shipping_fee_cents = null
+            artwork.artsy_shipping_international = true
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  isFixedShippingFeeOnly: false,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when free shipping worldwide", () => {
+          beforeEach(() => {
+            artwork.artsy_shipping_international = false
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = 0
+          })
+
+          it("returns true", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  isFixedShippingFeeOnly: true,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when free domestic shipping and international not configured", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = null
+          })
+
+          it("returns true", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  isFixedShippingFeeOnly: true,
+                },
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
   describe("#shippingOrigin", () => {
     const query = `
       {
