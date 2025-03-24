@@ -18,7 +18,6 @@ import { pageable } from "relay-cursor-paging"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
 import { ArtworkType } from "../artwork"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
 
 export const ArtworkImportErrorType = new GraphQLEnumType({
