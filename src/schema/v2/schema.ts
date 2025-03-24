@@ -228,8 +228,11 @@ import { createCareerHighlightMutation } from "./careerHighlight/createCareerHig
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { createPartnerShowMutation } from "./Show/createPartnerShowMutation"
+import { createPartnerShowEventMutation } from "./Show/createPartnerShowEventMutation"
 import { deletePartnerShowMutation } from "./Show/deletePartnerShowMutation"
+import { deletePartnerShowEventMutation } from "./Show/deletePartnerShowEventMutation"
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
+import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
@@ -464,6 +467,7 @@ export default new GraphQLSchema({
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerShow: createPartnerShowMutation,
+      createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
@@ -488,6 +492,7 @@ export default new GraphQLSchema({
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
       deletePartnerShow: deletePartnerShowMutation,
+      deletePartnerShowEvent: deletePartnerShowEventMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
@@ -561,6 +566,7 @@ export default new GraphQLSchema({
       updateQuiz: updateQuizMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
+      updatePartnerShowEvent: updatePartnerShowEventMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,

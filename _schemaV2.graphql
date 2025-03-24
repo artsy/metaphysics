@@ -8866,6 +8866,48 @@ type CreatePartnerContactSuccess {
   partnerContact: Contact
 }
 
+type CreatePartnerShowEventFailure {
+  mutationError: GravityMutationError
+}
+
+input CreatePartnerShowEventMutationInput {
+  clientMutationId: String
+
+  # A description of the event.
+  description: String
+
+  # The end time of the event.
+  endAt: String!
+
+  # The type of event.
+  eventType: String!
+
+  # The ID of the partner.
+  partnerId: String!
+
+  # The ID of the show.
+  showId: String!
+
+  # The start time of the event.
+  startAt: String!
+}
+
+type CreatePartnerShowEventMutationPayload {
+  clientMutationId: String
+
+  # On success: the created show event. On error: the error that occurred.
+  showEventOrError: CreatePartnerShowEventResponseOrError
+}
+
+union CreatePartnerShowEventResponseOrError =
+    CreatePartnerShowEventFailure
+  | CreatePartnerShowEventSuccess
+
+type CreatePartnerShowEventSuccess {
+  show: Show
+  showEvent: ShowEventType
+}
+
 type CreatePartnerShowFailure {
   mutationError: GravityMutationError
 }
@@ -9556,6 +9598,39 @@ union DeletePageResponseOrError = DeletePageFailure | DeletePageSuccess
 
 type DeletePageSuccess {
   page: Page
+}
+
+type DeletePartnerShowEventFailure {
+  mutationError: GravityMutationError
+}
+
+input DeletePartnerShowEventMutationInput {
+  clientMutationId: String
+
+  # The ID of the event to delete.
+  eventId: String!
+
+  # The ID of the partner.
+  partnerId: String!
+
+  # The ID of the show.
+  showId: String!
+}
+
+type DeletePartnerShowEventMutationPayload {
+  clientMutationId: String
+
+  # On success: the deleted show event. On error: the error that occurred.
+  showEventOrError: DeletePartnerShowEventResponseOrError
+}
+
+union DeletePartnerShowEventResponseOrError =
+    DeletePartnerShowEventFailure
+  | DeletePartnerShowEventSuccess
+
+type DeletePartnerShowEventSuccess {
+  show: Show
+  showEvent: ShowEventType
 }
 
 type DeletePartnerShowFailure {
@@ -14620,6 +14695,11 @@ type Mutation {
     input: CreatePartnerShowMutationInput!
   ): CreatePartnerShowMutationPayload
 
+  # Creates a partner show event.
+  createPartnerShowEvent(
+    input: CreatePartnerShowEventMutationInput!
+  ): CreatePartnerShowEventMutationPayload
+
   # Creates a static Markdown-backed sale agreement.
   createSaleAgreement(
     input: CreateSaleAgreementMutationInput!
@@ -14734,6 +14814,11 @@ type Mutation {
   deletePartnerShow(
     input: DeletePartnerShowMutationInput!
   ): DeletePartnerShowMutationPayload
+
+  # Deletes a partner show event.
+  deletePartnerShowEvent(
+    input: DeletePartnerShowEventMutationInput!
+  ): DeletePartnerShowEventMutationPayload
 
   # Delete a User
   deleteUser(input: DeleteUserInput!): DeleteUserPayload
@@ -15030,6 +15115,11 @@ type Mutation {
   updatePartnerShow(
     input: UpdatePartnerShowMutationInput!
   ): UpdatePartnerShowMutationPayload
+
+  # Updates a partner show event.
+  updatePartnerShowEvent(
+    input: UpdatePartnerShowEventMutationInput!
+  ): UpdatePartnerShowEventMutationPayload
 
   # Update a quiz artwork interacted_with flag
   updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
@@ -20106,6 +20196,12 @@ type ShowEventType {
     # Formatting option to apply to exhibition period
     format: ExhibitionPeriodFormat = LONG
   ): String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific Gravity Mongo Document ID.
+  internalID: ID!
   startAt(
     format: String
 
@@ -21278,6 +21374,51 @@ union UpdatePageResponseOrError = UpdatePageFailure | UpdatePageSuccess
 
 type UpdatePageSuccess {
   page: Page
+}
+
+type UpdatePartnerShowEventFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerShowEventMutationInput {
+  clientMutationId: String
+
+  # A description of the event.
+  description: String
+
+  # The end time of the event.
+  endAt: String
+
+  # The ID of the event to update.
+  eventId: String!
+
+  # The type of event.
+  eventType: String
+
+  # The ID of the partner.
+  partnerId: String!
+
+  # The ID of the show.
+  showId: String!
+
+  # The start time of the event.
+  startAt: String
+}
+
+type UpdatePartnerShowEventMutationPayload {
+  clientMutationId: String
+
+  # On success: the updated show event. On error: the error that occurred.
+  showEventOrError: UpdatePartnerShowEventResponseOrError
+}
+
+union UpdatePartnerShowEventResponseOrError =
+    UpdatePartnerShowEventFailure
+  | UpdatePartnerShowEventSuccess
+
+type UpdatePartnerShowEventSuccess {
+  show: Show
+  showEvent: ShowEventType
 }
 
 type UpdatePartnerShowFailure {
