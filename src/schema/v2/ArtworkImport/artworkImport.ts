@@ -18,7 +18,7 @@ import { pageable } from "relay-cursor-paging"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
 import { ArtworkType } from "../artwork"
-import { Money } from "../fields/money"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
 
 export const ArtworkImportErrorType = new GraphQLEnumType({
@@ -105,9 +105,21 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     priceListed: {
       type: Money,
-      resolve: ({ price_minor: minor, currency: currencyCode }) => {
-        if (!minor || !currencyCode) return null
-        return { minor, currencyCode }
+      resolve: (
+        { price_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
       },
     },
     rawData: {
