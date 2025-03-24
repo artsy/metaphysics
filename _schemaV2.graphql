@@ -15435,6 +15435,9 @@ type Order {
 
   # Source of the order
   source: OrderSourceEnum!
+
+  # The total amount for tax
+  taxTotal: Money
 }
 
 enum OrderModeEnum {

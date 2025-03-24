@@ -37,6 +37,7 @@ interface OrderJSON {
   shipping_postal_code?: string
   shipping_region?: string
   shipping_country?: string
+  tax_total_cents?: number
   fulfillment_options: Array<{
     type: string
     amount_minor: number
@@ -50,6 +51,7 @@ interface OrderJSON {
     list_price_cents: number
     quantity: number
     shipping_total_cents?: number
+    tax_cents?: number
     currency_code: string
   }>
 }
@@ -306,6 +308,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "The total amount for shipping",
       resolve: (
         { shipping_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
+    taxTotal: {
+      type: Money,
+      description: "The total amount for tax",
+      resolve: (
+        { tax_total_cents: minor, currency_code: currencyCode },
         _args,
         ctx,
         _info
