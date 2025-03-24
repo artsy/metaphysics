@@ -111,7 +111,6 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) return null
         return resolveMinorAndCurrencyFieldsToMoney(
           {
             minor,
