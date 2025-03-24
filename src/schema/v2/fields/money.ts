@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
-import { priceDisplayText } from "lib/moneyHelpers"
+import { priceDisplayText, currencyPrefix, priceAmount } from "lib/moneyHelpers"
 
 export const amountSDL = (name) => `
   ${name}(
@@ -187,6 +187,11 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
       },
       resolve: moneyMajorResolver,
     },
+    currencyPrefix: {
+      type: GraphQLString,
+      description: "The symbol used for the currency",
+    },
+    amount: { type: GraphQLString, description: "A pre-formatted price." },
   },
 })
 
@@ -227,6 +232,8 @@ export const resolveMinorAndCurrencyFieldsToMoney = async (
       cents: minor,
       currency: currencyCode,
       display: priceDisplayText(minor, currencyCode, ""),
+      amount: priceAmount(minor, currencyCode, ""),
+      currencyPrefix: currencyPrefix(currencyCode),
     }
   } catch (error) {
     console.error(
