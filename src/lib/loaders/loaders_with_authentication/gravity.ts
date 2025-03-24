@@ -234,6 +234,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerShowLoader: gravityLoader(
+      (partnerID) => `partner/${partnerID}/show`,
+      {},
+      { method: "POST" }
+    ),
     createSaleAgreementLoader: gravityLoader(
       "sale_agreements",
       {},
@@ -305,6 +310,14 @@ export default (accessToken, userID, opts) => {
     ),
     deleteDislikedArtworkLoader: gravityLoader(
       (id) => `collection/disliked-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}`,
       {},
       { method: "DELETE" }
     ),
