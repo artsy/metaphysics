@@ -26,6 +26,7 @@ const FEATURE: Gravity.Feature = {
       "https://d32dm0rphc51dk.cloudfront.net/6XnLlK82VdXcs0Ii9pTzzg/large_rectangle.jpg",
   },
   created_at: "2020-06-25T20:42:07+00:00",
+  meta_title: "Milan Gallery Community | Artsy",
 }
 
 const featureLoader = (_id: string) => Promise.resolve(FEATURE)
