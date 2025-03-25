@@ -114,7 +114,7 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       featured?: boolean
       description?: string
       press_release?: string
-      location_id?: string
+      partner_location?: string
       start_at?: number
       end_at?: number
     } = {
@@ -122,7 +122,7 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       featured: args.featured,
       description: args.description,
       press_release: args.pressRelease,
-      location_id: args.locationId,
+      partner_location: args.locationId,
     }
 
     // Convert the date strings to Unix-style timestamps.
