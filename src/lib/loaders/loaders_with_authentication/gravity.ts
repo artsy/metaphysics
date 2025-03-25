@@ -234,6 +234,27 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerShowLoader: gravityLoader(
+      (partnerID) => `partner/${partnerID}/show`,
+      {},
+      { method: "POST" }
+    ),
+    createPartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}/document`,
+      {},
+      { method: "POST" }
+    ),
+    createPartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}/event`,
+      {},
+      { method: "POST" }
+    ),
     createSaleAgreementLoader: gravityLoader(
       "sale_agreements",
       {},
@@ -305,6 +326,32 @@ export default (accessToken, userID, opts) => {
     ),
     deleteDislikedArtworkLoader: gravityLoader(
       (id) => `collection/disliked-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string }
+    >(
+      ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string; documentId: string }
+    >(
+      ({ partnerID, showID, documentId }) =>
+        `partner/${partnerID}/show/${showID}/document/${documentId}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerID: string; showID: string; eventID: string }
+    >(
+      ({ partnerID, showID, eventID }) =>
+        `partner/${partnerID}/show/${showID}/event/${eventID}`,
       {},
       { method: "DELETE" }
     ),
@@ -935,6 +982,10 @@ export default (accessToken, userID, opts) => {
     ),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
+    partnerShowLoader: gravityLoader<
+      any,
+      { partner_id: string; show_id: string }
+    >(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
     submitArtworkInquiryRequestLoader: gravityLoader(
       "me/artwork_inquiry_request",
       {},
@@ -1032,6 +1083,24 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; showId: string }
     >(
       ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerShowDocumentLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string; documentId: string }
+    >(
+      ({ partnerId, showId, documentId }) =>
+        `partner/${partnerId}/show/${showId}/document/${documentId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerShowEventLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string; eventId: string }
+    >(
+      ({ partnerId, showId, eventId }) =>
+        `partner/${partnerId}/show/${showId}/event/${eventId}`,
       {},
       { method: "PUT" }
     ),

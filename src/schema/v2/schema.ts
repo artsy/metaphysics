@@ -227,7 +227,15 @@ import { MarketingCategories } from "./marketingCategories"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
-import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
+import { createPartnerShowMutation } from "./Show/createPartnerShowMutation"
+import { createPartnerShowEventMutation } from "./Show/createPartnerShowEventMutation"
+import { createPartnerShowDocumentMutation } from "./Show/createPartnerShowDocumentMutation"
+import { deletePartnerShowMutation } from "./Show/deletePartnerShowMutation"
+import { deletePartnerShowEventMutation } from "./Show/deletePartnerShowEventMutation"
+import { deletePartnerShowDocumentMutation } from "./Show/deletePartnerShowDocumentMutation"
+import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
+import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
+import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
@@ -461,6 +469,9 @@ export default new GraphQLSchema({
       createInvoicePayment: createInvoicePaymentMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
+      createPartnerShow: createPartnerShowMutation,
+      createPartnerShowDocument: createPartnerShowDocumentMutation,
+      createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
@@ -484,6 +495,9 @@ export default new GraphQLSchema({
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
+      deletePartnerShow: deletePartnerShowMutation,
+      deletePartnerShowDocument: deletePartnerShowDocumentMutation,
+      deletePartnerShowEvent: deletePartnerShowEventMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
@@ -557,6 +571,8 @@ export default new GraphQLSchema({
       updateQuiz: updateQuizMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
+      updatePartnerShowDocument: updatePartnerShowDocumentMutation,
+      updatePartnerShowEvent: updatePartnerShowEventMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
