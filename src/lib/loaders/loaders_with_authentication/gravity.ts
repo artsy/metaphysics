@@ -982,6 +982,10 @@ export default (accessToken, userID, opts) => {
     ),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
+    partnerShowLoader: gravityLoader<
+      any,
+      { partner_id: string; show_id: string }
+    >(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
     submitArtworkInquiryRequestLoader: gravityLoader(
       "me/artwork_inquiry_request",
       {},
