@@ -20,7 +20,6 @@ const marketingCollectionSlugs = [
 
 export const DiscoverSomethingNew: HomeViewSection = {
   id: "home-view-section-discover-something-new",
-  featureFlag: "diamond_home-view-marketing-collection-categories",
   contextModule: ContextModule.discoverSomethingNewRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {

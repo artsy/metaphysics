@@ -29,10 +29,7 @@ describe("homeView", () => {
   describe("sectionsConnection", () => {
     beforeEach(() => {
       mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-        return [
-          "onyx_enable-home-view-section-featured-fairs",
-          "diamond_home-view-marketing-collection-categories",
-        ].includes(flag)
+        return ["onyx_enable-home-view-section-featured-fairs"].includes(flag)
       })
     })
 
