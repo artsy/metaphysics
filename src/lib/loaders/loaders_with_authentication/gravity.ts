@@ -10,6 +10,24 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
+    addArtworkToPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string; artworkId: string; partnerId: string }
+    >(
+      ({ showId, partnerId, artworkId }) =>
+        `partner/${partnerId}/show/${showId}/artwork/${artworkId}`,
+      {},
+      { method: "POST" }
+    ),
+    removeArtworkFromPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string; artworkId: string; partnerId: string }
+    >(
+      ({ showId, partnerId, artworkId }) =>
+        `partner/${partnerId}/show/${showId}/artwork/${artworkId}`,
+      {},
+      { method: "DELETE" }
+    ),
     addUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},

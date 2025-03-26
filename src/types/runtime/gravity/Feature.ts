@@ -29,6 +29,7 @@ export const Feature = Record({
     source: String.Or(Undefined),
   }).Or(Null),
   created_at: String,
+  meta_title: String.Or(Null).Or(Undefined),
 })
 
 export type Feature = Static<typeof Feature>

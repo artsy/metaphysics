@@ -12,7 +12,7 @@ import { ResolverContext } from "types/graphql"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { OrderedSetConnection } from "../OrderedSet"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, existyValue } from "lib/helpers"
 import { OrderedSetSortsEnum } from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
 import { FeatureMetaType } from "./FeatureMeta"
@@ -43,6 +43,10 @@ export const FeatureType = new GraphQLObjectType<
     meta: {
       type: new GraphQLNonNull(FeatureMetaType),
       resolve: (feature) => feature,
+    },
+    metaTitle: {
+      type: GraphQLString,
+      resolve: ({ meta_title }) => existyValue(meta_title),
     },
     setsConnection: {
       type: OrderedSetConnection.connectionType,

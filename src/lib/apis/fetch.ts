@@ -37,7 +37,11 @@ export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
         )
         body = arrayParams
       } else {
-        body = parsedParams
+        // We need to allow `key: null` to be sent in a way that unsets (`null`), and not as an empty string
+        body = Object.keys(parsedParams).reduce((acc, key) => {
+          acc[key] = parsedParams[key] === "" ? null : parsedParams[key]
+          return acc
+        }, {})
       }
 
       opts.body = body

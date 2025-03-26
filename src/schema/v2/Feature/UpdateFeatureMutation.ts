@@ -35,6 +35,7 @@ interface GravityInput {
   layout?: string
   source_bucket?: string
   source_key?: string
+  meta_title?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -81,6 +82,7 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
     id: { type: new GraphQLNonNull(GraphQLString) },
     sourceBucket: { type: GraphQLString },
     sourceKey: { type: GraphQLString },
+    metaTitle: { type: GraphQLString },
   },
   outputFields: {
     featureOrError: {
@@ -96,21 +98,20 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
       )
     }
 
-    const { id, description, name, active, callout, subheadline, layout } = args
-
     const gravityArgs: GravityInput = {
-      description,
-      name,
-      active,
-      callout,
-      subheadline,
-      layout,
+      description: args.description,
+      name: args.name,
+      active: args.active,
+      callout: args.callout,
+      subheadline: args.subheadline,
+      layout: args.layout,
       source_bucket: args.sourceBucket,
       source_key: args.sourceKey,
+      meta_title: args.metaTitle,
     }
 
     try {
-      return await updateFeatureLoader(id, gravityArgs)
+      return await updateFeatureLoader(args.id, gravityArgs)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

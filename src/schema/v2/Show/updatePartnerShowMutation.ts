@@ -111,19 +111,19 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     const showIdentifiers = { partnerId, showId }
 
     const gravityArgs: {
-      featured: any
-      description: any
-      press_release: any
-      name: any
-      location_id: any
-      start_at?: any
-      end_at?: any
+      name: string
+      featured: boolean
+      description: string
+      press_release: string
+      partner_location: string
+      start_at?: number
+      end_at?: number
     } = {
       featured: args.featured,
       description: args.description,
       press_release: args.pressRelease,
       name: args.name,
-      location_id: args.locationId,
+      partner_location: args.locationId,
     }
 
     // Convert the date strings to Unix-style timestamps.

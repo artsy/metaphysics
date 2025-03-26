@@ -14,8 +14,15 @@ export const FeatureMetaType = new GraphQLObjectType<
   description: "Meta-tag related fields for Features",
   fields: () => ({
     name: {
+      deprecationReason: "Use `title` instead",
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ name }) => `${name} | Artsy`,
+    },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ name, meta_title }) => {
+        return meta_title || `${name} | Artsy`
+      },
     },
     description: {
       type: new GraphQLNonNull(GraphQLString),

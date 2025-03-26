@@ -227,12 +227,14 @@ import { MarketingCategories } from "./marketingCategories"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
+import { addArtworkToPartnerShowMutation } from "./Show/addArtworkToPartnerShowMutation"
 import { createPartnerShowMutation } from "./Show/createPartnerShowMutation"
 import { createPartnerShowEventMutation } from "./Show/createPartnerShowEventMutation"
 import { createPartnerShowDocumentMutation } from "./Show/createPartnerShowDocumentMutation"
 import { deletePartnerShowMutation } from "./Show/deletePartnerShowMutation"
 import { deletePartnerShowEventMutation } from "./Show/deletePartnerShowEventMutation"
 import { deletePartnerShowDocumentMutation } from "./Show/deletePartnerShowDocumentMutation"
+import { removeArtworkFromPartnerShowMutation } from "./Show/removeArtworkFromPartnerShowMutation"
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
@@ -433,6 +435,7 @@ export default new GraphQLSchema({
     name: "Mutation",
     fields: {
       ackTask: ackTaskMutation,
+      addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
@@ -532,6 +535,7 @@ export default new GraphQLSchema({
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       publishViewingRoom: publishViewingRoomMutation,
+      removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
