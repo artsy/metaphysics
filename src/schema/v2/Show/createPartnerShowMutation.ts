@@ -122,7 +122,6 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       featured: args.featured,
       description: args.description,
       press_release: args.pressRelease,
-      partner_location: args.locationId,
     }
 
     // Convert the date strings to Unix-style timestamps.
@@ -131,6 +130,10 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
     }
     if (args.endAt) {
       gravityArgs.end_at = moment(args.endAt).unix()
+    }
+
+    if (args.locationId) {
+      gravityArgs.partner_location = args.locationId
     }
 
     try {
