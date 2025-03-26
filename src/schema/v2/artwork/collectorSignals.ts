@@ -118,8 +118,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       },
       curatorsPick: {
         type: GraphQLBoolean,
-        description:
-          "Artwork is part of either the Curators' Pick Emerging or Blue Chip collections",
+        description: "Artwork is part of Curators' Pick Emerging collection",
         resolve: (artwork, {}, ctx) => getIsCuratorsPick(artwork, ctx),
       },
       lotWatcherCount: {
@@ -274,10 +273,7 @@ const getActivePartnerOffer = async (artwork, ctx) => {
 }
 
 const getIsCuratorsPick = async (artwork, ctx) => {
-  const CURATED_COLLECTION_SLUGS = [
-    "curators-picks-blue-chip-artists",
-    "curators-picks-emerging-artists",
-  ]
+  const CURATED_COLLECTION_SLUGS = ["curators-picks-emerging-artists"]
 
   const checks = await Promise.all(
     CURATED_COLLECTION_SLUGS.map(async (slug) => {
