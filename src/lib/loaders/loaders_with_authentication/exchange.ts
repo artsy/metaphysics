@@ -55,6 +55,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOrderSubmitLoader = exchangeLoader(
+    (id) => `me/orders/${id}/submit`,
+    {},
+    {
+      method: "POST",
+    }
+  )
+
   const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
@@ -95,5 +103,6 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderLoader,
     meOrderUpdateLoader,
     meOrderSetFulfillmentOptionLoader,
+    meOrderSubmitLoader,
   }
 }
