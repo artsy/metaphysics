@@ -15103,6 +15103,11 @@ type Mutation {
     # Parameters for RemoveAssetFromConsignmentSubmission
     input: RemoveAssetFromConsignmentSubmissionInput!
   ): RemoveAssetFromConsignmentSubmissionPayload
+
+  # Removes an installation shot from a partner show.
+  removeInstallShotFromPartnerShow(
+    input: RemoveInstallShotFromPartnerShowMutationInput!
+  ): RemoveInstallShotFromPartnerShowMutationPayload
   requestConditionReport(
     # Parameters for RequestConditionReport
     input: RequestConditionReportInput!
@@ -18991,6 +18996,35 @@ type RemoveAssetFromConsignmentSubmissionPayload {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+}
+
+type RemoveInstallShotFromPartnerShowFailure {
+  mutationError: GravityMutationError
+}
+
+input RemoveInstallShotFromPartnerShowMutationInput {
+  clientMutationId: String
+
+  # The ID of the installation shot image to remove.
+  imageId: String!
+
+  # The ID of the show.
+  showId: String!
+}
+
+type RemoveInstallShotFromPartnerShowMutationPayload {
+  clientMutationId: String
+
+  # On success: the show that the installation shot was removed from. On error: the error that occurred.
+  showOrError: RemoveInstallShotFromPartnerShowResponseOrError
+}
+
+union RemoveInstallShotFromPartnerShowResponseOrError =
+    RemoveInstallShotFromPartnerShowFailure
+  | RemoveInstallShotFromPartnerShowSuccess
+
+type RemoveInstallShotFromPartnerShowSuccess {
+  show: Show
 }
 
 type Request {
