@@ -28,6 +28,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    repositionArtworksInPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string; partnerId: string }
+    >(
+      ({ showId, partnerId }) =>
+        `partner/${partnerId}/show/${showId}/reposition`,
+      {},
+      { method: "POST" }
+    ),
     addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
       ({ showId }) => `partner_show/${showId}/image`,
       {},

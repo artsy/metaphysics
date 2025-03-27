@@ -237,6 +237,7 @@ import { deletePartnerShowEventMutation } from "./Show/deletePartnerShowEventMut
 import { deletePartnerShowDocumentMutation } from "./Show/deletePartnerShowDocumentMutation"
 import { removeArtworkFromPartnerShowMutation } from "./Show/removeArtworkFromPartnerShowMutation"
 import { removeInstallShotFromPartnerShowMutation } from "./Show/removeInstallShotFromPartnerShowMutation"
+import { repositionArtworksInPartnerShowMutation } from "./Show/repositionArtworksInPartnerShowMutation"
 import { updateInstallShotForPartnerShowMutation } from "./Show/updateInstallShotForPartnerShowMutation"
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
@@ -541,6 +542,7 @@ export default new GraphQLSchema({
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
+      repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
