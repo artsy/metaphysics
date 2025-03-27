@@ -404,6 +404,7 @@ const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
   name: "ExchangeError",
   fields: {
     message: { type: new GraphQLNonNull(GraphQLString) },
+    code: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 

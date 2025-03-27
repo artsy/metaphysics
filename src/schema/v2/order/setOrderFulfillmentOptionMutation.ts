@@ -10,6 +10,7 @@ import {
   OrderMutationResponseType,
   ORDER_MUTATION_FLAGS,
 } from "./sharedOrderTypes"
+import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {
   id: string
@@ -79,10 +80,7 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
 
       return updatedOrder
     } catch (error) {
-      return {
-        message: error.message,
-        _type: ORDER_MUTATION_FLAGS.ERROR,
-      }
+      return handleExchangeError(error)
     }
   },
 })
