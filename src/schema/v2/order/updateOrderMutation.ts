@@ -2,12 +2,16 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
+  OrderPaymentMethodEnum,
+  OrderCreditCardWalletTypeEnum,
 } from "./sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 interface Input {
   id: string
+  paymentMethod?: string
+  creditCardWalletType?: string
   buyerPhoneNumber?: string
   buyerPhoneNumberCountryCode?: string
   shippingName?: string
@@ -28,6 +32,14 @@ export const updateOrderMutation = mutationWithClientMutationId<
   description: "Update an order",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLID), description: "Order id." },
+    paymentMethod: {
+      type: OrderPaymentMethodEnum,
+      description: "Payment method.",
+    },
+    creditCardWalletType: {
+      type: OrderCreditCardWalletTypeEnum,
+      description: "Credit card wallet type",
+    },
     buyerPhoneNumber: {
       type: GraphQLString,
       description: "Buyer's phone number",
@@ -78,6 +90,8 @@ export const updateOrderMutation = mutationWithClientMutationId<
     }
     try {
       const exchangeInputFields = {
+        payment_method: input.paymentMethod,
+        credit_card_wallet_type: input.creditCardWalletType,
         buyer_phone_number: input.buyerPhoneNumber,
         buyer_phone_number_country_code: input.buyerPhoneNumberCountryCode,
         shipping_name: input.shippingName,

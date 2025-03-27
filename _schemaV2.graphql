@@ -15806,6 +15806,10 @@ type Order {
   taxTotal: Money
 }
 
+enum OrderCreditCardWalletTypeEnum {
+  APPLE_PAY
+}
+
 enum OrderModeEnum {
   BUY
   OFFER
@@ -15820,6 +15824,10 @@ type OrderMutationSuccess {
 }
 
 union OrderParty = Partner | User
+
+enum OrderPaymentMethodEnum {
+  CREDIT_CARD
+}
 
 enum OrderSourceEnum {
   ARTWORK_PAGE
@@ -24517,8 +24525,14 @@ input updateOrderInput {
   buyerPhoneNumberCountryCode: String
   clientMutationId: String
 
+  # Credit card wallet type
+  creditCardWalletType: OrderCreditCardWalletTypeEnum
+
   # Order id.
   id: ID!
+
+  # Payment method.
+  paymentMethod: OrderPaymentMethodEnum
 
   # Shipping address line 1
   shippingAddressLine1: String
