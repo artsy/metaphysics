@@ -228,6 +228,7 @@ import { createCareerHighlightMutation } from "./careerHighlight/createCareerHig
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { addArtworkToPartnerShowMutation } from "./Show/addArtworkToPartnerShowMutation"
+import { addInstallShotToPartnerShowMutation } from "./Show/addInstallShotToPartnerShowMutation"
 import { createPartnerShowMutation } from "./Show/createPartnerShowMutation"
 import { createPartnerShowEventMutation } from "./Show/createPartnerShowEventMutation"
 import { createPartnerShowDocumentMutation } from "./Show/createPartnerShowDocumentMutation"
@@ -436,6 +437,7 @@ export default new GraphQLSchema({
     fields: {
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
+      addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,

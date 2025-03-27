@@ -28,6 +28,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
+      ({ showId }) => `partner_show/${showId}/image`,
+      {},
+      { method: "POST" }
+    ),
     addUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
