@@ -15243,6 +15243,11 @@ type Mutation {
     input: UpdateHeroUnitMutationInput!
   ): UpdateHeroUnitMutationPayload
 
+  # Updates an installation shot for a partner show.
+  updateInstallShotForPartnerShow(
+    input: UpdateInstallShotForPartnerShowMutationInput!
+  ): UpdateInstallShotForPartnerShowMutationPayload
+
   # Updates the user's collections in batch.
   updateMeCollectionsMutation(
     input: updateMeCollectionsMutationInput!
@@ -21360,6 +21365,37 @@ type UpdateHeroUnitMutationPayload {
 
   # On success: the hero unit updated.
   heroUnitOrError: updateHeroUnitResponseOrError
+}
+
+type UpdateInstallShotForPartnerShowFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateInstallShotForPartnerShowMutationInput {
+  # The updated caption for the installation shot.
+  caption: String!
+  clientMutationId: String
+
+  # The ID of the installation shot image to update.
+  imageId: String!
+
+  # The ID of the show.
+  showId: String!
+}
+
+type UpdateInstallShotForPartnerShowMutationPayload {
+  clientMutationId: String
+
+  # On success: the show that contains the updated installation shot. On error: the error that occurred.
+  showOrError: UpdateInstallShotForPartnerShowResponseOrError
+}
+
+union UpdateInstallShotForPartnerShowResponseOrError =
+    UpdateInstallShotForPartnerShowFailure
+  | UpdateInstallShotForPartnerShowSuccess
+
+type UpdateInstallShotForPartnerShowSuccess {
+  show: Show
 }
 
 input UpdateMeCollectionInput {

@@ -41,6 +41,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    updateInstallShotLoader: gravityLoader<
+      any,
+      { showId: string; imageId: string }
+    >(
+      ({ showId, imageId }) => `partner_show/${showId}/image/${imageId}`,
+      {},
+      { method: "PUT" }
+    ),
     addUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
