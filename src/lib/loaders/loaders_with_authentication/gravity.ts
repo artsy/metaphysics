@@ -37,6 +37,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    repositionInstallShotsInPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string }
+    >(
+      ({ showId }) => `partner_show/${showId}/images/reposition`,
+      {},
+      { method: "POST" }
+    ),
     addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
       ({ showId }) => `partner_show/${showId}/image`,
       {},
