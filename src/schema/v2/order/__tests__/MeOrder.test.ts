@@ -186,5 +186,69 @@ describe("Me", () => {
         ],
       })
     })
+
+    describe("taxTotal", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              taxTotal {
+                minor
+              }
+            }
+          }
+        }
+      `
+      it("returns taxTotal when present", async () => {
+        orderJson.tax_total_cents = 4299
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.taxTotal).toEqual({
+          minor: 4299,
+        })
+      })
+
+      it("returns 0 when taxTotal is 0", async () => {
+        orderJson.tax_total_cents = 0
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.taxTotal).toEqual({
+          minor: 0,
+        })
+      })
+
+      it("returns null when taxTotal is not present", async () => {
+        orderJson.tax_total_cents = null
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.taxTotal).toEqual(null)
+      })
+    })
   })
 })
