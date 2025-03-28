@@ -4,6 +4,7 @@ import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import { ResolverContext } from "types/graphql"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -17,22 +18,40 @@ export const QuickLinks: HomeViewSection = {
 }
 
 function getDisplayableQuickLinks(context: ResolverContext) {
+  /**
+   * Has to be in sync with the echo flag AREnableFavoritesTab!
+   */
+
   return QUICK_LINKS.filter((quickLink) => {
     let isDisplayable = true
     const actualEigenVersion = getEigenVersionNumber(
       context.userAgent as string
     )
+
     if (actualEigenVersion && quickLink.minimumEigenVersion) {
       isDisplayable = isAtLeastVersion(
         actualEigenVersion,
         quickLink.minimumEigenVersion
       )
     }
+
+    if (quickLink.featureFlag) {
+      isDisplayable = isFeatureFlagEnabled(quickLink.featureFlag)
+    }
+
     return isDisplayable
   })
 }
 
 export const QUICK_LINKS: Array<NavigationPill> = [
+  {
+    title: "Saves",
+    href: "/favorites-new",
+    ownerType: OwnerType.saves,
+    icon: "HeartStrokeIcon",
+    minimumEigenVersion: { major: 8, minor: 68, patch: 0 },
+    featureFlag: "onyx_favorites-tab",
+  },
   {
     title: "Saves",
     href: "/favorites/saves",

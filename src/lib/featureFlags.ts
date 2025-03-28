@@ -14,6 +14,7 @@ const FEATURE_FLAGS_LIST = [
   "diamond_home-view-infinite-discovery",
   "onyx_experiment_home_view_test",
   "emerald_clientside-collector-signals",
+  "onyx_favorites-tab",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
