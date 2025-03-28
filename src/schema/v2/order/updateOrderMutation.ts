@@ -7,6 +7,7 @@ import {
 } from "./sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {
   id: string
@@ -112,7 +113,7 @@ export const updateOrderMutation = mutationWithClientMutationId<
       updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
       return updatedOrder
     } catch (error) {
-      return { message: error.message, _type: ORDER_MUTATION_FLAGS.ERROR }
+      return handleExchangeError(error)
     }
   },
 })
