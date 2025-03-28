@@ -14,12 +14,16 @@ import { LocationType } from "../location"
 
 interface Input {
   partnerID: string
-  name?: string
-  // position?: string
-  // canContact?: boolean
-  // email?: string
-  // phone?: string
-  // locationID?: string
+  addressType: string
+  country: string
+  addressLine: string
+  addressLine2?: string
+  city: string
+  state?: string
+  postalCode: string
+  email?: string
+  phone?: string
+  publiclyViewable?: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
