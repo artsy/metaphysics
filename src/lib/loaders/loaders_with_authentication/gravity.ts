@@ -290,6 +290,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerLocationLoader: gravityLoader(
+      (id) => `partner/${id}/location`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerOfferLoader: gravityLoader(
       "partner_offer",
       {},
@@ -899,7 +904,7 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
-    partnerLocationsConnectionLoader: gravityLoader(
+    partnerLocationsLoader: gravityLoader(
       (id) => `partner/${id}/locations`,
       {},
       { headers: true }
