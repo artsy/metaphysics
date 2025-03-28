@@ -290,6 +290,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerLocationLoader: gravityLoader(
+      (id) => `partner/${id}/location`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerOfferLoader: gravityLoader(
       "partner_offer",
       {},
