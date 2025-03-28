@@ -18,8 +18,8 @@ interface Input {
   partnerID: string
   addressType: string
   country: string
-  addressLine: string
-  addressLine2?: string
+  address: string
+  address2?: string
   city: string
   state?: string
   postalCode: string
@@ -50,16 +50,9 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-// Check why this custom stuff is needed
 const ResponseOrErrorType = new GraphQLUnionType({
   name: "CreatePartnerLocationOrError",
   types: [SuccessType, FailureType],
-  resolveType: (value) => {
-    if (value?._type === "GravityMutationError") {
-      return "CreatePartnerLocationFailure"
-    }
-    return "CreatePartnerLocationSuccess"
-  },
 })
 
 export const CreatePartnerLocationMutation = mutationWithClientMutationId<
@@ -87,10 +80,10 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
     country: {
       type: GraphQLString,
     },
-    addressLine: {
+    address: {
       type: GraphQLString,
     },
-    addressLine2: {
+    address2: {
       type: GraphQLString,
     },
     city: {
@@ -125,8 +118,8 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (
     {
       addressType,
-      addressLine,
-      addressLine2,
+      address,
+      address2,
       city,
       state,
       country,
@@ -144,11 +137,10 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
 
     try {
       const response = await createPartnerLocationLoader(partnerID, {
-        name: "OMG IM REQUIRED",
         address_type: addressType,
         country,
-        address: addressLine,
-        address_2: addressLine2,
+        address,
+        address_2: address2,
         city,
         state,
         postal_code: postalCode,

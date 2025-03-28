@@ -8968,8 +8968,8 @@ type CreatePartnerLocationFailure {
 }
 
 input CreatePartnerLocationInput {
-  addressLine: String
-  addressLine2: String
+  address: String
+  address2: String
   addressType: locationType
   city: String
   clientMutationId: String
