@@ -178,6 +178,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    addImageToArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}/image`,
+      {},
+      { method: "POST" }
+    ),
     createCommerceOptInEligibleArtworksReportLoader: gravityLoader(
       (id) => `partner/${id}/commerce_opt_in_eligible_artworks_report`,
       {},
