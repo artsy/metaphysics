@@ -140,6 +140,7 @@ import { channel } from "./article/channel"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
+import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
@@ -461,6 +462,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createArtwork: createArtworkMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
