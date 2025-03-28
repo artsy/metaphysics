@@ -140,6 +140,7 @@ import { channel } from "./article/channel"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
+import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
@@ -237,6 +238,8 @@ import { deletePartnerShowEventMutation } from "./Show/deletePartnerShowEventMut
 import { deletePartnerShowDocumentMutation } from "./Show/deletePartnerShowDocumentMutation"
 import { removeArtworkFromPartnerShowMutation } from "./Show/removeArtworkFromPartnerShowMutation"
 import { removeInstallShotFromPartnerShowMutation } from "./Show/removeInstallShotFromPartnerShowMutation"
+import { repositionArtworksInPartnerShowMutation } from "./Show/repositionArtworksInPartnerShowMutation"
+import { repositionInstallShotsInPartnerShowMutation } from "./Show/repositionInstallShotsInPartnerShowMutation"
 import { updateInstallShotForPartnerShowMutation } from "./Show/updateInstallShotForPartnerShowMutation"
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
@@ -290,7 +293,11 @@ import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImp
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
-import { updateOrderMutation, setOrderFulfillmentOptionMutation } from "./order"
+import {
+  updateOrderMutation,
+  setOrderFulfillmentOptionMutation,
+  submitOrderMutation,
+} from "./order"
 import { CreatePartnerContactMutation } from "./partner/createPartnerContactMutation"
 
 const rootFields = {
@@ -455,6 +462,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createArtwork: createArtworkMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
@@ -541,6 +549,8 @@ export default new GraphQLSchema({
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
+      repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
+      repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
@@ -551,6 +561,7 @@ export default new GraphQLSchema({
       setOrderFulfillmentOption: setOrderFulfillmentOptionMutation,
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
+      submitOrder: submitOrderMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,

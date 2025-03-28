@@ -15,27 +15,28 @@ import {
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
 
 interface Input {
-  description?: string
-  name?: string
   active?: boolean
   callout?: string
-  subheadline?: string
-  layout?: string
+  description?: string
   id: string
+  layout?: string
+  metaTitle?: string
+  name?: string
   sourceBucket?: string
   sourceKey?: string
+  subheadline?: string
 }
 
 interface GravityInput {
-  description?: string
-  name?: string
   active?: boolean
   callout?: string
-  subheadline?: string
+  description?: string
   layout?: string
+  meta_title?: string
+  name?: string
   source_bucket?: string
   source_key?: string
-  meta_title?: string
+  subheadline?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -73,16 +74,16 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
   name: "UpdateFeatureMutation",
   description: "updates a feature.",
   inputFields: {
-    description: { type: GraphQLString },
-    layout: { type: FeatureLayoutsEnum },
-    name: { type: GraphQLString },
     active: { type: GraphQLBoolean },
     callout: { type: GraphQLString },
-    subheadline: { type: GraphQLString },
+    description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    layout: { type: FeatureLayoutsEnum },
+    metaTitle: { type: GraphQLString },
+    name: { type: GraphQLString },
     sourceBucket: { type: GraphQLString },
     sourceKey: { type: GraphQLString },
-    metaTitle: { type: GraphQLString },
+    subheadline: { type: GraphQLString },
   },
   outputFields: {
     featureOrError: {
@@ -99,15 +100,15 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs: GravityInput = {
-      description: args.description,
-      name: args.name,
       active: args.active,
       callout: args.callout,
-      subheadline: args.subheadline,
+      description: args.description,
       layout: args.layout,
+      meta_title: args.metaTitle,
+      name: args.name,
       source_bucket: args.sourceBucket,
       source_key: args.sourceKey,
-      meta_title: args.metaTitle,
+      subheadline: args.subheadline,
     }
 
     try {

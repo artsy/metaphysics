@@ -28,6 +28,23 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    repositionArtworksInPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string; partnerId: string }
+    >(
+      ({ showId, partnerId }) =>
+        `partner/${partnerId}/show/${showId}/reposition`,
+      {},
+      { method: "POST" }
+    ),
+    repositionInstallShotsInPartnerShowLoader: gravityLoader<
+      any,
+      { showId: string }
+    >(
+      ({ showId }) => `partner_show/${showId}/images/reposition`,
+      {},
+      { method: "POST" }
+    ),
     addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
       ({ showId }) => `partner_show/${showId}/image`,
       {},
@@ -158,6 +175,11 @@ export default (accessToken, userID, opts) => {
     ),
     createArtworkImportLoader: gravityLoader(
       "artwork_import",
+      {},
+      { method: "POST" }
+    ),
+    addImageToArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}/image`,
       {},
       { method: "POST" }
     ),

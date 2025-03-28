@@ -86,6 +86,24 @@ const OrderSourceEnum = new GraphQLEnumType({
   },
 })
 
+export const OrderPaymentMethodEnum = new GraphQLEnumType({
+  name: "OrderPaymentMethodEnum",
+  values: {
+    CREDIT_CARD: {
+      value: "credit card",
+    },
+  },
+})
+
+export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
+  name: "OrderCreditCardWalletTypeEnum",
+  values: {
+    APPLE_PAY: {
+      value: "apple_pay",
+    },
+  },
+})
+
 // Enum for fulfillment_option.type field
 const FulfillmentOptionTypeEnum = new GraphQLEnumType({
   name: "FulfillmentOptionTypeEnum",
