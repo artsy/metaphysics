@@ -8968,13 +8968,26 @@ type CreatePartnerLocationFailure {
 }
 
 input CreatePartnerLocationInput {
+  addressLine: String
+  addressLine2: String
+  addressType: locationType
+  city: String
   clientMutationId: String
+  country: String
 
-  # Location name
-  name: String
+  # Primary email of given location
+  email: String
 
   # ID of the partner
   partnerID: String!
+
+  # Primary phone of given location
+  phone: String
+  postalCode: String
+
+  # Boolean flag that denotes whether a location is publicly viewable on Partner's Artsy Profile
+  publiclyViewable: Boolean
+  state: String
 }
 
 union CreatePartnerLocationOrError =
@@ -24465,6 +24478,12 @@ type deleteUserRoleSuccess {
 type dimensions {
   cm: String
   in: String
+}
+
+enum locationType {
+  BUSINESS
+  OTHER
+  TEMPORARY
 }
 
 type partnerBiographyBlurb {

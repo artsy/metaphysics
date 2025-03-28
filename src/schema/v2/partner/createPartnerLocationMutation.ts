@@ -1,4 +1,6 @@
 import {
+  GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -72,9 +74,46 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
-    name: {
+    addressType: {
+      type: new GraphQLEnumType({
+        name: "locationType",
+        values: {
+          BUSINESS: { value: "Business" },
+          TEMPORARY: { value: "Temporary" },
+          OTHER: { value: "Other" },
+        },
+      }),
+    },
+    country: {
       type: GraphQLString,
-      description: "Location name",
+    },
+    addressLine: {
+      type: GraphQLString,
+    },
+    addressLine2: {
+      type: GraphQLString,
+    },
+    city: {
+      type: GraphQLString,
+    },
+    state: {
+      type: GraphQLString,
+    },
+    postalCode: {
+      type: GraphQLString,
+    },
+    email: {
+      type: GraphQLString,
+      description: "Primary email of given location",
+    },
+    phone: {
+      type: GraphQLString,
+      description: "Primary phone of given location",
+    },
+    publiclyViewable: {
+      type: GraphQLBoolean,
+      description:
+        "Boolean flag that denotes whether a location is publicly viewable on Partner's Artsy Profile",
     },
   },
   outputFields: {
@@ -84,7 +123,19 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerID },
+    {
+      addressType,
+      addressLine,
+      addressLine2,
+      city,
+      state,
+      country,
+      postalCode,
+      email,
+      phone,
+      publiclyViewable,
+      partnerID,
+    },
     { createPartnerLocationLoader }
   ) => {
     if (!createPartnerLocationLoader) {
@@ -93,7 +144,17 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
 
     try {
       const response = await createPartnerLocationLoader(partnerID, {
-        name: "Happy Gallery",
+        name: "OMG IM REQUIRED",
+        address_type: addressType,
+        country,
+        address: addressLine,
+        address_2: addressLine2,
+        city,
+        state,
+        postal_code: postalCode,
+        email,
+        phone,
+        publicly_viewable: publiclyViewable,
       })
 
       return response

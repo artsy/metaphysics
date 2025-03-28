@@ -904,7 +904,7 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
-    partnerLocationsLoader: gravityLoader(
+    partnerLocationsConnectionLoader: gravityLoader(
       (id) => `partner/${id}/locations`,
       {},
       { headers: true }
