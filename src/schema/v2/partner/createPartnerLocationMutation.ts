@@ -152,9 +152,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
-      console.log(formattedErr)
       if (formattedErr) {
-        console.log("hello?")
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
         throw new Error(error)
