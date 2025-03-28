@@ -137,22 +137,24 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
 
     try {
       const response = await createPartnerLocationLoader(partnerID, {
-        address_type: addressType,
-        country,
         address,
         address_2: address2,
+        address_type: addressType,
         city,
-        state,
-        postal_code: postalCode,
+        country,
         email,
         phone,
+        postal_code: postalCode,
         publicly_viewable: publiclyViewable,
+        state,
       })
 
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
+      console.log(formattedErr)
       if (formattedErr) {
+        console.log("hello?")
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
         throw new Error(error)
