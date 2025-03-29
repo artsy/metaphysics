@@ -18,6 +18,7 @@ interface CreateArtworkMutationInputProps {
   partnerId: string
   imageS3Bucket: string
   imageS3Key: string
+  partnerShowId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -66,6 +67,11 @@ export const createArtworkMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the partner under which the artwork is created.",
     },
+    partnerShowId: {
+      type: GraphQLString,
+      description:
+        "If present, the newly created artwork will be added to this show.",
+    },
     imageS3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The S3 bucket where the artwork image is stored.",
@@ -84,48 +90,53 @@ export const createArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artistIds, imageS3Bucket, imageS3Key, partnerId },
-    { createArtworkLoader, addImageToArtworkLoader }
+    { artistIds, imageS3Bucket, imageS3Key, partnerId, partnerShowId },
+    {
+      createArtworkLoader,
+      addImageToArtworkLoader,
+      addArtworkToPartnerShowLoader,
+    }
   ) => {
-    if (!createArtworkLoader || !addImageToArtworkLoader) {
+    if (
+      !createArtworkLoader ||
+      !addImageToArtworkLoader ||
+      !addArtworkToPartnerShowLoader
+    ) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    // Step 1: Create the artwork with artist IDs
-    const createArtworkData = {
-      artists: artistIds,
-      partner: partnerId,
+    const handleError = (error) => {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      }
+      throw new Error(error)
+    }
+
+    const createArtwork = async () => {
+      const data = { artists: artistIds, partner: partnerId }
+      return await createArtworkLoader(data)
+    }
+
+    const addImageToArtwork = async (artworkId: string) => {
+      const imageData = { source_bucket: imageS3Bucket, source_key: imageS3Key }
+      return await addImageToArtworkLoader(artworkId, imageData)
+    }
+
+    const addArtworkToShow = async (artworkId: string) => {
+      const identifiers = { showId: partnerShowId, artworkId, partnerId }
+      return await addArtworkToPartnerShowLoader(identifiers)
     }
 
     try {
-      const artwork = await createArtworkLoader(createArtworkData)
-
-      const imageData = {
-        source_bucket: imageS3Bucket,
-        source_key: imageS3Key,
+      const artwork = await createArtwork()
+      await addImageToArtwork(artwork._id)
+      if (partnerShowId) {
+        await addArtworkToShow(artwork._id)
       }
-
-      try {
-        await addImageToArtworkLoader(artwork._id, imageData)
-
-        return { artworkId: artwork._id }
-      } catch (imageError) {
-        // Handle image upload error
-        const formattedImageErr = formatGravityError(imageError)
-        if (formattedImageErr) {
-          return { ...formattedImageErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(imageError)
-        }
-      }
-    } catch (artworkError) {
-      // Handle artwork creation error
-      const formattedArtworkErr = formatGravityError(artworkError)
-      if (formattedArtworkErr) {
-        return { ...formattedArtworkErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(artworkError)
-      }
+      return { artworkId: artwork._id }
+    } catch (error) {
+      return handleError(error)
     }
   },
 })

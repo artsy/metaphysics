@@ -26,6 +26,7 @@ const mockMutation = `
         ... on OrderMutationError {
           mutationError {
             message
+            code
           }
         }
       }
@@ -100,10 +101,11 @@ describe("setOrderFulfillmentOption", () => {
     )
   })
 
-  it("propagates an error", async () => {
-    context.meOrderSetFulfillmentOptionLoader = jest
-      .fn()
-      .mockRejectedValue(new Error("Oops - Error updating order"))
+  it("propagates an unknown error", async () => {
+    context.meOrderSetFulfillmentOptionLoader = jest.fn().mockRejectedValue({
+      message: "An error occurred",
+      statusCode: 500,
+    })
     const result = await runAuthenticatedQuery(mockMutation, context)
 
     expect(result.errors).toBeUndefined()
@@ -111,7 +113,31 @@ describe("setOrderFulfillmentOption", () => {
       setOrderFulfillmentOption: {
         orderOrError: {
           mutationError: {
-            message: "Oops - Error updating order",
+            message: "An error occurred",
+            code: "internal_error",
+          },
+        },
+      },
+    })
+  })
+
+  it("propagates a 422 error from exchange", async () => {
+    context.meOrderSetFulfillmentOptionLoader = jest.fn().mockRejectedValue({
+      statusCode: 422,
+      body: {
+        message: "Invalid fulfillment option: rocket_ship",
+        code: "invalid_fulfillment_option",
+      },
+    })
+    const result = await runAuthenticatedQuery(mockMutation, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      setOrderFulfillmentOption: {
+        orderOrError: {
+          mutationError: {
+            message: "Invalid fulfillment option: rocket_ship",
+            code: "invalid_fulfillment_option",
           },
         },
       },
