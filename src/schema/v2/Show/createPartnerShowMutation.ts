@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -84,6 +85,14 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The id of the partner to create the show for.",
     },
+    fairId: {
+      type: GraphQLString,
+      description: "The id of the fair to create the show for.",
+    },
+    fairBooth: {
+      type: GraphQLString,
+      description: "The booth of the fair to create the show for.",
+    },
     pressRelease: {
       type: GraphQLString,
       description: "The press release of the show.",
@@ -91,6 +100,10 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
     startAt: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The start date of the show.",
+    },
+    viewingRoomIds: {
+      type: new GraphQLList(GraphQLString),
+      description: "The viewing room ids of the show.",
     },
   },
   outputFields: {
@@ -117,23 +130,18 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       partner_location?: string
       start_at?: number
       end_at?: number
+      fair?: string
     } = {
       name: args.name,
       featured: args.featured,
       description: args.description,
       press_release: args.pressRelease,
-    }
-
-    // Convert the date strings to Unix-style timestamps.
-    if (args.startAt) {
-      gravityArgs.start_at = moment(args.startAt).unix()
-    }
-    if (args.endAt) {
-      gravityArgs.end_at = moment(args.endAt).unix()
-    }
-
-    if (args.locationId) {
-      gravityArgs.partner_location = args.locationId
+      start_at: moment(args.startAt).unix(),
+      end_at: moment(args.endAt).unix(),
+      partner_location: args.locationId,
+      fair: args.fairId,
+      ...(args.fairBooth && { fair_location: { booth: args.fairBooth } }),
+      viewing_room_ids: args.viewingRoomIds,
     }
 
     try {
