@@ -299,6 +299,7 @@ import {
   submitOrderMutation,
 } from "./order"
 import { CreatePartnerContactMutation } from "./partner/createPartnerContactMutation"
+import { CreatePartnerLocationMutation } from "./partner/createPartnerLocationMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -484,6 +485,7 @@ export default new GraphQLSchema({
       createInvoicePayment: createInvoicePaymentMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
+      createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,

@@ -19,6 +19,7 @@ const mockMutation = `
         ...on OrderMutationError {
           mutationError {
             message
+            code
           }
         }
         ...on OrderMutationSuccess {
@@ -158,7 +159,31 @@ describe("updateOrderMutation", () => {
       updateOrder: {
         orderOrError: {
           mutationError: {
-            message: "Oops - Error updating order",
+            message: "An error occurred",
+            code: "internal_error",
+          },
+        },
+      },
+    })
+  })
+
+  it("propagates a 422 error from exchange", async () => {
+    context.meOrderUpdateLoader = jest.fn().mockRejectedValue({
+      statusCode: 422,
+      body: {
+        message: "order_not_pending: submitted",
+        code: "order_not_pending",
+      },
+    })
+    const result = await runAuthenticatedQuery(mockMutation, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      updateOrder: {
+        orderOrError: {
+          mutationError: {
+            message: "order_not_pending: submitted",
+            code: "order_not_pending",
           },
         },
       },
