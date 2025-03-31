@@ -16,13 +16,11 @@ export const FeatureMetaType = new GraphQLObjectType<
     name: {
       deprecationReason: "Use `title` instead",
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name }) => `${name} | Artsy`,
+      resolve: titleResolver,
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name, meta_title }) => {
-        return meta_title || `${name} | Artsy`
-      },
+      resolve: titleResolver,
     },
     description: {
       type: new GraphQLNonNull(GraphQLString),
@@ -40,3 +38,7 @@ export const FeatureMetaType = new GraphQLObjectType<
     },
   }),
 })
+
+const titleResolver = ({ name, meta_title }: Gravity.Feature) => {
+  return meta_title || `${name} | Artsy`
+}
