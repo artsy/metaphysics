@@ -300,6 +300,7 @@ import {
 } from "./order"
 import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
+import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -589,6 +590,7 @@ export default new GraphQLSchema({
       updateOrder: updateOrderMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updatePage: UpdatePageMutation,
+      updatePartnerContact: UpdatePartnerContactMutation,
       updatePartnerShow: updatePartnerShowMutation,
       updateQuiz: updateQuizMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,

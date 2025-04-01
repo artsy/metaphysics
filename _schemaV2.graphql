@@ -15390,6 +15390,11 @@ type Mutation {
   # Updates a page.
   updatePage(input: UpdatePageMutationInput!): UpdatePageMutationPayload
 
+  # Updates an existing contact for a partner
+  updatePartnerContact(
+    input: UpdatePartnerContactInput!
+  ): UpdatePartnerContactPayload
+
   # Updates a partner show.
   updatePartnerShow(
     input: UpdatePartnerShowMutationInput!
@@ -21821,6 +21826,50 @@ union UpdatePageResponseOrError = UpdatePageFailure | UpdatePageSuccess
 
 type UpdatePageSuccess {
   page: Page
+}
+
+type UpdatePartnerContactFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerContactInput {
+  # If true, send all user inquiries and order notifications to this contact.
+  canContact: Boolean
+  clientMutationId: String
+
+  # ID of the contact to update
+  contactID: String!
+
+  # Email address of the contact
+  email: String
+
+  # ID of the contact's partner location
+  locationID: String
+
+  # Contact's name
+  name: String
+
+  # ID of the partner
+  partnerID: String!
+
+  # Phone number of the contact
+  phone: String
+
+  # Contact's position at the partner
+  position: String
+}
+
+union UpdatePartnerContactOrError =
+    UpdatePartnerContactFailure
+  | UpdatePartnerContactSuccess
+
+type UpdatePartnerContactPayload {
+  clientMutationId: String
+  partnerContactOrError: UpdatePartnerContactOrError
+}
+
+type UpdatePartnerContactSuccess {
+  partnerContact: Contact
 }
 
 type UpdatePartnerShowDocumentFailure {
