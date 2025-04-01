@@ -1,21 +1,18 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("UpdatePartnerContactMutation", () => {
+describe("DeletePartnerContactMutation", () => {
   const mutation = gql`
     mutation {
-      updatePartnerContact(
-        input: { partnerId: "foo", contactId: "bar", email: "test@test.com" }
-      ) {
+      deletePartnerContact(input: { partnerId: "foo", contactId: "bar" }) {
         partnerContactOrError {
           __typename
-          ... on UpdatePartnerContactSuccess {
+          ... on DeletePartnerContactSuccess {
             partnerContact {
               internalID
-              email
             }
           }
-          ... on UpdatePartnerContactFailure {
+          ... on DeletePartnerContactFailure {
             mutationError {
               message
             }
@@ -25,25 +22,23 @@ describe("UpdatePartnerContactMutation", () => {
     }
   `
 
-  it("updates the partner contact", async () => {
+  it("deletes the partner contact", async () => {
     const context = {
-      updatePartnerContactLoader: () =>
+      deletePartnerContactLoader: () =>
         // Gravity returns id as it is PSQL backed
         Promise.resolve({
           id: "bar",
-          email: "test@test.com",
         }),
     }
 
-    const updatedPartner = await runAuthenticatedQuery(mutation, context)
+    const deletedPartner = await runAuthenticatedQuery(mutation, context)
 
-    expect(updatedPartner).toEqual({
-      updatePartnerContact: {
+    expect(deletedPartner).toEqual({
+      deletePartnerContact: {
         partnerContactOrError: {
-          __typename: "UpdatePartnerContactSuccess",
+          __typename: "DeletePartnerContactSuccess",
           partnerContact: {
             internalID: "bar",
-            email: "test@test.com",
           },
         },
       },
@@ -53,7 +48,7 @@ describe("UpdatePartnerContactMutation", () => {
   describe("when failure", () => {
     it("returns an error", async () => {
       const context = {
-        updatePartnerContactLoader: () =>
+        deletePartnerContactLoader: () =>
           Promise.reject(
             new Error(
               `https://stagingapi.artsy.net/api/v1/partners/foo/contact/bar - {"type":"error","message":"Contact not found"}`
@@ -61,12 +56,12 @@ describe("UpdatePartnerContactMutation", () => {
           ),
       }
 
-      const updatedPartner = await runAuthenticatedQuery(mutation, context)
+      const deletedPartner = await runAuthenticatedQuery(mutation, context)
 
-      expect(updatedPartner).toEqual({
-        updatePartnerContact: {
+      expect(deletedPartner).toEqual({
+        deletePartnerContact: {
           partnerContactOrError: {
-            __typename: "UpdatePartnerContactFailure",
+            __typename: "DeletePartnerContactFailure",
             mutationError: {
               message: "Contact not found",
             },
