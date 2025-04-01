@@ -25,7 +25,7 @@ interface Input {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerContactSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
     partnerContact: {
       type: ContactType,
