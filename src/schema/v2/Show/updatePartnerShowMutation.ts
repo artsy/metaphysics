@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -17,7 +18,16 @@ import moment from "moment"
 interface UpdatePartnerShowMutationInputProps {
   partnerId: string
   showId: string
-  featured: boolean
+  featured?: boolean
+  description?: string
+  endAt?: string
+  locationId?: string
+  name?: string
+  pressRelease?: string
+  startAt?: string
+  fairId?: string
+  fairBooth?: string
+  viewingRoomIds?: string[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -53,7 +63,7 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdatePartnerShowMutation",
-  description: "Updates a partner artist.",
+  description: "Updates a partner show.",
   inputFields: {
     description: {
       type: GraphQLString,
@@ -85,18 +95,30 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     },
     showId: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the artist to update.",
+      description: "The id of the show to update.",
     },
     startAt: {
       type: GraphQLString,
       description: "The start date of the show.",
+    },
+    fairId: {
+      type: GraphQLString,
+      description: "The id of the fair to update the show for.",
+    },
+    fairBooth: {
+      type: GraphQLString,
+      description: "The booth of the fair to update the show for.",
+    },
+    viewingRoomIds: {
+      type: new GraphQLList(GraphQLString),
+      description: "The viewing room ids of the show.",
     },
   },
   outputFields: {
     showOrError: {
       type: ResponseOrErrorType,
       description:
-        "On success: the updated partner. On error: the error that occurred.",
+        "On success: the updated partner show. On error: the error that occurred.",
       resolve: (result) => result,
     },
   },
@@ -110,28 +132,29 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
 
     const showIdentifiers = { partnerId, showId }
 
-    const gravityArgs: {
-      name: string
-      featured: boolean
-      description: string
-      press_release: string
-      partner_location: string
-      start_at?: number
-      end_at?: number
-    } = {
-      featured: args.featured,
-      description: args.description,
-      press_release: args.pressRelease,
-      name: args.name,
-      partner_location: args.locationId,
-    }
+    const addField = (key, value) =>
+      value !== undefined ? { [key]: value } : {}
 
-    // Convert the date strings to Unix-style timestamps.
-    if (args.startAt) {
-      gravityArgs.start_at = moment(args.startAt).unix()
-    }
-    if (args.endAt) {
-      gravityArgs.end_at = moment(args.endAt).unix()
+    const gravityArgs = {
+      ...addField("name", args.name),
+      ...addField("featured", args.featured),
+      ...addField("description", args.description),
+      ...addField("press_release", args.pressRelease),
+      ...addField("partner_location", args.locationId),
+      ...addField(
+        "start_at",
+        args.startAt !== undefined ? moment(args.startAt).unix() : undefined
+      ),
+      ...addField(
+        "end_at",
+        args.endAt !== undefined ? moment(args.endAt).unix() : undefined
+      ),
+      ...addField("fair", args.fairId),
+      ...addField(
+        "fair_location",
+        args.fairBooth !== undefined ? { booth: args.fairBooth } : undefined
+      ),
+      ...addField("viewing_room_ids", args.viewingRoomIds),
     }
 
     try {
