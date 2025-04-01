@@ -21838,19 +21838,19 @@ input UpdatePartnerContactInput {
   clientMutationId: String
 
   # ID of the contact to update
-  contactID: String!
+  contactId: String!
 
   # Email address of the contact
   email: String
 
   # ID of the contact's partner location
-  locationID: String
+  locationId: String
 
   # Contact's name
   name: String
 
   # ID of the partner
-  partnerID: String!
+  partnerId: String!
 
   # Phone number of the contact
   phone: String

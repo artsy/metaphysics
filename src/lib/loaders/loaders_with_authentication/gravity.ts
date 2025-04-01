@@ -1144,6 +1144,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerContactLoader: gravityLoader<
+      any,
+      { partnerId: string; contactId: string }
+    >(
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerShowLoader: gravityLoader<
       any,
       { partnerId: string; showId: string }

@@ -13,20 +13,20 @@ import {
 import { ContactType } from "schema/v2/Contacts"
 import { ResolverContext } from "types/graphql"
 
-interface Input {
-  contactID: string
-  partnerID: string
+interface UpdatePartnerContactInputProps {
+  contactId: string
+  partnerId: string
   name?: string
   position?: string
   canContact?: boolean
   email?: string
   phone?: string
-  locationID?: string
+  locationId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerContactSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,
@@ -52,18 +52,18 @@ const ResponseOrErrorType = new GraphQLUnionType({
 })
 
 export const UpdatePartnerContactMutation = mutationWithClientMutationId<
-  Input & { contactID: string },
+  UpdatePartnerContactInputProps,
   any,
   ResolverContext
 >({
   name: "UpdatePartnerContact",
   description: "Updates an existing contact for a partner",
   inputFields: {
-    contactID: {
+    contactId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the contact to update",
     },
-    partnerID: {
+    partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
@@ -88,7 +88,7 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Phone number of the contact",
     },
-    locationID: {
+    locationId: {
       type: GraphQLString,
       description: "ID of the contact's partner location",
     },
@@ -101,8 +101,8 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
-      contactID,
-      partnerID,
+      partnerId,
+      contactId,
       name,
       position,
       canContact,
@@ -117,15 +117,17 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await updatePartnerContactLoader(contactID, {
-        partner_id: partnerID,
-        name,
-        position,
-        can_contact: canContact,
-        email,
-        phone,
-        partner_location_id: locationID,
-      })
+      const response = await updatePartnerContactLoader(
+        { partnerId, contactId },
+        {
+          name,
+          position,
+          can_contact: canContact,
+          email,
+          phone,
+          partner_location_id: locationID,
+        }
+      )
 
       return response
     } catch (error) {
