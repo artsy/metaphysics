@@ -13,6 +13,7 @@ import { InternalIDFields } from "../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { ArtworkVersionType } from "../artwork_version"
 import { ArtworkType } from "../artwork"
+import { PartnerType } from "schema/v2/partner/partner"
 
 /**
  * The order json as received from the exchange REST API.
@@ -25,6 +26,10 @@ interface OrderJSON {
   mode: "buy" | "offer"
   currency_code: string
   available_shipping_countries: string[]
+  buyer_id: string
+  buyer_type: string
+  seller_id: string
+  seller_type: string
   buyer_phone_number?: string
   buyer_phone_number_country_code?: string
   buyer_total_cents?: number
@@ -253,6 +258,14 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+const SellerType = new GraphQLUnionType({
+  name: "SellerType",
+  types: [PartnerType],
+  resolveType: () => {
+    return PartnerType
+  },
+})
+
 export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
@@ -413,6 +426,15 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           ...selectedOption,
           _currencyCode: order.currency_code,
         }
+      },
+    },
+    seller: {
+      type: SellerType,
+      description: "The seller of the order",
+      resolve: ({ seller_id }, _args, { partnerLoader }) => {
+        if (!seller_id) return null
+
+        return partnerLoader(seller_id).catch(() => null)
       },
     },
   },

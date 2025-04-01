@@ -14,6 +14,10 @@ describe("Me", () => {
       code: "order-code",
       mode: "buy",
       currency_code: "USD",
+      buyer_id: "buyer-id-1",
+      buyer_type: "user",
+      seller_id: "seller-id-1",
+      seller_type: "gallery",
       buyer_total_cents: null,
       items_total_cents: 500000,
       shipping_total_cents: 2000,
@@ -184,6 +188,100 @@ describe("Me", () => {
             quantity: 1,
           },
         ],
+      })
+    })
+
+    describe("seller", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              seller {
+                __typename
+                ... on Partner {
+                  name
+                  merchantAccount {
+                    externalId
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      beforeEach(() => {
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          partnerLoader: jest
+            .fn()
+            .mockResolvedValue({ id: "partner-id", name: "Kyoto Art Gallery" }),
+          partnerMerchantAccountsLoader: jest.fn().mockResolvedValue({
+            body: [
+              {
+                external_id: "acct_123",
+              },
+            ],
+          }),
+        }
+      })
+
+      it("returns seller details", async () => {
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result).toEqual({
+          me: {
+            order: {
+              seller: {
+                __typename: "Partner",
+                name: "Kyoto Art Gallery",
+                merchantAccount: {
+                  externalId: "acct_123",
+                },
+              },
+            },
+          },
+        })
+      })
+
+      it("returns null seller when partner not found", async () => {
+        context.partnerLoader = jest.fn().mockRejectedValue({
+          statusCode: 404,
+          body: {
+            error: "Partner Not Found",
+          },
+        })
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result).toEqual({
+          me: {
+            order: {
+              seller: null,
+            },
+          },
+        })
+      })
+
+      it("returns null merchant account when no merchant account", async () => {
+        context.partnerMerchantAccountsLoader = jest
+          .fn()
+          .mockResolvedValue({ body: [] })
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result).toEqual({
+          me: {
+            order: {
+              seller: {
+                __typename: "Partner",
+                name: "Kyoto Art Gallery",
+                merchantAccount: null,
+              },
+            },
+          },
+        })
       })
     })
 
