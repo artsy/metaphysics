@@ -108,7 +108,7 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
       canContact,
       email,
       phone,
-      locationID,
+      locationId,
     },
     { updatePartnerContactLoader }
   ) => {
@@ -125,7 +125,7 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
           can_contact: canContact,
           email,
           phone,
-          partner_location_id: locationID,
+          partner_location_id: locationId,
         }
       )
 
