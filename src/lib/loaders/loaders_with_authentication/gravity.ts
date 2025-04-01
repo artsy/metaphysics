@@ -395,6 +395,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deletePartnerContactLoader: gravityLoader<
+      any,
+      { partnerId: string; contactId: string }
+    >(
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "DELETE" }
+    ),
     deletePartnerShowLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }

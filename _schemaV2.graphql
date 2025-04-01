@@ -9785,6 +9785,33 @@ type DeletePageSuccess {
   page: Page
 }
 
+type DeletePartnerContactFailure {
+  mutationError: GravityMutationError
+}
+
+input DeletePartnerContactMutationInput {
+  clientMutationId: String
+
+  # ID of the contact to delete
+  contactId: String!
+
+  # ID of the partner
+  partnerId: String!
+}
+
+type DeletePartnerContactMutationPayload {
+  clientMutationId: String
+  partnerContactOrError: DeletePartnerContactOrError
+}
+
+union DeletePartnerContactOrError =
+    DeletePartnerContactFailure
+  | DeletePartnerContactSuccess
+
+type DeletePartnerContactSuccess {
+  partnerContact: Contact
+}
+
 type DeletePartnerShowDocumentFailure {
   mutationError: GravityMutationError
 }
@@ -15055,6 +15082,11 @@ type Mutation {
 
   # Deletes a page.
   deletePage(input: DeletePageMutationInput!): DeletePageMutationPayload
+
+  # Deletes a contact for a partner
+  deletePartnerContact(
+    input: DeletePartnerContactMutationInput!
+  ): DeletePartnerContactMutationPayload
 
   # Deletes a partner show.
   deletePartnerShow(

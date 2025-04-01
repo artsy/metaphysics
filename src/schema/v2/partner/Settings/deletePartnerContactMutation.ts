@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -13,19 +12,13 @@ import {
 import { ContactType } from "schema/v2/Contacts"
 import { ResolverContext } from "types/graphql"
 
-interface UpdatePartnerContactInputProps {
+interface DeletePartnerContactInputProps {
   contactId: string
   partnerId: string
-  name?: string
-  position?: string
-  canContact?: boolean
-  email?: string
-  phone?: string
-  locationId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdatePartnerContactSuccess",
+  name: "DeletePartnerContactSuccess",
   isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
@@ -36,7 +29,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdatePartnerContactFailure",
+  name: "DeletePartnerContactFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -47,17 +40,17 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdatePartnerContactOrError",
+  name: "DeletePartnerContactOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdatePartnerContactMutation = mutationWithClientMutationId<
-  UpdatePartnerContactInputProps,
+export const DeletePartnerContactMutation = mutationWithClientMutationId<
+  DeletePartnerContactInputProps,
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerContact",
-  description: "Updates an existing contact for a partner",
+  name: "DeletePartnerContactMutation",
+  description: "Deletes a contact for a partner",
   inputFields: {
     partnerId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -65,32 +58,7 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
     },
     contactId: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the contact to update",
-    },
-    name: {
-      type: GraphQLString,
-      description: "Contact's name",
-    },
-    position: {
-      type: GraphQLString,
-      description: "Contact's position at the partner",
-    },
-    canContact: {
-      type: GraphQLBoolean,
-      description:
-        "If true, send all user inquiries and order notifications to this contact.",
-    },
-    email: {
-      type: GraphQLString,
-      description: "Email address of the contact",
-    },
-    phone: {
-      type: GraphQLString,
-      description: "Phone number of the contact",
-    },
-    locationId: {
-      type: GraphQLString,
-      description: "ID of the contact's partner location",
+      description: "ID of the contact to delete",
     },
   },
   outputFields: {
@@ -100,34 +68,18 @@ export const UpdatePartnerContactMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    {
-      partnerId,
-      contactId,
-      name,
-      position,
-      canContact,
-      email,
-      phone,
-      locationID,
-    },
-    { updatePartnerContactLoader }
+    { partnerId, contactId },
+    { deletePartnerContactLoader }
   ) => {
-    if (!updatePartnerContactLoader) {
+    if (!deletePartnerContactLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await updatePartnerContactLoader(
-        { partnerId, contactId },
-        {
-          name,
-          position,
-          can_contact: canContact,
-          email,
-          phone,
-          partner_location_id: locationID,
-        }
-      )
+      const response = await deletePartnerContactLoader({
+        partnerId,
+        contactId,
+      })
 
       return response
     } catch (error) {
