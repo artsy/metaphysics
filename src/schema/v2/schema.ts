@@ -298,8 +298,8 @@ import {
   setOrderFulfillmentOptionMutation,
   submitOrderMutation,
 } from "./order"
-import { CreatePartnerContactMutation } from "./partner/createPartnerContactMutation"
-import { CreatePartnerLocationMutation } from "./partner/createPartnerLocationMutation"
+import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
+import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,

@@ -11,7 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { ContactType } from "../Contacts"
+import { ContactType } from "../../Contacts"
 
 interface Input {
   partnerID: string
