@@ -10,22 +10,23 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { ContactType } from "schema/v2/Contacts"
 import { ResolverContext } from "types/graphql"
-import { ContactType } from "../Contacts"
 
-interface Input {
-  partnerID: string
+interface UpdatePartnerContactInputProps {
+  contactId: string
+  partnerId: string
   name?: string
   position?: string
   canContact?: boolean
   email?: string
   phone?: string
-  locationID?: string
+  locationId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerContactSuccess",
-  isTypeOf: (data) => data.id,
+  name: "UpdatePartnerContactSuccess",
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,
@@ -35,7 +36,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerContactFailure",
+  name: "UpdatePartnerContactFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -46,21 +47,25 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreatePartnerContactOrError",
+  name: "UpdatePartnerContactOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreatePartnerContactMutation = mutationWithClientMutationId<
-  Input,
+export const UpdatePartnerContactMutation = mutationWithClientMutationId<
+  UpdatePartnerContactInputProps,
   any,
   ResolverContext
 >({
-  name: "CreatePartnerContact",
-  description: "Creates a new contact for a partner",
+  name: "UpdatePartnerContact",
+  description: "Updates an existing contact for a partner",
   inputFields: {
-    partnerID: {
+    partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
+    },
+    contactId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the contact to update",
     },
     name: {
       type: GraphQLString,
@@ -83,7 +88,7 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Phone number of the contact",
     },
-    locationID: {
+    locationId: {
       type: GraphQLString,
       description: "ID of the contact's partner location",
     },
@@ -95,22 +100,34 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerID, name, position, canContact, email, phone, locationID },
-    { createPartnerContactLoader }
+    {
+      partnerId,
+      contactId,
+      name,
+      position,
+      canContact,
+      email,
+      phone,
+      locationId,
+    },
+    { updatePartnerContactLoader }
   ) => {
-    if (!createPartnerContactLoader) {
+    if (!updatePartnerContactLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await createPartnerContactLoader(partnerID, {
-        name,
-        position,
-        can_contact: canContact,
-        email,
-        phone,
-        partner_location_id: locationID,
-      })
+      const response = await updatePartnerContactLoader(
+        { partnerId, contactId },
+        {
+          name,
+          position,
+          can_contact: canContact,
+          email,
+          phone,
+          partner_location_id: locationId,
+        }
+      )
 
       return response
     } catch (error) {
