@@ -1,6 +1,7 @@
 import { GraphQLResolveInfo, visit } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { trim } from "lodash"
 import compact from "lodash/compact"
 import { SearchableItem } from "schema/v2/SearchableItem"
 import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
@@ -110,6 +111,7 @@ export class SearchResolver {
     const { page, size, offset, ...rest } = pageOptions
     const gravityArgs = {
       ...rest,
+      query: trim(this.args.query),
       page,
       size,
       entities: this.args.entities,

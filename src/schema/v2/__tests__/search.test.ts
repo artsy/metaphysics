@@ -356,4 +356,24 @@ describe("Search", () => {
       expect(geneNode.name).toBe("Minimalism")
     })
   })
+
+  it("Removes leading and trailing whitespace characters from the query", async () => {
+    const query = `
+      {
+        searchConnection(query: "  David Bowie  ", first: 10) {
+          edges {
+            node {
+              __typename
+            }
+          }
+        }
+      }
+    `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+    await runQuery(query, context)
+
+    // confirm that searchLoader was called with the trimmed query
+    expect(context.searchLoader.mock.calls[0][0].query).toBe("David Bowie")
+  })
 })
