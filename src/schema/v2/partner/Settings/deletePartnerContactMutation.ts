@@ -19,7 +19,7 @@ interface DeletePartnerContactInputProps {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePartnerContactSuccess",
-  isTypeOf: (data) => !!data.id,
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,

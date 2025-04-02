@@ -25,7 +25,7 @@ interface Input {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerContactSuccess",
-  isTypeOf: (data) => !!data.id,
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,
@@ -111,6 +111,8 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
         phone,
         partner_location_id: locationID,
       })
+
+      console.log(response)
 
       return response
     } catch (error) {

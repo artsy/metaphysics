@@ -28,9 +28,8 @@ describe("UpdatePartnerContactMutation", () => {
   it("updates the partner contact", async () => {
     const context = {
       updatePartnerContactLoader: () =>
-        // Gravity returns id as it is PSQL backed
         Promise.resolve({
-          id: "bar",
+          _id: "bar",
           email: "test@test.com",
         }),
     }

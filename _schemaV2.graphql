@@ -8090,12 +8090,15 @@ type Contact {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   location: Location
   name: String
   phone: String
   position: String
+
+  # A slug ID.
+  slug: ID!
 }
 
 # A connection to a list of items.

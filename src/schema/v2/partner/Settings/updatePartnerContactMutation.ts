@@ -26,7 +26,7 @@ interface UpdatePartnerContactInputProps {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerContactSuccess",
-  isTypeOf: (data) => !!data.id,
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,

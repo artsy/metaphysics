@@ -25,9 +25,8 @@ describe("DeletePartnerContactMutation", () => {
   it("deletes the partner contact", async () => {
     const context = {
       deletePartnerContactLoader: () =>
-        // Gravity returns id as it is PSQL backed
         Promise.resolve({
-          id: "bar",
+          _id: "bar",
         }),
     }
 
