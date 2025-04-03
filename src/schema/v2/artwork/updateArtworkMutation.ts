@@ -54,6 +54,10 @@ interface UpdateArtworkMutationInputProps {
 }
 
 const inputFields = {
+  id: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: "The id of the artwork to update.",
+  },
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
@@ -77,10 +81,6 @@ const inputFields = {
   priceListed: {
     type: GraphQLString,
     description: "The price of the artwork",
-  },
-  id: {
-    type: new GraphQLNonNull(GraphQLString),
-    description: "The id of the artwork to update.",
   },
 }
 
@@ -134,11 +134,13 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       if (editionSets?.length) {
         await Promise.all(
           editionSets.map((editionSet) => {
-            return updateArtworkEditionSetLoader({
+            const input = {
               ...getGravityArgs(editionSet),
               artworkId: id,
               editionSetId: editionSet.id,
-            })
+            }
+
+            return updateArtworkEditionSetLoader(input)
           })
         )
       }

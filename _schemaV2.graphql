@@ -10212,6 +10212,7 @@ input EditableLocation {
 type EditionSet implements Sellable {
   availability: String
   dimensions: dimensions
+  displayLabel: String
   displayPriceRange: Boolean
   editionOf: String
 
@@ -10228,13 +10229,23 @@ type EditionSet implements Sellable {
   internalID: ID!
   isAcquireable: Boolean
   isForSale: Boolean
+
+  # Is this artwork part of an auction?
+  isInAuction: Boolean
+
+  # Do we want to encourage inquiries on this work?
+  isInquireable: Boolean
   isOfferable: Boolean
   isOfferableFromInquiry: Boolean
+  isPriceHidden: Boolean
   isSold: Boolean
   listPrice: ListPrice
   price: String
   priceDisplay: String
   priceListed: Money
+
+  # Whether this artwork is published or not
+  published: Boolean
   saleMessage: String
 
   # size bucket assigned to an artwork based on its dimensions
@@ -20141,19 +20152,41 @@ union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
 
 # A piece that can be sold
 interface Sellable {
+  availability: String
   dimensions: dimensions
+  displayLabel: String
+  displayPriceRange: Boolean
   editionOf: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # Price for internal partner display, requires partner access
+  internalDisplayPrice: String
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
 
   # Whether a piece can be purchased through e-commerce
   isAcquireable: Boolean
   isForSale: Boolean
+
+  # Is this artwork part of an auction?
+  isInAuction: Boolean
+
+  # Do we want to encourage inquiries on this work?
+  isInquireable: Boolean
 
   # Whether a user can make an offer on the work
   isOfferable: Boolean
 
   # Whether a user can make an offer on the work through inquiry
   isOfferableFromInquiry: Boolean
+  isPriceHidden: Boolean
   isSold: Boolean
+
+  # Whether this artwork is published or not
+  published: Boolean
   saleMessage: String
 }
 

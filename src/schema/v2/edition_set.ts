@@ -9,7 +9,7 @@ import {
   GraphQLFieldConfig,
   GraphQLFloat,
 } from "graphql"
-import { Sellable } from "./sellable"
+import { Sellable, sharedSellableFields } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
 import { Money } from "./fields/money"
@@ -29,8 +29,9 @@ export const EditionSetSorts = {
 export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
+    ...sharedSellableFields,
     availability: {
       type: GraphQLString,
     },
@@ -119,7 +120,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLFloat,
       resolve: ({ height_cm }) => height_cm,
     },
-  },
+  }),
 })
 
 const EditionSet: GraphQLFieldConfig<void, ResolverContext> = {

@@ -865,7 +865,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ display_artist_bio }) => display_artist_bio,
       },
-
       displayPriceRange: {
         type: GraphQLBoolean,
         resolve: ({ display_price_range }) => display_price_range,
@@ -1807,7 +1806,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: (artwork) => artwork,
       },
-
       title: {
         type: GraphQLString,
         resolve: ({ title }) => (_.isEmpty(title) ? "Untitled" : title),
