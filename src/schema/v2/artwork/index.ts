@@ -611,10 +611,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       editionSets: {
         type: new GraphQLList(EditionSet.type),
         args: { sort: EditionSetSorts },
-        resolve: ({ edition_sets }, { sort }) => {
+        resolve: ({ edition_sets, ...artwork }, { sort }) => {
+          // Inject a copy of the artwork into each edition set
+          const editionSets = edition_sets.map((editionSet) => {
+            return {
+              artwork,
+              ...editionSet,
+            }
+          })
+
           if (sort) {
             // Only ascending price sort supported currently.
-            return edition_sets.sort(
+            return editionSets.sort(
               ({ price_cents: aPrice }, { price_cents: bPrice }) => {
                 if (!aPrice || aPrice.length === 0) {
                   return 1
@@ -626,7 +634,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               }
             )
           }
-          return edition_sets
+
+          return editionSets
         },
       },
       exhibitionHistory: markdown(

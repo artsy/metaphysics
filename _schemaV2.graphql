@@ -10212,6 +10212,8 @@ input EditableLocation {
 type EditionSet implements Sellable {
   availability: String
   dimensions: dimensions
+
+  # The edition set parent-artwork display label (title)
   displayLabel: String
   displayPriceRange: Boolean
   editionOf: String
@@ -10230,7 +10232,10 @@ type EditionSet implements Sellable {
   isAcquireable: Boolean
   isForSale: Boolean
 
-  # Do we want to encourage inquiries on this work?
+  # Is the edition set parent-artwork part of an auction?
+  isInAuction: Boolean
+
+  # Is the edition set parent-artwork inquireable?
   isInquireable: Boolean
   isOfferable: Boolean
   isOfferableFromInquiry: Boolean
@@ -10241,7 +10246,7 @@ type EditionSet implements Sellable {
   priceDisplay: String
   priceListed: Money
 
-  # Whether this artwork is published or not
+  # Is the edition set parent-artwork published?
   published: Boolean
   saleMessage: String
 
@@ -20149,19 +20154,33 @@ union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
 
 # A piece that can be sold
 interface Sellable {
+  availability: String
   dimensions: dimensions
+  displayLabel: String
+  displayPriceRange: Boolean
   editionOf: String
+
+  # A globally unique ID.
+  id: ID!
+  internalDisplayPrice: String
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
 
   # Whether a piece can be purchased through e-commerce
   isAcquireable: Boolean
   isForSale: Boolean
+  isInAuction: Boolean
+  isInquireable: Boolean
 
   # Whether a user can make an offer on the work
   isOfferable: Boolean
 
   # Whether a user can make an offer on the work through inquiry
   isOfferableFromInquiry: Boolean
+  isPriceHidden: Boolean
   isSold: Boolean
+  published: Boolean
   saleMessage: String
 }
 

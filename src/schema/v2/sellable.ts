@@ -1,11 +1,13 @@
 import { GraphQLBoolean, GraphQLInterfaceType, GraphQLString } from "graphql"
 
 import Dimensions from "./dimensions"
+import { InternalIDFields } from "./object_identification"
 
 export const Sellable = new GraphQLInterfaceType({
   name: "Sellable",
   description: "A piece that can be sold",
   fields: () => ({
+    ...sharedSellableFields,
     dimensions: Dimensions,
     editionOf: {
       type: GraphQLString,
@@ -41,3 +43,34 @@ export const Sellable = new GraphQLInterfaceType({
     },
   }),
 })
+
+export const sharedSellableFields = {
+  // Note: while EditionSets require this field to perform mutation updates,
+  // since they're technically embedded documents on the artwork, they're not
+  // queryable in isolation, by ID. They exist only in the context of the artwork.
+  ...InternalIDFields,
+  availability: {
+    type: GraphQLString,
+  },
+  displayLabel: {
+    type: GraphQLString,
+  },
+  displayPriceRange: {
+    type: GraphQLBoolean,
+  },
+  internalDisplayPrice: {
+    type: GraphQLString,
+  },
+  isInAuction: {
+    type: GraphQLBoolean,
+  },
+  isInquireable: {
+    type: GraphQLBoolean,
+  },
+  isPriceHidden: {
+    type: GraphQLBoolean,
+  },
+  published: {
+    type: GraphQLBoolean,
+  },
+}

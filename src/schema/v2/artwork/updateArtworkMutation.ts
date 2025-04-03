@@ -208,7 +208,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      if (editionSets?.length) {
+      if (editionSets?.length > 0) {
         await Promise.all(
           editionSets.map((editionSet) => {
             const input = getGravityArgs(editionSet)
