@@ -16321,9 +16321,9 @@ type Partner implements Node {
   claimed: Boolean
   collectingInstitution: String
 
-  # A Contact belonging to a Partner
+  # A Singular Contact belonging to the Partner
   contact(
-    # The slug or ID of the Show
+    # The slug or ID of the Contact
     contactId: String!
   ): Contact
 

@@ -509,6 +509,67 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#contact", () => {
+    let singleContactResponse
+
+    const partnerContactLoader = jest.fn(() => {
+      return Promise.resolve({
+        body: singleContactResponse,
+        headers: {
+          "x-total-count": 1,
+        },
+      })
+    })
+
+    const partnerLoader = jest.fn(() => {
+      return Promise.resolve(partnerData)
+    })
+
+    beforeEach(() => {
+      singleContactResponse = {
+        id: "contact-1",
+        name: "Molly D",
+        email: "md@artsy.net",
+        partner_location: { display: "123 Happy St, NY NY" },
+      }
+    })
+
+    it("returns a given partner contact", async () => {
+      context = {
+        partnerContactLoader,
+        partnerLoader,
+      }
+
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            contact(contactId: "contact-1") {
+              name
+              email
+              location {
+                display
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          contact: {
+            name: "Molly D",
+            email: "md@artsy.net",
+            location: {
+              display: "123 Happy St, NY NY",
+            },
+          },
+        },
+      })
+    })
+  })
+
   describe("#contactsConnection", () => {
     let contactsResponse
 

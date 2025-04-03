@@ -855,11 +855,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       contact: {
         type: ContactType,
-        description: "A Contact belonging to a Partner",
+        description: "A Singular Contact belonging to the Partner",
         args: {
           contactId: {
             type: new GraphQLNonNull(GraphQLString),
-            description: "The slug or ID of the Show",
+            description: "The slug or ID of the Contact",
           },
         },
         resolve: async ({ id }, args, { partnerContactLoader }) => {
