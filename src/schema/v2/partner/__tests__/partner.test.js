@@ -513,12 +513,7 @@ describe("Partner type", () => {
     let singleContactResponse
 
     const partnerContactLoader = jest.fn(() => {
-      return Promise.resolve({
-        body: singleContactResponse,
-        headers: {
-          "x-total-count": 1,
-        },
-      })
+      return Promise.resolve(singleContactResponse)
     })
 
     const partnerLoader = jest.fn(() => {

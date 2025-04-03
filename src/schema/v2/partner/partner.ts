@@ -867,12 +867,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           if (!partnerContactLoader) return null
 
-          const { body } = await partnerContactLoader({
+          const contact = await partnerContactLoader({
             partnerId: id,
             contactId: contactId,
           })
 
-          return body ?? null
+          return contact
         },
       },
       defaultProfileID: {

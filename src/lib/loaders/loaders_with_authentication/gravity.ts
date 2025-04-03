@@ -904,9 +904,7 @@ export default (accessToken, userID, opts) => {
       any,
       { partnerId: string; contactId: string }
     >(
-      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
-      {},
-      { headers: true }
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`
     ),
     partnerContactsLoader: gravityLoader(
       (id) => `partner/${id}/contacts`,
