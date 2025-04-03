@@ -11,7 +11,7 @@ describe("UpdatePartnerShowEventMutation", () => {
           eventId: "event123"
           eventType: "Closing Reception"
           description: "Join us for the closing reception"
-          timeZone: "(GMT-04:00) New York"
+          timeZone: "America/New_York"
         }
       ) {
         showEventOrError {
