@@ -11,6 +11,7 @@ describe("UpdatePartnerShowEventMutation", () => {
           eventId: "event123"
           eventType: "Closing Reception"
           description: "Join us for the closing reception"
+          timeZone: "(GMT-04:00) New York"
         }
       ) {
         showEventOrError {
@@ -21,6 +22,8 @@ describe("UpdatePartnerShowEventMutation", () => {
               description
               startAt
               endAt
+              timeZone
+              formattedTimeZone
             }
           }
         }
@@ -30,14 +33,17 @@ describe("UpdatePartnerShowEventMutation", () => {
 
   it("updates a partner show event", async () => {
     const context = {
-      updatePartnerShowEventLoader: () =>
-        Promise.resolve({
+      updatePartnerShowEventLoader: (_, args) => {
+        expect(args.time_zone).toEqual("America/New_York")
+        return Promise.resolve({
           _id: "event123",
           event_type: "Closing Reception",
           description: "Join us for the closing reception",
           start_at: "2025-01-01T12:00:00.000Z",
           end_at: "2025-01-01T18:00:00.000Z",
-        }),
+          time_zone: "America/New_York",
+        })
+      },
     }
 
     const updatedEvent = await runAuthenticatedQuery(mutation, context)
@@ -51,6 +57,8 @@ describe("UpdatePartnerShowEventMutation", () => {
             description: "Join us for the closing reception",
             startAt: "2025-01-01T12:00:00.000Z",
             endAt: "2025-01-01T18:00:00.000Z",
+            formattedTimeZone: "(GMT-04:00) New York",
+            timeZone: "America/New_York",
           },
         },
       },
