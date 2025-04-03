@@ -112,8 +112,6 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
         partner_location_id: locationID,
       })
 
-      console.log(response)
-
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
