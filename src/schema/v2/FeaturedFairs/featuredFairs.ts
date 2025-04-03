@@ -18,6 +18,7 @@ export const FeaturedFairs: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, args, { fairsLoader }) => {
     const sharedOptions = {
       has_full_feature: true,
+      has_listing: true,
       sort: "-start_at",
     }
 
