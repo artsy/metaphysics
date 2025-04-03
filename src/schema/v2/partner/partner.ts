@@ -60,7 +60,7 @@ import {
   ViewingRoomsConnection,
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
-import { contactsConnection } from "schema/v2/Contacts"
+import { contactsConnection, ContactType } from "schema/v2/Contacts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -851,6 +851,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           // Filter for dupes and blanks
           return Array.from(new Set(cities)).filter(Boolean)
+        },
+      },
+      contact: {
+        type: ContactType,
+        description: "A Singular Contact belonging to the Partner",
+        args: {
+          contactId: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The slug or ID of the Contact",
+          },
+        },
+        resolve: async ({ id }, args, { partnerContactLoader }) => {
+          const { contactId } = args
+
+          if (!partnerContactLoader) return null
+
+          const contact = await partnerContactLoader({
+            partnerId: id,
+            contactId: contactId,
+          })
+
+          return contact
         },
       },
       defaultProfileID: {
