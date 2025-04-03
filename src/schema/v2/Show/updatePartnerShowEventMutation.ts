@@ -11,7 +11,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import ShowEventType from "../show_event"
-import moment from "moment"
+import momentTimezone from "moment-timezone"
 import { ShowType } from "../show"
 
 interface UpdatePartnerShowEventMutationInputProps {
@@ -123,11 +123,13 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
     } = {}
 
     if (args.startAt) {
-      gravityArgs.start_at = moment(args.startAt).unix()
+      gravityArgs.start_at = momentTimezone
+        .tz(args.startAt, args.timeZone)
+        .unix()
     }
 
     if (args.endAt) {
-      gravityArgs.end_at = moment(args.endAt).unix()
+      gravityArgs.end_at = momentTimezone.tz(args.endAt, args.timeZone).unix()
     }
 
     if (args.eventType) {
