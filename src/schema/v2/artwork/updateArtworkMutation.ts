@@ -6,6 +6,8 @@ import {
   GraphQLList,
   GraphQLInputObjectType,
   GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLInt,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -43,14 +45,29 @@ const ResponseOrErrorType = new GraphQLUnionType({
 })
 
 interface UpdateArtworkMutationInputProps {
-  id?: string
-  availability?: boolean
-  ecommerce?: boolean
+  artistProofs?: string
+  availability?: string
+  delete?: boolean
   displayPriceRange?: boolean
-  offer?: boolean
-  priceHidden?: boolean
-  priceListed?: string
+  ecommerce?: boolean
   editionSets?: Omit<UpdateArtworkMutationInputProps, "editionSets">[]
+  editionSize?: string
+  framed?: boolean
+  framedDepth?: string
+  framedDiameter?: string
+  framedHeight?: string
+  framedMetric?: string
+  framedWidth?: string
+  id?: string
+  offer?: boolean
+  priceCurrency?: string
+  priceHidden?: boolean
+  priceIncludesTax?: boolean
+  priceListed?: string
+  priceMax?: number
+  priceMin?: number
+  shippingWeight?: number
+  shippingWeightMetric?: string
 }
 
 const inputFields = {
@@ -61,10 +78,6 @@ const inputFields = {
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
-  },
-  ecommerce: {
-    type: GraphQLBoolean,
-    description: "True for `Buy Now` artworks",
   },
   displayPriceRange: {
     type: GraphQLBoolean,
@@ -81,6 +94,55 @@ const inputFields = {
   priceListed: {
     type: GraphQLString,
     description: "The price of the artwork",
+  },
+  artistProofs: {
+    type: GraphQLString,
+  },
+  delete: {
+    type: GraphQLBoolean,
+  },
+  ecommerce: {
+    description: "True for `Buy Now` edition sets",
+    type: GraphQLBoolean,
+  },
+  editionSize: {
+    type: GraphQLString,
+  },
+  framedDepth: {
+    type: GraphQLString,
+  },
+  framedDiameter: {
+    type: GraphQLString,
+  },
+  framedHeight: {
+    type: GraphQLString,
+  },
+  framedMetric: {
+    type: GraphQLString,
+  },
+  framedWidth: {
+    type: GraphQLString,
+  },
+  framed: {
+    type: GraphQLBoolean,
+  },
+  priceCurrency: {
+    type: GraphQLString,
+  },
+  priceIncludesTax: {
+    type: GraphQLBoolean,
+  },
+  priceMax: {
+    type: GraphQLInt,
+  },
+  priceMin: {
+    type: GraphQLInt,
+  },
+  shippingWeightMetric: {
+    type: GraphQLString,
+  },
+  shippingWeight: {
+    type: GraphQLFloat,
   },
 }
 
@@ -120,13 +182,28 @@ export const updateArtworkMutation = mutationWithClientMutationId<
 
     const getGravityArgs = (inputArgs: UpdateArtworkMutationInputProps) => {
       return {
-        id: inputArgs.id,
+        artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
-        ecommerce: inputArgs.ecommerce,
+        delete: inputArgs.delete,
         display_price_range: inputArgs.displayPriceRange,
+        ecommerce: inputArgs.ecommerce,
+        edition_size: inputArgs.editionSize,
+        framed_depth: inputArgs.framedDepth,
+        framed_diameter: inputArgs.framedDiameter,
+        framed_height: inputArgs.framedHeight,
+        framed_metric: inputArgs.framedMetric,
+        framed_width: inputArgs.framedWidth,
+        framed: inputArgs.framed,
+        id: inputArgs.id,
         offer: inputArgs.offer,
+        price_currency: inputArgs.priceCurrency,
         price_hidden: inputArgs.priceHidden,
+        price_includes_tax: inputArgs.priceIncludesTax,
         price_listed: inputArgs.priceListed,
+        price_max: inputArgs.priceMax,
+        price_min: inputArgs.priceMin,
+        shipping_weight_metric: inputArgs.shippingWeightMetric,
+        shipping_weight: inputArgs.shippingWeight,
       }
     }
 
@@ -134,13 +211,15 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       if (editionSets?.length) {
         await Promise.all(
           editionSets.map((editionSet) => {
-            const input = {
-              ...getGravityArgs(editionSet),
-              artworkId: id,
-              editionSetId: editionSet.id,
-            }
+            const input = getGravityArgs(editionSet)
 
-            return updateArtworkEditionSetLoader(input)
+            return updateArtworkEditionSetLoader(
+              {
+                artworkId: id,
+                editionSetId: editionSet.id,
+              },
+              input
+            )
           })
         )
       }

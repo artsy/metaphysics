@@ -1858,7 +1858,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ framed_width }) => framed_width,
       },
       framedDiameter: {
-        type: GraphQLFloat,
+        type: GraphQLString,
         resolve: ({ framed_diameter }) => framed_diameter,
       },
       signatureInfo: {
