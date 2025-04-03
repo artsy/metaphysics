@@ -11,7 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { ContactType } from "../Contacts"
+import { ContactType } from "../../Contacts"
 
 interface Input {
   partnerID: string
@@ -25,7 +25,7 @@ interface Input {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerContactSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     partnerContact: {
       type: ContactType,

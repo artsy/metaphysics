@@ -12,6 +12,8 @@ import {
 import { ResolverContext } from "types/graphql"
 import ShowEventType from "../show_event"
 import moment from "moment"
+import momentTz from "moment-timezone"
+import { formatTimeZone } from "../show_event"
 import { ShowType } from "../show"
 
 interface UpdatePartnerShowEventMutationInputProps {
@@ -91,6 +93,10 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "A description of the event.",
     },
+    timeZone: {
+      type: GraphQLString,
+      description: "The time zone of the event.",
+    },
   },
   outputFields: {
     showEventOrError: {
@@ -115,6 +121,7 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
       end_at?: number
       event_type?: string
       description?: string
+      time_zone?: string
     } = {}
 
     if (args.startAt) {
@@ -131,6 +138,12 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
 
     if (args.description !== undefined) {
       gravityArgs.description = args.description
+    }
+
+    if (args.timeZone) {
+      gravityArgs.time_zone = momentTz.tz
+        .names()
+        .find((timeZone) => formatTimeZone(timeZone) === args.timeZone)
     }
 
     try {

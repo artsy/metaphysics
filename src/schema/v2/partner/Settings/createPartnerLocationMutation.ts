@@ -12,7 +12,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { LocationType } from "../location"
+import { LocationType } from "../../location"
 
 interface Input {
   partnerID: string

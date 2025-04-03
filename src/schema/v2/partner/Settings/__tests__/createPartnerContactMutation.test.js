@@ -39,7 +39,7 @@ const mutation = gql`
 describe("CreatePartnerContactMutation", () => {
   describe("when successful", () => {
     const partnerContact = {
-      id: "contact_123",
+      _id: "contact_123",
       name: "Jane Doe",
       position: "Manager",
       can_contact: true,

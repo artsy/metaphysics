@@ -395,6 +395,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deletePartnerContactLoader: gravityLoader<
+      any,
+      { partnerId: string; contactId: string }
+    >(
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "DELETE" }
+    ),
     deletePartnerShowLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
@@ -892,6 +900,12 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerContactLoader: gravityLoader<
+      any,
+      { partnerId: string; contactId: string }
+    >(
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`
+    ),
     partnerContactsLoader: gravityLoader(
       (id) => `partner/${id}/contacts`,
       {},
@@ -1141,6 +1155,14 @@ export default (accessToken, userID, opts) => {
     ),
     updatePartnerArtworksMetadataLoader: gravityLoader(
       (id) => `partner/${id}/bulk_operations/update_metadata`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerContactLoader: gravityLoader<
+      any,
+      { partnerId: string; contactId: string }
+    >(
+      ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
       {},
       { method: "PUT" }
     ),

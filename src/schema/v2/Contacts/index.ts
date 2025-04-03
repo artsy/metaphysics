@@ -1,14 +1,14 @@
 import { GraphQLBoolean, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { LocationType } from "schema/v2/location"
-import { IDFields } from "schema/v2/object_identification"
+import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 
 export const ContactType = new GraphQLObjectType<any, ResolverContext>({
   name: "Contact",
   fields: () => {
     return {
-      ...IDFields,
+      ...SlugAndInternalIDFields,
       name: {
         type: GraphQLString,
         resolve: ({ name }) => name,
