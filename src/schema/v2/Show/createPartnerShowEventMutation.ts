@@ -10,9 +10,8 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import ShowEventType, { formatTimeZone } from "../show_event"
+import ShowEventType from "../show_event"
 import moment from "moment"
-import momentTz from "moment-timezone"
 import { ShowType } from "../show"
 
 interface CreatePartnerShowEventMutationInputProps {
@@ -120,16 +119,11 @@ export const createPartnerShowEventMutation = mutationWithClientMutationId<
       start_at: moment(args.startAt).unix(),
       end_at: moment(args.endAt).unix(),
       event_type: args.eventType,
+      time_zone: args.timeZone,
     }
 
     if (args.description) {
       gravityArgs.description = args.description
-    }
-
-    if (args.timeZone) {
-      gravityArgs.time_zone = momentTz.tz
-        .names()
-        .find((timeZone) => formatTimeZone(timeZone) === args.timeZone)
     }
 
     try {

@@ -12,8 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import ShowEventType from "../show_event"
 import moment from "moment"
-import momentTz from "moment-timezone"
-import { formatTimeZone } from "../show_event"
 import { ShowType } from "../show"
 
 interface UpdatePartnerShowEventMutationInputProps {
@@ -141,9 +139,7 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
     }
 
     if (args.timeZone) {
-      gravityArgs.time_zone = momentTz.tz
-        .names()
-        .find((timeZone) => formatTimeZone(timeZone) === args.timeZone)
+      gravityArgs.time_zone = args.timeZone
     }
 
     try {
