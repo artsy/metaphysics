@@ -56,7 +56,10 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
-import { ViewingRoomsConnection } from "./viewingRoomConnection"
+import {
+  ViewingRoomsConnection,
+  ViewingRoomStatusEnum,
+} from "./viewingRoomConnection"
 import { PartnerDocumentsConnection } from "./partner/partnerDocumentsConnection"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
@@ -711,9 +714,14 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       viewingRoomsConnection: {
         type: ViewingRoomsConnection.type,
+        args: pageable({
+          statuses: {
+            type: new GraphQLList(new GraphQLNonNull(ViewingRoomStatusEnum)),
+          },
+        }),
         resolve: async (
           { viewing_room_ids },
-          _args,
+          { statuses },
           { viewingRoomsLoader }
         ) => {
           if (!viewing_room_ids || viewing_room_ids.length === 0) {
@@ -731,6 +739,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             total_count: true,
+            statuses,
           }
 
           const { body, headers } = await viewingRoomsLoader(gravityArgs)
