@@ -5,6 +5,15 @@ import { dateRange, dateTimeRange } from "lib/date"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { GravityIDFields } from "./object_identification"
+import moment from "moment-timezone"
+
+export const formatTimeZone = (timeZone: string) => {
+  // Get current offset in hours for the given timezone
+  const offset = moment.tz(timeZone).format("Z")
+  // Extract a user-friendly name
+  const displayName = timeZone.split("/")[1].replace("_", " ")
+  return `(GMT${offset}) ${displayName}`
+}
 
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
@@ -46,6 +55,19 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
         const { format } = args
         return dateRange(start_at, end_at, "UTC", format)
       },
+    },
+    formattedTimeZone: {
+      type: GraphQLString,
+      description: "A formatted description of the time zone",
+      resolve: ({ time_zone }) => {
+        if (!time_zone) return null
+
+        return formatTimeZone(time_zone)
+      },
+    },
+    timeZone: {
+      type: GraphQLString,
+      resolve: ({ time_zone }) => time_zone,
     },
   },
 })
