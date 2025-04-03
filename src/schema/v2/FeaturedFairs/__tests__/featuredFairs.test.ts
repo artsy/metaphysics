@@ -25,6 +25,16 @@ describe("featuredFairs", () => {
 
       expect(fairsLoader).toHaveBeenCalledTimes(1)
 
+      expect(fairsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          size: requestedSize,
+          sort: "-start_at",
+          status: "running",
+          has_full_feature: true,
+          has_listing: true,
+        })
+      )
+
       expect(featuredFairs).toMatchInlineSnapshot(`
         [
           {
