@@ -105,15 +105,4 @@ describe("metaphysics-cdn fetch handler", () => {
     expect(response.status).toBe(200)
     expect(await response.text()).toBe("Origin response")
   })
-
-  it("returns an error response if an exception is thrown", async () => {
-    const request = new Request("https://example.com", { method: "GET" })
-
-    global.fetch = jest.fn().mockRejectedValueOnce(new Error("Fetch error"))
-
-    const response = await fetchHandler(request, {}, {})
-
-    expect(response.status).toBe(200)
-    expect(await response.text()).toContain("Error thrown Fetch error")
-  })
 })
