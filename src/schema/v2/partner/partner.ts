@@ -864,7 +864,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: async ({ id }, args, { partnerContactLoader }) => {
           const { contactId } = args
-          console.log("hello???", id, contactId)
 
           if (!partnerContactLoader) return null
 
