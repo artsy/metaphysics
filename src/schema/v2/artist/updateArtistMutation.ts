@@ -28,6 +28,7 @@ import {
 interface Input {
   alternateNames: string[]
   awards?: string
+  biennials?: string
   birthday?: string
   blurb?: string
   criticallyAcclaimed?: boolean
@@ -45,6 +46,7 @@ interface Input {
   nationality?: string
   public?: boolean
   recentShow?: string
+  reviewSources?: string
   targetSupplyPriority?: ArtistTargetSupplyPriority
   targetSupplyType?: ArtistTargetSupplyType
   vanguardYear?: string
@@ -54,6 +56,7 @@ const inputFields = {
   alternateNames: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
   awards: { type: GraphQLString },
   birthday: { type: GraphQLString },
+  biennials: { type: GraphQLString },
   blurb: { type: GraphQLString },
   criticallyAcclaimed: { type: GraphQLBoolean },
   coverArtworkId: { type: GraphQLString },
@@ -70,6 +73,7 @@ const inputFields = {
   nationality: { type: GraphQLString },
   public: { type: GraphQLBoolean },
   recentShow: { type: GraphQLString },
+  reviewSources: { type: GraphQLString },
   targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
   targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
   vanguardYear: { type: GraphQLString },
@@ -79,6 +83,7 @@ interface GravityInput {
   alternate_names: string[]
   awards?: string
   birthday?: string
+  biennials?: string
   blurb?: string
   cover_artwork_id?: string
   critically_acclaimed?: boolean
@@ -95,6 +100,7 @@ interface GravityInput {
   nationality?: string
   public?: boolean
   recent_show?: string
+  review_sources?: string
   target_supply_priority?: string
   target_supply_type?: string
   vanguard_year?: string
