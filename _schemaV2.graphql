@@ -15302,7 +15302,7 @@ type Mutation {
     input: SendIdentityVerificationEmailMutationInput!
   ): SendIdentityVerificationEmailMutationPayload
 
-  # Update an order
+  # Set fulfillment option on an order
   setOrderFulfillmentOption(
     input: setOrderFulfillmentOptionInput!
   ): setOrderFulfillmentOptionPayload
@@ -15339,6 +15339,11 @@ type Mutation {
   unpublishViewingRoom(
     input: UnpublishViewingRoomInput!
   ): UnpublishViewingRoomPayload
+
+  # Unset fulfillment option on an order
+  unsetOrderFulfillmentOption(
+    input: unsetOrderFulfillmentOptionInput!
+  ): unsetOrderFulfillmentOptionPayload
 
   # Create an alert
   updateAlert(input: updateAlertInput!): updateAlertPayload
@@ -24733,6 +24738,18 @@ input submitOrderInput {
 }
 
 type submitOrderPayload {
+  clientMutationId: String
+  orderOrError: SetOrderFulfillmentOptionResponse
+}
+
+input unsetOrderFulfillmentOptionInput {
+  clientMutationId: String
+
+  # Order id.
+  id: ID!
+}
+
+type unsetOrderFulfillmentOptionPayload {
   clientMutationId: String
   orderOrError: SetOrderFulfillmentOptionResponse
 }
