@@ -12,7 +12,7 @@ describe("CreatePartnerShowEventMutation", () => {
           endAt: "2025-01-01T18:00:00+00:00"
           eventType: "Opening Reception"
           description: "Join us for the opening reception"
-          timeZone: "(GMT-04:00) New York"
+          timeZone: "America/New_York"
         }
       ) {
         showEventOrError {
