@@ -43,7 +43,7 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "setOrderFulfillmentOption",
-  description: "Update an order",
+  description: "Set fulfillment option on an order",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLID), description: "Order id." },
     fulfillmentOption: {
