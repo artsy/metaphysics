@@ -508,6 +508,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       birthday: { type: GraphQLString },
+      biennials: {
+        type: GraphQLString,
+        description: "The biennials the artist has participated in",
+        resolve: ({ biennials }) => biennials,
+      },
       blurb: {
         args: markdown().args,
         type: GraphQLString,
@@ -956,6 +961,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description: "The most recent show for an artist",
         resolve: ({ recent_show }) => recent_show,
+      },
+      reviewSources: {
+        type: GraphQLString,
+        description: "publications that have reviewed the artist",
+        resolve: ({ review_sources }) => review_sources,
       },
       sales: {
         type: new GraphQLList(Sale.type),
