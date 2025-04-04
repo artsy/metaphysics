@@ -9,7 +9,7 @@ import {
   GraphQLFieldConfig,
   GraphQLFloat,
 } from "graphql"
-import { Sellable } from "./sellable"
+import { Sellable, sharedSellableFields } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
 import { Money } from "./fields/money"
@@ -29,12 +29,20 @@ export const EditionSetSorts = {
 export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
+    ...sharedSellableFields,
+
     availability: {
       type: GraphQLString,
+      resolve: ({ artwork }) => artwork.availability,
     },
     dimensions: Dimensions,
+    displayLabel: {
+      description: "The edition set parent-artwork display label (title)",
+      type: GraphQLString,
+      resolve: ({ artwork }) => artwork.title,
+    },
     displayPriceRange: {
       type: GraphQLBoolean,
       resolve: ({ display_price_range }) => display_price_range,
@@ -43,9 +51,40 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ editions }) => editions,
     },
+    internalDisplayPrice: {
+      type: GraphQLString,
+      resolve: ({ internal_display_price }) => internal_display_price,
+      description:
+        "Price for internal partner display, requires partner access",
+    },
     isAcquireable: {
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
+    },
+    isForSale: {
+      type: GraphQLBoolean,
+      resolve: ({ forsale }) => forsale,
+    },
+    isInAuction: {
+      type: GraphQLBoolean,
+      description: "Is the edition set parent-artwork part of an auction?",
+      resolve: async ({ artwork }, _options, { salesLoader }) => {
+        if (artwork.sale_ids && artwork.sale_ids.length > 0) {
+          const sales = await salesLoader({
+            id: artwork.sale_ids,
+            is_auction: true,
+          })
+
+          return sales.length > 0
+        }
+
+        return false
+      },
+    },
+    isInquireable: {
+      type: GraphQLBoolean,
+      description: "Is the edition set parent-artwork inquireable?",
+      resolve: ({ artwork }) => artwork.inquireable,
     },
     isOfferable: {
       type: GraphQLBoolean,
@@ -55,21 +94,15 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ offerable_from_inquiry }) => offerable_from_inquiry,
     },
-    isForSale: {
+    isPriceHidden: {
       type: GraphQLBoolean,
-      resolve: ({ forsale }) => forsale,
+      resolve: ({ price_hidden }) => price_hidden,
     },
     isSold: {
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,
     },
     listPrice,
-    internalDisplayPrice: {
-      type: GraphQLString,
-      resolve: ({ internal_display_price }) => internal_display_price,
-      description:
-        "Price for internal partner display, requires partner access",
-    },
     price: {
       type: GraphQLString,
     },
@@ -85,6 +118,11 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
         const cents = price_listed * factor
         return { cents, currency }
       },
+    },
+    published: {
+      type: GraphQLBoolean,
+      description: "Is the edition set parent-artwork published?",
+      resolve: ({ artwork }) => artwork.published,
     },
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",
@@ -119,7 +157,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLFloat,
       resolve: ({ height_cm }) => height_cm,
     },
-  },
+  }),
 })
 
 const EditionSet: GraphQLFieldConfig<void, ResolverContext> = {

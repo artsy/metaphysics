@@ -5784,7 +5784,7 @@ describe("Artwork type", () => {
           framedHeight: "10",
           framedWidth: "20",
           framedDepth: "30",
-          framedDiameter: 40,
+          framedDiameter: "40",
           framedMetric: "cm",
         },
       })
