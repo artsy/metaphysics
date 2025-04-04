@@ -302,6 +302,7 @@ import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerCo
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
 import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerContactMutation"
+import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -570,6 +571,7 @@ export default new GraphQLSchema({
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
+      unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,

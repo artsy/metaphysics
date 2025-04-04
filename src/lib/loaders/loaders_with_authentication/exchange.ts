@@ -55,6 +55,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOrderUnsetFulfillmentOptionLoader = exchangeLoader(
+    (id) => `me/orders/${id}/unset_fulfillment_option`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const meOrderSubmitLoader = exchangeLoader(
     (id) => `me/orders/${id}/submit`,
     {},
@@ -104,5 +112,6 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderUpdateLoader,
     meOrderSetFulfillmentOptionLoader,
     meOrderSubmitLoader,
+    meOrderUnsetFulfillmentOptionLoader,
   }
 }
