@@ -190,6 +190,7 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
     currencyPrefix: {
       type: GraphQLString,
       description: "The symbol used for the currency",
+      resolve: ({ currency }) => currencyPrefix(currency),
     },
     amount: { type: GraphQLString, description: "A pre-formatted price." },
   },

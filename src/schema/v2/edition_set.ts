@@ -61,6 +61,10 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
     },
+    isEcommerce: {
+      type: GraphQLBoolean,
+      resolve: ({ ecommerce }) => ecommerce,
+    },
     isForSale: {
       type: GraphQLBoolean,
       resolve: ({ forsale }) => forsale,
