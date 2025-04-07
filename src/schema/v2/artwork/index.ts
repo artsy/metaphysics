@@ -913,6 +913,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return comparables_count > 0 && category !== "Architecture"
         },
       },
+      isEcommerce: {
+        type: GraphQLBoolean,
+        description:
+          "Whether this artwork is eligible for an ecommerce transaction",
+        resolve: ({ ecommerce }) => ecommerce,
+      },
       isDownloadable: {
         type: GraphQLBoolean,
         resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
