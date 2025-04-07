@@ -1767,7 +1767,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           name: "ArtworkSignatureMeta",
           fields: {
             hasSignature: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description: "Whether the artwork has a signature",
               resolve: (artwork) => {
                 return !!(
@@ -1780,29 +1780,29 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               },
             },
             hasStickerLabel: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description: "Whether the artwork has a sticker label",
               resolve: ({ sticker_label }) => !!sticker_label,
             },
             isSignedByArtist: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description: "Whether the artwork is signed by the artist",
               resolve: ({ signed_by_artist }) => !!signed_by_artist,
             },
             isSignedOther: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description: "Whether the artwork is signed by someone else",
               resolve: ({ signed_other }) => !!signed_other,
             },
             isStampedByArtistEstate: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description:
                 "Whether the artwork is stamped by the artist's estate",
               resolve: ({ stamped_by_artist_estate }) =>
                 !!stamped_by_artist_estate,
             },
             isSignedInPlate: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
               description: "Whether the artwork is signed in plate",
               resolve: ({ signed_in_plate }) => !!signed_in_plate,
             },
