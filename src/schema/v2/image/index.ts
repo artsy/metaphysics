@@ -19,7 +19,6 @@ import VersionedUrl from "./versioned"
 import { decode as decodeBlurHash } from "blurhash"
 import UPNG from "upng-js"
 import { encode } from "base64-arraybuffer"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { connectionWithCursorInfo } from "../fields/pagination"
 
 export type OriginalImage = {
@@ -71,13 +70,7 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
           defaultValue: 64,
         },
       },
-      resolve: ({ blurhash, aspect_ratio }, { width }, { userAgent }) => {
-        const isEigen = userAgent?.match("Artsy-Mobile") != null
-
-        const isBlurhashEnabled =
-          isEigen || isFeatureFlagEnabled("diamond_blurhash-enabled-globally")
-
-        if (!isBlurhashEnabled) return null
+      resolve: ({ blurhash, aspect_ratio }, { width }) => {
         if (!blurhash) return null
 
         try {

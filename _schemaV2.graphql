@@ -12785,7 +12785,6 @@ type Image {
 
   # Blurhash code for the image
   blurhash: String
-  blurhashDataURL(width: Int = 64): String
   caption: String
   cropped(
     height: Int!

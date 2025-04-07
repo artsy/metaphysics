@@ -9,7 +9,6 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * @see https://tools.artsy.net/feature-flags
  */
 const FEATURE_FLAGS_LIST = [
-  "diamond_blurhash-enabled-globally",
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-infinite-discovery",
   "onyx_experiment_home_view_test",
