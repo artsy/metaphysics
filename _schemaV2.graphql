@@ -10241,13 +10241,25 @@ input EditableLocation {
 }
 
 type EditionSet implements Sellable {
+  artistProofs: Boolean
   availability: String
+  availableEditions: [String]
+  depth: String
+  diameter: String
   dimensions: dimensions
 
   # The edition set parent-artwork display label (title)
   displayLabel: String
   displayPriceRange: Boolean
+  duration: String
   editionOf: String
+  editionSize: String
+  framedDepth: String
+  framedDiameter: String
+  framedHeight: String
+  framedMetric: String
+  framedWidth: String
+  height: String
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   heightCm: Float
@@ -10260,6 +10272,7 @@ type EditionSet implements Sellable {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  inventory: EditionSetInventory
   isAcquireable: Boolean
   isEcommerce: Boolean
   isForSale: Boolean
@@ -10277,19 +10290,28 @@ type EditionSet implements Sellable {
   price: String
   priceDisplay: String
   priceListed: Money
+  prototypes: String
 
   # Is the edition set parent-artwork published?
   published: Boolean
   saleMessage: String
+  shippingWeight: String
+  shippingWeightMetric: String
 
   # size bucket assigned to an artwork based on its dimensions
   sizeBucket: String
 
   # score assigned to an artwork based on its dimensions
   sizeScore: Float
+  width: String
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   widthCm: Float
+}
+
+type EditionSetInventory {
+  count: Int
+  isUnlimited: Boolean
 }
 
 enum EditionSetSorts {
