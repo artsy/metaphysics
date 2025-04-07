@@ -650,6 +650,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }).then(_.first)
         },
       },
+      featuredSlot: {
+        type: GraphQLInt,
+        description:
+          "Featured slot (if set, will boost the work to the top of the artwork grid. Should be set between 1 and 20).",
+        resolve: ({ featured_slot }) => featured_slot,
+      },
       formattedMetadata: {
         type: GraphQLString,
         description:
@@ -1282,6 +1288,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      isPickupAvailable: {
+        type: GraphQLBoolean,
+        description: "Whether a work is available for pickup",
+        resolve: ({ pickup_available }) => pickup_available,
+      },
+      isPartnerPromoted: {
+        type: GraphQLBoolean,
+        resolve: ({ partner_promoted }) => partner_promoted,
+      },
       realizedToEstimate: {
         type: GraphQLString,
         resolve: (artwork) => {
@@ -1746,6 +1761,53 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       signatureDetails: {
         type: GraphQLString,
         resolve: ({ signature }) => signature,
+      },
+      signatureMeta: {
+        type: new GraphQLObjectType({
+          name: "ArtworkSignatureMeta",
+          fields: {
+            hasSignature: {
+              type: GraphQLBoolean,
+              description: "Whether the artwork has a signature",
+              resolve: (artwork) => {
+                return !!(
+                  artwork.sticker_label ||
+                  artwork.signed_by_artist ||
+                  artwork.signed_other ||
+                  artwork.stamped_by_artist_estate ||
+                  artwork.signed_in_plate
+                )
+              },
+            },
+            hasStickerLabel: {
+              type: GraphQLBoolean,
+              description: "Whether the artwork has a sticker label",
+              resolve: ({ sticker_label }) => !!sticker_label,
+            },
+            isSignedByArtist: {
+              type: GraphQLBoolean,
+              description: "Whether the artwork is signed by the artist",
+              resolve: ({ signed_by_artist }) => !!signed_by_artist,
+            },
+            isSignedOther: {
+              type: GraphQLBoolean,
+              description: "Whether the artwork is signed by someone else",
+              resolve: ({ signed_other }) => !!signed_other,
+            },
+            isStampedByArtistEstate: {
+              type: GraphQLBoolean,
+              description:
+                "Whether the artwork is stamped by the artist's estate",
+              resolve: ({ stamped_by_artist_estate }) =>
+                !!stamped_by_artist_estate,
+            },
+            isSignedInPlate: {
+              type: GraphQLBoolean,
+              description: "Whether the artwork is signed in plate",
+              resolve: ({ signed_in_plate }) => !!signed_in_plate,
+            },
+          },
+        }),
       },
       savedSearch: {
         description: "Schema related to saved searches based on this artwork",
