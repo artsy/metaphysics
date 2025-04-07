@@ -1,5 +1,4 @@
 /* eslint-disable promise/always-return */
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { assign } from "lodash"
 import { getDefault } from "schema/v2/image"
 
@@ -63,102 +62,6 @@ describe("Image type", () => {
         .withArgs(artwork.id)
         .returns(Promise.resolve(artwork)),
     }
-  })
-
-  describe("blurhashDataURL", () => {
-    describe("when the feature flag is enabled", () => {
-      const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
-
-      it("returns a data URL when client is not Eigen", () => {
-        mockIsFeatureFlagEnabled.mockReturnValue(true)
-
-        const query = `{
-          artwork(id: "richard-prince-untitled-portrait") {
-            image {
-              blurhashDataURL
-            }
-          }
-        }`
-        assign(image, { blurhash: "LGHLe$4oIU-;_3%MbHRj~pIo%MM{" })
-        return runQuery(query, context).then((data) => {
-          expect(data.artwork.image.blurhashDataURL).toStartWith(
-            "data:image/png;base64,"
-          )
-        })
-      })
-
-      it("returns a data URL when client is Eigen", () => {
-        mockIsFeatureFlagEnabled.mockReturnValue(true)
-
-        const query = `{
-          artwork(id: "richard-prince-untitled-portrait") {
-            image {
-              blurhashDataURL
-            }
-          }
-        }`
-        assign(image, { blurhash: "LGHLe$4oIU-;_3%MbHRj~pIo%MM{" })
-
-        const context = {
-          artworkLoader: sinon
-            .stub()
-            .withArgs(artwork.id)
-            .returns(Promise.resolve(artwork)),
-          userAgent: "Artsy-Mobile/version-Eigen/build-number/app-version",
-        }
-        return runQuery(query, context).then((data) => {
-          expect(data.artwork.image.blurhashDataURL).toStartWith(
-            "data:image/png;base64,"
-          )
-        })
-      })
-    })
-
-    describe("when the feature flag is disabled", () => {
-      const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
-
-      it("returns data URL as null when client is not Eigen", () => {
-        mockIsFeatureFlagEnabled.mockReturnValue(false)
-
-        const query = `{
-          artwork(id: "richard-prince-untitled-portrait") {
-            image {
-              blurhashDataURL
-            }
-          }
-        }`
-        assign(image, { blurhash: "LGHLe$4oIU-;_3%MbHRj~pIo%MM{" })
-        return runQuery(query, context).then((data) => {
-          expect(data.artwork.image.blurhashDataURL).toBeNull()
-        })
-      })
-
-      it("returns a data URL when client is Eigen", () => {
-        mockIsFeatureFlagEnabled.mockReturnValue(false)
-
-        const query = `{
-          artwork(id: "richard-prince-untitled-portrait") {
-            image {
-              blurhashDataURL
-            }
-          }
-        }`
-        assign(image, { blurhash: "LGHLe$4oIU-;_3%MbHRj~pIo%MM{" })
-
-        const context = {
-          artworkLoader: sinon
-            .stub()
-            .withArgs(artwork.id)
-            .returns(Promise.resolve(artwork)),
-          userAgent: "Artsy-Mobile/version-Eigen/build-number/app-version",
-        }
-        return runQuery(query, context).then((data) => {
-          expect(data.artwork.image.blurhashDataURL).toStartWith(
-            "data:image/png;base64,"
-          )
-        })
-      })
-    })
   })
 
   describe("#aspect_ratio", () => {
