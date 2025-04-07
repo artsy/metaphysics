@@ -16,9 +16,6 @@ import DeepZoom, { isZoomable } from "./deep_zoom"
 import { ImageData, normalize } from "./normalize"
 import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
-import { decode as decodeBlurHash } from "blurhash"
-import UPNG from "upng-js"
-import { encode } from "base64-arraybuffer"
 import { connectionWithCursorInfo } from "../fields/pagination"
 
 export type OriginalImage = {
@@ -61,30 +58,6 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     blurhash: {
       type: GraphQLString,
       description: "Blurhash code for the image",
-    },
-    blurhashDataURL: {
-      type: GraphQLString,
-      args: {
-        width: {
-          type: GraphQLInt,
-          defaultValue: 64,
-        },
-      },
-      resolve: ({ blurhash, aspect_ratio }, { width }) => {
-        if (!blurhash) return null
-
-        try {
-          const aspectRatio = aspect_ratio || 1
-          const height = Math.round(width / aspectRatio)
-          const pixels = decodeBlurHash(blurhash, width, height)
-          const png = UPNG.encode([pixels], width, height, 256)
-
-          return `data:image/png;base64,${encode(png)}`
-        } catch (error) {
-          console.error("[schema/v2/image/blurhashDataURI] Error:", error)
-          return null
-        }
-      },
     },
     caption: {
       type: GraphQLString,
