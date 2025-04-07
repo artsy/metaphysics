@@ -8,6 +8,8 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFloat,
+  GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import { Sellable, sharedSellableFields } from "./sellable"
 import { ResolverContext } from "types/graphql"
@@ -35,7 +37,27 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
 
     availability: {
       type: GraphQLString,
-      resolve: ({ artwork }) => artwork.availability,
+      resolve: ({ availability }) => availability,
+    },
+    artistProofs: {
+      type: GraphQLBoolean,
+      resolve: ({ artist_proofs }) => artist_proofs,
+    },
+    availableEditions: {
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ available_editions }) => available_editions,
+    },
+    depth: {
+      type: GraphQLString,
+      resolve: ({ depth }) => depth,
+    },
+    diameter: {
+      type: GraphQLString,
+      resolve: ({ diameter }) => diameter,
+    },
+    duration: {
+      type: GraphQLString,
+      resolve: ({ duration }) => duration,
     },
     dimensions: Dimensions,
     displayLabel: {
@@ -51,15 +73,69 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ editions }) => editions,
     },
+    editionSize: {
+      type: GraphQLString,
+      resolve: ({ edition_size }) => edition_size,
+    },
+    framedDepth: {
+      type: GraphQLString,
+      resolve: ({ framed_depth }) => framed_depth,
+    },
+    framedWidth: {
+      type: GraphQLString,
+      resolve: ({ framed_width }) => framed_width,
+    },
+    framedHeight: {
+      type: GraphQLString,
+      resolve: ({ framed_height }) => framed_height,
+    },
+    framedDiameter: {
+      type: GraphQLString,
+      resolve: ({ framed_diameter }) => framed_diameter,
+    },
+    framedMetric: {
+      type: GraphQLString,
+      resolve: ({ framed_metric }) => framed_metric,
+    },
+    height: {
+      type: GraphQLString,
+      resolve: ({ height }) => height,
+    },
+    heightCm: {
+      description:
+        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+      type: GraphQLFloat,
+      resolve: ({ height_cm }) => height_cm,
+    },
     internalDisplayPrice: {
       type: GraphQLString,
       resolve: ({ internal_display_price }) => internal_display_price,
       description:
         "Price for internal partner display, requires partner access",
     },
+    inventory: {
+      type: new GraphQLObjectType({
+        name: "EditionSetInventory",
+        fields: {
+          count: {
+            type: GraphQLInt,
+            resolve: ({ count }) => count,
+          },
+          isUnlimited: {
+            type: GraphQLBoolean,
+            resolve: ({ unlimited }) => unlimited,
+          },
+        },
+      }),
+      resolve: ({ inventory }) => inventory,
+    },
     isAcquireable: {
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
+    },
+    isEcommerce: {
+      type: GraphQLBoolean,
+      resolve: ({ ecommerce }) => ecommerce,
     },
     isForSale: {
       type: GraphQLBoolean,
@@ -119,10 +195,22 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
         return { cents, currency }
       },
     },
+    prototypes: {
+      type: GraphQLString,
+      resolve: ({ prototypes }) => prototypes,
+    },
     published: {
       type: GraphQLBoolean,
       description: "Is the edition set parent-artwork published?",
       resolve: ({ artwork }) => artwork.published,
+    },
+    shippingWeight: {
+      type: GraphQLString,
+      resolve: ({ shipping_weight }) => shipping_weight,
+    },
+    shippingWeightMetric: {
+      type: GraphQLString,
+      resolve: ({ shipping_weight_metric }) => shipping_weight_metric,
     },
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",
@@ -145,17 +233,15 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
         return price
       },
     },
+    width: {
+      type: GraphQLString,
+      resolve: ({ width }) => width,
+    },
     widthCm: {
       description:
         "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
       type: GraphQLFloat,
       resolve: ({ width_cm }) => width_cm,
-    },
-    heightCm: {
-      description:
-        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
-      type: GraphQLFloat,
-      resolve: ({ height_cm }) => height_cm,
     },
   }),
 })
