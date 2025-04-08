@@ -13383,6 +13383,7 @@ type Location {
   daySchedules: [DaySchedule]
   display: String
   displayCountry: String
+  email: String
   euShippingLocation: Boolean
 
   # A globally unique ID.
@@ -16577,6 +16578,12 @@ type Partner implements Node {
 
   # Indicates the partner is a trusted seller on Artsy
   isVerifiedSeller: Boolean
+
+  # A Singular Location belonging to the Partner
+  location(
+    # The slug or ID of the Contact
+    locationId: String!
+  ): Location
 
   # This field is deprecated and is being used in Eigen release predating the 6.0 release
   locations(size: Int = 25): [Location]
