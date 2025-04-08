@@ -1166,6 +1166,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/location/${locationId}`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerShowLoader: gravityLoader<
       any,
       { partnerId: string; showId: string }

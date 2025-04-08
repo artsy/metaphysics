@@ -15513,6 +15513,11 @@ type Mutation {
     input: UpdatePartnerContactInput!
   ): UpdatePartnerContactPayload
 
+  # Updates a new location for a partner
+  updatePartnerLocation(
+    input: UpdatePartnerLocationInput!
+  ): UpdatePartnerLocationPayload
+
   # Updates a partner show.
   updatePartnerShow(
     input: UpdatePartnerShowMutationInput!
@@ -22061,6 +22066,49 @@ type UpdatePartnerContactSuccess {
   partnerContact: Contact
 }
 
+type UpdatePartnerLocationFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerLocationInput {
+  address: String
+  address2: String
+  addressType: partnerLocationType
+  city: String
+  clientMutationId: String
+  country: String
+
+  # Primary email of given location
+  email: String
+
+  # ID of the location to update
+  locationId: String!
+
+  # ID of the partner
+  partnerId: String!
+
+  # Primary phone of given location
+  phone: String
+  postalCode: String
+
+  # Boolean flag that denotes whether a location is publicly viewable on Partner's Artsy Profile
+  publiclyViewable: Boolean
+  state: String
+}
+
+union UpdatePartnerLocationOrError =
+    UpdatePartnerLocationFailure
+  | UpdatePartnerLocationSuccess
+
+type UpdatePartnerLocationPayload {
+  clientMutationId: String
+  partnerLocationOrError: UpdatePartnerLocationOrError
+}
+
+type UpdatePartnerLocationSuccess {
+  location: Location
+}
+
 type UpdatePartnerShowDocumentFailure {
   mutationError: GravityMutationError
 }
@@ -24751,6 +24799,12 @@ enum locationType {
 
 type partnerBiographyBlurb {
   text: String
+}
+
+enum partnerLocationType {
+  BUSINESS
+  OTHER
+  TEMPORARY
 }
 
 type purchases {
