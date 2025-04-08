@@ -9859,6 +9859,33 @@ type DeletePartnerContactSuccess {
   partnerContact: Contact
 }
 
+type DeletePartnerLocationFailure {
+  mutationError: GravityMutationError
+}
+
+input DeletePartnerLocationMutationInput {
+  clientMutationId: String
+
+  # ID of the Location to delete
+  locationId: String!
+
+  # ID of the partner
+  partnerId: String!
+}
+
+type DeletePartnerLocationMutationPayload {
+  clientMutationId: String
+  partnerLocationOrError: DeletePartnerLocationOrError
+}
+
+union DeletePartnerLocationOrError =
+    DeletePartnerLocationFailure
+  | DeletePartnerLocationSuccess
+
+type DeletePartnerLocationSuccess {
+  location: Location
+}
+
 type DeletePartnerShowDocumentFailure {
   mutationError: GravityMutationError
 }
@@ -15168,6 +15195,11 @@ type Mutation {
   deletePartnerContact(
     input: DeletePartnerContactMutationInput!
   ): DeletePartnerContactMutationPayload
+
+  # Deletes a location for a partner
+  deletePartnerLocation(
+    input: DeletePartnerLocationMutationInput!
+  ): DeletePartnerLocationMutationPayload
 
   # Deletes a partner show.
   deletePartnerShow(

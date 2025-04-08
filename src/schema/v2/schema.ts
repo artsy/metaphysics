@@ -304,6 +304,7 @@ import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerCo
 import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerContactMutation"
 import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
+import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -517,6 +518,7 @@ export default new GraphQLSchema({
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
       deletePartnerContact: DeletePartnerContactMutation,
+      deletePartnerLocation: DeletePartnerLocationMutation,
       deletePartnerShow: deletePartnerShowMutation,
       deletePartnerShowDocument: deletePartnerShowDocumentMutation,
       deletePartnerShowEvent: deletePartnerShowEventMutation,

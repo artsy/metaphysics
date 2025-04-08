@@ -403,6 +403,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deletePartnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/location/${locationId}`,
+      {},
+      { method: "DELETE" }
+    ),
     deletePartnerShowLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
