@@ -550,6 +550,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ depth_cm }) => depth_cm,
       },
       description: markdown(({ blurb }) => blurb),
+      diameter: {
+        type: GraphQLFloat,
+        resolve: ({ diameter }) => diameter,
+      },
       diameterCm: {
         type: GraphQLFloat,
         resolve: ({ diameter_cm }) => diameter_cm,
