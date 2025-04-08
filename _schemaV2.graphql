@@ -9026,7 +9026,7 @@ input CreatePartnerLocationInput {
   email: String
 
   # ID of the partner
-  partnerID: String!
+  partnerId: String!
 
   # Primary phone of given location
   phone: String
