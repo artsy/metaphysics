@@ -927,6 +927,13 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
+    partnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/locationId/${locationId}`
+    ),
     partnerLocationsConnectionLoader: gravityLoader(
       (id) => `partner/${id}/locations`,
       {},
