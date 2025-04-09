@@ -22,6 +22,9 @@ import { artworkConnection } from "schema/v2/artwork"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Image, { getDefault } from "../image"
 import { setVersion } from "../image/normalize"
+import { paginationResolver } from "../fields/pagination"
+import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { ShowsConnection } from "../show"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
@@ -125,90 +128,169 @@ const ArtworksSort = {
 export const fields: Thunk<GraphQLFieldConfigMap<
   PartnerArtistDetails,
   ResolverContext
->> = () => ({
-  ...IDFields,
-  artist: {
-    type: Artist.type,
-  },
-  biography: {
-    type: GraphQLString,
-  },
-  biographyBlurb,
-  counts,
-  isHiddenInPresentationMode: {
-    type: GraphQLBoolean,
-    resolve: ({ hide_in_presentation_mode }) => !!hide_in_presentation_mode,
-  },
-  artworksConnection: {
-    type: artworkConnection.connectionType,
-    args: pageable({
-      sort: ArtworksSort,
-    }),
-    resolve: (
-      { partner: { id: partnerID }, artist: { id: artistID } },
-      args,
-      { partnerArtistPartnerArtistArtworksLoader }
-    ) => {
-      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+>> = () => {
+  const {
+    filterArtworksConnectionWithParams,
+  } = require("../filterArtworksConnection")
+  return {
+    ...IDFields,
+    artist: {
+      type: Artist.type,
+    },
+    biography: {
+      type: GraphQLString,
+    },
+    biographyBlurb,
+    counts,
+    isHiddenInPresentationMode: {
+      type: GraphQLBoolean,
+      resolve: ({ hide_in_presentation_mode }) => !!hide_in_presentation_mode,
+    },
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({
+        sort: ArtworksSort,
+      }),
+      resolve: (
+        { partner: { id: partnerID }, artist: { id: artistID } },
+        args,
+        { partnerArtistPartnerArtistArtworksLoader }
+      ) => {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-      const gravityArgs = {
-        total_count: true,
-        sort: args.sort,
-        page,
-        size,
-      }
+        const gravityArgs = {
+          total_count: true,
+          sort: args.sort,
+          page,
+          size,
+        }
 
-      return partnerArtistPartnerArtistArtworksLoader(
-        { partnerID, artistID },
-        gravityArgs
-      ).then(({ body, headers }) => {
+        return partnerArtistPartnerArtistArtworksLoader(
+          { partnerID, artistID },
+          gravityArgs
+        ).then(({ body, headers }) => {
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            ...connectionFromArraySlice(body, args, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+              resolveNode: (node) => node.artwork,
+            }),
+          }
+        })
+      },
+    },
+    documentsConnection: {
+      type: PartnerDocumentsConnection.type,
+      description: "Retrieve all documents for this partner artist",
+      args: pageable({}),
+      resolve: async (
+        { partner, artist: { id: artistID } },
+        args,
+        { partnerArtistDocumentsLoader }
+      ) => {
+        if (!partnerArtistDocumentsLoader) {
+          return null
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const gravityOptions = {
+          size,
+          offset,
+          total_count: true,
+        }
+        const { body, headers } = await partnerArtistDocumentsLoader(
+          { artistID, partnerID: partner.id },
+          gravityOptions
+        )
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-        return {
+        return paginationResolver({
           totalCount,
-          ...connectionFromArraySlice(body, args, {
-            arrayLength: totalCount,
-            sliceStart: offset,
-            resolveNode: (node) => node.artwork,
-          }),
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
+    },
+    filterArtworksConnection: filterArtworksConnectionWithParams(
+      ({ artist, partner }) => {
+        return { artist_id: artist.id, partner_id: partner.id }
+      }
+    ),
+    showsConnection: {
+      type: ShowsConnection.connectionType,
+      description: "A list of shows for this artist",
+      args: pageable({}),
+      resolve: async (
+        { artist: { id: artistID }, partner: { id: partnerID } },
+        args,
+        { partnerShowsLoader }
+      ) => {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const gravityArgs = {
+          total_count: true,
+          page,
+          size,
+          artist_id: artistID,
         }
-      })
+
+        const { body, headers } = await partnerShowsLoader(
+          partnerID,
+          gravityArgs
+        )
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
     },
-  },
-  image: Image,
-  imageUrl: {
-    type: GraphQLString,
-    resolve: ({ image_versions, image_url, image_urls }) => {
-      return setVersion(
-        getDefault({
-          image_url,
-          images_urls: image_urls,
-          image_versions,
-        }),
-        ["square"]
-      )
+    image: Image,
+    imageUrl: {
+      type: GraphQLString,
+      resolve: ({ image_versions, image_url, image_urls }) => {
+        return setVersion(
+          getDefault({
+            image_url,
+            images_urls: image_urls,
+            image_versions,
+          }),
+          ["square"]
+        )
+      },
     },
-  },
-  isDisplayOnPartnerProfile: {
-    type: GraphQLBoolean,
-    resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
-  },
-  representedBy: {
-    type: GraphQLBoolean,
-    resolve: ({ represented_by }) => represented_by,
-  },
-  isUseDefaultBiography: {
-    type: GraphQLBoolean,
-    resolve: ({ use_default_biography }) => use_default_biography,
-  },
-  partner: {
-    type: PartnerType,
-  },
-  sortableID: {
-    type: GraphQLString,
-    resolve: ({ sortable_id }) => sortable_id,
-  },
-})
+    isDisplayOnPartnerProfile: {
+      type: GraphQLBoolean,
+      resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
+    },
+    representedBy: {
+      type: GraphQLBoolean,
+      resolve: ({ represented_by }) => represented_by,
+    },
+    isUseDefaultBiography: {
+      type: GraphQLBoolean,
+      resolve: ({ use_default_biography }) => use_default_biography,
+    },
+    partner: {
+      type: PartnerType,
+    },
+    sortableID: {
+      type: GraphQLString,
+      resolve: ({ sortable_id }) => sortable_id,
+    },
+  }
+}
 
 export const PartnerArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerArtist",
