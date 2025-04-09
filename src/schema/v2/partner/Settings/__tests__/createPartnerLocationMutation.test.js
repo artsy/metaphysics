@@ -5,7 +5,7 @@ const mutation = gql`
   mutation {
     createPartnerLocation(
       input: {
-        partnerID: "partner_123"
+        partnerId: "partner_123"
         address: "123 Happy Lane"
         address2: "Apt 2b"
         city: "New York"

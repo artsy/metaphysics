@@ -652,6 +652,58 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#location", () => {
+    let singleLocationResponse
+
+    const partnerLocationLoader = jest.fn(() => {
+      return Promise.resolve(singleLocationResponse)
+    })
+
+    const partnerLoader = jest.fn(() => {
+      return Promise.resolve(partnerData)
+    })
+
+    beforeEach(() => {
+      singleLocationResponse = {
+        id: "location-1",
+        email: "md@artsy.net",
+        address: "123 Happy St",
+        state: "NY",
+      }
+    })
+
+    it("returns a given partner location", async () => {
+      context = {
+        partnerLocationLoader,
+        partnerLoader,
+      }
+
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            location(locationId: "location-1") {
+              email
+              address
+              state
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          location: {
+            email: "md@artsy.net",
+            address: "123 Happy St",
+            state: "NY",
+          },
+        },
+      })
+    })
+  })
+
   describe("#locationsConnection", () => {
     let locationsResponse
 

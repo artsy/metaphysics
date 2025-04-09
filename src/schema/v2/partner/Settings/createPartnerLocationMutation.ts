@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 import { LocationType } from "../../location"
 
 interface Input {
-  partnerID: string
+  partnerId: string
   addressType: string
   country: string
   address: string
@@ -63,7 +63,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
   name: "CreatePartnerLocation",
   description: "Creates a new location for a partner",
   inputFields: {
-    partnerID: {
+    partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
@@ -127,7 +127,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       email,
       phone,
       publiclyViewable,
-      partnerID,
+      partnerId,
     },
     { createPartnerLocationLoader }
   ) => {
@@ -136,7 +136,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await createPartnerLocationLoader(partnerID, {
+      const response = await createPartnerLocationLoader(partnerId, {
         address,
         address_2: address2,
         address_type: addressType,

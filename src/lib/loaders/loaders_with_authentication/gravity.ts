@@ -403,6 +403,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deletePartnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/location/${locationId}`,
+      {},
+      { method: "DELETE" }
+    ),
     deletePartnerShowLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
@@ -918,6 +927,13 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
+    partnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/locationId/${locationId}`
+    ),
     partnerLocationsConnectionLoader: gravityLoader(
       (id) => `partner/${id}/locations`,
       {},
@@ -1163,6 +1179,15 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; contactId: string }
     >(
       ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerLocationLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/location/${locationId}`,
       {},
       { method: "PUT" }
     ),
