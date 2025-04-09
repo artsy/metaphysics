@@ -932,7 +932,7 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; locationId: string }
     >(
       ({ partnerId, locationId }) =>
-        `partner/${partnerId}/locationId/${locationId}`
+        `partner/${partnerId}/location/${locationId}`
     ),
     partnerLocationsConnectionLoader: gravityLoader(
       (id) => `partner/${id}/locations`,
