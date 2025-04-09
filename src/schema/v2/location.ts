@@ -99,6 +99,10 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ day_schedule_text }) => day_schedule_text,
     },
+    email: {
+      type: GraphQLString,
+      resolve: ({ email }) => email,
+    },
     addressType: {
       description: "Buisness, temporary, or private address",
       type: GraphQLString,

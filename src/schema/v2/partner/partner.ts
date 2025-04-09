@@ -1126,6 +1126,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      location: {
+        type: LocationType,
+        description: "A Singular Location belonging to the Partner",
+        args: {
+          locationId: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The slug or ID of the Contact",
+          },
+        },
+        resolve: async ({ id }, args, { partnerLocationLoader }) => {
+          const { locationId } = args
+
+          if (!partnerLocationLoader) return null
+
+          const location = await partnerLocationLoader({
+            partnerId: id,
+            locationId: locationId,
+          })
+
+          return location
+        },
+      },
       name: {
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),

@@ -14,22 +14,23 @@ import {
 import { ResolverContext } from "types/graphql"
 import { LocationType } from "../../location"
 
-interface Input {
+interface UpdatePartnerLocationInputProps {
+  locationId: string
   partnerId: string
-  addressType: string
-  country: string
-  address: string
+  addressType?: string
+  country?: string
+  address?: string
   address2?: string
-  city: string
+  city?: string
   state?: string
-  postalCode: string
+  postalCode?: string
   email?: string
   phone?: string
   publiclyViewable?: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerLocationSuccess",
+  name: "UpdatePartnerLocationSuccess",
   isTypeOf: (data) => !!data.id,
   fields: () => ({
     location: {
@@ -40,7 +41,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerLocationFailure",
+  name: "UpdatePartnerLocationFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -51,25 +52,29 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreatePartnerLocationOrError",
+  name: "UpdatePartnerLocationOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreatePartnerLocationMutation = mutationWithClientMutationId<
-  Input,
+export const UpdatePartnerLocationMutation = mutationWithClientMutationId<
+  UpdatePartnerLocationInputProps,
   any,
   ResolverContext
 >({
-  name: "CreatePartnerLocation",
-  description: "Creates a new location for a partner",
+  name: "UpdatePartnerLocation",
+  description: "Updates a new location for a partner",
   inputFields: {
     partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
+    locationId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the location to update",
+    },
     addressType: {
       type: new GraphQLEnumType({
-        name: "locationType",
+        name: "partnerLocationType",
         values: {
           BUSINESS: { value: "Business" },
           TEMPORARY: { value: "Temporary" },
@@ -128,26 +133,30 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       phone,
       publiclyViewable,
       partnerId,
+      locationId,
     },
-    { createPartnerLocationLoader }
+    { updatePartnerLocationLoader }
   ) => {
-    if (!createPartnerLocationLoader) {
+    if (!updatePartnerLocationLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await createPartnerLocationLoader(partnerId, {
-        address,
-        address_2: address2,
-        address_type: addressType,
-        city,
-        country,
-        email,
-        phone,
-        postal_code: postalCode,
-        publicly_viewable: publiclyViewable,
-        state,
-      })
+      const response = await updatePartnerLocationLoader(
+        { partnerId, locationId },
+        {
+          address,
+          address_2: address2,
+          address_type: addressType,
+          city,
+          country,
+          email,
+          phone,
+          postal_code: postalCode,
+          publicly_viewable: publiclyViewable,
+          state,
+        }
+      )
 
       return response
     } catch (error) {
