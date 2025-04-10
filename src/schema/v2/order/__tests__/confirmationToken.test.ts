@@ -18,7 +18,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               card {
-                display_brand
+                displayBrand
                 last4
               }
             }
@@ -30,7 +30,7 @@ describe("ConfirmationToken", () => {
     const mockResponse = {
       payment_method_preview: {
         card: {
-          display_brand: "Visa",
+          displayBrand: "Visa",
           last4: "4242",
         },
       },
@@ -45,7 +45,7 @@ describe("ConfirmationToken", () => {
         confirmationToken: {
           paymentMethodPreview: {
             card: {
-              display_brand: "Visa",
+              displayBrand: "Visa",
               last4: "4242",
             },
           },
@@ -61,7 +61,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               card {
-                display_brand
+                displayBrand
                 last4
               }
             }
@@ -84,7 +84,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               card {
-                display_brand
+                displayBrand
                 last4
               }
             }

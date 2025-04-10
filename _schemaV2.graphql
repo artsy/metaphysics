@@ -4573,7 +4573,7 @@ type CaptureHoldPayload {
 
 type Card {
   # The display brand of the card (e.g., Visa, Mastercard).
-  display_brand: String!
+  displayBrand: String!
 
   # The last 4 digits of the card.
   last4: String!

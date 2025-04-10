@@ -9,7 +9,7 @@ import { ResolverContext } from "types/graphql"
 const CardType = new GraphQLObjectType<any, ResolverContext>({
   name: "Card",
   fields: {
-    display_brand: {
+    displayBrand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The display brand of the card (e.g., Visa, Mastercard).",
     },
