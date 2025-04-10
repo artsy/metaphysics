@@ -12,6 +12,7 @@ const CardType = new GraphQLObjectType<any, ResolverContext>({
     displayBrand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The display brand of the card (e.g., Visa, Mastercard).",
+      resolve: ({ display_brand }) => display_brand,
     },
     last4: {
       type: new GraphQLNonNull(GraphQLString),

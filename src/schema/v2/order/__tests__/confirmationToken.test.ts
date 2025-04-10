@@ -30,7 +30,7 @@ describe("ConfirmationToken", () => {
     const mockResponse = {
       payment_method_preview: {
         card: {
-          displayBrand: "Visa",
+          display_brand: "Visa",
           last4: "4242",
         },
       },
