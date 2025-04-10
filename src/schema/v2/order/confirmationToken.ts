@@ -20,15 +20,25 @@ const CardType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+const PaymentMethodPreviewType = new GraphQLObjectType<any, ResolverContext>({
+  name: "PaymentMethodPreview",
+  fields: {
+    card: {
+      type: new GraphQLNonNull(CardType),
+      description: "Details of the card used in the payment method.",
+    },
+  },
+})
+
 export const ConfirmationTokenType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
   name: "ConfirmationToken",
   fields: {
-    card: {
-      type: CardType,
-      resolve: ({ payment_method_preview }) => payment_method_preview.card,
+    paymentMethodPreview: {
+      type: new GraphQLNonNull(PaymentMethodPreviewType),
+      resolve: ({ payment_method_preview }) => payment_method_preview,
     },
   },
 })

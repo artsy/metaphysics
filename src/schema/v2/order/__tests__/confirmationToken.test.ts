@@ -16,9 +16,11 @@ describe("ConfirmationToken", () => {
       query {
         me {
           confirmationToken(id: "tok_123456789") {
-            card {
-              display_brand
-              last4
+            paymentMethodPreview {
+              card {
+                display_brand
+                last4
+              }
             }
           }
         }
@@ -41,9 +43,11 @@ describe("ConfirmationToken", () => {
     expect(result).toEqual({
       me: {
         confirmationToken: {
-          card: {
-            display_brand: "Visa",
-            last4: "4242",
+          paymentMethodPreview: {
+            card: {
+              display_brand: "Visa",
+              last4: "4242",
+            },
           },
         },
       },
@@ -55,9 +59,11 @@ describe("ConfirmationToken", () => {
       query {
         me {
           confirmationToken(id: "tok_123456789") {
-            card {
-              display_brand
-              last4
+            paymentMethodPreview {
+              card {
+                display_brand
+                last4
+              }
             }
           }
         }
@@ -76,9 +82,11 @@ describe("ConfirmationToken", () => {
       query {
         me {
           confirmationToken(id: "tok_123456789") {
-            card {
-              display_brand
-              last4
+            paymentMethodPreview {
+              card {
+                display_brand
+                last4
+              }
             }
           }
         }

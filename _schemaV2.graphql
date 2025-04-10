@@ -7110,7 +7110,7 @@ type ConfirmPasswordPayload {
 }
 
 type ConfirmationToken {
-  card: Card
+  paymentMethodPreview: PaymentMethodPreview!
 }
 
 # Consignment
@@ -17644,6 +17644,11 @@ enum PartnersSortType {
   RELATIVE_SIZE_DESC
   SORTABLE_ID_ASC
   SORTABLE_ID_DESC
+}
+
+type PaymentMethodPreview {
+  # Details of the card used in the payment method.
+  card: Card!
 }
 
 union PaymentMethodUnion = BankAccount | CreditCard | WireTransfer
