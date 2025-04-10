@@ -303,6 +303,7 @@ import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerL
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
 import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerContactMutation"
 import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
+import { unsetOrderPaymentMethodMutation } from "./order/unsetOrderPaymentMethodMutation"
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 
@@ -575,6 +576,7 @@ export default new GraphQLSchema({
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
+      unsetOrderPaymentMethod: unsetOrderPaymentMethodMutation,
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
