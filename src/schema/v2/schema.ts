@@ -308,6 +308,7 @@ import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerCo
 import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
+import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -565,6 +566,7 @@ export default new GraphQLSchema({
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
+      repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,

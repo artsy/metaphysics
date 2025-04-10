@@ -957,6 +957,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    repositionPartnerLocationsLoader: gravityLoader(
+      (id) => `partner/${id}/locations/reposition`,
+      {},
+      { method: "POST" }
+    ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
