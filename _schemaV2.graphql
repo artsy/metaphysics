@@ -17648,7 +17648,7 @@ enum PartnersSortType {
 
 type PaymentMethodPreview {
   # Details of the card used in the payment method.
-  card: Card!
+  card: Card
 }
 
 union PaymentMethodUnion = BankAccount | CreditCard | WireTransfer

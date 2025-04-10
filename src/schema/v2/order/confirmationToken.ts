@@ -24,7 +24,7 @@ const PaymentMethodPreviewType = new GraphQLObjectType<any, ResolverContext>({
   name: "PaymentMethodPreview",
   fields: {
     card: {
-      type: new GraphQLNonNull(CardType),
+      type: CardType,
       description: "Details of the card used in the payment method.",
     },
   },
