@@ -71,6 +71,10 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const stripeConfirmationTokenLoader = exchangeLoader(
+    (id) => `stripe_confirmation_tokens/${id}`
+  )
+
   const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
@@ -113,5 +117,6 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderSetFulfillmentOptionLoader,
     meOrderSubmitLoader,
     meOrderUnsetFulfillmentOptionLoader,
+    stripeConfirmationTokenLoader,
   }
 }

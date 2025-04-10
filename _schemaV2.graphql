@@ -4571,6 +4571,14 @@ type CaptureHoldPayload {
   holdOrError: InventoryHoldOrErrorUnion!
 }
 
+type Card {
+  # The display brand of the card (e.g., Visa, Mastercard).
+  display_brand: String!
+
+  # The last 4 digits of the card.
+  last4: String!
+}
+
 type CareerHighlight implements Node {
   artist: Artist!
   collected: Boolean!
@@ -7099,6 +7107,10 @@ type ConfirmPasswordPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
   valid: Boolean!
+}
+
+type ConfirmationToken {
+  card: Card
 }
 
 # Consignment
@@ -14122,6 +14134,12 @@ type Me implements Node {
 
   # Current user's collector profile.
   collectorProfile: CollectorProfileType
+
+  # Retrieve payment details of a Stripe confirmation token
+  confirmationToken(
+    # Stripe confirmation token
+    id: String!
+  ): ConfirmationToken
 
   # A conversation, usually between a user and a partner
   conversation(
