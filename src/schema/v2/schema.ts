@@ -244,6 +244,9 @@ import { updateInstallShotForPartnerShowMutation } from "./Show/updateInstallSho
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
+import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
+import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
+import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistDocumentMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
@@ -491,6 +494,7 @@ export default new GraphQLSchema({
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
+      createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,
@@ -518,6 +522,7 @@ export default new GraphQLSchema({
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
       deletePartnerContact: DeletePartnerContactMutation,
+      deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
       deletePartnerLocation: DeletePartnerLocationMutation,
       deletePartnerShow: deletePartnerShowMutation,
       deletePartnerShowDocument: deletePartnerShowDocumentMutation,
@@ -604,6 +609,7 @@ export default new GraphQLSchema({
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateInstallShotForPartnerShow: updateInstallShotForPartnerShowMutation,
+      updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
       updatePartnerShowEvent: updatePartnerShowEventMutation,
       updateUser: updateUserMutation,
