@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const CardType = new GraphQLObjectType<any, ResolverContext>({
@@ -28,7 +33,7 @@ export const ConfirmationTokenType = new GraphQLObjectType<
   },
 })
 
-export const ConfirmationToken = {
+export const ConfirmationToken: GraphQLFieldConfig<void, ResolverContext> = {
   type: ConfirmationTokenType,
   description: "Retrieve payment details of a Stripe confirmation token",
   args: {
@@ -37,11 +42,7 @@ export const ConfirmationToken = {
       description: "Stripe confirmation token",
     },
   },
-  resolve: async (
-    _root,
-    { id },
-    { stripeConfirmationTokenLoader }: ResolverContext
-  ) => {
+  resolve: async (_root, { id }, { stripeConfirmationTokenLoader }) => {
     if (!stripeConfirmationTokenLoader) {
       throw new Error("You need to be authenticated to perform this action.")
     }
