@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -68,14 +67,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       description: "ID of the partner",
     },
     addressType: {
-      type: new GraphQLEnumType({
-        name: "locationType",
-        values: {
-          BUSINESS: { value: "Business" },
-          TEMPORARY: { value: "Temporary" },
-          OTHER: { value: "Other" },
-        },
-      }),
+      type: GraphQLString,
     },
     country: {
       type: GraphQLString,
