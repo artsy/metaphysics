@@ -13578,6 +13578,9 @@ type Location {
   # Union returning opening hours in formatted structure or a string
   openingHours: OpeningHoursUnion
   phone: String
+
+  # Marker of location's position in the partner's location list
+  position: String
   postalCode: String
 
   # Boolean flag that denotes whether a location is publicly viewable on Partner's Artsy Profile

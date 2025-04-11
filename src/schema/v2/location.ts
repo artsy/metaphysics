@@ -151,6 +151,12 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ postal_code }) => postal_code,
     },
+    position: {
+      type: GraphQLString,
+      description:
+        "Marker of location's position in the partner's location list",
+      resolve: ({ position }) => position,
+    },
     state: {
       type: GraphQLString,
     },
