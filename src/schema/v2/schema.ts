@@ -246,6 +246,7 @@ import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMut
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
 import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
 import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
+import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
 import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistDocumentMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
@@ -566,6 +567,7 @@ export default new GraphQLSchema({
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
+      repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
