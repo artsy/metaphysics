@@ -45,6 +45,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    repositionPartnerArtistArtworksLoader: gravityLoader<
+      any,
+      { artistId: string; partnerId: string }
+    >(
+      ({ artistId, partnerId }) =>
+        `partner/${partnerId}/artist/${artistId}/partner_artist_artworks/reposition`,
+      {},
+      { method: "POST" }
+    ),
     addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
       ({ showId }) => `partner_show/${showId}/image`,
       {},
