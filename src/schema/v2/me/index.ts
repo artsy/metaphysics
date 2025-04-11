@@ -97,6 +97,7 @@ import {
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
 import { MeOrder } from "../order"
+import { ConfirmationToken } from "../order/confirmationToken"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -226,6 +227,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     collectorProfile: MeCollectorProfile,
+    confirmationToken: ConfirmationToken,
     emailConfirmed: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "User has confirmed their email address",
