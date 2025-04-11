@@ -15,7 +15,7 @@ const PriceRange = new GraphQLObjectType({
     minPrice: {
       type: Money,
       resolve: ({ minPriceCents, price_currency }) => {
-        if (!minPriceCents) return null
+        if (!minPriceCents || !price_currency) return null
         return {
           cents: minPriceCents,
           currency: price_currency,
@@ -25,7 +25,7 @@ const PriceRange = new GraphQLObjectType({
     maxPrice: {
       type: Money,
       resolve: ({ maxPriceCents, price_currency }) => {
-        if (!maxPriceCents) return null
+        if (!maxPriceCents || !price_currency) return null
         return {
           cents: maxPriceCents,
           currency: price_currency,

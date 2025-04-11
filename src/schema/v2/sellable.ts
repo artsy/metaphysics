@@ -3,6 +3,7 @@ import { GraphQLBoolean, GraphQLInterfaceType, GraphQLString } from "graphql"
 import Dimensions from "./dimensions"
 import { InternalIDFields } from "./object_identification"
 import { Money } from "./fields/money"
+import { listPrice } from "./fields/listPrice"
 
 export const Sellable = new GraphQLInterfaceType({
   name: "Sellable",
@@ -80,6 +81,7 @@ export const sharedSellableFields = {
   priceListed: {
     type: Money,
   },
+  listPrice,
   published: {
     type: GraphQLBoolean,
   },
