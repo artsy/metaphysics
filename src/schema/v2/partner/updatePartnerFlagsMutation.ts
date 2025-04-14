@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -11,11 +12,13 @@ import {
 } from "lib/gravityErrorHandler"
 import Partner from "./partner"
 import { ResolverContext } from "types/graphql"
-import GraphQLJSON from "graphql-type-json"
 
 interface UpdatePartnerFlagsMutationInputProps {
   id: string
-  flags: Record<string, string>
+  inquireAvailabilityPriceDisplayEnabledByPartner?: boolean | null
+  artworksDefaultMetric?: string | null
+  artworksDefaultCurrency?: string | null
+  artworksDefaultPartnerLocationId?: string | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -57,9 +60,21 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The id of the partner to update.",
     },
-    flags: {
-      type: new GraphQLNonNull(GraphQLJSON),
-      description: "An object containing flag keys and values to update. If a value is empty, the flag will be unset.",
+    inquireAvailabilityPriceDisplayEnabledByPartner: {
+      type: GraphQLBoolean,
+      description: "Controls whether the partner has enabled the inquire availability price display. If null, the flag will be unset.",
+    },
+    artworksDefaultMetric: {
+      type: GraphQLString,
+      description: "The default metric system to use for artworks. If null, the flag will be unset.",
+    },
+    artworksDefaultCurrency: {
+      type: GraphQLString,
+      description: "The default currency to use for artworks. If null, the flag will be unset.",
+    },
+    artworksDefaultPartnerLocationId: {
+      type: GraphQLString,
+      description: "The default partner location ID to use for artworks. If null, the flag will be unset.",
     },
   },
   outputFields: {
@@ -70,12 +85,38 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ id, flags }, { updatePartnerFlagsLoader }) => {
+  mutateAndGetPayload: async ({ 
+    id, 
+    inquireAvailabilityPriceDisplayEnabledByPartner, 
+    artworksDefaultMetric,
+    artworksDefaultCurrency,
+    artworksDefaultPartnerLocationId
+  }, { updatePartnerFlagsLoader }) => {
     if (!updatePartnerFlagsLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
+      // Convert camelCase inputs to snake_case flags
+      const flags = {}
+      
+      // Only include the flags if they're being set or explicitly unset
+      if (inquireAvailabilityPriceDisplayEnabledByPartner !== undefined) {
+        flags["inquire_availability_price_display_enabled_by_partner"] = inquireAvailabilityPriceDisplayEnabledByPartner
+      }
+      
+      if (artworksDefaultMetric !== undefined) {
+        flags["artworks_default_metric"] = artworksDefaultMetric
+      }
+      
+      if (artworksDefaultCurrency !== undefined) {
+        flags["artworks_default_currency"] = artworksDefaultCurrency
+      }
+      
+      if (artworksDefaultPartnerLocationId !== undefined) {
+        flags["artworks_default_partner_location_id"] = artworksDefaultPartnerLocationId
+      }
+
       const response = await updatePartnerFlagsLoader(id, { flags })
       return response
     } catch (error) {

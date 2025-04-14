@@ -22668,13 +22668,21 @@ type UpdatePartnerFlagsFailure {
 }
 
 input UpdatePartnerFlagsMutationInput {
-  clientMutationId: String
+  # The default currency to use for artworks. If null, the flag will be unset.
+  artworksDefaultCurrency: String
 
-  # An object containing flag keys and values to update. If a value is empty, the flag will be unset.
-  flags: JSON!
+  # The default metric system to use for artworks. If null, the flag will be unset.
+  artworksDefaultMetric: String
+
+  # The default partner location ID to use for artworks. If null, the flag will be unset.
+  artworksDefaultPartnerLocationId: String
+  clientMutationId: String
 
   # The id of the partner to update.
   id: String!
+
+  # Controls whether the partner has enabled the inquire availability price display. If null, the flag will be unset.
+  inquireAvailabilityPriceDisplayEnabledByPartner: Boolean
 }
 
 type UpdatePartnerFlagsMutationPayload {
