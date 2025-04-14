@@ -194,6 +194,7 @@ import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { PartnerArtistDocumentsConnection } from "./partner/partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsConnection"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
+import { updatePartnerFlagsMutation } from "./partner/updatePartnerFlagsMutation"
 import { PaymentMethodUnion, WireTransferType } from "./payment_method_union"
 import { PhoneNumber } from "./phoneNumber"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
@@ -620,6 +621,7 @@ export default new GraphQLSchema({
       updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
       updatePartnerShowEvent: updatePartnerShowEventMutation,
+      updatePartnerFlags: updatePartnerFlagsMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,

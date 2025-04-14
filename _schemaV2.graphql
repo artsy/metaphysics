@@ -15787,6 +15787,11 @@ type Mutation {
     input: UpdatePartnerContactInput!
   ): UpdatePartnerContactPayload
 
+  # Updates multiple flags on a partner simultaneously.
+  updatePartnerFlags(
+    input: UpdatePartnerFlagsMutationInput!
+  ): UpdatePartnerFlagsMutationPayload
+
   # Updates a new location for a partner
   updatePartnerLocation(
     input: UpdatePartnerLocationInput!
@@ -22656,6 +22661,35 @@ type UpdatePartnerContactPayload {
 
 type UpdatePartnerContactSuccess {
   partnerContact: Contact
+}
+
+type UpdatePartnerFlagsFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerFlagsMutationInput {
+  clientMutationId: String
+
+  # An object containing flag keys and values to update. If a value is empty, the flag will be unset.
+  flags: JSON!
+
+  # The id of the partner to update.
+  id: String!
+}
+
+type UpdatePartnerFlagsMutationPayload {
+  clientMutationId: String
+
+  # On success: the updated partner. On error: the error that occurred.
+  partnerOrError: UpdatePartnerFlagsResponseOrError
+}
+
+union UpdatePartnerFlagsResponseOrError =
+    UpdatePartnerFlagsFailure
+  | UpdatePartnerFlagsSuccess
+
+type UpdatePartnerFlagsSuccess {
+  partner: Partner
 }
 
 type UpdatePartnerLocationFailure {
