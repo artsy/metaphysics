@@ -4455,6 +4455,17 @@ type BidderPositionSuggestedNextBid {
 # exceed the size of a 32-bit integer, it's encoded as a string.
 scalar BigInt
 
+input BulkUpdateArtworksFilterInput {
+  # Filter artworks with matching ids
+  artwork_ids: [String]
+
+  # Filter artworks by location
+  location_id: String
+
+  # Filter artworks by partner artist id
+  partner_artist_id: String
+}
+
 input BulkUpdateArtworksMetadataInput {
   # The category (medium type) to be assigned
   category: String
@@ -4472,6 +4483,9 @@ type BulkUpdateArtworksMetadataMutationFailure {
 
 input BulkUpdateArtworksMetadataMutationInput {
   clientMutationId: String
+
+  # Filter options to apply
+  filters: BulkUpdateArtworksFilterInput
 
   # ID of the partner
   id: String!

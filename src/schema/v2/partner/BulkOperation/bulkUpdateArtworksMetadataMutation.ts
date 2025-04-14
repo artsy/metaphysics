@@ -22,6 +22,11 @@ interface Input {
     category: string | null
     price_listed: number | null
   } | null
+  filters: {
+    artwork_ids: string[] | null
+    location_id: string | null
+    partner_artist_id: string | null
+  } | null
 }
 
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
@@ -38,6 +43,24 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     price_listed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
+    },
+  },
+})
+
+const BulkUpdateArtworksFilterInput = new GraphQLInputObjectType({
+  name: "BulkUpdateArtworksFilterInput",
+  fields: {
+    artwork_ids: {
+      type: new GraphQLList(GraphQLString),
+      description: "Filter artworks with matching ids",
+    },
+    location_id: {
+      type: GraphQLString,
+      description: "Filter artworks by location",
+    },
+    partner_artist_id: {
+      type: GraphQLString,
+      description: "Filter artworks by partner artist id",
     },
   },
 })
@@ -114,11 +137,18 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       type: BulkUpdateArtworksMetadataInput,
       description: "Metadata to be updated",
     },
+    filters: {
+      type: BulkUpdateArtworksFilterInput,
+      description: "Filter options to apply",
+    },
   },
   outputFields: {
     bulkUpdateArtworksMetadataOrError: {
       type: BulkUpdateArtworksMetadataMutationType,
       resolve: (result) => {
+        if (result._type === "GravityMutationError") {
+          return result
+        }
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
         return {
           updatedPartnerArtworks: { count: result.success, ids: [] },
@@ -131,11 +161,12 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, metadata },
+    { id, metadata, filters },
     { updatePartnerArtworksMetadataLoader }
   ) => {
     const gravityOptions = {
       metadata: metadata,
+      filters: filters,
     }
 
     if (!updatePartnerArtworksMetadataLoader) {
@@ -149,7 +180,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
-        throw new Error(error)
+        throw new Error(error.message || error.toString())
       }
     }
   },
