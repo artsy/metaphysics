@@ -312,6 +312,7 @@ import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerL
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
 import { PartnerMatch } from "./match/partner"
+import { PurchasesConnection } from "./purchases"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -416,6 +417,7 @@ const rootFields = {
   previewSavedSearch: PreviewSavedSearchField,
   profile: Profile,
   profilesConnection: Profiles,
+  purchasesConnection: PurchasesConnection,
   recentlySoldArtworks: RecentlySoldArtworks,
   requestLocation: RequestLocationField,
   sale: Sale,
