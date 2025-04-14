@@ -309,6 +309,7 @@ import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillme
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
+import { PartnerMatch } from "./match/partner"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -387,6 +388,7 @@ const rootFields = {
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
+  matchPartner: PartnerMatch,
   matchConnection: MatchConnection,
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,

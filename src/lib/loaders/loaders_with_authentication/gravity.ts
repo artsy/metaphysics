@@ -717,6 +717,9 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    matchPartnerLoader: gravityLoader<any, { term: string }>(
+      ({ term }) => `/match/partners?term=${term}&size=10`
+    ),
     matchProfilesLoader: gravityLoader("match/profiles", {}, { headers: true }),
     matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
