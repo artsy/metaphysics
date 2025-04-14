@@ -4,6 +4,7 @@ import Dimensions from "./dimensions"
 import { InternalIDFields } from "./object_identification"
 import { Money } from "./fields/money"
 import { listPrice } from "./fields/listPrice"
+import { listingOptions } from "./artwork/listingOptions"
 
 export const Sellable = new GraphQLInterfaceType({
   name: "Sellable",
@@ -63,9 +64,6 @@ export const sharedSellableFields = {
   internalDisplayPrice: {
     type: GraphQLString,
   },
-  isEcommerce: {
-    type: GraphQLBoolean,
-  },
   isInAuction: {
     type: GraphQLBoolean,
   },
@@ -82,6 +80,7 @@ export const sharedSellableFields = {
     type: Money,
   },
   listPrice,
+  listingOptions,
   published: {
     type: GraphQLBoolean,
   },

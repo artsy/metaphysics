@@ -99,6 +99,7 @@ import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
 import { ArtistSeriesConnectionType } from "../artistSeries"
+import { listingOptions } from "./listingOptions"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -923,12 +924,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return comparables_count > 0 && category !== "Architecture"
         },
       },
-      isEcommerce: {
-        type: GraphQLBoolean,
-        description:
-          "Whether this artwork is eligible for an ecommerce transaction",
-        resolve: ({ ecommerce }) => ecommerce,
-      },
       isDownloadable: {
         type: GraphQLBoolean,
         resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
@@ -1182,6 +1177,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")
       ),
+      listingOptions,
       location: {
         type: LocationType,
         resolve: ({ location }) => location,
