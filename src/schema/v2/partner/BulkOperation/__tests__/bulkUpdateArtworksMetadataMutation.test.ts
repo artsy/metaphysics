@@ -8,14 +8,14 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
         input: {
           id: "partner123"
           metadata: {
-            location_id: "location456"
+            locationId: "location456"
             category: "Painting"
-            price_listed: 1000
+            priceListed: 1000
           }
           filters: {
-            artwork_ids: ["artwork1", "artwork2"]
-            location_id: "oldLocation"
-            partner_artist_id: "artist789"
+            artworkIds: ["artwork1", "artwork2"]
+            locationId: "oldLocation"
+            partnerArtistId: "artist789"
           }
         }
       ) {
@@ -95,7 +95,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           input: {
             id: "partner123"
             metadata: { category: "Sculpture" }
-            filters: { partner_artist_id: "artist789" }
+            filters: { partnerArtistId: "artist789" }
           }
         ) {
           bulkUpdateArtworksMetadataOrError {

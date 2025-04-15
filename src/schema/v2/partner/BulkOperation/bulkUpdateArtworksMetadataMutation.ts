@@ -18,21 +18,21 @@ import { GraphQLUnionType } from "graphql"
 interface Input {
   id: string
   metadata: {
-    location_id: string | null
+    locationId: string | null
     category: string | null
-    price_listed: number | null
+    priceListed: number | null
   } | null
   filters: {
-    artwork_ids: string[] | null
-    location_id: string | null
-    partner_artist_id: string | null
+    artworkIds: string[] | null
+    locationId: string | null
+    partnerArtistId: string | null
   } | null
 }
 
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
   fields: {
-    location_id: {
+    locationId: {
       type: GraphQLString,
       description: "The partner location ID to assign",
     },
@@ -40,7 +40,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The category (medium type) to be assigned",
     },
-    price_listed: {
+    priceListed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
     },
@@ -50,15 +50,15 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
 const BulkUpdateArtworksFilterInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksFilterInput",
   fields: {
-    artwork_ids: {
+    artworkIds: {
       type: new GraphQLList(GraphQLString),
       description: "Filter artworks with matching ids",
     },
-    location_id: {
+    locationId: {
       type: GraphQLString,
       description: "Filter artworks by location",
     },
-    partner_artist_id: {
+    partnerArtistId: {
       type: GraphQLString,
       description: "Filter artworks by partner artist id",
     },
@@ -164,9 +164,22 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     { id, metadata, filters },
     { updatePartnerArtworksMetadataLoader }
   ) => {
-    const gravityOptions = {
-      metadata: metadata,
-      filters: filters,
+    const gravityOptions: any = {}
+
+    if (metadata) {
+      gravityOptions.metadata = {
+        location_id: metadata.locationId,
+        category: metadata.category,
+        price_listed: metadata.priceListed,
+      }
+    }
+
+    if (filters) {
+      gravityOptions.filters = {
+        artwork_ids: filters.artworkIds,
+        location_id: filters.locationId,
+        partner_artist_id: filters.partnerArtistId,
+      }
     }
 
     if (!updatePartnerArtworksMetadataLoader) {

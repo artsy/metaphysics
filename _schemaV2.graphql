@@ -4457,13 +4457,13 @@ scalar BigInt
 
 input BulkUpdateArtworksFilterInput {
   # Filter artworks with matching ids
-  artwork_ids: [String]
+  artworkIds: [String]
 
   # Filter artworks by location
-  location_id: String
+  locationId: String
 
   # Filter artworks by partner artist id
-  partner_artist_id: String
+  partnerArtistId: String
 }
 
 input BulkUpdateArtworksMetadataInput {
@@ -4471,10 +4471,10 @@ input BulkUpdateArtworksMetadataInput {
   category: String
 
   # The partner location ID to assign
-  location_id: String
+  locationId: String
 
   # The price for the artworks
-  price_listed: Float
+  priceListed: Float
 }
 
 type BulkUpdateArtworksMetadataMutationFailure {
