@@ -313,6 +313,7 @@ import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerL
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
 import { PartnerMatch } from "./match/partner"
+import { CreatePartnerLocationDayScheduleMutation } from "./partner/Settings/createPartnerLocationDaySchedule"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -500,6 +501,7 @@ export default new GraphQLSchema({
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
+      createPartnerLocationDaySchedule: CreatePartnerLocationDayScheduleMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,

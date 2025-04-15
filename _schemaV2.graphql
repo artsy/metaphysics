@@ -9180,6 +9180,36 @@ type CreatePartnerContactSuccess {
   partnerContact: Contact
 }
 
+type CreatePartnerLocationDayScheduleFailure {
+  mutationError: GravityMutationError
+}
+
+input CreatePartnerLocationDayScheduleInput {
+  clientMutationId: String
+
+  # List of day schedules for the full week
+  daySchedules: [DayScheduleInput!]!
+
+  # ID of the location
+  locationId: String!
+
+  # ID of the partner
+  partnerId: String!
+}
+
+union CreatePartnerLocationDayScheduleOrError =
+    CreatePartnerLocationDayScheduleFailure
+  | CreatePartnerLocationDayScheduleSuccess
+
+type CreatePartnerLocationDaySchedulePayload {
+  clientMutationId: String
+  partnerLocationOrError: CreatePartnerLocationDayScheduleOrError
+}
+
+type CreatePartnerLocationDayScheduleSuccess {
+  location: Location
+}
+
 type CreatePartnerLocationFailure {
   mutationError: GravityMutationError
 }
@@ -9777,6 +9807,12 @@ type DaySchedule {
   dayOfWeek: String
   endTime: Int
   startTime: Int
+}
+
+input DayScheduleInput {
+  day: Int!
+  endTime: Int!
+  startTime: Int!
 }
 
 type DeepZoom {
@@ -15291,6 +15327,11 @@ type Mutation {
   createPartnerLocation(
     input: CreatePartnerLocationInput!
   ): CreatePartnerLocationPayload
+
+  # Creates a new weekly schedule for a partner location
+  createPartnerLocationDaySchedule(
+    input: CreatePartnerLocationDayScheduleInput!
+  ): CreatePartnerLocationDaySchedulePayload
 
   # Create a partner offer for the users
   createPartnerOffer(

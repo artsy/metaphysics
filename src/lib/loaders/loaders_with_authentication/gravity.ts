@@ -304,6 +304,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerLocationDayScheduleLoader: gravityLoader<
+      any,
+      { partnerId: string; locationId: string }
+    >(
+      ({ partnerId, locationId }) =>
+        `partner/${partnerId}/location/${locationId}/day_schedules`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerOfferLoader: gravityLoader(
       "partner_offer",
       {},
