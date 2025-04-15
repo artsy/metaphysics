@@ -307,9 +307,11 @@ import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerL
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
 import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerContactMutation"
 import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
+import { unsetOrderPaymentMethodMutation } from "./order/unsetOrderPaymentMethodMutation"
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
+import { PartnerMatch } from "./match/partner"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -388,6 +390,7 @@ const rootFields = {
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
+  matchPartner: PartnerMatch,
   matchConnection: MatchConnection,
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,
@@ -584,6 +587,7 @@ export default new GraphQLSchema({
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
+      unsetOrderPaymentMethod: unsetOrderPaymentMethodMutation,
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,

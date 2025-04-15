@@ -16,6 +16,7 @@ import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
 import { Money } from "./fields/money"
 import currencyCodes from "lib/currency_codes.json"
+import { listingOptions } from "./artwork/listingOptions"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -133,10 +134,6 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
     },
-    isEcommerce: {
-      type: GraphQLBoolean,
-      resolve: ({ ecommerce }) => ecommerce,
-    },
     isForSale: {
       type: GraphQLBoolean,
       resolve: ({ forsale }) => forsale,
@@ -178,6 +175,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,
     },
+    listingOptions,
     listPrice,
     price: {
       type: GraphQLString,
