@@ -38,7 +38,7 @@ const DayScheduleInputType = new GraphQLInputObjectType({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerLocationDayScheduleSuccess",
-  isTypeOf: (data) => !!data._id,
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
     location: {
       type: LocationType,
@@ -101,19 +101,24 @@ export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutati
     }
 
     try {
-      const snakeCasedDaySchedules = daySchedules.map(
-        ({ day, startTime, endTime }) => ({
-          day,
-          start_time: startTime,
-          end_time: endTime,
-        })
+      const identifiers = { partnerId, locationId }
+
+      // Is this ethical.....
+      // refactor this
+      const formatDayScheduleDataForQueryString = daySchedules.reduce(
+        (acc, schedule, index) => {
+          acc[`day_schedules[${index}][day]`] = schedule.day
+          acc[`day_schedules[${index}][start_time]`] = schedule.startTime
+          acc[`day_schedules[${index}][end_time]`] = schedule.endTime
+          return acc
+        },
+        {}
       )
 
-      const response = await createPartnerLocationDayScheduleLoader({
-        partnerId,
-        locationId,
-        day_schedules: snakeCasedDaySchedules,
-      })
+      const response = await createPartnerLocationDayScheduleLoader(
+        identifiers,
+        formatDayScheduleDataForQueryString
+      )
 
       return response
     } catch (error) {
