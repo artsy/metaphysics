@@ -140,6 +140,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   dimensionRange: {
     type: GraphQLString,
   },
+  disableNotForSaleSorting: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will skip pushing sold works to the back of the list. Useful in a CMS context.",
+  },
   excludeArtworkIDs: {
     type: new GraphQLList(GraphQLString),
   },
@@ -559,6 +564,7 @@ const filterArtworksConnectionTypeFactory = (
       ...convertConnectionArgsToGravityArgs(options),
       ...mapRootToFilterParams(root),
       aggregations: aggregationOptions,
+      disable_not_for_sale_sorting: options.disableNotForSaleSorting,
     }
 
     // We need to set `include_unpublished` when filtering for only unpublished works.

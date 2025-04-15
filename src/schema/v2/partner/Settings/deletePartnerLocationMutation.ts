@@ -68,7 +68,7 @@ export const DeletePartnerLocationMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerId, LocationId },
+    { partnerId, locationId },
     { deletePartnerLocationLoader }
   ) => {
     if (!deletePartnerLocationLoader) {
@@ -78,7 +78,7 @@ export const DeletePartnerLocationMutation = mutationWithClientMutationId<
     try {
       const response = await deletePartnerLocationLoader({
         partnerId,
-        LocationId,
+        locationId,
       })
 
       return response

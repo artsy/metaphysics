@@ -244,6 +244,10 @@ import { updateInstallShotForPartnerShowMutation } from "./Show/updateInstallSho
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
+import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
+import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
+import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
+import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistDocumentMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
@@ -303,8 +307,11 @@ import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerL
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
 import { DeletePartnerContactMutation } from "./partner/Settings/deletePartnerContactMutation"
 import { unsetOrderFulfillmentOptionMutation } from "./order/unsetOrderFulfillmentOptionMutation"
+import { unsetOrderPaymentMethodMutation } from "./order/unsetOrderPaymentMethodMutation"
 import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerLocationMutation"
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
+import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
+import { PartnerMatch } from "./match/partner"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -383,6 +390,7 @@ const rootFields = {
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
+  matchPartner: PartnerMatch,
   matchConnection: MatchConnection,
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,
@@ -491,6 +499,7 @@ export default new GraphQLSchema({
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
+      createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,
@@ -518,6 +527,7 @@ export default new GraphQLSchema({
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
       deletePartnerContact: DeletePartnerContactMutation,
+      deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
       deletePartnerLocation: DeletePartnerLocationMutation,
       deletePartnerShow: deletePartnerShowMutation,
       deletePartnerShowDocument: deletePartnerShowDocumentMutation,
@@ -560,6 +570,8 @@ export default new GraphQLSchema({
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
+      repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
+      repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
@@ -575,6 +587,7 @@ export default new GraphQLSchema({
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
+      unsetOrderPaymentMethod: unsetOrderPaymentMethodMutation,
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
@@ -604,6 +617,7 @@ export default new GraphQLSchema({
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateInstallShotForPartnerShow: updateInstallShotForPartnerShowMutation,
+      updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
       updatePartnerShowEvent: updatePartnerShowEventMutation,
       updateUser: updateUserMutation,

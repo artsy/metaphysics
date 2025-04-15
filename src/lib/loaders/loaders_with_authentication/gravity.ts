@@ -45,6 +45,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    repositionPartnerArtistArtworksLoader: gravityLoader<
+      any,
+      { artistId: string; partnerId: string }
+    >(
+      ({ artistId, partnerId }) =>
+        `partner/${partnerId}/artist/${artistId}/partner_artist_artworks/reposition`,
+      {},
+      { method: "POST" }
+    ),
     addInstallShotToPartnerShowLoader: gravityLoader<any, { showId: string }>(
       ({ showId }) => `partner_show/${showId}/image`,
       {},
@@ -305,6 +314,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerArtistDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; artistID: string }
+    >(
+      ({ partnerID, artistID }) =>
+        `partner/${partnerID}/artist/${artistID}/document`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerShowDocumentLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
@@ -417,6 +435,15 @@ export default (accessToken, userID, opts) => {
       { partnerID: string; showID: string }
     >(
       ({ partnerID, showID }) => `partner/${partnerID}/show/${showID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerArtistDocumentLoader: gravityLoader<
+      any,
+      { partnerID: string; artistID: string; documentId: string }
+    >(
+      ({ partnerID, artistID, documentId }) =>
+        `partner/${partnerID}/artist/${artistID}/document/${documentId}`,
       {},
       { method: "DELETE" }
     ),
@@ -699,6 +726,9 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    matchPartnerLoader: gravityLoader<any, { term: string }>(
+      ({ term }) => `/match/partners?term=${term}&size=10`
+    ),
     matchProfilesLoader: gravityLoader("match/profiles", {}, { headers: true }),
     matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
@@ -938,6 +968,11 @@ export default (accessToken, userID, opts) => {
       (id) => `partner/${id}/locations`,
       {},
       { headers: true }
+    ),
+    repositionPartnerLocationsLoader: gravityLoader(
+      (id) => `partner/${id}/locations/reposition`,
+      {},
+      { method: "POST" }
     ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
     partnerSearchArtistsLoader: gravityLoader(
@@ -1196,6 +1231,15 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; showId: string }
     >(
       ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerArtistDocumentLoader: gravityLoader<
+      any,
+      { partnerId: string; artistId: string; documentId: string }
+    >(
+      ({ partnerId, artistId, documentId }) =>
+        `partner/${partnerId}/artist/${artistId}/document/${documentId}`,
       {},
       { method: "PUT" }
     ),

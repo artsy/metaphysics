@@ -63,6 +63,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOrderUnsetPaymentMethodLoader = exchangeLoader(
+    (id) => `me/orders/${id}/unset_payment_method`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const meOrderSubmitLoader = exchangeLoader(
     (id) => `me/orders/${id}/submit`,
     {},
@@ -117,6 +125,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderSetFulfillmentOptionLoader,
     meOrderSubmitLoader,
     meOrderUnsetFulfillmentOptionLoader,
+    meOrderUnsetPaymentMethodLoader,
     stripeConfirmationTokenLoader,
   }
 }
