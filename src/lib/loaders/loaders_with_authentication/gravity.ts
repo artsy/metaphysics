@@ -1234,6 +1234,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerArtistLoader: gravityLoader(
+      (id) => `partner_artist/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerArtistDocumentLoader: gravityLoader<
       any,
       { partnerId: string; artistId: string; documentId: string }
