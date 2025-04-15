@@ -11,6 +11,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLFieldConfig,
   GraphQLEnumType,
+  GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
@@ -65,6 +66,41 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
         ({ published_unlisted_artworks_count }) =>
           published_unlisted_artworks_count
       ),
+      documents: {
+        type: GraphQLInt,
+        resolve: async (
+          { artist, partner },
+          _args,
+          { partnerArtistDocumentsLoader }
+        ) => {
+          if (!partnerArtistDocumentsLoader) {
+            return null
+          }
+
+          const { headers } = await partnerArtistDocumentsLoader(
+            {
+              artistID: artist.id,
+              partnerID: partner.id,
+            },
+            { total_count: true }
+          )
+          return parseInt(headers["x-total-count"] || "0", 10)
+        },
+      },
+      shows: {
+        type: GraphQLInt,
+        resolve: async ({ artist, partner }, _args, { partnerShowsLoader }) => {
+          if (!partnerShowsLoader) {
+            return null
+          }
+
+          const { headers } = await partnerShowsLoader(partner.id, {
+            total_count: true,
+            artist_id: artist.id,
+          })
+          return parseInt(headers["x-total-count"] || "0", 10)
+        },
+      },
     },
   }),
   resolve: (partner_artist) => partner_artist,
