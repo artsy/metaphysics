@@ -17180,6 +17180,7 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  documents: Int
   forSaleArtworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
@@ -17190,6 +17191,7 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  shows: Int
   unlistedArtworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
