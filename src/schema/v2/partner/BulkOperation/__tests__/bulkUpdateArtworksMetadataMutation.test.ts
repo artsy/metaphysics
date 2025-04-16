@@ -11,6 +11,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             locationId: "location456"
             category: "Painting"
             priceListed: 1000
+            published: true
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
@@ -62,6 +63,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           location_id: "location456",
           category: "Painting",
           price_listed: 1000,
+          published: true,
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],

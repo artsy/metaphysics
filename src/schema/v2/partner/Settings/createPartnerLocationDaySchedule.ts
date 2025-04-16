@@ -17,8 +17,8 @@ import { ResolverContext } from "types/graphql"
 
 type DayScheduleInput = {
   day: number
-  startTime: number
-  endTime: number
+  startTime?: number
+  endTime?: number
 }
 
 interface Input {
@@ -30,9 +30,9 @@ interface Input {
 const DayScheduleInputType = new GraphQLInputObjectType({
   name: "DayScheduleInput",
   fields: {
-    day: { type: new GraphQLNonNull(GraphQLInt) },
-    startTime: { type: new GraphQLNonNull(GraphQLInt) },
-    endTime: { type: new GraphQLNonNull(GraphQLInt) },
+    day: { type: GraphQLInt },
+    startTime: { type: GraphQLInt },
+    endTime: { type: GraphQLInt },
   },
 })
 
@@ -120,7 +120,7 @@ export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutati
         formatDayScheduleDataForQueryString
       )
 
-      return response
+      return response[0] ?? []
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

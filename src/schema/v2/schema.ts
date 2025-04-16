@@ -195,6 +195,7 @@ import { PartnerArtistDocumentsConnection } from "./partner/partnerArtistDocumen
 import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsConnection"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 import { updatePartnerFlagsMutation } from "./partner/updatePartnerFlagsMutation"
+import { updatePartnerMutation } from "./partner/updatePartnerMutation"
 import { PaymentMethodUnion, WireTransferType } from "./payment_method_union"
 import { PhoneNumber } from "./phoneNumber"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
@@ -247,8 +248,10 @@ import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMut
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
 import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
 import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
+import { deletePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistMutation"
 import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
 import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistDocumentMutation"
+import { updatePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
@@ -529,6 +532,7 @@ export default new GraphQLSchema({
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
+      deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
       deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
       deletePartnerLocation: DeletePartnerLocationMutation,
@@ -620,9 +624,11 @@ export default new GraphQLSchema({
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateInstallShotForPartnerShow: updateInstallShotForPartnerShowMutation,
+      updatePartnerArtist: updatePartnerArtistMutation,
       updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
       updatePartnerShowEvent: updatePartnerShowEventMutation,
+      updatePartner: updatePartnerMutation,
       updatePartnerFlags: updatePartnerFlagsMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,

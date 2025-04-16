@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
@@ -17,16 +18,17 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
-  metadata: {
-    locationId: string | null
-    category: string | null
-    priceListed: number | null
-  } | null
-  filters: {
-    artworkIds: string[] | null
-    locationId: string | null
-    partnerArtistId: string | null
-  } | null
+  metadata?: {
+    locationId?: string
+    category?: string
+    priceListed?: number
+    published?: boolean
+  }
+  filters?: {
+    artworkIds?: string[]
+    locationId?: string
+    partnerArtistId?: string
+  }
 }
 
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
@@ -43,6 +45,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     priceListed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
+    },
+    published: {
+      type: GraphQLBoolean,
+      description: "Publish or unpublish artworks",
     },
   },
 })
@@ -171,6 +177,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         location_id: metadata.locationId,
         category: metadata.category,
         price_listed: metadata.priceListed,
+        published: metadata.published,
       }
     }
 
