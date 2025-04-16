@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -65,6 +66,15 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The URL of the image to use for the partner artist.",
     },
+    biography: {
+      type: GraphQLString,
+      description: "The partner-provided biography of the artist.",
+    },
+    useDefaultBiography: {
+      type: GraphQLBoolean,
+      description:
+        "Whether to use the default biography for the artist instead of the partner-provided one.",
+    },
   },
   outputFields: {
     partnerArtistOrError: {
@@ -75,7 +85,7 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, remoteImageUrl },
+    { id, remoteImageUrl, biography, useDefaultBiography },
     { updatePartnerArtistLoader }
   ) => {
     if (!updatePartnerArtistLoader) {
@@ -84,7 +94,13 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
 
     const gravityArgs: {
       remote_image_url?: string
-    } = { remote_image_url: remoteImageUrl }
+      biography?: string
+      use_default_biography?: boolean
+    } = {
+      remote_image_url: remoteImageUrl,
+      biography,
+      use_default_biography: useDefaultBiography,
+    }
 
     try {
       const partnerArtist = await updatePartnerArtistLoader(id, gravityArgs)
