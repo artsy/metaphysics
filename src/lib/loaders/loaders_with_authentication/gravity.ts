@@ -304,7 +304,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    createPartnerLocationDayScheduleLoader: gravityLoader<
+    createPartnerLocationDaySchedulesLoader: gravityLoader<
       any,
       { partnerId: string; locationId: string }
     >(

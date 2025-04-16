@@ -37,8 +37,8 @@ const DayScheduleInputType = new GraphQLInputObjectType({
 })
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerLocationDayScheduleSuccess",
-  isTypeOf: (data) => !!data[0]._id,
+  name: "CreatePartnerLocationDaySchedulesSuccess",
+  isTypeOf: (data) => !!data[0]?._id,
   fields: () => ({
     daySchedules: {
       type: new GraphQLList(DayScheduleType),
@@ -48,7 +48,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreatePartnerLocationDayScheduleFailure",
+  name: "CreatePartnerLocationDaySchedulesFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -59,16 +59,16 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreatePartnerLocationDayScheduleOrError",
+  name: "CreatePartnerLocationDaySchedulesOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutationId<
+export const CreatePartnerLocationDaySchedulesMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "CreatePartnerLocationDaySchedule",
+  name: "CreatePartnerLocationDaySchedules",
   description: "Creates a new weekly schedule for a partner location",
   inputFields: {
     partnerId: {
@@ -94,28 +94,24 @@ export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutati
   },
   mutateAndGetPayload: async (
     { partnerId, locationId, daySchedules },
-    { createPartnerLocationDayScheduleLoader }
+    { createPartnerLocationDaySchedulesLoader }
   ) => {
-    if (!createPartnerLocationDayScheduleLoader) {
+    if (!createPartnerLocationDaySchedulesLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
       const identifiers = { partnerId, locationId }
 
-      // Is this ethical.....
-      // refactor this
-      const formatDayScheduleDataForQueryString = daySchedules.reduce(
-        (acc, schedule, index) => {
-          acc[`day_schedules[${index}][day]`] = schedule.day
-          acc[`day_schedules[${index}][start_time]`] = schedule.startTime
-          acc[`day_schedules[${index}][end_time]`] = schedule.endTime
-          return acc
-        },
-        {}
+      const formatDayScheduleDataForQueryString = Object.fromEntries(
+        daySchedules.flatMap((schedule, index) => [
+          [`day_schedules[${index}][day]`, schedule.day],
+          [`day_schedules[${index}][start_time]`, schedule.startTime],
+          [`day_schedules[${index}][end_time]`, schedule.endTime],
+        ])
       )
 
-      const response = await createPartnerLocationDayScheduleLoader(
+      const response = await createPartnerLocationDaySchedulesLoader(
         identifiers,
         formatDayScheduleDataForQueryString
       )
