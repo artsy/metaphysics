@@ -316,7 +316,7 @@ import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerL
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
 import { PartnerMatch } from "./match/partner"
-import { CreatePartnerLocationDayScheduleMutation } from "./partner/Settings/createPartnerLocationDaySchedule"
+import { CreatePartnerLocationDayScheduleMutation } from "./partner/Settings/createPartnerLocationDayScheduleMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,

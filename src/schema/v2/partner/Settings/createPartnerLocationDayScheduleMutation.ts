@@ -12,7 +12,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { LocationType } from "schema/v2/location"
+import DayScheduleType from "schema/v2/day_schedule"
 import { ResolverContext } from "types/graphql"
 
 type DayScheduleInput = {
@@ -38,10 +38,10 @@ const DayScheduleInputType = new GraphQLInputObjectType({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerLocationDayScheduleSuccess",
-  isTypeOf: (data) => !!data.id,
+  isTypeOf: (data) => !!data[0]._id,
   fields: () => ({
-    location: {
-      type: LocationType,
+    daySchedules: {
+      type: new GraphQLList(DayScheduleType),
       resolve: (result) => result,
     },
   }),
@@ -87,7 +87,7 @@ export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutati
     },
   },
   outputFields: {
-    partnerLocationOrError: {
+    daySchedulesOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
@@ -120,7 +120,7 @@ export const CreatePartnerLocationDayScheduleMutation = mutationWithClientMutati
         formatDayScheduleDataForQueryString
       )
 
-      return response[0] ?? []
+      return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

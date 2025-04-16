@@ -9206,11 +9206,11 @@ union CreatePartnerLocationDayScheduleOrError =
 
 type CreatePartnerLocationDaySchedulePayload {
   clientMutationId: String
-  partnerLocationOrError: CreatePartnerLocationDayScheduleOrError
+  daySchedulesOrError: CreatePartnerLocationDayScheduleOrError
 }
 
 type CreatePartnerLocationDayScheduleSuccess {
-  location: Location
+  daySchedules: [DaySchedule]
 }
 
 type CreatePartnerLocationFailure {
