@@ -1234,6 +1234,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deletePartnerArtistLoader: gravityLoader<
+      any,
+      { partnerId: string; artistId: string }
+    >(
+      ({ partnerId, artistId }) =>
+        `partner/${partnerId}/artist/${artistId}?delete_artworks=true`,
+      {},
+      { method: "DELETE" }
+    ),
     updatePartnerArtistLoader: gravityLoader(
       (id) => `partner_artist/${id}`,
       {},
