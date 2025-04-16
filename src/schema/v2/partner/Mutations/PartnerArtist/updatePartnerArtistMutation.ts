@@ -75,6 +75,19 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
       description:
         "Whether to use the default biography for the artist instead of the partner-provided one.",
     },
+    displayOnPartnerProfile: {
+      type: GraphQLBoolean,
+      description: "Whether to display the artist on the partner profile page.",
+    },
+    hideInPresentationMode: {
+      type: GraphQLBoolean,
+      description:
+        "Whether to hide the artist in presentation mode (Folio) for the partner.",
+    },
+    representedBy: {
+      type: GraphQLBoolean,
+      description: "Whether the artist is represented by the partner.",
+    },
   },
   outputFields: {
     partnerArtistOrError: {
@@ -85,7 +98,15 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, remoteImageUrl, biography, useDefaultBiography },
+    {
+      id,
+      remoteImageUrl,
+      biography,
+      useDefaultBiography,
+      displayOnPartnerProfile,
+      hideInPresentationMode,
+      representedBy,
+    },
     { updatePartnerArtistLoader }
   ) => {
     if (!updatePartnerArtistLoader) {
@@ -96,10 +117,16 @@ export const updatePartnerArtistMutation = mutationWithClientMutationId<
       remote_image_url?: string
       biography?: string
       use_default_biography?: boolean
+      display_on_partner_profile?: boolean
+      hide_in_presentation_mode?: boolean
+      represented_by?: boolean
     } = {
       remote_image_url: remoteImageUrl,
       biography,
       use_default_biography: useDefaultBiography,
+      display_on_partner_profile: displayOnPartnerProfile,
+      hide_in_presentation_mode: hideInPresentationMode,
+      represented_by: representedBy,
     }
 
     try {
