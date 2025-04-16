@@ -10034,6 +10034,34 @@ type DeletePartnerArtistDocumentSuccess {
   partner: Partner
 }
 
+type DeletePartnerArtistFailure {
+  mutationError: GravityMutationError
+}
+
+input DeletePartnerArtistMutationInput {
+  # The ID of the artist to delete.
+  artistId: String!
+  clientMutationId: String
+
+  # The ID of the partner.
+  partnerId: String!
+}
+
+type DeletePartnerArtistMutationPayload {
+  clientMutationId: String
+
+  # On success: confirmation of deletion. On error: the error that occurred.
+  partnerArtistOrError: DeletePartnerArtistResponseOrError
+}
+
+union DeletePartnerArtistResponseOrError =
+    DeletePartnerArtistFailure
+  | DeletePartnerArtistSuccess
+
+type DeletePartnerArtistSuccess {
+  partner: Partner
+}
+
 type DeletePartnerContactFailure {
   mutationError: GravityMutationError
 }
@@ -15422,6 +15450,11 @@ type Mutation {
   # Deletes a page.
   deletePage(input: DeletePageMutationInput!): DeletePageMutationPayload
 
+  # Deletes a partner artist.
+  deletePartnerArtist(
+    input: DeletePartnerArtistMutationInput!
+  ): DeletePartnerArtistMutationPayload
+
   # Deletes a partner artist document.
   deletePartnerArtistDocument(
     input: DeletePartnerArtistDocumentMutationInput!
@@ -15790,6 +15823,11 @@ type Mutation {
 
   # Updates a page.
   updatePage(input: UpdatePageMutationInput!): UpdatePageMutationPayload
+
+  # Updates a partner artist.
+  updatePartnerArtist(
+    input: UpdatePartnerArtistMutationInput!
+  ): UpdatePartnerArtistMutationPayload
 
   # Updates a partner artist document.
   updatePartnerArtistDocument(
@@ -17180,6 +17218,7 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  documents: Int
   forSaleArtworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
@@ -17190,6 +17229,7 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  shows: Int
   unlistedArtworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
@@ -22631,6 +22671,41 @@ union UpdatePartnerArtistDocumentResponseOrError =
 type UpdatePartnerArtistDocumentSuccess {
   document: PartnerDocument
   partner: Partner
+}
+
+type UpdatePartnerArtistFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerArtistMutationInput {
+  # The partner-provided biography of the artist.
+  biography: String
+  clientMutationId: String
+
+  # The ID of the partner artist to update.
+  id: String!
+
+  # The URL of the image to use for the partner artist.
+  remoteImageUrl: String
+
+  # Whether to use the default biography for the artist instead of the partner-provided one.
+  useDefaultBiography: Boolean
+}
+
+type UpdatePartnerArtistMutationPayload {
+  clientMutationId: String
+
+  # On success: the updated partner artist. On error: the error that occurred.
+  partnerArtistOrError: UpdatePartnerArtistResponseOrError
+}
+
+union UpdatePartnerArtistResponseOrError =
+    UpdatePartnerArtistFailure
+  | UpdatePartnerArtistSuccess
+
+type UpdatePartnerArtistSuccess {
+  partner: Partner
+  partnerArtist: PartnerArtist
 }
 
 type UpdatePartnerContactFailure {
