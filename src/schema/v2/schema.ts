@@ -141,6 +141,7 @@ import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
+import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
@@ -523,6 +524,7 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtwork: deleteArtworkMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
