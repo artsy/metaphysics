@@ -56,23 +56,29 @@ describe("Me", () => {
               displayTexts {
                 titleText
               }
-              fulfillmentDetails {
-                addressLine1
-                addressLine2
-                city
-                country
-                name
-                phoneNumber
-                phoneNumberCountryCode
-                postalCode
-                region
-              }
+
               fulfillmentOptions {
+                type
                 amount {
                   currencyCode
                   display
                 }
                 selected
+              }
+              fulfillmentDetails {
+                phoneNumber {
+                  originalNumber
+                }
+                phoneNumberCountryCode
+                name
+                addressLine1
+                addressLine2
+                city
+                region
+                country
+                postalCode
+              }
+              selectedFulfillmentOption {
                 type
               }
               internalID
@@ -170,7 +176,9 @@ describe("Me", () => {
           city: "New York",
           country: "US",
           name: "John Doe",
-          phoneNumber: "123-456-7890",
+          phoneNumber: {
+            originalNumber: "123-456-7890",
+          },
           phoneNumberCountryCode: "US",
           postalCode: "10001",
           region: "NY",
@@ -352,6 +360,177 @@ describe("Me", () => {
         const result = await runAuthenticatedQuery(query, context)
 
         expect(result.me.order.taxTotal).toEqual(null)
+      })
+    })
+
+    describe("fulfillmentDetails", () => {
+      let consoleErrorSpy: jest.SpyInstance
+      beforeEach(() => {
+        const realConsoleError = console.error
+        consoleErrorSpy = jest.spyOn(console, "error").mockImplementation()
+        console.error = (...args) => {
+          if (args[0] !== "Parse phone number error: ") {
+            realConsoleError(...args)
+          }
+        }
+      })
+      afterEach(() => {
+        consoleErrorSpy.mockRestore()
+      })
+
+      it("returns phoneNumber if there is a blank country code", async () => {
+        orderJson.buyer_phone_number_country_code = ""
+        orderJson.buyer_phone_number = "7738675309"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                fulfillmentDetails {
+                  phoneNumber {
+                    countryCode
+                    regionCode
+                    originalNumber
+                    isValid
+                    display
+                  }
+                }
+              }
+            }
+          }
+        `
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual({
+          countryCode: null,
+          regionCode: null,
+          originalNumber: "7738675309",
+          isValid: false,
+          display: null,
+        })
+      })
+
+      it("returns only countryCode, originalNumber and a possibly strange display field if validation fails", async () => {
+        orderJson.buyer_phone_number_country_code = "us"
+        orderJson.buyer_phone_number = "7738asdf675309"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                fulfillmentDetails {
+                  phoneNumber {
+                    countryCode
+                    regionCode
+                    originalNumber
+                    isValid
+                    display(format: E164)
+                  }
+                }
+              }
+            }
+          }
+        `
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual({
+          countryCode: "1",
+          regionCode: null,
+          originalNumber: "7738asdf675309",
+          isValid: false,
+          display: "+177382733675309",
+        })
+      })
+
+      it("returns phoneNumber with rich values with a valid region code", async () => {
+        orderJson.buyer_phone_number_country_code = "us"
+        orderJson.buyer_phone_number = "7738675309"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                fulfillmentDetails {
+                  phoneNumber {
+                    countryCode
+                    regionCode
+                    originalNumber
+                    isValid
+                    display
+                  }
+                }
+              }
+            }
+          }
+        `
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual({
+          countryCode: "1",
+          display: "773-867-5309",
+          isValid: true,
+          originalNumber: "7738675309",
+          regionCode: "us",
+        })
+      })
+
+      it("returns shipping address fields", async () => {
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                fulfillmentDetails {
+                  name
+                  addressLine1
+                  addressLine2
+                  city
+                  region
+                  country
+                  postalCode
+                }
+              }
+            }
+          }
+        `
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.fulfillmentDetails).toEqual({
+          name: "John Doe",
+          addressLine1: "123 Main St",
+          addressLine2: "Apt 4B",
+          city: "New York",
+          region: "NY",
+          country: "US",
+          postalCode: "10001",
+        })
       })
     })
   })

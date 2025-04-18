@@ -57,7 +57,7 @@ export const PhoneNumberErrors = new GraphQLEnumType({
   },
 })
 
-const PhoneNumberType: GraphQLObjectType<
+export const PhoneNumberType: GraphQLObjectType<
   PhoneNumberTypeSource,
   ResolverContext
 > = new GraphQLObjectType<PhoneNumberTypeSource, ResolverContext>({
@@ -114,6 +114,23 @@ const PhoneNumberType: GraphQLObjectType<
   },
 })
 
+export const resolvePhoneNumber = ({ phoneNumber, regionCode }) => {
+  const phoneUtil = PhoneNumberUtil.getInstance()
+  let parsedPhone: GooglePhoneNumber | undefined
+
+  try {
+    parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
+  } catch (e) {
+    console.error("Parse phone number error: ", e)
+  }
+
+  return {
+    phoneNumber,
+    parsedPhone,
+    phoneUtil,
+  }
+}
+
 export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
   type: PhoneNumberType,
   description: "Phone number information",
@@ -126,19 +143,6 @@ export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
     },
   },
   resolve: (_, { phoneNumber, regionCode }) => {
-    const phoneUtil = PhoneNumberUtil.getInstance()
-    let parsedPhone: GooglePhoneNumber | undefined
-
-    try {
-      parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
-    } catch (e) {
-      console.error("Parse phone number error: ", e)
-    }
-
-    return {
-      phoneNumber,
-      parsedPhone,
-      phoneUtil,
-    }
+    return resolvePhoneNumber({ phoneNumber, regionCode })
   },
 }
