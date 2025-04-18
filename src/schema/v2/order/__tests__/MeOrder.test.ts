@@ -416,7 +416,7 @@ describe("Me", () => {
         })
       })
 
-      it("returns only countryCode, originalNumber and a possibly strange display field if validation fails", async () => {
+      it("returns only countryCode, originalNumber and a null display field if validation fails", async () => {
         orderJson.buyer_phone_number_country_code = "us"
         orderJson.buyer_phone_number = "7738asdf675309"
         context = {
@@ -450,8 +450,39 @@ describe("Me", () => {
           regionCode: null,
           originalNumber: "7738asdf675309",
           isValid: false,
-          display: "+177382733675309",
+          display: null,
         })
+      })
+
+      it("returns null if buyer_phone_number is not present", async () => {
+        orderJson.buyer_phone_number = null
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                fulfillmentDetails {
+                  phoneNumber {
+                    countryCode
+                    regionCode
+                    originalNumber
+                    isValid
+                    display(format: E164)
+                  }
+                }
+              }
+            }
+          }
+        `
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual(null)
       })
 
       it("returns phoneNumber with rich values with a valid region code", async () => {
@@ -475,7 +506,7 @@ describe("Me", () => {
                     regionCode
                     originalNumber
                     isValid
-                    display
+                    display(format: INTERNATIONAL)
                   }
                 }
               }
@@ -485,7 +516,7 @@ describe("Me", () => {
         const result = await runAuthenticatedQuery(query, context)
         expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual({
           countryCode: "1",
-          display: "773-867-5309",
+          display: "+1 773-867-5309",
           isValid: true,
           originalNumber: "7738675309",
           regionCode: "us",

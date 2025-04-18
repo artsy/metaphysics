@@ -108,8 +108,11 @@ export const PhoneNumberType: GraphQLObjectType<
       args: {
         format: PhoneNumberFormats,
       },
+      description: "A formatted phone number. Null if isValid is false",
       resolve: ({ parsedPhone, phoneUtil }, { format }) =>
-        parsedPhone && phoneUtil.format(parsedPhone, format),
+        parsedPhone && phoneUtil.isValidNumber(parsedPhone)
+          ? phoneUtil.format(parsedPhone, format)
+          : null,
     },
   },
 })
@@ -117,6 +120,10 @@ export const PhoneNumberType: GraphQLObjectType<
 export const resolvePhoneNumber = ({ phoneNumber, regionCode }) => {
   const phoneUtil = PhoneNumberUtil.getInstance()
   let parsedPhone: GooglePhoneNumber | undefined
+
+  if (!phoneNumber) {
+    return null
+  }
 
   try {
     parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
