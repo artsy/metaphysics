@@ -17948,6 +17948,8 @@ enum PhoneNumberFormats {
 
 type PhoneNumberType {
   countryCode: String
+
+  # A formatted phone number. Null if isValid is false
   display(format: PhoneNumberFormats): String
   error: PhoneNumberErrors
   isValid: Boolean
