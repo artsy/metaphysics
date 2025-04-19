@@ -41,7 +41,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ availability }) => availability,
     },
     artistProofs: {
-      type: GraphQLBoolean,
+      type: GraphQLString,
       resolve: ({ artist_proofs }) => artist_proofs,
     },
     availableEditions: {

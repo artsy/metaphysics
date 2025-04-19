@@ -141,6 +141,7 @@ import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
+import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
@@ -316,6 +317,7 @@ import { UpdatePartnerLocationMutation } from "./partner/Settings/updatePartnerL
 import { DeletePartnerLocationMutation } from "./partner/Settings/deletePartnerLocationMutation"
 import { repositionPartnerLocationsMutation } from "./partner/Settings/repositionPartnerLocations"
 import { PartnerMatch } from "./match/partner"
+import { CreatePartnerLocationDaySchedulesMutation } from "./partner/Settings/createPartnerLocationDaySchedulesMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -503,6 +505,7 @@ export default new GraphQLSchema({
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
+      createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
@@ -521,6 +524,7 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtwork: deleteArtworkMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
