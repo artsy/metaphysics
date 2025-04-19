@@ -57,7 +57,7 @@ export const PhoneNumberErrors = new GraphQLEnumType({
   },
 })
 
-const PhoneNumberType: GraphQLObjectType<
+export const PhoneNumberType: GraphQLObjectType<
   PhoneNumberTypeSource,
   ResolverContext
 > = new GraphQLObjectType<PhoneNumberTypeSource, ResolverContext>({
@@ -108,11 +108,35 @@ const PhoneNumberType: GraphQLObjectType<
       args: {
         format: PhoneNumberFormats,
       },
+      description: "A formatted phone number. Null if isValid is false",
       resolve: ({ parsedPhone, phoneUtil }, { format }) =>
-        parsedPhone && phoneUtil.format(parsedPhone, format),
+        parsedPhone && phoneUtil.isValidNumber(parsedPhone)
+          ? phoneUtil.format(parsedPhone, format)
+          : null,
     },
   },
 })
+
+export const resolvePhoneNumber = ({ phoneNumber, regionCode }) => {
+  const phoneUtil = PhoneNumberUtil.getInstance()
+  let parsedPhone: GooglePhoneNumber | undefined
+
+  if (!phoneNumber) {
+    return null
+  }
+
+  try {
+    parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
+  } catch (e) {
+    console.error("Parse phone number error: ", e)
+  }
+
+  return {
+    phoneNumber,
+    parsedPhone,
+    phoneUtil,
+  }
+}
 
 export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
   type: PhoneNumberType,
@@ -126,19 +150,6 @@ export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
     },
   },
   resolve: (_, { phoneNumber, regionCode }) => {
-    const phoneUtil = PhoneNumberUtil.getInstance()
-    let parsedPhone: GooglePhoneNumber | undefined
-
-    try {
-      parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
-    } catch (e) {
-      console.error("Parse phone number error: ", e)
-    }
-
-    return {
-      phoneNumber,
-      parsedPhone,
-      phoneUtil,
-    }
+    return resolvePhoneNumber({ phoneNumber, regionCode })
   },
 }
