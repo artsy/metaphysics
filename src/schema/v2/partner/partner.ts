@@ -937,6 +937,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vat_number }) => vat_number,
       },
+      vatStatus: {
+        type: GraphQLString,
+        resolve: ({ vat_status }) => vat_status,
+      },
+      vatInformation: {
+        type: GraphQLString,
+        description:
+          "Returns VAT number or a fallback message based on the partner's VAT status.",
+        resolve: ({ vat_status, vat_number }) => {
+          switch (vat_status) {
+            case "registered":
+            case "registered_and_exempt":
+              return vat_number
+            case "ineligible":
+              return "Not required"
+            case "exempt":
+              return "Exempt"
+            default:
+              return "None provided"
+          }
+        },
+      },
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
