@@ -1243,10 +1243,8 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    // PUT /api/v1/profile/:id/cover_image
-    // POST /api/v1/profile/:id/icon
-    updatePartnerProfileIconLoader: gravityLoader(
-      (id) => `profile/${id}/icon`,
+    updatePartnerProfileImageLoader: gravityLoader(
+      (id) => `profile/${id}/images`,
       {},
       { method: "POST" } // intentional POST
     ),

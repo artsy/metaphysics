@@ -12,15 +12,16 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ProfileType } from "schema/v2/profile"
 
-interface UpdatePartnerProfileIconInputProps {
+interface UpdatePartnerProfileImageInputProps {
   profileId: string
-  geminiToken?: string
-  remoteImageUrl?: string
+  type: string
+  remoteImageS3Key: string
+  remoteImageS3Bucket: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdatePartnerProfileIconSuccess",
-  isTypeOf: (data) => !!data.id,
+  name: "UpdatePartnerProfileImageSuccess",
+  isTypeOf: (data) => !!data._id,
   fields: () => ({
     profile: {
       type: ProfileType,
@@ -30,7 +31,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdatePartnerProfileIconFailure",
+  name: "UpdatePartnerProfileImageFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -41,29 +42,33 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdatePartnerProfileIconOrError",
+  name: "UpdatePartnerProfileImageOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdatePartnerProfileIconMutation = mutationWithClientMutationId<
-  UpdatePartnerProfileIconInputProps,
+export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
+  UpdatePartnerProfileImageInputProps,
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerProfileIcon",
-  description: "Updates the image icon for a partner",
+  name: "UpdatePartnerProfileImage",
+  description: "Updates the icon or cover image for a partner's profile page",
   inputFields: {
     profileId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner's profile",
     },
-    geminiToken: {
-      type: GraphQLString,
-      description: "Gemini Token",
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Can be of type Cover or Icon",
     },
-    remoteImageUrl: {
-      type: GraphQLString,
-      description: "Profile icon image",
+    remoteImageS3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the image to be uploaded",
+    },
+    remoteImageS3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket containing the image to be uploaded",
     },
   },
   outputFields: {
@@ -73,20 +78,20 @@ export const UpdatePartnerProfileIconMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { profileId, geminiToken, remoteImageUrl },
-    { updatePartnerProfileIconLoader }
+    { profileId, type, remoteImageS3Bucket, remoteImageS3Key },
+    { updatePartnerProfileImageLoader }
   ) => {
-    if (!updatePartnerProfileIconLoader) {
+    if (!updatePartnerProfileImageLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await updatePartnerProfileIconLoader(profileId, {
-        gemini_token: geminiToken,
-        remove_image_url: remoteImageUrl,
+      const response = await updatePartnerProfileImageLoader(profileId, {
+        type,
+        remote_image_s3_key: remoteImageS3Key,
+        remote_image_s3_bucket: remoteImageS3Bucket,
       })
 
-      console.log("response", response)
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)

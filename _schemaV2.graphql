@@ -15959,10 +15959,10 @@ type Mutation {
     input: UpdatePartnerLocationInput!
   ): UpdatePartnerLocationPayload
 
-  # Updates the image icon for a partner
-  updatePartnerProfileIcon(
-    input: UpdatePartnerProfileIconInput!
-  ): UpdatePartnerProfileIconPayload
+  # Updates the icon or cover image for a partner's profile page
+  updatePartnerProfileImage(
+    input: UpdatePartnerProfileImageInput!
+  ): UpdatePartnerProfileImagePayload
 
   # Updates a partner show.
   updatePartnerShow(
@@ -23051,33 +23051,36 @@ type UpdatePartnerMutationPayload {
   partnerOrError: UpdatePartnerResponseOrError
 }
 
-type UpdatePartnerProfileIconFailure {
+type UpdatePartnerProfileImageFailure {
   mutationError: GravityMutationError
 }
 
-input UpdatePartnerProfileIconInput {
+input UpdatePartnerProfileImageInput {
   clientMutationId: String
-
-  # Gemini Token
-  geminiToken: String
 
   # ID of the partner's profile
   profileId: String!
 
-  # Profile icon image
-  remoteImageUrl: String
+  # S3 bucket containing the image to be uploaded
+  remoteImageS3Bucket: String!
+
+  # S3 key of the image to be uploaded
+  remoteImageS3Key: String!
+
+  # Can be of type Cover or Icon
+  type: String!
 }
 
-union UpdatePartnerProfileIconOrError =
-    UpdatePartnerProfileIconFailure
-  | UpdatePartnerProfileIconSuccess
+union UpdatePartnerProfileImageOrError =
+    UpdatePartnerProfileImageFailure
+  | UpdatePartnerProfileImageSuccess
 
-type UpdatePartnerProfileIconPayload {
+type UpdatePartnerProfileImagePayload {
   clientMutationId: String
-  profileOrError: UpdatePartnerProfileIconOrError
+  profileOrError: UpdatePartnerProfileImageOrError
 }
 
-type UpdatePartnerProfileIconSuccess {
+type UpdatePartnerProfileImageSuccess {
   profile: Profile
 }
 
