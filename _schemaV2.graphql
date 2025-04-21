@@ -15926,6 +15926,11 @@ type Mutation {
     input: UpdatePartnerLocationInput!
   ): UpdatePartnerLocationPayload
 
+  # Updates the image icon for a partner
+  updatePartnerProfileIcon(
+    input: UpdatePartnerProfileIconInput!
+  ): UpdatePartnerProfileIconPayload
+
   # Updates a partner show.
   updatePartnerShow(
     input: UpdatePartnerShowMutationInput!
@@ -22993,6 +22998,36 @@ type UpdatePartnerMutationPayload {
 
   # On success: the updated partner. On error: the error that occurred.
   partnerOrError: UpdatePartnerResponseOrError
+}
+
+type UpdatePartnerProfileIconFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerProfileIconInput {
+  clientMutationId: String
+
+  # Gemini Token
+  geminiToken: String
+
+  # ID of the partner's profile
+  profileId: String!
+
+  # Profile icon image
+  remoteImageUrl: String
+}
+
+union UpdatePartnerProfileIconOrError =
+    UpdatePartnerProfileIconFailure
+  | UpdatePartnerProfileIconSuccess
+
+type UpdatePartnerProfileIconPayload {
+  clientMutationId: String
+  profileOrError: UpdatePartnerProfileIconOrError
+}
+
+type UpdatePartnerProfileIconSuccess {
+  profile: Profile
 }
 
 union UpdatePartnerResponseOrError = UpdatePartnerFailure | UpdatePartnerSuccess
