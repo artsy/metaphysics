@@ -10,7 +10,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { ProfileType } from "schema/v2/profile"
+import { ImageType } from "schema/v2/image"
 
 interface UpdatePartnerProfileImageInputProps {
   profileId: string
@@ -21,10 +21,10 @@ interface UpdatePartnerProfileImageInputProps {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerProfileImageSuccess",
-  isTypeOf: (data) => !!data._id,
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
-    profile: {
-      type: ProfileType,
+    image: {
+      type: ImageType,
       resolve: (result) => result,
     },
   }),
@@ -72,7 +72,7 @@ export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    profileOrError: {
+    imageOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },

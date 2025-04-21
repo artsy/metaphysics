@@ -23077,11 +23077,11 @@ union UpdatePartnerProfileImageOrError =
 
 type UpdatePartnerProfileImagePayload {
   clientMutationId: String
-  profileOrError: UpdatePartnerProfileImageOrError
+  imageOrError: UpdatePartnerProfileImageOrError
 }
 
 type UpdatePartnerProfileImageSuccess {
-  profile: Profile
+  image: Image
 }
 
 union UpdatePartnerResponseOrError = UpdatePartnerFailure | UpdatePartnerSuccess
