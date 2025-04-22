@@ -1,15 +1,19 @@
 import type { ResolverContext } from "types/graphql"
-import { GraphQLString, GraphQLFloat, GraphQLObjectType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLObjectType,
+  GraphQLInt,
+} from "graphql"
 import type { GraphQLFieldConfig } from "graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { ArtworkType } from "./artwork"
 import {
   connectionWithCursorInfo,
-  createPageCursors,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import { date } from "./fields/date"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import { UserType } from "./user"
 import { FairType } from "./fair"
@@ -32,6 +36,7 @@ const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
     discoverAdmin: {
       type: UserType,
       resolve: ({ discover_admin }) => discover_admin,
+      description: "Person who found the sale",
     },
     email: {
       type: GraphQLString,
@@ -51,7 +56,7 @@ const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
     },
     saleAdmin: {
       type: UserType,
-      resolve: ({ sale_admin }) => sale_admin,
+      description: "Person who facilitated the sale",
     },
     salePrice: {
       type: GraphQLFloat,
@@ -84,6 +89,8 @@ export const PurchasesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLString,
       description: "The ID of the sale to filter purchases by.",
     },
+    size: { type: GraphQLInt },
+    page: { type: GraphQLInt },
     userId: {
       type: GraphQLString,
       description: "The ID of the user to filter purchases by.",
@@ -115,13 +122,13 @@ export const PurchasesConnection: GraphQLFieldConfig<void, ResolverContext> = {
     const { body, headers } = await purchasesLoader(gravityArgs)
     const totalCount = Number.parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      pageCursors: createPageCursors({ page, size }, totalCount),
-      ...connectionFromArraySlice(body, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }),
-    }
+    })
   },
 }

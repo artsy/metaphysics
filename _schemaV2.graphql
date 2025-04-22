@@ -18387,6 +18387,8 @@ type Purchase implements Node {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+
+  # Person who found the sale
   discoverAdmin: User
   email: String
   fair: Fair
@@ -18399,6 +18401,8 @@ type Purchase implements Node {
   note: String
   ownerType: String
   sale: Sale
+
+  # Person who facilitated the sale
   saleAdmin: User
   saleDate(
     format: String
@@ -19579,9 +19583,11 @@ type Query {
     before: String
     first: Int
     last: Int
+    page: Int
 
     # The ID of the sale to filter purchases by.
     saleId: String
+    size: Int
 
     # The ID of the user to filter purchases by.
     userId: String
@@ -25103,9 +25109,11 @@ type Viewer {
     before: String
     first: Int
     last: Int
+    page: Int
 
     # The ID of the sale to filter purchases by.
     saleId: String
+    size: Int
 
     # The ID of the user to filter purchases by.
     userId: String
