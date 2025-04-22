@@ -1,0 +1,13 @@
+PUT /profile/:id
+  Update a profile.
+  Permissions:
+    Permitted user roles: user
+  Parameters:
+    id string: Profile id. (required)
+    handle string: Unique handle. 
+    bio string: Short bio (275 character max). 
+    full_bio string: Full bio (800 character max). 
+    website string: Website. 
+    location string: Location. 
+    private string: Private profiles hide certain features for non admins. 
+    menu_color_class string:  
