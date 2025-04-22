@@ -35,8 +35,8 @@ const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(({ created_at }) => created_at),
     discoverAdmin: {
       type: UserType,
-      resolve: ({ discover_admin }) => discover_admin,
       description: "Person who found the sale",
+      resolve: ({ discover_admin }) => discover_admin,
     },
     email: {
       type: GraphQLString,
@@ -57,6 +57,7 @@ const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
     saleAdmin: {
       type: UserType,
       description: "Person who facilitated the sale",
+      resolve: ({ sale_admin }) => sale_admin,
     },
     salePrice: {
       type: GraphQLFloat,
