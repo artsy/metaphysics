@@ -1243,6 +1243,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerProfileImageLoader: gravityLoader(
+      (id) => `partner/${id}/profile_images`,
+      {},
+      { method: "POST" } // intentional POST
+    ),
     deletePartnerArtistLoader: gravityLoader<
       any,
       { partnerId: string; artistId: string }
