@@ -1244,7 +1244,7 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     updatePartnerProfileImageLoader: gravityLoader(
-      (id) => `profile/${id}/images`,
+      (id) => `partner/${id}/profile_images`,
       {},
       { method: "POST" } // intentional POST
     ),

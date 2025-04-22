@@ -23058,8 +23058,8 @@ type UpdatePartnerProfileImageFailure {
 input UpdatePartnerProfileImageInput {
   clientMutationId: String
 
-  # ID of the partner's profile
-  profileId: String!
+  # ID of the partner
+  partnerId: String!
 
   # S3 bucket containing the image to be uploaded
   remoteImageS3Bucket: String!
@@ -23077,11 +23077,11 @@ union UpdatePartnerProfileImageOrError =
 
 type UpdatePartnerProfileImagePayload {
   clientMutationId: String
-  imageOrError: UpdatePartnerProfileImageOrError
+  partnerOrError: UpdatePartnerProfileImageOrError
 }
 
 type UpdatePartnerProfileImageSuccess {
-  image: Image
+  partner: Partner
 }
 
 union UpdatePartnerResponseOrError = UpdatePartnerFailure | UpdatePartnerSuccess

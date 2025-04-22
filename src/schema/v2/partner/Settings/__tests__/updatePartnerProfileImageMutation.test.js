@@ -6,16 +6,16 @@ describe("UpdatePartnerProfileImageMutation", () => {
     mutation {
       updatePartnerProfileImage(
         input: {
-          profileId: "foo"
+          partnerId: "foo"
           type: "icon"
           remoteImageS3Key: "s3-key-here"
           remoteImageS3Bucket: "s3-bucket-here"
         }
       ) {
-        imageOrError {
+        partnerOrError {
           __typename
           ... on UpdatePartnerProfileImageSuccess {
-            image {
+            partner {
               internalID
             }
           }
@@ -33,7 +33,10 @@ describe("UpdatePartnerProfileImageMutation", () => {
     const context = {
       updatePartnerProfileImageLoader: () =>
         Promise.resolve({
-          id: "newly-created-image-id",
+          id: "profile-id",
+          owner: {
+            _id: "foo",
+          },
         }),
     }
 
@@ -41,10 +44,10 @@ describe("UpdatePartnerProfileImageMutation", () => {
 
     expect(updatedProfile).toEqual({
       updatePartnerProfileImage: {
-        imageOrError: {
+        partnerOrError: {
           __typename: "UpdatePartnerProfileImageSuccess",
-          image: {
-            internalID: "newly-created-image-id",
+          partner: {
+            internalID: "foo",
           },
         },
       },
@@ -66,7 +69,7 @@ describe("UpdatePartnerProfileImageMutation", () => {
 
       expect(updatedPartner).toEqual({
         updatePartnerProfileImage: {
-          imageOrError: {
+          partnerOrError: {
             __typename: "UpdatePartnerProfileImageFailure",
             mutationError: {
               message: "Profile not found",

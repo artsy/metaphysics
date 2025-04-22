@@ -10,10 +10,10 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { ImageType } from "schema/v2/image"
+import { PartnerType } from "../partner"
 
 interface UpdatePartnerProfileImageInputProps {
-  profileId: string
+  partnerId: string
   type: string
   remoteImageS3Key: string
   remoteImageS3Bucket: string
@@ -23,9 +23,9 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerProfileImageSuccess",
   isTypeOf: (data) => !!data.id,
   fields: () => ({
-    image: {
-      type: ImageType,
-      resolve: (result) => result,
+    partner: {
+      type: PartnerType,
+      resolve: (result) => result.owner,
     },
   }),
 })
@@ -54,9 +54,9 @@ export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
   name: "UpdatePartnerProfileImage",
   description: "Updates the icon or cover image for a partner's profile page",
   inputFields: {
-    profileId: {
+    partnerId: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the partner's profile",
+      description: "ID of the partner",
     },
     type: {
       type: new GraphQLNonNull(GraphQLString),
@@ -72,13 +72,13 @@ export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    imageOrError: {
+    partnerOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { profileId, type, remoteImageS3Bucket, remoteImageS3Key },
+    { partnerId, type, remoteImageS3Bucket, remoteImageS3Key },
     { updatePartnerProfileImageLoader }
   ) => {
     if (!updatePartnerProfileImageLoader) {
@@ -86,7 +86,7 @@ export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await updatePartnerProfileImageLoader(profileId, {
+      const response = await updatePartnerProfileImageLoader(partnerId, {
         type,
         remote_image_s3_key: remoteImageS3Key,
         remote_image_s3_bucket: remoteImageS3Bucket,
