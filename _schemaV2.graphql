@@ -19570,6 +19570,10 @@ type Query {
     # If present, will search by term
     term: String
   ): ProfileConnection
+  purchase(
+    # The ID of the purchase
+    id: String!
+  ): Purchase
 
   # A list of purchases made by users.
   purchasesConnection(
@@ -25096,6 +25100,10 @@ type Viewer {
     # If present, will search by term
     term: String
   ): ProfileConnection
+  purchase(
+    # The ID of the purchase
+    id: String!
+  ): Purchase
 
   # A list of purchases made by users.
   purchasesConnection(
