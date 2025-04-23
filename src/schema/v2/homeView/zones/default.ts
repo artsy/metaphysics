@@ -26,6 +26,7 @@ import { TrendingArtists } from "../sections/TrendingArtists"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
+import { BoostHeroUnitsForNewUsersRule } from "../mixer/rules/BoostHeroUnitsForNewUsersRule"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -60,7 +61,7 @@ const SECTIONS: HomeViewSection[] = [
 export async function getSections(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
-    // other rules tk
+    new BoostHeroUnitsForNewUsersRule(),
   ])
 
   return await mixer.mix(SECTIONS, context)
