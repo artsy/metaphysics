@@ -978,6 +978,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    profileLoader: gravityLoader((id) => `profile/${id}`),
     repositionPartnerLocationsLoader: gravityLoader(
       (id) => `partner/${id}/locations/reposition`,
       {},
