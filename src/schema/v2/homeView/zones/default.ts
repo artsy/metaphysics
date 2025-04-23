@@ -1,6 +1,7 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
-import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
+import { DisplayableRule } from "../mixer/rules/DisplayableRule"
+import { HomeViewMixer } from "../mixer/HomeViewMixer"
 import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { Auctions } from "../sections/Auctions"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
@@ -57,13 +58,10 @@ const SECTIONS: HomeViewSection[] = [
  * Assemble the list of sections that can be displayed
  */
 export async function getSections(context: ResolverContext) {
-  const displayableSections: HomeViewSection[] = []
+  const mixer = new HomeViewMixer([
+    new DisplayableRule(),
+    // other rules tk
+  ])
 
-  SECTIONS.forEach((section) => {
-    if (isSectionDisplayable(section, context)) {
-      displayableSections.push(section)
-    }
-  })
-
-  return displayableSections
+  return await mixer.mix(SECTIONS, context)
 }
