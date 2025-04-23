@@ -10,7 +10,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import Profile, { ProfileType } from "../profile"
+import { ProfileType } from "../profile"
 import { ResolverContext } from "types/graphql"
 
 interface UpdateProfileMutationInputProps {
@@ -21,7 +21,6 @@ interface UpdateProfileMutationInputProps {
   website?: string | null
   location?: string | null
   isPrivate?: boolean | null
-  menuColorClass?: string | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -87,10 +86,6 @@ export const updateProfileMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Private profiles hide certain features for non admins.",
     },
-    menuColorClass: {
-      type: GraphQLString,
-      description: "Menu color class.",
-    },
   },
   outputFields: {
     profileOrError: {
@@ -109,7 +104,6 @@ export const updateProfileMutation = mutationWithClientMutationId<
       website,
       location,
       isPrivate,
-      menuColorClass,
     },
     { updateProfileLoader }
   ) => {
@@ -125,7 +119,6 @@ export const updateProfileMutation = mutationWithClientMutationId<
         website,
         location,
         private: isPrivate,
-        menu_color_class: menuColorClass,
       }
 
       const response = await updateProfileLoader(id, profileData)

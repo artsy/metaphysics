@@ -23,7 +23,6 @@ describe("updateProfileMutation", () => {
             website: "http://example.com"
             location: "New York"
             isPrivate: true
-            menuColorClass: "black"
           }
         ) {
           profileOrError {
@@ -52,7 +51,6 @@ describe("updateProfileMutation", () => {
       website: "http://example.com",
       location: "New York",
       private: true,
-      menu_color_class: "black",
     })
 
     // ID is returned as a base64-encoded value
