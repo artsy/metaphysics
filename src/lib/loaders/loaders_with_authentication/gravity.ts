@@ -1050,6 +1050,7 @@ export default (accessToken, userID, opts) => {
     partnersLoader: gravityLoader("partners", {}, { headers: true }),
     popularArtistsLoader: gravityLoader("artists/popular"),
     profilesLoader: gravityLoader("profiles", {}, { headers: true }),
+    purchaseLoader: gravityLoader((id) => `purchase/${id}`),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/Recently_viewed_artworks",
