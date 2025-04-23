@@ -135,6 +135,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   availability: {
     type: GraphQLString,
   },
+  categories: {
+    type: new GraphQLList(GraphQLString),
+  },
   color: {
     type: GraphQLString,
   },

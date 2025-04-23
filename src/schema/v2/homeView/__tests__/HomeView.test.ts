@@ -67,6 +67,12 @@ describe("homeView", () => {
             "edges": [
               {
                 "node": {
+                  "__typename": "HomeViewSectionCard",
+                  "component": null,
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
                   "component": {
                     "title": "Discover Something New",
@@ -207,6 +213,12 @@ describe("homeView", () => {
                   "component": {
                     "title": "Recently Viewed",
                   },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionCard",
+                  "component": null,
                 },
               },
               {
