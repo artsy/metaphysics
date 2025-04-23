@@ -106,6 +106,9 @@ export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
     APPLE_PAY: {
       value: "apple_pay",
     },
+    GOOGLE_PAY: {
+      value: "google_pay",
+    },
   },
 })
 

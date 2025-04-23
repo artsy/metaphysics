@@ -16494,6 +16494,7 @@ type Order {
 
 enum OrderCreditCardWalletTypeEnum {
   APPLE_PAY
+  GOOGLE_PAY
 }
 
 enum OrderModeEnum {
