@@ -171,6 +171,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ Width }) => Width,
             },
+            medium: {
+              type: GraphQLString,
+              resolve: ({ Medium }) => Medium,
+            },
           },
         })
       ),
