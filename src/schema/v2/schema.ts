@@ -320,6 +320,8 @@ import { repositionPartnerLocationsMutation } from "./partner/Settings/repositio
 import { PartnerMatch } from "./match/partner"
 import { CreatePartnerLocationDaySchedulesMutation } from "./partner/Settings/createPartnerLocationDaySchedulesMutation"
 import { UpdatePartnerProfileImageMutation } from "./partner/Settings/updatePartnerProfileImageMutation"
+import { PurchasesConnection } from "./purchases"
+import { Purchase } from "./purchase"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -424,6 +426,8 @@ const rootFields = {
   previewSavedSearch: PreviewSavedSearchField,
   profile: Profile,
   profilesConnection: Profiles,
+  purchase: Purchase,
+  purchasesConnection: PurchasesConnection,
   recentlySoldArtworks: RecentlySoldArtworks,
   requestLocation: RequestLocationField,
   sale: Sale,
