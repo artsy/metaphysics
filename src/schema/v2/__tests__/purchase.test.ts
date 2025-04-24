@@ -1,6 +1,5 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import sinon from "sinon"
 
 describe("purchase", () => {
   const purchaseMockData = {
@@ -22,13 +21,10 @@ describe("purchase", () => {
   }
 
   it("resolves a purchase", async () => {
+    const purchaseLoader = jest.fn().mockResolvedValue(purchaseMockData)
+
     const context = {
-      purchaseLoader: sinon
-        .stub()
-        .withArgs({
-          id: "purchase-id",
-        })
-        .returns(Promise.resolve(purchaseMockData)),
+      purchaseLoader,
     }
 
     const query = gql`
@@ -99,8 +95,8 @@ describe("purchase", () => {
       }
     `)
 
-    expect(context.purchaseLoader.callCount).toEqual(1)
-    expect(context.purchaseLoader.args[0][0]).toEqual("purchase-id")
+    expect(purchaseLoader).toHaveBeenCalledTimes(1)
+    expect(purchaseLoader).toHaveBeenCalledWith("purchase-id")
   })
 
   it("throws an error if purchaseLoader is not available", async () => {
