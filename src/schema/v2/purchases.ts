@@ -1,75 +1,14 @@
 import type { ResolverContext } from "types/graphql"
-import {
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLObjectType,
-  GraphQLInt,
-} from "graphql"
+import { GraphQLString, GraphQLInt } from "graphql"
 import type { GraphQLFieldConfig } from "graphql"
-import { IDFields, NodeInterface } from "./object_identification"
-import { ArtworkType } from "./artwork"
 import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "schema/v2/fields/pagination"
-import { date } from "./fields/date"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
-import { UserType } from "./user"
-import { FairType } from "./fair"
-import { SaleType } from "./sale"
 import { identity, pickBy } from "lodash"
-
-const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Purchase",
-  interfaces: [NodeInterface],
-  fields: {
-    ...IDFields,
-    artsyCommission: {
-      type: GraphQLFloat,
-      resolve: ({ artsy_commission }) => artsy_commission,
-    },
-    artwork: {
-      type: ArtworkType,
-    },
-    createdAt: date(({ created_at }) => created_at),
-    discoverAdmin: {
-      type: UserType,
-      description: "Person who found the sale",
-      resolve: ({ discover_admin }) => discover_admin,
-    },
-    email: {
-      type: GraphQLString,
-    },
-    fair: {
-      type: FairType,
-    },
-    note: {
-      type: GraphQLString,
-    },
-    ownerType: {
-      type: GraphQLString,
-      resolve: ({ owner_type }) => owner_type,
-    },
-    sale: {
-      type: SaleType,
-    },
-    saleAdmin: {
-      type: UserType,
-      description: "Person who facilitated the sale",
-      resolve: ({ sale_admin }) => sale_admin,
-    },
-    salePrice: {
-      type: GraphQLFloat,
-      resolve: ({ sale_price }) => sale_price,
-    },
-    saleDate: date(({ sale_date }) => sale_date),
-    source: { type: GraphQLString },
-    user: {
-      type: UserType,
-    },
-  },
-})
+import { PurchaseType } from "./purchase"
 
 export const PurchasesConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionWithCursorInfo({

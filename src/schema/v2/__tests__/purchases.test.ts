@@ -1,6 +1,5 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import sinon from "sinon"
 
 describe("purchases", () => {
   describe("purchasesConnection", () => {
@@ -25,24 +24,12 @@ describe("purchases", () => {
     ]
 
     it("resolves a connection with all query arguments", async () => {
+      const purchasesLoader = jest.fn().mockResolvedValue({
+        headers: { "x-total-count": 1 },
+        body: purchasesMockData,
+      })
       const context = {
-        purchasesLoader: sinon
-          .stub()
-          .withArgs({
-            artwork_id: "artwork-id",
-            artist_id: "artist-id",
-            sale_id: "sale-id",
-            user_id: "user-id",
-            page: 1,
-            size: 5,
-            total_count: true,
-          })
-          .returns(
-            Promise.resolve({
-              headers: { "x-total-count": 1 },
-              body: purchasesMockData,
-            })
-          ),
+        purchasesLoader,
       }
 
       const query = gql`
@@ -131,8 +118,8 @@ describe("purchases", () => {
         }
       `)
 
-      expect(context.purchasesLoader.callCount).toEqual(1)
-      expect(context.purchasesLoader.args[0][0]).toEqual({
+      expect(purchasesLoader).toHaveBeenCalledTimes(1)
+      expect(purchasesLoader).toHaveBeenCalledWith({
         artwork_id: "artwork-id",
         artist_id: "artist-id",
         sale_id: "sale-id",
@@ -144,21 +131,12 @@ describe("purchases", () => {
     })
 
     it("only passes non-empty arguments to the loader", async () => {
+      const purchasesLoader = jest.fn().mockResolvedValue({
+        headers: { "x-total-count": 1 },
+        body: purchasesMockData,
+      })
       const context = {
-        purchasesLoader: sinon
-          .stub()
-          .withArgs({
-            artwork_id: "artwork-id",
-            page: 1,
-            size: 5,
-            total_count: true,
-          })
-          .returns(
-            Promise.resolve({
-              headers: { "x-total-count": 1 },
-              body: purchasesMockData,
-            })
-          ),
+        purchasesLoader,
       }
 
       const query = gql`
@@ -181,17 +159,13 @@ describe("purchases", () => {
         internalID: "purchase-id",
       })
 
-      // Verify that empty args like artist_id were not passed to gravity
-      expect(context.purchasesLoader.callCount).toEqual(1)
-      expect(context.purchasesLoader.args[0][0]).toEqual({
+      expect(purchasesLoader).toHaveBeenCalledTimes(1)
+      expect(purchasesLoader).toHaveBeenCalledWith({
         artwork_id: "artwork-id",
         page: 1,
         size: 5,
         total_count: true,
       })
-      expect(context.purchasesLoader.args[0][0].artist_id).toBeUndefined()
-      expect(context.purchasesLoader.args[0][0].sale_id).toBeUndefined()
-      expect(context.purchasesLoader.args[0][0].user_id).toBeUndefined()
     })
 
     it("throws an error if purchasesLoader is not available", async () => {
