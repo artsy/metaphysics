@@ -45,6 +45,11 @@ describe("homeView", () => {
                     title
                   }
                 }
+                ... on HomeViewSectionCard {
+                  card {
+                    title
+                  }
+                }
               }
             }
           }
@@ -68,6 +73,9 @@ describe("homeView", () => {
               {
                 "node": {
                   "__typename": "HomeViewSectionCard",
+                  "card": {
+                    "title": "Discover Daily",
+                  },
                   "component": null,
                 },
               },
@@ -112,6 +120,9 @@ describe("homeView", () => {
               {
                 "node": {
                   "__typename": "HomeViewSectionCard",
+                  "card": {
+                    "title": "Galleries for You",
+                  },
                   "component": {
                     "title": "Galleries for You",
                   },
@@ -218,6 +229,9 @@ describe("homeView", () => {
               {
                 "node": {
                   "__typename": "HomeViewSectionCard",
+                  "card": {
+                    "title": "Discover Daily",
+                  },
                   "component": null,
                 },
               },
@@ -286,6 +300,9 @@ describe("homeView", () => {
               {
                 "node": {
                   "__typename": "HomeViewSectionCard",
+                  "card": {
+                    "title": "Galleries for You",
+                  },
                   "component": {
                     "title": "Galleries for You",
                   },

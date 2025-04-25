@@ -75,12 +75,10 @@ export const createArtworkMutation = mutationWithClientMutationId<
     imageS3Bucket: {
       type: GraphQLString,
       description: "The S3 bucket where the artwork image is stored.",
-      deprecationReason: "Use imageS3Buckets instead.",
     },
     imageS3Key: {
       type: GraphQLString,
       description: "The S3 key for the artwork image.",
-      deprecationReason: "Use imageS3Keys instead.",
     },
     imageS3Buckets: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),

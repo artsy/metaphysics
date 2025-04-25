@@ -3310,6 +3310,7 @@ type ArtworkImportTransformedData {
   diameter: String
   height: String
   imageFileNames: String
+  inventoryId: String
   medium: String
   price: String
   width: String
@@ -8715,13 +8716,13 @@ input CreateArtworkMutationInput {
   clientMutationId: String
 
   # The S3 bucket where the artwork image is stored.
-  imageS3Bucket: String @deprecated(reason: "Use imageS3Buckets instead.")
+  imageS3Bucket: String
 
   # The S3 buckets where the artwork images are stored. This is a list of bucket names.
   imageS3Buckets: [String!]
 
   # The S3 key for the artwork image.
-  imageS3Key: String @deprecated(reason: "Use imageS3Keys instead.")
+  imageS3Key: String
 
   # The S3 keys for the artwork images. This is a list of object keys.
   imageS3Keys: [String!]
