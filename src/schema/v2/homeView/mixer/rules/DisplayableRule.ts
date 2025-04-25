@@ -1,12 +1,12 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
 import { isSectionDisplayable } from "../../helpers/isSectionDisplayable"
-import { SectionRule } from "../SectionRule"
+import { HomeViewMixerRule } from "../HomeViewMixerRule"
 
 /**
  * Rule that removes sections based on the isSectionDisplayable helper.
  */
-export class DisplayableRule extends SectionRule {
+export class DisplayableRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
     context: ResolverContext

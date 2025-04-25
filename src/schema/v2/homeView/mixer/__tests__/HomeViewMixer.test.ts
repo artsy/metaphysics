@@ -1,7 +1,7 @@
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "../../sections"
 import { HomeViewMixer } from "../HomeViewMixer"
-import { SectionRule } from "../SectionRule"
+import { HomeViewMixerRule } from "../HomeViewMixerRule"
 
 describe("HomeViewMixer", () => {
   it("should apply all rules to produce the final section list", async () => {
@@ -30,7 +30,7 @@ describe("HomeViewMixer", () => {
 
 // Mock rules
 
-class RemoveBadArtworksRule extends SectionRule {
+class RemoveBadArtworksRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
     _context: ResolverContext
@@ -39,7 +39,7 @@ class RemoveBadArtworksRule extends SectionRule {
   }
 }
 
-class BoostGreatArtworksRule extends SectionRule {
+class BoostGreatArtworksRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
     _context: ResolverContext

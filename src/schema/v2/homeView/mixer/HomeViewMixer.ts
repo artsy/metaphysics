@@ -1,18 +1,18 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
-import { SectionRule } from "./SectionRule"
+import { HomeViewMixerRule } from "./HomeViewMixerRule"
 
 /**
  * Orchestrates the application of multiple rules to a list of sections.
  */
 export class HomeViewMixer {
-  private rules: SectionRule[]
+  private rules: HomeViewMixerRule[]
 
   /**
    * Create a new HomeViewMixer with the specified rules.
    * @param rules Array of section rules to apply in sequence
    */
-  constructor(rules: SectionRule[]) {
+  constructor(rules: HomeViewMixerRule[]) {
     this.rules = rules
   }
 

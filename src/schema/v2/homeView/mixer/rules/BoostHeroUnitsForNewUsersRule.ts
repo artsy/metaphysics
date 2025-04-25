@@ -1,6 +1,6 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
-import { SectionRule } from "../SectionRule"
+import { HomeViewMixerRule } from "../HomeViewMixerRule"
 import { HeroUnits } from "../../sections/HeroUnits"
 
 const THRESHOLD_IN_HOURS = 2 * 7 * 24 // equals two weeks
@@ -8,7 +8,7 @@ const THRESHOLD_IN_HOURS = 2 * 7 * 24 // equals two weeks
 /**
  * Rule that moves the HeroUnits section to the top of the list if the user is new.
  */
-export class BoostHeroUnitsForNewUsersRule extends SectionRule {
+export class BoostHeroUnitsForNewUsersRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
     context: ResolverContext
