@@ -9181,7 +9181,7 @@ input CreatePartnerContactInput {
   email: String
 
   # ID of the contact's partner location
-  locationID: String
+  locationId: String
 
   # Contact's name
   name: String
