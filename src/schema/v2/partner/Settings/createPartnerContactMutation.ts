@@ -20,7 +20,7 @@ interface Input {
   canContact?: boolean
   email?: string
   phone?: string
-  locationID?: string
+  locationId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -83,7 +83,7 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Phone number of the contact",
     },
-    locationID: {
+    locationId: {
       type: GraphQLString,
       description: "ID of the contact's partner location",
     },
@@ -95,7 +95,7 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerID, name, position, canContact, email, phone, locationID },
+    { partnerID, name, position, canContact, email, phone, locationId },
     { createPartnerContactLoader }
   ) => {
     if (!createPartnerContactLoader) {
@@ -109,7 +109,7 @@ export const CreatePartnerContactMutation = mutationWithClientMutationId<
         can_contact: canContact,
         email,
         phone,
-        partner_location_id: locationID,
+        partner_location_id: locationId,
       })
 
       return response
