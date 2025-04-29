@@ -163,6 +163,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
       const artwork = await createArtworkLoader({
         artists: artistIds,
         partner: partnerId,
+        sync_to_es: true,
       })
 
       // Attach all images
