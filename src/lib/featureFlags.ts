@@ -13,6 +13,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_experiment_home_view_test",
   "emerald_clientside-collector-signals",
   "onyx_enable-home-view-mixer",
+  "onyx_enable-quick-links-v2",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
