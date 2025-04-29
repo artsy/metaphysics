@@ -168,6 +168,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: (data) => data["Inventory ID"],
             },
+            materials: {
+              type: GraphQLString,
+              resolve: ({ Materials }) => Materials,
+            },
             price: {
               type: GraphQLString,
               resolve: ({ Price }) => Price,
