@@ -322,6 +322,7 @@ import { CreatePartnerLocationDaySchedulesMutation } from "./partner/Settings/cr
 import { UpdatePartnerProfileImageMutation } from "./partner/Settings/updatePartnerProfileImageMutation"
 import { PurchasesConnection } from "./purchases"
 import { Purchase } from "./purchase"
+import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingAddressMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -623,6 +624,7 @@ export default new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrder: updateOrderMutation,
+      updateOrderShippingAddress: updateOrderShippingAddressMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updatePage: UpdatePageMutation,
       updatePartnerContact: UpdatePartnerContactMutation,
