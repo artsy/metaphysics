@@ -34,6 +34,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_DEPTH: { value: "invalid_depth" },
     INVALID_DIAMETER: { value: "invalid_diameter" },
     INVALID_MEDIUM: { value: "invalid_medium" },
+    INVALID_COA: { value: "invalid_coa" },
     UNMATCHED_IMAGE: { value: "unmatched_image" },
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
@@ -183,6 +184,11 @@ const ArtworkImportRowType = new GraphQLObjectType({
             medium: {
               type: GraphQLString,
               resolve: ({ Medium }) => Medium,
+            },
+            certificateOfAuthenticity: {
+              type: GraphQLString,
+              resolve: ({ CertificateOfAuthenticity }) =>
+                CertificateOfAuthenticity,
             },
           },
         })
