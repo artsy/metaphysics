@@ -11,7 +11,7 @@ const mutation = gql`
         canContact: true
         email: "jane@example.com"
         phone: "123-456-7890"
-        locationID: "location_567"
+        locationId: "location_567"
       }
     ) {
       partnerContactOrError {

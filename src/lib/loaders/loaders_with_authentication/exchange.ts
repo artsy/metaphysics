@@ -47,6 +47,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOrderUpdateShippingAddressLoader = exchangeLoader(
+    (id) => `me/orders/${id}/shipping_address`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const meOrderSetFulfillmentOptionLoader = exchangeLoader(
     (id) => `me/orders/${id}/fulfillment_option`,
     {},
@@ -122,6 +130,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     exchangeGraphQLLoader,
     meOrderLoader,
     meOrderUpdateLoader,
+    meOrderUpdateShippingAddressLoader,
     meOrderSetFulfillmentOptionLoader,
     meOrderSubmitLoader,
     meOrderUnsetFulfillmentOptionLoader,

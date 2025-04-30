@@ -64,6 +64,10 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     cropped: CroppedUrl,
     deepZoom: DeepZoom,
+    geminiToken: {
+      type: GraphQLString,
+      resolve: ({ gemini_token }) => gemini_token,
+    },
     href: {
       type: GraphQLString,
     },
