@@ -185,7 +185,7 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
     phoneNumberCountryCode: {
       type: GraphQLString,
       deprecationReason:
-        "Use `order.fulfillmentDetails.phoneNumber.countryCode`",
+        "Use `order.fulfillmentDetails.phoneNumber.regionCode`",
       description: "Country code of the buyer's phone number",
     },
     name: {

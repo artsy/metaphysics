@@ -11975,9 +11975,7 @@ type FulfillmentDetails {
 
   # Country code of the buyer's phone number
   phoneNumberCountryCode: String
-    @deprecated(
-      reason: "Use `order.fulfillmentDetails.phoneNumber.countryCode`"
-    )
+    @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber.regionCode`")
 
   # Shipping address postal code
   postalCode: String
@@ -17955,7 +17953,7 @@ enum PhoneNumberFormats {
 type PhoneNumberType {
   countryCode: String
 
-  # A formatted phone number. Null if isValid is false
+  # A formatted phone number if the number could be parsed
   display(format: PhoneNumberFormats): String
   error: PhoneNumberErrors
   isValid: Boolean

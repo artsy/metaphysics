@@ -418,7 +418,7 @@ describe("Me", () => {
 
       it("returns only countryCode, originalNumber and a null display field if validation fails", async () => {
         orderJson.buyer_phone_number_country_code = "us"
-        orderJson.buyer_phone_number = "7738asdf675309"
+        orderJson.buyer_phone_number = "773867530Z"
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
           meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -447,10 +447,10 @@ describe("Me", () => {
         const result = await runAuthenticatedQuery(query, context)
         expect(result.me.order.fulfillmentDetails.phoneNumber).toEqual({
           countryCode: "1",
-          regionCode: null,
-          originalNumber: "7738asdf675309",
+          regionCode: "us",
+          originalNumber: "773867530Z",
           isValid: false,
-          display: null,
+          display: "+1773867530",
         })
       })
 

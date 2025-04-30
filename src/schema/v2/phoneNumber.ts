@@ -99,20 +99,22 @@ export const PhoneNumberType: GraphQLObjectType<
     },
     regionCode: {
       type: GraphQLString,
-      resolve: ({ parsedPhone, phoneUtil }) =>
-        parsedPhone &&
-        phoneUtil.getRegionCodeForNumber(parsedPhone)?.toLowerCase(),
+      resolve: ({ parsedPhone, phoneUtil }) => {
+        const countryCode = parsedPhone?.getCountryCode()
+        return (
+          countryCode &&
+          phoneUtil.getRegionCodeForCountryCode(countryCode)?.toLowerCase()
+        )
+      },
     },
     display: {
       type: GraphQLString,
       args: {
         format: PhoneNumberFormats,
       },
-      description: "A formatted phone number. Null if isValid is false",
+      description: "A formatted phone number if the number could be parsed",
       resolve: ({ parsedPhone, phoneUtil }, { format }) =>
-        parsedPhone && phoneUtil.isValidNumber(parsedPhone)
-          ? phoneUtil.format(parsedPhone, format)
-          : null,
+        parsedPhone && phoneUtil.format(parsedPhone, format),
     },
   },
 })
