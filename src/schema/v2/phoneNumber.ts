@@ -94,10 +94,12 @@ export const PhoneNumberType: GraphQLObjectType<
       resolve: ({ phoneNumber }) => phoneNumber,
     },
     countryCode: {
+      description: "Numeric phone number country code",
       type: GraphQLString,
       resolve: ({ parsedPhone }) => parsedPhone?.getCountryCode(),
     },
     regionCode: {
+      description: "Two-letter region code (ISO 3166-1 alpha-2)",
       type: GraphQLString,
       resolve: ({ parsedPhone, phoneUtil }) => {
         const countryCode = parsedPhone?.getCountryCode()
@@ -145,9 +147,11 @@ export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Phone number information",
   args: {
     phoneNumber: {
+      description: "Phone number to parse",
       type: new GraphQLNonNull(GraphQLString),
     },
     regionCode: {
+      description: "Two-letter region code (ISO 3166-1 alpha-2)",
       type: GraphQLString,
     },
   },
