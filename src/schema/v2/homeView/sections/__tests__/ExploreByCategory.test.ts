@@ -1,7 +1,18 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+import * as featureFlags from "lib/featureFlags"
+
+jest.mock("lib/featureFlags", () => ({
+  getExperimentVariant: jest.fn(),
+}))
 
 describe("ExploreByCategory", () => {
+  const mockGetExperimentVariant = featureFlags.getExperimentVariant as jest.Mock
+
+  beforeEach(() => {
+    mockGetExperimentVariant.mockClear().mockReturnValue(false)
+  })
+
   it("returns the section's metadata", async () => {
     const query = gql`
       {
@@ -105,5 +116,34 @@ describe("ExploreByCategory", () => {
           },
         }
       `)
+  })
+
+  it("is not displayable when user is in variant A of diamond_discover-tab experiment", async () => {
+    mockGetExperimentVariant.mockReturnValue({
+      name: "variant-a",
+      enabled: true,
+    })
+
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-explore-by-category") {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      userID: "test-user-id",
+    }
+
+    await expect(runQuery(query, context)).rejects.toThrow(
+      "Section is not displayable"
+    )
+
+    expect(
+      mockGetExperimentVariant
+    ).toHaveBeenCalledWith("diamond_discover-tab", { userId: "test-user-id" })
   })
 })
