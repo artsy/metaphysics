@@ -11975,7 +11975,9 @@ type FulfillmentDetails {
 
   # Country code of the buyer's phone number
   phoneNumberCountryCode: String
-    @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber.regionCode`")
+    @deprecated(
+      reason: "Use `phoneNumber.regionCode` for the alpha-2 country code or phoneNumber.countryCode for the numeric country code"
+    )
 
   # Shipping address postal code
   postalCode: String
