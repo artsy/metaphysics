@@ -31,6 +31,7 @@ describe("homeView", () => {
       mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
         return ["onyx_enable-home-view-section-featured-fairs"].includes(flag)
       })
+      mockGetExperimentVariant.mockReturnValue(false)
     })
 
     const query = gql`
@@ -383,6 +384,39 @@ describe("homeView", () => {
             ],
           }
         `)
+      })
+
+      it("hides DiscoverSomethingNew and ExploreByCategory sections with a user in the diamond_discover-tab experiment", async () => {
+        mockGetExperimentVariant.mockImplementation((flag: string) => {
+          if (flag === "diamond_discover-tab") {
+            return {
+              name: "variant-a",
+              enabled: true,
+            }
+          }
+          return false
+        })
+
+        const userContext = {
+          ...context,
+          userID: "test-user-id",
+        }
+
+        const { homeView } = await runQuery(query, userContext)
+
+        const sectionTitles = homeView.sectionsConnection.edges.map(
+          (edge) => edge.node.component?.title
+        )
+
+        expect(sectionTitles).not.toContain("Discover Something New")
+        expect(sectionTitles).not.toContain("Explore by Category")
+
+        expect(mockGetExperimentVariant).toHaveBeenCalledWith(
+          "diamond_discover-tab",
+          {
+            userId: "test-user-id",
+          }
+        )
       })
     })
   })
