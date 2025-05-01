@@ -12,8 +12,10 @@ export const QuickLinks: HomeViewSection = {
   ownerType: OwnerType.quickLinks,
   type: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,
   requiresAuthentication: true,
-  resolver: (_parent, _args, context, _info) => {
-    return getDisplayableQuickLinks(context)
+  resolver: async (_parent, _args, context, _info) => {
+    let links = getDisplayableQuickLinks(context)
+    links = await maybeInsertYourBidsLink(links, context)
+    return links
   },
 }
 
@@ -51,6 +53,9 @@ export const QUICK_LINKS_V2: Array<NavigationPill> = [
     ownerType: OwnerType.auctions,
     icon: "GavelIcon",
   },
+  /*
+   * see below for optional Your Bids link inserted here
+   */
   {
     title: "New This Week",
     href: "/collection/new-this-week",
@@ -146,3 +151,26 @@ export const QUICK_LINKS: Array<NavigationPill> = [
     icon: "FairIcon",
   },
 ]
+
+async function maybeInsertYourBidsLink(
+  links: NavigationPill[],
+  context: ResolverContext
+) {
+  if (isFeatureFlagEnabled("onyx_enable-quick-links-v2")) {
+    const { MyBids } = require("schema/v2/me/myBids")
+    const bids = await MyBids.resolve?.({}, {}, context, {} as any)
+    const hasBids = bids?.active?.length > 0
+    const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
+
+    if (hasBids && auctionsIndex >= 0) {
+      const yourBids: NavigationPill = {
+        title: "Your Bids",
+        href: "/inbox",
+        ownerType: OwnerType.inbox,
+        icon: undefined,
+      }
+      links.splice(auctionsIndex + 1, 0, yourBids)
+    }
+  }
+  return links
+}
