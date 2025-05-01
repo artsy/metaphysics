@@ -250,6 +250,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   saleID: {
     type: GraphQLID,
   },
+  showID: {
+    type: GraphQLString,
+  },
   sold: {
     type: GraphQLBoolean,
   },
@@ -474,6 +477,7 @@ const convertFilterArgs = ({
   partnerIDs,
   priceRange,
   saleID,
+  showID,
   sizes,
   tagID,
   visibilityLevel,
@@ -509,6 +513,7 @@ const convertFilterArgs = ({
     partner_cities: partnerCities,
     partner_id: partnerID,
     partner_ids: partnerIDs,
+    partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
     sizes: sizes,
