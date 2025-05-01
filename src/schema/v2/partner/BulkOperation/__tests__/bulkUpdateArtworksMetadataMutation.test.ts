@@ -8,6 +8,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
         input: {
           id: "partner123"
           metadata: {
+            availability: SOLD
             locationId: "location456"
             category: "Painting"
             priceListed: 1000
@@ -60,6 +61,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       "partner123",
       {
         metadata: {
+          availability: "sold",
           location_id: "location456",
           category: "Painting",
           price_listed: 1000,

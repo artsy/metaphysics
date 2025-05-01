@@ -15,10 +15,12 @@ import {
 } from "lib/gravityErrorHandler"
 import { GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
+import { Availability } from "schema/v2/types/availability"
 
 interface Input {
   id: string
   metadata?: {
+    availability?: string
     locationId?: string
     category?: string
     priceListed?: number
@@ -34,6 +36,10 @@ interface Input {
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
   fields: {
+    availability: {
+      type: Availability,
+      description: "The availaiblity to be assigned",
+    },
     locationId: {
       type: GraphQLString,
       description: "The partner location ID to assign",
@@ -174,6 +180,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
 
     if (metadata) {
       gravityOptions.metadata = {
+        availability: metadata.availability,
         location_id: metadata.locationId,
         category: metadata.category,
         price_listed: metadata.priceListed,
