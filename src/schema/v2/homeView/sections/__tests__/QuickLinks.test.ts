@@ -105,6 +105,69 @@ describe("QuickLinks", () => {
         }
       `)
     })
+
+    describe("when user has active bids", () => {
+      beforeEach(() => {
+        jest.mock("schema/v2/me/myBids", () => {
+          const originalModule = jest.requireActual("schema/v2/me/myBids")
+
+          return {
+            MyBidType: originalModule.MyBidType,
+            MyBids: {
+              ...originalModule.MyBids,
+              resolve: jest.fn().mockReturnValueOnce({
+                active: [
+                  {
+                    // some bid
+                  },
+                ],
+              }),
+            },
+          }
+        })
+      })
+      afterEach(() => {
+        jest.clearAllMocks()
+      })
+
+      it("returns the Your Bids quick link", async () => {
+        const { homeView } = await runQuery(query, context)
+
+        expect(homeView.section.navigationPills).toContainEqual(
+          expect.objectContaining({
+            title: "Your Bids",
+          })
+        )
+      })
+    })
+
+    describe("when user has no active bids", () => {
+      beforeEach(() => {
+        jest.mock("schema/v2/me/myBids", () => {
+          const originalModule = jest.requireActual("schema/v2/me/myBids")
+
+          return {
+            MyBidType: originalModule.MyBidType,
+            MyBids: {
+              ...originalModule.MyBids,
+              resolve: jest.fn().mockReturnValueOnce({}),
+            },
+          }
+        })
+      })
+      afterEach(() => {
+        jest.clearAllMocks()
+      })
+
+      it("does NOT return the Your Bids quick link", async () => {
+        const { homeView } = await runQuery(query, context)
+        expect(homeView.section.navigationPills).not.toContainEqual(
+          expect.objectContaining({
+            title: "Your Bids",
+          })
+        )
+      })
+    })
   })
 
   describe("when v2 is not enabled", () => {
