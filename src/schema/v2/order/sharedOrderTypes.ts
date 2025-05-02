@@ -43,6 +43,8 @@ interface OrderJSON {
   shipping_region?: string
   shipping_country?: string
   tax_total_cents?: number
+  buyer_state?: string
+  fulfillment_type?: string
   fulfillment_options: Array<{
     type: string
     amount_minor: number
@@ -269,25 +271,63 @@ const SellerType = new GraphQLUnionType({
   },
 })
 
+const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
+  name: "DisplayTexts",
+  description: "Display texts for the order based on its state",
+  fields: {
+    titleText: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Title text to display for the order",
+    },
+  },
+})
+
+const resolveDisplayTexts = (order: OrderJSON) => {
+  switch (order.buyer_state) {
+    case "submitted":
+      return {
+        titleText: "Great choice!",
+      }
+    case "payment_failed":
+      return {
+        titleText: "Payment failed",
+      }
+    case "processing_payment":
+      return {
+        titleText: "Your payment is processing",
+      }
+    case "processing_offline_payment":
+    case "approved":
+      return {
+        titleText: "Congratulations!",
+      }
+    case "shipped":
+      return {
+        titleText: "Good news, your order has shipped!",
+      }
+    case "completed":
+      return {
+        titleText:
+          order.fulfillment_type == "pickup"
+            ? "Your order has been picked up"
+            : "Your order has been delivered",
+      }
+    case "canceled_and_refunded":
+      return {
+        titleText: "Your order was canceled",
+      }
+    default:
+      return {
+        titleText: "Your order",
+      }
+  }
+}
+
 export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
   fields: {
     ...InternalIDFields,
-    code: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Order code",
-      resolve: ({ code }) => code,
-    },
-    source: {
-      type: new GraphQLNonNull(OrderSourceEnum),
-      description: "Source of the order",
-      resolve: (order) => resolveSource(order),
-    },
-    mode: {
-      type: new GraphQLNonNull(OrderModeEnum),
-      resolve: (order) => resolveMode(order),
-    },
     availableShippingCountries: {
       description:
         "List of alpha-2 country codes to which the order can be shipped",
@@ -296,6 +336,12 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       ),
       resolve: ({ available_shipping_countries }) =>
         available_shipping_countries,
+    },
+    buyerPhoneNumber: {
+      type: GraphQLString,
+      description: "Phone number of the buyer",
+      deprecationReason: "Use `order.fulfillmentDetails.phoneNumber`",
+      resolve: ({ buyer_phone_number }) => buyer_phone_number,
     },
     buyerTotal: {
       type: Money,
@@ -317,6 +363,44 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Order code",
+      resolve: ({ code }) => code,
+    },
+    displayTexts: {
+      type: new GraphQLNonNull(DisplayTextsType),
+      description: "Display texts for the order based on its buyer_state",
+      resolve: (order) => resolveDisplayTexts(order),
+    },
+    fulfillmentDetails: {
+      type: FulfillmentDetailsType,
+      description: "Buyer fulfillment details for order",
+      resolve: (order) => ({
+        addressLine1: order.shipping_address_line1,
+        addressLine2: order.shipping_address_line2,
+        city: order.shipping_city,
+        country: order.shipping_country,
+        name: order.shipping_name,
+        phoneNumber: order.buyer_phone_number,
+        phoneNumberCountryCode: order.buyer_phone_number_country_code,
+        postalCode: order.shipping_postal_code,
+        region: order.shipping_region,
+      }),
+    },
+    fulfillmentOptions: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
+      ),
+      resolve: ({
+        fulfillment_options,
+        currency_code,
+      }): Array<FulfillmentOptionJSONWithCurrencyCode> =>
+        fulfillment_options.map((option) => ({
+          ...option,
+          _currencyCode: currency_code,
+        })),
+    },
     itemsTotal: {
       type: Money,
       description: "The total amount of the line items",
@@ -337,83 +421,13 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
-    shippingTotal: {
-      type: Money,
-      description: "The total amount for shipping",
-      resolve: (
-        { shipping_total_cents: minor, currency_code: currencyCode },
-        _args,
-        ctx,
-        _info
-      ) => {
-        if (minor == null || currencyCode == null) {
-          return null
-        }
-        return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
-          _args,
-          ctx,
-          _info
-        )
-      },
-    },
-    taxTotal: {
-      type: Money,
-      description: "The total amount for tax",
-      resolve: (
-        { tax_total_cents: minor, currency_code: currencyCode },
-        _args,
-        ctx,
-        _info
-      ) => {
-        if (minor == null || currencyCode == null) {
-          return null
-        }
-        return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
-          _args,
-          ctx,
-          _info
-        )
-      },
-    },
     lineItems: {
       type: new GraphQLNonNull(new GraphQLList(LineItemType)),
       resolve: ({ line_items }) => line_items,
     },
-    fulfillmentOptions: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(FulfillmentOptionType))
-      ),
-      resolve: ({
-        fulfillment_options,
-        currency_code,
-      }): Array<FulfillmentOptionJSONWithCurrencyCode> =>
-        fulfillment_options.map((option) => ({
-          ...option,
-          _currencyCode: currency_code,
-        })),
-    },
-    buyerPhoneNumber: {
-      type: GraphQLString,
-      description: "Phone number of the buyer",
-      deprecationReason: "Use `order.fulfillmentDetails.phoneNumber`",
-      resolve: ({ buyer_phone_number }) => buyer_phone_number,
-    },
-    fulfillmentDetails: {
-      type: FulfillmentDetailsType,
-      description: "Buyer fulfillment details for order",
-      resolve: (order) => ({
-        phoneNumber: order.buyer_phone_number,
-        phoneNumberCountryCode: order.buyer_phone_number_country_code,
-        name: order.shipping_name,
-        addressLine1: order.shipping_address_line1,
-        addressLine2: order.shipping_address_line2,
-        city: order.shipping_city,
-        postalCode: order.shipping_postal_code,
-        region: order.shipping_region,
-        country: order.shipping_country,
-      }),
+    mode: {
+      type: new GraphQLNonNull(OrderModeEnum),
+      resolve: (order) => resolveMode(order),
     },
     selectedFulfillmentOption: {
       type: FulfillmentOptionType,
@@ -438,6 +452,51 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         if (!seller_id) return null
 
         return partnerLoader(seller_id).catch(() => null)
+      },
+    },
+    shippingTotal: {
+      type: Money,
+      description: "The total amount for shipping",
+      resolve: (
+        { shipping_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
+    source: {
+      type: new GraphQLNonNull(OrderSourceEnum),
+      description: "Source of the order",
+      resolve: (order) => resolveSource(order),
+    },
+    taxTotal: {
+      type: Money,
+      description: "The total amount for tax",
+      resolve: (
+        { tax_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
       },
     },
   },

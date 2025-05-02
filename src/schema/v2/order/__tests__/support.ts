@@ -3,6 +3,7 @@ export const baseOrderJson = {
   buyer_phone_number: null,
   buyer_phone_number_country_code: null,
   buyer_total_cents: null,
+  buyer_state: "pending",
   code: "order-code",
   currency_code: "USD",
   items_total_cents: 10000,
