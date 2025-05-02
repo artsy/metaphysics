@@ -48,60 +48,63 @@ describe("Me", () => {
         query {
           me {
             order(id: "order-id") {
-              internalID
-              mode
-              source
-              code
               availableShippingCountries
               buyerTotal {
                 display
               }
-              itemsTotal {
-                minor
-                display
-                currencyCode
+              code
+              displayTexts {
+                titleText
               }
-              shippingTotal {
-                minor
-              }
-              taxTotal {
-                minor
+              fulfillmentDetails {
+                addressLine1
+                addressLine2
+                city
+                country
+                name
+                phoneNumber
+                phoneNumberCountryCode
+                postalCode
+                region
               }
               fulfillmentOptions {
-                type
                 amount {
                   currencyCode
                   display
                 }
                 selected
-              }
-              fulfillmentDetails {
-                phoneNumber
-                phoneNumberCountryCode
-                name
-                addressLine1
-                addressLine2
-                city
-                region
-                country
-                postalCode
-              }
-              selectedFulfillmentOption {
                 type
               }
-              lineItems {
-                internalID
+              internalID
+              itemsTotal {
                 currencyCode
+                display
+                minor
+              }
+              lineItems {
                 artwork {
                   title
                 }
                 artworkVersion {
                   internalID
                 }
+                currencyCode
+                internalID
                 listPrice {
                   display
                 }
                 quantity
+              }
+              mode
+              selectedFulfillmentOption {
+                type
+              }
+              shippingTotal {
+                minor
+              }
+              source
+              taxTotal {
+                minor
               }
             }
           }
@@ -122,6 +125,9 @@ describe("Me", () => {
 
       expect(result.me.order).toEqual({
         internalID: "order-id",
+        displayTexts: {
+          titleText: "Your order",
+        },
         mode: "BUY",
         source: "ARTWORK_PAGE",
         code: "order-code",
