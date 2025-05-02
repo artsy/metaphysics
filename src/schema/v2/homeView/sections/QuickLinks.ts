@@ -152,10 +152,15 @@ export const QUICK_LINKS: Array<NavigationPill> = [
   },
 ]
 
+/**
+ * If the user has currently active bids then we insert
+ * the **Your Bids** link immediately after the **Auctions** link.
+ * We return the (maybe) updated full list of quick links.
+ */
 async function maybeInsertYourBidsLink(
   links: NavigationPill[],
   context: ResolverContext
-) {
+): Promise<NavigationPill[]> {
   if (isFeatureFlagEnabled("onyx_enable-quick-links-v2")) {
     const { MyBids } = require("schema/v2/me/myBids")
     const bids = await MyBids.resolve?.({}, {}, context, {} as any)
