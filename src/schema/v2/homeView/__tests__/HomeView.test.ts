@@ -520,6 +520,92 @@ describe("homeView", () => {
         })
       })
     })
+
+    describe("with overrideShouldBeDisplayed parameter", () => {
+      describe("accessing a section that would be hidden by overrideShouldBeDisplayed", () => {
+        const context: Partial<ResolverContext> = {
+          userID: "test-user-id",
+        }
+
+        beforeEach(() => {
+          mockGetExperimentVariant.mockImplementation((flag: string) => {
+            if (flag === "diamond_discover-tab") {
+              return {
+                name: "variant-a",
+                enabled: true,
+              }
+            }
+            return false
+          })
+        })
+
+        it("throws an error when overrideShouldBeDisplayed is false", async () => {
+          const query = gql`
+            {
+              homeView {
+                section(
+                  id: "home-view-section-discover-something-new"
+                  overrideShouldBeDisplayed: false
+                ) {
+                  __typename
+                }
+              }
+            }
+          `
+
+          await expect(runQuery(query, context)).rejects.toThrow(
+            "Section is not displayable"
+          )
+        })
+
+        it("throws an error when overrideShouldBeDisplayed not passed", async () => {
+          const query = gql`
+            {
+              homeView {
+                section(id: "home-view-section-discover-something-new") {
+                  __typename
+                }
+              }
+            }
+          `
+
+          await expect(runQuery(query, context)).rejects.toThrow(
+            "Section is not displayable"
+          )
+        })
+
+        it("returns the hidden section when overrideShouldBeDisplayed is true", async () => {
+          const query = gql`
+            {
+              homeView {
+                section(
+                  id: "home-view-section-discover-something-new"
+                  overrideShouldBeDisplayed: true
+                ) {
+                  __typename
+                  ... on HomeViewSectionGeneric {
+                    component {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          const { homeView } = await runQuery(query, context)
+
+          expect(homeView.section).toMatchInlineSnapshot(`
+            {
+              "__typename": "HomeViewSectionCards",
+              "component": {
+                "title": "Discover Something New",
+              },
+            }
+          `)
+        })
+      })
+    })
   })
 
   describe("experiments", () => {
