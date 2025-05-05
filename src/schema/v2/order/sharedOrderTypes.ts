@@ -14,6 +14,7 @@ import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { ArtworkVersionType } from "../artwork_version"
 import { ArtworkType } from "../artwork"
 import { PartnerType } from "schema/v2/partner/partner"
+import { PhoneNumberType, resolvePhoneNumber } from "../phoneNumber"
 
 /**
  * The order json as received from the exchange REST API.
@@ -172,11 +173,19 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   description: "Buyer fulfillment details for order",
   fields: {
     phoneNumber: {
-      type: GraphQLString,
+      type: PhoneNumberType,
       description: "Phone number of the buyer",
+      resolve: ({ phoneNumber, phoneNumberCountryCode }) => {
+        return resolvePhoneNumber({
+          phoneNumber,
+          regionCode: phoneNumberCountryCode,
+        })
+      },
     },
     phoneNumberCountryCode: {
       type: GraphQLString,
+      deprecationReason:
+        "Use `phoneNumber.regionCode` for the alpha-2 country code or phoneNumber.countryCode for the numeric country code",
       description: "Country code of the buyer's phone number",
     },
     name: {

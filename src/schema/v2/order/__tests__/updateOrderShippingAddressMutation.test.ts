@@ -26,7 +26,11 @@ const mockMutation = `
           order {
             internalID
             fulfillmentDetails {
-              phoneNumber
+              phoneNumber {
+                display(format: E164)
+                countryCode
+                regionCode
+              }
               phoneNumberCountryCode
               name
               addressLine1
@@ -58,7 +62,7 @@ describe("updateOrderShippingAddressMutation", () => {
         items_total_cents: 500000,
         shipping_total_cents: 2000,
         buyer_phone_number: "123-456-7890",
-        buyer_phone_number_country_code: "+1",
+        buyer_phone_number_country_code: "US",
         shipping_name: "John Doe",
         shipping_country: "US",
         shipping_postal_code: "10001",
@@ -83,8 +87,12 @@ describe("updateOrderShippingAddressMutation", () => {
           order: {
             internalID: "order-id",
             fulfillmentDetails: {
-              phoneNumber: "123-456-7890",
-              phoneNumberCountryCode: "+1",
+              phoneNumber: {
+                display: "+11234567890",
+                countryCode: "1",
+                regionCode: "us",
+              },
+              phoneNumberCountryCode: "US",
               name: "John Doe",
               addressLine1: "123 Main St",
               addressLine2: "Apt 4B",

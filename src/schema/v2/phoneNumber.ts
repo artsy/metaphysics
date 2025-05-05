@@ -57,7 +57,7 @@ export const PhoneNumberErrors = new GraphQLEnumType({
   },
 })
 
-const PhoneNumberType: GraphQLObjectType<
+export const PhoneNumberType: GraphQLObjectType<
   PhoneNumberTypeSource,
   ResolverContext
 > = new GraphQLObjectType<PhoneNumberTypeSource, ResolverContext>({
@@ -94,51 +94,68 @@ const PhoneNumberType: GraphQLObjectType<
       resolve: ({ phoneNumber }) => phoneNumber,
     },
     countryCode: {
+      description: "Numeric phone number country code",
       type: GraphQLString,
       resolve: ({ parsedPhone }) => parsedPhone?.getCountryCode(),
     },
     regionCode: {
+      description: "Two-letter region code (ISO 3166-1 alpha-2)",
       type: GraphQLString,
-      resolve: ({ parsedPhone, phoneUtil }) =>
-        parsedPhone &&
-        phoneUtil.getRegionCodeForNumber(parsedPhone)?.toLowerCase(),
+      resolve: ({ parsedPhone, phoneUtil }) => {
+        const countryCode = parsedPhone?.getCountryCode()
+        return (
+          countryCode &&
+          phoneUtil.getRegionCodeForCountryCode(countryCode)?.toLowerCase()
+        )
+      },
     },
     display: {
       type: GraphQLString,
       args: {
         format: PhoneNumberFormats,
       },
+      description: "A formatted phone number if the number could be parsed",
       resolve: ({ parsedPhone, phoneUtil }, { format }) =>
         parsedPhone && phoneUtil.format(parsedPhone, format),
     },
   },
 })
 
+export const resolvePhoneNumber = ({ phoneNumber, regionCode }) => {
+  const phoneUtil = PhoneNumberUtil.getInstance()
+  let parsedPhone: GooglePhoneNumber | undefined
+
+  if (!phoneNumber) {
+    return null
+  }
+
+  try {
+    parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
+  } catch (e) {
+    console.error("Parse phone number error: ", e)
+  }
+
+  return {
+    phoneNumber,
+    parsedPhone,
+    phoneUtil,
+  }
+}
+
 export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
   type: PhoneNumberType,
   description: "Phone number information",
   args: {
     phoneNumber: {
+      description: "Phone number to parse",
       type: new GraphQLNonNull(GraphQLString),
     },
     regionCode: {
+      description: "Two-letter region code (ISO 3166-1 alpha-2)",
       type: GraphQLString,
     },
   },
   resolve: (_, { phoneNumber, regionCode }) => {
-    const phoneUtil = PhoneNumberUtil.getInstance()
-    let parsedPhone: GooglePhoneNumber | undefined
-
-    try {
-      parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
-    } catch (e) {
-      console.error("Parse phone number error: ", e)
-    }
-
-    return {
-      phoneNumber,
-      parsedPhone,
-      phoneUtil,
-    }
+    return resolvePhoneNumber({ phoneNumber, regionCode })
   },
 }
