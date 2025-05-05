@@ -543,6 +543,25 @@ describe("homeView", () => {
           const query = gql`
             {
               homeView {
+                section(
+                  id: "home-view-section-discover-something-new"
+                  overrideShouldBeDisplayed: false
+                ) {
+                  __typename
+                }
+              }
+            }
+          `
+
+          await expect(runQuery(query, context)).rejects.toThrow(
+            "Section is not displayable"
+          )
+        })
+
+        it("throws an error when overrideShouldBeDisplayed not passed", async () => {
+          const query = gql`
+            {
+              homeView {
                 section(id: "home-view-section-discover-something-new") {
                   __typename
                 }
