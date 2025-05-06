@@ -38,6 +38,7 @@ export const updateUserMutation = mutationWithClientMutationId<
     email: { type: GraphQLString },
     name: { type: GraphQLString },
     phone: { type: GraphQLString },
+    enabled: { type: GraphQLBoolean },
   },
   outputFields: {},
   mutateAndGetPayload: async (args, { updateUserLoader }) => {
