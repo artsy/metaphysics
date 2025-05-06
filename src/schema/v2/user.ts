@@ -226,6 +226,11 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       emailConfirmationSentAt: date(
         ({ confirmation_sent_at }) => confirmation_sent_at
       ),
+      enabled: {
+        description: "If the user is enabled",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ is_enabled }) => is_enabled,
+      },
       secondFactorEnabled: {
         description:
           "If the user has enabled two-factor authentication on their account",
