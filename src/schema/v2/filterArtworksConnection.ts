@@ -1,57 +1,57 @@
-import { pageable } from "relay-cursor-paging"
 import {
-  convertConnectionArgsToGravityArgs,
-  removeNulls,
-  removeEmptyValues,
-  isExisty,
-} from "lib/helpers"
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import {
-  connectionFromArraySlice,
   connectionDefinitions,
+  connectionFromArraySlice,
   toGlobalId,
 } from "graphql-relay"
 import {
-  GraphQLFieldConfig,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLBoolean,
-  GraphQLList,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLUnionType,
-  GraphQLObjectType,
-  GraphQLInterfaceType,
-  GraphQLInputObjectType,
-} from "graphql"
+  convertConnectionArgsToGravityArgs,
+  isExisty,
+  removeEmptyValues,
+  removeNulls,
+} from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 
-import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import {
   computeTotalPages,
   createPageCursors,
-  pageToCursor,
   PageCursorsType,
+  pageToCursor,
 } from "schema/v2/fields/pagination"
+import { ResolverContext } from "types/graphql"
 
-import Artwork, {
-  artworkConnection,
-  ArtworkConnectionInterface,
-  ArtworkEdgeInterface,
-} from "./artwork"
-import { NodeInterface, GlobalIDField } from "./object_identification"
+import { deprecate } from "lib/deprecation"
+import { keys, map, omit } from "lodash"
 import {
   ArtworksAggregation,
   ArtworksAggregationResultsType,
 } from "./aggregations/filter_artworks_aggregation"
-import { omit, keys, map } from "lodash"
 import Artist from "./artist"
-import { TagType } from "./tag"
-import { GeneType } from "./gene"
-import numeral from "./fields/numeral"
-import { ArtworkType } from "./artwork"
-import { deprecate } from "lib/deprecation"
+import Artwork, {
+  artworkConnection,
+  ArtworkConnectionInterface,
+  ArtworkEdgeInterface,
+  ArtworkType,
+} from "./artwork"
 import ArtworkSizes from "./artwork/artworkSizes"
+import numeral from "./fields/numeral"
+import { GeneType } from "./gene"
+import { GlobalIDField, NodeInterface } from "./object_identification"
+import { TagType } from "./tag"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -173,6 +173,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   height: {
     type: GraphQLString,
+  },
+  importSources: {
+    type: GraphQLList(GraphQLString),
   },
   includeAllJSON: {
     type: GraphQLBoolean,
@@ -462,6 +465,7 @@ const convertFilterArgs = ({
   forSale,
   geneID,
   geneIDs,
+  importSources,
   includeAllJSON,
   includeArtworksByFollowedArtists,
   includeMediumFilterInAggregation,
@@ -500,6 +504,7 @@ const convertFilterArgs = ({
     gene_id: geneID,
     gene_ids: geneIDs,
     ids: artworkIDs,
+    import_sources: importSources,
     include_all_json: includeAllJSON,
     include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
