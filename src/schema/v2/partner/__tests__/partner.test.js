@@ -30,10 +30,13 @@ describe("Partner type", () => {
     }
 
     context = {
-      partnerLoader: sinon
-        .stub()
-        .withArgs(partnerData.id)
-        .returns(Promise.resolve(partnerData)),
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        partnerLoader: sinon
+          .stub()
+          .withArgs(partnerData.id)
+          .returns(Promise.resolve(partnerData)),
+      },
     }
   })
 
@@ -314,7 +317,10 @@ describe("Partner type", () => {
 
       context = {
         profileLoader: () => Promise.resolve(profileData),
-        partnerLoader: () => Promise.resolve(partnerData),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
       }
     })
 
@@ -348,7 +354,10 @@ describe("Partner type", () => {
     it("returns meta if profile empty", async () => {
       context = {
         profileLoader: () => Promise.reject(),
-        partnerLoader: () => Promise.resolve(partnerData),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
       }
 
       const query = `
@@ -532,7 +541,10 @@ describe("Partner type", () => {
     it("returns a given partner contact", async () => {
       context = {
         partnerContactLoader,
-        partnerLoader,
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader,
+        },
       }
 
       const query = `
@@ -600,7 +612,10 @@ describe("Partner type", () => {
     it("returns partner contacts", async () => {
       context = {
         partnerContactsLoader,
-        partnerLoader,
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader,
+        },
       }
 
       const query = `
@@ -675,7 +690,10 @@ describe("Partner type", () => {
     it("returns a given partner location", async () => {
       context = {
         partnerLocationLoader,
-        partnerLoader,
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader,
+        },
       }
 
       const query = `
@@ -739,6 +757,7 @@ describe("Partner type", () => {
       context = {
         authenticatedLoaders: {},
         unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
           partnerLocationsConnectionLoader: () =>
             Promise.resolve({
               body: locationsResponse,
@@ -747,7 +766,6 @@ describe("Partner type", () => {
               },
             }),
         },
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
@@ -1042,7 +1060,10 @@ describe("Partner type", () => {
         context = {
           partnerArtworksAllLoader,
           partnerArtworksLoader,
-          partnerLoader,
+          authenticatedLoaders: {
+            partnerLoader: () => Promise.resolve(partnerData),
+          },
+          unauthenticatedLoaders: {},
         }
       })
 
@@ -1144,7 +1165,11 @@ describe("Partner type", () => {
 
     describe("when query is not authenticated", () => {
       beforeEach(() => {
-        context = { partnerLoader, partnerArtworksLoader }
+        context = {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: { partnerLoader },
+          partnerArtworksLoader,
+        }
       })
       it("returns artworks", async () => {
         const query = gql`
@@ -1329,7 +1354,10 @@ describe("Partner type", () => {
               "x-total-count": showsResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
       }
     })
 
@@ -1458,7 +1486,10 @@ describe("Partner type", () => {
       ]
 
       context = {
-        partnerLoader: () => Promise.resolve(partnerData),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerMerchantAccountsLoader: () =>
           Promise.resolve({
             body: merchantAccountResponse,
@@ -1514,6 +1545,10 @@ describe("Partner type", () => {
         },
       ]
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerArtistsForPartnerLoader: () =>
           Promise.resolve({
             body: artistsResponse,
@@ -1521,7 +1556,6 @@ describe("Partner type", () => {
               "x-total-count": artistsResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
@@ -1680,6 +1714,10 @@ describe("Partner type", () => {
         },
       ]
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerArtistsForPartnerLoader: () =>
           Promise.resolve({
             body: artistsResponse,
@@ -1687,7 +1725,6 @@ describe("Partner type", () => {
               "x-total-count": artistsResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
@@ -2107,7 +2144,10 @@ describe("Partner type", () => {
 
       context = {
         articlesLoader: () => Promise.resolve(articlesResponse),
-        partnerLoader: () => Promise.resolve(partnerData),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
       }
     })
 
@@ -2171,6 +2211,10 @@ describe("Partner type", () => {
         },
       ]
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerSearchShowsLoader: () =>
           Promise.resolve({
             body: showsResponse,
@@ -2178,7 +2222,6 @@ describe("Partner type", () => {
               "x-total-count": showsResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
@@ -2241,6 +2284,10 @@ describe("Partner type", () => {
         },
       ]
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerSearchArtistsLoader: () =>
           Promise.resolve({
             body: artistsResponse,
@@ -2248,7 +2295,6 @@ describe("Partner type", () => {
               "x-total-count": artistsResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
@@ -2310,6 +2356,10 @@ describe("Partner type", () => {
         },
       ]
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLoader: () => Promise.resolve(partnerData),
+        },
         partnerSearchArtworksLoader: () =>
           Promise.resolve({
             body: artworksResponse,
@@ -2317,7 +2367,6 @@ describe("Partner type", () => {
               "x-total-count": artworksResponse.length,
             },
           }),
-        partnerLoader: () => Promise.resolve(partnerData),
       }
     })
 
