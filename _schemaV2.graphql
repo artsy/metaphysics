@@ -21395,6 +21395,9 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     after: String
     before: String
     first: Int
+
+    # When false, will exclude the cover image from the results
+    isDefault: Boolean
     last: Int
   ): ImageConnection
 
