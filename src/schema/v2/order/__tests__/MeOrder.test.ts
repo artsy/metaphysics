@@ -3,13 +3,9 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { baseArtwork, baseOrderJson } from "./support"
 
-// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
 let context
-// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
 let orderJson
-// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
 let artwork
-// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
 let artworkVersion
 
 describe("Me", () => {
