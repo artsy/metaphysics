@@ -9,18 +9,19 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "../object_identification"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
-import { ArtworkVersionType } from "../artwork_version"
-import { ArtworkType } from "../artwork"
+import { InternalIDFields } from "../../object_identification"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { ArtworkVersionType } from "../../artwork_version"
+import { ArtworkType } from "../../artwork"
 import { PartnerType } from "schema/v2/partner/partner"
-import { PhoneNumberType, resolvePhoneNumber } from "../phoneNumber"
+import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
+import { PricingBreakdownLines } from "./PricingBreakdownLines"
 
 /**
  * The order json as received from the exchange REST API.
  * Used to nudge our our OrderType resolvers
  */
-interface OrderJSON {
+export interface OrderJSON {
   id: string
   code: string
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
@@ -317,7 +318,7 @@ const resolveDisplayTexts = (order: OrderJSON) => {
     case "completed":
       return {
         titleText:
-          order.fulfillment_type == "pickup"
+          order.fulfillment_type === "pickup"
             ? "Your order has been picked up"
             : "Your order has been delivered",
       }
@@ -438,6 +439,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       type: new GraphQLNonNull(OrderModeEnum),
       resolve: (order) => resolveMode(order),
     },
+    pricingBreakdownLines: PricingBreakdownLines,
     selectedFulfillmentOption: {
       type: FulfillmentOptionType,
       description: "The selected fulfillment option for the order",

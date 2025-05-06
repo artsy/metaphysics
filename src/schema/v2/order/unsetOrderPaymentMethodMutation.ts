@@ -4,7 +4,7 @@ import { ResolverContext } from "types/graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
-} from "./sharedOrderTypes"
+} from "./sharedTypes/sharedOrderTypes"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {

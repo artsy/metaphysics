@@ -4,7 +4,7 @@ import {
   OrderMutationResponseType,
   OrderPaymentMethodEnum,
   OrderCreditCardWalletTypeEnum,
-} from "./sharedOrderTypes"
+} from "./sharedTypes/sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleExchangeError } from "./exchangeErrorHandling"
