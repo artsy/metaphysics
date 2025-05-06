@@ -3,7 +3,14 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { baseArtwork, baseOrderJson } from "./support"
 
-let context, orderJson, artwork, artworkVersion
+// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
+let context
+// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
+let orderJson
+// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
+let artwork
+// biome-ignore lint/suspicious/noImplicitAnyLet: test stub
+let artworkVersion
 
 describe("Me", () => {
   beforeEach(() => {
@@ -562,6 +569,144 @@ describe("Me", () => {
           country: "US",
           postalCode: "10001",
         })
+      })
+    })
+
+    describe("pricingBreakdownLines", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              pricingBreakdownLines {
+                __typename
+                ... on ShippingLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                  }
+                }
+                ... on TaxLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                  }
+                }
+                ... on SubtotalLine {
+                  displayName
+                  amount {
+                    display
+                  }
+                }
+                ... on TotalLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      it("returns the correct pricing breakdown lines with all values present", async () => {
+        orderJson.items_total_cents = 500000
+        orderJson.shipping_total_cents = 2000
+        orderJson.tax_total_cents = 4299
+        orderJson.buyer_total_cents = 506299
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.pricingBreakdownLines).toEqual([
+          {
+            __typename: "SubtotalLine",
+            displayName: "Subtotal",
+            amount: {
+              display: "US$5,000",
+            },
+          },
+          {
+            __typename: "ShippingLine",
+            displayName: "Shipping",
+            amountFallbackText: null,
+            amount: {
+              display: "US$20",
+            },
+          },
+          {
+            __typename: "TaxLine",
+            displayName: "Tax",
+            amountFallbackText: null,
+            amount: {
+              display: "US$42.99",
+            },
+          },
+          {
+            __typename: "TotalLine",
+            displayName: "Total",
+            amountFallbackText: null,
+            amount: {
+              display: "US$5,062.99",
+            },
+          },
+        ])
+      })
+
+      it("returns the correct pricing breakdown lines with missing values", async () => {
+        orderJson.items_total_cents = 500000
+        orderJson.shipping_total_cents = null
+        orderJson.tax_total_cents = null
+        orderJson.buyer_total_cents = null
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.pricingBreakdownLines).toEqual([
+          {
+            __typename: "SubtotalLine",
+            displayName: "Subtotal",
+            amount: {
+              display: "US$5,000",
+            },
+          },
+          {
+            __typename: "ShippingLine",
+            displayName: "Shipping",
+            amountFallbackText: "Calculated in next steps",
+            amount: {
+              display: null,
+            },
+          },
+          {
+            __typename: "TaxLine",
+            displayName: "Tax",
+            amountFallbackText: "Calculated in next steps",
+            amount: {
+              display: null,
+            },
+          },
+          {
+            __typename: "TotalLine",
+            displayName: "Total",
+            amountFallbackText: "Waiting for final costs",
+            amount: {
+              display: null,
+            },
+          },
+        ])
       })
     })
   })

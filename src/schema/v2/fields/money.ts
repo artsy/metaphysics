@@ -152,9 +152,8 @@ export const moneyMajorResolver = async (
     const convertedToUSD = major / exchangeRates[currency]
     const truncatedUSD = convertedToUSD.toFixed(2)
     return truncatedUSD
-  } else {
-    return major
   }
+  return major
 }
 
 export const Money = new GraphQLObjectType<any, ResolverContext>({
@@ -216,7 +215,12 @@ export const MoneyInput = new GraphQLInputObjectType({
  * See src/schema/v2/partnerOfferToCollector.ts for usage
  */
 export const resolveMinorAndCurrencyFieldsToMoney = async (
-  { minor, currencyCode }: { minor: number; currencyCode: string },
+  {
+    minor,
+    currencyCode,
+    format = "",
+    exact = false,
+  }: { minor: number; currencyCode: string; format?: string; exact?: boolean },
   _args,
   context,
   _info
@@ -232,8 +236,8 @@ export const resolveMinorAndCurrencyFieldsToMoney = async (
       major,
       cents: minor,
       currency: currencyCode,
-      display: priceDisplayText(minor, currencyCode, ""),
-      amount: priceAmount(minor, currencyCode, ""),
+      display: priceDisplayText(minor, currencyCode, format, exact),
+      amount: priceAmount(minor, currencyCode, format, exact),
       currencyPrefix: currencyPrefix(currencyCode),
     }
   } catch (error) {

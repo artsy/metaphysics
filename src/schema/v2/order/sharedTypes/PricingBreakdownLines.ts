@@ -1,5 +1,5 @@
 import {
-  type GraphQLFieldConfig,
+  GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -19,12 +19,10 @@ const COPY = {
     displayName: "Shipping",
     fallbackText: "Calculated in next steps",
   },
-  // Tax* asterisk refers to a 'additional taxes may apply at import' disclaimer
-  // would be nice to know when this is actually true
-  tax: { displayName: "Tax*", fallbackAmountText: "Calculated in next steps" },
+  tax: { displayName: "Tax", amountFallbackText: "Calculated in next steps" },
   total: {
     displayName: "Total",
-    fallbackAmountText: "Waiting for final costs",
+    amountFallbackText: "Waiting for final costs",
   },
 } as const
 
@@ -69,6 +67,8 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
         {
           minor: amount,
           currencyCode,
+          format: "0,0[.]00",
+          exact: true,
         },
         args,
         context,
@@ -78,29 +78,36 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
 
     const subtotalLine = {
       __typename: "SubtotalLine",
+      displayName: COPY.subtotal.displayName,
       amount: itemsTotalCents && resolveMoney(itemsTotalCents),
     }
 
-    // TODO: Would be nice to know if
-    const shippingLine = {
+    // TODO: Would be nice to know if shipping applies
+    const hasShippingTotal = shippingTotalCents != null
+    const shippingLine = order.fulfillment_type !== "PICKUP" && {
       __typename: "ShippingLine",
-      amount: shippingTotalCents && resolveMoney(shippingTotalCents),
-      fallbackAmountText:
-        shippingTotalCents == null ? COPY.shipping.fallbackText : null,
+      displayName: COPY.shipping.displayName,
+      amount: hasShippingTotal && resolveMoney(shippingTotalCents),
+      amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
     }
 
+    // TODO: Would be nice to know if tax applies (US only) and if the asterisk
+    // applies (e.g. if the order is shipped across borders)
+    const hasTaxTotal = taxTotalCents != null
     const taxLine = {
       __typename: "TaxLine",
-      amount: taxTotalCents && resolveMoney(taxTotalCents),
-      fallbackAmountText:
-        taxTotalCents == null ? COPY.tax.fallbackAmountText : null,
+      displayName: COPY.tax.displayName,
+      amount: hasTaxTotal && resolveMoney(taxTotalCents),
+      amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
     }
+
+    const hasBuyerTotal = buyerTotalCents != null
 
     const totalLine = {
       __typename: "TotalLine",
-      amount: buyerTotalCents && resolveMoney(buyerTotalCents),
-      fallbackAmountText:
-        buyerTotalCents == null ? COPY.total.fallbackAmountText : null,
+      displayName: COPY.total.displayName,
+      amount: hasBuyerTotal && resolveMoney(buyerTotalCents),
+      amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
     }
 
     return [subtotalLine, shippingLine, taxLine, totalLine].filter(Boolean)
@@ -114,12 +121,10 @@ const ShippingLine = new GraphQLObjectType({
     displayName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Display name of the shipping line",
-      resolve: () => COPY.shipping.displayName,
     },
-    fallbackAmountText: {
+    amountFallbackText: {
       type: GraphQLString,
       description: "Fallback text if no monetary amount is available",
-      resolve: () => COPY.shipping.fallbackText,
     },
     amount: {
       type: Money,
@@ -135,12 +140,10 @@ const TaxLine = new GraphQLObjectType({
     displayName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Display name of the tax line",
-      resolve: () => COPY.tax.displayName,
     },
-    fallbackAmountText: {
+    amountFallbackText: {
       type: GraphQLString,
       description: "Fallback text if no monetary amount is available",
-
     },
     amount: {
       type: Money,
@@ -156,12 +159,10 @@ const SubtotalLine = new GraphQLObjectType({
     displayName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Display name of the subtotal line",
-      resolve: () => COPY.subtotal.displayName,
     },
-    fallbackAmountText: {
+    amountFallbackText: {
       type: GraphQLString,
       description: "Fallback text if no monetary amount is available",
-      resolve: () => null,
     },
     amount: {
       type: Money,
@@ -179,7 +180,7 @@ const TotalLine = new GraphQLObjectType({
       description: "Display name of the total line",
       resolve: () => COPY.total.displayName,
     },
-    fallbackAmountText: {
+    amountFallbackText: {
       type: GraphQLString,
       description: "Fallback text if no monetary amount is available",
     },
