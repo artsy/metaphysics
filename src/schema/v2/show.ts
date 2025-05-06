@@ -438,8 +438,18 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       imagesConnection: {
         type: ImageConnectionType,
-        args: pageable({}),
-        resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
+        args: pageable({
+          isDefault: {
+            type: GraphQLBoolean,
+            description:
+              "When false, will exclude the cover image from the results",
+          },
+        }),
+        resolve: async (
+          { id },
+          { isDefault, ...options },
+          { partnerShowImagesLoader }
+        ) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
           )
@@ -447,6 +457,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             size,
             offset,
             total_count: true,
+            default: isDefault,
           }
 
           const { body, headers } = await partnerShowImagesLoader(
