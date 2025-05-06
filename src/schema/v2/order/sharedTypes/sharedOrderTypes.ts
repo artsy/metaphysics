@@ -48,7 +48,7 @@ export interface OrderJSON {
   buyer_state?: string
   fulfillment_type?: string
   fulfillment_options: Array<{
-    type: string
+    type: "domestic_flat" | "international_flat" | "pickup" | "shipping_tbd"
     amount_minor: number
     selected?: boolean
   }>

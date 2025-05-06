@@ -16,7 +16,12 @@ import type { OrderJSON } from "./sharedOrderTypes"
 const COPY = {
   subtotal: { displayName: "Subtotal" },
   shipping: {
-    displayName: "Shipping",
+    displayName: {
+      fallback: "Shipping",
+      flatFee: "Flat rate shipping",
+      free: "Free shipping",
+      pickup: "Pickup",
+    },
     fallbackText: "Calculated in next steps",
   },
   tax: { displayName: "Tax", amountFallbackText: "Calculated in next steps" },
@@ -47,13 +52,20 @@ export const PricingBreakdownLineUnion = new GraphQLUnionType({
   },
 })
 
+type ResolvedPriceLineData = {
+  __typename: "ShippingLine" | "TaxLine" | "SubtotalLine" | "TotalLine"
+  displayName: string
+  amount: ReturnType<typeof resolveMinorAndCurrencyFieldsToMoney> | null
+  amountFallbackText: string | null
+}
+
 export const PricingBreakdownLines: GraphQLFieldConfig<
   OrderJSON,
   ResolverContext
 > = {
   description: "Order pricing breakdown lines",
   type: new GraphQLNonNull(new GraphQLList(PricingBreakdownLineUnion)),
-  resolve: (order, args, context, info) => {
+  resolve: (order, args, context, info): ResolvedPriceLineData[] => {
     const {
       currency_code: currencyCode,
       shipping_total_cents: shippingTotalCents,
@@ -82,17 +94,39 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       amount: itemsTotalCents && resolveMoney(itemsTotalCents),
     }
 
-    // TODO: Would be nice to know if shipping applies
-    const hasShippingTotal = shippingTotalCents != null
-    const shippingLine = order.fulfillment_type !== "PICKUP" && {
-      __typename: "ShippingLine",
-      displayName: COPY.shipping.displayName,
-      amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-      amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+    const selectedFulfillment = order.fulfillment_options.find(
+      (option) => option.selected
+    )
+
+    let shippingLine: ResolvedPriceLineData | null = null
+    if (selectedFulfillment?.type !== "pickup") {
+      const hasShippingTotal = shippingTotalCents != null
+      const amounts = {
+        amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
+        amountFallbackText: hasShippingTotal
+          ? null
+          : COPY.shipping.fallbackText,
+      }
+
+      let shippingDisplayName: string = COPY.shipping.displayName.fallback
+      if (
+        selectedFulfillment?.type === "domestic_flat" ||
+        selectedFulfillment?.type === "international_flat"
+      ) {
+        if (shippingTotalCents === 0) {
+          shippingDisplayName = COPY.shipping.displayName.free
+        } else {
+          shippingDisplayName = COPY.shipping.displayName.flatFee
+        }
+      }
+
+      shippingLine = {
+        __typename: "ShippingLine",
+        displayName: shippingDisplayName,
+        ...amounts,
+      }
     }
 
-    // TODO: Would be nice to know if tax applies (US only) and if the asterisk
-    // applies (e.g. if the order is shipped across borders)
     const hasTaxTotal = taxTotalCents != null
     const taxLine = {
       __typename: "TaxLine",
@@ -110,7 +144,9 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
     }
 
-    return [subtotalLine, shippingLine, taxLine, totalLine].filter(Boolean)
+    return [subtotalLine, shippingLine, taxLine, totalLine].filter(
+      Boolean
+    ) as ResolvedPriceLineData[]
   },
 }
 
