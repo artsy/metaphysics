@@ -871,7 +871,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-
+    partnerOwnerLoader: gravityLoader((id) => `partner/${id}`),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,
