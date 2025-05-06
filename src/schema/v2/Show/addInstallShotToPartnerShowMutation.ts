@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -14,9 +15,11 @@ import { ShowType } from "../show"
 
 interface AddInstallShotToPartnerShowMutationInputProps {
   showId: string
-  s3Bucket: string
-  s3Key: string
+  s3Bucket?: string
+  s3Key?: string
   caption?: string
+  isDefault?: boolean
+  imageUrl?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -59,12 +62,22 @@ export const addInstallShotToPartnerShowMutation = mutationWithClientMutationId<
       description: "The ID of the show.",
     },
     s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "The S3 bucket where the image is stored.",
     },
     s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "The S3 key for the image to add as an installation shot.",
+    },
+    imageUrl: {
+      type: GraphQLString,
+      description:
+        "Optional URL of the image to add as an installation shot. If provided, this will be used instead of the S3 bucket and key.",
+    },
+    isDefault: {
+      type: GraphQLBoolean,
+      description:
+        "Optional flag to indicate if this installation shot should be set as the default (cover) image for the show.",
     },
     caption: {
       type: GraphQLString,
@@ -80,7 +93,14 @@ export const addInstallShotToPartnerShowMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { showId, s3Bucket, s3Key, caption },
+    {
+      showId,
+      s3Bucket,
+      s3Key,
+      caption,
+      isDefault,
+      imageUrl,
+    }: AddInstallShotToPartnerShowMutationInputProps,
     { addInstallShotToPartnerShowLoader }
   ) => {
     if (!addInstallShotToPartnerShowLoader) {
@@ -94,6 +114,8 @@ export const addInstallShotToPartnerShowMutation = mutationWithClientMutationId<
     const data = {
       remote_image_s3_bucket: s3Bucket,
       remote_image_s3_key: s3Key,
+      remote_image_url: imageUrl,
+      default: isDefault,
       ...(caption && { caption }),
     }
 
