@@ -22,6 +22,10 @@ export const currencyPrefix = (currency: string): string => {
   return disambiguate_symbol || currency + " " + symbol
 }
 
+export const currencyCodeMap = (currency: string) => {
+  return currencyCodes[currency.toLowerCase()]
+}
+
 export const priceAmount = (
   priceCents: number,
   currency: string,

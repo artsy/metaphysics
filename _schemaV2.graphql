@@ -14955,6 +14955,9 @@ type Money {
   # The symbol used for the currency
   currencyPrefix: String
 
+  # The symbol used for the currency without disambiguation
+  currencySymbol: String
+
   # A pre-formatted price.
   display: String
 

@@ -87,7 +87,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     const shippingLine = order.fulfillment_type !== "PICKUP" && {
       __typename: "ShippingLine",
       displayName: COPY.shipping.displayName,
-      amount: hasShippingTotal && resolveMoney(shippingTotalCents),
+      amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
       amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
     }
 
@@ -97,7 +97,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     const taxLine = {
       __typename: "TaxLine",
       displayName: COPY.tax.displayName,
-      amount: hasTaxTotal && resolveMoney(taxTotalCents),
+      amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
       amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
     }
 
@@ -106,7 +106,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     const totalLine = {
       __typename: "TotalLine",
       displayName: COPY.total.displayName,
-      amount: hasBuyerTotal && resolveMoney(buyerTotalCents),
+      amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
       amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
     }
 

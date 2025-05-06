@@ -584,6 +584,8 @@ describe("Me", () => {
                   amountFallbackText
                   amount {
                     display
+                    amount
+                    currencySymbol
                   }
                 }
                 ... on TaxLine {
@@ -591,12 +593,16 @@ describe("Me", () => {
                   amountFallbackText
                   amount {
                     display
+                    amount
+                    currencySymbol
                   }
                 }
                 ... on SubtotalLine {
                   displayName
                   amount {
                     display
+                    amount
+                    currencySymbol
                   }
                 }
                 ... on TotalLine {
@@ -604,6 +610,8 @@ describe("Me", () => {
                   amountFallbackText
                   amount {
                     display
+                    amount
+                    currencySymbol
                   }
                 }
               }
@@ -631,6 +639,8 @@ describe("Me", () => {
             displayName: "Subtotal",
             amount: {
               display: "US$5,000",
+              currencySymbol: "$",
+              amount: "5,000",
             },
           },
           {
@@ -639,6 +649,8 @@ describe("Me", () => {
             amountFallbackText: null,
             amount: {
               display: "US$20",
+              currencySymbol: "$",
+              amount: "20",
             },
           },
           {
@@ -647,6 +659,8 @@ describe("Me", () => {
             amountFallbackText: null,
             amount: {
               display: "US$42.99",
+              currencySymbol: "$",
+              amount: "42.99",
             },
           },
           {
@@ -655,6 +669,8 @@ describe("Me", () => {
             amountFallbackText: null,
             amount: {
               display: "US$5,062.99",
+              currencySymbol: "$",
+              amount: "5,062.99",
             },
           },
         ])
@@ -680,31 +696,27 @@ describe("Me", () => {
             displayName: "Subtotal",
             amount: {
               display: "US$5,000",
+              currencySymbol: "$",
+              amount: "5,000",
             },
           },
           {
             __typename: "ShippingLine",
             displayName: "Shipping",
             amountFallbackText: "Calculated in next steps",
-            amount: {
-              display: null,
-            },
+            amount: null,
           },
           {
             __typename: "TaxLine",
             displayName: "Tax",
             amountFallbackText: "Calculated in next steps",
-            amount: {
-              display: null,
-            },
+            amount: null,
           },
           {
             __typename: "TotalLine",
             displayName: "Total",
             amountFallbackText: "Waiting for final costs",
-            amount: {
-              display: null,
-            },
+            amount: null,
           },
         ])
       })
