@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
+import { GraphQLNonNull, GraphQLID } from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
