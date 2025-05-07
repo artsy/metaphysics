@@ -34,7 +34,7 @@ const COPY = {
   },
 } as const
 
-export const PricingBreakdownLineUnion = new GraphQLUnionType({
+const PricingBreakdownLineUnion = new GraphQLUnionType({
   name: "PricingBreakdownLineUnion",
   description: "Pricing breakdown line",
   types: () => [ShippingLine, TaxLine, SubtotalLine, TotalLine],
@@ -228,7 +228,6 @@ const TotalLine = new GraphQLObjectType({
     displayName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Display name of the total line",
-      resolve: () => COPY.total.displayName,
     },
     amountFallbackText: {
       type: GraphQLString,
