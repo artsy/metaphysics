@@ -5,15 +5,8 @@ const mockMutation = `
   mutation {
     updateOrder(input: {
       id: "order-id",
-      buyerPhoneNumber: "123-456-7890",
-      buyerPhoneNumberCountryCode: "+1",
-      shippingName: "John Doe",
-      shippingAddressLine1: "123 Main St",
-      shippingAddressLine2: "Apt 4B",
-      shippingCity: "New York",
-      shippingRegion: "NY",
-      shippingCountry: "US",
-      shippingPostalCode: "10001"
+      paymentMethod: CREDIT_CARD,
+      creditCardWalletType: APPLE_PAY
     }) {
       orderOrError {
         ...on OrderMutationError {
@@ -25,20 +18,7 @@ const mockMutation = `
         ...on OrderMutationSuccess {
           order {
             internalID
-            fulfillmentDetails {
-              phoneNumber {
-                originalNumber
-              }
-              phoneNumberCountryCode
-              name
-              addressLine1
-              addressLine2
-              city
-              region
-              country
-              postalCode
-            }
-          }     
+          }
         }
       }
     }
@@ -56,18 +36,8 @@ describe("updateOrderMutation", () => {
         code: "order-code",
         mode: "buy",
         currency_code: "USD",
-        buyer_total_cents: null,
-        items_total_cents: 500000,
-        shipping_total_cents: 2000,
-        buyer_phone_number: "123-456-7890",
-        buyer_phone_number_country_code: "us",
-        shipping_name: "John Doe",
-        shipping_country: "US",
-        shipping_postal_code: "10001",
-        shipping_region: "NY",
-        shipping_city: "New York",
-        shipping_address_line1: "123 Main St",
-        shipping_address_line2: "Apt 4B",
+        payment_method: "credit card",
+        credit_card_wallet_type: "apple_pay",
       }),
       artworkLoader: jest.fn().mockResolvedValue({ ...baseArtwork }),
       artworkVersionLoader: jest
@@ -84,34 +54,14 @@ describe("updateOrderMutation", () => {
         orderOrError: {
           order: {
             internalID: "order-id",
-            fulfillmentDetails: {
-              phoneNumber: {
-                originalNumber: "123-456-7890",
-              },
-              phoneNumberCountryCode: "us",
-              name: "John Doe",
-              addressLine1: "123 Main St",
-              addressLine2: "Apt 4B",
-              city: "New York",
-              region: "NY",
-              country: "US",
-              postalCode: "10001",
-            },
           },
         },
       },
     })
 
     expect(context.meOrderUpdateLoader).toHaveBeenCalledWith("order-id", {
-      buyer_phone_number: "123-456-7890",
-      buyer_phone_number_country_code: "+1",
-      shipping_address_line1: "123 Main St",
-      shipping_address_line2: "Apt 4B",
-      shipping_city: "New York",
-      shipping_country: "US",
-      shipping_name: "John Doe",
-      shipping_postal_code: "10001",
-      shipping_region: "NY",
+      payment_method: "credit card",
+      credit_card_wallet_type: "apple_pay",
     })
   })
 
@@ -121,7 +71,7 @@ describe("updateOrderMutation", () => {
       mutation {
         updateOrder(input: {
           id: "order-id",
-          buyerPhoneNumber: null
+          paymentMethod: null
         }) {
           orderOrError {
             ...on OrderMutationSuccess {
@@ -148,7 +98,7 @@ describe("updateOrderMutation", () => {
     })
 
     expect(context.meOrderUpdateLoader).toHaveBeenCalledWith("order-id", {
-      buyer_phone_number: null,
+      payment_method: null,
     })
   })
 
