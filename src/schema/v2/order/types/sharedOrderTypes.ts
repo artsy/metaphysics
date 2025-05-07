@@ -322,10 +322,6 @@ const resolveDisplayTexts = (order: OrderJSON) => {
       }
     case "canceled_and_refunded":
       return {
-        titleText: "Your order was canceled",
-      }
-    default:
-      return {
         titleText: "Your order",
       }
   }

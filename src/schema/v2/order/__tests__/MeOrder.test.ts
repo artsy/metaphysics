@@ -59,7 +59,7 @@ describe("Me", () => {
               code
               displayTexts {
                 titleText
-                messageText1
+                messageText
               }
 
               fulfillmentOptions {
@@ -138,7 +138,7 @@ describe("Me", () => {
         internalID: "order-id",
         displayTexts: {
           titleText: "Great choice!",
-          messageText1:
+          messageText:
             "Thank you! Your order is being processed.<br/>You will receive an email shortly with all the details.",
         },
         mode: "BUY",
