@@ -18,6 +18,7 @@ describe("Me", () => {
       mode: "buy",
       currency_code: "USD",
       buyer_id: "buyer-id-1",
+      buyer_state: "submitted",
       buyer_type: "user",
       seller_id: "seller-id-1",
       seller_type: "gallery",
@@ -58,6 +59,7 @@ describe("Me", () => {
               code
               displayTexts {
                 titleText
+                messageText1
               }
 
               fulfillmentOptions {
@@ -135,7 +137,9 @@ describe("Me", () => {
       expect(result.me.order).toEqual({
         internalID: "order-id",
         displayTexts: {
-          titleText: "Your order",
+          titleText: "Great choice!",
+          messageText1:
+            "Thank you! Your order is being processed.<br/>You will receive an email shortly with all the details.",
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",

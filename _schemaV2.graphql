@@ -10558,6 +10558,15 @@ type DismissTaskSuccess {
 
 # Display texts for the order based on its state
 type DisplayTexts {
+  # First paragraph of the message text for the order
+  messageText1(format: Format = MARKDOWN): String
+
+  # Second paragraph of the message text for the order
+  messageText2(format: Format = MARKDOWN): String
+
+  # Third paragraph of the message text for the order
+  messageText3(format: Format = MARKDOWN): String
+
   # Title text to display for the order
   titleText: String!
 }
