@@ -737,7 +737,7 @@ describe("Me", () => {
           }
         `
 
-        it("returns no shipping line with pickup", async () => {
+        it("returns a shipping line for type pickup", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
           orderJson.fulfillment_options = [{ type: "pickup", selected: true }]
@@ -754,6 +754,15 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
             },
+
+            {
+              __typename: "ShippingLine",
+              displayName: "Pickup",
+              amountFallbackText: null,
+              amount: {
+                amount: "0",
+              },
+            },
             {
               __typename: "TaxLine",
             },
@@ -762,6 +771,7 @@ describe("Me", () => {
             },
           ])
         })
+
         it("returns the correct display name for shipping line with free international shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
@@ -833,6 +843,7 @@ describe("Me", () => {
             },
           ])
         })
+
         it("returns the correct display name for flat fee domestic shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 420
@@ -868,6 +879,7 @@ describe("Me", () => {
             },
           ])
         })
+
         it("returns the correct display name for flat fee international shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 420

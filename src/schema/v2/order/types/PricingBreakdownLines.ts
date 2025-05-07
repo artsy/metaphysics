@@ -11,16 +11,19 @@ import {
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import type { ResolverContext } from "types/graphql"
-import type { OrderJSON } from "./sharedOrderTypes"
+import { OrderJSON } from "./exchangeJson"
 
 const COPY = {
   subtotal: { displayName: "Subtotal" },
   shipping: {
     displayName: {
+      pickup: "Pickup",
       fallback: "Shipping",
       flatFee: "Flat rate shipping",
       free: "Free shipping",
-      pickup: "Pickup",
+      standard: "Standard shipping",
+      express: "Express shipping",
+      whiteGlove: "White glove shipping",
     },
     fallbackText: "Calculated in next steps",
   },
@@ -99,32 +102,43 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     )
 
     let shippingLine: ResolvedPriceLineData | null = null
-    if (selectedFulfillment?.type !== "pickup") {
-      const hasShippingTotal = shippingTotalCents != null
-      const amounts = {
-        amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-        amountFallbackText: hasShippingTotal
-          ? null
-          : COPY.shipping.fallbackText,
-      }
+    const hasShippingTotal = shippingTotalCents != null
+    const amounts = {
+      amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
+      amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+    }
 
-      let shippingDisplayName: string = COPY.shipping.displayName.fallback
-      if (
-        selectedFulfillment?.type === "domestic_flat" ||
-        selectedFulfillment?.type === "international_flat"
-      ) {
+    let shippingDisplayName: string = COPY.shipping.displayName.fallback
+    switch (selectedFulfillment?.type) {
+      case "pickup":
+        shippingDisplayName = COPY.shipping.displayName.pickup
+        break
+      case "artsy_standard":
+        shippingDisplayName = COPY.shipping.displayName.standard
+        break
+      case "artsy_express":
+        shippingDisplayName = COPY.shipping.displayName.express
+        break
+      case "artsy_white_glove":
+        shippingDisplayName = COPY.shipping.displayName.whiteGlove
+        break
+      case "domestic_flat":
+      case "international_flat":
         if (shippingTotalCents === 0) {
           shippingDisplayName = COPY.shipping.displayName.free
         } else {
           shippingDisplayName = COPY.shipping.displayName.flatFee
         }
-      }
+        break
+      case "shipping_tbd":
+        shippingDisplayName = COPY.shipping.displayName.fallback
+        break
+    }
 
-      shippingLine = {
-        __typename: "ShippingLine",
-        displayName: shippingDisplayName,
-        ...amounts,
-      }
+    shippingLine = {
+      __typename: "ShippingLine",
+      displayName: shippingDisplayName,
+      ...amounts,
     }
 
     const hasTaxTotal = taxTotalCents != null
