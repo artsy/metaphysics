@@ -22,14 +22,21 @@ export const currencyPrefix = (currency: string): string => {
   return disambiguate_symbol || currency + " " + symbol
 }
 
+export const currencyCodeMap = (currency: string) => {
+  return currencyCodes[currency.toLowerCase()]
+}
+
 export const priceAmount = (
   priceCents: number,
   currency: string,
-  format: string
+  format: string,
+  exact = false
 ): string => {
   const { subunit_to_unit } = currencyCodes[currency.toLowerCase()]
 
-  const amount = Math.round(priceCents / subunit_to_unit)
+  const major = priceCents / subunit_to_unit
+
+  const amount = exact ? major : Math.round(major)
 
   return numeral(amount).format(format)
 }
@@ -44,9 +51,12 @@ export const isCurrencySupported = (currency: string): boolean => {
 export const priceDisplayText = (
   priceCents: number,
   currency: string,
-  format: string
+  format: string,
+  exact?: boolean
 ): string => {
-  return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
+  return (
+    currencyPrefix(currency) + priceAmount(priceCents, currency, format, exact)
+  )
 }
 
 /**

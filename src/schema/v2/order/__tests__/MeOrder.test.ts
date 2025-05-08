@@ -3,7 +3,10 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { baseArtwork, baseOrderJson } from "./support"
 
-let context, orderJson, artwork, artworkVersion
+let context
+let orderJson
+let artwork
+let artworkVersion
 
 describe("Me", () => {
   beforeEach(() => {
@@ -561,6 +564,356 @@ describe("Me", () => {
           region: "NY",
           country: "US",
           postalCode: "10001",
+        })
+      })
+    })
+
+    describe("pricingBreakdownLines", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              pricingBreakdownLines {
+                __typename
+                ... on ShippingLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                    amount
+                    currencySymbol
+                  }
+                }
+                ... on TaxLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                    amount
+                    currencySymbol
+                  }
+                }
+                ... on SubtotalLine {
+                  displayName
+                  amount {
+                    display
+                    amount
+                    currencySymbol
+                  }
+                }
+                ... on TotalLine {
+                  displayName
+                  amountFallbackText
+                  amount {
+                    display
+                    amount
+                    currencySymbol
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      it("returns the correct pricing breakdown lines with all values present", async () => {
+        orderJson.items_total_cents = 500000
+        orderJson.shipping_total_cents = 2000
+        orderJson.tax_total_cents = 4299
+        orderJson.buyer_total_cents = 506299
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.pricingBreakdownLines).toEqual([
+          {
+            __typename: "SubtotalLine",
+            displayName: "Subtotal",
+            amount: {
+              display: "US$5,000",
+              currencySymbol: "$",
+              amount: "5,000",
+            },
+          },
+          {
+            __typename: "ShippingLine",
+            displayName: "Flat rate shipping",
+            amountFallbackText: null,
+            amount: {
+              display: "US$20",
+              currencySymbol: "$",
+              amount: "20",
+            },
+          },
+          {
+            __typename: "TaxLine",
+            displayName: "Tax",
+            amountFallbackText: null,
+            amount: {
+              display: "US$42.99",
+              currencySymbol: "$",
+              amount: "42.99",
+            },
+          },
+          {
+            __typename: "TotalLine",
+            displayName: "Total",
+            amountFallbackText: null,
+            amount: {
+              display: "US$5,062.99",
+              currencySymbol: "$",
+              amount: "5,062.99",
+            },
+          },
+        ])
+      })
+
+      it("returns the correct pricing breakdown lines with missing values", async () => {
+        orderJson.items_total_cents = 500000
+        orderJson.shipping_total_cents = null
+        orderJson.tax_total_cents = null
+        orderJson.buyer_total_cents = null
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.pricingBreakdownLines).toEqual([
+          {
+            __typename: "SubtotalLine",
+            displayName: "Subtotal",
+            amount: {
+              display: "US$5,000",
+              currencySymbol: "$",
+              amount: "5,000",
+            },
+          },
+          {
+            __typename: "ShippingLine",
+            displayName: "Flat rate shipping",
+            amountFallbackText: "Calculated in next steps",
+            amount: null,
+          },
+          {
+            __typename: "TaxLine",
+            displayName: "Tax",
+            amountFallbackText: "Calculated in next steps",
+            amount: null,
+          },
+          {
+            __typename: "TotalLine",
+            displayName: "Total",
+            amountFallbackText: "Waiting for final costs",
+            amount: null,
+          },
+        ])
+      })
+
+      describe("Shipping line display names", () => {
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                pricingBreakdownLines {
+                  __typename
+                  ... on ShippingLine {
+                    displayName
+                    amountFallbackText
+                    amount {
+                      amount
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        it("returns a shipping line for type pickup", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 0
+          orderJson.fulfillment_options = [{ type: "pickup", selected: true }]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+
+            {
+              __typename: "ShippingLine",
+              displayName: "Pickup",
+              amountFallbackText: null,
+              amount: {
+                amount: "0",
+              },
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
+        })
+
+        it("returns the correct display name for shipping line with free international shipping", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 0
+          orderJson.fulfillment_options = [
+            { type: "international_flat", selected: true },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Free shipping",
+              amountFallbackText: null,
+              amount: {
+                amount: "0",
+              },
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
+        })
+
+        it("returns the correct display name for free domestic shipping", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 0
+          orderJson.fulfillment_options = [
+            { type: "domestic_flat", selected: true },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Free shipping",
+              amountFallbackText: null,
+              amount: {
+                amount: "0",
+              },
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
+        })
+
+        it("returns the correct display name for flat fee domestic shipping", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 420
+          orderJson.fulfillment_options = [
+            { type: "domestic_flat", selected: true },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Flat rate shipping",
+              amountFallbackText: null,
+              amount: {
+                amount: "4.20",
+              },
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
+        })
+
+        it("returns the correct display name for flat fee international shipping", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 420
+          orderJson.fulfillment_options = [
+            { type: "international_flat", selected: true },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Flat rate shipping",
+              amountFallbackText: null,
+              amount: {
+                amount: "4.20",
+              },
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
         })
       })
     })

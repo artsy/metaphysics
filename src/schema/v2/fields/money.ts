@@ -14,7 +14,12 @@ import { ResolverContext } from "types/graphql"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
-import { priceDisplayText, currencyPrefix, priceAmount } from "lib/moneyHelpers"
+import {
+  priceDisplayText,
+  currencyPrefix,
+  priceAmount,
+  currencyCodeMap,
+} from "lib/moneyHelpers"
 
 export const amountSDL = (name) => `
   ${name}(
@@ -152,9 +157,8 @@ export const moneyMajorResolver = async (
     const convertedToUSD = major / exchangeRates[currency]
     const truncatedUSD = convertedToUSD.toFixed(2)
     return truncatedUSD
-  } else {
-    return major
   }
+  return major
 }
 
 export const Money = new GraphQLObjectType<any, ResolverContext>({
@@ -192,6 +196,17 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
       description: "The symbol used for the currency",
       resolve: ({ currency }) => currencyPrefix(currency),
     },
+    currencySymbol: {
+      type: GraphQLString,
+      description: "The symbol used for the currency without disambiguation",
+      resolve: ({ currency }) => {
+        const currencyMap = currency && currencyCodeMap(currency)
+        if (!currencyMap) {
+          return ""
+        }
+        return currencyMap.symbol
+      },
+    },
     amount: { type: GraphQLString, description: "A pre-formatted price." },
   },
 })
@@ -216,7 +231,12 @@ export const MoneyInput = new GraphQLInputObjectType({
  * See src/schema/v2/partnerOfferToCollector.ts for usage
  */
 export const resolveMinorAndCurrencyFieldsToMoney = async (
-  { minor, currencyCode }: { minor: number; currencyCode: string },
+  {
+    minor,
+    currencyCode,
+    format = "",
+    exact = false,
+  }: { minor: number; currencyCode: string; format?: string; exact?: boolean },
   _args,
   context,
   _info
@@ -232,8 +252,8 @@ export const resolveMinorAndCurrencyFieldsToMoney = async (
       major,
       cents: minor,
       currency: currencyCode,
-      display: priceDisplayText(minor, currencyCode, ""),
-      amount: priceAmount(minor, currencyCode, ""),
+      display: priceDisplayText(minor, currencyCode, format, exact),
+      amount: priceAmount(minor, currencyCode, format, exact),
       currencyPrefix: currencyPrefix(currencyCode),
     }
   } catch (error) {
