@@ -1,10 +1,10 @@
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
+import { GraphQLNonNull, GraphQLID } from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
   OrderPaymentMethodEnum,
   OrderCreditCardWalletTypeEnum,
-} from "./sharedOrderTypes"
+} from "./types/sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleExchangeError } from "./exchangeErrorHandling"
@@ -13,15 +13,6 @@ interface Input {
   id: string
   paymentMethod?: string
   creditCardWalletType?: string
-  buyerPhoneNumber?: string
-  buyerPhoneNumberCountryCode?: string
-  shippingName?: string
-  shippingAddressLine1?: string
-  shippingAddressLine2?: string
-  shippingCity?: string
-  shippingRegion?: string
-  shippingCountry?: string
-  shippingPostalCode?: string
 }
 
 export const updateOrderMutation = mutationWithClientMutationId<
@@ -41,42 +32,6 @@ export const updateOrderMutation = mutationWithClientMutationId<
       type: OrderCreditCardWalletTypeEnum,
       description: "Credit card wallet type",
     },
-    buyerPhoneNumber: {
-      type: GraphQLString,
-      description: "Buyer's phone number",
-    },
-    buyerPhoneNumberCountryCode: {
-      type: GraphQLString,
-      description: "Buyer's phone number country code",
-    },
-    shippingName: {
-      type: GraphQLString,
-      description: "Shipping address name",
-    },
-    shippingAddressLine1: {
-      type: GraphQLString,
-      description: "Shipping address line 1",
-    },
-    shippingAddressLine2: {
-      type: GraphQLString,
-      description: "Shipping address line 2",
-    },
-    shippingCity: {
-      type: GraphQLString,
-      description: "Shipping address city",
-    },
-    shippingRegion: {
-      type: GraphQLString,
-      description: "Shipping address state/province/region",
-    },
-    shippingCountry: {
-      type: GraphQLString,
-      description: "Shipping address country",
-    },
-    shippingPostalCode: {
-      type: GraphQLString,
-      description: "Shipping address postal code",
-    },
   },
   outputFields: {
     orderOrError: {
@@ -93,15 +48,6 @@ export const updateOrderMutation = mutationWithClientMutationId<
       const exchangeInputFields = {
         payment_method: input.paymentMethod,
         credit_card_wallet_type: input.creditCardWalletType,
-        buyer_phone_number: input.buyerPhoneNumber,
-        buyer_phone_number_country_code: input.buyerPhoneNumberCountryCode,
-        shipping_name: input.shippingName,
-        shipping_address_line1: input.shippingAddressLine1,
-        shipping_address_line2: input.shippingAddressLine2,
-        shipping_city: input.shippingCity,
-        shipping_region: input.shippingRegion,
-        shipping_country: input.shippingCountry,
-        shipping_postal_code: input.shippingPostalCode,
       }
       // filter out `undefined` values from the input fields
       const payload = Object.fromEntries(

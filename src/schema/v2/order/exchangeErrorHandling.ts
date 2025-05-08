@@ -1,4 +1,4 @@
-import { ORDER_MUTATION_FLAGS } from "./sharedOrderTypes"
+import { ORDER_MUTATION_FLAGS } from "./types/sharedOrderTypes"
 
 type ExchangeError = Error & {
   statusCode: number

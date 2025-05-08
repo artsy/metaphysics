@@ -2,7 +2,7 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
-} from "./sharedOrderTypes"
+} from "./types/sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleExchangeError } from "./exchangeErrorHandling"
