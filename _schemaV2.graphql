@@ -10556,7 +10556,7 @@ type DismissTaskSuccess {
   task: Task!
 }
 
-# Display texts for the order based on its state
+# Display texts for the order based on its state and order shipping/payment states
 type DisplayTexts {
   # First paragraph of the message text for the order
   messageText(format: Format = MARKDOWN): String
