@@ -13,6 +13,7 @@ import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
+import { DisplayTexts } from "./DisplayTexts"
 import { PartnerType } from "schema/v2/partner/partner"
 import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import { PricingBreakdownLines } from "./PricingBreakdownLines"
@@ -234,58 +235,6 @@ const SellerType = new GraphQLUnionType({
   },
 })
 
-const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
-  name: "DisplayTexts",
-  description: "Display texts for the order based on its state",
-  fields: {
-    titleText: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Title text to display for the order",
-    },
-  },
-})
-
-const resolveDisplayTexts = (order: OrderJSON) => {
-  switch (order.buyer_state) {
-    case "submitted":
-      return {
-        titleText: "Great choice!",
-      }
-    case "payment_failed":
-      return {
-        titleText: "Payment failed",
-      }
-    case "processing_payment":
-      return {
-        titleText: "Your payment is processing",
-      }
-    case "processing_offline_payment":
-    case "approved":
-      return {
-        titleText: "Congratulations!",
-      }
-    case "shipped":
-      return {
-        titleText: "Good news, your order has shipped!",
-      }
-    case "completed":
-      return {
-        titleText:
-          order.fulfillment_type === "pickup"
-            ? "Your order has been picked up"
-            : "Your order has been delivered",
-      }
-    case "canceled_and_refunded":
-      return {
-        titleText: "Your order was canceled",
-      }
-    default:
-      return {
-        titleText: "Your order",
-      }
-  }
-}
-
 export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
@@ -331,11 +280,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Order code",
       resolve: ({ code }) => code,
     },
-    displayTexts: {
-      type: new GraphQLNonNull(DisplayTextsType),
-      description: "Display texts for the order based on its buyer_state",
-      resolve: (order) => resolveDisplayTexts(order),
-    },
+    displayTexts: DisplayTexts,
     fulfillmentDetails: {
       type: FulfillmentDetailsType,
       description: "Buyer fulfillment details for order",

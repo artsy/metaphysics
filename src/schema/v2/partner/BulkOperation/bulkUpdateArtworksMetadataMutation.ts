@@ -21,12 +21,16 @@ interface Input {
   id: string
   metadata?: {
     availability?: string
+    ecommerce: boolean
     locationId?: string
     category?: string
+    offer: boolean
     priceListed?: number
     published?: boolean
   }
   filters?: {
+    artistId?: string
+    availability?: string
     artworkIds?: string[]
     locationId?: string
     partnerArtistId?: string
@@ -48,9 +52,17 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The category (medium type) to be assigned",
     },
+    ecommerce: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks must be listed as Purchase",
+    },
     priceListed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
+    },
+    offer: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks must be listed as Make Offer",
     },
     published: {
       type: GraphQLBoolean,
@@ -62,6 +74,14 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
 const BulkUpdateArtworksFilterInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksFilterInput",
   fields: {
+    artistId: {
+      type: GraphQLString,
+      description: "Filter artworks by artist id",
+    },
+    availability: {
+      type: Availability,
+      description: "Filter artworks by availability",
+    },
     artworkIds: {
       type: new GraphQLList(GraphQLString),
       description: "Filter artworks with matching ids",
@@ -185,11 +205,15 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         category: metadata.category,
         price_listed: metadata.priceListed,
         published: metadata.published,
+        offer: metadata.offer,
+        ecommerce: metadata.ecommerce,
       }
     }
 
     if (filters) {
       gravityOptions.filters = {
+        artist_id: filters.artistId,
+        availability: filters.availability,
         artwork_ids: filters.artworkIds,
         location_id: filters.locationId,
         partner_artist_id: filters.partnerArtistId,

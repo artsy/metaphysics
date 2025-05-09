@@ -11,11 +11,14 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             availability: SOLD
             locationId: "location456"
             category: "Painting"
+            ecommerce: true
+            offer: false
             priceListed: 1000
             published: true
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
+            availability: FOR_SALE
             locationId: "oldLocation"
             partnerArtistId: "artist789"
           }
@@ -64,11 +67,14 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           availability: "sold",
           location_id: "location456",
           category: "Painting",
+          ecommerce: true,
+          offer: false,
           price_listed: 1000,
           published: true,
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],
+          availability: "for sale",
           location_id: "oldLocation",
           partner_artist_id: "artist789",
         },
