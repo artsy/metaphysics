@@ -3,7 +3,6 @@ import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
 import { marketingCollectionCategories } from "lib/marketingCollectionCategories"
-import { getExperimentVariant } from "lib/featureFlags"
 
 const orderedCategoryKeys = [
   "Medium",
@@ -22,16 +21,6 @@ export const ExploreByCategory: HomeViewSection = {
     title: "Explore by Category",
   },
   requiresAuthentication: false,
-  shouldBeDisplayed: (context) => {
-    const variant = getExperimentVariant("diamond_discover-tab", {
-      userId: context.userID,
-    })
-
-    const isDiscoverVariant =
-      variant && variant.name === "variant-a" && variant.enabled
-
-    return !isDiscoverVariant
-  },
   resolver: (_parent, args, _context, _info) => {
     const cards = orderedCategoryKeys.map((key) => {
       const category = marketingCollectionCategories[key]
