@@ -60,6 +60,7 @@ interface UpdateArtworkMutationInputProps {
   framedWidth?: string
   id?: string
   offer?: boolean
+  partnerLocationId?: string
   published?: boolean
   priceCurrency?: string
   priceHidden?: boolean
@@ -126,6 +127,9 @@ const inputFields = {
   },
   framed: {
     type: GraphQLBoolean,
+  },
+  partnerLocationId: {
+    type: GraphQLString,
   },
   published: {
     type: GraphQLBoolean,
@@ -200,6 +204,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed: inputArgs.framed,
         id: inputArgs.id,
         offer: inputArgs.offer,
+        partner_location_id: inputArgs.partnerLocationId,
         published: inputArgs.published,
         price_currency: inputArgs.priceCurrency,
         price_hidden: inputArgs.priceHidden,
