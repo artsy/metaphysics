@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -52,24 +51,16 @@ export const Section: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the section",
       type: new GraphQLNonNull(GraphQLString),
     },
-    overrideShouldBeDisplayed: {
-      description:
-        "Overrides shouldBeDisplayed to show sections that would otherwise be hidden",
-      type: GraphQLBoolean,
-      defaultValue: false,
-    },
   },
   resolve: (_parent, args, context, _info) => {
-    const { id, overrideShouldBeDisplayed } = args
+    const { id } = args
     const section = registry[id]
 
     if (!section) {
       throw new Error(`Section not found: ${id}`)
     }
 
-    if (
-      !isSectionDisplayable(section, context, { overrideShouldBeDisplayed })
-    ) {
+    if (!isSectionDisplayable(section, context)) {
       throw new Error(`Section is not displayable: ${id}`)
     }
 
