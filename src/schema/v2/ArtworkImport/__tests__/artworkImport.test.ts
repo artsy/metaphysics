@@ -33,12 +33,13 @@ describe("ArtworkImport", () => {
     const artworkImportLoader = jest.fn().mockReturnValue({
       id: "artwork-import-1",
       file_name: "import.csv",
+      raw_data_mapping: { ArtistNames: "artist" },
     })
 
     const artworkImportRowsLoader = jest.fn().mockResolvedValue({
       body: [
-        { id: "row1", raw_data: { foo: "bar" } },
-        { id: "row2", raw_data: { foo: "baz" } },
+        { id: "row1", raw_data: { artist: "bar" } },
+        { id: "row2", raw_data: { artist: "baz" } },
       ],
       headers: { "x-total-count": "2" },
     })
@@ -53,7 +54,9 @@ describe("ArtworkImport", () => {
             edges {
               node {
                 internalID
-                rawData
+                rawData {
+                  artistNames
+                }
               }
             }
           }
@@ -77,11 +80,11 @@ describe("ArtworkImport", () => {
     expect(result.artworkImport.rowsConnection.edges).toHaveLength(2)
     expect(result.artworkImport.rowsConnection.edges[0].node).toEqual({
       internalID: "row1",
-      rawData: { foo: "bar" },
+      rawData: { artistNames: "bar" },
     })
     expect(result.artworkImport.rowsConnection.edges[1].node).toEqual({
       internalID: "row2",
-      rawData: { foo: "baz" },
+      rawData: { artistNames: "baz" },
     })
   })
 

@@ -3258,8 +3258,8 @@ type ArtworkImportRow {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   priceListed: Money
-  rawData: JSON!
-  transformedData: ArtworkImportTransformedData!
+  rawData: ArtworkImportRowData!
+  transformedData: ArtworkImportRowData!
 }
 
 # A connection to a list of items.
@@ -3271,6 +3271,22 @@ type ArtworkImportRowConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
+}
+
+type ArtworkImportRowData {
+  artistNames: String
+  artworkTitle: String
+  certificateOfAuthenticity: String
+  date: String
+  depth: String
+  diameter: String
+  height: String
+  imageFileNames: String
+  inventoryId: String
+  materials: String
+  medium: String
+  price: String
+  width: String
 }
 
 # An edge in a connection.
@@ -3315,22 +3331,6 @@ enum ArtworkImportState {
   ARTWORKS_CREATION_COMPLETE
   CANCELED
   PENDING
-}
-
-type ArtworkImportTransformedData {
-  artistNames: String
-  artworkTitle: String
-  certificateOfAuthenticity: String
-  date: String
-  depth: String
-  diameter: String
-  height: String
-  imageFileNames: String
-  inventoryId: String
-  materials: String
-  medium: String
-  price: String
-  width: String
 }
 
 type ArtworkInfoRow {

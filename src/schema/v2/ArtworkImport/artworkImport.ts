@@ -97,6 +97,51 @@ const ArtworkImportRowImageType = new GraphQLObjectType({
   },
 })
 
+const ArtworkImportRowDataType = new GraphQLObjectType({
+  name: "ArtworkImportRowData",
+  fields: {
+    artistNames: {
+      type: GraphQLString,
+    },
+    artworkTitle: {
+      type: GraphQLString,
+    },
+    date: {
+      type: GraphQLString,
+    },
+    depth: {
+      type: GraphQLString,
+    },
+    diameter: {
+      type: GraphQLString,
+    },
+    height: {
+      type: GraphQLString,
+    },
+    imageFileNames: {
+      type: GraphQLString,
+    },
+    inventoryId: {
+      type: GraphQLString,
+    },
+    materials: {
+      type: GraphQLString,
+    },
+    price: {
+      type: GraphQLString,
+    },
+    width: {
+      type: GraphQLString,
+    },
+    medium: {
+      type: GraphQLString,
+    },
+    certificateOfAuthenticity: {
+      type: GraphQLString,
+    },
+  },
+})
+
 const ArtworkImportRowType = new GraphQLObjectType({
   name: "ArtworkImportRow",
   fields: {
@@ -131,71 +176,45 @@ const ArtworkImportRowType = new GraphQLObjectType({
       },
     },
     rawData: {
-      type: new GraphQLNonNull(GraphQLJSON),
-      resolve: ({ raw_data }) => raw_data,
+      type: new GraphQLNonNull(ArtworkImportRowDataType),
+      resolve: ({ raw_data, rawDataMapping }) => {
+        return {
+          artistNames: raw_data[rawDataMapping["ArtistNames"]],
+          artworkTitle: raw_data[rawDataMapping["ArtworkTitle"]],
+          date: raw_data[rawDataMapping["Date"]],
+          depth: raw_data[rawDataMapping["Depth"]],
+          diameter: raw_data[rawDataMapping["Diameter"]],
+          height: raw_data[rawDataMapping["Height"]],
+          imageFileNames: raw_data[rawDataMapping["ImageFileNames"]],
+          inventoryId: raw_data[rawDataMapping["Inventory ID"]],
+          materials: raw_data[rawDataMapping["Materials"]],
+          price: raw_data[rawDataMapping["Price"]],
+          width: raw_data[rawDataMapping["Width"]],
+          medium: raw_data[rawDataMapping["Medium"]],
+          certificateOfAuthenticity:
+            raw_data[rawDataMapping["CertificateOfAuthenticity"]],
+        }
+      },
     },
     transformedData: {
-      type: new GraphQLNonNull(
-        new GraphQLObjectType<any, ResolverContext>({
-          name: "ArtworkImportTransformedData",
-          fields: {
-            artistNames: {
-              type: GraphQLString,
-              resolve: ({ ArtistNames }) => ArtistNames,
-            },
-            artworkTitle: {
-              type: GraphQLString,
-              resolve: ({ ArtworkTitle }) => ArtworkTitle,
-            },
-            date: {
-              type: GraphQLString,
-              resolve: ({ Date }) => Date,
-            },
-            depth: {
-              type: GraphQLString,
-              resolve: ({ Depth }) => Depth,
-            },
-            diameter: {
-              type: GraphQLString,
-              resolve: ({ Diameter }) => Diameter,
-            },
-            height: {
-              type: GraphQLString,
-              resolve: ({ Height }) => Height,
-            },
-            imageFileNames: {
-              type: GraphQLString,
-              resolve: ({ ImageFileNames }) => ImageFileNames,
-            },
-            inventoryId: {
-              type: GraphQLString,
-              resolve: (data) => data["Inventory ID"],
-            },
-            materials: {
-              type: GraphQLString,
-              resolve: ({ Materials }) => Materials,
-            },
-            price: {
-              type: GraphQLString,
-              resolve: ({ Price }) => Price,
-            },
-            width: {
-              type: GraphQLString,
-              resolve: ({ Width }) => Width,
-            },
-            medium: {
-              type: GraphQLString,
-              resolve: ({ Medium }) => Medium,
-            },
-            certificateOfAuthenticity: {
-              type: GraphQLString,
-              resolve: ({ CertificateOfAuthenticity }) =>
-                CertificateOfAuthenticity,
-            },
-          },
-        })
-      ),
-      resolve: ({ transformed_data }) => transformed_data,
+      type: new GraphQLNonNull(ArtworkImportRowDataType),
+      resolve: ({ transformed_data }) => {
+        return {
+          artistNames: transformed_data.ArtistNames,
+          artworkTitle: transformed_data.ArtworkTitle,
+          date: transformed_data.Date,
+          depth: transformed_data.Depth,
+          diameter: transformed_data.Diameter,
+          height: transformed_data.Height,
+          imageFileNames: transformed_data.ImageFileNames,
+          inventoryId: transformed_data["Inventory ID"],
+          materials: transformed_data.Materials,
+          price: transformed_data.Price,
+          width: transformed_data.Width,
+          medium: transformed_data.Medium,
+          certificateOfAuthenticity: transformed_data.CertificateOfAuthenticity,
+        }
+      },
     },
     errors: {
       type: new GraphQLNonNull(
@@ -280,7 +299,11 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           type: GraphQLBoolean,
         },
       }),
-      resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
+      resolve: async (
+        { id, currency, raw_data_mapping },
+        args,
+        { artworkImportRowsLoader }
+      ) => {
         if (!artworkImportRowsLoader) {
           throw new Error(
             "A X-Access-Token header is required to perform this action."
@@ -309,6 +332,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           body: body.map((row) => ({
             ...row,
             currency,
+            rawDataMapping: raw_data_mapping,
           })),
           args,
         })
