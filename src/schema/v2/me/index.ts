@@ -98,6 +98,7 @@ import {
 } from "./secondFactors/secondFactors"
 import { MeOrder } from "../order"
 import { ConfirmationToken } from "../order/confirmationToken"
+import { AuctionSegmentation } from "./auctionSegmentation"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -208,6 +209,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
+    auctionSegmentation: AuctionSegmentation,
     authentications: authentications,
     bankAccounts: BankAccounts,
     bidders: Bidders,

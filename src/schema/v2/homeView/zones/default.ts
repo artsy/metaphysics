@@ -29,6 +29,7 @@ import { QuickLinks } from "../sections/QuickLinks"
 import { BoostHeroUnitsForNewUsersRule } from "../mixer/rules/BoostHeroUnitsForNewUsersRule"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -74,6 +75,7 @@ async function getSectionsViaMixer(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new BoostHeroUnitsForNewUsersRule(),
+    new AuctionEngagementRule(),
   ])
 
   return await mixer.mix(SECTIONS, context)
