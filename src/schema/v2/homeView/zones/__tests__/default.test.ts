@@ -1,14 +1,12 @@
-import { isFeatureFlagEnabled, getExperimentVariant } from "lib/featureFlags"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { getSections } from "../default"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(() => true),
-  getExperimentVariant: jest.fn(() => false),
 }))
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
-const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 
 describe("getSections", () => {
   describe("with an authenticated user", () => {
@@ -111,58 +109,6 @@ describe("getSections", () => {
         const sectionIds = sections.map((section) => section.id)
 
         expect(sectionIds).not.toInclude("home-view-section-featured-fairs")
-      })
-    })
-  })
-
-  describe("diamond_discover-tab experiment", () => {
-    describe("when user is in variant-a", () => {
-      beforeEach(() => {
-        mockGetExperimentVariant.mockImplementation((flag: string) => {
-          if (flag === "diamond_discover-tab") {
-            return {
-              name: "variant-a",
-              enabled: true,
-            }
-          }
-          return false
-        })
-      })
-
-      it("does not include DiscoverSomethingNew and ExploreByCategory sections", async () => {
-        const context: Partial<ResolverContext> = {
-          userID: "test-user-id",
-        }
-
-        const sections = await getSections(context as ResolverContext)
-        const sectionIds = sections.map((section) => section.id)
-
-        expect(sectionIds).not.toInclude(
-          "home-view-section-discover-something-new"
-        )
-        expect(sectionIds).not.toInclude(
-          "home-view-section-explore-by-category"
-        )
-      })
-    })
-
-    describe("when user is not in variant-a", () => {
-      beforeEach(() => {
-        mockGetExperimentVariant.mockImplementation(() => {
-          return false
-        })
-      })
-
-      it("includes DiscoverSomethingNew and ExploreByCategory sections", async () => {
-        const context: Partial<ResolverContext> = {
-          userID: "test-user-id",
-        }
-
-        const sections = await getSections(context as ResolverContext)
-        const sectionIds = sections.map((section) => section.id)
-
-        expect(sectionIds).toInclude("home-view-section-discover-something-new")
-        expect(sectionIds).toInclude("home-view-section-explore-by-category")
       })
     })
   })

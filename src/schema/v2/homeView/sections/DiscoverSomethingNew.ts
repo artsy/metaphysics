@@ -1,8 +1,7 @@
 import { ContextModule } from "@artsy/cohesion"
-import { connectionFromArray } from "graphql-relay"
-import { getExperimentVariant } from "lib/featureFlags"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { connectionFromArray } from "graphql-relay"
 
 const marketingCollectionSlugs = [
   "most-loved",
@@ -28,16 +27,6 @@ export const DiscoverSomethingNew: HomeViewSection = {
     type: "Chips",
   },
   requiresAuthentication: false,
-  shouldBeDisplayed: (context) => {
-    const variant = getExperimentVariant("diamond_discover-tab", {
-      userId: context.userID,
-    })
-
-    const isDiscoverVariant =
-      variant && variant.name === "variant-a" && variant.enabled
-
-    return !isDiscoverVariant
-  },
   resolver: async (_parent, args, context, _info) => {
     const { body } = await context.marketingCollectionsLoader({
       slugs: marketingCollectionSlugs,

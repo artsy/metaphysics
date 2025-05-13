@@ -9,8 +9,7 @@ import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
  */
 export function isSectionDisplayable(
   section: HomeViewSection,
-  context: ResolverContext,
-  options?: { overrideShouldBeDisplayed?: boolean }
+  context: ResolverContext
 ): boolean {
   // public content
   const isPublicSection = section.requiresAuthentication === false
@@ -42,14 +41,9 @@ export function isSectionDisplayable(
     }
   }
 
-  // override section's display pre-check if present
-  if (options?.overrideShouldBeDisplayed) {
-    return isDisplayable
-  }
-
   // section's display pre-check
   if (typeof section.shouldBeDisplayed === "function") {
-    isDisplayable = isDisplayable && section.shouldBeDisplayed(context)
+    isDisplayable = isDisplayable && section?.shouldBeDisplayed(context)
   }
 
   return isDisplayable

@@ -31,7 +31,6 @@ describe("homeView", () => {
       mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
         return ["onyx_enable-home-view-section-featured-fairs"].includes(flag)
       })
-      mockGetExperimentVariant.mockReturnValue(false)
     })
 
     const query = gql`
@@ -385,39 +384,6 @@ describe("homeView", () => {
           }
         `)
       })
-
-      it("hides DiscoverSomethingNew and ExploreByCategory sections with a user in the diamond_discover-tab experiment", async () => {
-        mockGetExperimentVariant.mockImplementation((flag: string) => {
-          if (flag === "diamond_discover-tab") {
-            return {
-              name: "variant-a",
-              enabled: true,
-            }
-          }
-          return false
-        })
-
-        const userContext = {
-          ...context,
-          userID: "test-user-id",
-        }
-
-        const { homeView } = await runQuery(query, userContext)
-
-        const sectionTitles = homeView.sectionsConnection.edges.map(
-          (edge) => edge.node.component?.title
-        )
-
-        expect(sectionTitles).not.toContain("Discover Something New")
-        expect(sectionTitles).not.toContain("Explore by Category")
-
-        expect(mockGetExperimentVariant).toHaveBeenCalledWith(
-          "diamond_discover-tab",
-          {
-            userId: "test-user-id",
-          }
-        )
-      })
     })
   })
 
@@ -514,92 +480,6 @@ describe("homeView", () => {
               "__typename": "HomeViewSectionArticles",
               "component": {
                 "title": "News",
-              },
-            }
-          `)
-        })
-      })
-    })
-
-    describe("with overrideShouldBeDisplayed parameter", () => {
-      describe("accessing a section that would be hidden by overrideShouldBeDisplayed", () => {
-        const context: Partial<ResolverContext> = {
-          userID: "test-user-id",
-        }
-
-        beforeEach(() => {
-          mockGetExperimentVariant.mockImplementation((flag: string) => {
-            if (flag === "diamond_discover-tab") {
-              return {
-                name: "variant-a",
-                enabled: true,
-              }
-            }
-            return false
-          })
-        })
-
-        it("throws an error when overrideShouldBeDisplayed is false", async () => {
-          const query = gql`
-            {
-              homeView {
-                section(
-                  id: "home-view-section-discover-something-new"
-                  overrideShouldBeDisplayed: false
-                ) {
-                  __typename
-                }
-              }
-            }
-          `
-
-          await expect(runQuery(query, context)).rejects.toThrow(
-            "Section is not displayable"
-          )
-        })
-
-        it("throws an error when overrideShouldBeDisplayed not passed", async () => {
-          const query = gql`
-            {
-              homeView {
-                section(id: "home-view-section-discover-something-new") {
-                  __typename
-                }
-              }
-            }
-          `
-
-          await expect(runQuery(query, context)).rejects.toThrow(
-            "Section is not displayable"
-          )
-        })
-
-        it("returns the hidden section when overrideShouldBeDisplayed is true", async () => {
-          const query = gql`
-            {
-              homeView {
-                section(
-                  id: "home-view-section-discover-something-new"
-                  overrideShouldBeDisplayed: true
-                ) {
-                  __typename
-                  ... on HomeViewSectionGeneric {
-                    component {
-                      title
-                    }
-                  }
-                }
-              }
-            }
-          `
-
-          const { homeView } = await runQuery(query, context)
-
-          expect(homeView.section).toMatchInlineSnapshot(`
-            {
-              "__typename": "HomeViewSectionCards",
-              "component": {
-                "title": "Discover Something New",
               },
             }
           `)
