@@ -58,8 +58,8 @@ describe("Me", () => {
               }
               code
               displayTexts {
-                titleText
-                messageText
+                title
+                message
               }
 
               fulfillmentOptions {
@@ -137,9 +137,9 @@ describe("Me", () => {
       expect(result.me.order).toEqual({
         internalID: "order-id",
         displayTexts: {
-          titleText: "Great choice!",
-          messageText:
-            "Thank you! Your order is being processed.<br/>You will receive an email shortly with all the details.",
+          title: "Great choice!",
+          message:
+            "Thank you! Your order is being processed.<br/>You will receive an email shortly with all the details.<br/><br/>You can <a href='#' data-link='contact-gallery'>contact the gallery</a> with any questions about your order.",
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",
