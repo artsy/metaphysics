@@ -40,6 +40,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_CERTIFICATE_OF_AUTHENTICITY: {
       value: "invalid_coa",
     },
+    INVALID_SIGNATURE: { value: "invalid_signature" },
   },
 })
 
@@ -191,6 +192,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ CertificateOfAuthenticity }) =>
                 CertificateOfAuthenticity,
+            },
+            signature: {
+              type: new GraphQLList(GraphQLString),
+              resolve: ({ Signature }) => Signature,
             },
             signatureDetails: {
               type: GraphQLString,
