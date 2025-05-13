@@ -192,9 +192,9 @@ const ArtworkImportRowType = new GraphQLObjectType({
               resolve: ({ CertificateOfAuthenticity }) =>
                 CertificateOfAuthenticity,
             },
-            signaturePlacement: {
+            signatureDetails: {
               type: GraphQLString,
-              resolve: ({ SignaturePlacement }) => SignaturePlacement,
+              resolve: ({ SignatureDetails }) => SignatureDetails,
             },
             artworkCondition: {
               type: GraphQLString,
