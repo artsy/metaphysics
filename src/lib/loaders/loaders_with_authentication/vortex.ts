@@ -98,6 +98,7 @@ export default (accessToken, opts) => {
     auctionLotRecommendationsLoader: vortexLoader(
       "auction_lot_recommendations"
     ),
+    auctionUserSegmentationLoader: vortexLoader("auction_user_segmentation"),
   }
 }
 

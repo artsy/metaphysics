@@ -14,6 +14,7 @@ const FEATURE_FLAGS_LIST = [
   "emerald_clientside-collector-signals",
   "onyx_enable-home-view-mixer",
   "onyx_enable-quick-links-v2",
+  "onyx_enable-home-view-auction-segmentation",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
