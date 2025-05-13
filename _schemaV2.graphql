@@ -3331,7 +3331,7 @@ type ArtworkImportTransformedData {
   materials: String
   medium: String
   price: String
-  signatures: [String]
+  signature: [String]
   width: String
 }
 
