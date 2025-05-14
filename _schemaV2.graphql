@@ -10593,13 +10593,13 @@ type DisplayTexts {
   message(format: Format = MARKDOWN): String
 
   # deprecated
-  messageText: String
+  messageText(format: Format = MARKDOWN): String
 
   # Title text to display for the order
   title: String!
 
   # deprecated
-  titleText: String
+  titleText: String!
 }
 
 type DoNotUseThisPartner {
