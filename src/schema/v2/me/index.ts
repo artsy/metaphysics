@@ -99,6 +99,7 @@ import {
 import { MeOrder } from "../order"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
+import { UserPricePreference } from "./UserPricePreference"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -534,6 +535,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ phone }, _, context, info) =>
         PhoneNumber.resolve?.(null, { phoneNumber: phone }, context, info),
     },
+    pricePreference: UserPricePreference,
     priceRange: {
       type: GraphQLString,
       resolve: ({ price_range }) => price_range,
