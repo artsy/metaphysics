@@ -33,6 +33,15 @@ const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
         return formatMarkdownValue(message, format)
       },
     },
+    // TODO: deprecated - remove after deploy
+    titleText: {
+      type: GraphQLString,
+      description: "deprecated",
+    },
+    messageText: {
+      type: GraphQLString,
+      description: "deprecated",
+    },
   },
 })
 

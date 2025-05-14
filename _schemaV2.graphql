@@ -10592,8 +10592,14 @@ type DisplayTexts {
   # First paragraph of the message text for the order
   message(format: Format = MARKDOWN): String
 
+  # deprecated
+  messageText: String
+
   # Title text to display for the order
   title: String!
+
+  # deprecated
+  titleText: String
 }
 
 type DoNotUseThisPartner {
