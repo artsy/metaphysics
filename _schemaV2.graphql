@@ -18312,6 +18312,9 @@ type ProfileCounts {
     format: String
     label: String
   ): FormattedNumber
+
+  # If the profile has more than 500 follows
+  hasFollows: Boolean!
 }
 
 # An edge in a connection.
