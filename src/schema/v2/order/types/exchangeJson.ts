@@ -27,6 +27,7 @@ export interface OrderJSON {
   shipping_country?: string
   tax_total_cents?: number
   buyer_state?: string
+  buyer_state_expires_at?: string
   fulfillment_type?: string
   fulfillment_options: Array<{
     type:
@@ -40,6 +41,14 @@ export interface OrderJSON {
     amount_minor: number
     selected?: boolean
   }>
+  selected_fulfillment_option?:
+    | "domestic_flat"
+    | "international_flat"
+    | "pickup"
+    | "artsy_standard"
+    | "artsy_express"
+    | "artsy_white_glove"
+    | "shipping_tbd"
   line_items: Array<{
     id: string
     artwork_id: string
