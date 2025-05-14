@@ -37,10 +37,12 @@ const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
     titleText: {
       type: new GraphQLNonNull(GraphQLString),
       description: "deprecated",
+      deprecationReason: "Use `title` instead",
     },
     messageText: {
       type: GraphQLString,
       description: "deprecated",
+      deprecationReason: "Use `message` instead",
       args: {
         format: {
           type: FormatEnums,
