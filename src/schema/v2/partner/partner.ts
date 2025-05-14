@@ -963,6 +963,25 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
       },
+      hasFollows: {
+        type: GraphQLNonNull(GraphQLBoolean),
+        description: "If the partner has more than 500 follows",
+        resolve: async (
+          { default_profile_id },
+          _,
+          { profileLoader, userID, accessToken }
+        ) => {
+          if (!userID || !accessToken) {
+            return false
+          }
+          try {
+            const res = await profileLoader(default_profile_id)
+            return res?.follows_count > 500
+          } catch (e) {
+            return false
+          }
+        },
+      },
       meta: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerMeta",

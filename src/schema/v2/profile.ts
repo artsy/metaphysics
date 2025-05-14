@@ -30,11 +30,6 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
         name: "ProfileCounts",
         fields: {
           follows: numeral(({ follows_count }) => follows_count),
-          hasFollows: {
-            type: GraphQLNonNull(GraphQLBoolean),
-            description: "If the profile has more than 500 follows",
-            resolve: ({ follows_count }) => follows_count > 500,
-          },
         },
       }),
     },
