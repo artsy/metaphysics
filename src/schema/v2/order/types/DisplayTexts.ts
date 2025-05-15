@@ -33,23 +33,6 @@ const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
         return formatMarkdownValue(message, format)
       },
     },
-    // TODO: deprecated - remove after deploy
-    titleText: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "deprecated",
-      deprecationReason: "Use `title` instead",
-    },
-    messageText: {
-      type: GraphQLString,
-      description: "deprecated",
-      deprecationReason: "Use `message` instead",
-      args: {
-        format: {
-          type: FormatEnums,
-          defaultValue: "markdown",
-        },
-      },
-    },
   },
 })
 
