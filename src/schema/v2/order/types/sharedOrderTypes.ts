@@ -275,6 +275,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
+    buyerStateExpiresAt: {
+      type: GraphQLString,
+      description: "Expiration for the current state of the order",
+      resolve: ({ buyer_state_expires_at }) => buyer_state_expires_at,
+    },
     code: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Order code",
