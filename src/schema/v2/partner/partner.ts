@@ -963,7 +963,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
       },
-      hasFollows: {
+      hasVisibleFollowsCount: {
         type: GraphQLNonNull(GraphQLBoolean),
         description: "If the partner has more than 500 follows",
         resolve: async (

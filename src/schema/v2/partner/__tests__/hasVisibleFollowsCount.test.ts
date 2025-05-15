@@ -2,12 +2,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Partner", () => {
-  describe("hasFollows field", () => {
+  describe("hasVisibleFollowsCount field", () => {
     it("returns true when follows_count is greater than 500", async () => {
       const query = gql`
         {
           partner(id: "example-partner") {
-            hasFollows
+            hasVisibleFollowsCount
           }
         }
       `
@@ -33,14 +33,14 @@ describe("Partner", () => {
       })
 
       expect(profileLoader).toHaveBeenCalledWith("example-profile")
-      expect(partner.hasFollows).toBe(true)
+      expect(partner.hasVisibleFollowsCount).toBe(true)
     })
 
     it("returns false when follows_count is equal to 500", async () => {
       const query = gql`
         {
           partner(id: "example-partner") {
-            hasFollows
+            hasVisibleFollowsCount
           }
         }
       `
@@ -66,14 +66,14 @@ describe("Partner", () => {
       })
 
       expect(profileLoader).toHaveBeenCalledWith("example-profile")
-      expect(partner.hasFollows).toBe(false)
+      expect(partner.hasVisibleFollowsCount).toBe(false)
     })
 
     it("returns false when follows_count is less than 500", async () => {
       const query = gql`
         {
           partner(id: "example-partner") {
-            hasFollows
+            hasVisibleFollowsCount
           }
         }
       `
@@ -99,14 +99,14 @@ describe("Partner", () => {
       })
 
       expect(profileLoader).toHaveBeenCalledWith("example-profile")
-      expect(partner.hasFollows).toBe(false)
+      expect(partner.hasVisibleFollowsCount).toBe(false)
     })
 
     it("returns false when profileLoader throws an error", async () => {
       const query = gql`
         {
           partner(id: "example-partner") {
-            hasFollows
+            hasVisibleFollowsCount
           }
         }
       `
@@ -130,14 +130,14 @@ describe("Partner", () => {
       })
 
       expect(profileLoader).toHaveBeenCalledWith("example-profile")
-      expect(partner.hasFollows).toBe(false)
+      expect(partner.hasVisibleFollowsCount).toBe(false)
     })
 
     it("returns false when user is not authenticated", async () => {
       const query = gql`
         {
           partner(id: "example-partner") {
-            hasFollows
+            hasVisibleFollowsCount
           }
         }
       `
@@ -158,7 +158,7 @@ describe("Partner", () => {
         accessToken: undefined,
       })
 
-      expect(partner.hasFollows).toBe(false)
+      expect(partner.hasVisibleFollowsCount).toBe(false)
       expect(profileLoader).not.toHaveBeenCalledWith("example-profile")
     })
   })
