@@ -18,7 +18,8 @@ describe("Me", () => {
       mode: "buy",
       currency_code: "USD",
       buyer_id: "buyer-id-1",
-      buyer_state: "submitted",
+      buyer_state: "approved",
+      buyer_state_expires_at: "January 1, 2035 19:00 EST",
       buyer_type: "user",
       seller_id: "seller-id-1",
       seller_type: "gallery",
@@ -27,6 +28,7 @@ describe("Me", () => {
       shipping_total_cents: 2000,
       buyer_phone_number: "123-456-7890",
       buyer_phone_number_country_code: "US",
+      fulfillment_type: "ship",
       shipping_name: "John Doe",
       shipping_country: "US",
       shipping_postal_code: "10001",
@@ -56,10 +58,12 @@ describe("Me", () => {
               buyerTotal {
                 display
               }
+              buyerStateExpiresAt
               code
               displayTexts {
                 title
                 message
+                messageType
               }
 
               fulfillmentOptions {
@@ -136,10 +140,12 @@ describe("Me", () => {
 
       expect(result.me.order).toEqual({
         internalID: "order-id",
+        buyerStateExpiresAt: "January 1, 2035 19:00 EST",
         displayTexts: {
-          title: "Great choice!",
+          title: "Congratulations!",
           message:
-            "Thank you! Your order is being processed.<br/>You will receive an email shortly with all the details.<br/><br/>You can <a href='#' data-link='contact-gallery'>contact the gallery</a> with any questions about your order.",
+            "Your order has been confirmed. Thank you for your purchase.<br/><br/>You will be notified when the work has shipped, typically within 5-7 business days.<br/>You can <a href='#' data-link='contact-gallery'>contact the gallery</a> with any questions about your order.",
+          messageType: "APPROVED_SHIP",
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",
