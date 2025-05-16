@@ -13,7 +13,7 @@ export const LatestAuctionResults: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionAuctionResults,
   contextModule: ContextModule.auctionResultsRail,
   component: {
-    title: "Latest Auction Results",
+    title: "Auction Results for Artists You Follow",
     behaviors: {
       viewAll: {
         buttonText: "Browse All Results",

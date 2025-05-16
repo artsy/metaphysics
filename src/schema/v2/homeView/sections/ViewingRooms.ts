@@ -8,6 +8,7 @@ export const ViewingRooms: HomeViewSection = {
   contextModule: ContextModule.featuredViewingRoomsRail,
   component: {
     title: "Viewing Rooms",
+    description: "Immersive online exhibition spaces by top galleries",
     behaviors: {
       viewAll: {
         href: "/viewing-rooms",

@@ -46,7 +46,7 @@ describe("LatestAuctionResults", () => {
                 },
               },
               "description": null,
-              "title": "Latest Auction Results",
+              "title": "Auction Results for Artists You Follow",
             },
             "contextModule": "auctionResultsRail",
             "internalID": "home-view-section-latest-auction-results",
