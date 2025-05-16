@@ -99,7 +99,7 @@ import {
 import { MeOrder } from "../order"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
-import { UserPricePreference } from "./UserPricePreference"
+import { UserPricePreference } from "./userPricePreference"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
