@@ -14653,6 +14653,9 @@ type Me implements Node {
   pendingIdentityVerification: IdentityVerification
   phone: String
   phoneNumber: PhoneNumberType
+
+  # User's price preference, in USD.
+  pricePreference: Float
   priceRange: String
   priceRangeMax: Float
   priceRangeMin: Float

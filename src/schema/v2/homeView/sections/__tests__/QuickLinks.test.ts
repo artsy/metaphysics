@@ -32,9 +32,15 @@ describe("QuickLinks", () => {
     accessToken: "424242",
   }
 
+  beforeEach(() => {
+    mockIsFeatureFlagEnabled.mockResolvedValue(false)
+  })
+
   describe("when v2 is enabled", () => {
     beforeEach(() => {
-      mockIsFeatureFlagEnabled.mockReturnValue(true)
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (flag === "onyx_enable-quick-links-v2") return true
+      })
     })
 
     it("returns the section's data", async () => {
@@ -172,7 +178,9 @@ describe("QuickLinks", () => {
 
   describe("when v2 is not enabled", () => {
     beforeEach(() => {
-      mockIsFeatureFlagEnabled.mockReturnValue(false)
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (flag === "onyx_enable-quick-links-v2") return false
+      })
     })
 
     it("returns the section's data", async () => {
@@ -236,6 +244,141 @@ describe("QuickLinks", () => {
           "ownerType": "quickLinks",
         }
       `)
+    })
+  })
+
+  describe("when onyx_enable-quick-links-price-budget is enabled", () => {
+    beforeEach(() => {
+      // enable onyx_enable-quick-links-v2 too, since it's likely to be fully enabled in future
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (
+          flag === "onyx_enable-quick-links-price-budget" ||
+          flag === "onyx_enable-quick-links-v2"
+        )
+          return true
+      })
+    })
+
+    describe("when user has price preferences", () => {
+      beforeEach(() => {
+        jest.mock("schema/v2/me/userPricePreference", () => {
+          const originalModule = jest.requireActual(
+            "schema/v2/me/userPricePreference"
+          )
+
+          return {
+            UserPricePreference: {
+              ...originalModule.UserPricePreference,
+              resolve: jest.fn().mockReturnValueOnce(2500.0),
+            },
+          }
+        })
+      })
+
+      afterEach(() => {
+        jest.clearAllMocks()
+      })
+
+      it("returns the Art Under $X quick link", async () => {
+        const { homeView } = await runQuery(query, context)
+
+        expect(homeView.section.navigationPills).toContainEqual(
+          expect.objectContaining({
+            title: "Art Under $2500",
+            href: "/collect?price_range=1001-2500",
+          })
+        )
+      })
+    })
+
+    describe("when user has no price preferences", () => {
+      beforeEach(() => {
+        jest.mock("schema/v2/me/userPricePreference", () => {
+          const originalModule = jest.requireActual(
+            "schema/v2/me/userPricePreference"
+          )
+
+          return {
+            UserPricePreference: {
+              ...originalModule.UserPricePreference,
+              resolve: jest.fn().mockReturnValueOnce(null),
+            },
+          }
+        })
+      })
+
+      afterEach(() => {
+        jest.clearAllMocks()
+      })
+
+      it("does NOT return the Art Under $X quick link", async () => {
+        const { homeView } = await runQuery(query, context)
+
+        expect(homeView.section).toMatchInlineSnapshot(`
+          {
+            "__typename": "HomeViewSectionNavigationPills",
+            "contextModule": "quickLinks",
+            "internalID": "home-view-section-quick-links",
+            "navigationPills": [
+              {
+                "href": "/infinite-discovery",
+                "icon": "ImageSetIcon",
+                "ownerType": "infiniteDiscovery",
+                "title": "Discover Daily",
+              },
+              {
+                "href": "/auctions",
+                "icon": "GavelIcon",
+                "ownerType": "auctions",
+                "title": "Auctions",
+              },
+              {
+                "href": "/collection/new-this-week",
+                "icon": null,
+                "ownerType": "collection",
+                "title": "New This Week",
+              },
+              {
+                "href": "/articles",
+                "icon": "PublicationIcon",
+                "ownerType": "articles",
+                "title": "Articles",
+              },
+              {
+                "href": "/collection/statement-pieces",
+                "icon": null,
+                "ownerType": "collection",
+                "title": "Statement Pieces",
+              },
+              {
+                "href": "/collection/paintings",
+                "icon": "ArtworkIcon",
+                "ownerType": "collection",
+                "title": "Paintings",
+              },
+              {
+                "href": "galleries-for-you",
+                "icon": "InstitutionIcon",
+                "ownerType": "galleriesForYou",
+                "title": "Galleries for You",
+              },
+              {
+                "href": "/shows-for-you",
+                "icon": null,
+                "ownerType": "shows",
+                "title": "Shows for You",
+              },
+              {
+                "href": "/featured-fairs",
+                "icon": "FairIcon",
+                "ownerType": "featuredFairs",
+                "title": "Featured Fairs",
+              },
+            ],
+            "ownerType": "quickLinks",
+          }
+        `)
+      })
     })
   })
 
