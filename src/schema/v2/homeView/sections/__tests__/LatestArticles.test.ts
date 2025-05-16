@@ -42,7 +42,7 @@ describe("LatestArticles", () => {
               "ownerType": "articles",
             },
           },
-          "description": null,
+          "description": "Your guide to the art world",
           "title": "Artsy Editorial",
         },
         "contextModule": "articleRail",
