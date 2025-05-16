@@ -9,7 +9,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.lotsForYouRail,
   component: {
-    title: "Auction Lots for You",
+    title: "Your Auction Picks",
     behaviors: {
       viewAll: {
         buttonText: "Browse All Artworks",

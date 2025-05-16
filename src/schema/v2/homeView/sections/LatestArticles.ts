@@ -11,6 +11,7 @@ export const LatestArticles: HomeViewSection = {
   contextModule: ContextModule.articleRail,
   component: {
     title: "Artsy Editorial",
+    description: "Your guide to the art world",
     behaviors: {
       viewAll: {
         ownerType: OwnerType.articles,
