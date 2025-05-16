@@ -45,7 +45,7 @@ describe("AuctionLotsForYou", () => {
             },
           },
           "description": null,
-          "title": "Auction Lots for You",
+          "title": "Your Auction Picks",
         },
         "contextModule": "lotsForYouRail",
         "internalID": "home-view-section-auction-lots-for-you",

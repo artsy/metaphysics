@@ -42,7 +42,7 @@ describe("ViewingRooms", () => {
               "ownerType": "viewingRooms",
             },
           },
-          "description": null,
+          "description": "Immersive online exhibition spaces by top galleries",
           "title": "Viewing Rooms",
         },
         "contextModule": "featuredViewingRoomsRail",

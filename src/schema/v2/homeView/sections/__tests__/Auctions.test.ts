@@ -43,7 +43,7 @@ describe("Auctions", () => {
             },
           },
           "description": null,
-          "title": "Auctions",
+          "title": "Discover Auctions on Artsy",
         },
         "contextModule": "auctionRail",
         "internalID": "home-view-section-auctions",
