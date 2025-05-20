@@ -10600,6 +10600,9 @@ type DisplayTexts {
 
   # Text to display as a first message on the page (header)
   title: String!
+
+  # Wire specific type that specifies which wire details to use
+  wireType: DisplayTextsWireTypeEnum
 }
 
 enum DisplayTextsMessageTypeEnum {
@@ -10619,6 +10622,12 @@ enum DisplayTextsMessageTypeEnum {
   SUBMITTED_OFFER
   SUBMITTED_ORDER
   UNKNOWN
+}
+
+enum DisplayTextsWireTypeEnum {
+  WIRE_EUR
+  WIRE_GBP
+  WIRE_USD
 }
 
 type DoNotUseThisPartner {

@@ -63,6 +63,7 @@ describe("Me", () => {
               displayTexts {
                 title
                 messageType
+                wireType
               }
 
               fulfillmentOptions {
@@ -143,6 +144,7 @@ describe("Me", () => {
         displayTexts: {
           title: "Congratulations!",
           messageType: "APPROVED_SHIP",
+          wireType: null,
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",
