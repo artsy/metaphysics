@@ -9,7 +9,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           id: "partner123"
           metadata: {
             availability: SOLD
-            domestic_shipping_fee_cents: 20000
+            domesticShippingFeeCents: 20000
             locationId: "location456"
             category: "Painting"
             ecommerce: true
