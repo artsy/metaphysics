@@ -21,6 +21,7 @@ interface Input {
   id: string
   metadata?: {
     availability?: string
+    domesticShippingFeeCents?: number
     ecommerce: boolean
     locationId?: string
     category?: string
@@ -34,6 +35,7 @@ interface Input {
     artworkIds?: string[]
     locationId?: string
     partnerArtistId?: string
+    published?: boolean
   }
 }
 
@@ -43,6 +45,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     availability: {
       type: Availability,
       description: "The availaiblity to be assigned",
+    },
+    domesticShippingFeeCents: {
+      type: GraphQLInt,
+      description:
+        "Flat fee for domestic shipping. It must be entered in cents.",
     },
     locationId: {
       type: GraphQLString,
@@ -93,6 +100,10 @@ const BulkUpdateArtworksFilterInput = new GraphQLInputObjectType({
     partnerArtistId: {
       type: GraphQLString,
       description: "Filter artworks by partner artist id",
+    },
+    published: {
+      type: GraphQLBoolean,
+      description: "Filter artworks by published status",
     },
   },
 })
@@ -201,6 +212,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     if (metadata) {
       gravityOptions.metadata = {
         availability: metadata.availability,
+        domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         location_id: metadata.locationId,
         category: metadata.category,
         price_listed: metadata.priceListed,
@@ -217,6 +229,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         artwork_ids: filters.artworkIds,
         location_id: filters.locationId,
         partner_artist_id: filters.partnerArtistId,
+        published: filters.published,
       }
     }
 

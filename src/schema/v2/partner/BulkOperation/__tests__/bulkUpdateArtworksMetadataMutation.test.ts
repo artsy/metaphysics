@@ -9,6 +9,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           id: "partner123"
           metadata: {
             availability: SOLD
+            domesticShippingFeeCents: 20000
             locationId: "location456"
             category: "Painting"
             ecommerce: true
@@ -21,6 +22,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             availability: FOR_SALE
             locationId: "oldLocation"
             partnerArtistId: "artist789"
+            published: true
           }
         }
       ) {
@@ -65,6 +67,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       {
         metadata: {
           availability: "sold",
+          domestic_shipping_fee_cents: 20000,
           location_id: "location456",
           category: "Painting",
           ecommerce: true,
@@ -77,6 +80,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           availability: "for sale",
           location_id: "oldLocation",
           partner_artist_id: "artist789",
+          published: true,
         },
       }
     )
