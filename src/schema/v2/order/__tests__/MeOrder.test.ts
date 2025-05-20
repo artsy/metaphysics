@@ -60,9 +60,9 @@ describe("Me", () => {
               }
               buyerStateExpiresAt
               code
+              currencyCode
               displayTexts {
                 title
-                message
                 messageType
               }
 
@@ -143,13 +143,12 @@ describe("Me", () => {
         buyerStateExpiresAt: "January 1, 2035 19:00 EST",
         displayTexts: {
           title: "Congratulations!",
-          message:
-            "Your order has been confirmed. Thank you for your purchase.<br/><br/>You will be notified when the work has shipped, typically within 5-7 business days.<br/>You can <a href='#' data-link='contact-gallery'>contact the gallery</a> with any questions about your order.",
           messageType: "APPROVED_SHIP",
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",
         code: "order-code",
+        currencyCode: "USD",
         availableShippingCountries: ["US", "JP"],
         buyerTotal: {
           display: "US$5,000",
