@@ -60,10 +60,10 @@ describe("Me", () => {
               }
               buyerStateExpiresAt
               code
+              currencyCode
               displayTexts {
                 title
                 messageType
-                wireType
               }
 
               fulfillmentOptions {
@@ -144,11 +144,11 @@ describe("Me", () => {
         displayTexts: {
           title: "Congratulations!",
           messageType: "APPROVED_SHIP",
-          wireType: null,
         },
         mode: "BUY",
         source: "ARTWORK_PAGE",
         code: "order-code",
+        currencyCode: "USD",
         availableShippingCountries: ["US", "JP"],
         buyerTotal: {
           display: "US$5,000",

@@ -62,21 +62,6 @@ const DisplayTextsMessageTypeEnum = new GraphQLEnumType({
   },
 })
 
-const DisplayTextsWireTypeEnum = new GraphQLEnumType({
-  name: "DisplayTextsWireTypeEnum",
-  values: {
-    WIRE_GBP: {
-      value: "WIRE_GBP",
-    },
-    WIRE_EUR: {
-      value: "WIRE_EUR",
-    },
-    WIRE_USD: {
-      value: "WIRE_USD",
-    },
-  },
-})
-
 const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
   name: "DisplayTexts",
   description:
@@ -91,11 +76,6 @@ const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
       description:
         "Granular order states specific type that should be directly interpreted by clients",
     },
-    wireType: {
-      type: DisplayTextsWireTypeEnum,
-      description:
-        "Wire specific type that specifies which wire details to use",
-    },
   },
 })
 
@@ -109,7 +89,6 @@ export const DisplayTexts: GraphQLFieldConfig<OrderJSON, ResolverContext> = {
 const resolveDisplayTexts = (order: OrderJSON) => {
   const isBuyOrder = order.mode === "buy" ? true : false
   const isPickup = order.fulfillment_type == "pickup"
-  const currencyCode = order.currency_code
 
   switch (order.buyer_state) {
     case "submitted": {
@@ -130,19 +109,11 @@ const resolveDisplayTexts = (order: OrderJSON) => {
           ? "PROCESSING_PAYMENT_PICKUP"
           : "PROCESSING_PAYMENT_SHIP",
       }
-    case "processing_offline_payment": {
-      let wireType = "WIRE_USD"
-      if (currencyCode === "GBP") {
-        wireType = "WIRE_GBP"
-      } else if (currencyCode == "EUR") {
-        wireType = "WIRE_EUR"
-      }
+    case "processing_offline_payment":
       return {
         title: "Congratulations!",
         messageType: "PROCESSING_WIRE",
-        wireType: wireType,
       }
-    }
     case "approved": {
       let messageType = "UNKNOWN"
 

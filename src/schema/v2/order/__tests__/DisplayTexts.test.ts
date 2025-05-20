@@ -24,7 +24,6 @@ describe("DisplayTexts", () => {
           displayTexts {
             title
             messageType
-            wireType
           }
         }
       }
@@ -44,7 +43,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Great choice!",
         messageType: "SUBMITTED_ORDER",
-        wireType: null,
       })
     })
 
@@ -60,7 +58,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Great choice!",
         messageType: "SUBMITTED_OFFER",
-        wireType: null,
       })
     })
   })
@@ -78,7 +75,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Payment failed",
         messageType: "PAYMENT_FAILED",
-        wireType: null,
       })
     })
   })
@@ -97,7 +93,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your payment is processing",
         messageType: "PROCESSING_PAYMENT_PICKUP",
-        wireType: null,
       })
     })
 
@@ -114,7 +109,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your payment is processing",
         messageType: "PROCESSING_PAYMENT_SHIP",
-        wireType: null,
       })
     })
   })
@@ -133,41 +127,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "PROCESSING_WIRE",
-        wireType: "WIRE_USD",
-      })
-    })
-
-    it("returns correct display texts for GBP", async () => {
-      orderJson.buyer_state = "processing_offline_payment"
-      orderJson.currency_code = "GBP"
-      context = {
-        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-      }
-
-      const result = await runAuthenticatedQuery(query, context)
-
-      expect(result.me.order.displayTexts).toEqual({
-        title: "Congratulations!",
-        messageType: "PROCESSING_WIRE",
-        wireType: "WIRE_GBP",
-      })
-    })
-
-    it("returns correct display texts for EUR", async () => {
-      orderJson.buyer_state = "processing_offline_payment"
-      orderJson.currency_code = "EUR"
-      context = {
-        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-      }
-
-      const result = await runAuthenticatedQuery(query, context)
-
-      expect(result.me.order.displayTexts).toEqual({
-        title: "Congratulations!",
-        messageType: "PROCESSING_WIRE",
-        wireType: "WIRE_EUR",
       })
     })
   })
@@ -186,7 +145,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_PICKUP",
-        wireType: null,
       })
     })
 
@@ -204,7 +162,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_STANDARD",
-        wireType: null,
       })
     })
 
@@ -222,7 +179,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_EXPRESS",
-        wireType: null,
       })
     })
 
@@ -240,7 +196,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_WHITE_GLOVE",
-        wireType: null,
       })
     })
 
@@ -258,7 +213,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP",
-        wireType: null,
       })
     })
   })
@@ -276,7 +230,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Good news, your order has shipped!",
         messageType: "SHIPPED",
-        wireType: null,
       })
     })
   })
@@ -295,7 +248,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order has been picked up",
         messageType: "COMPLETED_PICKUP",
-        wireType: null,
       })
     })
 
@@ -312,7 +264,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order has been delivered",
         messageType: "COMPLETED_SHIP",
-        wireType: null,
       })
     })
   })
@@ -330,7 +281,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order was canceled",
         messageType: "CANCELLED_ORDER",
-        wireType: null,
       })
     })
   })
@@ -348,7 +298,6 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order",
         messageType: "UNKNOWN",
-        wireType: null,
       })
     })
   })
