@@ -21,7 +21,7 @@ interface Input {
   id: string
   metadata?: {
     availability?: string
-    domestic_shipping_fee_cents?: number
+    domesticShippingFeeCents?: number
     ecommerce: boolean
     locationId?: string
     category?: string
@@ -46,7 +46,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: Availability,
       description: "The availaiblity to be assigned",
     },
-    domestic_shipping_fee_cents: {
+    domesticShippingFeeCents: {
       type: GraphQLInt,
       description:
         "Flat fee for domestic shipping. It must be entered in cents.",
@@ -212,7 +212,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     if (metadata) {
       gravityOptions.metadata = {
         availability: metadata.availability,
-        domestic_shipping_fee_cents: metadata.domestic_shipping_fee_cents,
+        domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         location_id: metadata.locationId,
         category: metadata.category,
         price_listed: metadata.priceListed,
