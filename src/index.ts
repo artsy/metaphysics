@@ -153,7 +153,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
   const xImpersonateUserID = req.headers["x-impersonate-user-id"] as
     | string
     | undefined
-
+  const isCMSRequest = !!(req.headers["x-cms-request"] == "true")
   const ipAddress = requestIPAddress(req)
 
   const { requestIDs } = res.locals
@@ -194,6 +194,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     appToken,
     ipAddress,
     xImpersonateUserID,
+    isCMSRequest,
   }
 
   const validationRules = [
