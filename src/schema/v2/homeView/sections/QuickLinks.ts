@@ -5,6 +5,7 @@ import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import { ResolverContext } from "types/graphql"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { priceBucketBasedOnPricePreference } from "../helpers/priceBucketBasedOnPricePreference"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -14,7 +15,9 @@ export const QuickLinks: HomeViewSection = {
   requiresAuthentication: true,
   resolver: async (_parent, _args, context, _info) => {
     let links = getDisplayableQuickLinks(context)
+    links = await maybeInsertArtworksWithinPriceBudgetLink(links, context)
     links = await maybeInsertYourBidsLink(links, context)
+
     return links
   },
 }
@@ -177,5 +180,48 @@ async function maybeInsertYourBidsLink(
       links.splice(auctionsIndex + 1, 0, yourBids)
     }
   }
+  return links
+}
+
+/**
+ * If the use has a price preference set in Vortex, we insert
+ * the **Art Under $X** link immediately after the **Auctions** link.
+ * We return the (maybe) updated full list of quick links.
+ */
+async function maybeInsertArtworksWithinPriceBudgetLink(
+  links: NavigationPill[],
+  context: ResolverContext
+): Promise<NavigationPill[]> {
+  if (isFeatureFlagEnabled("onyx_enable-quick-links-price-budget")) {
+    const { UserPricePreference } = require("schema/v2/me/userPricePreference")
+
+    const pricePreference = await UserPricePreference.resolve?.(
+      {},
+      {},
+      context,
+      {} as any
+    )
+
+    if (pricePreference) {
+      const priceBucket = priceBucketBasedOnPricePreference(pricePreference)
+
+      if (!priceBucket) {
+        return links
+      }
+
+      const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
+
+      const priceBudgetPill: NavigationPill = {
+        title: priceBucket.text,
+        href: `/collect?price_range=${priceBucket.priceRange}`,
+        ownerType: OwnerType.collect,
+        icon: undefined,
+        minimumEigenVersion: { major: 8, minor: 74, patch: 0 }, // when /collect screen was added to the app
+      }
+
+      links.splice(auctionsIndex + 1, 0, priceBudgetPill)
+    }
+  }
+
   return links
 }

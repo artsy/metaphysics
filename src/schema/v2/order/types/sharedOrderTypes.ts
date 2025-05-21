@@ -285,6 +285,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Order code",
       resolve: ({ code }) => code,
     },
+    currencyCode: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Currency code",
+      resolve: ({ currency_code }) => currency_code,
+    },
     displayTexts: DisplayTexts,
     fulfillmentDetails: {
       type: FulfillmentDetailsType,
