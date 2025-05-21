@@ -563,12 +563,18 @@ const filterArtworksConnectionTypeFactory = (
       include_artworks_by_followed_artists,
       include_all_json,
       visibility_level,
+      price_range,
       aggregations: aggregationOptions = [],
     } = options
 
     // Check if connection args missing.
     if (first == null && last == null && size == null) {
       throw new Error("You must pass either `first`, `last` or `size`.")
+    }
+
+    // inc-223
+    if (price_range === "*-1") {
+      throw new Error("Invalid input")
     }
 
     const requestedPersonalizedAggregation = aggregationOptions.includes(
