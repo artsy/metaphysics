@@ -34,6 +34,10 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_DEPTH: { value: "invalid_depth" },
     INVALID_DIAMETER: { value: "invalid_diameter" },
     INVALID_MEDIUM: { value: "invalid_medium" },
+    INVALID_FRAMED_HEIGHT: { value: "invalid_framed_height" },
+    INVALID_FRAMED_WIDTH: { value: "invalid_framed_width" },
+    INVALID_FRAMED_DEPTH: { value: "invalid_framed_depth" },
+    INVALID_FRAMED_DIAMETER: { value: "invalid_framed_diameter" },
     UNMATCHED_IMAGE: { value: "unmatched_image" },
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
@@ -204,6 +208,22 @@ const ArtworkImportRowType = new GraphQLObjectType({
             artworkCondition: {
               type: GraphQLString,
               resolve: ({ ArtworkCondition }) => ArtworkCondition,
+            },
+            framedHeight: {
+              type: GraphQLString,
+              resolve: ({ FramedHeight }) => FramedHeight,
+            },
+            framedWidth: {
+              type: GraphQLString,
+              resolve: ({ FramedWidth }) => FramedWidth,
+            },
+            framedDepth: {
+              type: GraphQLString,
+              resolve: ({ FramedDepth }) => FramedDepth,
+            },
+            framedDiameter: {
+              type: GraphQLString,
+              resolve: ({ FramedDiameter }) => FramedDiameter,
             },
           },
         })
