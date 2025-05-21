@@ -15,8 +15,8 @@ export const QuickLinks: HomeViewSection = {
   requiresAuthentication: true,
   resolver: async (_parent, _args, context, _info) => {
     let links = getDisplayableQuickLinks(context)
-    links = await maybeInsertYourBidsLink(links, context)
     links = await maybeInsertArtworksWithinPriceBudgetLink(links, context)
+    links = await maybeInsertYourBidsLink(links, context)
 
     return links
   },
@@ -185,7 +185,7 @@ async function maybeInsertYourBidsLink(
 
 /**
  * If the use has a price preference set in Vortex, we insert
- * the **Art Under $X** link immediately after the **New This Week** link.
+ * the **Art Under $X** link immediately after the **Auctions** link.
  * We return the (maybe) updated full list of quick links.
  */
 async function maybeInsertArtworksWithinPriceBudgetLink(
@@ -209,18 +209,17 @@ async function maybeInsertArtworksWithinPriceBudgetLink(
         return links
       }
 
-      const newThisWeekIndex = links.findIndex(
-        (link) => link.href === "/collection/new-this-week"
-      )
+      const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
 
       const priceBudgetPill: NavigationPill = {
         title: priceBucket.text,
         href: `/collect?price_range=${priceBucket.priceRange}`,
         ownerType: OwnerType.collect,
         icon: undefined,
+        minimumEigenVersion: { major: 8, minor: 74, patch: 0 }, // when /collect screen was added to the app
       }
 
-      links.splice(newThisWeekIndex + 1, 0, priceBudgetPill)
+      links.splice(auctionsIndex + 1, 0, priceBudgetPill)
     }
   }
 
