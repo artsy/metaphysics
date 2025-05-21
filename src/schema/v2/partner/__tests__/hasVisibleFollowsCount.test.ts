@@ -132,34 +132,5 @@ describe("Partner", () => {
       expect(profileLoader).toHaveBeenCalledWith("example-profile")
       expect(partner.hasVisibleFollowsCount).toBe(false)
     })
-
-    it("returns false when user is not authenticated", async () => {
-      const query = gql`
-        {
-          partner(id: "example-partner") {
-            hasVisibleFollowsCount
-          }
-        }
-      `
-
-      const partnerLoader = jest.fn().mockReturnValue(
-        Promise.resolve({
-          id: "example-partner",
-          default_profile_id: "example-profile",
-        })
-      )
-
-      const profileLoader = jest.fn()
-
-      const { partner } = await runAuthenticatedQuery(query, {
-        partnerLoader,
-        profileLoader,
-        userID: undefined,
-        accessToken: undefined,
-      })
-
-      expect(partner.hasVisibleFollowsCount).toBe(false)
-      expect(profileLoader).not.toHaveBeenCalledWith("example-profile")
-    })
   })
 })

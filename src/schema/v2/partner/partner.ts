@@ -966,14 +966,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       hasVisibleFollowsCount: {
         type: GraphQLNonNull(GraphQLBoolean),
         description: "If the partner has more than 500 follows",
-        resolve: async (
-          { default_profile_id },
-          _,
-          { profileLoader, userID, accessToken }
-        ) => {
-          if (!userID || !accessToken) {
-            return false
-          }
+        resolve: async ({ default_profile_id }, _, { profileLoader }) => {
           try {
             const res = await profileLoader(default_profile_id)
             return res?.follows_count > 500
