@@ -418,6 +418,27 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
+    totalListPrice: {
+      type: Money,
+      description:
+        "The total list price of items (accounting for limited partner offer if applicable)",
+      resolve: (
+        { total_list_price_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
   },
 })
 
