@@ -749,7 +749,10 @@ describe("Me", () => {
         it("returns a shipping line for type pickup", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
-          orderJson.fulfillment_options = [{ type: "pickup", selected: true }]
+          orderJson.selected_fulfillment_option = {
+            type: "pickup",
+            selected: true,
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -784,9 +787,10 @@ describe("Me", () => {
         it("returns the correct display name for shipping line with free international shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
-          orderJson.fulfillment_options = [
-            { type: "international_flat", selected: true },
-          ]
+          orderJson.selected_fulfillment_option = {
+            type: "international_flat",
+            selected: true,
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -820,9 +824,10 @@ describe("Me", () => {
         it("returns the correct display name for free domestic shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
-          orderJson.fulfillment_options = [
-            { type: "domestic_flat", selected: true },
-          ]
+          orderJson.selected_fulfillment_option = {
+            type: "domestic_flat",
+            selected: true,
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -856,9 +861,10 @@ describe("Me", () => {
         it("returns the correct display name for flat fee domestic shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 420
-          orderJson.fulfillment_options = [
-            { type: "domestic_flat", selected: true },
-          ]
+          orderJson.selected_fulfillment_option = {
+            type: "domestic_flat",
+            selected: true,
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -892,9 +898,11 @@ describe("Me", () => {
         it("returns the correct display name for flat fee international shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 420
-          orderJson.fulfillment_options = [
-            { type: "international_flat", selected: true },
-          ]
+          orderJson.selected_fulfillment_option = {
+            type: "international_flat",
+            selected: true,
+          }
+
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),

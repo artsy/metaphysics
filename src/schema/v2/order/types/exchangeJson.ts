@@ -2,6 +2,19 @@
  * The order json as received from the exchange REST API.
  * Used to nudge our our OrderType resolvers
  */
+export interface FulfillmentOptionJson {
+  type:
+    | "domestic_flat"
+    | "international_flat"
+    | "pickup"
+    | "artsy_standard"
+    | "artsy_express"
+    | "artsy_white_glove"
+    | "shipping_tbd"
+  amount_minor?: number
+  selected?: boolean
+  shipping_quote_id?: string
+}
 export interface OrderJSON {
   id: string
   code: string
@@ -29,26 +42,8 @@ export interface OrderJSON {
   buyer_state?: string
   buyer_state_expires_at?: string
   fulfillment_type?: string
-  fulfillment_options: Array<{
-    type:
-      | "domestic_flat"
-      | "international_flat"
-      | "pickup"
-      | "artsy_standard"
-      | "artsy_express"
-      | "artsy_white_glove"
-      | "shipping_tbd"
-    amount_minor: number
-    selected?: boolean
-  }>
-  selected_fulfillment_option?:
-    | "domestic_flat"
-    | "international_flat"
-    | "pickup"
-    | "artsy_standard"
-    | "artsy_express"
-    | "artsy_white_glove"
-    | "shipping_tbd"
+  fulfillment_options: Array<FulfillmentOptionJson>
+  selected_fulfillment_option?: FulfillmentOptionJson
   line_items: Array<{
     id: string
     artwork_id: string

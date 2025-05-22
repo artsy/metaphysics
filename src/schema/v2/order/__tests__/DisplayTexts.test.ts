@@ -151,7 +151,10 @@ describe("DisplayTexts", () => {
     it("returns correct display texts for standard shipping", async () => {
       orderJson.buyer_state = "approved"
       orderJson.fulfillment_type = "ship"
-      orderJson.selected_fulfillment_option = "artsy_standard"
+      orderJson.selected_fulfillment_option = {
+        type: "artsy_standard",
+        amount_minor: 2344,
+      }
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -168,7 +171,10 @@ describe("DisplayTexts", () => {
     it("returns correct display texts for express shipping", async () => {
       orderJson.buyer_state = "approved"
       orderJson.fulfillment_type = "ship"
-      orderJson.selected_fulfillment_option = "artsy_express"
+      orderJson.selected_fulfillment_option = {
+        type: "artsy_express",
+        amount_minor: 123,
+      }
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -185,7 +191,10 @@ describe("DisplayTexts", () => {
     it("returns correct display texts for white glove shipping", async () => {
       orderJson.buyer_state = "approved"
       orderJson.fulfillment_type = "ship"
-      orderJson.selected_fulfillment_option = "artsy_white_glove"
+      orderJson.selected_fulfillment_option = {
+        type: "artsy_white_glove",
+        amount_minor: 456,
+      }
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -202,7 +211,7 @@ describe("DisplayTexts", () => {
     it("returns correct display texts for default shipping", async () => {
       orderJson.buyer_state = "approved"
       orderJson.fulfillment_type = "ship"
-      orderJson.selected_fulfillment_option = "other"
+      orderJson.selected_fulfillment_option = { type: "other", amount_minor: 0 }
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
