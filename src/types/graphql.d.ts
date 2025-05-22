@@ -30,6 +30,7 @@ export interface ResolverContextValues {
 
   ipAddress: string
   xImpersonateUserID?: string
+  isCMSRequest: boolean
 }
 
 export type ResolverContext = ResolverContextValues &

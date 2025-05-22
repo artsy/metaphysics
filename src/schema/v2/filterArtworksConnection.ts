@@ -543,6 +543,8 @@ const filterArtworksConnectionTypeFactory = (
         filterArtworksLoader: filterArtworksAuthenticatedLoader,
       },
       filterArtworksUncachedLoader,
+      isCMSRequest,
+      partnerArtworksAllLoader,
     } = ctx
     const argsProvidedAtRoot = convertFilterArgs(rootArguments as any)
     removeEmptyValues(argsProvidedAtRoot)
@@ -654,7 +656,64 @@ const filterArtworksConnectionTypeFactory = (
       return { hits: null, aggregations: null, gravityOptions }
     }
 
-    const { aggregations, hits } = await loader(gravityOptions)
+    let hits, aggregations
+
+    // For simple CMS requests, use partnerArtworksAllLoader instead of ElasticSearch.
+    // This is a workaround to try to not use ElasticSearch if we don't need to (for resiliency).
+    // We've seen ElasticSearch can not be stable and partners notice that in CMS.
+    // Currently, this will serve requests for the landing page of /artworks listings in CMS.
+    if (isCMSRequest && partnerArtworksAllLoader) {
+      const {
+        partnerID,
+        sort,
+        includeUnpublished,
+        disableNotForSaleSorting,
+        medium,
+        // pagination arguments we want to exclude
+        // from the check for other filters
+        first,
+        after,
+        page,
+        ...otherFilters
+      } = input
+
+      const isSimpleRequest =
+        Boolean(partnerID) &&
+        sort === "-created_at" &&
+        includeUnpublished &&
+        disableNotForSaleSorting &&
+        // medium must be either undefined/null or the wildcard "*"
+        (!medium || medium === "*") &&
+        // check no other properties besides those above
+        // (and ignored pagination args) were passed in
+        Object.keys(otherFilters).length === 0
+
+      if (isSimpleRequest) {
+        const partnerArtworksOptions = {
+          size: gravityOptions.size,
+          page: gravityOptions.page,
+          sort: "-created_at,-id",
+          total_count: true,
+        }
+
+        const { body, headers } = await partnerArtworksAllLoader(
+          partnerID,
+          partnerArtworksOptions
+        )
+
+        const total = parseInt(headers["x-total-count"] || "0", 10)
+        aggregations = { total: { value: total } }
+        hits = body
+      }
+    }
+
+    // If we didn't already load the data via a different loader, use ElasticSearch.
+    if (!hits || !aggregations) {
+      const result = await loader(gravityOptions)
+      hits = result.hits
+      aggregations = result.aggregations
+    }
+
     if (!aggregations || !aggregations.total) {
       throw new Error(
         "Expected filter results to contain a `total` aggregation"
