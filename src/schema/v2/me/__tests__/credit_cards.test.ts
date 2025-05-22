@@ -5,8 +5,8 @@ import gql from "lib/gql"
 describe("CreditCards", () => {
   it("returns a credit card connection", () => {
     const creditCards = [
-      { id: "12345", brand: "Visa" },
-      { id: "6789", brand: "Mastercard" },
+      { id: "12345", brand: "Visa", last_digits: "1234" },
+      { id: "6789", brand: "Mastercard", last_digits: "6789" },
     ]
     const context = {
       meCreditCardsLoader: () =>
