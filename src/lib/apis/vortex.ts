@@ -7,8 +7,7 @@ const { VORTEX_API_BASE, VORTEX_TOKEN } = config
 
 export const vortex = (path, accessToken, fetchOptions: any = {}) => {
   const headers = { Accept: "application/json" }
-  // NOTE: we use the Vortex token instead of fetchOptions.appToken
-  const token = accessToken || VORTEX_TOKEN
+  const token = accessToken || fetchOptions.appToken || VORTEX_TOKEN
 
   assign(headers, { Authorization: `Bearer ${token}` })
 
