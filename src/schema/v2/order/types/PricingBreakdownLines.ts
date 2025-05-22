@@ -11,7 +11,7 @@ import {
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import type { ResolverContext } from "types/graphql"
-import { OrderJSON } from "./exchangeJson"
+import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 
 const COPY = {
   subtotal: { displayName: "Subtotal" },
@@ -97,9 +97,9 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       amount: itemsTotalCents && resolveMoney(itemsTotalCents),
     }
 
-    const selectedFulfillment = order.fulfillment_options.find(
-      (option) => option.selected
-    )
+    const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
+      type: "shipping_tbd",
+    }
 
     let shippingLine: ResolvedPriceLineData | null = null
     const hasShippingTotal = shippingTotalCents != null
