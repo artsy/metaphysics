@@ -942,4 +942,148 @@ describe("artworksConnection", () => {
       ])
     })
   })
+
+  describe("CMS request filtering", () => {
+    describe("simple CMS requests", () => {
+      it("uses partnerArtworksAllLoader for simple CMS requests", async () => {
+        const partnerArtworks = [
+          { id: "artwork1", title: "Artwork 1" },
+          { id: "artwork2", title: "Artwork 2" },
+        ]
+
+        const mockPartnerArtworksAllLoader = jest.fn(() =>
+          Promise.resolve({
+            body: partnerArtworks,
+            headers: {
+              "x-total-count": "2",
+            },
+          })
+        )
+
+        const mockFilterArtworksLoader = jest.fn()
+
+        const context = {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: {
+            filterArtworksLoader: mockFilterArtworksLoader,
+          },
+          isCMSRequest: true,
+          partnerArtworksAllLoader: mockPartnerArtworksAllLoader,
+        }
+
+        const query = gql`
+          {
+            artworksConnection(
+              input: {
+                partnerID: "partner123"
+                sort: "-created_at"
+                includeUnpublished: true
+                disableNotForSaleSorting: true
+                medium: "*"
+                first: 10
+              }
+            ) {
+              edges {
+                node {
+                  slug
+                  title
+                }
+              }
+              counts {
+                total
+              }
+            }
+          }
+        `
+
+        const { artworksConnection } = await runQuery(query, context)
+
+        expect(mockPartnerArtworksAllLoader).toHaveBeenCalledWith(
+          "partner123",
+          expect.objectContaining({
+            size: 10,
+            page: 1,
+            sort: "-created_at,-id",
+            total_count: true,
+          })
+        )
+
+        expect(mockFilterArtworksLoader).not.toHaveBeenCalled()
+
+        expect(artworksConnection.edges).toEqual([
+          { node: { slug: "artwork1", title: "Artwork 1" } },
+          { node: { slug: "artwork2", title: "Artwork 2" } },
+        ])
+        expect(artworksConnection.counts.total).toEqual(2)
+      })
+    })
+
+    describe("complex CMS requests", () => {
+      it("falls back to ElasticSearch for CMS requests with additional filters", async () => {
+        const mockFilterArtworksLoader = jest.fn(() =>
+          Promise.resolve({
+            hits: [
+              {
+                id: "artwork1",
+                title: "Artwork 1",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 1,
+              },
+            },
+          })
+        )
+
+        const mockPartnerArtworksAllLoader = jest.fn()
+
+        const context = {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: {
+            filterArtworksLoader: mockFilterArtworksLoader,
+          },
+          isCMSRequest: true,
+          partnerArtworksAllLoader: mockPartnerArtworksAllLoader,
+        }
+
+        const query = gql`
+          {
+            artworksConnection(
+              input: {
+                partnerID: "partner123"
+                sort: "-created_at"
+                includeUnpublished: true
+                disableNotForSaleSorting: true
+                medium: "*"
+                priceRange: "1000-5000"
+                first: 10
+              }
+            ) {
+              edges {
+                node {
+                  slug
+                  title
+                }
+              }
+              counts {
+                total
+              }
+            }
+          }
+        `
+
+        const { artworksConnection } = await runQuery(query, context)
+
+        expect(mockFilterArtworksLoader).toHaveBeenCalled()
+
+        expect(mockPartnerArtworksAllLoader).not.toHaveBeenCalled()
+
+        expect(artworksConnection.edges).toEqual([
+          { node: { slug: "artwork1", title: "Artwork 1" } },
+        ])
+        expect(artworksConnection.counts.total).toEqual(1)
+      })
+    })
+  })
 })
