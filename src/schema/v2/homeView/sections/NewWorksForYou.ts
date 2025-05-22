@@ -9,7 +9,7 @@ export const NewWorksForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.newWorksForYouRail,
   component: {
-    title: "New Works for You", //TODO: add a/b test
+    title: "New Works for You",
     behaviors: {
       viewAll: {
         buttonText: "Browse All Artworks",
