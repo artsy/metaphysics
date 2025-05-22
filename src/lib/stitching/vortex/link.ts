@@ -9,6 +9,7 @@ import { responseLoggerLink } from "../logLinkMiddleware"
 import { setContext } from "apollo-link-context"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import { ResolverContext } from "types/graphql"
+import { tokenIfPropagatable } from "lib/apis/vortex"
 
 const { VORTEX_API_BASE, VORTEX_TOKEN } = config
 
@@ -25,7 +26,7 @@ export const createVortexLink = () => {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
       }
 
-      if (tokenLoader && !graphqlContext.appToken) {
+      if (tokenLoader && !tokenIfPropagatable(graphqlContext.appToken)) {
         return tokenLoader().then(({ token }) => {
           return {
             headers: Object.assign(headers, {
@@ -35,7 +36,7 @@ export const createVortexLink = () => {
         })
       }
 
-      const token = graphqlContext.appToken || VORTEX_TOKEN
+      const token = tokenIfPropagatable(graphqlContext.appToken) || VORTEX_TOKEN
       const bearer = `Bearer ${token}`
 
       return {
