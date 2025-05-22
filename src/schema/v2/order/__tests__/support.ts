@@ -34,6 +34,11 @@ export const baseOrderJson = {
     { type: "pickup", amount_minor: 0 },
     { type: "domestic_flat", amount_minor: 10000, selected: true },
   ],
+  selected_fulfillment_option: {
+    type: "domestic_flat",
+    amount_minor: 10000,
+    selected: true,
+  },
 }
 
 export const baseArtwork = {

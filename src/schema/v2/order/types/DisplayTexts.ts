@@ -120,11 +120,15 @@ const resolveDisplayTexts = (order: OrderJSON) => {
       if (isPickup) {
         messageType = "APPROVED_PICKUP"
       } else {
-        if (order.selected_fulfillment_option == "artsy_express") {
+        if (order.selected_fulfillment_option?.type == "artsy_express") {
           messageType = "APPROVED_SHIP_EXPRESS"
-        } else if (order.selected_fulfillment_option == "artsy_standard") {
+        } else if (
+          order.selected_fulfillment_option?.type == "artsy_standard"
+        ) {
           messageType = "APPROVED_SHIP_STANDARD"
-        } else if (order.selected_fulfillment_option == "artsy_white_glove") {
+        } else if (
+          order.selected_fulfillment_option?.type == "artsy_white_glove"
+        ) {
           messageType = "APPROVED_SHIP_WHITE_GLOVE"
         } else {
           messageType = "APPROVED_SHIP"
