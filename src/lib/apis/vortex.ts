@@ -21,9 +21,16 @@ export const vortex = (path, accessToken, fetchOptions: any = {}) => {
 
 export const tokenIfPropagatable = (token) => {
   const decoded = decodeUnverifiedJWT(token)
-  if (!decoded?.subject_application) {
+
+  const roles = decoded?.roles.split(",")
+  const isEmailProvider = roles?.includes("email_provider")
+
+  // If the token doesn't have the email provider role,
+  // we want to fallback to the Vortex token.
+  if (!isEmailProvider) {
     return null
   }
 
+  // Return the token with the email provider role
   return token
 }
