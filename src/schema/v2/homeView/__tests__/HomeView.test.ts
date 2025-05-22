@@ -247,7 +247,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
-                    "title": "We Think You'll Love",
+                    "title": "We Think You’ll Love",
                   },
                 },
               },

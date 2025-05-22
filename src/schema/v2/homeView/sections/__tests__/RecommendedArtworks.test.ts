@@ -46,7 +46,7 @@ describe("RecommendedArtworks", () => {
               },
             },
             "description": null,
-            "title": "We Think You'll Love",
+            "title": "We Think You’ll Love",
           },
           "contextModule": "artworkRecommendationsRail",
           "internalID": "home-view-section-recommended-artworks",

@@ -9,7 +9,7 @@ export const RecommendedArtworks: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.artworkRecommendationsRail,
   component: {
-    title: "We Think You'll Love",
+    title: "We Think You’ll Love",
     behaviors: {
       viewAll: {
         buttonText: "Browse All Artworks",
