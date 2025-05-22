@@ -11,7 +11,7 @@ export const Auctions: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionSales,
   contextModule: ContextModule.auctionRail,
   component: {
-    title: "Auctions",
+    title: "Discover Auctions on Artsy",
     behaviors: {
       viewAll: {
         href: "/auctions",

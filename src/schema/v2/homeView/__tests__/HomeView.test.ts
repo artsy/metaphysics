@@ -113,7 +113,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionSales",
                   "component": {
-                    "title": "Auctions",
+                    "title": "Discover Auctions on Artsy",
                   },
                 },
               },
@@ -247,7 +247,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
-                    "title": "Artwork Recommendations",
+                    "title": "We Think You’ll Love",
                   },
                 },
               },
@@ -277,7 +277,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
-                    "title": "Auction Lots for You",
+                    "title": "Your Auction Picks",
                   },
                 },
               },
@@ -285,7 +285,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionSales",
                   "component": {
-                    "title": "Auctions",
+                    "title": "Discover Auctions on Artsy",
                   },
                 },
               },
@@ -293,7 +293,7 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionAuctionResults",
                   "component": {
-                    "title": "Latest Auction Results",
+                    "title": "Auction Results for Artists You Follow",
                   },
                 },
               },
@@ -426,7 +426,7 @@ describe("homeView", () => {
             {
               "__typename": "HomeViewSectionArtworks",
               "component": {
-                "title": "Auction Lots for You",
+                "title": "Your Auction Picks",
               },
             }
           `)
