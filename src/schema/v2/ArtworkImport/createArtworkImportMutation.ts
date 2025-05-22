@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -58,6 +59,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     fileName: {
       type: GraphQLString,
     },
+    parseWithAI: {
+      type: GraphQLBoolean,
+    },
   },
   outputFields: {
     artworkImportOrError: {
@@ -75,6 +79,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       s3_bucket: args.s3Bucket,
       s3_key: args.s3Key,
       file_name: args.fileName,
+      parse_with_ai: args.parseWithAI,
     }
 
     try {
