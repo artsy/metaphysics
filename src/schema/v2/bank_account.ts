@@ -17,6 +17,9 @@ import { BankAccountTypes } from "./me/bank_accounts"
 // fields: https://github.com/artsy/gravity/blob/main/db/schema.rb
 export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
   name: "BankAccount",
+  isTypeOf: (data) => {
+    return !!data.last4
+  },
   fields: () => ({
     ...InternalIDFields,
     bankName: {

@@ -945,5 +945,128 @@ describe("Me", () => {
         })
       })
     })
+
+    describe("paymentDetails", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              creditCardWalletType
+              paymentMethod
+              paymentMethodDetails {
+                __typename
+                ... on CreditCard {
+                  brand
+                  lastDigits
+                  expirationYear
+                  expirationMonth
+                }
+                ... on BankAccount {
+                  bankName
+                  last4
+                }
+                ... on WireTransfer {
+                  isManualPayment
+                }
+              }
+            }
+          }
+        }
+      `
+
+      it("returns credit card wallet type", async () => {
+        orderJson.credit_card_wallet_type = "apple_pay"
+        orderJson.payment_method = "credit card"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.creditCardWalletType).toEqual("APPLE_PAY")
+      })
+
+      it("returns credit card details", async () => {
+        orderJson.payment_method = "credit card"
+        orderJson.credit_card_id = "credit-card-id"
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          creditCardLoader: jest.fn().mockResolvedValue({
+            brand: "Visa",
+            last_digits: "1234",
+            expiration_year: 2025,
+            expiration_month: 12,
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.paymentMethodDetails).toEqual({
+          __typename: "CreditCard",
+          brand: "Visa",
+          lastDigits: "1234",
+          expirationYear: 2025,
+          expirationMonth: 12,
+        })
+      })
+
+      it("returns ach bank account details", async () => {
+        orderJson.payment_method = "us_bank_account"
+        orderJson.bank_account_id = "ach-account-id"
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          bankAccountLoader: jest.fn().mockResolvedValue({
+            bank_name: "Bank of America",
+            last4: "1234",
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.paymentMethodDetails).toEqual({
+          __typename: "BankAccount",
+          bankName: "Bank of America",
+          last4: "1234",
+        })
+      })
+
+      it("returns sepa bank account details", async () => {
+        orderJson.payment_method = "sepa_debit"
+        orderJson.bank_account_id = "bank-account-id"
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          bankAccountLoader: jest.fn().mockResolvedValue({
+            bank_name: "Commerzebank",
+            last4: "6789",
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.paymentMethodDetails).toEqual({
+          __typename: "BankAccount",
+          bankName: "Commerzebank",
+          last4: "6789",
+        })
+      })
+
+      it("returns wire transfer details", async () => {
+        orderJson.payment_method = "wire_transfer"
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.paymentMethodDetails).toEqual({
+          __typename: "WireTransfer",
+          isManualPayment: true,
+        })
+      })
+    })
   })
 })
