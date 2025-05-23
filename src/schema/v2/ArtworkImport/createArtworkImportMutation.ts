@@ -15,11 +15,19 @@ import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkImportSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => !!data.id || !!data.queued,
   fields: () => ({
     artworkImport: {
       type: ArtworkImportType,
-      resolve: (result) => result,
+      resolve: (result) => {
+        if (result.id) {
+          return result
+        }
+      },
+    },
+    queued: {
+      type: GraphQLBoolean,
+      resolve: ({ queued }) => queued,
     },
   }),
 })
@@ -47,6 +55,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtworkImport",
   inputFields: {
+    async: {
+      type: GraphQLBoolean,
+    },
     partnerID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -75,6 +86,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs = {
+      async: args.async,
       partner_id: args.partnerID,
       s3_bucket: args.s3Bucket,
       s3_key: args.s3Key,
