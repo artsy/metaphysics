@@ -25,6 +25,7 @@ describe("Me", () => {
       seller_type: "gallery",
       buyer_total_cents: null,
       items_total_cents: 500000,
+      total_list_price_cents: 700000,
       shipping_total_cents: 2000,
       buyer_phone_number: "123-456-7890",
       buyer_phone_number_country_code: "US",
@@ -96,6 +97,11 @@ describe("Me", () => {
                 display
                 minor
               }
+              totalListPrice {
+                currencyCode
+                display
+                minor
+              }
               lineItems {
                 artwork {
                   title
@@ -157,6 +163,11 @@ describe("Me", () => {
           currencyCode: "USD",
           display: "US$5,000",
           minor: 500000,
+        },
+        totalListPrice: {
+          currencyCode: "USD",
+          display: "US$7,000",
+          minor: 700000,
         },
         shippingTotal: {
           minor: 2000,
