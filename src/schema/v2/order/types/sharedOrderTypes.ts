@@ -369,6 +369,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     paymentMethodDetails: {
       type: PaymentMethodUnion,
+      description: "The payment method details that was used for the order",
       resolve: (order, _args, ctx) => resolvePaymentMethodDetails(order, ctx),
     },
     pricingBreakdownLines: PricingBreakdownLines,

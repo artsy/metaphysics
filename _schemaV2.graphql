@@ -16520,6 +16520,8 @@ type Order {
 
   # Payment method used for the order
   paymentMethod: OrderPaymentMethodEnum
+
+  # The payment method details that was used for the order
   paymentMethodDetails: PaymentMethodUnion
 
   # Order pricing breakdown lines
