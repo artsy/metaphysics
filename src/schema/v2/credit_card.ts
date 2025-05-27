@@ -60,6 +60,9 @@ export const CreditCardMutationType = new GraphQLUnionType({
 
 export const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreditCard",
+  isTypeOf: (data) => {
+    return !!data.last_digits
+  },
   fields: () => ({
     ...InternalIDFields,
     brand: {

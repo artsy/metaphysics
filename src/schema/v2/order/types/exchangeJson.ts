@@ -56,4 +56,12 @@ export interface OrderJSON {
     tax_cents?: number
     currency_code: string
   }>
+  credit_card_wallet_type?: "apple_pay" | "google_pay"
+  payment_method?:
+    | "credit card"
+    | "wire_transfer"
+    | "us_bank_account"
+    | "sepa_debit"
+  bank_account_id?: string
+  credit_card_id?: string
 }
