@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("BulkUpdateArtworksMetadataMutation", () => {
@@ -142,5 +143,26 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
         },
       }
     )
+  })
+
+  it("handles gravity API errors gracefully", async () => {
+    const context = {
+      updatePartnerArtworksMetadataLoader: () =>
+        Promise.reject(new HTTPError(`Forbidden`, 403, "Gravity Error")),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result).toEqual({
+      bulkUpdateArtworksMetadata: {
+        bulkUpdateArtworksMetadataOrError: {
+          __typename: "BulkUpdateArtworksMetadataMutationFailure",
+          mutationError: {
+            error: null,
+            message: "Gravity Error",
+          },
+        },
+      },
+    })
   })
 })

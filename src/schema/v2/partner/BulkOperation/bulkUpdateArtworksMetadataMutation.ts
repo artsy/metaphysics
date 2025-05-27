@@ -1,21 +1,21 @@
 import {
   GraphQLBoolean,
+  GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLString,
-  GraphQLFloat,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { GraphQLObjectType } from "graphql"
-import { GraphQLUnionType } from "graphql"
 import { Availability } from "schema/v2/types/availability"
+import { ResolverContext } from "types/graphql"
 
 interface Input {
   id: string
@@ -157,7 +157,7 @@ const BulkUpdateArtworksMetadataMutationType = new GraphQLUnionType({
     BulkUpdateArtworksMetadataMutationFailureType,
   ],
   resolveType: (object) => {
-    if (object.mutationError) {
+    if (object.mutationError || object._type === "GravityMutationError") {
       return BulkUpdateArtworksMetadataMutationFailureType
     }
     return BulkUpdateArtworksMetadataMutationSuccessType
