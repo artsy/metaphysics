@@ -3,16 +3,16 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { GraphQLObjectType } from "graphql"
-import { GraphQLUnionType } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 interface Input {
   id: string
@@ -65,7 +65,7 @@ const ArtsyShippingOptInMutationType = new GraphQLUnionType({
     ArtsyShippingOptInMutationFailureType,
   ],
   resolveType: (object) => {
-    if (object.mutationError) {
+    if (object.mutationError || object._type === "GravityMutationError") {
       return ArtsyShippingOptInMutationFailureType
     }
     return ArtsyShippingOptInMutationSuccessType
@@ -97,6 +97,9 @@ export const artsyShippingOptInMutation = mutationWithClientMutationId<
     ArtsyShippingOptInOrError: {
       type: ArtsyShippingOptInMutationType,
       resolve: (result) => {
+        if (result._type === "GravityMutationError") {
+          return result
+        }
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
         return {
           updatedPartnerArtworks: { count: result.success, ids: [] },
