@@ -18,6 +18,7 @@ import { PartnerType } from "schema/v2/partner/partner"
 import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import { PricingBreakdownLines } from "./PricingBreakdownLines"
 import { OrderJSON } from "./exchangeJson"
+import { PaymentMethodUnion } from "schema/v2/payment_method_union"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
@@ -54,6 +55,15 @@ export const OrderPaymentMethodEnum = new GraphQLEnumType({
   values: {
     CREDIT_CARD: {
       value: "credit card",
+    },
+    WIRE_TRANSFER: {
+      value: "wire_transfer",
+    },
+    US_BANK_ACCOUNT: {
+      value: "us_bank_account",
+    },
+    SEPA_DEBIT: {
+      value: "sepa_debit",
     },
   },
 })
@@ -285,6 +295,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Order code",
       resolve: ({ code }) => code,
     },
+    creditCardWalletType: {
+      type: OrderCreditCardWalletTypeEnum,
+      description: "Express Checkout wallet type",
+      resolve: ({ credit_card_wallet_type }) => credit_card_wallet_type,
+    },
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Currency code",
@@ -346,6 +361,16 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     mode: {
       type: new GraphQLNonNull(OrderModeEnum),
       resolve: (order) => resolveMode(order),
+    },
+    paymentMethod: {
+      type: OrderPaymentMethodEnum,
+      description: "Payment method used for the order",
+      resolve: ({ payment_method }) => payment_method,
+    },
+    paymentMethodDetails: {
+      type: PaymentMethodUnion,
+      description: "The payment method details that was used for the order",
+      resolve: (order, _args, ctx) => resolvePaymentMethodDetails(order, ctx),
     },
     pricingBreakdownLines: PricingBreakdownLines,
     selectedFulfillmentOption: {
@@ -510,5 +535,36 @@ const resolveMode = ({ mode }) => {
       return "OFFER"
     default:
       throw new Error(`Unknown order mode: ${mode}`)
+  }
+}
+
+const resolvePaymentMethodDetails = (order, context) => {
+  const { payment_method, credit_card_id, bank_account_id } = order
+
+  if (!payment_method) {
+    return null
+  }
+
+  const { creditCardLoader, bankAccountLoader } = context
+
+  switch (payment_method) {
+    case "credit card":
+      if (!credit_card_id) {
+        return null
+      }
+
+      return creditCardLoader ? creditCardLoader(credit_card_id) : null
+    case "us_bank_account":
+    case "sepa_debit":
+      if (!bank_account_id) {
+        return null
+      }
+      return bankAccountLoader ? bankAccountLoader(bank_account_id) : null
+
+    case "wire_transfer":
+      return { __typename: "WireTransfer", isManualPayment: true }
+
+    default:
+      throw new Error(`Unknown order payment method: ${payment_method}`)
   }
 }
