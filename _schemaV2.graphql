@@ -16540,6 +16540,9 @@ type Order {
   # The seller of the order
   seller: SellerType
 
+  # Details about the shipment of an order
+  shipment: Shipment
+
   # Display short version of order's artwork location
   shippingOrigin: String
 
@@ -21316,6 +21319,18 @@ type Services {
 union SetOrderFulfillmentOptionResponse =
     OrderMutationError
   | OrderMutationSuccess
+
+# Shipment details for an order
+type Shipment {
+  # The carrier handling the shipment (e.g., UPS, FedEx, DHL, USPS)
+  courier: String
+
+  # The tracking number for the shipment
+  trackingNumber: String
+
+  # The URL to track the shipment
+  trackingURL: String
+}
 
 # Shipping line
 type ShippingLine {
