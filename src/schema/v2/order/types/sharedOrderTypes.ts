@@ -398,6 +398,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         return partnerLoader(seller_id).catch(() => null)
       },
     },
+    shippingOrigin: {
+      type: GraphQLString,
+      description: "Display short version of order's artwork location",
+      resolve: ({ shipping_origin }) => shipping_origin,
+    },
     shippingTotal: {
       type: Money,
       description: "The total amount for shipping",
