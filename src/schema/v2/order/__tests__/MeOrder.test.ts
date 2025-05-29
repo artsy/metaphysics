@@ -38,6 +38,7 @@ describe("Me", () => {
       shipping_address_line1: "123 Main St",
       shipping_address_line2: "Apt 4B",
       tax_total_cents: 4299,
+      shipping_origin: "Marfa, TX, US",
     }
     artwork = artwork || {
       ...baseArtwork,
@@ -66,15 +67,6 @@ describe("Me", () => {
                 title
                 messageType
               }
-
-              fulfillmentOptions {
-                type
-                amount {
-                  currencyCode
-                  display
-                }
-                selected
-              }
               fulfillmentDetails {
                 phoneNumber {
                   originalNumber
@@ -88,16 +80,16 @@ describe("Me", () => {
                 country
                 postalCode
               }
-              selectedFulfillmentOption {
+              fulfillmentOptions {
                 type
+                amount {
+                  currencyCode
+                  display
+                }
+                selected
               }
               internalID
               itemsTotal {
-                currencyCode
-                display
-                minor
-              }
-              totalListPrice {
                 currencyCode
                 display
                 minor
@@ -120,11 +112,17 @@ describe("Me", () => {
               selectedFulfillmentOption {
                 type
               }
+              shippingOrigin
               shippingTotal {
                 minor
               }
               source
               taxTotal {
+                minor
+              }
+              totalListPrice {
+                currencyCode
+                display
                 minor
               }
             }
@@ -145,35 +143,29 @@ describe("Me", () => {
       const result = await runAuthenticatedQuery(query, context)
 
       expect(result.me.order).toEqual({
-        internalID: "order-id",
-        buyerStateExpiresAt: "January 1, 2035 19:00 EST",
-        displayTexts: {
-          title: "Congratulations!",
-          messageType: "APPROVED_SHIP",
-        },
-        mode: "BUY",
-        source: "ARTWORK_PAGE",
-        code: "order-code",
-        currencyCode: "USD",
         availableShippingCountries: ["US", "JP"],
         buyerTotal: {
           display: "US$5,000",
         },
-        itemsTotal: {
-          currencyCode: "USD",
-          display: "US$5,000",
-          minor: 500000,
+        buyerStateExpiresAt: "January 1, 2035 19:00 EST",
+        code: "order-code",
+        currencyCode: "USD",
+        displayTexts: {
+          title: "Congratulations!",
+          messageType: "APPROVED_SHIP",
         },
-        totalListPrice: {
-          currencyCode: "USD",
-          display: "US$7,000",
-          minor: 700000,
-        },
-        shippingTotal: {
-          minor: 2000,
-        },
-        taxTotal: {
-          minor: 4299,
+        fulfillmentDetails: {
+          addressLine1: "123 Main St",
+          addressLine2: "Apt 4B",
+          city: "New York",
+          country: "US",
+          name: "John Doe",
+          phoneNumber: {
+            originalNumber: "123-456-7890",
+          },
+          phoneNumberCountryCode: "US",
+          postalCode: "10001",
+          region: "NY",
         },
         fulfillmentOptions: [
           {
@@ -193,21 +185,11 @@ describe("Me", () => {
             selected: true,
           },
         ],
-        fulfillmentDetails: {
-          addressLine1: "123 Main St",
-          addressLine2: "Apt 4B",
-          city: "New York",
-          country: "US",
-          name: "John Doe",
-          phoneNumber: {
-            originalNumber: "123-456-7890",
-          },
-          phoneNumberCountryCode: "US",
-          postalCode: "10001",
-          region: "NY",
-        },
-        selectedFulfillmentOption: {
-          type: "DOMESTIC_FLAT",
+        internalID: "order-id",
+        itemsTotal: {
+          currencyCode: "USD",
+          display: "US$5,000",
+          minor: 500000,
         },
         lineItems: [
           {
@@ -225,6 +207,23 @@ describe("Me", () => {
             quantity: 1,
           },
         ],
+        mode: "BUY",
+        selectedFulfillmentOption: {
+          type: "DOMESTIC_FLAT",
+        },
+        shippingOrigin: "Marfa, TX, US",
+        shippingTotal: {
+          minor: 2000,
+        },
+        source: "ARTWORK_PAGE",
+        totalListPrice: {
+          currencyCode: "USD",
+          display: "US$7,000",
+          minor: 700000,
+        },
+        taxTotal: {
+          minor: 4299,
+        },
       })
     })
 
