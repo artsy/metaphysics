@@ -177,6 +177,11 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     listingOptions,
     listPrice,
+    metric: {
+      description:
+        "The unit of length of the edition set, expressed in `in` or `cm`",
+      type: GraphQLString,
+    },
     price: {
       type: GraphQLString,
     },
