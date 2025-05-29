@@ -227,6 +227,41 @@ describe("Me", () => {
       })
     })
 
+    describe("shipment", () => {
+      const query = gql`
+        {
+          me {
+            order(id: "order-id") {
+              shipment {
+                trackingNumber
+                trackingURL
+                courier
+              }
+            }
+          }
+        }
+      `
+
+      it("returns shipment details with partner shipping shape", async () => {
+        orderJson.shipment = {
+          type: "partner_shipping",
+          courier: "USPs",
+          tracking_id: "9405550206217013523037",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.shipment).toEqual({
+          trackingNumber: "9405550206217013523037",
+          trackingURL:
+            "https://tools.usps.com/go/TrackConfirmAction?tLabels=9405550206217013523037",
+          courier: "USPs",
+        })
+      })
+    })
+
     describe("seller", () => {
       const query = gql`
         query {
