@@ -32,6 +32,7 @@ export interface OrderJSON {
   shipping_total_cents?: number
   items_total_cents?: number
   total_list_price_cents?: number
+  shipping_origin?: string
   shipping_name?: string
   shipping_address_line1?: string
   shipping_address_line2?: string
