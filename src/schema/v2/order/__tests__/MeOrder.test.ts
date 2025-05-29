@@ -236,6 +236,7 @@ describe("Me", () => {
                 trackingNumber
                 trackingURL
                 courier
+                courierCode
               }
             }
           }
@@ -252,12 +253,15 @@ describe("Me", () => {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
           meOrderLoader: jest.fn().mockResolvedValue(orderJson),
         }
+
         const result = await runAuthenticatedQuery(query, context)
+
         expect(result.me.order.shipment).toEqual({
           trackingNumber: "9405550206217013523037",
           trackingURL:
             "https://tools.usps.com/go/TrackConfirmAction?tLabels=9405550206217013523037",
-          courier: "USPs",
+          courier: "United States Postal Service",
+          courierCode: "USPS",
         })
       })
     })

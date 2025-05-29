@@ -1,4 +1,9 @@
-import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLFieldConfig,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import {
   getTracking,
   TrackingNumber,
@@ -9,6 +14,29 @@ import {
 } from "ts-tracking-number"
 import { OrderJSON } from "./exchangeJson"
 import { ResolverContext } from "types/graphql"
+
+const CourierCodeType = new GraphQLEnumType({
+  name: "CourierCode",
+  description: "Enum for different courier codes",
+  values: {
+    UPS: {
+      value: "UPS",
+      description: "United Parcel Service",
+    },
+    FEDEX: {
+      value: "FEDEX",
+      description: "Federal Express",
+    },
+    DHL: {
+      value: "DHL",
+      description: "DHL Express",
+    },
+    USPS: {
+      value: "USPS",
+      description: "United States Postal Service",
+    },
+  },
+})
 
 const ShipmentType = new GraphQLObjectType({
   name: "Shipment",
@@ -25,7 +53,11 @@ const ShipmentType = new GraphQLObjectType({
     courier: {
       type: GraphQLString,
       description:
-        "The carrier handling the shipment (e.g., UPS, FedEx, DHL, USPS)",
+        "The carrier handling the shipment as saved on the order (e.g., UPS, FedEx, DHL, USPS)",
+    },
+    courierCode: {
+      type: CourierCodeType,
+      description: "The code representing a known courier",
     },
   }),
 })
@@ -43,10 +75,10 @@ const resolveShipment = (order: OrderJSON) => {
     return null
   }
 
-  const { tracking_id: trackingNumber, courier } = order.shipment
+  const { tracking_id: rawTrackingNumber, courier: rawCourier } = order.shipment
   let trackingURL: string | null
 
-  const tracking = guessTracking(courier, trackingNumber)
+  const tracking = guessTracking(rawCourier, rawTrackingNumber)
   const urlTemplate = tracking?.trackingUrl
 
   if (urlTemplate && tracking.trackingNumber) {
@@ -60,10 +92,15 @@ const resolveShipment = (order: OrderJSON) => {
     trackingURL = order.shipment.tracking_url ?? null
   }
 
+  const courier = tracking?.courier?.name || rawCourier || null
+  const trackingNumber = tracking?.trackingNumber || rawTrackingNumber || null
+  const courierCode = tracking?.courier?.code?.toUpperCase() || null
+
   return {
     courier,
     trackingNumber,
     trackingURL,
+    courierCode,
   }
 }
 
