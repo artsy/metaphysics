@@ -19,7 +19,7 @@ import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import { PricingBreakdownLines } from "./PricingBreakdownLines"
 import { OrderJSON } from "./exchangeJson"
 import { PaymentMethodUnion } from "schema/v2/payment_method_union"
-import { DeliveryInfo, Shipment } from "./DeliveryInfo"
+import { DeliveryInfo } from "./DeliveryInfo"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
