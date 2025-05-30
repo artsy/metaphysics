@@ -1887,6 +1887,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ title }) => (_.isEmpty(title) ? "Untitled" : title),
       },
+      hasTitle: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ title }) => {
+          return Boolean(title && title.trim().length > 0)
+        },
+      },
       published: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Whether this artwork is published or not",
