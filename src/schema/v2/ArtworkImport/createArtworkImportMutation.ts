@@ -73,6 +73,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     parseWithAI: {
       type: GraphQLBoolean,
     },
+    parseWithAIModel: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     artworkImportOrError: {
@@ -92,6 +95,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       s3_key: args.s3Key,
       file_name: args.fileName,
       parse_with_ai: args.parseWithAI,
+      parse_with_ai_model: args.parseWithAIModel,
     }
 
     try {
