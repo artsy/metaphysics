@@ -19,7 +19,7 @@ import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import { PricingBreakdownLines } from "./PricingBreakdownLines"
 import { OrderJSON } from "./exchangeJson"
 import { PaymentMethodUnion } from "schema/v2/payment_method_union"
-import { Shipment } from "./Shipment"
+import { DeliveryInfo, Shipment } from "./DeliveryInfo"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
@@ -399,7 +399,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         return partnerLoader(seller_id).catch(() => null)
       },
     },
-    shipment: Shipment,
+    deliveryInfo: DeliveryInfo,
     shippingOrigin: {
       type: GraphQLString,
       description: "Display short version of order's artwork location",

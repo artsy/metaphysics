@@ -15,8 +15,8 @@ import {
 import { OrderJSON } from "./exchangeJson"
 import { ResolverContext } from "types/graphql"
 
-const CourierCodeType = new GraphQLEnumType({
-  name: "CourierCode",
+const ShipperCodeType = new GraphQLEnumType({
+  name: "ShipperCode",
   description: "Enum for different courier codes",
   values: {
     UPS: {
@@ -38,8 +38,8 @@ const CourierCodeType = new GraphQLEnumType({
   },
 })
 
-const ShipmentType = new GraphQLObjectType({
-  name: "Shipment",
+const DeliveryInfoType = new GraphQLObjectType({
+  name: "DeliveryInfo",
   description: "Shipment details for an order",
   fields: () => ({
     trackingNumber: {
@@ -50,35 +50,38 @@ const ShipmentType = new GraphQLObjectType({
       type: GraphQLString,
       description: "The URL to track the shipment",
     },
-    courier: {
+    shipperName: {
       type: GraphQLString,
       description:
         "The carrier handling the shipment as saved on the order (e.g., UPS, FedEx, DHL, USPS)",
     },
-    courierCode: {
-      type: CourierCodeType,
+    shipperCode: {
+      type: ShipperCodeType,
       description: "The code representing a known courier",
     },
   }),
 })
 
-export const Shipment: GraphQLFieldConfig<OrderJSON, ResolverContext> = {
-  type: ShipmentType,
+export const DeliveryInfo: GraphQLFieldConfig<OrderJSON, ResolverContext> = {
+  type: DeliveryInfoType,
   description: "Details about the shipment of an order",
   resolve: (order: OrderJSON) => {
-    return resolveShipment(order)
+    return resolveDeliveryInfo(order)
   },
 }
 
-const resolveShipment = (order: OrderJSON) => {
-  if (!order.shipment) {
+const resolveDeliveryInfo = (order: OrderJSON) => {
+  if (!order.delivery_info) {
     return null
   }
 
-  const { tracking_id: rawTrackingNumber, courier: rawCourier } = order.shipment
+  const {
+    tracking_id: rawTrackingNumber,
+    shipper_name: carrierName,
+  } = order.delivery_info
   let trackingURL: string | null
 
-  const tracking = guessTracking(rawCourier, rawTrackingNumber)
+  const tracking = guessTracking(carrierName, rawTrackingNumber)
   const urlTemplate = tracking?.trackingUrl
 
   if (urlTemplate && tracking.trackingNumber) {
@@ -89,23 +92,23 @@ const resolveShipment = (order: OrderJSON) => {
       encodeURIComponent(tracking.trackingNumber)
     )
   } else {
-    trackingURL = order.shipment.tracking_url ?? null
+    trackingURL = order.delivery_info.tracking_url ?? null
   }
 
-  const courier = tracking?.courier?.name || rawCourier || null
+  const shipperName = tracking?.courier?.name || carrierName || null
   const trackingNumber = tracking?.trackingNumber || rawTrackingNumber || null
-  const courierCode = tracking?.courier?.code?.toUpperCase() || null
+  const shipperCode = tracking?.courier?.code?.toUpperCase() || null
 
   return {
-    courier,
+    shipperName,
+    shipperCode,
     trackingNumber,
     trackingURL,
-    courierCode,
   }
 }
 
 const guessTracking = (
-  courierRaw?: string,
+  carrierName?: string,
   trackingNumber?: string
 ): TrackingNumber | null => {
   if (!trackingNumber) {
@@ -113,7 +116,7 @@ const guessTracking = (
   }
 
   let tracking: TrackingNumber | undefined
-  const normalizedCourier = courierRaw?.toLowerCase()
+  const normalizedCourier = carrierName?.toLowerCase()
 
   if (normalizedCourier?.startsWith("ups")) {
     tracking = getTracking(trackingNumber, [ups])
@@ -127,9 +130,5 @@ const guessTracking = (
     tracking = getTracking(trackingNumber)
   }
 
-  if (!tracking) {
-    return null
-  }
-
-  return tracking
+  return tracking ?? null
 }

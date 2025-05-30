@@ -232,11 +232,11 @@ describe("Me", () => {
         {
           me {
             order(id: "order-id") {
-              shipment {
+              deliveryInfo {
                 trackingNumber
                 trackingURL
-                courier
-                courierCode
+                shipperName
+                shipperCode
               }
             }
           }
@@ -244,9 +244,9 @@ describe("Me", () => {
       `
 
       it("returns shipment details with partner shipping shape", async () => {
-        orderJson.shipment = {
+        orderJson.delivery_info = {
           type: "partner_shipping",
-          courier: "USPs",
+          shipper_name: "USPs",
           tracking_id: "9405550206217013523037",
         }
         context = {
@@ -256,12 +256,12 @@ describe("Me", () => {
 
         const result = await runAuthenticatedQuery(query, context)
 
-        expect(result.me.order.shipment).toEqual({
+        expect(result.me.order.deliveryInfo).toEqual({
           trackingNumber: "9405550206217013523037",
           trackingURL:
             "https://tools.usps.com/go/TrackConfirmAction?tLabels=9405550206217013523037",
-          courier: "United States Postal Service",
-          courierCode: "USPS",
+          shipperName: "United States Postal Service",
+          shipperCode: "USPS",
         })
       })
     })

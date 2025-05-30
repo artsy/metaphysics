@@ -8616,21 +8616,6 @@ enum ConversationsInputMode {
   USER
 }
 
-# Enum for different courier codes
-enum CourierCode {
-  # DHL Express
-  DHL
-
-  # Federal Express
-  FEDEX
-
-  # United Parcel Service
-  UPS
-
-  # United States Postal Service
-  USPS
-}
-
 type CreateAccountRequestMutationFailure {
   mutationError: GravityMutationError
 }
@@ -10549,6 +10534,21 @@ type Delivery {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+}
+
+# Shipment details for an order
+type DeliveryInfo {
+  # The code representing a known courier
+  shipperCode: ShipperCode
+
+  # The carrier handling the shipment as saved on the order (e.g., UPS, FedEx, DHL, USPS)
+  shipperName: String
+
+  # The tracking number for the shipment
+  trackingNumber: String
+
+  # The URL to track the shipment
+  trackingURL: String
 }
 
 type Department {
@@ -16522,6 +16522,9 @@ type Order {
   # Currency code
   currencyCode: String!
 
+  # Details about the shipment of an order
+  deliveryInfo: DeliveryInfo
+
   # Display texts for the order based on its buyer_state and order shipping/payment states
   displayTexts: DisplayTexts!
 
@@ -16554,9 +16557,6 @@ type Order {
 
   # The seller of the order
   seller: SellerType
-
-  # Details about the shipment of an order
-  shipment: Shipment
 
   # Display short version of order's artwork location
   shippingOrigin: String
@@ -21335,19 +21335,19 @@ union SetOrderFulfillmentOptionResponse =
     OrderMutationError
   | OrderMutationSuccess
 
-# Shipment details for an order
-type Shipment {
-  # The carrier handling the shipment as saved on the order (e.g., UPS, FedEx, DHL, USPS)
-  courier: String
+# Enum for different courier codes
+enum ShipperCode {
+  # DHL Express
+  DHL
 
-  # The code representing a known courier
-  courierCode: CourierCode
+  # Federal Express
+  FEDEX
 
-  # The tracking number for the shipment
-  trackingNumber: String
+  # United Parcel Service
+  UPS
 
-  # The URL to track the shipment
-  trackingURL: String
+  # United States Postal Service
+  USPS
 }
 
 # Shipping line
