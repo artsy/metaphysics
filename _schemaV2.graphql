@@ -8614,6 +8614,21 @@ enum ConversationsInputMode {
   USER
 }
 
+# Enum for different courier codes
+enum CourierCode {
+  # DHL Express
+  DHL
+
+  # Federal Express
+  FEDEX
+
+  # United Parcel Service
+  UPS
+
+  # United States Postal Service
+  USPS
+}
+
 type CreateAccountRequestMutationFailure {
   mutationError: GravityMutationError
 }
@@ -16538,6 +16553,9 @@ type Order {
   # The seller of the order
   seller: SellerType
 
+  # Details about the shipment of an order
+  shipment: Shipment
+
   # Display short version of order's artwork location
   shippingOrigin: String
 
@@ -21314,6 +21332,21 @@ type Services {
 union SetOrderFulfillmentOptionResponse =
     OrderMutationError
   | OrderMutationSuccess
+
+# Shipment details for an order
+type Shipment {
+  # The carrier handling the shipment as saved on the order (e.g., UPS, FedEx, DHL, USPS)
+  courier: String
+
+  # The code representing a known courier
+  courierCode: CourierCode
+
+  # The tracking number for the shipment
+  trackingNumber: String
+
+  # The URL to track the shipment
+  trackingURL: String
+}
 
 # Shipping line
 type ShippingLine {
