@@ -65,4 +65,10 @@ export interface OrderJSON {
     | "sepa_debit"
   bank_account_id?: string
   credit_card_id?: string
+  delivery_info?: {
+    type: "artsy_shipping" | "partner_shipping"
+    tracking_id?: string
+    tracking_url?: string
+    shipper_name?: string
+  }
 }

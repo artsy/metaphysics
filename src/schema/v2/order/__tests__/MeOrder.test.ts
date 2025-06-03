@@ -227,6 +227,87 @@ describe("Me", () => {
       })
     })
 
+    describe("shipment", () => {
+      const query = gql`
+        {
+          me {
+            order(id: "order-id") {
+              deliveryInfo {
+                trackingNumber
+                trackingURL
+                shipperName
+                shipperCode
+              }
+            }
+          }
+        }
+      `
+
+      it("returns shipment details with partner shipping shape", async () => {
+        orderJson.delivery_info = {
+          type: "partner_shipping",
+          shipper_name: "USPs",
+          tracking_id: "9405550206217013523037",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.deliveryInfo).toEqual({
+          trackingNumber: "9405550206217013523037",
+          trackingURL:
+            "https://tools.usps.com/go/TrackConfirmAction?tLabels=9405550206217013523037",
+          shipperName: "United States Postal Service",
+          shipperCode: "USPS",
+        })
+      })
+
+      it("returns a value for an unusual tracking number without erroring", async () => {
+        orderJson.delivery_info = {
+          type: "partner_shipping",
+          shipper_name: "Amazon Logistics",
+          tracking_id: "TBA123456789000",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.deliveryInfo).toEqual({
+          trackingNumber: "TBA123456789000",
+          trackingURL: null,
+          shipperName: "Amazon",
+          shipperCode: "OTHER",
+        })
+      })
+
+      it("returns something for an invalid tracking number without erroring", async () => {
+        orderJson.delivery_info = {
+          type: "partner_shipping",
+          shipper_name: "Art handler interns bargain shipping",
+          tracking_id: "I am not a valid tracking number",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.deliveryInfo).toEqual({
+          shipperName: "Art handler interns bargain shipping",
+          trackingNumber: "I am not a valid tracking number",
+          trackingURL: null,
+          shipperCode: null,
+        })
+      })
+    })
+
     describe("seller", () => {
       const query = gql`
         query {
