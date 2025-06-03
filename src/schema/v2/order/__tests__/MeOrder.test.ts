@@ -15,6 +15,13 @@ describe("Me", () => {
       id: "order-id",
       source: "artwork_page",
       code: "order-code",
+      delivery_info: {
+        shipper_name: "DHL",
+        tracking_id: "12345",
+        tracking_url: "track_me.com",
+        type: "artsy_shipping",
+        estimated_delivery_window: "will arrive at some point",
+      },
       mode: "buy",
       currency_code: "USD",
       buyer_id: "buyer-id-1",
@@ -63,6 +70,13 @@ describe("Me", () => {
               buyerStateExpiresAt
               code
               currencyCode
+              deliveryInfo {
+                shipperName
+                trackingNumber
+                trackingURL
+                estimatedDelivery
+                estimatedDeliveryWindow
+              }
               displayTexts {
                 title
                 messageType
@@ -150,6 +164,13 @@ describe("Me", () => {
         buyerStateExpiresAt: "January 1, 2035 19:00 EST",
         code: "order-code",
         currencyCode: "USD",
+        deliveryInfo: {
+          shipperName: "DHL",
+          trackingNumber: "12345",
+          trackingURL: "track_me.com",
+          estimatedDelivery: null,
+          estimatedDeliveryWindow: "will arrive at some point",
+        },
         displayTexts: {
           title: "Congratulations!",
           messageType: "APPROVED_SHIP",
