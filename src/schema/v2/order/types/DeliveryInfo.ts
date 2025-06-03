@@ -35,6 +35,10 @@ const ShipperCodeType = new GraphQLEnumType({
       value: "USPS",
       description: "United States Postal Service",
     },
+    OTHER: {
+      value: "OTHER",
+      description: "Other courier not listed - see shipperName",
+    },
   },
 })
 
@@ -77,11 +81,11 @@ const resolveDeliveryInfo = (order: OrderJSON) => {
 
   const {
     tracking_id: rawTrackingNumber,
-    shipper_name: carrierName,
+    shipper_name: rawShipperName,
   } = order.delivery_info
   let trackingURL: string | null
 
-  const tracking = guessTracking(carrierName, rawTrackingNumber)
+  const tracking = guessTracking(rawShipperName, rawTrackingNumber)
   const urlTemplate = tracking?.trackingUrl
 
   if (urlTemplate && tracking.trackingNumber) {
@@ -95,15 +99,33 @@ const resolveDeliveryInfo = (order: OrderJSON) => {
     trackingURL = order.delivery_info.tracking_url ?? null
   }
 
-  const shipperName = tracking?.courier?.name || carrierName || null
+  const shipperName = tracking?.courier?.name || rawShipperName || null
   const trackingNumber = tracking?.trackingNumber || rawTrackingNumber || null
-  const shipperCode = tracking?.courier?.code?.toUpperCase() || null
+  const shipperCode = getShipperCode(tracking)
 
   return {
     shipperName,
     shipperCode,
     trackingNumber,
     trackingURL,
+  }
+}
+
+const getShipperCode = (tracking: TrackingNumber | null): string | null => {
+  if (!tracking?.courier?.code) {
+    return null
+  }
+  switch (tracking.courier.code.toUpperCase()) {
+    case "UPS":
+      return "UPS"
+    case "FEDEX":
+      return "FEDEX"
+    case "DHL":
+      return "DHL"
+    case "USPS":
+      return "USPS"
+    default:
+      return "OTHER"
   }
 }
 

@@ -21343,6 +21343,9 @@ enum ShipperCode {
   # Federal Express
   FEDEX
 
+  # Other courier not listed - see shipperName
+  OTHER
+
   # United Parcel Service
   UPS
 

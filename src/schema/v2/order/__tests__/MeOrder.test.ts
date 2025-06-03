@@ -264,6 +264,48 @@ describe("Me", () => {
           shipperCode: "USPS",
         })
       })
+
+      it("returns a value for an unusual tracking number without erroring", async () => {
+        orderJson.delivery_info = {
+          type: "partner_shipping",
+          shipper_name: "Amazon Logistics",
+          tracking_id: "TBA123456789000",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.deliveryInfo).toEqual({
+          trackingNumber: "TBA123456789000",
+          trackingURL: null,
+          shipperName: "Amazon",
+          shipperCode: "OTHER",
+        })
+      })
+
+      it("returns something for an invalid tracking number without erroring", async () => {
+        orderJson.delivery_info = {
+          type: "partner_shipping",
+          shipper_name: "Art handler interns bargain shipping",
+          tracking_id: "I am not a valid tracking number",
+        }
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.deliveryInfo).toEqual({
+          shipperName: "Art handler interns bargain shipping",
+          trackingNumber: "I am not a valid tracking number",
+          trackingURL: null,
+          shipperCode: null,
+        })
+      })
     })
 
     describe("seller", () => {
