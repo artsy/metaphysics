@@ -45,6 +45,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
       value: "invalid_coa",
     },
     INVALID_SIGNATURE: { value: "invalid_signature" },
+    INVALID_CLASSIFICATION: { value: "invalid_classification" },
   },
 })
 
@@ -224,6 +225,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
             framedDiameter: {
               type: GraphQLString,
               resolve: ({ FramedDiameter }) => FramedDiameter,
+            },
+            classification: {
+              type: GraphQLString,
+              resolve: ({ Classification }) => Classification,
             },
           },
         })
