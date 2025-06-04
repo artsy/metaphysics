@@ -22,12 +22,13 @@ const DeliveryInfoType = new GraphQLObjectType({
 
     estimatedDelivery: {
       type: GraphQLString,
-      description: "Eesimated delivery date as saved on the order",
+      description: "Estimated delivery date saved on the order as date stringr",
     },
 
     estimatedDeliveryWindow: {
       type: GraphQLString,
-      description: "Eesimated delivery window as saved on the order",
+      description:
+        "Estimated delivery window saved on the otder as display text",
     },
   }),
 })
