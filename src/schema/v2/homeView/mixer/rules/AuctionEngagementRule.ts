@@ -3,8 +3,6 @@ import { ResolverContext } from "types/graphql"
 import { HomeViewMixerRule } from "../HomeViewMixerRule"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../../sections/AuctionLotsForYou"
-import { Auctions } from "../../sections/Auctions"
-import { LatestAuctionResults } from "../../sections/LatestAuctionResults"
 import { compact } from "lodash"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
@@ -25,11 +23,7 @@ export class AuctionEngagementRule extends HomeViewMixerRule {
       // for eligible user segments
       if (segment === "adjacent" || segment === "engaged") {
         // find the auction-related sections
-        const auctionRelatedSections = [
-          Auctions,
-          AuctionLotsForYou,
-          LatestAuctionResults,
-        ]
+        const auctionRelatedSections = [AuctionLotsForYou]
         // and remove them
         const sectionsToMove = auctionRelatedSections.map((section) => {
           const index = sections.findIndex((s) => s.id === section.id)
