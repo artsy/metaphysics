@@ -16,17 +16,18 @@ import Show from "../show"
 import moment from "moment"
 
 interface UpdatePartnerShowMutationInputProps {
-  partnerId: string
-  showId: string
-  featured?: boolean
   description?: string
+  displayOnPartnerProfile?: boolean
   endAt?: string
+  fairBooth?: string
+  fairId?: string
+  featured?: boolean
   locationId?: string
   name?: string
+  partnerId: string
   pressRelease?: string
+  showId: string
   startAt?: string
-  fairId?: string
-  fairBooth?: string
   viewingRoomIds?: string[]
 }
 
@@ -68,6 +69,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     description: {
       type: GraphQLString,
       description: "The description of the show.",
+    },
+    displayOnPartnerProfile: {
+      type: GraphQLBoolean,
+      description: "Should the show be displayed on the partner profile page?",
     },
     endAt: {
       type: GraphQLString,
@@ -139,6 +144,7 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       ...addField("name", args.name),
       ...addField("featured", args.featured),
       ...addField("description", args.description),
+      ...addField("display_on_partner_profile", args.displayOnPartnerProfile),
       ...addField("press_release", args.pressRelease),
       ...addField("partner_location", args.locationId),
       ...addField(

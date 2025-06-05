@@ -501,6 +501,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ displayable }) => displayable,
       },
+      isDisplayableOnPartnerProfile: {
+        description:
+          "Should this show be displayed on the partner profile page?",
+        type: GraphQLBoolean,
+        resolve: ({ display_on_partner_profile }) =>
+          !!display_on_partner_profile,
+      },
       isFairBooth: {
         description: "Does the show exist as a fair booth?",
         type: GraphQLBoolean,
