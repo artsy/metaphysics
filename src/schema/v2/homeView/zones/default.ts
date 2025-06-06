@@ -26,7 +26,6 @@ import { TrendingArtists } from "../sections/TrendingArtists"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
-import { BoostHeroUnitsForNewUsersRule } from "../mixer/rules/BoostHeroUnitsForNewUsersRule"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
@@ -74,7 +73,6 @@ export async function getSections(context: ResolverContext) {
 async function getSectionsViaMixer(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
-    new BoostHeroUnitsForNewUsersRule(),
     new AuctionEngagementRule(),
   ])
 
