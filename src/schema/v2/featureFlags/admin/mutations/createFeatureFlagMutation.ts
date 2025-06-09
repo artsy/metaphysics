@@ -6,7 +6,6 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
-  GraphQLObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { omit } from "lodash"
@@ -154,12 +153,12 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
     }
 
     try {
-      const params = { ...args }
+      const unleashArgs = { ...args }
 
       if (args.doNotDelete) {
         // Apply tag indicating that this flag should not be deleted
         // See: https://unleash.artsy.net/tag-types
-        params.tags = args.doNotDelete
+        unleashArgs.tags = args.doNotDelete
           ? [
               {
                 value: args.doNotDelete === true ? "true" : "false",
@@ -170,7 +169,7 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
       }
 
       await adminCreateFeatureFlag(
-        omit(params, ["strategy", "variants", "doNotDelete"])
+        omit(unleashArgs, ["strategy", "variants", "doNotDelete"])
       )
 
       if (args.strategy) {
