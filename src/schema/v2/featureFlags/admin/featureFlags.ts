@@ -27,6 +27,14 @@ export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
       description: {
         type: GraphQLString,
       },
+      doNotDelete: {
+        type: GraphQLBoolean,
+        description: "Indicates whether a flag shouldn't be deleted",
+        resolve: (flag) =>
+          flag.tags?.some(
+            (tag) => tag.type === "doNotDelete" && tag.value === "true"
+          ),
+      },
       environments: {
         type: new GraphQLList(
           new GraphQLObjectType({
@@ -37,6 +45,24 @@ export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
               },
               enabled: {
                 type: new GraphQLNonNull(GraphQLBoolean),
+              },
+            },
+          })
+        ),
+      },
+      tags: {
+        type: new GraphQLList(
+          new GraphQLObjectType({
+            name: "FeatureFlagTag",
+            fields: {
+              value: {
+                type: GraphQLString,
+              },
+              type: {
+                type: GraphQLString,
+              },
+              color: {
+                type: GraphQLString,
               },
             },
           })

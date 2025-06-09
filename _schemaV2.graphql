@@ -215,6 +215,9 @@ type Admin {
 input AdminCreateFeatureFlagInput {
   clientMutationId: String
   description: String = ""
+
+  # Add tag indicating that this flag should not be deleted
+  doNotDelete: Boolean
   impressionData: Boolean = false
   name: String
   strategy: FeatureFlagStrategyInput!
@@ -11407,6 +11410,9 @@ type FeatureFlag {
     timezone: String
   ): String
   description: String
+
+  # Indicates whether a flag shouldn't be deleted
+  doNotDelete: Boolean
   environments: [FeatureFlagEnvironments]
 
   # A globally unique ID.
@@ -11421,6 +11427,7 @@ type FeatureFlag {
   name: String!
   project: String!
   stale: Boolean!
+  tags: [FeatureFlagTag]
   type: String!
   variants: [FeatureFlagVariantType]
 }
@@ -11441,6 +11448,12 @@ enum FeatureFlagStrategyType {
 
   # For A/B tests, where you can specify a percentage of users to be served a variant
   FLEXIBLE_ROLLOUT
+}
+
+type FeatureFlagTag {
+  color: String
+  type: String
+  value: String
 }
 
 enum FeatureFlagToggleType {

@@ -6,6 +6,7 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
+  GraphQLObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { omit } from "lodash"
@@ -38,6 +39,10 @@ export const FeatureFlagInputFields = {
   impressionData: {
     type: GraphQLBoolean,
     defaultValue: false,
+  },
+  doNotDelete: {
+    type: GraphQLBoolean,
+    description: "Add tag indicating that this flag should not be deleted",
   },
   strategy: {
     type: new GraphQLNonNull(
@@ -149,7 +154,24 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
     }
 
     try {
-      await adminCreateFeatureFlag(omit(args, ["strategy", "variants"]))
+      const params = { ...args }
+
+      if (args.doNotDelete) {
+        // Apply tag indicating that this flag should not be deleted
+        // See: https://unleash.artsy.net/tag-types
+        params.tags = args.doNotDelete
+          ? [
+              {
+                value: args.doNotDelete === true ? "true" : "false",
+                type: "doNotDelete",
+              },
+            ]
+          : []
+      }
+
+      await adminCreateFeatureFlag(
+        omit(params, ["strategy", "variants", "doNotDelete"])
+      )
 
       if (args.strategy) {
         await Promise.all(
