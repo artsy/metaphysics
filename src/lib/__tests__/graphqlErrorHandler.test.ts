@@ -84,13 +84,13 @@ describe("graphqlErrorHandler", () => {
       })
 
       it("does include a HTTP status code when a response is present", () => {
-        const originalError = {
+        const originalError: ServerError = {
           message: "underlying",
-          response: ({ status: 404 } as any) as Response,
+          response: { status: 404 } as Response,
           name: "ServerError",
           result: [],
           statusCode: 200,
-        } as ServerError
+        }
         const error = new GraphQLError(
           "not found",
           undefined,
