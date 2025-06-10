@@ -45,7 +45,6 @@ commands:
           command: |
             sudo apt update
             sudo apt install --assume-yes python3-pip
-            sudo ln -s /usr/bin/python3 /usr/bin/python
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
