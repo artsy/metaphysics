@@ -4,7 +4,7 @@
   "description": "",
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
-    "node": "~22.5",
+    "node": ">=22.5",
     "npm": "5.6.0",
     "yarn": "1.*"
   },
