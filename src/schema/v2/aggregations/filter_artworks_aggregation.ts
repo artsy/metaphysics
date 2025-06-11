@@ -27,6 +27,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     FOLLOWED_ARTISTS: {
       value: "followed_artists",
     },
+    IMPORT_SOURCE: {
+      value: "import_source",
+    },
     MAJOR_PERIOD: {
       value: "major_period",
     },

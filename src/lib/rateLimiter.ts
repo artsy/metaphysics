@@ -16,7 +16,7 @@ export const rateLimiterMiddleware = async (req, res, next) => {
   try {
     await new Promise<void>((resolve, reject) => {
       // Timeout handler, will reject if hit.
-      let timeoutId: NodeJS.Timer | null = setTimeout(() => {
+      let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
         timeoutId = null
         const error = new Error(
           `Timeout of ${config.CACHE_RETRIEVAL_TIMEOUT_MS}ms, skipping...`

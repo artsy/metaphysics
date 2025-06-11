@@ -87,7 +87,7 @@ const statsClient = isTest ? null : createStatsClient()
 
 function _get<T>(key) {
   return new Promise<T>((resolve, reject) => {
-    let timeoutId: NodeJS.Timer | null = setTimeout(() => {
+    let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
       timeoutId = null
       const err = new Error(`[Cache#get] Timeout for key ${cacheKey(key)}`)
       statsClient.increment("cache.timeout")
