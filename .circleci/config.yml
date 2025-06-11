@@ -45,7 +45,6 @@ commands:
           command: |
             sudo apt update
             sudo apt install --assume-yes python3-pip
-            sudo ln -s /usr/bin/python3 /usr/bin/python
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
@@ -60,7 +59,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: "18.15"
+      tag: "22.5"
     parallelism: 6
     steps:
       - checkout
@@ -72,7 +71,7 @@ jobs:
   ensure-schema-update:
     executor:
       name: node/default
-      tag: "18.15"
+      tag: "22.5"
     steps:
       - checkout
       - setup_hokusai
@@ -81,7 +80,7 @@ jobs:
   push-schema-changes:
     executor:
       name: node/default
-      tag: "18.15"
+      tag: "22.5"
     parallelism: 7
     steps:
       - checkout
