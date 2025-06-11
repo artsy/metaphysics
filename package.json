@@ -123,7 +123,7 @@
     "@types/invariant": "2.2.29",
     "@types/jest": "^29.5.14",
     "@types/lodash": "4.14.86",
-    "@types/node": "22.0.0",
+    "@types/node": "^22.15",
     "@types/node-fetch": "2.1.7",
     "@types/qs": "6.5.1",
     "@types/request": "2.0.8",
