@@ -28,6 +28,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     MISSING_ARTIST: { value: "missing_artist" },
     MISSING_PRICE: { value: "missing_price" },
     MISSING_DATE: { value: "missing_date" },
+    INVALID_TITLE: { value: "invalid_title" },
     INVALID_PRICE: { value: "invalid_price" },
     INVALID_HEIGHT: { value: "invalid_height" },
     INVALID_WIDTH: { value: "invalid_width" },
