@@ -844,6 +844,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       ) {
         return new HTTPError("Show Not Found", 404)
       }
+
       return show
     })
   },
