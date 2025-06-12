@@ -5,6 +5,7 @@ import {
   GraphQLUnionType,
   GraphQLBoolean,
   GraphQLList,
+  GraphQLInputObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -16,14 +17,22 @@ import Show from "../show"
 import moment from "moment"
 
 interface CreatePartnerShowMutationInputProps {
-  partnerId: string
-  name: string
   description?: string
-  startAt?: string
   endAt?: string
-  locationId?: string
   featured?: boolean
+  locationId?: string
+  name: string
+  partnerId: string
   pressRelease?: string
+  startAt?: string
+  fairLocation?: {
+    booth?: string
+    floor?: string
+    hall?: string
+    pier?: string
+    room?: string
+    section?: string
+  }
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -89,9 +98,36 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The id of the fair to create the show for.",
     },
-    fairBooth: {
-      type: GraphQLString,
-      description: "The booth of the fair to create the show for.",
+    fairLocation: {
+      type: new GraphQLInputObjectType({
+        name: "CreatePartnerShowFairLocationInput",
+        fields: {
+          booth: {
+            type: GraphQLString,
+            description: "The booth of the show in the fair.",
+          },
+          floor: {
+            type: GraphQLString,
+            description: "The floor of the show in the fair.",
+          },
+          hall: {
+            type: GraphQLString,
+            description: "The hall of the show in the fair.",
+          },
+          pier: {
+            type: GraphQLString,
+            description: "The pier of the show in the fair.",
+          },
+          room: {
+            type: GraphQLString,
+            description: "The room of the show in the fair.",
+          },
+          section: {
+            type: GraphQLString,
+            description: "The section of the show in the fair.",
+          },
+        },
+      }),
     },
     pressRelease: {
       type: GraphQLString,
@@ -131,6 +167,15 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       start_at?: number
       end_at?: number
       fair?: string
+      fair_location?: {
+        booth?: string
+        floor?: string
+        hall?: string
+        pier?: string
+        room?: string
+        section?: string
+      }
+      viewing_room_ids?: string[]
     } = {
       name: args.name,
       featured: args.featured,
@@ -140,7 +185,7 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       end_at: moment(args.endAt).unix(),
       partner_location: args.locationId,
       fair: args.fairId,
-      ...(args.fairBooth && { fair_location: { booth: args.fairBooth } }),
+      fair_location: args.fairLocation,
       viewing_room_ids: args.viewingRoomIds,
     }
 

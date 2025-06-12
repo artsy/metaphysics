@@ -5,6 +5,7 @@ import {
   GraphQLUnionType,
   GraphQLBoolean,
   GraphQLList,
+  GraphQLInputObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -110,9 +111,36 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The id of the fair to update the show for.",
     },
-    fairBooth: {
-      type: GraphQLString,
-      description: "The booth of the fair to update the show for.",
+    fairLocation: {
+      type: new GraphQLInputObjectType({
+        name: "UpdatePartnerShowFairLocationInput",
+        fields: {
+          booth: {
+            type: GraphQLString,
+            description: "The booth of the show in the fair.",
+          },
+          floor: {
+            type: GraphQLString,
+            description: "The floor of the show in the fair",
+          },
+          hall: {
+            type: GraphQLString,
+            description: "The hall of the show in the fair",
+          },
+          pier: {
+            type: GraphQLString,
+            description: "The pier of the show in the fair",
+          },
+          room: {
+            type: GraphQLString,
+            description: "The room of the show in the fair",
+          },
+          section: {
+            type: GraphQLString,
+            description: "The section of the show in the fair",
+          },
+        },
+      }),
     },
     viewingRoomIds: {
       type: new GraphQLList(GraphQLString),
@@ -156,10 +184,7 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
         args.endAt !== undefined ? moment(args.endAt).unix() : undefined
       ),
       ...addField("fair", args.fairId),
-      ...addField(
-        "fair_location",
-        args.fairBooth !== undefined ? { booth: args.fairBooth } : undefined
-      ),
+      ...addField("fair_location", args.fairLocation),
       ...addField("viewing_room_ids", args.viewingRoomIds),
     }
 

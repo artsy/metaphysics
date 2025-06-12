@@ -71,6 +71,30 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ address_2 }) => address_2,
     },
+    booth: {
+      type: GraphQLString,
+      resolve: ({ booth }) => booth,
+    },
+    floor: {
+      type: GraphQLString,
+      resolve: ({ floor }) => floor,
+    },
+    hall: {
+      type: GraphQLString,
+      resolve: ({ hall }) => hall,
+    },
+    pier: {
+      type: GraphQLString,
+      resolve: ({ pier }) => pier,
+    },
+    room: {
+      type: GraphQLString,
+      resolve: ({ room }) => room,
+    },
+    section: {
+      type: GraphQLString,
+      resolve: ({ section }) => section,
+    },
     city: {
       type: GraphQLString,
       resolve: ({ city }) => existyValue(city),
