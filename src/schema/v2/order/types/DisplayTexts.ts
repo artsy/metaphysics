@@ -53,8 +53,17 @@ const DisplayTextsMessageTypeEnum = new GraphQLEnumType({
     COMPLETED_SHIP: {
       value: "COMPLETED_SHIP",
     },
-    CANCELLED_ORDER: {
-      value: "CANCELLED_ORDER",
+    DECLINED_BY_SELLER: {
+      value: "DECLINED_BY_SELLER",
+    },
+    DECLINED_BY_BUYER: {
+      value: "DECLINED_BY_BUYER",
+    },
+    CANCELED: {
+      value: "CANCELED",
+    },
+    REFUNDED: {
+      value: "REFUNDED",
     },
     UNKNOWN: {
       value: "UNKNOWN",
@@ -153,10 +162,25 @@ const resolveDisplayTexts = (order: OrderJSON) => {
           : "Your order has been delivered",
         messageType: isPickup ? "COMPLETED_PICKUP" : "COMPLETED_SHIP",
       }
-    case "canceled_and_refunded":
+    case "declined_by_seller":
+      return {
+        title: "Your offer was declined",
+        messageType: "DECLINED_BY_SELLER",
+      }
+    case "declined_by_buyer":
+      return {
+        title: "You declined the offer",
+        messageType: "DECLINED_BY_BUYER",
+      }
+    case "canceled":
       return {
         title: "Your order was canceled",
-        messageType: "CANCELLED_ORDER",
+        messageType: "CANCELED",
+      }
+    case "refunded":
+      return {
+        title: "Your order was canceled and refunded",
+        messageType: "REFUNDED",
       }
     default:
       return {
