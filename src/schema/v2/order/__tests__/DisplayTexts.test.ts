@@ -277,9 +277,9 @@ describe("DisplayTexts", () => {
     })
   })
 
-  describe("buyer_state: canceled_and_refunded", () => {
+  describe("buyer_state: canceled", () => {
     it("returns correct display texts", async () => {
-      orderJson.buyer_state = "canceled_and_refunded"
+      orderJson.buyer_state = "canceled"
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
         meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -289,7 +289,58 @@ describe("DisplayTexts", () => {
 
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order was canceled",
-        messageType: "CANCELLED_ORDER",
+        messageType: "CANCELED",
+      })
+    })
+  })
+
+  describe("buyer_state: refunded", () => {
+    it("returns correct display texts", async () => {
+      orderJson.buyer_state = "refunded"
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.order.displayTexts).toEqual({
+        title: "Your order was canceled and refunded",
+        messageType: "REFUNDED",
+      })
+    })
+  })
+
+  describe("buyer_state: declined_by_buyer", () => {
+    it("returns correct display texts", async () => {
+      orderJson.buyer_state = "declined_by_buyer"
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.order.displayTexts).toEqual({
+        title: "You declined the offer",
+        messageType: "DECLINED_BY_BUYER",
+      })
+    })
+  })
+
+  describe("buyer_state: declined_by_seller", () => {
+    it("returns correct display texts", async () => {
+      orderJson.buyer_state = "declined_by_seller"
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.order.displayTexts).toEqual({
+        title: "Your offer was declined",
+        messageType: "DECLINED_BY_SELLER",
       })
     })
   })

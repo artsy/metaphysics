@@ -216,7 +216,7 @@ async function maybeInsertArtworksWithinPriceBudgetLink(
         href: `/collect?price_range=${priceBucket.priceRange}`,
         ownerType: OwnerType.collect,
         icon: undefined,
-        minimumEigenVersion: { major: 8, minor: 74, patch: 0 }, // when /collect screen was added to the app
+        minimumEigenVersion: { major: 8, minor: 75, patch: 0 }, // when /collect screen was added to the app
       }
 
       links.splice(auctionsIndex + 1, 0, priceBudgetPill)
