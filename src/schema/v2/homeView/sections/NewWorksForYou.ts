@@ -3,6 +3,7 @@ import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
+import { getExperimentVariant } from "lib/featureFlags"
 
 export const NewWorksForYou: HomeViewSection = {
   id: "home-view-section-new-works-for-you",
@@ -20,12 +21,22 @@ export const NewWorksForYou: HomeViewSection = {
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    const variant = getExperimentVariant("onyx_nwfy-price-affinity-test", {
+      userId: context.userID,
+    })
+
+    let recommendationsVersion = "C"
+
+    if (variant && variant.enabled && variant.name === "experiment") {
+      recommendationsVersion = "A"
+    }
+
     const finalArgs = {
       // formerly specified client-side
       maxWorksPerArtist: 3,
       includeBackfill: true,
       first: args.first,
-      version: "C",
+      version: recommendationsVersion,
       excludeDislikedArtworks: true,
       excludeArtworkIds: [],
 
