@@ -40,6 +40,10 @@ export const PurchaseType = new GraphQLObjectType<any, ResolverContext>({
     note: {
       type: GraphQLString,
     },
+    ownerID: {
+      type: GraphQLString,
+      resolve: ({ owner_id }) => owner_id,
+    },
     ownerType: {
       type: GraphQLString,
       resolve: ({ owner_type }) => owner_type,

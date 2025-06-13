@@ -860,6 +860,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePurchaseLoader: gravityLoader(
+      (id) => `purchase/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
     optInArtworksIntoCommerceLoader: gravityLoader(
       (id) => `partner/${id}/bulk_operations/commerce_opt_in`,
