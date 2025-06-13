@@ -1,7 +1,7 @@
 # ---------------------------------------------------------
 # Base build dependencies
 # ---------------------------------------------------------
-FROM node:22.5-alpine as builder-base
+FROM node:22.5.1-alpine as builder-base
 
 WORKDIR /app
 
