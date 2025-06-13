@@ -860,6 +860,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deletePurchaseLoader: gravityLoader(
+      (id) => `purchase/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     updatePageLoader: gravityLoader(
       (id) => `page/${id}`,
       {},

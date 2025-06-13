@@ -325,6 +325,7 @@ import { PurchasesConnection } from "./purchases"
 import { Purchase } from "./purchase"
 import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingAddressMutation"
 import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
+import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -555,6 +556,7 @@ export default new GraphQLSchema({
       deleteOrderedSet: deleteOrderedSetMutation,
       deleteOrderedSetItem: deleteOrderedSetItemMutation,
       deletePage: DeletePageMutation,
+      deletePurchase: deletePurchaseMutation,
       deleteUser: deleteUserMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
