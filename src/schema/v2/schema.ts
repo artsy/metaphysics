@@ -325,6 +325,7 @@ import { PurchasesConnection } from "./purchases"
 import { Purchase } from "./purchase"
 import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingAddressMutation"
 import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
+import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -521,6 +522,7 @@ export default new GraphQLSchema({
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
       createUserAdminNote: createUserAdminNoteMutation,
