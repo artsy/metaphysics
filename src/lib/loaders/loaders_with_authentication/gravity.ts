@@ -101,6 +101,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artworkImportFlagCellLoader: gravityLoader(
+      (id) => `artwork_import/${id}/flag_cell`,
+      {},
+      { method: "POST" }
+    ),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
     artworkImportMatchArtistsLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_artists`,
