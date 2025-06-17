@@ -64,6 +64,9 @@ export const FlagArtworkImportCellMutation = mutationWithClientMutationId<
     flaggedValue: {
       type: GraphQLString,
     },
+    originalValue: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     flagArtworkImportCellOrError: {
@@ -72,7 +75,14 @@ export const FlagArtworkImportCellMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, rowID, columnName, userNote, flaggedValue },
+    {
+      artworkImportID,
+      rowID,
+      columnName,
+      userNote,
+      flaggedValue,
+      originalValue,
+    },
     { artworkImportFlagCellLoader }
   ) => {
     if (!artworkImportFlagCellLoader) {
@@ -85,6 +95,7 @@ export const FlagArtworkImportCellMutation = mutationWithClientMutationId<
         column_name: columnName,
         user_note: userNote,
         flagged_value: flaggedValue,
+        original_value: originalValue,
       })
 
       return { artworkImportID }
