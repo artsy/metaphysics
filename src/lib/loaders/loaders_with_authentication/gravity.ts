@@ -101,6 +101,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artworkImportFlagCellLoader: gravityLoader(
+      (id) => `artwork_import/${id}/flag_cell`,
+      {},
+      { method: "POST" }
+    ),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
     artworkImportMatchArtistsLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_artists`,
@@ -857,6 +862,11 @@ export default (accessToken, userID, opts) => {
     ),
     updatePageLoader: gravityLoader(
       (id) => `page/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePurchaseLoader: gravityLoader(
+      (id) => `purchase/${id}`,
       {},
       { method: "PUT" }
     ),

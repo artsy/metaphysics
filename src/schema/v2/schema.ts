@@ -300,6 +300,7 @@ import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkI
 import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworksMutation"
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
+import { FlagArtworkImportCellMutation } from "./ArtworkImport/flagArtworkImportCellMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
@@ -323,6 +324,7 @@ import { UpdatePartnerProfileImageMutation } from "./partner/Settings/updatePart
 import { PurchasesConnection } from "./purchases"
 import { Purchase } from "./purchase"
 import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingAddressMutation"
+import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -610,6 +612,7 @@ export default new GraphQLSchema({
       updateArtwork: updateArtworkMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
+      flagArtworkImportCell: FlagArtworkImportCellMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollection: updateCollectionMutation,
       updateCollectorProfile: UpdateCollectorProfile,
@@ -627,6 +630,7 @@ export default new GraphQLSchema({
       updateOrderShippingAddress: updateOrderShippingAddressMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updatePage: UpdatePageMutation,
+      updatePurchase: updatePurchaseMutation,
       updatePartnerContact: UpdatePartnerContactMutation,
       updatePartnerLocation: UpdatePartnerLocationMutation,
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,
