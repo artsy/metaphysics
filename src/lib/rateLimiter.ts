@@ -3,6 +3,8 @@ import MemcachedStore from "rate-limit-memcached"
 import { client } from "./cache"
 import { Request } from "express"
 import config from "../config"
+import { requestIPAddress } from "./requestIDs"
+import { rateLimitInterfaceKey } from "./rateLimitKey"
 
 // We expect our own services to include DataDog headers.
 export const skip = (req: Request) => !!req.headers["x-datadog-trace-id"]
@@ -42,7 +44,12 @@ export const rateLimiterMiddleware = async (req, res, next) => {
         max: config.RATE_LIMIT_MAX,
         skip,
         windowMs: config.RATE_LIMIT_WINDOW_MS,
-        // statusCode: 500, // In case we don’t want to inform the offender
+        keyGenerator: (req) => {
+          const ip = requestIPAddress(req)
+          const identifier = rateLimitInterfaceKey(req)
+          return `${ip}:${identifier}`
+        },
+        // statusCode: 500, // In case we don't want to inform the offender
         store: new MemcachedStore({
           client,
           prefix: "limit-ip:",
