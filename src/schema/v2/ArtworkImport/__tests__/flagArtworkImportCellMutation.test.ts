@@ -16,6 +16,7 @@ describe("FlagArtworkImportCellMutation", () => {
             columnName: "title"
             userNote: "This title needs review"
             flaggedValue: "Hallucinated title"
+            originalValue: "Original Title"
           }
         ) {
           flagArtworkImportCellOrError {
@@ -46,6 +47,7 @@ describe("FlagArtworkImportCellMutation", () => {
         column_name: "title",
         user_note: "This title needs review",
         flagged_value: "Hallucinated title",
+        original_value: "Original Title",
       }
     )
 
