@@ -1,7 +1,11 @@
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "../sections"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
+import {
+  getEigenVersionNumber,
+  isAtLeastVersion,
+  isAtMostVersion,
+} from "lib/semanticVersioning"
 
 /**
  * Determine if an individual section can be displayed, considering the current
@@ -28,17 +32,22 @@ export function isSectionDisplayable(
     })
   }
 
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+
   // minimum Eigen version
-  if (isDisplayable && section.minimumEigenVersion) {
-    const actualEigenVersion = getEigenVersionNumber(
-      context.userAgent as string
+  if (isDisplayable && section.minimumEigenVersion && actualEigenVersion) {
+    isDisplayable = isAtLeastVersion(
+      actualEigenVersion,
+      section.minimumEigenVersion
     )
-    if (actualEigenVersion) {
-      isDisplayable = isAtLeastVersion(
-        actualEigenVersion,
-        section.minimumEigenVersion
-      )
-    }
+  }
+
+  // maximum Eigen version
+  if (isDisplayable && section.maximumEigenVersion && actualEigenVersion) {
+    isDisplayable = isAtMostVersion(
+      actualEigenVersion,
+      section.maximumEigenVersion
+    )
   }
 
   // section's display pre-check

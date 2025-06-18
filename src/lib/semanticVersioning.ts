@@ -34,3 +34,18 @@ export function isAtLeastVersion(
 
   return version.patch >= patch
 }
+
+export function isAtMostVersion(
+  version: SemanticVersionNumber,
+  atMost: SemanticVersionNumber
+): boolean {
+  const { major, minor, patch } = atMost
+
+  if (version.major < major) return true
+  if (version.major > major) return false
+
+  if (version.minor < minor) return true
+  if (version.minor > minor) return false
+
+  return version.patch <= patch
+}
