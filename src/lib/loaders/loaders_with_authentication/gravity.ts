@@ -855,8 +855,14 @@ export default (accessToken, userID, opts) => {
     pageLoader: gravityLoader((id) => `page/${id}`),
     pagesLoader: gravityLoader("pages", {}, { headers: true }),
     createPageLoader: gravityLoader("page", {}, { method: "POST" }),
+    createPurchaseLoader: gravityLoader("purchase", {}, { method: "POST" }),
     deletePageLoader: gravityLoader(
       (id) => `page/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePurchaseLoader: gravityLoader(
+      (id) => `purchase/${id}`,
       {},
       { method: "DELETE" }
     ),
