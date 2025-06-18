@@ -217,6 +217,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createUserExcludeArtistLoader: gravityLoader(
+      "artworks_discovery/artist/exclude",
+      {},
+      { method: "POST" }
+    ),
     deliverSecondFactor: gravityLoader(
       (id) => `me/second_factors/${id}/deliver`,
       {},
