@@ -66,20 +66,20 @@ export const excludeArtistFromDiscoveryMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createUserExcludeArtistLoader }) => {
-    if (!createUserExcludeArtistLoader) {
+  mutateAndGetPayload: async (args, { excludeArtistFromDiscoveryLoader }) => {
+    if (!excludeArtistFromDiscoveryLoader) {
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
-    const createUserExcludeArtistLoaderPayload: GravityInput = {
+    const excludeArtistFromDiscoveryPayload: GravityInput = {
       artist_id: args.artistId,
     }
 
     try {
-      return await createUserExcludeArtistLoader(
-        createUserExcludeArtistLoaderPayload
+      return await excludeArtistFromDiscoveryLoader(
+        excludeArtistFromDiscoveryPayload
       )
     } catch (error) {
       const formattedErr = formatGravityError(error)

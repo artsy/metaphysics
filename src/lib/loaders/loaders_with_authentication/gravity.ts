@@ -217,8 +217,8 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    createUserExcludeArtistLoader: gravityLoader(
-      "artworks_discovery/artist/exclude",
+    excludeArtistFromDiscoveryLoader: gravityLoader(
+      "artworks_discovery/artists/exclude",
       {},
       { method: "POST" }
     ),
