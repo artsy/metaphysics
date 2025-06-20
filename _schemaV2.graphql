@@ -3292,7 +3292,7 @@ type ArtworkImportRowEdge {
 }
 
 type ArtworkImportRowError {
-  blocking: Boolean
+  blocking: Boolean!
   errorType: ArtworkImportError
 
   # A globally unique ID.

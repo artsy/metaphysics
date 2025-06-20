@@ -83,7 +83,7 @@ const ArtworkImportRowErrorType = new GraphQLObjectType({
       type: GraphQLJSON,
     },
     blocking: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
   },
 })
