@@ -14,7 +14,14 @@ import type { ResolverContext } from "types/graphql"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 
 const COPY = {
-  subtotal: { displayName: "Subtotal" },
+  subtotal: {
+    displayName: {
+      buyNow: "Price",
+      counterOffer: "Seller's offer",
+      makeOffer: "Your offer",
+      partnerOffer: "Gallery offer",
+    },
+  },
   shipping: {
     displayName: {
       pickup: "Pickup",
@@ -75,6 +82,9 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       tax_total_cents: taxTotalCents,
       items_total_cents: itemsTotalCents,
       buyer_total_cents: buyerTotalCents,
+      awaiting_response_from: awaitingResponseFrom,
+      mode,
+      source,
     } = order
 
     const resolveMoney = (amount: number) => {
@@ -91,9 +101,24 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       )
     }
 
+    let subtotalDisplayName: string
+    switch (true) {
+      case mode === "buy" && source === "partner_offer":
+        subtotalDisplayName = COPY.subtotal.displayName.partnerOffer
+        break
+      case mode === "offer" && awaitingResponseFrom === "buyer":
+        subtotalDisplayName = COPY.subtotal.displayName.counterOffer
+        break
+      case mode === "offer":
+        subtotalDisplayName = COPY.subtotal.displayName.makeOffer
+        break
+      default:
+        subtotalDisplayName = COPY.subtotal.displayName.buyNow
+    }
+
     const subtotalLine = {
       __typename: "SubtotalLine",
-      displayName: COPY.subtotal.displayName,
+      displayName: subtotalDisplayName,
       amount: itemsTotalCents && resolveMoney(itemsTotalCents),
     }
 

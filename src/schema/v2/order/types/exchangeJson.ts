@@ -17,6 +17,7 @@ export interface FulfillmentOptionJson {
 }
 export interface OrderJSON {
   available_shipping_countries: string[]
+  awaiting_response_from: "buyer" | "seller" | null
   bank_account_id?: string
   buyer_id: string
   buyer_phone_number?: string
