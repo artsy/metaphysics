@@ -285,6 +285,7 @@ import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableS
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
 import { createUserSeenArtworkMutation } from "./infiniteDiscovery/createUserSeenArtworkMutation"
+import { excludeArtistFromDiscoveryMutation } from "./infiniteDiscovery/excludeArtistFromDiscoveryMutation"
 import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
@@ -532,6 +533,7 @@ export default new GraphQLSchema({
       createUserInterests: createUserInterestsMutation,
       createUserSaleProfile: createUserSaleProfileMutation,
       createUserSeenArtwork: createUserSeenArtworkMutation,
+      excludeArtistFromDiscovery: excludeArtistFromDiscoveryMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
