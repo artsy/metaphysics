@@ -32,6 +32,7 @@ const NotificationTypesEnum = new GraphQLEnumType({
   values: {
     ARTICLE_FEATURED_ARTIST: { value: "ArticleFeaturedArtistActivity" },
     ARTWORK_ALERT: { value: "SavedSearchHitActivity" },
+    ARTWORK_PRICE_DROPPED: { value: "ArtworkPriceDroppedActivity" },
     ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
     COLLECTOR_PROFILE_UPDATE_PROMPT: {
       value: "CollectorProfileUpdatePromptActivity",
@@ -111,7 +112,13 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       resolve: async (
         notification,
         { size },
-        { articleLoader, artworksLoader, showsLoader, viewingRoomLoader }
+        {
+          articleLoader,
+          artworksLoader,
+          artworkPriceDropsLoader,
+          showsLoader,
+          viewingRoomLoader,
+        }
       ) => {
         let images: NormalizedImageData[] = []
 
@@ -156,6 +163,19 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
                 image_url,
               })
             })
+            break
+          }
+          case "ArtworkPriceDroppedActivity": {
+            const priceDrops = await artworkPriceDropsLoader({
+              ids: slicedObjectIds,
+            })
+
+            const artworks = priceDrops.map(({ artwork }) => artwork)
+
+            images = artworks.map((artwork) =>
+              normalizeImageData(getDefault(artwork.images))
+            )
+
             break
           }
           default: {

@@ -3447,6 +3447,17 @@ union ArtworkMutationType =
 
 union ArtworkOrEditionSetType = Artwork | EditionSet
 
+type ArtworkPriceDroppedNotificationItem {
+  alert: Alert
+  priceDropsConnection(
+    after: String
+    before: String
+    first: Int
+    ids: [String!]
+    last: Int
+  ): PriceDropConnection
+}
+
 # Insights may not be available for all Artwork Connections due to potential performance issues
 type ArtworkPriceInsights {
   annualLotsSold: Int
@@ -16504,6 +16515,7 @@ type NotificationEdge {
 union NotificationItem =
     AlertNotificationItem
   | ArticleFeaturedArtistNotificationItem
+  | ArtworkPriceDroppedNotificationItem
   | ArtworkPublishedNotificationItem
   | CollectorProfileUpdatePromptNotificationItem
   | PartnerOfferCreatedNotificationItem
@@ -16528,6 +16540,7 @@ input NotificationPreferenceInput {
 enum NotificationTypesEnum {
   ARTICLE_FEATURED_ARTIST
   ARTWORK_ALERT
+  ARTWORK_PRICE_DROPPED
   ARTWORK_PUBLISHED
   COLLECTOR_PROFILE_UPDATE_PROMPT
   PARTNER_OFFER_CREATED
@@ -18216,6 +18229,32 @@ input PreviewSavedSearchAttributes {
   # Filter results by Artwork sizes
   sizes: [ArtworkSizes]
   width: String
+}
+
+type PriceDrop {
+  artwork: Artwork!
+  newPrice: Int!
+  oldPrice: Int!
+}
+
+# A connection to a list of items.
+type PriceDropConnection {
+  # A list of edges.
+  edges: [PriceDropEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PriceDropEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PriceDrop
 }
 
 # The connection type for MarketPriceInsights.
