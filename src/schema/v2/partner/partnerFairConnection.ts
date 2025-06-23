@@ -30,8 +30,8 @@ export const PartnerFairConnection: GraphQLFieldConfig<
       type: GraphQLInt,
     },
   }),
-  resolve: async (_root, args, { partnerFairLoader }) => {
-    if (!partnerFairLoader) {
+  resolve: async (_root, args, { matchFairsLoader }) => {
+    if (!matchFairsLoader) {
       return null
     }
 
@@ -42,7 +42,7 @@ export const PartnerFairConnection: GraphQLFieldConfig<
       total_count: true,
       term: args.term,
     }
-    const { body, headers } = await partnerFairLoader(gravityOptions)
+    const { body, headers } = await matchFairsLoader(gravityOptions)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
     return paginationResolver({

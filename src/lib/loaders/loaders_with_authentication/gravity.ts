@@ -757,7 +757,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
-    partnerFairLoader: gravityLoader("match/fairs", {}, { headers: true }),
+    matchFairsLoader: gravityLoader("match/fairs", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meAlertLoader: gravityLoader((id) => `me/alert/${id}`),
     meAlertsLoader: gravityLoader("me/alerts", {}, { headers: true }),
