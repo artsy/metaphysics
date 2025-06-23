@@ -36,20 +36,25 @@ export const PartnerFairConnection: GraphQLFieldConfig<
       description: "Exclude these MongoDB ids from results",
     },
   }),
-  resolve: async (_root, { excludeIDs, ...args }, { matchFairsLoader }) => {
+  resolve: async (
+    _root,
+    { excludeIDs, term, ...args },
+    { matchFairsLoader }
+  ) => {
     if (!matchFairsLoader) {
       return null
     }
+    console.log(excludeIDs, term, args)
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const gravityOptions = {
-      size,
-      offset,
-      total_count: true,
-      term: args.term,
-      exclude_ids: excludeIDs,
-    }
-    const { body, headers } = await matchFairsLoader(gravityOptions)
+    const gravityArgs: {
+      page: number
+      size: number
+      total_count: boolean
+      term?: string
+      id?: string[]
+    } = { page, size, term, total_count: true }
+    const { body, headers } = await matchFairsLoader(gravityArgs)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
     return paginationResolver({
