@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLString, GraphQLInt, GraphQLNonNull, GraphQLList } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
@@ -20,17 +20,23 @@ export const PartnerFairConnection: GraphQLFieldConfig<
   description: "Retrieve partner fairs for search",
   args: pageable({
     term: {
-      type: GraphQLString,
-      description: "Search term for fairs",
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Your search term",
     },
     page: {
       type: GraphQLInt,
+      description: "Page to retrieve. Default: 1.",
     },
     size: {
       type: GraphQLInt,
+      description: "Maximum number of items to retrieve. Default: 5.",
+    },
+    excludeIDs: {
+      type: new GraphQLList(GraphQLString),
+      description: "Exclude these MongoDB ids from results",
     },
   }),
-  resolve: async (_root, args, { matchFairsLoader }) => {
+  resolve: async (_root, { excludeIDs, ...args }, { matchFairsLoader }) => {
     if (!matchFairsLoader) {
       return null
     }
@@ -41,6 +47,7 @@ export const PartnerFairConnection: GraphQLFieldConfig<
       offset,
       total_count: true,
       term: args.term,
+      exclude_ids: excludeIDs,
     }
     const { body, headers } = await matchFairsLoader(gravityOptions)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

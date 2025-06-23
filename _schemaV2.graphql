@@ -17267,13 +17267,20 @@ type Partner implements Node {
   partnerFairConnection(
     after: String
     before: String
+
+    # Exclude these MongoDB ids from results
+    excludeIDs: [String]
     first: Int
     last: Int
+
+    # Page to retrieve. Default: 1.
     page: Int
+
+    # Maximum number of items to retrieve. Default: 5.
     size: Int
 
-    # Search term for fairs
-    term: String
+    # Your search term
+    term: String!
   ): PartnerFairConnection
   partnerPageEligible: Boolean
   partnerType: String
