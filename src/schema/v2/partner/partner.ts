@@ -50,6 +50,7 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { PartnerFairConnection } from "./partnerFairConnection"
 import { AlertType, PartnerAlertsEdgeFields } from "../Alerts"
 import {
   ArtworkVisibility,
@@ -1294,6 +1295,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       showsSearchConnection: partnerShowsMatchConnection,
+      partnerFairConnection: PartnerFairConnection,
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

@@ -17262,6 +17262,19 @@ type Partner implements Node {
     page: Int
     size: Int
   ): PartnerAlertHitsConnection
+
+  # Retrieve partner fairs for search
+  partnerFairConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+
+    # Search term for fairs
+    term: String
+  ): PartnerFairConnection
   partnerPageEligible: Boolean
   partnerType: String
   profile: Profile
@@ -17982,6 +17995,26 @@ type PartnerEngagementCounts {
   ): Int!
   followedArtists: Int!
   savedArtworks: Int!
+}
+
+# A connection to a list of items.
+type PartnerFairConnection {
+  # A list of edges.
+  edges: [PartnerFairEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerFairEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Fair
 }
 
 type PartnerInquiryRequest {
