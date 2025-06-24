@@ -408,3 +408,39 @@ export const CuratedMarketingCollections: GraphQLFieldConfig<
     )
   },
 }
+
+export const DiscoveryMarketingCollections: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  type: new GraphQLList(MarketingCollectionType),
+  description:
+    "Discovery Marketing Collections for personalized recommendations",
+  args: pageable({
+    size: {
+      type: GraphQLInt,
+      defaultValue: 12,
+    },
+  }),
+  resolve: async (_root, args, { marketingCollectionsLoader }) => {
+    const marketingCollectionSlugs = [
+      "most-loved",
+      "understated",
+      "art-gifts-under-1000-dollars",
+      "transcendent",
+      "best-bids",
+      "statement-pieces",
+      "little-gems",
+      "feast-for-the-eyes",
+      "street-art-edit",
+      "icons",
+      "bleeding-edge",
+      "flora-and-fauna",
+    ]
+
+    return fetchMarketingCollections(
+      { ...args, slugs: marketingCollectionSlugs },
+      marketingCollectionsLoader
+    )
+  },
+}

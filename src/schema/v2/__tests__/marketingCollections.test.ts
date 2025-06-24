@@ -240,4 +240,41 @@ describe("MarketingCollections", () => {
       "Category is required for CURATED sort."
     )
   })
+
+  it("returns discovery marketing collections", async () => {
+    const discoveryCollectionsData = [
+      {
+        slug: "most-loved",
+        title: "Most Loved",
+      },
+      {
+        slug: "understated",
+        title: "Understated",
+      },
+    ]
+
+    const query = gql`
+      {
+        discoveryMarketingCollections(size: 2) {
+          slug
+          title
+        }
+      }
+    `
+
+    const context = {
+      marketingCollectionsLoader: ({ slugs }) =>
+        Promise.resolve({
+          body: discoveryCollectionsData.filter((collection) =>
+            slugs.includes(collection.slug)
+          ),
+        }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      discoveryMarketingCollections: discoveryCollectionsData,
+    })
+  })
 })

@@ -227,6 +227,7 @@ import {
   MarketingCollection,
   MarketingCollections,
   CuratedMarketingCollections,
+  DiscoveryMarketingCollections,
 } from "./marketingCollections"
 import { MarketingCategories } from "./marketingCategories"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
@@ -411,6 +412,7 @@ const rootFields = {
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,
   curatedMarketingCollections: CuratedMarketingCollections,
+  discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
   me: Me,
   node: ObjectIdentification.NodeField,
