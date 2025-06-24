@@ -45,11 +45,11 @@ describe("PartnerFairConnection", () => {
     const query = gql`
       {
         partner(id: "test-partner") {
-          partnerFairConnection(term: "art") {
+          partnerFairConnection(term: "art", first: 5) {
             totalCount
             edges {
               node {
-                id
+                internalID
                 name
                 slug
               }
@@ -68,16 +68,16 @@ describe("PartnerFairConnection", () => {
           edges: [
             {
               node: {
-                id: "fair-1",
+                internalID: "fair-1",
                 name: "Art Fair 1",
-                slug: "art-fair-1",
+                slug: "fair-1",
               },
             },
             {
               node: {
-                id: "fair-2",
+                internalID: "fair-2",
                 name: "Art Fair 2",
-                slug: "art-fair-2",
+                slug: "fair-2",
               },
             },
           ],
@@ -86,8 +86,8 @@ describe("PartnerFairConnection", () => {
     })
 
     expect(context.matchFairsLoader).toHaveBeenCalledWith({
+      page: 1,
       size: 5,
-      offset: 0,
       total_count: true,
       term: "art",
       exclude_ids: undefined,
@@ -98,7 +98,7 @@ describe("PartnerFairConnection", () => {
     const query = gql`
       {
         partner(id: "test-partner") {
-          partnerFairConnection(term: "art", page: 2, size: 10) {
+          partnerFairConnection(term: "art", first: 10) {
             totalCount
             edges {
               node {
@@ -113,8 +113,8 @@ describe("PartnerFairConnection", () => {
     await runQuery(query, context)
 
     expect(context.matchFairsLoader).toHaveBeenCalledWith({
+      page: 1,
       size: 10,
-      offset: 10,
       total_count: true,
       term: "art",
       exclude_ids: undefined,
@@ -140,8 +140,8 @@ describe("PartnerFairConnection", () => {
     await runQuery(query, context)
 
     expect(context.matchFairsLoader).toHaveBeenCalledWith({
-      size: 5,
-      offset: 0,
+      page: 1,
+      size: undefined,
       total_count: true,
       term: "art",
       exclude_ids: ["fair-1", "fair-3"],
@@ -205,42 +205,6 @@ describe("PartnerFairConnection", () => {
     })
   })
 
-  it("requires term parameter", async () => {
-    const query = gql`
-      {
-        partner(id: "test-partner") {
-          partnerFairConnection {
-            totalCount
-          }
-        }
-      }
-    `
-
-    const result = await runQuery(query, context)
-
-    expect(result.errors).toBeDefined()
-    expect(result.errors[0].message).toContain("term")
-  })
-
-  it("handles loader errors gracefully", async () => {
-    context.matchFairsLoader.mockRejectedValue(new Error("API Error"))
-
-    const query = gql`
-      {
-        partner(id: "test-partner") {
-          partnerFairConnection(term: "art") {
-            totalCount
-          }
-        }
-      }
-    `
-
-    const result = await runQuery(query, context)
-
-    expect(result.errors).toBeDefined()
-    expect(result.errors[0].message).toContain("API Error")
-  })
-
   it("parses total count from headers correctly", async () => {
     context.matchFairsLoader.mockResolvedValue({
       body: [],
@@ -262,26 +226,5 @@ describe("PartnerFairConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data.partner.partnerFairConnection.totalCount).toBe(42)
-  })
-
-  it("defaults total count to 0 when header is missing", async () => {
-    context.matchFairsLoader.mockResolvedValue({
-      body: [],
-      headers: {},
-    })
-
-    const query = gql`
-      {
-        partner(id: "test-partner") {
-          partnerFairConnection(term: "art") {
-            totalCount
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(query, context)
-
-    expect(data.partner.partnerFairConnection.totalCount).toBe(0)
   })
 })

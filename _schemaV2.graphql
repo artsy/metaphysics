@@ -17263,7 +17263,7 @@ type Partner implements Node {
     size: Int
   ): PartnerAlertHitsConnection
 
-  # Retrieve partner fairs for search
+  # A connection of fairs for a partner.
   partnerFairConnection(
     after: String
     before: String
@@ -17272,12 +17272,6 @@ type Partner implements Node {
     excludeIDs: [String]
     first: Int
     last: Int
-
-    # Page to retrieve. Default: 1.
-    page: Int
-
-    # Maximum number of items to retrieve. Default: 5.
-    size: Int
 
     # Your search term
     term: String!
