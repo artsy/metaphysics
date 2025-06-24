@@ -413,7 +413,7 @@ export const DiscoveryMarketingCollections: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  type: new GraphQLList(MarketingCollectionType),
+  type: new GraphQLList(new GraphQLNonNull(MarketingCollectionType)),
   description:
     "Discovery Marketing Collections for personalized recommendations",
   args: pageable({
@@ -438,9 +438,12 @@ export const DiscoveryMarketingCollections: GraphQLFieldConfig<
       "flora-and-fauna",
     ]
 
-    return fetchMarketingCollections(
+    const collections = await fetchMarketingCollections(
       { ...args, slugs: marketingCollectionSlugs },
       marketingCollectionsLoader
     )
+
+    // Filter out any null collections to match the non-null schema
+    return collections.filter(Boolean)
   },
 }

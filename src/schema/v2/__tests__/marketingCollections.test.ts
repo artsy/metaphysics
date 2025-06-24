@@ -277,4 +277,59 @@ describe("MarketingCollections", () => {
       discoveryMarketingCollections: discoveryCollectionsData,
     })
   })
+
+  it("filters out null and undefined collections from discovery marketing collections", async () => {
+    const discoveryCollectionsDataWithNulls = [
+      {
+        slug: "most-loved",
+        title: "Most Loved",
+      },
+      null,
+      {
+        slug: "understated",
+        title: "Understated",
+      },
+      undefined,
+      {
+        slug: "best-bids",
+        title: "Best Bids",
+      },
+    ]
+
+    const query = gql`
+      {
+        discoveryMarketingCollections {
+          slug
+          title
+        }
+      }
+    `
+
+    const context = {
+      marketingCollectionsLoader: () =>
+        Promise.resolve({
+          body: discoveryCollectionsDataWithNulls,
+        }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    // Should only return the valid collections, filtering out null/undefined
+    expect(data).toEqual({
+      discoveryMarketingCollections: [
+        {
+          slug: "most-loved",
+          title: "Most Loved",
+        },
+        {
+          slug: "understated",
+          title: "Understated",
+        },
+        {
+          slug: "best-bids",
+          title: "Best Bids",
+        },
+      ],
+    })
+  })
 })
