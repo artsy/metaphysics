@@ -100,6 +100,7 @@ export const fairsConnection: GraphQLFieldConfig<
     near?: NearType
     sort?: FairSortsType
     status?: EventStatusType
+    term?: string
   } & CursorPageable
 > = {
   type: fairConnection.connectionType,
@@ -116,11 +117,53 @@ export const fairsConnection: GraphQLFieldConfig<
     near: { type: Near },
     sort: FairSorts,
     status: EventStatus,
+    term: {
+      type: GraphQLString,
+      description: "Search term to match against fair names",
+    },
   }),
   description: "A list of fairs",
-  resolve: async (_root, args, { fairsLoader }) => {
+  resolve: async (
+    _root,
+    args,
+    {
+      unauthenticatedLoaders: { fairsLoader },
+      authenticatedLoaders: { matchFairsLoader },
+    }
+  ) => {
     const { size, offset, page } = convertConnectionArgsToGravityArgs(args)
 
+    // Use matchFairsLoader when term is provided
+    if (args.term) {
+      if (!matchFairsLoader)
+        throw new Error(
+          "You need to pass a X-Access-Token header to perform this action"
+        )
+
+      const { body, headers } = await matchFairsLoader({
+        term: args.term,
+        page,
+        size,
+        total_count: true,
+      })
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
+        ...connectionFromArraySlice(
+          body,
+          pick(args, "before", "after", "first", "last"),
+          {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          }
+        ),
+      }
+    }
+
+    // Use regular fairsLoader for non-search queries or when not authenticated
     const { body, headers } = await fairsLoader({
       fair_organizer_id: args.fairOrganizerID,
       has_full_feature: args.hasFullFeature,
