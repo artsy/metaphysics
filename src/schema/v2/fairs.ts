@@ -126,15 +126,13 @@ export const fairsConnection: GraphQLFieldConfig<
   resolve: async (
     _root,
     args,
-    {
-      unauthenticatedLoaders: { fairsLoader },
-      authenticatedLoaders: { matchFairsLoader },
-    }
+    { unauthenticatedLoaders: { fairsLoader }, authenticatedLoaders }
   ) => {
     const { size, offset, page } = convertConnectionArgsToGravityArgs(args)
 
     // Use matchFairsLoader when term is provided
     if (args.term) {
+      const matchFairsLoader = authenticatedLoaders?.matchFairsLoader
       if (!matchFairsLoader)
         throw new Error(
           "You need to pass a X-Access-Token header to perform this action"
