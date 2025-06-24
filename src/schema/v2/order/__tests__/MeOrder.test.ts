@@ -25,7 +25,7 @@ describe("Me", () => {
       mode: "buy",
       currency_code: "USD",
       buyer_id: "buyer-id-1",
-      buyer_state: "approved",
+      buyer_state: "COMPLETED",
       buyer_state_expires_at: "January 1, 2035 19:00 EST",
       buyer_type: "user",
       seller_id: "seller-id-1",
@@ -67,6 +67,7 @@ describe("Me", () => {
               buyerTotal {
                 display
               }
+              buyerState
               buyerStateExpiresAt
               code
               currencyCode
@@ -161,6 +162,7 @@ describe("Me", () => {
         buyerTotal: {
           display: "US$5,000",
         },
+        buyerState: "COMPLETED",
         buyerStateExpiresAt: "January 1, 2035 19:00 EST",
         code: "order-code",
         currencyCode: "USD",

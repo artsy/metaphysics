@@ -81,6 +81,25 @@ export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
   },
 })
 
+const OrderBuyerStateEnum = new GraphQLEnumType({
+  name: "OrderBuyerStateEnum",
+  values: {
+    INCOMPLETE: { value: "INCOMPLETE" },
+    PAYMENT_FAILED: { value: "PAYMENT_FAILED" },
+    SUBMITTED: { value: "SUBMITTED" },
+    PROCESSING_OFFLINE_PAYMENT: { value: "PROCESSING_OFFLINE_PAYMENT" },
+    PROCESSING_PAYMENT: { value: "PROCESSING_PAYMENT" },
+    SHIPPED: { value: "SHIPPED" },
+    COMPLETED: { value: "COMPLETED" },
+    APPROVED: { value: "APPROVED" },
+    REFUNDED: { value: "REFUNDED" },
+    CANCELLED: { value: "CANCELLED" },
+    DECLINED_BY_SELLER: { value: "DECLINED_BY_SELLER" },
+    DECLINED_BY_BUYER: { value: "DECLINED_BY_BUYER" },
+    UNKNOWN: { value: "UNKNOWN" },
+  },
+})
+
 // Enum for fulfillment_option.type field
 const FulfillmentOptionTypeEnum = new GraphQLEnumType({
   name: "FulfillmentOptionTypeEnum",
@@ -285,6 +304,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           _info
         )
       },
+    },
+    buyerState: {
+      type: OrderBuyerStateEnum,
+      description: "Current state of the order",
+      resolve: ({ buyer_state }) => buyer_state,
     },
     buyerStateExpiresAt: {
       type: GraphQLString,

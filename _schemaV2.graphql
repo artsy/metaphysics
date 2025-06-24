@@ -16632,6 +16632,9 @@ type Order {
   buyerPhoneNumber: String
     @deprecated(reason: "Use `order.fulfillmentDetails.phoneNumber`")
 
+  # Current state of the order
+  buyerState: OrderBuyerStateEnum
+
   # Expiration for the current state of the order
   buyerStateExpiresAt: String
 
@@ -16697,6 +16700,22 @@ type Order {
 
   # The total list price of items (accounting for limited partner offer if applicable)
   totalListPrice: Money
+}
+
+enum OrderBuyerStateEnum {
+  APPROVED
+  CANCELLED
+  COMPLETED
+  DECLINED_BY_BUYER
+  DECLINED_BY_SELLER
+  INCOMPLETE
+  PAYMENT_FAILED
+  PROCESSING_OFFLINE_PAYMENT
+  PROCESSING_PAYMENT
+  REFUNDED
+  SHIPPED
+  SUBMITTED
+  UNKNOWN
 }
 
 enum OrderCreditCardWalletTypeEnum {
