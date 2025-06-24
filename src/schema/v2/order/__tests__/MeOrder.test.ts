@@ -25,7 +25,7 @@ describe("Me", () => {
       mode: "buy",
       currency_code: "USD",
       buyer_id: "buyer-id-1",
-      buyer_state: "COMPLETED",
+      buyer_state: "approved",
       buyer_state_expires_at: "January 1, 2035 19:00 EST",
       buyer_type: "user",
       seller_id: "seller-id-1",
@@ -162,7 +162,7 @@ describe("Me", () => {
         buyerTotal: {
           display: "US$5,000",
         },
-        buyerState: "COMPLETED",
+        buyerState: "APPROVED",
         buyerStateExpiresAt: "January 1, 2035 19:00 EST",
         code: "order-code",
         currencyCode: "USD",
@@ -1203,6 +1203,49 @@ describe("Me", () => {
           __typename: "WireTransfer",
           isManualPayment: true,
         })
+      })
+    })
+
+    describe("buyerState", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              buyerState
+            }
+          }
+        }
+      `
+      it("defaults to null if nothing is present", async () => {
+        orderJson.buyer_state = null
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerState).toEqual(null)
+      })
+
+      it("defaults to UNKNOWN if the status is not mapped", async () => {
+        orderJson.buyer_state = "invalid_state"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+          authenticatedArtworkVersionLoader: jest
+            .fn()
+            .mockResolvedValue(artworkVersion),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerState).toEqual("UNKNOWN")
       })
     })
   })
