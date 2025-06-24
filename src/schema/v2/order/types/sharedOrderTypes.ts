@@ -84,19 +84,37 @@ export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
 const OrderBuyerStateEnum = new GraphQLEnumType({
   name: "OrderBuyerStateEnum",
   values: {
-    INCOMPLETE: { value: "INCOMPLETE" },
-    PAYMENT_FAILED: { value: "PAYMENT_FAILED" },
-    SUBMITTED: { value: "SUBMITTED" },
-    PROCESSING_OFFLINE_PAYMENT: { value: "PROCESSING_OFFLINE_PAYMENT" },
-    PROCESSING_PAYMENT: { value: "PROCESSING_PAYMENT" },
-    SHIPPED: { value: "SHIPPED" },
-    COMPLETED: { value: "COMPLETED" },
-    APPROVED: { value: "APPROVED" },
-    REFUNDED: { value: "REFUNDED" },
-    CANCELLED: { value: "CANCELLED" },
-    DECLINED_BY_SELLER: { value: "DECLINED_BY_SELLER" },
-    DECLINED_BY_BUYER: { value: "DECLINED_BY_BUYER" },
-    UNKNOWN: { value: "UNKNOWN" },
+    INCOMPLETE: {
+      value: "INCOMPLETE",
+      description: "Order is incomplete (pending or abandoned)",
+    },
+    SUBMITTED: { value: "SUBMITTED", description: "Order has been submitted" },
+    PAYMENT_FAILED: {
+      value: "PAYMENT_FAILED",
+      description: "Payment has failed",
+    },
+    PROCESSING_PAYMENT: {
+      value: "PROCESSING_PAYMENT",
+      description: "Processing payment",
+    },
+    PROCESSING_OFFLINE_PAYMENT: {
+      value: "PROCESSING_OFFLINE_PAYMENT",
+      description: "Processing offline payment",
+    },
+    APPROVED: { value: "APPROVED", description: "Order has been approved" },
+    SHIPPED: { value: "SHIPPED", description: "Order has been shipped" },
+    COMPLETED: { value: "COMPLETED", description: "Order is completed" },
+    REFUNDED: { value: "REFUNDED", description: "Order has been refunded" },
+    DECLINED_BY_SELLER: {
+      value: "DECLINED_BY_SELLER",
+      description: "Order was declined by the seller",
+    },
+    DECLINED_BY_BUYER: {
+      value: "DECLINED_BY_BUYER",
+      description: "Order was declined by the buyer",
+    },
+    CANCELLED: { value: "CANCELLED", description: "Order has been cancelled" },
+    UNKNOWN: { value: "UNKNOWN", description: "Order status is unknown" },
   },
 })
 
@@ -307,8 +325,9 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     buyerState: {
       type: OrderBuyerStateEnum,
-      description: "Current state of the order",
-      resolve: ({ buyer_state }) => buyer_state,
+      description:
+        "Calculated state of the order that defines buyer facing state/actions",
+      resolve: (order) => resolveBuyerState(order),
     },
     buyerStateExpiresAt: {
       type: GraphQLString,
@@ -597,5 +616,42 @@ const resolvePaymentMethodDetails = (order, context) => {
 
     default:
       throw new Error(`Unknown order payment method: ${payment_method}`)
+  }
+}
+
+const resolveBuyerState = (order) => {
+  const { buyer_state } = order
+
+  if (!buyer_state) {
+    return null
+  }
+
+  switch (buyer_state) {
+    case "incomplete":
+      return "INCOMPLETE"
+    case "submitted":
+      return "SUBMITTED"
+    case "payment_failed":
+      return "PAYMENT_FAILED"
+    case "processing_payment":
+      return "PROCESSING_PAYMENT"
+    case "processing_offline_payment":
+      return "PROCESSING_OFFLINE_PAYMENT"
+    case "approved":
+      return "APPROVED"
+    case "shipped":
+      return "SHIPPED"
+    case "completed":
+      return "COMPLETED"
+    case "refunded":
+      return "REFUNDED"
+    case "declined_by_seller":
+      return "DECLINED_BY_SELLER"
+    case "declined_by_buyer":
+      return "DECLINED_BY_BUYER"
+    case "cancelled":
+      return "CANCELLED"
+    default:
+      return "UNKNOWN"
   }
 }
