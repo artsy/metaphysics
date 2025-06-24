@@ -1,4 +1,4 @@
-import _, { pick } from "lodash"
+import _ from "lodash"
 import FairSorts, { FairSortsType } from "./sorts/fair_sorts"
 import EventStatus, { EventStatusType } from "./input_fields/event_status"
 import Near, { NearType } from "./input_fields/near"
@@ -13,8 +13,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
+import { paginationResolver } from "schema/v2/fields/pagination"
 
 const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Fair.type),
@@ -119,7 +118,8 @@ export const fairsConnection: GraphQLFieldConfig<
     status: EventStatus,
     term: {
       type: GraphQLString,
-      description: "Search term to match against fair names",
+      description:
+        "Search term to match against fair names for authenticated users",
     },
   }),
   description: "A list of fairs",
@@ -147,18 +147,14 @@ export const fairsConnection: GraphQLFieldConfig<
 
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return {
+      return paginationResolver({
+        args,
+        body,
+        offset,
+        page,
+        size,
         totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArraySlice(
-          body,
-          pick(args, "before", "after", "first", "last"),
-          {
-            arrayLength: totalCount,
-            sliceStart: offset,
-          }
-        ),
-      }
+      })
     }
 
     // Use regular fairsLoader for non-search queries or when not authenticated
@@ -183,17 +179,13 @@ export const fairsConnection: GraphQLFieldConfig<
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      pageCursors: createPageCursors({ page, size }, totalCount),
-      ...connectionFromArraySlice(
-        body,
-        pick(args, "before", "after", "first", "last"),
-        {
-          arrayLength: totalCount,
-          sliceStart: offset,
-        }
-      ),
-    }
+    })
   },
 }
