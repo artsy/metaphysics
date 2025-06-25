@@ -28,7 +28,7 @@ describe("UpdateArtworkImportMutation", () => {
 
     expect(artworkImportUpdateLoader).toHaveBeenCalledWith({
       currency: "EUR",
-      dimensionMetric: "cm",
+      dimension_metric: "cm",
     })
 
     expect(result).toEqual({
