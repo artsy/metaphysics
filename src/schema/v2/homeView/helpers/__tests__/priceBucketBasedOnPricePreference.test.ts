@@ -33,7 +33,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "500-1000",
       min: 500,
       max: 1000,
-      text: "Art Under $1000",
+      text: "Art Under $1,000",
     })
   })
 
@@ -42,7 +42,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "500-1000",
       min: 500,
       max: 1000,
-      text: "Art Under $1000",
+      text: "Art Under $1,000",
     })
   })
 
@@ -51,7 +51,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "500-1000",
       min: 500,
       max: 1000,
-      text: "Art Under $1000",
+      text: "Art Under $1,000",
     })
   })
 
@@ -60,7 +60,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "1000-2500",
       min: 1000,
       max: 2500,
-      text: "Art Under $2500",
+      text: "Art Under $2,500",
     })
   })
 
@@ -69,7 +69,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "1000-2500",
       min: 1000,
       max: 2500,
-      text: "Art Under $2500",
+      text: "Art Under $2,500",
     })
   })
 
@@ -78,7 +78,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "2500-5000",
       min: 2500,
       max: 5000,
-      text: "Art Under $5000",
+      text: "Art Under $5,000",
     })
   })
 
@@ -87,7 +87,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "2500-5000",
       min: 2500,
       max: 5000,
-      text: "Art Under $5000",
+      text: "Art Under $5,000",
     })
   })
 
@@ -96,7 +96,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "5000-10000",
       min: 5000,
       max: 10000,
-      text: "Art Under $10000",
+      text: "Art Under $10,000",
     })
   })
 
@@ -105,7 +105,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "5000-10000",
       min: 5000,
       max: 10000,
-      text: "Art Under $10000",
+      text: "Art Under $10,000",
     })
   })
 
@@ -114,7 +114,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "10000-25000",
       min: 10000,
       max: 25000,
-      text: "Art Under $25000",
+      text: "Art Under $25,000",
     })
   })
 
@@ -123,7 +123,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "10000-25000",
       min: 10000,
       max: 25000,
-      text: "Art Under $25000",
+      text: "Art Under $25,000",
     })
   })
 
@@ -132,7 +132,7 @@ describe("priceBucketBasedOnPricePreference", () => {
       priceRange: "25000-*",
       min: 25000,
       max: Number.POSITIVE_INFINITY,
-      text: "Art Above $25000",
+      text: "Art Above $25,000",
     })
   })
 })
