@@ -1,8 +1,8 @@
 import {
   GraphQLString,
   GraphQLObjectType,
-  GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLUnionType,
   GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -14,9 +14,13 @@ import {
 import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportSuccess",
-  isTypeOf: (data) => !!data.id || !!data.queued,
+  name: "UpdateArtworkImportSuccess",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
+    },
     artworkImport: {
       type: ArtworkImportType,
       resolve: (result) => {
@@ -25,15 +29,11 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    queued: {
-      type: GraphQLBoolean,
-      resolve: ({ queued }) => queued,
-    },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportFailure",
+  name: "UpdateArtworkImportFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -44,42 +44,21 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportResponseOrError",
+  name: "UpdateArtworkImportResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportMutation = mutationWithClientMutationId<
+export const UpdateArtworkImportMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImport",
+  name: "UpdateArtworkImport",
   inputFields: {
-    async: {
-      type: GraphQLBoolean,
-    },
     currency: {
       type: GraphQLString,
     },
     dimensionMetric: {
-      type: GraphQLString,
-    },
-    partnerID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    fileName: {
-      type: GraphQLString,
-    },
-    parseWithAI: {
-      type: GraphQLBoolean,
-    },
-    parseWithAIModel: {
       type: GraphQLString,
     },
   },
@@ -89,25 +68,21 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createArtworkImportLoader }) => {
-    if (!createArtworkImportLoader) {
+  mutateAndGetPayload: async (
+    { currency, dimensionMetric },
+    { artworkImportUpdateLoader }
+  ) => {
+    if (!artworkImportUpdateLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     const gravityArgs = {
-      async: args.async,
-      partner_id: args.partnerID,
-      s3_bucket: args.s3Bucket,
-      s3_key: args.s3Key,
-      file_name: args.fileName,
-      parse_with_ai: args.parseWithAI,
-      parse_with_ai_model: args.parseWithAIModel,
-      currency: args.currency,
-      dimension_metric: args.dimensionMetric,
+      currency: currency,
+      dimension_metric: dimensionMetric,
     }
 
     try {
-      const result = await createArtworkImportLoader(gravityArgs)
+      const result = await artworkImportUpdateLoader(gravityArgs)
       return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
