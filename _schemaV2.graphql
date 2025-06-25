@@ -16015,6 +16015,9 @@ type Mutation {
   updateArtwork(
     input: UpdateArtworkMutationInput!
   ): UpdateArtworkMutationPayload
+  updateArtworkImport(
+    input: UpdateArtworkImportInput!
+  ): UpdateArtworkImportPayload
   updateArtworkImportRow(
     input: UpdateArtworkImportRowInput!
   ): UpdateArtworkImportRowPayload
@@ -22568,6 +22571,25 @@ input UpdateArtworkEditionSetInput {
   shippingWeightMetric: String
 }
 
+type UpdateArtworkImportFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtworkImportInput {
+  clientMutationId: String
+  currency: String
+  dimensionMetric: String
+}
+
+type UpdateArtworkImportPayload {
+  artworkImportOrError: UpdateArtworkImportResponseOrError
+  clientMutationId: String
+}
+
+union UpdateArtworkImportResponseOrError =
+    UpdateArtworkImportFailure
+  | UpdateArtworkImportSuccess
+
 type UpdateArtworkImportRowFailure {
   mutationError: GravityMutationError
 }
@@ -22590,6 +22612,11 @@ union UpdateArtworkImportRowResponseOrError =
   | UpdateArtworkImportRowSuccess
 
 type UpdateArtworkImportRowSuccess {
+  artworkImport: ArtworkImport
+  success: Boolean!
+}
+
+type UpdateArtworkImportSuccess {
   artworkImport: ArtworkImport
   success: Boolean!
 }
