@@ -11,6 +11,7 @@ const mockMutation = `
         ...on OrderMutationError {
           mutationError {
             message
+            code
           }
         }
         ...on OrderMutationSuccess {
@@ -74,7 +75,7 @@ describe("submitOrderMutation", () => {
     })
   })
 
-  it("propagates an error", async () => {
+  it("propagates an unexpected error", async () => {
     context.meOrderSubmitLoader = jest
       .fn()
       .mockRejectedValue(new Error("Oops - Error submitting order"))
@@ -85,7 +86,32 @@ describe("submitOrderMutation", () => {
       submitOrder: {
         orderOrError: {
           mutationError: {
-            message: "Oops - Error submitting order",
+            // fallback message for a non-exchange formatted error
+            message: "An error occurred",
+            code: "internal_error",
+          },
+        },
+      },
+    })
+  })
+
+  it("propagates a proper exchange error", async () => {
+    context.meOrderSubmitLoader = jest.fn().mockRejectedValue({
+      statusCode: 422,
+      body: {
+        code: "create_credit_card_failed",
+      },
+    })
+    const result = await runAuthenticatedQuery(mockMutation, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      submitOrder: {
+        orderOrError: {
+          mutationError: {
+            // fallback message for a non-exchange formatted error
+            message: "An error occurred",
+            code: "create_credit_card_failed",
           },
         },
       },
