@@ -240,4 +240,96 @@ describe("MarketingCollections", () => {
       "Category is required for CURATED sort."
     )
   })
+
+  it("returns discovery marketing collections", async () => {
+    const discoveryCollectionsData = [
+      {
+        slug: "most-loved",
+        title: "Most Loved",
+      },
+      {
+        slug: "understated",
+        title: "Understated",
+      },
+    ]
+
+    const query = gql`
+      {
+        discoveryMarketingCollections(size: 2) {
+          slug
+          title
+        }
+      }
+    `
+
+    const context = {
+      marketingCollectionsLoader: ({ slugs }) =>
+        Promise.resolve({
+          body: discoveryCollectionsData.filter((collection) =>
+            slugs.includes(collection.slug)
+          ),
+        }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      discoveryMarketingCollections: discoveryCollectionsData,
+    })
+  })
+
+  it("filters out null and undefined collections from discovery marketing collections", async () => {
+    const discoveryCollectionsDataWithNulls = [
+      {
+        slug: "most-loved",
+        title: "Most Loved",
+      },
+      null,
+      {
+        slug: "understated",
+        title: "Understated",
+      },
+      undefined,
+      {
+        slug: "best-bids",
+        title: "Best Bids",
+      },
+    ]
+
+    const query = gql`
+      {
+        discoveryMarketingCollections {
+          slug
+          title
+        }
+      }
+    `
+
+    const context = {
+      marketingCollectionsLoader: () =>
+        Promise.resolve({
+          body: discoveryCollectionsDataWithNulls,
+        }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    // Should only return the valid collections, filtering out null/undefined
+    expect(data).toEqual({
+      discoveryMarketingCollections: [
+        {
+          slug: "most-loved",
+          title: "Most Loved",
+        },
+        {
+          slug: "understated",
+          title: "Understated",
+        },
+        {
+          slug: "best-bids",
+          title: "Best Bids",
+        },
+      ],
+    })
+  })
 })

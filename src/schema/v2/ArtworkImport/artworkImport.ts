@@ -43,7 +43,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
     INVALID_CERTIFICATE_OF_AUTHENTICITY: {
-      value: "invalid_coa",
+      value: "invalid_certificate_of_authenticity",
     },
     INVALID_SIGNATURE: { value: "invalid_signature" },
     INVALID_CLASSIFICATION: { value: "invalid_classification" },
