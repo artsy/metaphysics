@@ -248,6 +248,107 @@ describe("Me", () => {
       })
     })
 
+    describe("artworkOrEditionSet", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              lineItems {
+                artworkOrEditionSet {
+                  __typename
+                  ... on Artwork {
+                    dimensions {
+                      in
+                      cm
+                    }
+                  }
+                  ... on EditionSet {
+                    dimensions {
+                      in
+                      cm
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      it("returns artwork details for an artwork line item", async () => {
+        orderJson.line_items[0].artwork_id = "artwork-id-1"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue({
+            id: "artwork-id-1",
+            dimensions: {
+              in: "10 x 10",
+              cm: "25.4 x 25.4",
+            },
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].artworkOrEditionSet).toEqual({
+          __typename: "Artwork",
+          dimensions: {
+            in: "10 x 10",
+            cm: "25.4 x 25.4",
+          },
+        })
+      })
+
+      it("returns edition set details for an edition set line item", async () => {
+        orderJson.line_items[0].edition_set_id = "edition-set-id-1"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue({
+            edition_sets: [
+              {
+                id: "edition-set-id-1",
+                dimensions: {
+                  in: "10 x 10",
+                  cm: "25.4 x 25.4",
+                },
+              },
+              {
+                id: "edition-set-id-2",
+                dimensions: {
+                  in: "12 x 12",
+                  cm: "30.5 x 30.5",
+                },
+              },
+            ],
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].artworkOrEditionSet).toEqual({
+          __typename: "EditionSet",
+          dimensions: {
+            in: "10 x 10",
+            cm: "25.4 x 25.4",
+          },
+        })
+      })
+
+      it("returns null for artworkOrEditionSet when no artwork or edition set found", async () => {
+        orderJson.line_items[0].artwork_id = "unknown-id"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(null),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].artworkOrEditionSet).toBeNull()
+      })
+    })
+
     describe("seller", () => {
       const query = gql`
         query {

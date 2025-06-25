@@ -20,6 +20,7 @@ import { PricingBreakdownLines } from "./PricingBreakdownLines"
 import { OrderJSON } from "./exchangeJson"
 import { PaymentMethodUnion } from "schema/v2/payment_method_union"
 import { DeliveryInfo } from "./DeliveryInfo"
+import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
@@ -194,6 +195,32 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       type: ArtworkType,
       resolve: ({ artwork_id }, _args, { artworkLoader }) => {
         return artworkLoader(artwork_id)
+      },
+    },
+    artworkOrEditionSet: {
+      type: ArtworkOrEditionSetType,
+      resolve: async (
+        { artwork_id, edition_set_id },
+        _args,
+        { artworkLoader }
+      ) => {
+        if (artwork_id && edition_set_id) {
+          const artwork = await artworkLoader(artwork_id)
+          if (artwork && artwork.edition_sets) {
+            const editionSet = artwork.edition_sets.find(
+              (es) => es.id === edition_set_id
+            )
+            if (editionSet) {
+              return { ...editionSet, __typename: "EditionSet" }
+            }
+          }
+        } else if (artwork_id) {
+          const artwork = await artworkLoader(artwork_id)
+          if (artwork) {
+            return { ...artwork, __typename: "Artwork" }
+          }
+        }
+        return null
       },
     },
     artworkVersion: {
