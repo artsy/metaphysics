@@ -281,7 +281,7 @@ describe("QuickLinks", () => {
 
         expect(homeView.section.navigationPills).toContainEqual(
           expect.objectContaining({
-            title: "Art Under $2500",
+            title: "Art Under $2,500",
             href: "/collect?price_range=1000-2500",
           })
         )
