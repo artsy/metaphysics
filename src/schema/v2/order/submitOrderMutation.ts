@@ -5,6 +5,7 @@ import {
 } from "./types/sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {
   id: string
@@ -41,9 +42,10 @@ export const submitOrderMutation = mutationWithClientMutationId<
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
       submittedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
+      submittedOrder.__typename = "OrderMutationSuccess"
       return submittedOrder
     } catch (error) {
-      return { message: error.message, _type: ORDER_MUTATION_FLAGS.ERROR }
+      return handleExchangeError(error)
     }
   },
 })
