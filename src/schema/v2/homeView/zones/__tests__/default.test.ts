@@ -24,6 +24,7 @@ describe("getSections", () => {
           "home-view-section-tasks",
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
+          "home-view-section-based-on-your-recent-saves",
           "home-view-section-recently-viewed-artworks",
           "home-view-section-infinite-discovery",
           "home-view-section-discover-something-new",

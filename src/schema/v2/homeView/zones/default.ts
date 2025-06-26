@@ -29,12 +29,14 @@ import { QuickLinks } from "../sections/QuickLinks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
+import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
   Tasks,
   LatestActivity,
   NewWorksForYou,
+  BasedOnYourRecentSaves, // TODO: think about the order of sections
   RecentlyViewedArtworks,
   InfiniteDiscovery,
   DiscoverSomethingNew,
