@@ -444,6 +444,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description: "If true, will return featured bio over Artsy one.",
             defaultValue: true,
+            deprecationReason:
+              "Artsy bios are always returned over featured bios.",
           },
           ...markdown().args,
         },
@@ -474,15 +476,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: async (
           { blurb, id },
-          { format, partnerBio },
+          { format },
           { partnerArtistsForArtistLoader }
         ) => {
-          if (!partnerBio && blurb && blurb.length) {
+          if (blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
-          }
-
-          if (!partnerBio) {
-            return null
           }
 
           // Favor partner bio...
@@ -504,7 +502,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           // Fall back to the default bio
-          return { text: formatMarkdownValue(blurb, format) }
+          return null
         },
       },
       birthday: { type: GraphQLString },
