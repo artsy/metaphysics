@@ -1,22 +1,24 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("AssignArtworkImportArtistMutation", () => {
-  it("assigns an artist", async () => {
-    const artworkImportMatchArtistsLoader = jest.fn().mockResolvedValue({
-      matched: 5,
-      unmatched: 4,
+describe("MatchArtworkImportArtistsMutation", () => {
+  it("matches the artists", async () => {
+    const artworkImportAssignArtistLoader = jest.fn().mockResolvedValue({
+      updated_rows_count: 1,
     })
 
     const mutation = gql`
       mutation {
-        matchArtworkImportArtists(
-          input: { artworkImportID: "artwork-import-1" }
+        assignArtworkImportArtist(
+          input: {
+            artworkImportID: "artwork-import-1"
+            artistName: "artist-name"
+            artistID: "artist-id"
+          }
         ) {
-          matchArtworkImportArtistsOrError {
-            ... on MatchArtworkImportArtistsSuccess {
-              matched
-              unmatched
+          assignArtworkImportArtistOrError {
+            ... on AssignArtworkImportArtistSuccess {
+              updatedRowsCount
             }
           }
         }
@@ -24,19 +26,22 @@ describe("AssignArtworkImportArtistMutation", () => {
     `
 
     const context = {
-      artworkImportMatchArtistsLoader,
+      artworkImportAssignArtistLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportMatchArtistsLoader).toHaveBeenCalledWith(
-      "artwork-import-1"
+    expect(artworkImportAssignArtistLoader).toHaveBeenCalledWith(
+      "artwork-import-1",
+      {
+        artist_name: "artist-name",
+        artist_id: "artist-id",
+      }
     )
 
     expect(result).toEqual({
-      matchArtworkImportArtists: {
-        matchArtworkImportArtistsOrError: {
-          matched: 5,
-          unmatched: 4,
+      assignArtworkImportArtist: {
+        assignArtworkImportArtistOrError: {
+          updatedRowsCount: 1,
         },
       },
     })
