@@ -532,12 +532,12 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const ORDER_MUTATION_FLAGS = {
-  SUCCESS: "SuccessType",
-  ERROR: "ErrorType",
+  SUCCESS: "ExchangeSuccessType",
+  ERROR: "ExchangeErrorType",
 } as const
 
 export const OrderMutationResponseType = new GraphQLUnionType({
-  name: "SetOrderFulfillmentOptionResponse",
+  name: "OrderMutationResponse",
   types: [SuccessType, ErrorType],
   resolveType: (data) => {
     const result =
