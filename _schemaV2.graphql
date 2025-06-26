@@ -14320,31 +14320,6 @@ union Match =
   | Show
   | Tag
 
-type MatchArtworkImportArtistsFailure {
-  mutationError: GravityMutationError
-}
-
-input MatchArtworkImportArtistsInput {
-  artworkImportID: String!
-  clientMutationId: String
-}
-
-type MatchArtworkImportArtistsPayload {
-  clientMutationId: String
-  matchArtworkImportArtistsOrError: MatchArtworkImportArtistsResponseOrError
-}
-
-union MatchArtworkImportArtistsResponseOrError =
-    MatchArtworkImportArtistsFailure
-  | MatchArtworkImportArtistsSuccess
-
-type MatchArtworkImportArtistsSuccess {
-  artworkImport: ArtworkImport
-  artworkImportID: String!
-  matched: Int!
-  unmatched: Int!
-}
-
 type MatchArtworkImportRowImageFailure {
   mutationError: GravityMutationError
 }
@@ -15856,9 +15831,6 @@ type Mutation {
   markNotificationsAsSeen(
     input: MarkNotificationsAsSeenInput!
   ): MarkNotificationsAsSeenPayload
-  matchArtworkImportArtists(
-    input: MatchArtworkImportArtistsInput!
-  ): MatchArtworkImportArtistsPayload
   matchArtworkImportRowImage(
     input: MatchArtworkImportRowImageInput!
   ): MatchArtworkImportRowImagePayload
