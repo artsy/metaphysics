@@ -26,6 +26,7 @@ interface Input {
     locationId?: string
     category?: string
     offer: boolean
+    priceAdjustment?: number
     priceListed?: number
     published?: boolean
   }
@@ -62,6 +63,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     ecommerce: {
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Purchase",
+    },
+    priceAdjustment: {
+      type: GraphQLInt,
+      description:
+        "Adjusts the artworks' prices according to the value passed (percentage).",
     },
     priceListed: {
       type: GraphQLFloat,
@@ -215,6 +221,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         location_id: metadata.locationId,
         category: metadata.category,
+        price_adjustment: metadata.priceAdjustment,
         price_listed: metadata.priceListed,
         published: metadata.published,
         offer: metadata.offer,

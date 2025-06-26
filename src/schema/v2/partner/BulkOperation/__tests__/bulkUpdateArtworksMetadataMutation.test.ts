@@ -15,6 +15,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             category: "Painting"
             ecommerce: true
             offer: false
+            priceAdjustment: -5
             priceListed: 1000
             published: true
           }
@@ -73,6 +74,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           category: "Painting",
           ecommerce: true,
           offer: false,
+          price_adjustment: -5,
           price_listed: 1000,
           published: true,
         },
