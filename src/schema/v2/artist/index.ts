@@ -493,11 +493,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           if (partnerArtists && partnerArtists.length) {
             const { biography, partner } = first(partnerArtists) as any
 
-            return {
-              text: formatMarkdownValue(biography, format),
-              credit: `Submitted by ${partner.name}`,
-              partner_id: partner.id,
-              partner: partner,
+            // Only return partner bio if biography has actual content
+            if (biography && biography.length) {
+              return {
+                text: formatMarkdownValue(biography, format),
+                credit: `Submitted by ${partner.name}`,
+                partner_id: partner.id,
+                partner: partner,
+              }
             }
           }
 

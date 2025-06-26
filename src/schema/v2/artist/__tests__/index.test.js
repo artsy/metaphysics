@@ -525,6 +525,76 @@ describe("Artist type", () => {
           })
         })
       })
+
+      it("returns null when partner bio is null", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: null,
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
+            },
+          },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: null,
+            },
+          })
+        })
+      })
+
+      it("returns null when partner bio is empty string", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "",
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
+            },
+          },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: null,
+            },
+          })
+        })
+      })
     })
   })
 
