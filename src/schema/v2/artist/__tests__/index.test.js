@@ -471,7 +471,6 @@ describe("Artist type", () => {
             partner: {
               name: "Catty Partner",
               id: "catty-partner",
-              slug: "catty-partner",
             },
           },
         ])
@@ -509,7 +508,6 @@ describe("Artist type", () => {
             partner: {
               name: "Gallery Example",
               id: "gallery-example",
-              slug: "gallery-example",
             },
           },
         ])
