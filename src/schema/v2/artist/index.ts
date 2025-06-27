@@ -479,21 +479,20 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           { format },
           { partnerArtistsForArtistLoader }
         ) => {
+          // Return the Artsy bio if one exists
           if (blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
           }
 
-          // Favor partner bio...
           const partnerArtists = await partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
           })
 
-          // ...if available
           if (partnerArtists && partnerArtists.length) {
             const { biography, partner } = first(partnerArtists) as any
 
-            // Only return partner bio if biography has actual content
+            // Return the featured partner bio if one exists
             if (biography && biography.length) {
               return {
                 text: formatMarkdownValue(biography, format),
@@ -504,7 +503,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             }
           }
 
-          // Fall back to the default bio
+          // Return nothing if neither an Artsy nor a partner bio exists
           return null
         },
       },
