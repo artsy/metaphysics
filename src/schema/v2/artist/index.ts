@@ -496,7 +496,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             // Return the featured partner bio if one exists
             if (biography && biography.length) {
               // Append the credit to the text so it can be formatted
-              const creditedBiography = `${biography}\n\n_Submitted by [${partner.name}](${config.FORCE_URL}/partner/${partner.slug})_`
+              const creditedBiography = `${biography}\n\n_Submitted by [${partner.name}](${config.FORCE_URL}/partner/${partner.id})_`
 
               return {
                 text: formatMarkdownValue(creditedBiography, format),
