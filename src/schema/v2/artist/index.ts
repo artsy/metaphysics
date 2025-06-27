@@ -68,6 +68,7 @@ import {
 } from "../marketingCollections"
 import { ArtistSeriesConnectionType } from "../artistSeries"
 import { SEO_EXPERIMENT_ARTISTS } from "schema/v2/seoExperimentArtists"
+import config from "config"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -494,8 +495,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
 
             // Return the featured partner bio if one exists
             if (biography && biography.length) {
+              // Append the credit to the text so it can be formatted
+              const creditedBiography = `${biography}\n\n_Submitted by [${partner.name}](${config.FORCE_URL}/partner/${partner.slug})_`
+
               return {
-                text: formatMarkdownValue(biography, format),
+                text: formatMarkdownValue(creditedBiography, format),
                 credit: `Submitted by ${partner.name}`,
                 partner_id: partner.id,
                 partner: partner,
