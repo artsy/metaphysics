@@ -8,9 +8,11 @@ describe("Artist type", () => {
 
   beforeEach(() => {
     config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
+    config.FORCE_URL = "https://www.artsy.net"
   })
   afterEach(() => {
     config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
+    delete config.FORCE_URL
   })
 
   beforeEach(() => {
@@ -469,6 +471,7 @@ describe("Artist type", () => {
             partner: {
               name: "Catty Partner",
               id: "catty-partner",
+              slug: "catty-partner",
             },
           },
         ])
@@ -489,15 +492,80 @@ describe("Artist type", () => {
           }
         `
         return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artist: {
-              biographyBlurb: {
-                text: "<p>new catty bio</p>\n",
-                credit: "Submitted by Catty Partner",
-                partnerID: "catty-partner",
-              },
+          expect(data.artist.biographyBlurb.text).toContain("new catty bio")
+          expect(data.artist.biographyBlurb.text).toContain("Submitted by")
+          expect(data.artist.biographyBlurb.text).toContain("Catty Partner")
+          expect(data.artist.biographyBlurb.credit).toBe(
+            "Submitted by Catty Partner"
+          )
+          expect(data.artist.biographyBlurb.partnerID).toBe("catty-partner")
+        })
+      })
+
+      it("includes partner link in credited biography with correct formatting", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "This is a great artist biography.",
+            partner: {
+              name: "Gallery Example",
+              id: "gallery-example",
+              slug: "gallery-example",
             },
-          })
+          },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const htmlQuery = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: HTML) {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+
+        const markdownQuery = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: MARKDOWN) {
+                text
+              }
+            }
+          }
+        `
+
+        return Promise.all([
+          runQuery(htmlQuery, context),
+          runQuery(markdownQuery, context),
+        ]).then(([htmlData, markdownData]) => {
+          // Test HTML format
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            "This is a great artist biography."
+          )
+          expect(htmlData.artist.biographyBlurb.text).toContain("Submitted by")
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            "Gallery Example"
+          )
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            'href="https://www.artsy.net/partner/gallery-example"'
+          )
+          expect(htmlData.artist.biographyBlurb.credit).toBe(
+            "Submitted by Gallery Example"
+          )
+          expect(htmlData.artist.biographyBlurb.partnerID).toBe(
+            "gallery-example"
+          )
+
+          // Test Markdown format
+          expect(markdownData.artist.biographyBlurb.text).toBe(
+            "This is a great artist biography.\n\n_Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)_"
+          )
         })
       })
 
