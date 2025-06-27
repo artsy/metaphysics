@@ -6,11 +6,13 @@ import { ShowOpenedNotificationItemType } from "./ShowOpenedNotificationItem"
 import { ViewingRoomPublishedNotificationItemType } from "./ViewingRoomPublishedNotificationItem"
 import { PartnerOfferCreatedNotificationItemType } from "./PartnerOfferCreatedNotificationItem"
 import { CollectorProfileUpdatePromptNotificationItemType } from "./CollectorProfileUpdatePromptNotificationItem"
+import { ArtworkPriceDroppedNotificationItemType } from "./ArtworkPriceDroppedNotificationItem"
 
 export const NotificationItemType = new GraphQLUnionType({
   name: "NotificationItem",
   types: [
     ArtworkPublishedNotificationItemType,
+    ArtworkPriceDroppedNotificationItemType,
     AlertNotificationItemType,
     ArticleFeaturedArtistNotificationItemType,
     ShowOpenedNotificationItemType,
@@ -24,6 +26,8 @@ export const NotificationItemType = new GraphQLUnionType({
         return AlertNotificationItemType
       case "ArtworkPublishedActivity":
         return ArtworkPublishedNotificationItemType
+      case "ArtworkPriceDroppedActivity":
+        return ArtworkPriceDroppedNotificationItemType
       case "ArticleFeaturedArtistActivity":
         return ArticleFeaturedArtistNotificationItemType
       case "PartnerShowOpenedActivity":
