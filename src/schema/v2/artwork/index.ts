@@ -1174,8 +1174,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      literature: markdown(({ literature }) =>
-        literature.replace(/^literature:\s+/i, "")
+      literature: markdown(
+        ({ literature }) => literature?.replace(/^literature:\s+/i, "") || ""
       ),
       listingOptions,
       location: {
@@ -1603,8 +1603,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      provenance: markdown(({ provenance }) =>
-        provenance.replace(/^provenance:\s+/i, "")
+      provenance: markdown(
+        ({ provenance }) => provenance?.replace(/^provenance:\s+/i, "") || ""
       ),
       publisher: markdown(),
       realizedPrice: {
@@ -1755,8 +1755,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               })
             : [],
       },
-      signature: markdown(({ signature }) =>
-        signature.replace(/^signature:\s+/i, "")
+      signature: markdown(
+        ({ signature }) => signature?.replace(/^signature:\s+/i, "") || ""
       ),
       signatureDetails: {
         type: GraphQLString,
