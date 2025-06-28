@@ -68,6 +68,7 @@ import {
 } from "../marketingCollections"
 import { ArtistSeriesConnectionType } from "../artistSeries"
 import { SEO_EXPERIMENT_ARTISTS } from "schema/v2/seoExperimentArtists"
+import config from "config"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -444,6 +445,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description: "If true, will return featured bio over Artsy one.",
             defaultValue: true,
+            deprecationReason:
+              "Artsy bios are always returned over featured bios.",
           },
           ...markdown().args,
         },
@@ -474,37 +477,38 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: async (
           { blurb, id },
-          { format, partnerBio },
+          { format },
           { partnerArtistsForArtistLoader }
         ) => {
-          if (!partnerBio && blurb && blurb.length) {
+          // Return the Artsy bio if one exists
+          if (blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
           }
 
-          if (!partnerBio) {
-            return null
-          }
-
-          // Favor partner bio...
           const partnerArtists = await partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
           })
 
-          // ...if available
           if (partnerArtists && partnerArtists.length) {
             const { biography, partner } = first(partnerArtists) as any
 
-            return {
-              text: formatMarkdownValue(biography, format),
-              credit: `Submitted by ${partner.name}`,
-              partner_id: partner.id,
-              partner: partner,
+            // Return the featured partner bio if one exists
+            if (biography && biography.length) {
+              // Append the credit to the text so it can be formatted
+              const creditedBiography = `${biography}\n\n_Submitted by [${partner.name}](${config.FORCE_URL}/partner/${partner.id})_`
+
+              return {
+                text: formatMarkdownValue(creditedBiography, format),
+                credit: `Submitted by ${partner.name}`,
+                partner_id: partner.id,
+                partner: partner,
+              }
             }
           }
 
-          // Fall back to the default bio
-          return { text: formatMarkdownValue(blurb, format) }
+          // Return nothing if neither an Artsy nor a partner bio exists
+          return null
         },
       },
       birthday: { type: GraphQLString },

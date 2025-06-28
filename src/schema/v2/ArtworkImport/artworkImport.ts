@@ -274,11 +274,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ created_by }) => created_by,
     },
     currency: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    dimensionMetric: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ dimension_metric }) => dimension_metric,
+      type: GraphQLString,
     },
     fileName: {
       type: new GraphQLNonNull(GraphQLString),

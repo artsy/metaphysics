@@ -58,12 +58,6 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     async: {
       type: GraphQLBoolean,
     },
-    currency: {
-      type: GraphQLString,
-    },
-    dimensionMetric: {
-      type: GraphQLString,
-    },
     partnerID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -102,8 +96,6 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       file_name: args.fileName,
       parse_with_ai: args.parseWithAI,
       parse_with_ai_model: args.parseWithAIModel,
-      currency: args.currency,
-      dimension_metric: args.dimensionMetric,
     }
 
     try {

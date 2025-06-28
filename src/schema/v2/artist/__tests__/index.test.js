@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import config from "config"
 
 describe("Artist type", () => {
@@ -8,9 +8,11 @@ describe("Artist type", () => {
 
   beforeEach(() => {
     config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
+    config.FORCE_URL = "https://www.artsy.net"
   })
   afterEach(() => {
     config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
+    delete config.FORCE_URL
   })
 
   beforeEach(() => {
@@ -419,161 +421,244 @@ describe("Artist type", () => {
     })
   })
   describe("biographyBlurb", () => {
-    it("returns the blurb if present", () => {
-      artist.blurb = "catty blurb"
-      const query = `
-        {
-          artist(id: "foo-bar") {
-            blurb
-          }
-        }
-      `
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artist: {
-            blurb: "catty blurb",
+    describe("when artsy blurb exists", () => {
+      it("returns the artsy blurb", () => {
+        artist.blurb = "artsy blurb"
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "new catty bio",
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
+            },
           },
-        })
-      })
-    })
-  })
-  describe("biographyBlurb", () => {
-    describe("with partnerBio set to true", () => {
-      describe("with a featured partner bio", () => {
-        beforeEach(() => {
-          const partnerArtists = Promise.resolve([
-            {
-              biography: "new catty bio",
-              partner: {
-                name: "Catty Partner",
-                id: "catty-partner",
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: HTML) {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: {
+                text: "<p>artsy blurb</p>\n",
+                credit: null,
+                partnerID: null,
               },
             },
-          ])
-          context.partnerArtistsForArtistLoader = sinon
-            .stub()
-            .withArgs(artist.id)
-            .returns(partnerArtists)
-        })
-        afterEach(() => {
-          const query = `
-            {
-              artist(id: "foo-bar") {
-                biographyBlurb(partnerBio: true, format: HTML) {
-                  text
-                  credit
-                  partnerID
-                }
-              }
-            }
-          `
-          return runQuery(query, context).then((data) => {
-            expect(data).toEqual({
-              artist: {
-                biographyBlurb: {
-                  text: "<p>new catty bio</p>\n",
-                  credit: "Submitted by Catty Partner",
-                  partnerID: "catty-partner",
-                },
-              },
-            })
-          })
-        })
-        it("returns the featured partner bio without an artsy blurb", () => {})
-        it("returns the featured partner bio with an artsy blurb", () => {
-          artist.blurb = "artsy blurb"
-        })
-      })
-      describe("without a featured partner bio", () => {
-        it("returns the artsy blurb if there is no featured partner bio", () => {
-          context.partnerArtistsForArtistLoader = sinon
-            .stub()
-            .returns(Promise.resolve([]))
-          artist.blurb = "artsy blurb"
-          const query = `
-            {
-              artist(id: "foo-bar") {
-                biographyBlurb(partnerBio: true) {
-                  text
-                  credit
-                  partnerID
-                }
-              }
-            }
-          `
-          return runQuery(query, context).then((data) => {
-            expect(data).toEqual({
-              artist: {
-                biographyBlurb: {
-                  text: "artsy blurb",
-                  credit: null,
-                  partnerID: null,
-                },
-              },
-            })
           })
         })
       })
     })
-    it("returns the blurb if present", () => {
-      artist.blurb = "catty blurb"
-      const query = `
-        {
-          artist(id: "foo-bar") {
-            biographyBlurb(partnerBio: false) {
-              text
-              credit
-              partnerID
-            }
-          }
-        }
-      `
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artist: {
-            biographyBlurb: {
-              text: "catty blurb",
-              credit: null,
-              partnerID: null,
+
+    describe("when no artsy blurb exists", () => {
+      it("returns the partner bio if available", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "new catty bio",
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
             },
           },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: HTML) {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data.artist.biographyBlurb.text).toContain("new catty bio")
+          expect(data.artist.biographyBlurb.text).toContain("Submitted by")
+          expect(data.artist.biographyBlurb.text).toContain("Catty Partner")
+          expect(data.artist.biographyBlurb.credit).toBe(
+            "Submitted by Catty Partner"
+          )
+          expect(data.artist.biographyBlurb.partnerID).toBe("catty-partner")
         })
       })
-    })
-    it("returns the featured bio if there is no Artsy one", () => {
-      const partnerArtists = Promise.resolve([
-        {
-          biography: "new catty bio",
-          partner: {
-            name: "Catty Partner",
-            id: "catty-partner",
-          },
-        },
-      ])
-      context.partnerArtistsForArtistLoader = sinon
-        .stub()
-        .withArgs(artist.id)
-        .returns(partnerArtists)
-      const query = `
-        {
-          artist(id: "foo-bar") {
-            biographyBlurb {
-              text
-              credit
-              partnerID
-            }
-          }
-        }
-      `
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artist: {
-            biographyBlurb: {
-              text: "new catty bio",
-              credit: "Submitted by Catty Partner",
-              partnerID: "catty-partner",
+
+      it("includes partner link in credited biography with correct formatting", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "This is a great artist biography.",
+            partner: {
+              name: "Gallery Example",
+              id: "gallery-example",
             },
           },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const htmlQuery = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: HTML) {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+
+        const markdownQuery = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb(format: MARKDOWN) {
+                text
+              }
+            }
+          }
+        `
+
+        return Promise.all([
+          runQuery(htmlQuery, context),
+          runQuery(markdownQuery, context),
+        ]).then(([htmlData, markdownData]) => {
+          // Test HTML format
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            "This is a great artist biography."
+          )
+          expect(htmlData.artist.biographyBlurb.text).toContain("Submitted by")
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            "Gallery Example"
+          )
+          expect(htmlData.artist.biographyBlurb.text).toContain(
+            'href="https://www.artsy.net/partner/gallery-example"'
+          )
+          expect(htmlData.artist.biographyBlurb.credit).toBe(
+            "Submitted by Gallery Example"
+          )
+          expect(htmlData.artist.biographyBlurb.partnerID).toBe(
+            "gallery-example"
+          )
+
+          // Test Markdown format
+          expect(markdownData.artist.biographyBlurb.text).toBe(
+            "This is a great artist biography.\n\n_Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)_"
+          )
+        })
+      })
+
+      it("returns null when no partner bio exists", () => {
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .returns(Promise.resolve([]))
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: null,
+            },
+          })
+        })
+      })
+
+      it("returns null when partner bio is null", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: null,
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
+            },
+          },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: null,
+            },
+          })
+        })
+      })
+
+      it("returns null when partner bio is empty string", () => {
+        const partnerArtists = Promise.resolve([
+          {
+            biography: "",
+            partner: {
+              name: "Catty Partner",
+              id: "catty-partner",
+            },
+          },
+        ])
+        context.partnerArtistsForArtistLoader = sinon
+          .stub()
+          .withArgs(artist.id)
+          .returns(partnerArtists)
+
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biographyBlurb {
+                text
+                credit
+                partnerID
+              }
+            }
+          }
+        `
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artist: {
+              biographyBlurb: null,
+            },
+          })
         })
       })
     })
