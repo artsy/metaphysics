@@ -217,6 +217,7 @@ import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
+import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
@@ -379,6 +380,7 @@ const rootFields = {
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
   discoverArtworks: DiscoverArtworks,
+  discoveryCategoriesConnection,
   departments,
   external: externalField,
   fair: Fair,
