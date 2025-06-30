@@ -329,7 +329,6 @@ import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingA
 import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
-import { UpdateArtworkImportMutation } from "./ArtworkImport/updateArtworkImportMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -619,7 +618,6 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateArtwork: updateArtworkMutation,
-      updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
       flagArtworkImportCell: FlagArtworkImportCellMutation,

@@ -135,11 +135,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    artworkImportUpdateLoader: gravityLoader(
-      (id) => `artwork_import/${id}`,
-      {},
-      { method: "PUT" }
-    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
