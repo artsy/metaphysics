@@ -20,7 +20,7 @@ const orderedCategoryKeys = [
 ]
 
 export type DiscoveryCategory = {
-  categoryID: string
+  category: string
   imageUrl: string
   title: string
 }
@@ -32,7 +32,7 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
   name: "DiscoveryCategory",
   description: "A category for discovering and browsing art",
   fields: {
-    categoryID: {
+    category: {
       type: GraphQLNonNull(GraphQLString),
       description: "The ID of the category",
     },
@@ -64,7 +64,7 @@ export const discoveryCategoriesConnection: GraphQLFieldConfig<
       const category = marketingCollectionCategories[key]
 
       return {
-        categoryID: category.id,
+        category: category.id,
         imageUrl: category.imageUrl,
         title: category.title,
       }

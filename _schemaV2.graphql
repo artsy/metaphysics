@@ -10664,7 +10664,7 @@ type DiscoveryCategoriesConnectionEdge {
 # A category for discovering and browsing art
 type DiscoveryCategory {
   # The ID of the category
-  categoryID: String!
+  category: String!
 
   # The URL of the image representing this category
   imageUrl: String

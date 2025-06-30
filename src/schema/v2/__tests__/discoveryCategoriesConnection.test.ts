@@ -8,7 +8,7 @@ describe("discoveryCategoriesConnection", () => {
           edges {
             node {
               title
-              categoryID
+              category
               imageUrl
             }
           }
@@ -28,27 +28,27 @@ describe("discoveryCategoriesConnection", () => {
       expect.arrayContaining([
         expect.objectContaining({
           title: "Medium",
-          categoryID: "Medium",
+          category: "Medium",
         }),
         expect.objectContaining({
           title: "Movement",
-          categoryID: "Movement",
+          category: "Movement",
         }),
         expect.objectContaining({
           title: "Size",
-          categoryID: "Collect by Size",
+          category: "Collect by Size",
         }),
         expect.objectContaining({
           title: "Color",
-          categoryID: "Collect by Color",
+          category: "Collect by Color",
         }),
         expect.objectContaining({
           title: "Price",
-          categoryID: "Collect by Price",
+          category: "Collect by Price",
         }),
         expect.objectContaining({
           title: "Gallery",
-          categoryID: "Gallery",
+          category: "Gallery",
         }),
       ])
     )
