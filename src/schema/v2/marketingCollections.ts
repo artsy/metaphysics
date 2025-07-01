@@ -409,13 +409,9 @@ export const CuratedMarketingCollections: GraphQLFieldConfig<
   },
 }
 
-export const DiscoveryMarketingCollections: GraphQLFieldConfig<
-  void,
-  ResolverContext
-> = {
+export const DiscoveryCollections: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(new GraphQLNonNull(MarketingCollectionType)),
-  description:
-    "Discovery Marketing Collections for personalized recommendations",
+  description: "Discovery collections for personalized recommendations",
   args: pageable({
     size: {
       type: GraphQLInt,

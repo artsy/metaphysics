@@ -241,7 +241,7 @@ describe("MarketingCollections", () => {
     )
   })
 
-  it("returns discovery marketing collections", async () => {
+  it("returns discovery collections", async () => {
     const discoveryCollectionsData = [
       {
         slug: "most-loved",
@@ -255,7 +255,7 @@ describe("MarketingCollections", () => {
 
     const query = gql`
       {
-        discoveryMarketingCollections(size: 2) {
+        discoveryCollections(size: 2) {
           slug
           title
         }
@@ -274,11 +274,11 @@ describe("MarketingCollections", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      discoveryMarketingCollections: discoveryCollectionsData,
+      discoveryCollections: discoveryCollectionsData,
     })
   })
 
-  it("filters out null and undefined collections from discovery marketing collections", async () => {
+  it("filters out null and undefined collections from discovery collections", async () => {
     const discoveryCollectionsDataWithNulls = [
       {
         slug: "most-loved",
@@ -298,7 +298,7 @@ describe("MarketingCollections", () => {
 
     const query = gql`
       {
-        discoveryMarketingCollections {
+        discoveryCollections {
           slug
           title
         }
@@ -316,7 +316,7 @@ describe("MarketingCollections", () => {
 
     // Should only return the valid collections, filtering out null/undefined
     expect(data).toEqual({
-      discoveryMarketingCollections: [
+      discoveryCollections: [
         {
           slug: "most-loved",
           title: "Most Loved",

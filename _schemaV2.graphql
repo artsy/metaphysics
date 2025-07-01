@@ -19382,8 +19382,8 @@ type Query {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
-  # Discovery Marketing Collections for personalized recommendations
-  discoveryMarketingCollections(
+  # Discovery collections for personalized recommendations
+  discoveryCollections(
     after: String
     before: String
     first: Int
@@ -25187,8 +25187,8 @@ type Viewer {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
-  # Discovery Marketing Collections for personalized recommendations
-  discoveryMarketingCollections(
+  # Discovery collections for personalized recommendations
+  discoveryCollections(
     after: String
     before: String
     first: Int
