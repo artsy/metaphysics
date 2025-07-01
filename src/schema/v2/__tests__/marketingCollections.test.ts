@@ -223,7 +223,7 @@ describe("MarketingCollections", () => {
     `
     const context = {} as any
     await expect(runQuery(query, context)).rejects.toThrow(
-      "No curated sort available for category: newest"
+      "No curated sort available for category: newest or slug: undefined"
     )
   })
 
@@ -237,8 +237,106 @@ describe("MarketingCollections", () => {
     `
     const context = {} as any
     await expect(runQuery(query, context)).rejects.toThrow(
-      "Category is required for CURATED sort."
+      "Category or slug is required for CURATED sort."
     )
+  })
+
+  it("returns the marketing collections with a curated sort and categorySlug", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CURATED, size: 2, categorySlug: "gallery") {
+          slug
+        }
+      }
+    `
+
+    const context = {
+      authenticatedLoaders: {},
+    } as any
+
+    context.marketingCollectionsLoader = jest
+      .fn()
+      .mockResolvedValue({ body: marketingCollectionsData })
+
+    const data = await runQuery(query, context)
+
+    expect(
+      context.marketingCollectionsLoader.mock.calls[0][0]
+    ).not.toContainKeys(["categorySlug", "sort"])
+
+    expect(context.marketingCollectionsLoader).toHaveBeenCalledWith({
+      size: 2,
+      slugs: [
+        "new-from-tastemaking-galleries",
+        "new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691",
+        "new-from-small-galleries",
+        "new-from-leading-galleries",
+        "new-to-artsy",
+      ],
+    })
+
+    expect(data).toEqual({
+      marketingCollections: marketingCollectionsSlugsData,
+    })
+  })
+
+  it("returns an error when used with curated sort and non-existing categorySlug", async () => {
+    const query = gql`
+      {
+        marketingCollections(
+          sort: CURATED
+          size: 2
+          categorySlug: "non-existent"
+        ) {
+          slug
+        }
+      }
+    `
+    const context = {} as any
+    await expect(runQuery(query, context)).rejects.toThrow(
+      "No curated sort available for category: undefined or slug: non-existent"
+    )
+  })
+
+  it("returns the marketing collections with both category and categorySlug (category takes precedence)", async () => {
+    const query = gql`
+      {
+        marketingCollections(
+          sort: CURATED
+          size: 2
+          category: "Gallery"
+          categorySlug: "medium"
+        ) {
+          slug
+        }
+      }
+    `
+
+    const context = {
+      authenticatedLoaders: {},
+    } as any
+
+    context.marketingCollectionsLoader = jest
+      .fn()
+      .mockResolvedValue({ body: marketingCollectionsData })
+
+    const data = await runQuery(query, context)
+
+    // Should use Gallery category, not medium categorySlug
+    expect(context.marketingCollectionsLoader).toHaveBeenCalledWith({
+      size: 2,
+      slugs: [
+        "new-from-tastemaking-galleries",
+        "new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691",
+        "new-from-small-galleries",
+        "new-from-leading-galleries",
+        "new-to-artsy",
+      ],
+    })
+
+    expect(data).toEqual({
+      marketingCollections: marketingCollectionsSlugsData,
+    })
   })
 
   it("returns discovery marketing collections", async () => {
