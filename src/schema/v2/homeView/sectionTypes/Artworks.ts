@@ -10,11 +10,11 @@ import { standardSectionFields } from "./GenericSectionInterface"
 import { HomeViewSection } from "../sections"
 
 export interface HomeViewArtworksSection extends HomeViewSection {
-  enableItemsImpressionTracking?: boolean
+  trackItemImpressions?: boolean
 }
 
 export const HomeViewArtworksSectionType = new GraphQLObjectType<
-  any,
+  HomeViewArtworksSection,
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionArtworks,
@@ -23,9 +23,9 @@ export const HomeViewArtworksSectionType = new GraphQLObjectType<
   fields: {
     ...standardSectionFields,
 
-    enableItemsImpressionTracking: {
+    trackItemImpressions: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (parent) => !!parent.enableItemsImpressionTracking,
+      resolve: (parent) => !!parent.trackItemImpressions,
     },
     artworksConnection: {
       type: artworkConnection.connectionType,

@@ -12967,7 +12967,6 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)
   contextModule: String
-  enableItemsImpressionTracking: Boolean!
 
   # A globally unique ID.
   id: ID!
@@ -12977,6 +12976,7 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
+  trackItemImpressions: Boolean!
 }
 
 # An auction results section in the home view

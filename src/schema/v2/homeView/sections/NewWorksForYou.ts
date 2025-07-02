@@ -19,7 +19,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   },
   ownerType: OwnerType.newWorksForYou,
   requiresAuthentication: true,
-  enableItemsImpressionTracking: true,
+  trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const variant = getExperimentVariant("onyx_nwfy-price-affinity-test", {
       userId: context.userID,
