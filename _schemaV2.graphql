@@ -12967,6 +12967,7 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)
   contextModule: String
+  enableItemsImpressionTracking: Boolean!
 
   # A globally unique ID.
   id: ID!
