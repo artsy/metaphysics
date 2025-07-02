@@ -406,6 +406,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           _currencyCode: currency_code,
         })),
     },
+    impulseConversationId: {
+      type: GraphQLString,
+      description: "Impulse conversation Id for the order",
+      resolve: ({ impulse_conversation_id }) => impulse_conversation_id,
+    },
     itemsTotal: {
       type: Money,
       description: "The total amount of the line items",
