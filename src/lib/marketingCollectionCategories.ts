@@ -1,6 +1,7 @@
 export const marketingCollectionCategories = {
   Medium: {
     id: "Medium",
+    slug: "medium",
     title: "Medium",
     imageUrl:
       "https://files.artsy.net/images/collections-mediums-category.jpeg",
@@ -19,6 +20,7 @@ export const marketingCollectionCategories = {
   },
   Movement: {
     id: "Movement",
+    slug: "movement",
     title: "Movement",
     imageUrl:
       "https://files.artsy.net/images/collections-movement-category.jpeg",
@@ -37,6 +39,7 @@ export const marketingCollectionCategories = {
   },
   "Collect by Size": {
     id: "Collect by Size",
+    slug: "collect-by-size",
     title: "Size",
     imageUrl: "https://files.artsy.net/images/collections-size-category.jpeg",
     sortedCollectionSlugs: [
@@ -47,6 +50,7 @@ export const marketingCollectionCategories = {
   },
   "Collect by Color": {
     id: "Collect by Color",
+    slug: "collect-by-color",
     title: "Color",
     imageUrl: "https://files.artsy.net/images/collections-color-category.png",
     sortedCollectionSlugs: [
@@ -63,6 +67,7 @@ export const marketingCollectionCategories = {
   },
   "Collect by Price": {
     id: "Collect by Price",
+    slug: "collect-by-price",
     title: "Price",
     imageUrl: "https://files.artsy.net/images/collections-price-category.jpeg",
     sortedCollectionSlugs: [
@@ -77,6 +82,7 @@ export const marketingCollectionCategories = {
   },
   Gallery: {
     id: "Gallery",
+    slug: "gallery",
     title: "Gallery",
     imageUrl:
       "https://files.artsy.net/images/collections-gallery-category.jpeg",

@@ -312,6 +312,9 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     category: {
       type: GraphQLString,
     },
+    categorySlug: {
+      type: GraphQLString,
+    },
     sort: {
       type: MarketingCollectionsSorts,
     },
@@ -326,19 +329,29 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     const { size } = convertConnectionArgsToGravityArgs(args)
     // Enable curated sorting
     if (args.sort === MARKETING_COLLECTIONS_SORTS.CURATED.value) {
-      if (!args.category) {
-        throw new Error("Category is required for CURATED sort.")
+      if (!args.category && !args.categorySlug) {
+        throw new Error("Category or slug is required for CURATED sort.")
       }
 
       const category = args.category
+      const categorySlug = args.categorySlug
 
-      if (!marketingCollectionCategories[category]) {
-        throw new Error(`No curated sort available for category: ${category}`)
+      const marketingCollectionCategory = category
+        ? marketingCollectionCategories[category]
+        : Object.values(marketingCollectionCategories).find(
+            (c) => c.slug === categorySlug
+          )
+
+      if (!marketingCollectionCategory) {
+        throw new Error(
+          `No curated sort available for category: ${category} or slug: ${categorySlug}`
+        )
       }
 
-      args.slugs = marketingCollectionCategories[category].sortedCollectionSlugs
+      args.slugs = marketingCollectionCategory.sortedCollectionSlugs
 
       delete args.category
+      delete args.categorySlug
       delete args.sort
     }
 
