@@ -54,8 +54,8 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     query: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    size: { type: GraphQLInt, defaultValue: 10 },
-    page: { type: GraphQLInt, defaultValue: 1 },
+    size: { type: GraphQLInt },
+    page: { type: GraphQLInt },
   }),
   resolve: async (
     { id },
@@ -63,6 +63,13 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     { partnerSearchArtworksLoader }
   ) => {
     if (!partnerSearchArtworksLoader) return null
+
+    // Apply defaults only if new Relay cursor fields aren't present
+    // for backwards compatibility with Folio
+    if (!args.first && !args.after) {
+      args.size = args.size || 10
+      args.page = args.page || 1
+    }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
