@@ -100,6 +100,11 @@ export default (accessToken, opts) => {
     ),
     auctionUserSegmentationLoader: vortexLoader("auction_user_segmentation"),
     userPricePreferenceLoader: vortexLoader("user_price_preference"),
+    artworkCaptionsLoader: vortexLoader(
+      "artwork_captions",
+      {},
+      { requestThrottleMs: 86400000 } // 1 day throttle
+    ),
   }
 }
 

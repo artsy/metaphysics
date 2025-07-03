@@ -5822,3 +5822,139 @@ describe("Artwork type", () => {
     })
   })
 })
+
+describe("Artwork caption field", () => {
+  const query = gql`
+    {
+      artwork(id: "percy-z-cat-artwork") {
+        caption
+      }
+    }
+  `
+
+  const mockArtwork = {
+    _id: "percy-z-cat-artwork-database-id",
+    id: "percy-z-cat-artwork",
+    title: "Percy and Fiby: A Cat Tale",
+  }
+
+  describe("with unauthenticated context", () => {
+    it("returns caption when artworkCaptionsLoader succeeds", async () => {
+      const artworkCaptionsLoader = jest.fn(() =>
+        Promise.resolve({
+          data: {
+            caption: "This is a beautiful artwork caption",
+          },
+        })
+      )
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        unauthenticatedLoaders: {
+          artworkCaptionsLoader,
+        },
+        artworkCaptionsLoader,
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(artworkCaptionsLoader).toHaveBeenCalledWith({
+        artwork_id: mockArtwork._id,
+      })
+      expect(data).toEqual({
+        artwork: {
+          caption: "This is a beautiful artwork caption",
+        },
+      })
+    })
+
+    it("returns null when caption data is null", async () => {
+      const artworkCaptionsLoader = jest.fn(() =>
+        Promise.resolve({
+          data: {
+            caption: null,
+          },
+        })
+      )
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        unauthenticatedLoaders: {
+          artworkCaptionsLoader,
+        },
+        artworkCaptionsLoader,
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          caption: null,
+        },
+      })
+    })
+
+    it("returns null when artworkCaptionsLoader is not available", async () => {
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        unauthenticatedLoaders: {},
+        artworkCaptionsLoader: null,
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          caption: null,
+        },
+      })
+    })
+  })
+
+  describe("with authenticated context", () => {
+    it("returns caption when artworkCaptionsLoader succeeds", async () => {
+      const artworkCaptionsLoader = jest.fn(() =>
+        Promise.resolve({
+          data: {
+            caption: "This is an authenticated artwork caption",
+          },
+        })
+      )
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        authenticatedLoaders: {
+          artworkCaptionsLoader,
+        },
+        artworkCaptionsLoader,
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(artworkCaptionsLoader).toHaveBeenCalledWith({
+        artwork_id: mockArtwork._id,
+      })
+      expect(data).toEqual({
+        artwork: {
+          caption: "This is an authenticated artwork caption",
+        },
+      })
+    })
+
+    it("returns null when artworkCaptionsLoader is not available", async () => {
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        authenticatedLoaders: {},
+        artworkCaptionsLoader: null,
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          caption: null,
+        },
+      })
+    })
+  })
+})
