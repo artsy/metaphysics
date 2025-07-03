@@ -1695,9 +1695,8 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   biographyBlurb(
     format: Format
 
-    # If true, will return featured bio over Artsy one.
+    # DEPRECATED: Artsy bios are always returned over featured bios.
     partnerBio: Boolean = true
-      @deprecated(reason: "Artsy bios are always returned over featured bios.")
   ): ArtistBlurb
   birthday: String
   blurb(format: Format): String

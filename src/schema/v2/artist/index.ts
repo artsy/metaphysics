@@ -443,10 +443,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         args: {
           partnerBio: {
             type: GraphQLBoolean,
-            description: "If true, will return featured bio over Artsy one.",
+            description:
+              "DEPRECATED: Artsy bios are always returned over featured bios.",
             defaultValue: true,
-            deprecationReason:
-              "Artsy bios are always returned over featured bios.",
           },
           ...markdown().args,
         },
