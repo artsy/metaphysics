@@ -105,10 +105,16 @@ describe("NotificationItem", () => {
   })
 
   describe('for "AlertNotificationItem"', () => {
-    const meSearchCriteriaLoader = jest.fn(() =>
+    const meAlertLoader = jest.fn(() =>
       Promise.resolve({
-        id: "search-criteria-id",
-        attribution_class: ["open edition", "unique"],
+        search_criteria: {
+          id: "search-criteria-id",
+          attribution_class: ["open edition", "unique"],
+        },
+        id: "alert-id",
+        email: true,
+        push: true,
+        frequency: "daily",
       })
     )
     const artworksLoader = jest.fn(() =>
@@ -161,7 +167,7 @@ describe("NotificationItem", () => {
       const data = await runAuthenticatedQuery(query, {
         meNotificationLoader,
         meLoader,
-        meSearchCriteriaLoader,
+        meAlertLoader,
         artworksLoader,
       })
 
@@ -176,7 +182,7 @@ describe("NotificationItem", () => {
                     "open edition",
                     "unique",
                   ],
-                  "internalID": "search-criteria-id",
+                  "internalID": "alert-id",
                   "labels": [
                     {
                       "displayValue": "Open edition",
