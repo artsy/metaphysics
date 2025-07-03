@@ -23,5 +23,10 @@ export default (opts) => {
     auctionLotRecommendationsLoader: vortexLoader(
       "auction_lot_recommendations"
     ),
+    artworkCaptionsLoader: vortexLoader(
+      "artwork_captions",
+      {},
+      { requestThrottleMs: 86400000 } // 1 day throttle
+    ),
   }
 }
