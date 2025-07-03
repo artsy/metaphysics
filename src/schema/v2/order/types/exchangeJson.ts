@@ -41,6 +41,7 @@ export interface OrderJSON {
   fulfillment_options: Array<FulfillmentOptionJson>
   fulfillment_type?: string
   id: string
+  impulse_conversation_id?: string
   items_total_cents?: number
   line_items: Array<{
     artwork_id: string
