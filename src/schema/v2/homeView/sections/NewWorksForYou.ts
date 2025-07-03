@@ -1,11 +1,11 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
-import { HomeViewSection } from "."
-import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 import { getExperimentVariant } from "lib/featureFlags"
+import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
+import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
-export const NewWorksForYou: HomeViewSection = {
+export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.newWorksForYouRail,
@@ -19,7 +19,7 @@ export const NewWorksForYou: HomeViewSection = {
   },
   ownerType: OwnerType.newWorksForYou,
   requiresAuthentication: true,
-
+  trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const variant = getExperimentVariant("onyx_nwfy-price-affinity-test", {
       userId: context.userID,
