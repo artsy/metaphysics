@@ -1,12 +1,14 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../../artwork"
 import { emptyConnection } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
-import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
+import {
+  HomeViewGenericSectionInterface,
+  standardSectionFields,
+} from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./GenericSectionInterface"
 
 /*
  * A section type in the home view is specified declaratively
@@ -50,13 +52,19 @@ export const HomeViewExampleSectionType = new GraphQLObjectType<
 
     /**
      * This is where you define the field that is used to access this
-     * section type's data. It will typically be a connection over an existing
-     * MP data type.
+     * section type's data.
      *
-     * Usually you will need to define the connection name itself, and the
+     * This can be either a new field that is used only within the home view,
+     * or, most of the time, a connection over an existing MP data type.
+     *
+     * In the latter case, you will need to define the connection name itself, and the
      * type of connection. (The `args` and `resolve` attributes here are
      * generally just boilerplate.)
      */
+    trackItemImpressions: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (parent) => !!parent.trackItemImpressions,
+    },
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable({}),

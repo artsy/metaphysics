@@ -30,6 +30,9 @@ describe("NewWorksForYou", () => {
                 }
               }
             }
+            ... on HomeViewSectionArtworks {
+              trackItemImpressions
+            }
           }
         }
       }
@@ -58,6 +61,7 @@ describe("NewWorksForYou", () => {
         "contextModule": "newWorksForYouRail",
         "internalID": "home-view-section-new-works-for-you",
         "ownerType": "newWorksForYou",
+        "trackItemImpressions": true,
       }
     `)
   })

@@ -12976,6 +12976,7 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
+  trackItemImpressions: Boolean!
 }
 
 # An auction results section in the home view
@@ -16703,6 +16704,9 @@ type Order {
 
   # A globally unique ID.
   id: ID!
+
+  # Impulse conversation Id for the order
+  impulseConversationId: String
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!

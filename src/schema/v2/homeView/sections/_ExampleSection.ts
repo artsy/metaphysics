@@ -240,6 +240,12 @@ export const ExampleSection: HomeViewSection = {
   requiresAuthentication: false,
 
   /*
+   * Whether the section should track item impressions.
+   *
+   */
+  trackItemImpressions: true,
+
+  /*
    * Arbitrary logic to determine whether this section should be displayed.
    *
    * Intended for considering any logic beyond the standard checks

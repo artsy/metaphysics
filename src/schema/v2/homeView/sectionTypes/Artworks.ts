@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../../artwork"
@@ -7,9 +7,14 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
+import { HomeViewSection } from "../sections"
+
+export interface HomeViewArtworksSection extends HomeViewSection {
+  trackItemImpressions?: boolean
+}
 
 export const HomeViewArtworksSectionType = new GraphQLObjectType<
-  any,
+  HomeViewArtworksSection,
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionArtworks,
@@ -18,6 +23,10 @@ export const HomeViewArtworksSectionType = new GraphQLObjectType<
   fields: {
     ...standardSectionFields,
 
+    trackItemImpressions: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (parent) => !!parent.trackItemImpressions,
+    },
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable({}),
