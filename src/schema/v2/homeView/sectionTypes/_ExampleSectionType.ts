@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
+import { GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../../artwork"
@@ -61,10 +61,6 @@ export const HomeViewExampleSectionType = new GraphQLObjectType<
      * type of connection. (The `args` and `resolve` attributes here are
      * generally just boilerplate.)
      */
-    trackItemImpressions: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (parent) => !!parent.trackItemImpressions,
-    },
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable({}),

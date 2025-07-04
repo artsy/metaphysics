@@ -241,9 +241,11 @@ export const ExampleSection: HomeViewSection = {
 
   /*
    * Whether the section should track item impressions.
+   * (This is currently valid only for sections that return artworks,
+   * i.e. HomeViewArtworksSection)
    *
    */
-  trackItemImpressions: true,
+  trackItemImpressions: false,
 
   /*
    * Arbitrary logic to determine whether this section should be displayed.
