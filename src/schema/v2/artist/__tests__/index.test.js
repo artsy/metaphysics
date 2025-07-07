@@ -566,7 +566,7 @@ describe("Artist type", () => {
           )
 
           expect(markdownData.artist.biographyBlurb.credit).toBe(
-            "Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)"
+            "_Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)_"
           )
         })
       })
