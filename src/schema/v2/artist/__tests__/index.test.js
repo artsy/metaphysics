@@ -492,11 +492,11 @@ describe("Artist type", () => {
         `
         return runQuery(query, context).then((data) => {
           expect(data.artist.biographyBlurb.text).toContain("new catty bio")
-          expect(data.artist.biographyBlurb.text).toContain("Submitted by")
-          expect(data.artist.biographyBlurb.text).toContain("Catty Partner")
-          expect(data.artist.biographyBlurb.credit).toBe(
-            "Submitted by Catty Partner"
+          expect(data.artist.biographyBlurb.credit).toContain("Submitted by")
+          expect(data.artist.biographyBlurb.credit).toContain(
+            "https://www.artsy.net/partner/catty-partner"
           )
+          expect(data.artist.biographyBlurb.credit).toContain("Catty Partner")
           expect(data.artist.biographyBlurb.partnerID).toBe("catty-partner")
         })
       })
@@ -533,6 +533,7 @@ describe("Artist type", () => {
             artist(id: "foo-bar") {
               biographyBlurb(format: MARKDOWN) {
                 text
+                credit
               }
             }
           }
@@ -546,15 +547,14 @@ describe("Artist type", () => {
           expect(htmlData.artist.biographyBlurb.text).toContain(
             "This is a great artist biography."
           )
-          expect(htmlData.artist.biographyBlurb.text).toContain("Submitted by")
-          expect(htmlData.artist.biographyBlurb.text).toContain(
+          expect(htmlData.artist.biographyBlurb.credit).toContain(
+            "Submitted by"
+          )
+          expect(htmlData.artist.biographyBlurb.credit).toContain(
+            "https://www.artsy.net/partner/gallery-example"
+          )
+          expect(htmlData.artist.biographyBlurb.credit).toContain(
             "Gallery Example"
-          )
-          expect(htmlData.artist.biographyBlurb.text).toContain(
-            'href="https://www.artsy.net/partner/gallery-example"'
-          )
-          expect(htmlData.artist.biographyBlurb.credit).toBe(
-            "Submitted by Gallery Example"
           )
           expect(htmlData.artist.biographyBlurb.partnerID).toBe(
             "gallery-example"
@@ -562,7 +562,11 @@ describe("Artist type", () => {
 
           // Test Markdown format
           expect(markdownData.artist.biographyBlurb.text).toBe(
-            "This is a great artist biography.\n\n_Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)_"
+            "This is a great artist biography."
+          )
+
+          expect(markdownData.artist.biographyBlurb.credit).toBe(
+            "Submitted by [Gallery Example](https://www.artsy.net/partner/gallery-example)"
           )
         })
       })
