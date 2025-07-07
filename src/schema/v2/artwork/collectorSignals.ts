@@ -11,7 +11,6 @@ import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import Show from "../show"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 interface ActiveLotData {
   saleArtwork: {
@@ -221,30 +220,10 @@ const getPrimaryLabel = async (
   const increasedInterest =
     !ignoreLabels?.includes("INCREASED_INTEREST") &&
     getIncreasedInterest(artwork)
+  const curatorsPick = await curatorsPickPromise
 
-  if (isFeatureFlagEnabled("emerald_clientside-collector-signals")) {
-    const curatorsPick = await curatorsPickPromise
-
-    if (curatorsPick) {
-      return "CURATORS_PICK"
-    }
-  } else {
-    const partnerOfferPromise =
-      !ignoreLabels?.includes("PARTNER_OFFER") &&
-      getActivePartnerOffer(artwork, ctx)
-
-    const [activePartnerOffer, curatorsPick] = await Promise.all([
-      partnerOfferPromise,
-      curatorsPickPromise,
-    ])
-
-    if (activePartnerOffer) {
-      return "PARTNER_OFFER"
-    }
-
-    if (curatorsPick) {
-      return "CURATORS_PICK"
-    }
+  if (curatorsPick) {
+    return "CURATORS_PICK"
   }
 
   if (increasedInterest) {
