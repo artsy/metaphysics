@@ -71,7 +71,7 @@ describe("NewWorksForYou", () => {
     // see artworksForUser.test.ts
   })
 
-  describe("when the onyx_nwfy-price-affinity-test experiment is enabled", () => {
+  describe("when the onyx_nwfy-artist-diversity-experiment experiment is enabled", () => {
     it("serves Version C to the control group", async () => {
       mockGetExperimentVariant.mockImplementation(() => ({
         name: "control",
@@ -126,7 +126,7 @@ describe("NewWorksForYou", () => {
 
     it("serves Version A to the experiment group", async () => {
       mockGetExperimentVariant.mockImplementation(() => ({
-        name: "experiment",
+        name: "variant-a",
         enabled: true,
       }))
 
