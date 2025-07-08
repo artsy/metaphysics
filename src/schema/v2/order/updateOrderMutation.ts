@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLID } from "graphql"
+import { GraphQLNonNull, GraphQLID, GraphQLString } from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
@@ -13,6 +13,7 @@ interface Input {
   id: string
   paymentMethod?: string
   creditCardWalletType?: string
+  stripeConfirmationToken?: string
 }
 
 export const updateOrderMutation = mutationWithClientMutationId<
@@ -32,6 +33,10 @@ export const updateOrderMutation = mutationWithClientMutationId<
       type: OrderCreditCardWalletTypeEnum,
       description: "Credit card wallet type",
     },
+    stripeConfirmationToken: {
+      type: GraphQLString,
+      description: "Stripe confirmation token",
+    },
   },
   outputFields: {
     orderOrError: {
@@ -48,6 +53,7 @@ export const updateOrderMutation = mutationWithClientMutationId<
       const exchangeInputFields = {
         payment_method: input.paymentMethod,
         credit_card_wallet_type: input.creditCardWalletType,
+        stripe_confirmation_token: input.stripeConfirmationToken,
       }
       // filter out `undefined` values from the input fields
       const payload = Object.fromEntries(
