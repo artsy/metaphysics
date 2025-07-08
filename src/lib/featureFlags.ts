@@ -15,7 +15,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_enable-quick-links-v2",
   "onyx_enable-home-view-auction-segmentation",
   "onyx_enable-quick-links-price-budget",
-  "onyx_nwfy-price-affinity-test",
+  "onyx_nwfy-artist-diversity-experiment",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]

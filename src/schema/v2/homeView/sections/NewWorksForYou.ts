@@ -21,13 +21,16 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   requiresAuthentication: true,
   trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    const variant = getExperimentVariant("onyx_nwfy-price-affinity-test", {
-      userId: context.userID,
-    })
+    const variant = getExperimentVariant(
+      "onyx_nwfy-artist-diversity-experiment",
+      {
+        userId: context.userID,
+      }
+    )
 
     let recommendationsVersion = "C"
 
-    if (variant && variant.enabled && variant.name === "experiment") {
+    if (variant && variant.enabled && variant.name === "variant-a") {
       recommendationsVersion = "A"
     }
 
