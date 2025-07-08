@@ -11,7 +11,6 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
 const FEATURE_FLAGS_LIST = [
   "onyx_enable-home-view-section-featured-fairs",
   "onyx_experiment_home_view_test",
-  "emerald_clientside-collector-signals",
   "onyx_enable-home-view-mixer",
   "onyx_enable-quick-links-v2",
   "onyx_enable-home-view-auction-segmentation",
