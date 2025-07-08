@@ -30,6 +30,7 @@ import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
 import { QuickLinks } from "./QuickLinks"
 import { BasedOnYourRecentSaves } from "./BasedOnYourRecentSaves"
+import { BecauseYouSaved } from "./BecauseYouSaved"
 
 type MaybeResolved<T> =
   | T
@@ -59,6 +60,7 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   BasedOnYourRecentSaves,
+  BecauseYouSaved,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,
   ExploreByCategory,

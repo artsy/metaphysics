@@ -10,6 +10,7 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",
   HomeViewSectionBasedOnYourRecentSaves:
     "HomeViewSectionBasedOnYourRecentSaves",
+  HomeViewSectionBecauseYouSaved: "HomeViewSectionBecauseYouSaved",
   HomeViewSectionCard: "HomeViewSectionCard",
   HomeViewSectionCards: "HomeViewSectionCards",
   HomeViewSectionFairs: "HomeViewSectionFairs",
