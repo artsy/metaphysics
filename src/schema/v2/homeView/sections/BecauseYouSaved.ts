@@ -30,7 +30,7 @@ export const BecauseYouSaved: HomeViewSection = {
       if (works.length === 0) return ""
 
       const work = works[0]
-      return `Because You Saved ${work.title} by ${work.artist.name}`
+      return `Because You Saved Works by ${work.artist.name}`
     },
   },
   ownerType: OwnerType.artworkRecommendations, // TODO: add owner type
