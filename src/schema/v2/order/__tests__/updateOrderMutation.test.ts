@@ -7,6 +7,7 @@ const mockMutation = `
       id: "order-id",
       paymentMethod: CREDIT_CARD,
       creditCardWalletType: APPLE_PAY
+      stripeConfirmationToken: "ctoken_123"
     }) {
       orderOrError {
         ...on OrderMutationError {
@@ -38,6 +39,7 @@ describe("updateOrderMutation", () => {
         currency_code: "USD",
         payment_method: "credit card",
         credit_card_wallet_type: "apple_pay",
+        stripe_confirmation_token: "ctoken_123",
       }),
       artworkLoader: jest.fn().mockResolvedValue({ ...baseArtwork }),
       artworkVersionLoader: jest
@@ -62,6 +64,7 @@ describe("updateOrderMutation", () => {
     expect(context.meOrderUpdateLoader).toHaveBeenCalledWith("order-id", {
       payment_method: "credit card",
       credit_card_wallet_type: "apple_pay",
+      stripe_confirmation_token: "ctoken_123",
     })
   })
 

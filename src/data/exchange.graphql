@@ -164,6 +164,7 @@ type BuyOrder implements Order {
   stateExpiresAt: DateTime
   stateReason: String
   stateUpdatedAt: DateTime
+  stripeConfirmationToken: String
   taxTotalCents: Int
   taxTypes: [TaxTypeEnum!]!
   totalListPriceCents: Int!
@@ -1378,6 +1379,7 @@ type OfferOrder implements Order {
   stateExpiresAt: DateTime
   stateReason: String
   stateUpdatedAt: DateTime
+  stripeConfirmationToken: String
   taxTotalCents: Int
   taxTypes: [TaxTypeEnum!]!
   totalListPriceCents: Int!
@@ -1470,6 +1472,7 @@ interface Order {
   stateExpiresAt: DateTime
   stateReason: String
   stateUpdatedAt: DateTime
+  stripeConfirmationToken: String
   taxTotalCents: Int
   taxTypes: [TaxTypeEnum!]!
   totalListPriceCents: Int!

@@ -29,6 +29,7 @@ export interface OrderJSON {
   code: string
   credit_card_id?: string
   credit_card_wallet_type?: "apple_pay" | "google_pay"
+  stripe_confirmation_token?: string
   currency_code: string
   delivery_info?: {
     shipper_name?: string

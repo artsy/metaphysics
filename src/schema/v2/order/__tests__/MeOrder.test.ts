@@ -1191,6 +1191,7 @@ describe("Me", () => {
             order(id: "order-id") {
               creditCardWalletType
               paymentMethod
+              stripeConfirmationToken
               paymentMethodDetails {
                 __typename
                 ... on CreditCard {
@@ -1304,6 +1305,18 @@ describe("Me", () => {
           __typename: "WireTransfer",
           isManualPayment: true,
         })
+      })
+
+      it("returns stripe confirmation token", async () => {
+        orderJson.stripe_confirmation_token = "ctoken_123"
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+        expect(result.me.order.stripeConfirmationToken).toEqual("ctoken_123")
       })
     })
 

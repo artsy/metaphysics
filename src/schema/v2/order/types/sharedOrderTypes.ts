@@ -371,6 +371,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Express Checkout wallet type",
       resolve: ({ credit_card_wallet_type }) => credit_card_wallet_type,
     },
+    stripeConfirmationToken: {
+      type: GraphQLString,
+      description: "Stripe confirmation token for the order",
+      resolve: ({ stripe_confirmation_token }) => stripe_confirmation_token,
+    },
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Currency code",
