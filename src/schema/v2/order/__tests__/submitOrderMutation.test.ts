@@ -5,7 +5,8 @@ const mockMutation = `
   mutation {
     submitOrder(input: {
       id: "order-id",
-      confirmationToken: "ctoken_123"
+      confirmationToken: "ctoken_123",
+      oneTimeUse: false
     }) {
       orderOrError {
         ...on OrderMutationError {
@@ -56,6 +57,7 @@ describe("submitOrderMutation", () => {
         .mockResolvedValue({ ...baseArtwork, id: "artwork-version-id" }),
     }
   })
+
   it("submits an order", async () => {
     const result = await runAuthenticatedQuery(mockMutation, context)
 
@@ -68,6 +70,45 @@ describe("submitOrderMutation", () => {
           },
         },
       },
+    })
+
+    expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
+      confirmation_token: "ctoken_123",
+      one_time_use: false,
+    })
+  })
+
+  it("submits an order without oneTimeUse", async () => {
+    const mockMutationWithoutOneTimeUse = `
+      mutation {
+        submitOrder(input: {
+          id: "order-id",
+          confirmationToken: "ctoken_123",
+        }) {
+          orderOrError {
+            ...on OrderMutationError {
+              mutationError {
+                message
+                code
+              }
+            }
+            ...on OrderMutationSuccess {
+              order {
+                internalID
+              }     
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(
+      mockMutationWithoutOneTimeUse,
+      context
+    )
+
+    expect(result).toEqual({
+      submitOrder: { orderOrError: { order: { internalID: "order-id" } } },
     })
 
     expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
