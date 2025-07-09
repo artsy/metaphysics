@@ -5738,47 +5738,29 @@ describe("Artwork caption field", () => {
         },
       })
     })
-  })
 
-  describe("with authenticated context", () => {
-    it("returns caption when artworkCaptionsLoader succeeds", async () => {
+    it("returns null when artworkCaptionsLoader throws an error", async () => {
       const artworkCaptionsLoader = jest.fn(() =>
-        Promise.resolve({
-          data: {
-            caption: "This is an authenticated artwork caption",
-          },
-        })
+        Promise.reject(
+          new Error(
+            "Artwork caption not found for artwork_id: 62c46ba25523ce000ec596d9"
+          )
+        )
       )
 
       const context = {
         artworkLoader: () => Promise.resolve(mockArtwork),
-        authenticatedLoaders: {
+        unauthenticatedLoaders: {
           artworkCaptionsLoader,
         },
         artworkCaptionsLoader,
       }
 
-      const data = await runAuthenticatedQuery(query, context)
+      const data = await runQuery(query, context)
 
       expect(artworkCaptionsLoader).toHaveBeenCalledWith({
         artwork_id: mockArtwork._id,
       })
-      expect(data).toEqual({
-        artwork: {
-          caption: "This is an authenticated artwork caption",
-        },
-      })
-    })
-
-    it("returns null when artworkCaptionsLoader is not available", async () => {
-      const context = {
-        artworkLoader: () => Promise.resolve(mockArtwork),
-        authenticatedLoaders: {},
-        artworkCaptionsLoader: null,
-      }
-
-      const data = await runAuthenticatedQuery(query, context)
-
       expect(data).toEqual({
         artwork: {
           caption: null,

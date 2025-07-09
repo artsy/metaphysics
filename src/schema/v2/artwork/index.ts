@@ -415,14 +415,24 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "This field is intended for use exclusively on the individual Artwork page for alt tags",
-        resolve: ({ _id }, _options, { artworkCaptionsLoader }) => {
+        resolve: (
+          { _id },
+          _options,
+          // use unauthenticatedLoaders for better caching abilities
+          { unauthenticatedLoaders: { artworkCaptionsLoader } }
+        ) => {
           if (!artworkCaptionsLoader) return null
 
           return artworkCaptionsLoader({
             artwork_id: _id,
-          }).then(({ data }) => {
-            return data?.caption
           })
+            .then(({ data }) => {
+              return data?.caption
+            })
+            .catch(() => {
+              // don't error if the caption is not found
+              return null
+            })
         },
       },
       category: {
