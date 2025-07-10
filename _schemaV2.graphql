@@ -4542,26 +4542,6 @@ type BidderPositionSuggestedNextBid {
 # exceed the size of a 32-bit integer, it's encoded as a string.
 scalar BigInt
 
-input BulkAddArtworksToShowFilterInput {
-  # Filter artworks by artist id
-  artistId: String
-
-  # Filter artworks with matching ids
-  artworkIds: [String]
-
-  # Filter artworks by availability
-  availability: Availability
-
-  # Filter artworks by location
-  locationId: String
-
-  # Filter artworks by partner artist id
-  partnerArtistId: String
-
-  # Filter artworks by published status
-  published: Boolean
-}
-
 type BulkAddArtworksToShowMutationFailure {
   mutationError: GravityMutationError
 }
@@ -4570,7 +4550,7 @@ input BulkAddArtworksToShowMutationInput {
   clientMutationId: String
 
   # Filter options to apply
-  filters: BulkAddArtworksToShowFilterInput
+  filters: BulkArtworkFilterInput
 
   # ID of the partner
   id: String!
@@ -4598,7 +4578,7 @@ type BulkAddArtworksToShowResponse {
   ids: [String]
 }
 
-input BulkUpdateArtworksFilterInput {
+input BulkArtworkFilterInput {
   # Filter artworks by artist id
   artistId: String
 
@@ -4655,7 +4635,7 @@ input BulkUpdateArtworksMetadataMutationInput {
   clientMutationId: String
 
   # Filter options to apply
-  filters: BulkUpdateArtworksFilterInput
+  filters: BulkArtworkFilterInput
 
   # ID of the partner
   id: String!

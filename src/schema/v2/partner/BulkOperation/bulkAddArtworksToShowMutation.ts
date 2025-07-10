@@ -1,6 +1,4 @@
 import {
-  GraphQLBoolean,
-  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -13,8 +11,8 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { Availability } from "schema/v2/types/availability"
 import { ResolverContext } from "types/graphql"
+import { BulkArtworkFilterInput } from "./shared"
 
 interface Input {
   id: string
@@ -28,37 +26,6 @@ interface Input {
     published?: boolean
   }
 }
-
-// Pull this out into something sharable?
-const BulkAddArtworksToShowFilterInput = new GraphQLInputObjectType({
-  name: "BulkAddArtworksToShowFilterInput",
-  fields: {
-    artistId: {
-      type: GraphQLString,
-      description: "Filter artworks by artist id",
-    },
-    availability: {
-      type: Availability,
-      description: "Filter artworks by availability",
-    },
-    artworkIds: {
-      type: new GraphQLList(GraphQLString),
-      description: "Filter artworks with matching ids",
-    },
-    locationId: {
-      type: GraphQLString,
-      description: "Filter artworks by location",
-    },
-    partnerArtistId: {
-      type: GraphQLString,
-      description: "Filter artworks by partner artist id",
-    },
-    published: {
-      type: GraphQLBoolean,
-      description: "Filter artworks by published status",
-    },
-  },
-})
 
 const BulkAddArtworksToShowResponseType = new GraphQLObjectType<
   any,
@@ -133,7 +100,7 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
       description: "ID of the show to which artworks will be added",
     },
     filters: {
-      type: BulkAddArtworksToShowFilterInput,
+      type: BulkArtworkFilterInput,
       description: "Filter options to apply",
     },
   },
