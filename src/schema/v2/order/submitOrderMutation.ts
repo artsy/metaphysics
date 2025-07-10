@@ -1,4 +1,9 @@
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLBoolean,
+} from "graphql"
 import {
   ORDER_MUTATION_FLAGS,
   OrderMutationResponseType,
@@ -10,6 +15,7 @@ import { handleExchangeError } from "./exchangeErrorHandling"
 interface Input {
   id: string
   confirmationToken?: string
+  oneTimeUse?: boolean
 }
 
 export const submitOrderMutation = mutationWithClientMutationId<
@@ -25,6 +31,10 @@ export const submitOrderMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Stripe confirmation token.",
     },
+    oneTimeUse: {
+      type: GraphQLBoolean,
+      description: "Whether the credit card should be one-time use.",
+    },
   },
   outputFields: {
     orderOrError: {
@@ -38,7 +48,10 @@ export const submitOrderMutation = mutationWithClientMutationId<
     }
 
     try {
-      const payload = { confirmation_token: input.confirmationToken }
+      const payload = {
+        confirmation_token: input.confirmationToken,
+        one_time_use: input.oneTimeUse,
+      }
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
       submittedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
