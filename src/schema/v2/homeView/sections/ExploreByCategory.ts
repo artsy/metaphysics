@@ -21,6 +21,7 @@ export const ExploreByCategory: HomeViewSection = {
     title: "Explore by Category",
   },
   requiresAuthentication: false,
+  maximumEigenVersion: { major: 8, minor: 77, patch: 0 },
   resolver: (_parent, args, _context, _info) => {
     const cards = orderedCategoryKeys.map((key) => {
       const category = marketingCollectionCategories[key]
