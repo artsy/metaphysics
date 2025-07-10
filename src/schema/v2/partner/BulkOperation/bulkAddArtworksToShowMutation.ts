@@ -151,8 +151,13 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async ({ id, filters }, { addArtworksToShowLoader }) => {
+  mutateAndGetPayload: async (
+    { id, showId, filters },
+    { addArtworksToShowLoader }
+  ) => {
     const gravityOptions: any = {}
+
+    console.log("filters", filters)
 
     if (filters) {
       gravityOptions.filters = {
@@ -170,7 +175,10 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await addArtworksToShowLoader(id, gravityOptions)
+      return await addArtworksToShowLoader(id, {
+        show_id: showId,
+        filters: gravityOptions.filters,
+      })
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
