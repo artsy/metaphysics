@@ -71,7 +71,7 @@ const BulkAddArtworksToShowResponseType = new GraphQLObjectType<
   }),
 })
 
-const BulkAddArtworksToShowSuccessType = new GraphQLObjectType<
+const BulkAddArtworksToShowMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
@@ -86,11 +86,11 @@ const BulkAddArtworksToShowSuccessType = new GraphQLObjectType<
   }),
 })
 
-const BulkAddArtworksToShowFailureType = new GraphQLObjectType<
+const BulkAddArtworksToShowMutationFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "BulkAddArtworksToShowFailure",
+  name: "BulkAddArtworksToShowMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -104,12 +104,15 @@ const BulkAddArtworksToShowFailureType = new GraphQLObjectType<
 
 const BulkAddArtworksToShowMutationType = new GraphQLUnionType({
   name: "BulkAddArtworksToShowMutationType",
-  types: [BulkAddArtworksToShowSuccessType, BulkAddArtworksToShowFailureType],
+  types: [
+    BulkAddArtworksToShowMutationSuccessType,
+    BulkAddArtworksToShowMutationFailureType,
+  ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkAddArtworksToShowFailureType
+      return BulkAddArtworksToShowMutationFailureType
     }
-    return BulkAddArtworksToShowSuccessType
+    return BulkAddArtworksToShowMutationSuccessType
   },
 })
 
@@ -156,8 +159,6 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
     { addArtworksToShowLoader }
   ) => {
     const gravityOptions: any = {}
-
-    console.log("filters", filters)
 
     if (filters) {
       gravityOptions.filters = {
