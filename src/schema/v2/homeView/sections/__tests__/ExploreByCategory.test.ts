@@ -1,5 +1,7 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+import { isSectionDisplayable } from "schema/v2/homeView/helpers/isSectionDisplayable"
+import { ExploreByCategory } from "../ExploreByCategory"
 
 describe("ExploreByCategory", () => {
   it("returns the section's metadata", async () => {
@@ -105,5 +107,46 @@ describe("ExploreByCategory", () => {
           },
         }
       `)
+  })
+
+  describe("eigen version constraints", () => {
+    it("is displayable when user is on version 8.77.0 (at maximum)", () => {
+      const context = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.77.0 Eigen/2024.12.10.06/8.77.0",
+      } as any
+      expect(isSectionDisplayable(ExploreByCategory, context)).toBe(true)
+    })
+
+    it("is displayable when user is on version 8.76.0 (below maximum)", () => {
+      const context = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.76.0 Eigen/2024.12.10.06/8.76.0",
+      } as any
+      expect(isSectionDisplayable(ExploreByCategory, context)).toBe(true)
+    })
+
+    it("is not displayable when user is on version 8.78.0 (above maximum)", () => {
+      const context = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.78.0 Eigen/2024.12.10.06/8.78.0",
+      } as any
+      expect(isSectionDisplayable(ExploreByCategory, context)).toBe(false)
+    })
+
+    it("is not displayable when user is on version 9.0.0 (above maximum)", () => {
+      const context = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/9.0.0 Eigen/2024.12.10.06/9.0.0",
+      } as any
+      expect(isSectionDisplayable(ExploreByCategory, context)).toBe(false)
+    })
+
+    it("is displayable when user agent is unrecognized (graceful fallback)", () => {
+      const context = {
+        userAgent: "unknown browser",
+      } as any
+      expect(isSectionDisplayable(ExploreByCategory, context)).toBe(true)
+    })
   })
 })

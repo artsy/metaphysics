@@ -27,6 +27,7 @@ export const DiscoverSomethingNew: HomeViewSection = {
     type: "Chips",
   },
   requiresAuthentication: false,
+  maximumEigenVersion: { major: 8, minor: 77, patch: 0 },
   resolver: async (_parent, args, context, _info) => {
     const { body } = await context.marketingCollectionsLoader({
       slugs: marketingCollectionSlugs,
