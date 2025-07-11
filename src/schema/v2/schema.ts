@@ -330,6 +330,7 @@ import { updateOrderShippingAddressMutation } from "./order/updateOrderShippingA
 import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
+import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -492,6 +493,7 @@ export default new GraphQLSchema({
       artsyShippingOptIn: artsyShippingOptInMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       assignArtworkImportArtist: AssignArtworkImportArtistMutation,
+      bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       cancelArtworkImport: CancelArtworkImportMutation,
       commerceOptIn: commerceOptInMutation,

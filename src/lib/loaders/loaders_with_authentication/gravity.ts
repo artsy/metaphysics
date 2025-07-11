@@ -1242,6 +1242,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    addArtworksToShowLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/add_artworks_to_show`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerContactLoader: gravityLoader<
       any,
       { partnerId: string; contactId: string }
