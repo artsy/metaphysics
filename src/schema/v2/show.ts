@@ -327,6 +327,38 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
                 )
               },
             },
+            publishedArtworks: {
+              type: GraphQLInt,
+              resolve: ({ id, partner }, {}, { partnerShowArtworksLoader }) => {
+                const options: any = {
+                  published: true,
+                }
+                return totalViaLoader(
+                  partnerShowArtworksLoader,
+                  {
+                    partner_id: partner.id,
+                    show_id: id,
+                  },
+                  options
+                )
+              },
+            },
+            unpublishedArtworks: {
+              type: GraphQLInt,
+              resolve: ({ id, partner }, {}, { partnerShowArtworksLoader }) => {
+                const options: any = {
+                  published: false,
+                }
+                return totalViaLoader(
+                  partnerShowArtworksLoader,
+                  {
+                    partner_id: partner.id,
+                    show_id: id,
+                  },
+                  options
+                )
+              },
+            },
             eligibleArtworks: numeral(
               ({ eligible_artworks_count }) => eligible_artworks_count
             ),
