@@ -771,6 +771,74 @@ describe("Show type", () => {
     })
   })
 
+  it("includes the total number of published artworks", async () => {
+    context.partnerShowArtworksLoader = sinon.stub().returns(
+      Promise.resolve({
+        headers: {
+          "x-total-count": 42,
+        },
+      })
+    )
+    context.partnerShowArtistsLoader = jest.fn(() =>
+      Promise.resolve({
+        headers: {
+          "x-total-count": 21,
+        },
+      })
+    )
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          counts {
+            publishedArtworks
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          publishedArtworks: 42,
+        },
+      },
+    })
+  })
+
+  it("includes the total number of unpublished artworks", async () => {
+    context.partnerShowArtworksLoader = sinon.stub().returns(
+      Promise.resolve({
+        headers: {
+          "x-total-count": 42,
+        },
+      })
+    )
+    context.partnerShowArtistsLoader = jest.fn(() =>
+      Promise.resolve({
+        headers: {
+          "x-total-count": 21,
+        },
+      })
+    )
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          counts {
+            unpublishedArtworks
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          unpublishedArtworks: 42,
+        },
+      },
+    })
+  })
+
   it("includes the total number of artists", async () => {
     context.partnerShowArtistsLoader = jest.fn(() =>
       Promise.resolve({
