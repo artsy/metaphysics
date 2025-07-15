@@ -113,11 +113,11 @@ generate a short-term JWT for your app.
    `/lib/loaders/loaders_with_authentication/index.js` to add the following:
 
    ```diff
-   import convectionLoaders from "./convection"
+   import gravityLoaders from "./gravity"
    + import threeBodyLoaders from "./threeBody"
    import impulseLoaders from "./impulse"
 
-   ...convectionLoaders(accessToken),
+   ...gravityLoaders(accessToken),
    + ...threeBodyLoaders(accessToken),
    ...impulseLoaders(accessToken, userID),
    ```

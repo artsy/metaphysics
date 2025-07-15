@@ -1,4 +1,3 @@
-import { createConvectionLink } from "./link"
 import {
   makeRemoteExecutableSchema,
   transformSchema,
@@ -8,9 +7,13 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 import { GraphQLError } from "graphql"
+import { createHttpLink } from "apollo-link-http"
 
 export const executableConvectionSchema = () => {
-  const convectionLink = createConvectionLink()
+  const convectionLink = createHttpLink({
+    fetch,
+    uri: "https://example.com/graphql",
+  })
   const convectionTypeDefs = readFileSync("src/data/convection.graphql", "utf8")
 
   // Setup the default Schema

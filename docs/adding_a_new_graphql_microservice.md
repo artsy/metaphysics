@@ -80,7 +80,7 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
 
      // Return the new modified schema
      return transformSchema(schema, [
-       new RenameTypes(name => {
+       new RenameTypes((name) => {
          return `Document${name}`
        }),
        new RenameRootFields(
@@ -97,9 +97,7 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
 
    ```diff
    import { executableGravitySchema } from "lib/stitching/gravity/schema"
-   import { executableConvectionSchema } from "lib/stitching/convection/schema"
    + import { executableThreeBodySchema } from "lib/stitching/threeBody/schema"
-   import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 
    export const incrementalMergeSchemas = (testConfig?: any) => {
      ...
