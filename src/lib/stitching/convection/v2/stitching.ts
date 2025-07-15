@@ -1,12 +1,12 @@
 import { GraphQLSchema } from "graphql"
-import { amount, amountSDL } from "schema/v2/fields/money"
+import { amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
-import { artworkToSubmissionMapping } from "lib/artworkToSubmissionMapping"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
+import { GraphQLError } from "graphql"
 
 export const consignmentStitchingEnvironment = (
-  localSchema: GraphQLSchema,
-  convectionSchema: GraphQLSchemaWithTransforms
+  _localSchema: GraphQLSchema,
+  _convectionSchema: GraphQLSchemaWithTransforms
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
@@ -36,40 +36,11 @@ export const consignmentStitchingEnvironment = (
     ConsignmentSubmission: {
       artist: {
         fragment: `fragment SubmissionArtist on ConsignmentSubmission { artistId }`,
-        resolve: (parent, _args, context, info) => {
-          const id = parent.artistId
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "artist",
-            args: {
-              id,
-            },
-            context,
-            info,
-            transforms: convectionSchema.transforms,
-          })
-        },
+        resolve: () => null,
       },
       myCollectionArtwork: {
         fragment: `fragment SubmissionArtwork on ConsignmentSubmission { myCollectionArtworkID }`,
-        resolve: (parent, _args, context, info) => {
-          const id = parent.myCollectionArtworkID
-
-          if (!id) return null
-
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "artwork",
-            args: {
-              id,
-            },
-            context,
-            info,
-            transforms: convectionSchema.transforms,
-          })
-        },
+        resolve: () => null,
       },
       userPhoneNumber: {
         fragment: gql`
@@ -77,20 +48,7 @@ export const consignmentStitchingEnvironment = (
             userPhone
           }
         `,
-        resolve: (parent, _args, context, info) => {
-          const phoneNumber = parent.userPhone
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "phoneNumber",
-            args: {
-              phoneNumber: phoneNumber || "",
-            },
-            context,
-            info,
-            transforms: convectionSchema.transforms,
-          })
-        },
+        resolve: () => null,
       },
     },
 
@@ -102,13 +60,7 @@ export const consignmentStitchingEnvironment = (
             lowEstimateCents
           }
         `,
-        resolve: (parent, args) =>
-          amount((_) => parent.lowEstimateCents).resolve(
-            {
-              currencyCode: parent.currency,
-            },
-            args
-          ),
+        resolve: () => null,
       },
       highEstimateAmount: {
         fragment: gql`
@@ -117,53 +69,15 @@ export const consignmentStitchingEnvironment = (
             highEstimateCents
           }
         `,
-        resolve: (parent, args) =>
-          amount((_) => parent.highEstimateCents).resolve(
-            {
-              currencyCode: parent.currency,
-            },
-            args
-          ),
+        resolve: () => null,
       },
     },
     Mutation: {
       createConsignmentSubmission: {
-        resolve: async (_source, args, context, info) => {
-          const myCollectionArtworkID = args.input?.myCollectionArtworkID
-          let createSubmissionArgs = args
-
-          // when myCollectionArtworkID is specified, use artwork data to fill in submission
-          if (myCollectionArtworkID) {
-            if (context.artworkLoader) {
-              const artwork = await context.artworkLoader(myCollectionArtworkID)
-
-              if (!artwork) {
-                throw new Error("Artwork not found")
-              }
-
-              const artworkSubmissionData = artworkToSubmissionMapping(artwork)
-
-              // use artwork data to fill in submission, but allow input to override
-              createSubmissionArgs = {
-                ...createSubmissionArgs,
-                input: {
-                  ...artworkSubmissionData,
-                  ...createSubmissionArgs.input,
-                  source: "MY_COLLECTION",
-                },
-              }
-            }
-          }
-
-          return await info.mergeInfo.delegateToSchema({
-            schema: convectionSchema,
-            operation: "mutation",
-            fieldName: "convectionCreateConsignmentSubmission",
-            args: createSubmissionArgs,
-            context,
-            info,
-            transforms: [],
-          })
+        resolve: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
         },
       },
     },
