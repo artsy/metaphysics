@@ -117,6 +117,13 @@ const ArtworkImportRowType = new GraphQLObjectType({
     artists: {
       type: new GraphQLList(new GraphQLNonNull(ArtistType)),
     },
+    currency: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    dimensionMetric: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ dimension_metric }) => dimension_metric,
+    },
     priceListed: {
       type: Money,
       resolve: (
@@ -326,7 +333,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           type: GraphQLBoolean,
         },
       }),
-      resolve: async ({ id, currency }, args, { artworkImportRowsLoader }) => {
+      resolve: async ({ id }, args, { artworkImportRowsLoader }) => {
         if (!artworkImportRowsLoader) {
           throw new Error(
             "A X-Access-Token header is required to perform this action."
@@ -352,10 +359,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
           offset,
           page,
           size,
-          body: body.map((row) => ({
-            ...row,
-            currency,
-          })),
+          body,
           args,
         })
       },
