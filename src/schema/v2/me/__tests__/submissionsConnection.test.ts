@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("submissionsConnection", () => {
-  it("returns list of submissions", async () => {
+  it("returns empty list since Convection is disabled", async () => {
     const query = gql`
       {
         me {
@@ -21,12 +21,8 @@ describe("submissionsConnection", () => {
 
     const submissionsLoader = jest.fn(async () => {
       return {
-        headers: { "x-total-count": "3" },
-        body: [
-          mockDraftSubmission,
-          mockRejectedSubmission,
-          mockApprovedSubmission,
-        ],
+        headers: { "x-total-count": "0" },
+        body: [],
       }
     })
 
@@ -39,23 +35,14 @@ describe("submissionsConnection", () => {
       me: { submissionsConnection },
     } = await runAuthenticatedQuery(query, context)
 
-    expect(submissionsLoader).toHaveBeenCalledWith({
-      offset: 0,
-      size: 10,
-      state: undefined,
-      total_count: true,
-    })
+    expect(submissionsLoader).toHaveBeenCalledWith()
     expect(submissionsConnection).toEqual({
-      edges: [
-        { node: { state: "DRAFT" } },
-        { node: { state: "REJECTED" } },
-        { node: { state: "APPROVED" } },
-      ],
-      totalCount: 3,
+      edges: [],
+      totalCount: 0,
     })
   })
 
-  it("filters submissions by state", async () => {
+  it("returns empty list when filtering by state since Convection is disabled", async () => {
     const query = gql`
       {
         me {
@@ -73,8 +60,8 @@ describe("submissionsConnection", () => {
 
     const submissionsLoader = jest.fn(async () => {
       return {
-        headers: { "x-total-count": "1" },
-        body: [mockDraftSubmission],
+        headers: { "x-total-count": "0" },
+        body: [],
       }
     })
 
@@ -87,15 +74,10 @@ describe("submissionsConnection", () => {
       me: { submissionsConnection },
     } = await runAuthenticatedQuery(query, context)
 
-    expect(submissionsLoader).toHaveBeenCalledWith({
-      offset: 0,
-      size: 10,
-      state: ["draft"],
-      total_count: true,
-    })
+    expect(submissionsLoader).toHaveBeenCalledWith()
     expect(submissionsConnection).toEqual({
-      edges: [{ node: { state: "DRAFT" } }],
-      totalCount: 1,
+      edges: [],
+      totalCount: 0,
     })
   })
 })

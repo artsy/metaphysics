@@ -26,9 +26,8 @@ export const createConvectionLink = () => {
       // If a token loader exists for Convection (i.e. this is an authenticated request), use that token to make
       // authenticated requests to Convection.
       if (tokenLoader) {
-        return tokenLoader().then(({ token }) => ({
-          headers: Object.assign(headers, { Authorization: `Bearer ${token}` }),
-        }))
+        // Convection integration disabled - return headers without authentication
+        return { headers }
       }
       // Otherwise use no authentication, which is also meant for fetching the service’s (public) schema.
       return { headers }

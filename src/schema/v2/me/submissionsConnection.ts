@@ -29,19 +29,10 @@ export const submissionsConnection: GraphQLFieldConfig<
       throw new Error("You need to be signed in to query for submission")
     }
 
-    const { limit: size, offset } = getPagingParameters(options)
-
-    const convectionArgs = {
-      size,
-      offset,
-      total_count: true,
-      state: options.states,
-    }
+    const { offset } = getPagingParameters(options)
 
     try {
-      const { body: submissions, headers } = await submissionsLoader(
-        convectionArgs
-      )
+      const { body: submissions, headers } = await submissionsLoader()
 
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
