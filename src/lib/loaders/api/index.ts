@@ -1,6 +1,5 @@
 import config from "config"
 
-import convection from "lib/apis/convection"
 import delta from "lib/apis/delta"
 import diffusion from "lib/apis/diffusion"
 import exchange from "lib/apis/exchange"
@@ -48,18 +47,6 @@ export interface DataLoaderKey {
 
 export default (opts) => ({
   // Unauthenticated loaders
-
-  /**
-   * The Convection loaders produced by this factory _will_ cache all responses to memcache.
-   */
-  convectionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
-    convection,
-    "convection",
-    {
-      requestIDs: opts.requestIDs,
-      userAgent: opts.userAgent,
-    }
-  ),
 
   /**
    * The Delta loaders produced by this factory _will_ cache all responses to memcache.
@@ -169,21 +156,6 @@ export default (opts) => ({
   ),
 
   // Authenticated loaders
-
-  /**
-   * The Convection loaders produced by this factory _will_ cache responses for the duration of query execution but do
-   * **not** cache to memcache.
-   *
-   * Use this for authenticated requests.
-   */
-  convectionLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
-    convection,
-    "convection",
-    {
-      requestIDs: opts.requestIDs,
-      userAgent: opts.userAgent,
-    }
-  ),
 
   /**
    * The Gravity loaders produced by this factory _will_ cache responses for the duration of query execution but do

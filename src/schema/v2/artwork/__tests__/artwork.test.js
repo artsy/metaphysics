@@ -1395,7 +1395,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns artwork's submission by submission_id", () => {
+    it("returns null for artwork's submission since Convection is disabled", () => {
       artwork.submission_id = "1"
       context.convectionGraphQLLoader = () =>
         Promise.resolve({
@@ -1412,10 +1412,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             slug: "richard-prince-untitled-portrait",
-            consignmentSubmission: {
-              displayText: "Submission in progress",
-              inProgress: true,
-            },
+            consignmentSubmission: null,
           },
         })
       })

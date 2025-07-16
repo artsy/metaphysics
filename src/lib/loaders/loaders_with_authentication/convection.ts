@@ -1,98 +1,52 @@
-import factories from "../api"
-import config from "config"
-import fetch from "node-fetch"
-import urljoin from "url-join"
 import { GraphQLError } from "graphql"
-
-const { CONVECTION_APP_ID, CONVECTION_API_BASE } = config
 
 interface GraphQLArgs {
   query: string
   variables: any
 }
 
-export default (accessToken, opts) => {
-  let convectionTokenLoader
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
-
-  const {
-    gravityLoaderWithAuthenticationFactory,
-    convectionLoaderWithAuthenticationFactory,
-  } = factories(opts)
-
-  const convectionAccessTokenLoader = () =>
-    convectionTokenLoader().then((data) => data.token)
-
-  const gravityLoader = gravityLoaderWithAuthenticationFactory(
-    gravityAccessTokenLoader
-  )
-  const convectionLoader = convectionLoaderWithAuthenticationFactory(
-    convectionAccessTokenLoader
-  )
-
-  // This generates a token with a lifetime of 1 minute, which should be plenty of time to fulfill a full query.
-  convectionTokenLoader = gravityLoader(
-    "me/token",
-    { client_application_id: CONVECTION_APP_ID },
-    { method: "POST" }
-  )
+export default (_accessToken, _opts) => {
+  // Disabled Convection loaders - all operations throw errors or return null
+  const convectionTokenLoader = () => {
+    throw new GraphQLError("Artwork submissions are not accepted at this time.")
+  }
 
   const convectionGraphQLLoader = async <T = unknown>({
-    query,
-    variables,
+    query: _query,
+    variables: _variables,
   }: GraphQLArgs): Promise<Record<string, T>> => {
-    const { token } = await convectionTokenLoader()
+    // Return empty data structure for GraphQL queries
+    return {} as Record<string, T>
+  }
 
-    const body = JSON.stringify({
-      query,
-      variables,
-    })
+  const createConsignmentInquiryLoader = () => {
+    throw new GraphQLError("Artwork submissions are not accepted at this time.")
+  }
 
-    const response = await fetch(urljoin(CONVECTION_API_BASE, "graphql"), {
-      method: "POST",
-      body,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
+  const assetCreateLoader = () => {
+    throw new GraphQLError("Artwork submissions are not accepted at this time.")
+  }
 
-    const json = await response.json()
-    const { data: convectionData, error, errors: convectionErrors } = json
+  const submissionCreateLoader = () => {
+    throw new GraphQLError("Artwork submissions are not accepted at this time.")
+  }
 
-    if (error) {
-      throw new Error(`[loaders/convection.ts]: ${error.message}`)
-      // If the convection request failed for some reason, throw its errors.
-    } else if (convectionErrors) {
-      const errors = convectionErrors.reduce((acc, error) => {
-        return acc + " " + error["message"]
-      }, "From convection service:")
+  const submissionsLoader = () => {
+    // Return empty array for submissions list with expected structure
+    return Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+  }
 
-      throw new GraphQLError(`[loaders/convection.ts]: ${errors}`)
-    } else {
-      return convectionData
-    }
+  const submissionUpdateLoader = () => {
+    throw new GraphQLError("Artwork submissions are not accepted at this time.")
   }
 
   return {
-    assetCreateLoader: convectionLoader(`assets`, {}, { method: "POST" }),
+    assetCreateLoader,
     convectionGraphQLLoader,
     convectionTokenLoader,
-    createConsignmentInquiryLoader: convectionLoader(
-      "consignment_inquiries",
-      {},
-      { method: "POST" }
-    ),
-    submissionCreateLoader: convectionLoader(
-      `submissions`,
-      {},
-      { method: "POST" }
-    ),
-    submissionsLoader: convectionLoader(`submissions`, {}, { headers: true }),
-    submissionUpdateLoader: convectionLoader(
-      (id) => `submissions/${id}`,
-      {},
-      { method: "PUT" }
-    ),
+    createConsignmentInquiryLoader,
+    submissionCreateLoader,
+    submissionsLoader,
+    submissionUpdateLoader,
   }
 }
