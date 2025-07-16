@@ -385,6 +385,10 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ has_password }) => has_password,
     },
+    hasPriceRange: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ has_price_range }) => !!has_price_range,
+    },
     hasQualifiedCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {
