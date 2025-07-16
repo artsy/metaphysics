@@ -14,6 +14,7 @@ describe("me/index", () => {
         isIdentityVerified
         hasSecondFactorEnabled
         hasPassword
+        hasPriceRange
         labFeatures
         receivePurchaseNotification
         receiveOutbidNotification
@@ -72,6 +73,7 @@ describe("me/index", () => {
       identity_verified: true,
       second_factor_enabled: true,
       has_password: false,
+      has_price_range: true,
       lab_features: ["CMS Batch Edit", "Collector Resume"],
       receive_purchase_notification: false,
       receive_outbid_notification: true,
@@ -100,6 +102,7 @@ describe("me/index", () => {
           isIdentityVerified: true,
           hasSecondFactorEnabled: true,
           hasPassword: false,
+          hasPriceRange: true,
           labFeatures: ["CMS Batch Edit", "Collector Resume"],
           receivePurchaseNotification: false,
           receiveOutbidNotification: true,
