@@ -1,14 +1,19 @@
-import { createConvectionLink } from "./link"
 import {
   makeRemoteExecutableSchema,
   transformSchema,
   RenameTypes,
   RenameRootFields,
+  addResolveFunctionsToSchema,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import { GraphQLError } from "graphql"
+import { createHttpLink } from "apollo-link-http"
 
 export const executableConvectionSchema = () => {
-  const convectionLink = createConvectionLink()
+  const convectionLink = createHttpLink({
+    fetch,
+    uri: "https://example.com/graphql",
+  })
   const convectionTypeDefs = readFileSync("src/data/convection.graphql", "utf8")
 
   // Setup the default Schema
@@ -36,7 +41,78 @@ export const executableConvectionSchema = () => {
     SubmissionSource: "ConsignmentSubmissionSource",
   }
 
-  // Return the new modified schema
+  // Add disabled resolvers to the schema
+  addResolveFunctionsToSchema({
+    schema,
+    resolvers: {
+      Query: {
+        consignments: () => ({
+          edges: [],
+          nodes: [],
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          totalCount: 0,
+        }),
+        offer: () => null,
+        offers: () => ({
+          edges: [],
+          nodes: [],
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          totalCount: 0,
+        }),
+        submission: () => null,
+        submissions: () => ({
+          edges: [],
+          nodes: [],
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          totalCount: 0,
+        }),
+      },
+      Mutation: {
+        addAssetToConsignmentSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        addAssetsToConsignmentSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        addUserToSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        createConsignmentOffer: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        createConsignmentOfferResponse: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        createConsignmentSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        removeAssetFromConsignmentSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+        updateConsignmentSubmission: () => {
+          throw new GraphQLError(
+            "Artwork submissions are not accepted at this time."
+          )
+        },
+      },
+    },
+  })
+
+  // Return the new modified schema with disabled resolvers
   return transformSchema(schema, [
     new RenameTypes((name) => {
       const newName = remap[name] || name

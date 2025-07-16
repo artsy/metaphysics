@@ -11,7 +11,9 @@ describe("CreateConsignmentInquiryMutation", () => {
     phone_number: "+49123456",
   }
   const loaders = {
-    createConsignmentInquiryLoader: () => Promise.resolve(consignmentInquiry),
+    createConsignmentInquiryLoader: () => {
+      throw new Error("Artwork submissions are not accepted at this time.")
+    },
   }
 
   const query = `
@@ -44,20 +46,9 @@ describe("CreateConsignmentInquiryMutation", () => {
   }
   `
 
-  it("requests price estimate and returns submitted params", async () => {
-    const data = await runAuthenticatedQuery(query, loaders)
-    expect(data).toEqual({
-      createConsignmentInquiry: {
-        consignmentInquiryOrError: {
-          consignmentInquiry: {
-            email: "user@art.com",
-            internalID: 1,
-            message: "This is my message to you",
-            name: "User",
-            userId: "1234gravity",
-          },
-        },
-      },
-    })
+  it("throws error since Convection is disabled", async () => {
+    await expect(runAuthenticatedQuery(query, loaders)).rejects.toThrow(
+      "Artwork submissions are not accepted at this time."
+    )
   })
 })
