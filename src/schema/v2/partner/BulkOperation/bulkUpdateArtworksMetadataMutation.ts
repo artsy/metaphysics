@@ -28,9 +28,11 @@ interface Input {
     ecommerce: boolean
     locationId?: string
     category?: string
+    medium?: string
     offer: boolean
     priceAdjustment?: number
     priceListed?: number
+    provenance?: string
     published?: boolean
   }
   filters?: {
@@ -201,7 +203,9 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         location_id: metadata.locationId,
         category: metadata.category,
+        medium: metadata.medium,
         price_adjustment: metadata.priceAdjustment,
+        provenance: metadata.provenance,
         price_listed: metadata.priceListed,
         published: metadata.published,
         offer: metadata.offer,
