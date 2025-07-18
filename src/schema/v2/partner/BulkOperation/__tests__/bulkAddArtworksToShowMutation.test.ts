@@ -9,6 +9,7 @@ describe("BulkAddArtworksToShowMutation", () => {
         input: {
           id: "partner123"
           showId: "show456"
+          source: ADMIN
           filters: {
             artworkIds: ["artwork1", "artwork2"]
             availability: FOR_SALE
@@ -56,6 +57,7 @@ describe("BulkAddArtworksToShowMutation", () => {
 
     expect(context.addArtworksToShowLoader).toHaveBeenCalledWith("partner123", {
       show_id: "show456",
+      source: "admin",
       filters: {
         artwork_ids: ["artwork1", "artwork2"],
         availability: "for sale",

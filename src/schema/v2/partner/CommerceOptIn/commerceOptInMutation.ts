@@ -13,6 +13,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
 export const CommerceOptInResponseType = new GraphQLObjectType<
   any,
@@ -27,6 +28,7 @@ export const CommerceOptInResponseType = new GraphQLObjectType<
 
 interface Input {
   id: string
+  source: string
   exactPrice?: boolean
   pickupAvailable?: boolean
   framed?: boolean
@@ -89,6 +91,11 @@ export const commerceOptInMutation = mutationWithClientMutationId<
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
+    },
+    source: {
+      type: BulkUpdateSourceEnum,
+      description:
+        "Source of the mutation being triggered, E.g. admin, artworks_list",
     },
     exactPrice: {
       type: GraphQLBoolean,
@@ -169,6 +176,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       stickerLabel,
       signedInPlate,
       signedOther,
+      source,
       notSigned,
     },
     { optInArtworksIntoCommerceLoader }
@@ -187,6 +195,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       sticker_label: stickerLabel,
       signed_in_plate: signedInPlate,
       signed_other: signedOther,
+      source,
       not_signed: notSigned,
     }
 

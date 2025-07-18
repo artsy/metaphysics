@@ -13,10 +13,12 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { BulkArtworkFilterInput } from "./shared"
+import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
 interface Input {
   id: string
   showId: string
+  source: string
   filters?: {
     artistId?: string
     availability?: string
@@ -99,6 +101,11 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the show to which artworks will be added",
     },
+    source: {
+      type: BulkUpdateSourceEnum,
+      description:
+        "Source of the mutation being triggered, E.g. admin, artworks_list",
+    },
     filters: {
       type: BulkArtworkFilterInput,
       description: "Filter options to apply",
@@ -122,7 +129,7 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, showId, filters },
+    { id, showId, source, filters },
     { addArtworksToShowLoader }
   ) => {
     const gravityOptions: any = {}
@@ -145,6 +152,7 @@ export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
     try {
       return await addArtworksToShowLoader(id, {
         show_id: showId,
+        source,
         filters: gravityOptions.filters,
       })
     } catch (error) {
