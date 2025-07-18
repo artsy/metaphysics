@@ -20,6 +20,11 @@ const mockMutation = `
             internalID
           }     
         }
+        ...on OrderMutationActionRequired {
+          actionData {
+            clientSecret
+          }
+        }
       }
     }
   }
@@ -153,6 +158,30 @@ describe("submitOrderMutation", () => {
             // fallback message for a non-exchange formatted error
             message: "An error occurred",
             code: "create_credit_card_failed",
+          },
+        },
+      },
+    })
+  })
+
+  it("handles payment_requires_action error with action required response", async () => {
+    context.meOrderSubmitLoader = jest.fn().mockRejectedValue({
+      statusCode: 422,
+      body: {
+        code: "payment_requires_action",
+        action_data: {
+          client_secret: "pi_test_1234567890_secret_abc123",
+        },
+      },
+    })
+    const result = await runAuthenticatedQuery(mockMutation, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      submitOrder: {
+        orderOrError: {
+          actionData: {
+            clientSecret: "pi_test_1234567890_secret_abc123",
           },
         },
       },
