@@ -1,16 +1,16 @@
 import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLUnionType,
-  GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { ResolverContext } from "types/graphql"
 import { ArtworkImportType } from "./artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -64,7 +64,7 @@ export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
     },
     fieldValue: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
   },
   outputFields: {
