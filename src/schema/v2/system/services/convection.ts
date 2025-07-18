@@ -1,4 +1,5 @@
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
+import config from "config"
 import { ResolverContext } from "types/graphql"
 
 const ConvectionSchema = new GraphQLObjectType<any, ResolverContext>({
@@ -16,7 +17,7 @@ const Convection = {
   description: "The schema for convection's ENV settings",
   args: {},
   resolve: () => ({
-    geminiTemplateKey: "",
+    geminiTemplateKey: config.CONVECTION_GEMINI_TEMPLATE,
   }),
 }
 
