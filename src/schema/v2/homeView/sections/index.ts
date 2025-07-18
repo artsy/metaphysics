@@ -29,6 +29,7 @@ import { ViewingRooms } from "./ViewingRooms"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
 import { QuickLinks } from "./QuickLinks"
+import { BasedOnYourRecentSaves } from "./BasedOnYourRecentSaves"
 
 type MaybeResolved<T> =
   | T
@@ -57,6 +58,7 @@ export type HomeViewSection = {
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
+  BasedOnYourRecentSaves,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,
   ExploreByCategory,

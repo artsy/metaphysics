@@ -11,9 +11,9 @@
     "@jridgewell/trace-mapping" "^0.3.24"
 
 "@artsy/cohesion@^4.237.0":
-  version "4.237.0"
-  resolved "https://registry.yarnpkg.com/@artsy/cohesion/-/cohesion-4.237.0.tgz#a85fc5fd49564d4ffffc7c479f512dd7f4db3819"
-  integrity sha512-2SI63DnGZzTe+9v6jS/H9Kqg1AT5VYdxS4ZL8Fua07CFaFB6TVTjJWkXOZ1u6CNa8gJWrUW1pEvhsHMZtYFMIg==
+  version "4.285.0"
+  resolved "https://registry.yarnpkg.com/@artsy/cohesion/-/cohesion-4.285.0.tgz#26ee64d6c1977f3f162ca8143f92b3d8c71446be"
+  integrity sha512-V37K4CQ/hO4Dhw5IRGCWLPOscPpZbHAHcNWCWzOUAXiDvbI95cIxndmgMtp03PPb2lAzyNdVyqNQIPeQZOXWTg==
   dependencies:
     core-js "3"
 
@@ -3617,7 +3617,12 @@ core-js@2.6.12, core-js@^2.4.1:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
-core-js@3, core-js@^3.30.2, core-js@^3.8.2:
+core-js@3:
+  version "3.44.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.44.0.tgz#db4fd4fa07933c1d6898c8b112a1119a9336e959"
+  integrity sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw==
+
+core-js@^3.30.2, core-js@^3.8.2:
   version "3.38.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.38.1.tgz#aa375b79a286a670388a1a363363d53677c0383e"
   integrity sha512-OP35aUorbU3Zvlx7pjsFdu1rGNnD4pgw/CWoYzRY3t2EzoVT7shKHY1dlAy3f41cGIO7ZDPQimhGFTlEYkG/Hw==

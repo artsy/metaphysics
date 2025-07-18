@@ -29,6 +29,7 @@ import { QuickLinks } from "../sections/QuickLinks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
+import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -39,6 +40,7 @@ const SECTIONS: HomeViewSection[] = [
   InfiniteDiscovery,
   DiscoverSomethingNew,
   RecommendedArtworks,
+  BasedOnYourRecentSaves,
   CuratorsPicksEmerging,
   ExploreByCategory,
   HeroUnits,

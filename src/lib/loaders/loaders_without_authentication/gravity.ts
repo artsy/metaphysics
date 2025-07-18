@@ -307,7 +307,11 @@ export default (opts) => {
     showLoader: gravityLoader((id) => `show/${id}`),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
-    similarArtworksLoader: gravityLoader("related/artworks"),
+    similarArtworksLoader: gravityLoader(
+      "related/artworks",
+      {},
+      { headers: true }
+    ),
     recentlyViewedArtworkIdsLoader: gravityLoader(
       (id) => `user/${id}/recently_viewed_artwork_ids`,
       {},
