@@ -17,9 +17,11 @@ import {
 import { Availability } from "schema/v2/types/availability"
 import { ResolverContext } from "types/graphql"
 import { BulkArtworkFilterInput } from "./shared"
+import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
 interface Input {
   id: string
+  source: string
   metadata?: {
     availability?: string
     domesticShippingFeeCents?: number
@@ -153,6 +155,11 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
+    source: {
+      type: BulkUpdateSourceEnum,
+      description:
+        "Source of the mutation being triggered, E.g. admin, artworks_list",
+    },
     metadata: {
       type: BulkUpdateArtworksMetadataInput,
       description: "Metadata to be updated",
@@ -181,10 +188,12 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, metadata, filters },
+    { id, filters, metadata, source },
     { updatePartnerArtworksMetadataLoader }
   ) => {
-    const gravityOptions: any = {}
+    const gravityOptions: any = {
+      source,
+    }
 
     if (metadata) {
       gravityOptions.metadata = {

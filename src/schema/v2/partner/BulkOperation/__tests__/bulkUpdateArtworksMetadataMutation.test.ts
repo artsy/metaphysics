@@ -8,6 +8,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       bulkUpdateArtworksMetadata(
         input: {
           id: "partner123"
+          source: ARTWORKS_LIST
           metadata: {
             availability: SOLD
             domesticShippingFeeCents: 20000
@@ -85,6 +86,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           partner_artist_id: "artist789",
           published: true,
         },
+        source: "artworks_list",
       }
     )
 
