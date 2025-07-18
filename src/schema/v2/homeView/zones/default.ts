@@ -36,11 +36,11 @@ const SECTIONS: HomeViewSection[] = [
   Tasks,
   LatestActivity,
   NewWorksForYou,
-  BasedOnYourRecentSaves, // TODO: think about the order of sections
   RecentlyViewedArtworks,
   InfiniteDiscovery,
   DiscoverSomethingNew,
   RecommendedArtworks,
+  BasedOnYourRecentSaves,
   CuratorsPicksEmerging,
   ExploreByCategory,
   HeroUnits,

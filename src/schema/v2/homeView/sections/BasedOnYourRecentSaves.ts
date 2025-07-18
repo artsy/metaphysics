@@ -3,20 +3,22 @@ import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { map } from "lodash"
-import { connectionFromArray } from "graphql-relay"
+import { paginationResolver } from "schema/v2/fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const SAVED_ARTWORKS_SIZE = 3
 const SIMILAR_ARTWORKS_SIZE = 10
+const TIMEOUT_MS = 6000
 
 export const BasedOnYourRecentSaves: HomeViewSection = {
   id: "home-view-section-based-on-your-recent-saves",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   featureFlag: "onyx_based_on_your_saves_home_view_section",
-  contextModule: ContextModule.artworkRecommendationsRail, // TODO: add basedOnYourRecentSavesRail context module
+  contextModule: ContextModule.basedOnYourRecentSavesRail,
   component: {
-    title: "Based on Your Recent Saves",
+    title: "Inspired by Your Saved Artworks",
   },
-  ownerType: OwnerType.artworkRecommendations, // TODO: add owner type
+  ownerType: OwnerType.basedOnYourRecentSaves,
   requiresAuthentication: true,
   resolver: withHomeViewTimeout(
     async (
@@ -27,6 +29,9 @@ export const BasedOnYourRecentSaves: HomeViewSection = {
     ) => {
       if (!savedArtworksLoader || !userID) return null
 
+      const gravityArgs = convertConnectionArgsToGravityArgs(args)
+      const { page, size, offset } = gravityArgs
+
       const { body: works } = await savedArtworksLoader({
         size: SAVED_ARTWORKS_SIZE,
         sort: "-position",
@@ -36,18 +41,19 @@ export const BasedOnYourRecentSaves: HomeViewSection = {
 
       if (works.length === 0) return null
 
-      const similarArtworks = await similarArtworksLoader({
+      const { body, headers } = await similarArtworksLoader({
         artwork_id: map(works, "_id"),
         for_sale: true,
-        size: SIMILAR_ARTWORKS_SIZE,
+        size: size || SIMILAR_ARTWORKS_SIZE,
+        offset,
+        total_count: true,
       })
 
-      if (similarArtworks.length === 0) return null
+      const totalCount =
+        parseInt(headers?.["x-total-count"] || "0", 10) || body.length
 
-      return {
-        totalCount: similarArtworks.length,
-        ...connectionFromArray(similarArtworks, args),
-      }
-    }
+      return paginationResolver({ totalCount, offset, page, size, body, args })
+    },
+    TIMEOUT_MS
   ),
 }
