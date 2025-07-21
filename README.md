@@ -64,7 +64,7 @@ With your dependencies set up, you can run Metaphysics by running:
 yarn start
 ```
 
-Which will start the server on http://localhost:3000
+Which will start the server on http://localhost:5001
 
 Be sure that memcached is no longer running before starting hokusai by running
 

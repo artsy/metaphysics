@@ -28,10 +28,13 @@ interface Input {
     ecommerce: boolean
     locationId?: string
     category?: string
+    medium?: string
     offer: boolean
     priceAdjustment?: number
     priceListed?: number
+    provenance?: string
     published?: boolean
+    signature?: string
   }
   filters?: {
     artistId?: string
@@ -67,6 +70,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Purchase",
     },
+    medium: {
+      type: GraphQLString,
+      description: "The medium (materials) to be assigned, E.g. Oil on Canvas",
+    },
     priceAdjustment: {
       type: GraphQLInt,
       description:
@@ -76,6 +83,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLFloat,
       description: "The price for the artworks",
     },
+    provenance: {
+      type: GraphQLString,
+      description: "The provenance to be assigned",
+    },
     offer: {
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Make Offer",
@@ -83,6 +94,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     published: {
       type: GraphQLBoolean,
       description: "Publish or unpublish artworks",
+    },
+    signature: {
+      type: GraphQLString,
+      description: "Details about the signature",
     },
   },
 })
@@ -201,10 +216,13 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         location_id: metadata.locationId,
         category: metadata.category,
+        medium: metadata.medium,
         price_adjustment: metadata.priceAdjustment,
+        provenance: metadata.provenance,
         price_listed: metadata.priceListed,
         published: metadata.published,
         offer: metadata.offer,
+        signature: metadata.signature,
         ecommerce: metadata.ecommerce,
       }
     }

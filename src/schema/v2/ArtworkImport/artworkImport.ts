@@ -71,6 +71,20 @@ const ArtworkImportCreatedBy = new GraphQLObjectType({
   },
 })
 
+const ArtworkImportSummaryType = new GraphQLObjectType({
+  name: "ArtworkImportSummary",
+  fields: {
+    currencies: {
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
+      resolve: ({ currencies_found }) => currencies_found,
+    },
+    dimensionMetrics: {
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
+      resolve: ({ dimension_metrics_found }) => dimension_metrics_found,
+    },
+  },
+})
+
 const ArtworkImportRowErrorType = new GraphQLObjectType({
   name: "ArtworkImportRowError",
   fields: {
@@ -293,6 +307,14 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     state: {
       type: ArtworkImportStateType,
+    },
+    summary: {
+      type: ArtworkImportSummaryType,
+      resolve: async ({ id }, _args, { artworkImportSummaryLoader }) => {
+        if (!artworkImportSummaryLoader) return null
+
+        return await artworkImportSummaryLoader(id)
+      },
     },
     unmatchedArtistNames: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
