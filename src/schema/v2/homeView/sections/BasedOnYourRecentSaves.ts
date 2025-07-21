@@ -41,7 +41,7 @@ export const BasedOnYourRecentSaves: HomeViewSection = {
 
       if (works.length === 0) return null
 
-      const { body, headers } = await similarArtworksLoader({
+      const artworks = await similarArtworksLoader({
         artwork_id: map(works, "_id"),
         for_sale: true,
         size: size || SIMILAR_ARTWORKS_SIZE,
@@ -49,10 +49,14 @@ export const BasedOnYourRecentSaves: HomeViewSection = {
         total_count: true,
       })
 
-      const totalCount =
-        parseInt(headers?.["x-total-count"] || "0", 10) || body.length
-
-      return paginationResolver({ totalCount, offset, page, size, body, args })
+      return paginationResolver({
+        totalCount: artworks.length,
+        offset,
+        page,
+        size,
+        body: artworks,
+        args,
+      })
     },
     TIMEOUT_MS
   ),
