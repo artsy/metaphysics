@@ -95,7 +95,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLBoolean,
       description: "Publish or unpublish artworks",
     },
-    signatureDetails: {
+    signature: {
       type: GraphQLString,
       description: "Details about the signature",
     },
@@ -222,7 +222,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         price_listed: metadata.priceListed,
         published: metadata.published,
         offer: metadata.offer,
-        signature: metadata.signatureDetails,
+        signature: metadata.signature,
         ecommerce: metadata.ecommerce,
       }
     }
