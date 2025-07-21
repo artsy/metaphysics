@@ -98,23 +98,18 @@ describe("BasedOnYourRecentSaves", () => {
       ],
     }
 
-    const similarArtworksResponse = {
-      body: [
-        {
-          _id: "similar-artwork-1",
-          id: "similar-artwork-1",
-          slug: "similar-artwork-1-slug",
-        },
-        {
-          _id: "similar-artwork-2",
-          id: "similar-artwork-2",
-          slug: "similar-artwork-2-slug",
-        },
-      ],
-      headers: {
-        "x-total-count": "10",
+    const similarArtworksResponse = [
+      {
+        _id: "similar-artwork-1",
+        id: "similar-artwork-1",
+        slug: "similar-artwork-1-slug",
       },
-    }
+      {
+        _id: "similar-artwork-2",
+        id: "similar-artwork-2",
+        slug: "similar-artwork-2-slug",
+      },
+    ]
 
     const savedArtworksLoader = jest.fn(async () => savedArtworksResponse)
     const similarArtworksLoader = jest.fn(async () => similarArtworksResponse)
