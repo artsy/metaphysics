@@ -21,6 +21,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             priceListed: 1000
             provenance: "Owned by a famous collector"
             published: true
+            signatureDetails: "Signed by the artist in the bottom right corner"
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
@@ -82,6 +83,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           published: true,
           provenance: "Owned by a famous collector",
           medium: "Oil on Canvas",
+          signature: "Signed by the artist in the bottom right corner",
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],
