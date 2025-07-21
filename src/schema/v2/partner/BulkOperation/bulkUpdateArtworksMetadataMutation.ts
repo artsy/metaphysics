@@ -69,6 +69,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Purchase",
     },
+    medium: {
+      type: GraphQLString,
+      description: "The medium (materials) to be assigned, E.g. Oil on Canvas",
+    },
     priceAdjustment: {
       type: GraphQLInt,
       description:
@@ -77,6 +81,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     priceListed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
+    },
+    provenance: {
+      type: GraphQLString,
+      description: "The provenance to be assigned",
     },
     offer: {
       type: GraphQLBoolean,

@@ -15,9 +15,11 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             locationId: "location456"
             category: "Painting"
             ecommerce: true
+            medium: "Oil on Canvas"
             offer: false
             priceAdjustment: -5
             priceListed: 1000
+            provenance: "Owned by a famous collector"
             published: true
           }
           filters: {
@@ -78,6 +80,8 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           price_adjustment: -5,
           price_listed: 1000,
           published: true,
+          provenance: "Owned by a famous collector",
+          medium: "Oil on Canvas",
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],
