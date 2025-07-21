@@ -21,7 +21,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             priceListed: 1000
             provenance: "Owned by a famous collector"
             published: true
-            signatureDetails: "Signed by the artist in the bottom right corner"
+            signature: "Signed by the artist in the bottom right corner"
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
