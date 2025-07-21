@@ -127,8 +127,21 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    artworkImportSummaryLoader: gravityLoader(
+      (id) => `artwork_import/${id}/summary`
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
+    ),
+    artworkImportUpdateCurrencyLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_currency`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportUpdateDimensionMetricLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_dimension_metric`,
+      {},
+      { method: "PUT" }
     ),
     artworkImportUpdateRowLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_row`,
