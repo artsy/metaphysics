@@ -34,6 +34,7 @@ interface Input {
     priceListed?: number
     provenance?: string
     published?: boolean
+    signature?: string
   }
   filters?: {
     artistId?: string
@@ -93,6 +94,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     published: {
       type: GraphQLBoolean,
       description: "Publish or unpublish artworks",
+    },
+    signatureDetails: {
+      type: GraphQLString,
+      description: "Details about the signature",
     },
   },
 })
@@ -217,6 +222,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         price_listed: metadata.priceListed,
         published: metadata.published,
         offer: metadata.offer,
+        signature: metadata.signatureDetails,
         ecommerce: metadata.ecommerce,
       }
     }
