@@ -2562,6 +2562,9 @@ input ArtsyShippingOptInMutationInput {
 
   # ID of the partner
   id: String!
+
+  # Source of the mutation being triggered, E.g. admin, artworks_list
+  source: BulkUpdateSourceEnum
 }
 
 type ArtsyShippingOptInMutationPayload {
@@ -3262,6 +3265,8 @@ enum ArtworkImportError {
 type ArtworkImportRow {
   artists: [Artist!]
   artwork: Artwork
+  currency: String!
+  dimensionMetric: String!
   errors: [ArtworkImportRowError!]!
 
   # A globally unique ID.
@@ -4557,6 +4562,9 @@ input BulkAddArtworksToShowMutationInput {
 
   # ID of the show to which artworks will be added
   showId: String!
+
+  # Source of the mutation being triggered, E.g. admin, artworks_list
+  source: BulkUpdateSourceEnum
 }
 
 type BulkAddArtworksToShowMutationPayload {
@@ -4642,6 +4650,9 @@ input BulkUpdateArtworksMetadataMutationInput {
 
   # Metadata to be updated
   metadata: BulkUpdateArtworksMetadataInput
+
+  # Source of the mutation being triggered, E.g. admin, artworks_list
+  source: BulkUpdateSourceEnum
 }
 
 type BulkUpdateArtworksMetadataMutationPayload {
@@ -4661,6 +4672,14 @@ union BulkUpdateArtworksMetadataMutationType =
 type BulkUpdateArtworksMetadataResponse {
   count: Int
   ids: [String]
+}
+
+# Possible sources of the bulk operation
+enum BulkUpdateSourceEnum {
+  ADMIN
+  ARTWORKS_LIST
+  PARTNER_ARTIST_ARTWORKS_LIST
+  SHOW_ARTWORKS_LIST
 }
 
 type BuyersPremium {
@@ -6304,6 +6323,9 @@ input CommerceOptInMutationInput {
 
   # whether or not other is selected for signature
   signedOther: Boolean
+
+  # Source of the mutation being triggered, E.g. admin, artworks_list
+  source: BulkUpdateSourceEnum
 
   # whether or not it is stamped by the artist estate
   stampedByArtistEstate: Boolean
@@ -14675,6 +14697,7 @@ type Me implements Node {
   followsAndSaves: FollowsAndSaves
   hasCreditCards: Boolean
   hasPassword: Boolean!
+  hasPriceRange: Boolean!
   hasQualifiedCreditCards: Boolean
   hasSecondFactorEnabled: Boolean!
   icon: Image

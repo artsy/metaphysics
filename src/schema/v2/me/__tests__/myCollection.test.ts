@@ -194,7 +194,7 @@ describe("me.myCollection", () => {
     })
   })
 
-  it("enriches artwork with consignment submissions data", async () => {
+  it("returns artworks without consignment submission data since Convection is disabled", async () => {
     const query = gql`
       {
         me {
@@ -282,8 +282,7 @@ describe("me.myCollection", () => {
     )
     expect(
       data.me.myCollectionConnection.edges[0].node.consignmentSubmission
-        .displayText
-    ).toBe("Submission in progress")
+    ).toBeFalsy()
 
     expect(data.me.myCollectionConnection.edges[1].node.title).toBe(
       "some title 2"

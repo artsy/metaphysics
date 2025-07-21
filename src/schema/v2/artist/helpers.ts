@@ -342,6 +342,7 @@ const formatFoundationsDescription = (foundationsArr) => {
     "Summer 2023": "/fair/foundations",
     "Winter 2024": "/fair/foundations-winter-2024",
     "Summer 2024": "/fair/foundations-summer-2024",
+    "Summer 2025": "/fair/foundations-2025",
   }
 
   const lastFoundation = foundations[foundations.length - 1]

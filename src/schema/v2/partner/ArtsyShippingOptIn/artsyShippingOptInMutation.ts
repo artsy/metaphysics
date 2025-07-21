@@ -13,9 +13,11 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
 interface Input {
   id: string
+  source: string
   artsyShippingDomestic: boolean | null
   artsyShippingInternational: boolean | null
 }
@@ -92,6 +94,11 @@ export const artsyShippingOptInMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy international shipping should be enabled",
     },
+    source: {
+      type: BulkUpdateSourceEnum,
+      description:
+        "Source of the mutation being triggered, E.g. admin, artworks_list",
+    },
   },
   outputFields: {
     ArtsyShippingOptInOrError: {
@@ -112,12 +119,13 @@ export const artsyShippingOptInMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, artsyShippingDomestic, artsyShippingInternational },
+    { id, artsyShippingDomestic, artsyShippingInternational, source },
     { artsyShippingOptInLoader }
   ) => {
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
+      source,
     }
 
     if (!artsyShippingOptInLoader) {
