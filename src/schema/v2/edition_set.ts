@@ -14,7 +14,7 @@ import {
 import { Sellable, sharedSellableFields } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
-import { Money } from "./fields/money"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 import currencyCodes from "lib/currency_codes.json"
 import { listingOptions } from "./artwork/listingOptions"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
@@ -190,35 +190,35 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ price_display }) => price_display,
     },
+    // Are we backwards compatible here??
+    // priceListed: {
+    //   type: Money,
+    //   resolve: ({ price_listed: price_listed, price_currency: currency }) => {
+    //     console.log(price_listed, currency)
+    //     const factor =
+    //       currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+    //     const cents = price_listed * factor
+    //     return { cents, currency }
+    //   },
+    // },
     priceListed: {
       type: Money,
-      resolve: ({ price_listed: price_listed, price_currency: currency }) => {
-        const factor =
-          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
-        const cents = price_listed * factor
-        return { cents, currency }
-      },
-    },
-    priceListedDisplay: {
-      type: GraphQLString,
-      resolve: ({ price_cents, price_currency }) => {
-        let formatted
+      resolve: ({ price_cents, price_currency }, args, context, info) => {
+        console.log("priceListed resolver hit", price_cents, price_currency)
 
-        if (price_cents) {
-          formatted =
-            price_cents.length === 1
-              ? priceDisplayText(price_cents[0], price_currency, "")
-              : priceRangeDisplayText(
-                  price_cents[0],
-                  price_cents[1],
-                  price_currency,
-                  ""
-                )
-        } else {
-          formatted = "Not publicly listed"
-        }
+        const cents = Array.isArray(price_cents) ? price_cents[0] : price_cents
 
-        return formatted
+        if (!cents || !price_currency) return null
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor: cents,
+            currencyCode: price_currency,
+          },
+          args,
+          context,
+          info
+        )
       },
     },
     prototypes: {

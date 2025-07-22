@@ -10920,7 +10920,6 @@ type EditionSet implements Sellable {
   price: String
   priceDisplay: String
   priceListed: Money
-  priceListedDisplay: String
   prototypes: String
 
   # Is the edition set parent-artwork published?
