@@ -5,11 +5,25 @@ type ExchangeError = Error & {
   body?: {
     message?: string
     code: string
+    action_data?: {
+      client_secret: string
+    }
   }
 }
 
 export const handleExchangeError = (error: ExchangeError) => {
   let errorProperties: { message: string; code: string }
+
+  if (
+    error.statusCode === 422 &&
+    error.body?.code === "payment_requires_action"
+  ) {
+    return {
+      clientSecret: error.body.action_data?.client_secret,
+      _type: ORDER_MUTATION_FLAGS.ACTION_REQUIRED,
+      __typename: "OrderMutationActionRequired",
+    }
+  }
 
   if (error.statusCode === 422 && typeof error.body === "object") {
     errorProperties = {
