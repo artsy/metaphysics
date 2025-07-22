@@ -17,6 +17,7 @@ import { listPrice } from "./fields/listPrice"
 import { Money } from "./fields/money"
 import currencyCodes from "lib/currency_codes.json"
 import { listingOptions } from "./artwork/listingOptions"
+import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -196,6 +197,28 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
           currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
         const cents = price_listed * factor
         return { cents, currency }
+      },
+    },
+    priceListedDisplay: {
+      type: GraphQLString,
+      resolve: ({ price_cents, price_currency }) => {
+        let formatted
+
+        if (price_cents) {
+          formatted =
+            price_cents.length === 1
+              ? priceDisplayText(price_cents[0], price_currency, "")
+              : priceRangeDisplayText(
+                  price_cents[0],
+                  price_cents[1],
+                  price_currency,
+                  ""
+                )
+        } else {
+          formatted = "Not publicly listed"
+        }
+
+        return formatted
       },
     },
     prototypes: {
