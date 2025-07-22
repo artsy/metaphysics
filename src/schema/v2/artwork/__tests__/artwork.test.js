@@ -664,7 +664,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              display: "Starting at $420",
+              display: "Starting at US$420",
               minPrice: {
                 minor: 42000,
                 major: 420,
