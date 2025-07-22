@@ -562,6 +562,13 @@ const ExchangeErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+const OrderActionDataType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderActionData",
+  fields: {
+    clientSecret: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
 const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   name: "OrderMutationError",
   fields: () => ({
@@ -584,18 +591,35 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
+const ActionRequiredType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OrderMutationActionRequired",
+  fields: () => ({
+    actionData: {
+      type: new GraphQLNonNull(OrderActionDataType),
+      resolve: (response) => response,
+    },
+  }),
+})
+
 export const ORDER_MUTATION_FLAGS = {
   SUCCESS: "ExchangeSuccessType",
   ERROR: "ExchangeErrorType",
+  ACTION_REQUIRED: "ExchangeActionRequiredType",
 } as const
 
 export const OrderMutationResponseType = new GraphQLUnionType({
   name: "OrderMutationResponse",
-  types: [SuccessType, ErrorType],
+  types: [SuccessType, ErrorType, ActionRequiredType],
   resolveType: (data) => {
-    const result =
-      data._type === ORDER_MUTATION_FLAGS.ERROR ? ErrorType : SuccessType
-    return result
+    switch (data._type) {
+      case ORDER_MUTATION_FLAGS.ACTION_REQUIRED:
+        return ActionRequiredType
+      case ORDER_MUTATION_FLAGS.ERROR:
+        return ErrorType
+      case ORDER_MUTATION_FLAGS.SUCCESS:
+      default:
+        return SuccessType
+    }
   },
 })
 
