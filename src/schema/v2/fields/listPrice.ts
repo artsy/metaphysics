@@ -42,7 +42,7 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
     types: [PriceRange, Money],
   }),
   resolve: ({ price_cents, price_currency }) => {
-    if (!price_cents || price_cents.length === 0) {
+    if (!price_cents || price_cents.length === 0 || !price_currency) {
       return null
     }
     const isExactPrice = price_cents.length === 1
