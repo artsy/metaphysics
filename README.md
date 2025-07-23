@@ -38,7 +38,7 @@ It is currently used in production all over the place in
   - [CDN Metrics](https://dash.cloudflare.com/0373426be7be649ff052277fb5377c4f/workers/services/view/mpcache-staging/production)
   - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-staging/)
   - [Papertrail logs](https://papertrailapp.com/groups/3674473/events?q=host%3Ametaphysics-web)
-- **Point People:** [@mzikherman](https://github.com/mzikherman)
+- **Point People:** [@mzikherman](https://github.com/mzikherman), [@dblandin](https://github.com/dblandin)
 
 ### Getting Setup
 
