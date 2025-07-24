@@ -12,6 +12,7 @@ describe("Me", () => {
   beforeEach(() => {
     orderJson = {
       ...baseOrderJson,
+      available_payment_methods: ["credit card", "wire_transfer"],
       id: "order-id",
       source: "artwork_page",
       code: "order-code",
@@ -63,6 +64,7 @@ describe("Me", () => {
         query {
           me {
             order(id: "order-id") {
+              availablePaymentMethods
               availableShippingCountries
               buyerTotal {
                 display
@@ -158,6 +160,7 @@ describe("Me", () => {
       const result = await runAuthenticatedQuery(query, context)
 
       expect(result.me.order).toEqual({
+        availablePaymentMethods: ["CREDIT_CARD", "WIRE_TRANSFER"],
         availableShippingCountries: ["US", "JP"],
         buyerTotal: {
           display: "US$5,000",
