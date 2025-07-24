@@ -1,4 +1,5 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
+import { getExperimentVariant } from "lib/featureFlags"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
@@ -20,7 +21,18 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   requiresAuthentication: true,
   trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    const recommendationsVersion = "C"
+    const variant = getExperimentVariant(
+      "onyx_nwfy-at-risk-gallery-boost-experiment",
+      {
+        userId: context.userID,
+      }
+    )
+
+    let recommendationsVersion = "C"
+
+    if (variant && variant.enabled && variant.name === "variant-a") {
+      recommendationsVersion = "A"
+    }
 
     const finalArgs = {
       // formerly specified client-side
