@@ -16,6 +16,7 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A list of Articles",
   args: {
     auctionID: { type: GraphQLString },
+    authorID: { type: GraphQLString },
     channelID: { type: GraphQLString },
     featured: { type: GraphQLBoolean },
     ids: {
@@ -35,11 +36,12 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: async (
     _root,
-    { auctionID, channelID, showID, ...rest },
+    { auctionID, authorID, channelID, showID, ...rest },
     { articlesLoader }
   ) => {
     const articles = await articlesLoader({
       auction_id: auctionID,
+      author_ids: authorID,
       channel_id: channelID,
       show_id: showID,
       ...rest,
