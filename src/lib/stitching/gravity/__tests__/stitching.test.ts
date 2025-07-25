@@ -3,10 +3,15 @@ import {
   getGravityMergedSchema,
   getGravityStitchedSchema,
 } from "./testingUtils"
+import config from "config"
 
 describe("gravity/stitching", () => {
   describe("#addressConnection", () => {
     it("extends the Me type with an addressConnection field", async () => {
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
       const mergedSchema = await getGravityMergedSchema()
       const addressConnectionFields = await getFieldsForTypeFromSchema(
         "Me",
@@ -17,7 +22,13 @@ describe("gravity/stitching", () => {
 
     it("resolves addressConnection on Me as a paginated list", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { addressConnection } = resolvers.Me
+
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      expect(resolvers.Me).toBeDefined()
+      const { addressConnection } = resolvers.Me!
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       addressConnection.resolve({}, { first: 2 }, { userID: 1 }, info)
@@ -31,10 +42,24 @@ describe("gravity/stitching", () => {
         info: expect.anything(),
       })
     })
+
+    it("has empty resolvers when unstiching is enabled", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+
+      if (!config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      expect(resolvers).toEqual({})
+    })
   })
 
   describe("#UserAddress", () => {
     it("extends the UserAddress type with an id field", async () => {
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
       const mergedSchema = await getGravityMergedSchema()
       const userAddressField = await getFieldsForTypeFromSchema(
         "UserAddress",
@@ -42,6 +67,17 @@ describe("gravity/stitching", () => {
       )
 
       expect(userAddressField).toContain("id")
+    })
+
+    it("includes stitched id resolver when stitching enabled", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      expect(resolvers.UserAddress).toBeDefined()
+      expect(resolvers.UserAddress!.id).toBeDefined()
     })
   })
 })

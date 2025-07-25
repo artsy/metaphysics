@@ -8,6 +8,7 @@ import {
   FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import config from "config"
 
 const rootFieldsAllowList = ["agreement"]
 
@@ -45,6 +46,32 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
+  // UserAddress unstitching
+  if (config.USE_UNSTITCHED_USER_ADDRESS) {
+    duplicatedTypes.push("UserAddress")
+    duplicatedTypes.push("UserAddressConnection")
+    duplicatedTypes.push("UserAddressEdge")
+    duplicatedTypes.push("UserAddressOrErrorsUnion")
+
+    // createUserAddress
+    duplicatedTypes.push("CreateUserAddress")
+    duplicatedTypes.push("CreateUserAddressPayload")
+    duplicatedTypes.push("UserAddressAttributesInput")
+
+    // updateUserAddress
+    duplicatedTypes.push("UpdateUserAddress")
+    duplicatedTypes.push("UpdateUserAddressPayload")
+
+    // updateUserDefaultAddress
+    duplicatedTypes.push("UpdateUserDefaultAddress")
+    duplicatedTypes.push("UpdateUserDefaultAddressPayload")
+
+    // deleteUserAddress
+    duplicatedTypes.push("DeleteUserAddress")
+    duplicatedTypes.push("DeleteUserAddressInput")
+    duplicatedTypes.push("DeleteUserAddressPayload")
+  }
+
   // TODO: Get rid of these after cleanup on the Gravity side
   duplicatedTypes.push("ViewingRoom")
   duplicatedTypes.push("ViewingRoomsConnection")
@@ -81,6 +108,14 @@ export const executableGravitySchema = () => {
   excludedMutations.push("updateViewingRoom")
   excludedMutations.push("updateViewingRoomArtworks")
   excludedMutations.push("updateViewingRoomSubsections")
+
+  // UserAddress mutations
+  if (config.USE_UNSTITCHED_USER_ADDRESS) {
+    excludedMutations.push("createUserAddress")
+    excludedMutations.push("updateUserAddress")
+    excludedMutations.push("deleteUserAddress")
+    excludedMutations.push("updateUserDefaultAddress")
+  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
