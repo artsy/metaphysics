@@ -27,9 +27,19 @@ export const getGravityMergedSchema = async () => {
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
+  const schemas = [localSchema, cachedSchema]
+  if (extensionSchema) {
+    schemas.push(extensionSchema)
+  }
+
+  // Filter out undefined resolver properties
+  const filteredResolvers = Object.fromEntries(
+    Object.entries(resolvers).filter(([_, value]) => value !== undefined)
+  )
+
   const mergedSchema = mergeSchemas({
-    schemas: [localSchema, cachedSchema, extensionSchema],
-    resolvers: resolvers,
+    schemas,
+    resolvers: filteredResolvers,
   }) as GraphQLSchemaWithTransforms
 
   const anyMergedSchema = mergedSchema as any
