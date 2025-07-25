@@ -10,7 +10,7 @@ import {
 } from "graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import AuthorType from "schema/v2/author"
+import { AuthorType } from "schema/v2/author"
 import cached from "schema/v2/fields/cached"
 import { date } from "schema/v2/fields/date"
 import Image, { ImageType, normalizeImageData } from "schema/v2/image"
