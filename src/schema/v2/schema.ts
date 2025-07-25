@@ -306,6 +306,7 @@ import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtwork
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
 import { UpdateArtworkImportCurrencyMutation } from "./ArtworkImport/updateArtworkImportCurrencyMutation"
 import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/updateArtworkImportDimensionMetricMutation"
+import { ToggleArtworkImportRowExclusionMutation } from "./ArtworkImport/toggleArtworkImportRowExclusionMutation"
 import { FlagArtworkImportCellMutation } from "./ArtworkImport/flagArtworkImportCellMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
@@ -629,6 +630,7 @@ export default new GraphQLSchema({
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
       updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
+      toggleArtworkImportRowExclusion: ToggleArtworkImportRowExclusionMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
       flagArtworkImportCell: FlagArtworkImportCellMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
