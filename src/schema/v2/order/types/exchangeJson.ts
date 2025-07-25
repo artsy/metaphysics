@@ -15,7 +15,15 @@ export interface FulfillmentOptionJson {
   selected?: boolean
   shipping_quote_id?: string
 }
+
+type OrderPaymentMethodEnum =
+  | "credit card"
+  | "wire_transfer"
+  | "us_bank_account"
+  | "sepa_debit"
+
 export interface OrderJSON {
+  available_payment_methods: OrderPaymentMethodEnum[]
   available_shipping_countries: string[]
   awaiting_response_from: "buyer" | "seller" | null
   bank_account_id?: string
@@ -56,11 +64,7 @@ export interface OrderJSON {
     tax_cents?: number
   }>
   mode: "buy" | "offer"
-  payment_method?:
-    | "credit card"
-    | "wire_transfer"
-    | "us_bank_account"
-    | "sepa_debit"
+  payment_method?: OrderPaymentMethodEnum
   selected_fulfillment_option?: FulfillmentOptionJson
   seller_id: string
   seller_type: string

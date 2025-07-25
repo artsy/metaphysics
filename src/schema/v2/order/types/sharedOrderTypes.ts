@@ -315,6 +315,13 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   description: "Buyer's representation of an order",
   fields: {
     ...InternalIDFields,
+    availablePaymentMethods: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(OrderPaymentMethodEnum))
+      ),
+      description: "List of available payment methods for the order",
+      resolve: ({ available_payment_methods }) => available_payment_methods,
+    },
     availableShippingCountries: {
       description:
         "List of alpha-2 country codes to which the order can be shipped",
