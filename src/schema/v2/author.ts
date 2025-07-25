@@ -18,7 +18,7 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...IDFields,
       name: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
       },
       initials: initials("name"),
       image: {

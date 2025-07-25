@@ -4329,7 +4329,7 @@ type Author {
 
   # A type-specific ID.
   internalID: ID!
-  name: String
+  name: String!
   twitterHandle: String
 }
 
