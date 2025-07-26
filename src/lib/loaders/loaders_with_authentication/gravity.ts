@@ -130,6 +130,11 @@ export default (accessToken, userID, opts) => {
     artworkImportSummaryLoader: gravityLoader(
       (id) => `artwork_import/${id}/summary`
     ),
+    artworkImportToggleRowExclusionLoader: gravityLoader(
+      (id) => `artwork_import/${id}/toggle_row_exclusion`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),

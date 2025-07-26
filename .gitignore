@@ -1,4 +1,5 @@
 .cache
+.claude/settings.local.json
 .env
 .env.staging
 .env.shared
