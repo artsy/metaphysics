@@ -84,7 +84,7 @@ export const priceRangeDisplayText = (
 
   if (higherPriceCents == null) {
     const amount = priceAmount(lowerPriceCents as number, currency, format)
-    return `${fullPrefix}${amount} and up`
+    return `Starting at ${fullPrefix}${amount}`
   }
 
   const low = priceAmount(lowerPriceCents, currency, format)

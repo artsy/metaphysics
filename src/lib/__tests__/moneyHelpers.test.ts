@@ -57,7 +57,11 @@ describe("priceRangeDisplayText", () => {
   })
 
   it("appends text 'and up' when high price is not given", () => {
-    expect(priceRangeDisplayText(10000, null, "EUR", "")).toBe("€100 and up")
-    expect(priceRangeDisplayText(100, null, "VUV", "")).toBe("VUV Vt100 and up")
+    expect(priceRangeDisplayText(10000, null, "EUR", "")).toBe(
+      "Starting at €100"
+    )
+    expect(priceRangeDisplayText(100, null, "VUV", "")).toBe(
+      "Starting at VUV Vt100"
+    )
   })
 })
