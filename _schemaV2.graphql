@@ -3269,6 +3269,7 @@ type ArtworkImportRow {
   currency: String!
   dimensionMetric: String!
   errors: [ArtworkImportRowError!]!
+  excludedFromImport: Boolean!
 
   # A globally unique ID.
   id: ID!
@@ -16103,6 +16104,9 @@ type Mutation {
 
   # Submit an order
   submitOrder(input: submitOrderInput!): submitOrderPayload
+  toggleArtworkImportRowExclusion(
+    input: ToggleArtworkImportRowExclusionInput!
+  ): ToggleArtworkImportRowExclusionPayload
   transferMyCollection(
     # Parameters for TransferMyCollection
     input: TransferMyCollectionInput!
@@ -22578,6 +22582,30 @@ type TaxMoreInfo {
   url: String!
 }
 
+type ToggleArtworkImportRowExclusionFailure {
+  mutationError: GravityMutationError
+}
+
+input ToggleArtworkImportRowExclusionInput {
+  artworkImportID: String!
+  artworkImportRowID: String!
+  clientMutationId: String
+  excludedFromImport: Boolean!
+}
+
+type ToggleArtworkImportRowExclusionPayload {
+  clientMutationId: String
+  toggleArtworkImportRowExclusionOrError: ToggleArtworkImportRowExclusionResponseOrError
+}
+
+union ToggleArtworkImportRowExclusionResponseOrError =
+    ToggleArtworkImportRowExclusionFailure
+  | ToggleArtworkImportRowExclusionSuccess
+
+type ToggleArtworkImportRowExclusionSuccess {
+  artworkImport: ArtworkImport
+}
+
 # Total line
 type TotalLine {
   # The monetary amount for the line
@@ -22838,7 +22866,7 @@ input UpdateArtworkImportRowInput {
   artworkImportRowID: String!
   clientMutationId: String
   fieldName: String!
-  fieldValue: String!
+  fieldValue: String
 }
 
 type UpdateArtworkImportRowPayload {

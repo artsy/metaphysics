@@ -272,6 +272,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
       ),
       resolve: ({ artwork_import_row_images }) => artwork_import_row_images,
     },
+    excludedFromImport: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ excluded_from_import }) => excluded_from_import,
+    },
   },
 })
 
