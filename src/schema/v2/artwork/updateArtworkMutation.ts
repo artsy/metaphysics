@@ -44,6 +44,11 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
+interface S3LocationInput {
+  bucket: string
+  key: string
+}
+
 interface UpdateArtworkMutationInputProps {
   artistProofs?: string
   availability?: string
@@ -59,6 +64,7 @@ interface UpdateArtworkMutationInputProps {
   framedMetric?: string
   framedWidth?: string
   id?: string
+  imageS3Locations?: S3LocationInput[]
   offer?: boolean
   partnerLocationId?: string
   published?: boolean
@@ -154,6 +160,21 @@ const inputFields = {
   },
 }
 
+// TODO: Extract this and use it in other mutations that require S3 locations
+const S3LocationInputType = new GraphQLInputObjectType({
+  name: "S3LocationInput",
+  fields: {
+    bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The S3 bucket name where the image is stored.",
+    },
+    key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The S3 key (object path) for the image.",
+    },
+  },
+})
+
 const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   name: "UpdateArtworkEditionSetInput",
   fields: inputFields,
@@ -172,6 +193,11 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       type: new GraphQLList(UpdateArtworkEditionSetInput),
       description: "A list of edition sets for the artwork",
     },
+    imageS3Locations: {
+      type: new GraphQLList(new GraphQLNonNull(S3LocationInputType)),
+      description:
+        "A list of S3 locations (bucket and key pairs) for artwork images to be added.",
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -181,8 +207,12 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, editionSets, ...args },
-    { updateArtworkLoader, updateArtworkEditionSetLoader }
+    { id, editionSets, imageS3Locations, ...args },
+    {
+      updateArtworkLoader,
+      updateArtworkEditionSetLoader,
+      addImageToArtworkLoader,
+    }
   ) => {
     if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
       return new Error("You need to be signed in to perform this action")
@@ -218,6 +248,23 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
+      // Handle image additions if provided
+      if (imageS3Locations?.length) {
+        if (!addImageToArtworkLoader) {
+          return new Error("You need to be signed in to perform this action")
+        }
+
+        // Attach all images
+        await Promise.all(
+          imageS3Locations.map((location) =>
+            addImageToArtworkLoader(id, {
+              source_bucket: location.bucket,
+              source_key: location.key,
+            })
+          )
+        )
+      }
+
       if (editionSets?.length > 0) {
         await Promise.all(
           editionSets.map((editionSet) => {
