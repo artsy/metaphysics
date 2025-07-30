@@ -54,7 +54,6 @@ const defaultArtworkDetails = ({
   attribution_class: "open edition",
   signature: "artist initials",
   signed_other: true,
-  submissionId: "submission-id",
 })
 
 const artworkLoader = jest.fn().mockResolvedValue(defaultArtworkDetails())
@@ -113,7 +112,6 @@ const computeMutationInput = ({
           signatureTypes: [OTHER]
           title: "hey now"
           width: "20"
-          submissionId: "submission-id"
         }
       ) {
         artworkOrError {

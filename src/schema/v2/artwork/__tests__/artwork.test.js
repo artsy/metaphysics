@@ -1356,7 +1356,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns artwork's submission", () => {
+    it("returns null since submissions are deprecated", () => {
       artwork.consignmentSubmission = {
         id: "1",
         state: "SUBMITTED",
@@ -1367,10 +1367,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             slug: "richard-prince-untitled-portrait",
-            consignmentSubmission: {
-              displayText: "Submission in progress",
-              inProgress: true,
-            },
+            consignmentSubmission: null,
           },
         })
       })
@@ -4223,7 +4220,7 @@ describe("Artwork type", () => {
   })
 
   describe("submissionID", () => {
-    it(`returns submission id for an artwork`, () => {
+    it(`returns null since submissions are deprecated`, () => {
       artwork.submission_id = "submission-id"
 
       const query = `
@@ -4237,7 +4234,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            submissionId: "submission-id",
+            submissionId: null,
           },
         })
       })
@@ -4609,14 +4606,14 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns true if the artist is P1 artist", async () => {
+    it("returns false since submissions are deprecated", async () => {
       artwork.artist.target_supply_priority = 1
 
       const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {
-          isPriceEstimateRequestable: true,
+          isPriceEstimateRequestable: false,
         },
       })
     })
@@ -4824,7 +4821,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns the connection", async () => {
+    it("returns empty connection since submissions are deprecated", async () => {
       const artworks = [{ id: "foo-bar" }, { id: "bar-foo" }]
       const context = {
         artworkLoader: () =>
@@ -4840,10 +4837,7 @@ describe("Artwork type", () => {
       expect(data).toEqual({
         artwork: {
           listedArtworksConnection: {
-            edges: [
-              { node: { slug: "foo-bar" } },
-              { node: { slug: "bar-foo" } },
-            ],
+            edges: [],
           },
         },
       })
@@ -4859,7 +4853,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("true if listed_artworks_ids length is > 0", async () => {
+    it("returns false since submissions are deprecated", async () => {
       const context = {
         artworkLoader: () =>
           Promise.resolve({
@@ -4871,7 +4865,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          isListed: true,
+          isListed: false,
         },
       })
     })

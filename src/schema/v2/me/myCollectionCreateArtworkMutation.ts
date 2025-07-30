@@ -218,7 +218,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       pricePaidCurrency,
       signatureDetails,
       signatureTypes,
-      submissionId,
       ...rest
     },
     {
@@ -260,7 +259,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       const response = await createArtworkLoader({
         additional_information: additionalInformation,
         artists: artistIds,
-        submission_id: submissionId,
         certificate_of_authenticity: hasCertificateOfAuthenticity,
         coa_by_authenticating_body: coaByAuthenticatingBody,
         coa_by_gallery: coaByGallery,

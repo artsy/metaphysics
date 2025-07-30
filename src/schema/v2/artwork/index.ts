@@ -12,7 +12,7 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import { connectionFromArray, PageInfoType } from "graphql-relay"
+import { PageInfoType } from "graphql-relay"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -42,6 +42,7 @@ import { markdown } from "schema/v2/fields/markdown"
 import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
+  emptyConnection,
   PageCursorsType,
   paginationResolver,
 } from "schema/v2/fields/pagination"
@@ -67,7 +68,6 @@ import { VideoType } from "schema/v2/types/Video"
 import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
-import { loadSubmissions } from "../me/loadSubmissions"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
 import FormattedNumber from "../types/formatted_number"
@@ -115,9 +115,6 @@ const IMPORT_SOURCES = {
 } as const
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
-
-const NON_REQUESTABLE_CATEGORIES = [artworkMediums.Posters.name]
-const NON_REQUESTABLE_ARTIST_IDS = ["salvador-dali"]
 
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
@@ -502,24 +499,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
-        resolve: async (
-          { submission_id: submissionId, consignmentSubmission },
-          _,
-          { convectionGraphQLLoader }
-        ) => {
-          // If artwork already has submission information use it
-          if (consignmentSubmission) return consignmentSubmission
-
-          // Load submission by submission id in other case
-          if (submissionId && convectionGraphQLLoader) {
-            const submissions = await loadSubmissions(
-              [submissionId],
-              convectionGraphQLLoader
-            )
-
-            return submissions && submissions.length ? submissions[0] : null
-          }
-        },
+        deprecationReason:
+          "This field is deprecated as collector artwork submissions are no longer accepted.",
+        resolve: () => null,
       },
       contactLabel: {
         type: GraphQLString,
@@ -1055,21 +1037,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       isPriceEstimateRequestable: {
         type: GraphQLBoolean,
-        resolve: ({
-          artist,
-          submission_id,
-          consignmentSubmission,
-          category,
-        }) => {
-          const isRequestable =
-            artist.target_supply_priority === 1 &&
-            !submission_id &&
-            !consignmentSubmission?.id &&
-            !NON_REQUESTABLE_CATEGORIES.includes(category) &&
-            !NON_REQUESTABLE_ARTIST_IDS.includes(artist.id)
-
-          return isRequestable
-        },
+        deprecationReason:
+          "This field is deprecated as collector artwork submissions are no longer accepted.",
+        resolve: () => false,
       },
       isSaved: {
         type: GraphQLBoolean,
@@ -1183,22 +1153,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       listedArtworksConnection: {
         type: GraphQLNonNull(artworkConnection.connectionType),
         args: pageable(),
-        resolve: async ({ listed_artwork_ids }, args, { artworksLoader }) => {
-          const artworks =
-            listed_artwork_ids?.length > 0
-              ? await artworksLoader({ ids: listed_artwork_ids })
-              : []
-
-          return connectionFromArray(artworks, args)
-        },
+        deprecationReason:
+          "This field is deprecated as collector artwork submissions are no longer accepted.",
+        resolve: () => emptyConnection,
       },
       isListed: {
         type: GraphQLNonNull(GraphQLBoolean),
-        resolve: ({ listed_artwork_ids }) => {
-          return (
-            Array.isArray(listed_artwork_ids) && listed_artwork_ids.length > 0
-          )
-        },
+        deprecationReason:
+          "This field is deprecated as collector artwork submissions are no longer accepted.",
+        resolve: () => false,
       },
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")
@@ -1544,12 +1507,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       submissionId: {
         type: GraphQLString,
-        resolve: async ({
-          submission_id: submissionId,
-          consignmentSubmission,
-        }) => {
-          return submissionId || consignmentSubmission?.id || null
-        },
+        deprecationReason:
+          "This field is deprecated as collector artwork submissions are no longer accepted.",
+        resolve: () => null,
       },
       euShippingOrigin: {
         type: GraphQLBoolean,
