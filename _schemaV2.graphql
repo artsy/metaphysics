@@ -2745,6 +2745,9 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Whether a request for price estimate has been submitted for this artwork
   hasPriceEstimateRequest: Boolean
+    @deprecated(
+      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
+    )
   hasTitle: Boolean!
 
   # The height as expressed by the original input metric
