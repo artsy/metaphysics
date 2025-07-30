@@ -624,7 +624,7 @@ describe("Artwork type", () => {
             listPrice: {
               minor: 42000,
               major: 420,
-              display: "$420",
+              display: "US$420",
               currencyCode: "USD",
             },
           },
@@ -636,18 +636,18 @@ describe("Artwork type", () => {
       // Priced at under $420
       artwork.price_cents = [null, 42000]
       artwork.price = "Under $420"
-      artwork.price_currency = "USD"
+      artwork.price_currency = "AUD"
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              display: "Under $420",
+              display: "Under AU$420",
               minPrice: null,
               maxPrice: {
                 minor: 42000,
                 major: 420,
                 display: null,
-                currencyCode: "USD",
+                currencyCode: "AUD",
               },
             },
           },
@@ -664,7 +664,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              display: "Starting at $420",
+              display: "Starting at US$420",
               minPrice: {
                 minor: 42000,
                 major: 420,

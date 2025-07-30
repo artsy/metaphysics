@@ -5,6 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { Money } from "./money"
+import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 
 const PriceRange = new GraphQLObjectType({
   name: "PriceRange",
@@ -40,8 +41,8 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
     name: "ListPrice",
     types: [PriceRange, Money],
   }),
-  resolve: ({ price_cents, price, price_currency }) => {
-    if (!price_cents || price_cents.length === 0) {
+  resolve: ({ price_cents, price_currency }) => {
+    if (!price_cents || price_cents.length === 0 || !price_currency) {
       return null
     }
     const isExactPrice = price_cents.length === 1
@@ -50,7 +51,7 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
       ? {
           __typename: Money.name,
           cents: price_cents[0],
-          display: price,
+          display: priceDisplayText(price_cents[0], price_currency, ""),
           currency: price_currency,
         }
       : {
@@ -61,7 +62,12 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
 
           // For preferred types
           price_currency,
-          display: price,
+          display: priceRangeDisplayText(
+            price_cents[0],
+            price_cents[1],
+            price_currency,
+            ""
+          ),
         }
   },
 }
