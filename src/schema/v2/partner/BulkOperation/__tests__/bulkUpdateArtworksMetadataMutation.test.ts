@@ -10,6 +10,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           id: "partner123"
           source: ARTWORKS_LIST
           metadata: {
+            artistIds: ["artist1", "artist2"]
             availability: SOLD
             domesticShippingFeeCents: 20000
             locationId: "location456"
@@ -72,6 +73,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       "partner123",
       {
         metadata: {
+          artist_ids: ["artist1", "artist2"],
           availability: "sold",
           domestic_shipping_fee_cents: 20000,
           location_id: "location456",

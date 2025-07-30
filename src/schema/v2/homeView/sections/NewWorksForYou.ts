@@ -22,7 +22,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const variant = getExperimentVariant(
-      "onyx_nwfy-artist-diversity-experiment",
+      "onyx_nwfy-at-risk-gallery-boost-experiment",
       {
         userId: context.userID,
       }
