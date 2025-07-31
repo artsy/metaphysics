@@ -22,10 +22,13 @@ defineCustomLocale(LocaleEnAuctionRelative, {
 })
 
 export const isLiveOpen = (sale) => {
+  return sale.auction_state === "open" && isLiveOpenHappened(sale)
+}
+
+export const isLiveOpenHappened = (sale) => {
   const liveStart = moment(sale.live_start_at)
   return (
-    sale.auction_state === "open" &&
-    (moment().isAfter(liveStart) || moment().isSame(liveStart))
+    !!liveStart && (moment().isAfter(liveStart) || moment().isSame(liveStart))
   )
 }
 

@@ -30,7 +30,7 @@ import { amount } from "schema/v2/fields/money"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
-import { isLiveOpen, displayTimelyAt } from "./display"
+import { displayTimelyAt, isLiveOpen, isLiveOpenHappened } from "./display"
 import { flatten, first, isEmpty } from "lodash"
 
 import {
@@ -405,6 +405,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ auction_state }) => auction_state === "open",
       },
       isLiveOpen: { type: GraphQLBoolean, resolve: isLiveOpen },
+      isLiveOpenHappened: {
+        type: GraphQLBoolean,
+        description:
+          "True for live auctions once live part is happening or in the past",
+        resolve: isLiveOpenHappened,
+      },
       isPreview: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
