@@ -18,6 +18,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               ... on Card {
+                type
                 displayBrand
                 last4
               }
@@ -45,6 +46,7 @@ describe("ConfirmationToken", () => {
       me: {
         confirmationToken: {
           paymentMethodPreview: {
+            type: "card",
             displayBrand: "Visa",
             last4: "4242",
           },
@@ -60,6 +62,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               ... on Card {
+                type
                 displayBrand
                 last4
               }
@@ -83,6 +86,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               ... on Card {
+                type
                 displayBrand
                 last4
               }
@@ -108,6 +112,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               ... on USBankAccount {
+                type
                 bankName
                 last4
               }
@@ -135,6 +140,7 @@ describe("ConfirmationToken", () => {
       me: {
         confirmationToken: {
           paymentMethodPreview: {
+            type: "us_bank_account",
             bankName: "Chase Bank",
             last4: "6789",
           },
@@ -150,6 +156,7 @@ describe("ConfirmationToken", () => {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
               ... on SEPADebit {
+                type
                 last4
               }
             }
@@ -175,6 +182,7 @@ describe("ConfirmationToken", () => {
       me: {
         confirmationToken: {
           paymentMethodPreview: {
+            type: "sepa_debit",
             last4: "1234",
           },
         },
