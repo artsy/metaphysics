@@ -335,6 +335,7 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
+import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -630,6 +631,7 @@ export default new GraphQLSchema({
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
       updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
+      UpdateArtworkImportWeightMetricMutation: UpdateArtworkImportWeightMetricMutation,
       toggleArtworkImportRowExclusion: ToggleArtworkImportRowExclusionMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
       flagArtworkImportCell: FlagArtworkImportCellMutation,

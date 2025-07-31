@@ -3208,6 +3208,7 @@ type ArtworkImport implements Node {
   state: ArtworkImportState
   summary: ArtworkImportSummary
   unmatchedArtistNames: [String!]!
+  weightMetric: String!
 }
 
 # A connection to a list of items.
@@ -3254,6 +3255,7 @@ enum ArtworkImportError {
   INVALID_PRICE
   INVALID_SIGNATURE
   INVALID_TITLE
+  INVALID_WEIGHT
   INVALID_WIDTH
   MISSING_ARTIST
   MISSING_DATE
@@ -3280,6 +3282,7 @@ type ArtworkImportRow {
   priceListed: Money
   rawData: JSON!
   transformedData: ArtworkImportTransformedData!
+  weightMetric: String!
 }
 
 # A connection to a list of items.
@@ -3341,6 +3344,7 @@ enum ArtworkImportState {
 type ArtworkImportSummary {
   currencies: [String!]!
   dimensionMetrics: [String!]!
+  weightMetrics: [String!]!
 }
 
 type ArtworkImportTransformedData {
@@ -3364,6 +3368,7 @@ type ArtworkImportTransformedData {
   price: String
   signature: [String]
   signatureDetails: String
+  weight: String
   width: String
 }
 
@@ -15301,6 +15306,9 @@ type Money {
 }
 
 type Mutation {
+  UpdateArtworkImportWeightMetricMutation(
+    input: UpdateArtworkImportWeightMetricInput!
+  ): UpdateArtworkImportWeightMetricPayload
   acceptPartnerAgreement(
     # Parameters for AcceptPartnerAgreement
     input: AcceptPartnerAgreementInput!
@@ -22891,6 +22899,30 @@ type UpdateArtworkImportRowSuccess {
   success: Boolean!
 }
 
+type UpdateArtworkImportWeightMetricFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtworkImportWeightMetricInput {
+  artworkImportID: String!
+  clientMutationId: String
+  fromWeightMetric: String!
+  toWeightMetric: String!
+}
+
+type UpdateArtworkImportWeightMetricPayload {
+  clientMutationId: String
+  updateArtworkImportWeightMetricOrError: UpdateArtworkImportWeightMetricResponseOrError
+}
+
+union UpdateArtworkImportWeightMetricResponseOrError =
+    UpdateArtworkImportWeightMetricFailure
+  | UpdateArtworkImportWeightMetricSuccess
+
+type UpdateArtworkImportWeightMetricSuccess {
+  artworkImport: ArtworkImport
+}
+
 input UpdateArtworkMutationInput {
   artistProofs: String
 
@@ -23629,6 +23661,9 @@ input UpdatePartnerFlagsMutationInput {
 
   # The default partner location ID to use for artworks. If null, the flag will be unset.
   artworksDefaultPartnerLocationId: String
+
+  # The default weight metric system to use for artworks. If null, the flag will be unset.
+  artworksDefaultWeightMetric: String
   clientMutationId: String
 
   # The id of the partner to update.

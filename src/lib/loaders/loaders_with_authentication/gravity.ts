@@ -148,6 +148,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportUpdateWeightMetricLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_weight_metric`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportUpdateRowLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_row`,
       {},
