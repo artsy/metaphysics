@@ -217,7 +217,6 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       pricePaidCurrency,
       signatureDetails,
       signatureTypes,
-      submissionId,
       ...rest
     },
     {
@@ -268,7 +267,6 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
-        submission_id: submissionId,
         signature: signatureDetails,
         ...transformSignatureFieldsToGravityFields(signatureTypes),
         ...rest,
