@@ -5,11 +5,18 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfig,
   GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ImageType } from "./image"
 import { markdown } from "schema/v2/fields/markdown"
 import initials from "schema/v2/fields/initials"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
   name: "Author",
@@ -40,6 +47,37 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id }, _args, { articlesLoader }) => {
           const { results } = await articlesLoader({ author_ids: id })
           return results
+        },
+      },
+      articlesConnection: {
+        type: connectionWithCursorInfo({
+          nodeType: ArticleType,
+          name: "AuthorArticlesConnection",
+        }).connectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+        }),
+        resolve: async ({ id }, args, { articlesLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { results: body, count: totalCount } = await articlesLoader({
+            author_ids: id,
+            size,
+            offset,
+            count: true,
+          })
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
         },
       },
     }
