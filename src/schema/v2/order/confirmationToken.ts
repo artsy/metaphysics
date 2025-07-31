@@ -3,6 +3,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLFieldConfig,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -12,22 +13,57 @@ const CardType = new GraphQLObjectType<any, ResolverContext>({
     displayBrand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The display brand of the card (e.g., Visa, Mastercard).",
-      resolve: ({ display_brand }) => display_brand,
+      resolve: ({ card }) => card.display_brand,
     },
     last4: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The last 4 digits of the card.",
+      resolve: ({ card }) => card.last4,
     },
   },
 })
 
-const PaymentMethodPreviewType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PaymentMethodPreview",
+const UsBankAccountType = new GraphQLObjectType<any, ResolverContext>({
+  name: "USBankAccount",
   fields: {
-    card: {
-      type: CardType,
-      description: "Details of the card used in the payment method.",
+    bankName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The name of the bank.",
+      resolve: ({ us_bank_account }) => us_bank_account.bank_name,
     },
+    last4: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The last 4 digits of the bank account.",
+      resolve: ({ us_bank_account }) => us_bank_account.last4,
+    },
+  },
+})
+
+const SepaType = new GraphQLObjectType<any, ResolverContext>({
+  name: "SEPADebit",
+  fields: {
+    last4: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The last 4 digits of the bank account.",
+      resolve: ({ sepa_debit }) => sepa_debit.last4,
+    },
+  },
+})
+
+const PaymentMethodPreviewUnion = new GraphQLUnionType({
+  name: "PaymentMethodPreview",
+  types: [CardType, UsBankAccountType, SepaType],
+  resolveType: (obj) => {
+    if (obj.type === "card") {
+      return CardType
+    }
+    if (obj.type === "us_bank_account") {
+      return UsBankAccountType
+    }
+    if (obj.type === "sepa_debit") {
+      return SepaType
+    }
+    return null
   },
 })
 
@@ -38,7 +74,7 @@ export const ConfirmationTokenType = new GraphQLObjectType<
   name: "ConfirmationToken",
   fields: {
     paymentMethodPreview: {
-      type: new GraphQLNonNull(PaymentMethodPreviewType),
+      type: new GraphQLNonNull(PaymentMethodPreviewUnion),
       resolve: ({ payment_method_preview }) => payment_method_preview,
     },
   },

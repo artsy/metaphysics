@@ -17,7 +17,7 @@ describe("ConfirmationToken", () => {
         me {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
-              card {
+              ... on Card {
                 displayBrand
                 last4
               }
@@ -29,6 +29,7 @@ describe("ConfirmationToken", () => {
 
     const mockResponse = {
       payment_method_preview: {
+        type: "card",
         card: {
           display_brand: "Visa",
           last4: "4242",
@@ -44,10 +45,8 @@ describe("ConfirmationToken", () => {
       me: {
         confirmationToken: {
           paymentMethodPreview: {
-            card: {
-              displayBrand: "Visa",
-              last4: "4242",
-            },
+            displayBrand: "Visa",
+            last4: "4242",
           },
         },
       },
@@ -60,7 +59,7 @@ describe("ConfirmationToken", () => {
         me {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
-              card {
+              ... on Card {
                 displayBrand
                 last4
               }
@@ -83,7 +82,7 @@ describe("ConfirmationToken", () => {
         me {
           confirmationToken(id: "tok_123456789") {
             paymentMethodPreview {
-              card {
+              ... on Card {
                 displayBrand
                 last4
               }
@@ -100,5 +99,86 @@ describe("ConfirmationToken", () => {
     await expect(runAuthenticatedQuery(query, context)).rejects.toThrow(
       "Failed to fetch confirmation token"
     )
+  })
+
+  it("returns the US bank account details from the confirmation token", async () => {
+    const query = gql`
+      query {
+        me {
+          confirmationToken(id: "tok_123456789") {
+            paymentMethodPreview {
+              ... on USBankAccount {
+                bankName
+                last4
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const mockResponse = {
+      payment_method_preview: {
+        type: "us_bank_account",
+        us_bank_account: {
+          bank_name: "Chase Bank",
+          last4: "6789",
+        },
+      },
+    }
+
+    context.stripeConfirmationTokenLoader.mockResolvedValue(mockResponse)
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result).toEqual({
+      me: {
+        confirmationToken: {
+          paymentMethodPreview: {
+            bankName: "Chase Bank",
+            last4: "6789",
+          },
+        },
+      },
+    })
+  })
+
+  it("returns the SEPA debit details from the confirmation token", async () => {
+    const query = gql`
+      query {
+        me {
+          confirmationToken(id: "tok_123456789") {
+            paymentMethodPreview {
+              ... on SEPADebit {
+                last4
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const mockResponse = {
+      payment_method_preview: {
+        type: "sepa_debit",
+        sepa_debit: {
+          last4: "1234",
+        },
+      },
+    }
+
+    context.stripeConfirmationTokenLoader.mockResolvedValue(mockResponse)
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result).toEqual({
+      me: {
+        confirmationToken: {
+          paymentMethodPreview: {
+            last4: "1234",
+          },
+        },
+      },
+    })
   })
 })
