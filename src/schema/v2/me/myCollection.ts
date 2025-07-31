@@ -13,7 +13,7 @@ import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs, snakeCaseKeys } from "lib/helpers"
-import { compact, reverse, sortBy, uniqWith } from "lodash"
+import { reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -21,7 +21,6 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { loadSubmissions } from "./loadSubmissions"
 import { myCollectionInfoFields } from "./myCollectionInfo"
 
 const MAX_COLLECTION_SIZE = 100
@@ -87,17 +86,9 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     _args,
     options,
-    {
-      meMyCollectionArtworksLoader,
-      convectionGraphQLLoader,
-      marketPriceInsightsBatchLoader,
-    }
+    { meMyCollectionArtworksLoader, marketPriceInsightsBatchLoader }
   ) => {
-    if (
-      !meMyCollectionArtworksLoader ||
-      !convectionGraphQLLoader ||
-      !marketPriceInsightsBatchLoader
-    ) {
+    if (!meMyCollectionArtworksLoader || !marketPriceInsightsBatchLoader) {
       return null
     }
 
@@ -122,16 +113,6 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       const { body: artworks, headers } = await meMyCollectionArtworksLoader(
         gravityOptions
       )
-
-      // Fetch submission statues for artworks
-
-      const submissionIds = compact([...artworks.map((c) => c.submission_id)])
-      const submissions = await loadSubmissions(
-        submissionIds,
-        convectionGraphQLLoader
-      )
-
-      enrichArtworksWithSubmissions(artworks, submissions)
 
       // Fetch market price insights for artworks
 
@@ -263,20 +244,3 @@ export const MyCollectionArtworkMutationType = new GraphQLUnionType({
     MyCollectionArtworkMutationFailureType,
   ],
 })
-
-const enrichArtworksWithSubmissions = async (
-  artworks: Array<any>,
-  submissions?: Array<any>
-) => {
-  if (submissions?.length) {
-    submissions.forEach((submission: any) => {
-      const artwork = artworks.find(
-        (artwork) => artwork.submission_id == submission.id
-      )
-
-      if (artwork) {
-        artwork.consignmentSubmission = submission
-      }
-    })
-  }
-}

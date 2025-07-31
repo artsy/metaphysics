@@ -1097,11 +1097,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    requestPriceEstimateLoader: gravityLoader(
-      "me/request_price_estimate",
-      {},
-      { method: "POST" }
-    ),
     userRolesLoader: gravityLoader("system/roles"),
     saleAgreementsLoader: gravityLoader(
       "sale_agreements",

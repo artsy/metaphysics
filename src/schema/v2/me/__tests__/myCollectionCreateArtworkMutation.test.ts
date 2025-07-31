@@ -329,7 +329,6 @@ describe("myCollectionCreateArtworkMutation", () => {
         signed_other: true,
         stamped_by_artist_estate: false,
         sticker_label: false,
-        submission_id: undefined,
         title: "hey now",
         width: "20",
       })
