@@ -10,11 +10,6 @@ import { ResolverContext } from "types/graphql"
 const CardType = new GraphQLObjectType<any, ResolverContext>({
   name: "Card",
   fields: {
-    type: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The type of payment method.",
-      resolve: () => "card",
-    },
     displayBrand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The display brand of the card (e.g., Visa, Mastercard).",
@@ -31,11 +26,6 @@ const CardType = new GraphQLObjectType<any, ResolverContext>({
 const UsBankAccountType = new GraphQLObjectType<any, ResolverContext>({
   name: "USBankAccount",
   fields: {
-    type: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The type of payment method.",
-      resolve: () => "us_bank_account",
-    },
     bankName: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The name of the bank.",
@@ -52,11 +42,6 @@ const UsBankAccountType = new GraphQLObjectType<any, ResolverContext>({
 const SepaType = new GraphQLObjectType<any, ResolverContext>({
   name: "SEPADebit",
   fields: {
-    type: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The type of payment method.",
-      resolve: () => "sepa_debit",
-    },
     last4: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The last 4 digits of the bank account.",
