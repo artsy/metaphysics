@@ -104,7 +104,7 @@ describe("me/index", () => {
           hasSecondFactorEnabled: true,
           hasPassword: false,
           hasPriceRange: true,
-          hasStaleArtworkBudget: false,
+          hasStaleArtworkBudget: true,
           labFeatures: ["CMS Batch Edit", "Collector Resume"],
           receivePurchaseNotification: false,
           receiveOutbidNotification: true,
