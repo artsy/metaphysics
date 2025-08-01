@@ -309,6 +309,7 @@ import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/upda
 import { ToggleArtworkImportRowExclusionMutation } from "./ArtworkImport/toggleArtworkImportRowExclusionMutation"
 import { FlagArtworkImportCellMutation } from "./ArtworkImport/flagArtworkImportCellMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
+import { RemoveArtworkImportImageMutation } from "./ArtworkImport/removeArtworkImportImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
 import {
@@ -596,6 +597,7 @@ export default new GraphQLSchema({
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
       matchArtworkImportArtists: MatchArtworkImportArtistsMutation,
       matchArtworkImportRowImage: MatchArtworkImportRowImageMutation,
+      removeArtworkImportImage: RemoveArtworkImportImageMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
