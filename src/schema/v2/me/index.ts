@@ -389,6 +389,22 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ has_price_range }) => !!has_price_range,
     },
+    hasStaleArtworkBudget: {
+      description:
+        "Indicates whether the Artwork Budget was updated within the past three months",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ price_range_updated_at }) => {
+        // if the timestamp is unset, also consider the budget "stale" and needing an update
+        if (!price_range_updated_at) return true
+
+        const staleCutOff = moment().subtract(3, "months")
+        const updatedAt = moment(price_range_updated_at)
+
+        const isStale = updatedAt < staleCutOff
+
+        return isStale
+      },
+    },
     hasQualifiedCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {

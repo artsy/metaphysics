@@ -19,6 +19,7 @@ interface UpdatePartnerFlagsMutationInputProps {
   artworksDefaultMetric?: string | null
   artworksDefaultCurrency?: string | null
   artworksDefaultPartnerLocationId?: string | null
+  artworksDefaultWeightMetric?: string | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -62,19 +63,28 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
     },
     inquireAvailabilityPriceDisplayEnabledByPartner: {
       type: GraphQLBoolean,
-      description: "Controls whether the partner has enabled the inquire availability price display. If null, the flag will be unset.",
+      description:
+        "Controls whether the partner has enabled the inquire availability price display. If null, the flag will be unset.",
     },
     artworksDefaultMetric: {
       type: GraphQLString,
-      description: "The default metric system to use for artworks. If null, the flag will be unset.",
+      description:
+        "The default metric system to use for artworks. If null, the flag will be unset.",
     },
     artworksDefaultCurrency: {
       type: GraphQLString,
-      description: "The default currency to use for artworks. If null, the flag will be unset.",
+      description:
+        "The default currency to use for artworks. If null, the flag will be unset.",
     },
     artworksDefaultPartnerLocationId: {
       type: GraphQLString,
-      description: "The default partner location ID to use for artworks. If null, the flag will be unset.",
+      description:
+        "The default partner location ID to use for artworks. If null, the flag will be unset.",
+    },
+    artworksDefaultWeightMetric: {
+      type: GraphQLString,
+      description:
+        "The default weight metric system to use for artworks. If null, the flag will be unset.",
     },
   },
   outputFields: {
@@ -85,13 +95,17 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ 
-    id, 
-    inquireAvailabilityPriceDisplayEnabledByPartner, 
-    artworksDefaultMetric,
-    artworksDefaultCurrency,
-    artworksDefaultPartnerLocationId
-  }, { updatePartnerFlagsLoader }) => {
+  mutateAndGetPayload: async (
+    {
+      id,
+      inquireAvailabilityPriceDisplayEnabledByPartner,
+      artworksDefaultMetric,
+      artworksDefaultCurrency,
+      artworksDefaultPartnerLocationId,
+      artworksDefaultWeightMetric,
+    },
+    { updatePartnerFlagsLoader }
+  ) => {
     if (!updatePartnerFlagsLoader) {
       return new Error("You need to be signed in to perform this action")
     }
@@ -99,22 +113,30 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
     try {
       // Convert camelCase inputs to snake_case flags
       const flags = {}
-      
+
       // Only include the flags if they're being set or explicitly unset
       if (inquireAvailabilityPriceDisplayEnabledByPartner !== undefined) {
-        flags["inquire_availability_price_display_enabled_by_partner"] = inquireAvailabilityPriceDisplayEnabledByPartner
+        flags[
+          "inquire_availability_price_display_enabled_by_partner"
+        ] = inquireAvailabilityPriceDisplayEnabledByPartner
       }
-      
+
       if (artworksDefaultMetric !== undefined) {
         flags["artworks_default_metric"] = artworksDefaultMetric
       }
-      
+
       if (artworksDefaultCurrency !== undefined) {
         flags["artworks_default_currency"] = artworksDefaultCurrency
       }
-      
+
       if (artworksDefaultPartnerLocationId !== undefined) {
-        flags["artworks_default_partner_location_id"] = artworksDefaultPartnerLocationId
+        flags[
+          "artworks_default_partner_location_id"
+        ] = artworksDefaultPartnerLocationId
+      }
+
+      if (artworksDefaultWeightMetric !== undefined) {
+        flags["artworks_default_weight_metric"] = artworksDefaultWeightMetric
       }
 
       const response = await updatePartnerFlagsLoader(id, { flags })

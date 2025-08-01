@@ -122,7 +122,7 @@ export default (accessToken, userID, opts) => {
       { artworkImportID: string; imageID: string }
     >(
       ({ artworkImportID, imageID }) =>
-        `artwork_import/${artworkImportID}/remove_image/${imageID}`,
+        `artwork_import/${artworkImportID}/image/${imageID}`,
       {},
       { method: "DELETE" }
     ),
@@ -154,6 +154,11 @@ export default (accessToken, userID, opts) => {
     ),
     artworkImportUpdateDimensionMetricLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_dimension_metric`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportUpdateWeightMetricLoader: gravityLoader(
+      (id) => `artwork_import/${id}/update_weight_metric`,
       {},
       { method: "PUT" }
     ),

@@ -24,10 +24,13 @@ import { date } from "schema/v2/fields/date"
 export const ArtworkImportErrorType = new GraphQLEnumType({
   name: "ArtworkImportError",
   values: {
+    // MISSING
     MISSING_TITLE: { value: "missing_title" },
     MISSING_ARTIST: { value: "missing_artist" },
     MISSING_PRICE: { value: "missing_price" },
     MISSING_DATE: { value: "missing_date" },
+
+    // INVALID
     INVALID_TITLE: { value: "invalid_title" },
     INVALID_PRICE: { value: "invalid_price" },
     INVALID_HEIGHT: { value: "invalid_height" },
@@ -39,14 +42,17 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_FRAMED_WIDTH: { value: "invalid_framed_width" },
     INVALID_FRAMED_DEPTH: { value: "invalid_framed_depth" },
     INVALID_FRAMED_DIAMETER: { value: "invalid_framed_diameter" },
-    UNMATCHED_IMAGE: { value: "unmatched_image" },
-    ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
-    UNMATCHED_ARTIST: { value: "unmatched_artist" },
     INVALID_CERTIFICATE_OF_AUTHENTICITY: {
       value: "invalid_certificate_of_authenticity",
     },
     INVALID_SIGNATURE: { value: "invalid_signature" },
     INVALID_CLASSIFICATION: { value: "invalid_classification" },
+    INVALID_WEIGHT: { value: "invalid_weight" },
+
+    // OTHER
+    UNMATCHED_IMAGE: { value: "unmatched_image" },
+    UNMATCHED_ARTIST: { value: "unmatched_artist" },
+    ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
   },
 })
 
@@ -81,6 +87,10 @@ const ArtworkImportSummaryType = new GraphQLObjectType({
     dimensionMetrics: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: ({ dimension_metrics_found }) => dimension_metrics_found,
+    },
+    weightMetrics: {
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
+      resolve: ({ weight_metrics_found }) => weight_metrics_found,
     },
   },
 })
@@ -137,6 +147,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
     dimensionMetric: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ dimension_metric }) => dimension_metric,
+    },
+    weightMetric: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ weight_metric }) => weight_metric,
     },
     priceListed: {
       type: Money,
@@ -255,6 +269,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ Classification }) => Classification,
             },
+            weight: {
+              type: GraphQLString,
+              resolve: ({ Weight }) => Weight,
+            },
           },
         })
       ),
@@ -304,6 +322,10 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     dimensionMetric: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ dimension_metric }) => dimension_metric,
+    },
+    weightMetric: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ weight_metric }) => weight_metric,
     },
     fileName: {
       type: new GraphQLNonNull(GraphQLString),

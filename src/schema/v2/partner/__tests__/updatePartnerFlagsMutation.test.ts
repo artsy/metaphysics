@@ -6,12 +6,13 @@ describe("UpdatePartnerFlagsMutation", () => {
     const mutationWithAllFlags = gql`
       mutation {
         updatePartnerFlags(
-          input: { 
-            id: "partner-id", 
-            inquireAvailabilityPriceDisplayEnabledByPartner: true,
-            artworksDefaultMetric: "cm",
-            artworksDefaultCurrency: "USD",
+          input: {
+            id: "partner-id"
+            inquireAvailabilityPriceDisplayEnabledByPartner: true
+            artworksDefaultMetric: "cm"
+            artworksDefaultCurrency: "USD"
             artworksDefaultPartnerLocationId: "location-1"
+            artworksDefaultWeightMetric: "kg"
           }
         ) {
           partnerOrError {
@@ -39,7 +40,8 @@ describe("UpdatePartnerFlagsMutation", () => {
             inquire_availability_price_display_enabled_by_partner: true,
             artworks_default_metric: "cm",
             artworks_default_currency: "USD",
-            artworks_default_partner_location_id: "location-1"
+            artworks_default_partner_location_id: "location-1",
+            artworks_default_weight_metric: "kg",
           })
           return Promise.resolve({
             _id: "partner-id",
@@ -47,7 +49,10 @@ describe("UpdatePartnerFlagsMutation", () => {
         }),
       }
 
-      const updatedPartner = await runAuthenticatedQuery(mutationWithAllFlags, context)
+      const updatedPartner = await runAuthenticatedQuery(
+        mutationWithAllFlags,
+        context
+      )
 
       expect(updatedPartner).toEqual({
         updatePartnerFlags: {
@@ -66,9 +71,9 @@ describe("UpdatePartnerFlagsMutation", () => {
     const mutationWithSubsetOfFlags = gql`
       mutation {
         updatePartnerFlags(
-          input: { 
-            id: "partner-id", 
-            inquireAvailabilityPriceDisplayEnabledByPartner: true,
+          input: {
+            id: "partner-id"
+            inquireAvailabilityPriceDisplayEnabledByPartner: true
             artworksDefaultCurrency: "EUR"
           }
         ) {
@@ -90,18 +95,24 @@ describe("UpdatePartnerFlagsMutation", () => {
           expect(id).toEqual("partner-id")
           expect(flags).toEqual({
             inquire_availability_price_display_enabled_by_partner: true,
-            artworks_default_currency: "EUR"
+            artworks_default_currency: "EUR",
           })
           // Make sure other flags are not included
           expect(flags).not.toHaveProperty("artworks_default_metric")
-          expect(flags).not.toHaveProperty("artworks_default_partner_location_id")
+          expect(flags).not.toHaveProperty(
+            "artworks_default_partner_location_id"
+          )
+          expect(flags).not.toHaveProperty("artworks_default_weight_metric")
           return Promise.resolve({
             _id: "partner-id",
           })
         }),
       }
 
-      const updatedPartner = await runAuthenticatedQuery(mutationWithSubsetOfFlags, context)
+      const updatedPartner = await runAuthenticatedQuery(
+        mutationWithSubsetOfFlags,
+        context
+      )
 
       expect(updatedPartner).toEqual({
         updatePartnerFlags: {
@@ -120,10 +131,11 @@ describe("UpdatePartnerFlagsMutation", () => {
     const mutationWithNullFlags = gql`
       mutation {
         updatePartnerFlags(
-          input: { 
-            id: "partner-id", 
-            inquireAvailabilityPriceDisplayEnabledByPartner: null,
+          input: {
+            id: "partner-id"
+            inquireAvailabilityPriceDisplayEnabledByPartner: null
             artworksDefaultMetric: null
+            artworksDefaultWeightMetric: null
           }
         ) {
           partnerOrError {
@@ -144,7 +156,8 @@ describe("UpdatePartnerFlagsMutation", () => {
           expect(id).toEqual("partner-id")
           expect(flags).toEqual({
             inquire_availability_price_display_enabled_by_partner: null,
-            artworks_default_metric: null
+            artworks_default_metric: null,
+            artworks_default_weight_metric: null,
           })
           return Promise.resolve({
             _id: "partner-id",
@@ -152,7 +165,10 @@ describe("UpdatePartnerFlagsMutation", () => {
         }),
       }
 
-      const updatedPartner = await runAuthenticatedQuery(mutationWithNullFlags, context)
+      const updatedPartner = await runAuthenticatedQuery(
+        mutationWithNullFlags,
+        context
+      )
 
       expect(updatedPartner).toEqual({
         updatePartnerFlags: {
@@ -171,8 +187,8 @@ describe("UpdatePartnerFlagsMutation", () => {
     const mutation = gql`
       mutation {
         updatePartnerFlags(
-          input: { 
-            id: "partner-id", 
+          input: {
+            id: "partner-id"
             inquireAvailabilityPriceDisplayEnabledByPartner: true
           }
         ) {
@@ -205,8 +221,8 @@ describe("UpdatePartnerFlagsMutation", () => {
     const mutation = gql`
       mutation {
         updatePartnerFlags(
-          input: { 
-            id: "partner-id", 
+          input: {
+            id: "partner-id"
             inquireAvailabilityPriceDisplayEnabledByPartner: true
           }
         ) {
