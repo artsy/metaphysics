@@ -41,7 +41,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworks_default_metric: "cm",
             artworks_default_currency: "USD",
             artworks_default_partner_location_id: "location-1",
-            artworksDefaultWeightMetric: "kg",
+            artworks_default_weight_metric: "kg",
           })
           return Promise.resolve({
             _id: "partner-id",

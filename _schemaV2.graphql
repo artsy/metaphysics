@@ -15306,9 +15306,6 @@ type Money {
 }
 
 type Mutation {
-  UpdateArtworkImportWeightMetricMutation(
-    input: UpdateArtworkImportWeightMetricInput!
-  ): UpdateArtworkImportWeightMetricPayload
   acceptPartnerAgreement(
     # Parameters for AcceptPartnerAgreement
     input: AcceptPartnerAgreementInput!
@@ -16163,6 +16160,9 @@ type Mutation {
   updateArtworkImportRow(
     input: UpdateArtworkImportRowInput!
   ): UpdateArtworkImportRowPayload
+  updateArtworkImportWeightMetric(
+    input: UpdateArtworkImportWeightMetricInput!
+  ): UpdateArtworkImportWeightMetricPayload
 
   # Updates the flags on a partner.
   updateCMSLastAccessTimestamp(

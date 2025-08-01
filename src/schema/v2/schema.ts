@@ -306,6 +306,7 @@ import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtwork
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
 import { UpdateArtworkImportCurrencyMutation } from "./ArtworkImport/updateArtworkImportCurrencyMutation"
 import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/updateArtworkImportDimensionMetricMutation"
+import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
 import { ToggleArtworkImportRowExclusionMutation } from "./ArtworkImport/toggleArtworkImportRowExclusionMutation"
 import { FlagArtworkImportCellMutation } from "./ArtworkImport/flagArtworkImportCellMutation"
 import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
@@ -335,7 +336,6 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
-import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -631,7 +631,7 @@ export default new GraphQLSchema({
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
       updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
-      UpdateArtworkImportWeightMetricMutation: UpdateArtworkImportWeightMetricMutation,
+      updateArtworkImportWeightMetric: UpdateArtworkImportWeightMetricMutation,
       toggleArtworkImportRowExclusion: ToggleArtworkImportRowExclusionMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
       flagArtworkImportCell: FlagArtworkImportCellMutation,
