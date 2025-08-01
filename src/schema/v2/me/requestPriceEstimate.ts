@@ -5,10 +5,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import {
-  formatGravityError,
-  GravityMutationErrorType,
-} from "lib/gravityErrorHandler"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { camelCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 
@@ -102,28 +99,7 @@ export const requestPriceEstimateMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (
-    { artworkId, requesterName, requesterEmail, requesterPhoneNumber },
-    { requestPriceEstimateLoader }
-  ) => {
-    if (!requestPriceEstimateLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    return requestPriceEstimateLoader({
-      artwork_id: artworkId,
-      requester_name: requesterName,
-      requester_email: requesterEmail,
-      requester_phone_number: requesterPhoneNumber,
-    })
-      .then((result) => result)
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
-      })
+  mutateAndGetPayload: () => {
+    throw new Error("Artwork submissions are not accepted at this time.")
   },
 })

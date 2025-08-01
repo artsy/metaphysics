@@ -64,6 +64,7 @@ describe("Sale type", () => {
           isPreview
           isOpen
           isLiveOpen
+          isLiveOpenHappened
           isClosed
           isPreliminary
           isRegistrationClosed
@@ -76,6 +77,7 @@ describe("Sale type", () => {
 
     it("returns the correct values when the sale is closed", async () => {
       sale.auction_state = "closed"
+      sale.live_start_at = null
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
@@ -84,6 +86,7 @@ describe("Sale type", () => {
           isPreview: false,
           isOpen: false,
           isLiveOpen: false,
+          isLiveOpenHappened: false,
           isClosed: true,
           isPreliminary: false,
           isRegistrationClosed: false,
@@ -96,6 +99,7 @@ describe("Sale type", () => {
 
     it("returns the correct values when the sale is in preview mode", async () => {
       sale.auction_state = "preview"
+      sale.live_start_at = null
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
@@ -104,6 +108,7 @@ describe("Sale type", () => {
           isPreview: true,
           isOpen: false,
           isLiveOpen: false,
+          isLiveOpenHappened: false,
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
@@ -125,6 +130,7 @@ describe("Sale type", () => {
           isPreview: false,
           isOpen: true,
           isLiveOpen: false,
+          isLiveOpenHappened: false,
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
@@ -146,6 +152,7 @@ describe("Sale type", () => {
           isPreview: false,
           isOpen: true,
           isLiveOpen: true,
+          isLiveOpenHappened: true,
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
@@ -167,12 +174,35 @@ describe("Sale type", () => {
           isPreview: false,
           isOpen: true,
           isLiveOpen: true,
+          isLiveOpenHappened: true,
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: true,
           isLotConditionsReportEnabled: true,
           requireIdentityVerification: true,
           status: "open",
+        },
+      })
+    })
+
+    it("returns the correct values when live bidding sale is closed", async () => {
+      sale.auction_state = "closed"
+      sale.registration_ends_at = moment().subtract(2, "days")
+      expect(await execute(query)).toEqual({
+        sale: {
+          internalID: "123",
+          collectPayments: true,
+          isArtsyLicensed: false,
+          isPreview: false,
+          isOpen: false,
+          isLiveOpen: false,
+          isLiveOpenHappened: true,
+          isClosed: true,
+          isPreliminary: false,
+          isRegistrationClosed: true,
+          isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
+          status: "closed",
         },
       })
     })

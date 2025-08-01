@@ -117,6 +117,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportRemoveImageLoader: gravityLoader<
+      any,
+      { artworkImportID: string; imageID: string }
+    >(
+      ({ artworkImportID, imageID }) =>
+        `artwork_import/${artworkImportID}/remove_image/${imageID}`,
+      {},
+      { method: "DELETE" }
+    ),
     artworkImportRowsLoader: gravityLoader(
       (id) => `artwork_import/${id}/rows`,
       {},
@@ -1099,11 +1108,6 @@ export default (accessToken, userID, opts) => {
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/Recently_viewed_artworks",
-      {},
-      { method: "POST" }
-    ),
-    requestPriceEstimateLoader: gravityLoader(
-      "me/request_price_estimate",
       {},
       { method: "POST" }
     ),
