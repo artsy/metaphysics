@@ -66,6 +66,9 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     s3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    rowID: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     matchArtworkImportRowImageOrError: {
@@ -74,7 +77,7 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, fileName, s3Key, s3Bucket },
+    { artworkImportID, fileName, s3Key, s3Bucket, rowID },
     { artworkImportRowMatchImageLoader }
   ) => {
     if (!artworkImportRowMatchImageLoader) {
@@ -85,6 +88,7 @@ export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
       file_name: fileName,
       s3_key: s3Key,
       s3_bucket: s3Bucket,
+      ...(rowID && { row_id: rowID }),
     }
 
     try {
