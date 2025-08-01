@@ -40,6 +40,10 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ twitter_handle }) => twitter_handle,
       },
+      instagramHandle: {
+        type: GraphQLString,
+        resolve: ({ instagram_handle }) => instagram_handle,
+      },
       articles: {
         type: new GraphQLNonNull(
           new GraphQLList(new GraphQLNonNull(ArticleType))
