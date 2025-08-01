@@ -394,10 +394,15 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         "Indicates whether the Artwork Budget was updated within the past three months",
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ price_range_updated_at }) => {
-        if (!price_range_updated_at) return false
-        const threeMonthTime = 90 * 24 * 60 * 60 * 1000
-        new Date().getTime() - new Date(price_range_updated_at).getTime() <
-          threeMonthTime
+        // if the timestamp is unset, also consider the budget "stale" and needing an update
+        if (!price_range_updated_at) return true
+
+        const staleCutOff = moment().subtract(3, "months")
+        const updatedAt = moment(price_range_updated_at)
+
+        const isStale = updatedAt < staleCutOff
+
+        return isStale
       },
     },
     hasQualifiedCreditCards: {
