@@ -389,6 +389,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ has_price_range }) => !!has_price_range,
     },
+    priceRangeUpdatedAt: {
+      description: "The date the price range was last updated",
+      type: GraphQLString,
+      resolve: ({ price_range_updated_at }) => price_range_updated_at,
+    },
     hasQualifiedCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {

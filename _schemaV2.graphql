@@ -14947,6 +14947,9 @@ type Me implements Node {
   priceRange: String
   priceRangeMax: Float
   priceRangeMin: Float
+
+  # The date the price range was last updated
+  priceRangeUpdatedAt: String
   privacy: String
   profession: String
 
