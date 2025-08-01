@@ -91,7 +91,15 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateCollectionMutation } from "./me/updateCollectionMutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
+import {
+  CreateUserAddress,
+  UpdateUserAddress,
+  DeleteUserAddress,
+  UpdateUserDefaultAddress,
+  UserAddressType,
+} from "./userAddress/index"
 import ObjectIdentification from "./object_identification"
+import config from "config"
 import { OrderedSet } from "./OrderedSet"
 import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
 import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
@@ -487,6 +495,14 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      ...(config.ENABLE_UNSTITCHING_GRAVITY_USER_ADDRESS
+        ? {
+            createUserAddress: CreateUserAddress,
+            updateUserAddress: UpdateUserAddress,
+            deleteUserAddress: DeleteUserAddress,
+            updateUserDefaultAddress: UpdateUserDefaultAddress,
+          }
+        : {}),
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
@@ -704,6 +720,9 @@ export default new GraphQLSchema({
     AppSecondFactor,
     SmsSecondFactor,
     BackupSecondFactors,
+    ...(config.ENABLE_UNSTITCHING_GRAVITY_USER_ADDRESS
+      ? [UserAddressType]
+      : []),
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
