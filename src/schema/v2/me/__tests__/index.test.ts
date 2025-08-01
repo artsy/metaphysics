@@ -15,7 +15,7 @@ describe("me/index", () => {
         hasSecondFactorEnabled
         hasPassword
         hasPriceRange
-        priceRangeUpdatedAt
+        hasStaleArtworkBudget
         labFeatures
         receivePurchaseNotification
         receiveOutbidNotification
@@ -104,7 +104,7 @@ describe("me/index", () => {
           hasSecondFactorEnabled: true,
           hasPassword: false,
           hasPriceRange: true,
-          priceRangeUpdatedAt: null,
+          hasStaleArtworkBudget: false,
           labFeatures: ["CMS Batch Edit", "Collector Resume"],
           receivePurchaseNotification: false,
           receiveOutbidNotification: true,

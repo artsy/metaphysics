@@ -389,10 +389,16 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ has_price_range }) => !!has_price_range,
     },
-    priceRangeUpdatedAt: {
-      description: "The date the price range was last updated",
-      type: GraphQLString,
-      resolve: ({ price_range_updated_at }) => price_range_updated_at,
+    hasStaleArtworkBudget: {
+      description:
+        "Indicates whether the Artwork Budget was updated within the past three months",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ price_range_updated_at }) => {
+        if (!price_range_updated_at) return false
+        const threeMonthTime = 90 * 24 * 60 * 60 * 1000
+        new Date().getTime() - new Date(price_range_updated_at).getTime() <
+          threeMonthTime
+      },
     },
     hasQualifiedCreditCards: {
       type: GraphQLBoolean,
