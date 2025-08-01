@@ -122,7 +122,7 @@ export default (accessToken, userID, opts) => {
       { artworkImportID: string; imageID: string }
     >(
       ({ artworkImportID, imageID }) =>
-        `artwork_import/${artworkImportID}/remove_image/${imageID}`,
+        `artwork_import/${artworkImportID}/image/${imageID}`,
       {},
       { method: "DELETE" }
     ),
