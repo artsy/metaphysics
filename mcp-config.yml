@@ -1,0 +1,20 @@
+endpoint: http://localhost:5001/v2
+transport:
+  type: streamable_http
+operations:
+  source: local
+  paths:
+    - ./mcp/operations/analytics
+schema:
+  source: local
+  path: ./_schemaV2.graphql
+introspection:
+  execute:
+    enabled: true
+  introspect:
+    enabled: true
+  search:
+    enabled: true
+headers:
+  "x-access-token": "fill in"
+  "x-user-id": "fill in"
