@@ -73,18 +73,19 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
 
           const { results: body, count: totalCount } = await articlesLoader({
             author_ids: id,
-            size,
-            offset,
             count: true,
+            limit: size,
+            offset,
+            size,
           })
 
           return paginationResolver({
-            totalCount,
+            args,
+            body,
             offset,
             page,
             size,
-            body,
-            args,
+            totalCount,
           })
         },
       },
