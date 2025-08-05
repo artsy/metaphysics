@@ -36,6 +36,7 @@ interface Input {
   deathday?: string
   displayName?: string
   first?: string
+  foundations?: string
   gender?: string
   groupIndicator?: ArtistGroupIndicator
   hometown?: string
@@ -46,6 +47,7 @@ interface Input {
   nationality?: string
   public?: boolean
   recentShow?: string
+  residencies?: string
   reviewSources?: string
   targetSupplyPriority?: ArtistTargetSupplyPriority
   targetSupplyType?: ArtistTargetSupplyType
@@ -63,6 +65,7 @@ const inputFields = {
   deathday: { type: GraphQLString },
   displayName: { type: GraphQLString },
   first: { type: GraphQLString },
+  foundations: { type: GraphQLString },
   gender: { type: GraphQLString },
   groupIndicator: { type: ArtistGroupIndicatorEnum },
   hometown: { type: GraphQLString },
@@ -73,6 +76,7 @@ const inputFields = {
   nationality: { type: GraphQLString },
   public: { type: GraphQLBoolean },
   recentShow: { type: GraphQLString },
+  residencies: { type: GraphQLString },
   reviewSources: { type: GraphQLString },
   targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
   targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
@@ -90,6 +94,7 @@ interface GravityInput {
   deathday?: string
   display_name?: string
   first?: string
+  foundations?: string
   gender?: string
   group_indicator?: string
   hometown?: string
@@ -99,6 +104,7 @@ interface GravityInput {
   middle?: string
   nationality?: string
   public?: boolean
+  residencies?: string
   recent_show?: string
   review_sources?: string
   target_supply_priority?: string
