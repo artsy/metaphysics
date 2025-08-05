@@ -949,6 +949,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      residencies: {
+        type: GraphQLString,
+        resolve: ({ residencies }) => residencies,
+      },
       duplicates: {
         type: new GraphQLList(Artist.type),
         resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {
