@@ -6,19 +6,11 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
 describe("Artwork type", () => {
   const sale = { id: "existy" }
-
-  beforeEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
-  })
-  afterEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
-  })
 
   let artwork = null
   let context = null
@@ -5504,12 +5496,6 @@ describe("Artwork type", () => {
   })
 
   describe("artistSeriesConnection", () => {
-    beforeEach(() => {
-      config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
-    })
-    afterEach(() => {
-      config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
-    })
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {

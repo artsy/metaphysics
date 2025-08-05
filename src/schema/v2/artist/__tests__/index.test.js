@@ -7,11 +7,9 @@ describe("Artist type", () => {
   let context
 
   beforeEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
     config.FORCE_URL = "https://www.artsy.net"
   })
   afterEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
     delete config.FORCE_URL
   })
 
