@@ -1,0 +1,11 @@
+# This is the LLM system context tool defining common behaviors and rules for our GraphQL server.
+
+# - **IMPORTANT**: When querying for records or passing IDs between different operations, use a record's `internalID`, not `id` or `_id`. Frequently, `slug` can also be used.
+# - When asking for the ID of a record, return the value of `internalID`, but just call it "id". Devs and other users know what this means.
+
+query llmSystemContext {
+  # Intentionally no-op-ish
+  system {
+    time
+  }
+}

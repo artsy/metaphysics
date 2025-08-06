@@ -18,3 +18,6 @@ tmp
 coverage*
 .hokusai-tmp
 Brewfile.lock.json
+
+# Apollo MCP binary
+apollo-mcp-server

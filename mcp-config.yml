@@ -4,6 +4,7 @@ transport:
 operations:
   source: local
   paths:
+    - ./mcp/operations/llmSystemContext.graphql
     - ./mcp/operations/analytics
     - ./mcp/operations/artist
 schema:
@@ -19,5 +20,5 @@ introspection:
   search:
     enabled: true
 headers:
-  "x-access-token": "fill in"
-  "x-user-id": "fill in"
+  "x-access-token": "fill-in"
+  "x-user-id": "fill-in"
