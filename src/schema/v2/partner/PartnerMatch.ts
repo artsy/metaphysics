@@ -1,4 +1,4 @@
-import { GraphQLInt, GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
 import { GraphQLFieldConfig } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -19,6 +19,7 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
     },
     size: { type: GraphQLInt, defaultValue: 10 },
     page: { type: GraphQLInt, defaultValue: 1 },
+    status: { type: new GraphQLList(GraphQLString) },
   }),
   resolve: async ({ id }, { query, ...args }, { partnerSearchShowsLoader }) => {
     if (!partnerSearchShowsLoader) return null
@@ -27,6 +28,7 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
 
     const { body, headers } = await partnerSearchShowsLoader(id, {
       term: query,
+      status: args.status,
       size,
       offset,
       total_count: true,
