@@ -5,9 +5,12 @@ operations:
   source: local
   paths:
     - ./mcp/operations/analytics
+    - ./mcp/operations/artist
 schema:
   source: local
   path: ./_schemaV2.graphql
+overrides:
+  mutation_mode: "all" # enable mutations!
 introspection:
   execute:
     enabled: true
