@@ -8899,6 +8899,7 @@ input CreateArtworkImportInput {
   async: Boolean
   clientMutationId: String
   fileName: String
+  locationID: String
   parseWithAI: Boolean
   parseWithAIModel: String
   partnerID: String!
