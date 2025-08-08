@@ -4,7 +4,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("UpdateArtworkImportMutation", () => {
   it("updates an artwork import successfully", async () => {
     const artworkImportUpdateLoader = jest.fn().mockResolvedValue({
-      artworkImportID: "artwork-import-1",
+      id: "artwork-import-1",
+      location_id: "partner-location-1",
     })
 
     const mutation = gql`
@@ -31,12 +32,12 @@ describe("UpdateArtworkImportMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(artworkImportUpdateLoader).toHaveBeenCalledWith("artwork-import-1", {
-      locationID: "partner-location-1",
+      location_id: "partner-location-1",
     })
 
     expect(result).toEqual({
-      createArtworkImport: {
-        artworkImportOrError: {
+      updateArtworkImport: {
+        updateArtworkImportOrError: {
           artworkImport: {
             internalID: "artwork-import-1",
             locationID: "partner-location-1",
