@@ -332,7 +332,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ file_name }) => file_name,
     },
     locationID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       resolve: ({ location_id }) => location_id,
     },
     state: {
