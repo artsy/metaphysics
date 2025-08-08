@@ -1,0 +1,23 @@
+query activityStatsToolQuery(
+  $partnerId: String!
+  $period: AnalyticsQueryPeriodEnum!
+) {
+  partner(id: $partnerId) {
+    name
+    analytics {
+      pageviews(period: $period) {
+        totalCount
+        percentageChanged
+        artworkViews
+        galleryViews
+        showViews
+        uniqueVisitors
+        timeSeries {
+          count
+          startTime
+          endTime
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+mutation updateArtist($input: UpdateArtistMutationInput!) {
+  updateArtist(input: $input) {
+    artistOrError {
+      __typename
+      ... on UpdateArtistSuccess {
+        artist {
+          id
+          displayName
+          alternateNames
+          nationality
+          birthday
+          deathday
+          location
+          blurb
+        }
+      }
+      ... on UpdateArtistFailure {
+        mutationError {
+          message
+        }
+      }
+    }
+  }
+}
