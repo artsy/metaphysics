@@ -76,6 +76,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     parseWithAIModel: {
       type: GraphQLString,
     },
+    locationID: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     artworkImportOrError: {
@@ -96,6 +99,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       file_name: args.fileName,
       parse_with_ai: args.parseWithAI,
       parse_with_ai_model: args.parseWithAIModel,
+      location_id: args.locationID,
     }
 
     try {

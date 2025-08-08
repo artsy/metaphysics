@@ -162,6 +162,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportUpdateLoader: gravityLoader(
+      (id) => `artwork_import/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artworkImportUpdateRowLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_row`,
       {},
