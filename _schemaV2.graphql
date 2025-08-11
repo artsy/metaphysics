@@ -4677,6 +4677,9 @@ input BulkUpdateArtworksMetadataInput {
   # The artist IDs to be assigned
   artistIds: [String]
 
+  # The artwork condition to be assigned
+  artworkCondition: String
+
   # The availaiblity to be assigned
   availability: Availability
 
@@ -4688,6 +4691,15 @@ input BulkUpdateArtworksMetadataInput {
 
   # Whether the artworks must be listed as Purchase
   ecommerce: Boolean
+
+  # The exhibition history to be assigned
+  exhibitionHistory: String
+
+  # The image rights to be assigned
+  imageRights: String
+
+  # The literature to be assigned
+  literature: String
 
   # The partner location ID to assign
   locationId: String

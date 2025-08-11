@@ -24,11 +24,15 @@ interface Input {
   source: string
   metadata?: {
     artistIds?: string[]
+    artworkCondition?: string
     availability?: string
+    category?: string
     domesticShippingFeeCents?: number
     ecommerce: boolean
+    exhibitionHistory?: string
+    imageRights?: string
+    literature?: string
     locationId?: string
-    category?: string
     medium?: string
     offer: boolean
     priceAdjustment?: number
@@ -58,10 +62,26 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: Availability,
       description: "The availaiblity to be assigned",
     },
+    artworkCondition: {
+      type: GraphQLString,
+      description: "The artwork condition to be assigned",
+    },
     domesticShippingFeeCents: {
       type: GraphQLInt,
       description:
         "Flat fee for domestic shipping. It must be entered in cents.",
+    },
+    exhibitionHistory: {
+      type: GraphQLString,
+      description: "The exhibition history to be assigned",
+    },
+    imageRights: {
+      type: GraphQLString,
+      description: "The image rights to be assigned",
+    },
+    literature: {
+      type: GraphQLString,
+      description: "The literature to be assigned",
     },
     locationId: {
       type: GraphQLString,
@@ -219,7 +239,11 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
         availability: metadata.availability,
+        artwork_condition: metadata.artworkCondition,
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
+        exhibition_history: metadata.exhibitionHistory,
+        image_rights: metadata.imageRights,
+        literature: metadata.literature,
         location_id: metadata.locationId,
         category: metadata.category,
         medium: metadata.medium,
