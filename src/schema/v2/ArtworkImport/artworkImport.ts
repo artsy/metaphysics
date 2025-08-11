@@ -120,6 +120,10 @@ const ArtworkImportRowImageType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
     },
+    publicUrl: {
+      type: GraphQLString,
+      resolve: ({ public_url }) => public_url,
+    },
     s3Key: {
       type: GraphQLString,
       resolve: ({ s3_key }) => s3_key,
