@@ -11,22 +11,6 @@ const introspectionQuery = getIntrospectionQuery()
 const defaultBody =
   "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process."
 
-const REPOS = {
-  "artsy-mcp": {},
-  eigen: { body: `${defaultBody} #nochangelog` },
-  energy: {},
-  prediction: {},
-  force: {},
-  forque: {},
-  pulse: { destinations: ["vendor/graphql/schema/metaphysics.json"] },
-  volt: {
-    destinations: [
-      "vendor/graphql/schema/schema.graphql",
-      "vendor/graphql/schema/metaphysics.json",
-    ],
-  },
-}
-
 /**
  * updates the schema file on repo
  * @param {Object} input
@@ -87,6 +71,21 @@ async function updateSchemaFile({
   })
 }
 
+const supportedRepos = {
+  eigen: { body: `${defaultBody} #nochangelog` },
+  energy: {},
+  prediction: {},
+  force: {},
+  forque: {},
+  pulse: { destinations: ["vendor/graphql/schema/metaphysics.json"] },
+  volt: {
+    destinations: [
+      "vendor/graphql/schema/schema.graphql",
+      "vendor/graphql/schema/metaphysics.json",
+    ],
+  },
+}
+
 /**
  * Splits the supported repositories into chunks for parallel processing on the CI
  * @param {Array<string>} repos
@@ -106,7 +105,7 @@ async function main() {
   try {
     execSync("yarn dump:staging")
 
-    const repos = Object.keys(REPOS)
+    const repos = Object.keys(supportedRepos)
 
     // Read total_nodes and node_index from command line arguments
     const [totalNodesArg, nodeIndexArg] = process.argv.slice(2)
@@ -124,8 +123,8 @@ async function main() {
     console.log(`Dumping staging schema for the repos ${reposToUpdate}`)
 
     const updatePromises = reposToUpdate.map((repo) => {
-      if (REPOS[repo]) {
-        updateSchemaFile({ repo: repo, ...REPOS[repo] })
+      if (supportedRepos[repo]) {
+        updateSchemaFile({ repo: repo, ...supportedRepos[repo] })
       } else {
         console.error(`Repo ${repo} is not supported`)
       }
