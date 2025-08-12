@@ -305,6 +305,8 @@ import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtwo
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
+import { UpdateArtworkImportRowImageMutation } from "./ArtworkImport/updateArtworkImportRowImageMutation"
+import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/updateArtworkImportRowImagesMutation"
 import { UpdateArtworkImportCurrencyMutation } from "./ArtworkImport/updateArtworkImportCurrencyMutation"
 import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/updateArtworkImportDimensionMetricMutation"
 import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
@@ -633,6 +635,8 @@ export default new GraphQLSchema({
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
+      updateArtworkImportRowImage: UpdateArtworkImportRowImageMutation,
+      updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,
       updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
       updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
       updateArtworkImportWeightMetric: UpdateArtworkImportWeightMetricMutation,

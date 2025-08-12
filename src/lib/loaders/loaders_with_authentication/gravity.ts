@@ -172,6 +172,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportUpdateImageMatchLoader: gravityLoader<
+      any,
+      { artworkImportID: string; imageID: string }
+    >(
+      ({ artworkImportID, imageID }) =>
+        `artwork_import/${artworkImportID}/image_matches/${imageID}`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportBatchUpdateImageMatchesLoader: gravityLoader(
+      (id) => `artwork_import/${id}/image_matches`,
+      {},
+      { method: "PUT" }
+    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
