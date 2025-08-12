@@ -6,6 +6,7 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLEnumType,
+  GraphQLInt,
 } from "graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { ResolverContext } from "types/graphql"
@@ -131,6 +132,10 @@ const ArtworkImportRowImageType = new GraphQLObjectType({
     s3Bucket: {
       type: GraphQLString,
       resolve: ({ s3_bucket }) => s3_bucket,
+    },
+    position: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ position }) => position,
     },
   },
 })
