@@ -62,6 +62,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: Availability,
       description: "The availaiblity to be assigned",
     },
+    category: {
+      type: GraphQLString,
+      description: "The category (medium type) to be assigned",
+    },
     condition: {
       type: GraphQLString,
       description: "The artwork condition to be assigned",
@@ -70,6 +74,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLInt,
       description:
         "Flat fee for domestic shipping. It must be entered in cents.",
+    },
+    ecommerce: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks must be listed as Purchase",
     },
     exhibitionHistory: {
       type: GraphQLString,
@@ -87,17 +95,13 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The partner location ID to assign",
     },
-    category: {
-      type: GraphQLString,
-      description: "The category (medium type) to be assigned",
-    },
-    ecommerce: {
-      type: GraphQLBoolean,
-      description: "Whether the artworks must be listed as Purchase",
-    },
     medium: {
       type: GraphQLString,
       description: "The medium (materials) to be assigned, E.g. Oil on Canvas",
+    },
+    offer: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks must be listed as Make Offer",
     },
     priceAdjustment: {
       type: GraphQLInt,
@@ -111,10 +115,6 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     provenance: {
       type: GraphQLString,
       description: "The provenance to be assigned",
-    },
-    offer: {
-      type: GraphQLBoolean,
-      description: "Whether the artworks must be listed as Make Offer",
     },
     published: {
       type: GraphQLBoolean,
@@ -239,21 +239,21 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
         availability: metadata.availability,
+        category: metadata.category,
         condition: metadata.condition,
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
+        ecommerce: metadata.ecommerce,
         exhibition_history: metadata.exhibitionHistory,
         image_rights: metadata.imageRights,
         literature: metadata.literature,
         location_id: metadata.locationId,
-        category: metadata.category,
         medium: metadata.medium,
-        price_adjustment: metadata.priceAdjustment,
-        provenance: metadata.provenance,
-        price_listed: metadata.priceListed,
-        published: metadata.published,
         offer: metadata.offer,
+        price_adjustment: metadata.priceAdjustment,
+        price_listed: metadata.priceListed,
+        provenance: metadata.provenance,
+        published: metadata.published,
         signature: metadata.signature,
-        ecommerce: metadata.ecommerce,
       }
     }
 
