@@ -10,7 +10,11 @@ describe("RemoveArtworkImportImageMutation", () => {
     const mutation = gql`
       mutation {
         removeArtworkImportImage(
-          input: { artworkImportID: "artwork-import-1", imageID: "image-123" }
+          input: {
+            artworkImportID: "artwork-import-1"
+            rowID: "row-1"
+            imageID: "image-123"
+          }
         ) {
           removeArtworkImportImageOrError {
             ... on RemoveArtworkImportImageSuccess {
@@ -28,6 +32,7 @@ describe("RemoveArtworkImportImageMutation", () => {
 
     expect(artworkImportRemoveImageLoader).toHaveBeenCalledWith({
       artworkImportID: "artwork-import-1",
+      rowID: "row-1",
       imageID: "image-123",
     })
 
@@ -52,6 +57,7 @@ describe("RemoveArtworkImportImageMutation", () => {
         removeArtworkImportImage(
           input: {
             artworkImportID: "artwork-import-1"
+            rowID: "row-1"
             imageID: "nonexistent-image"
           }
         ) {
@@ -73,6 +79,7 @@ describe("RemoveArtworkImportImageMutation", () => {
 
     expect(artworkImportRemoveImageLoader).toHaveBeenCalledWith({
       artworkImportID: "artwork-import-1",
+      rowID: "row-1",
       imageID: "nonexistent-image",
     })
 

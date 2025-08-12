@@ -57,6 +57,10 @@ export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row containing the image",
+    },
     imageID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -68,7 +72,7 @@ export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, imageID },
+    { artworkImportID, rowID, imageID },
     { artworkImportRemoveImageLoader }
   ) => {
     if (!artworkImportRemoveImageLoader) {
@@ -79,6 +83,7 @@ export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
       return {
         ...(await artworkImportRemoveImageLoader({
           artworkImportID,
+          rowID,
           imageID,
         })),
         artworkImportID,

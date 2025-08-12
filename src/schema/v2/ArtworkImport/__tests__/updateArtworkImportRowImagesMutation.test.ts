@@ -3,22 +3,21 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateArtworkImportRowImagesMutation", () => {
   it("updates multiple image positions", async () => {
-    const artworkImportBatchUpdateImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        images: [
-          { id: "image-1", position: 2 },
-          { id: "image-2", position: 1 },
-          { id: "image-3", position: 0 },
-        ],
-      })
+    const artworkImportUpdateRowImagesLoader = jest.fn().mockResolvedValue({
+      images: [
+        { id: "image-3", position: 0 },
+        { id: "image-2", position: 1 },
+        { id: "image-1", position: 2 },
+      ],
+    })
 
     const mutation = gql`
       mutation {
         updateArtworkImportRowImages(
           input: {
             artworkImportID: "artwork-import-1"
-            positions: ["image-3", "image-2", "image-1"]
+            rowID: "row-1"
+            sortedImageIDs: ["image-3", "image-2", "image-1"]
           }
         ) {
           updateArtworkImportRowImagesOrError {
@@ -31,17 +30,17 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     `
 
     const context = {
-      artworkImportBatchUpdateImageMatchesLoader,
+      artworkImportUpdateRowImagesLoader,
       artworkImportLoader: jest
         .fn()
         .mockResolvedValue({ id: "artwork-import-1" }),
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportBatchUpdateImageMatchesLoader).toHaveBeenCalledWith(
-      "artwork-import-1",
+    expect(artworkImportUpdateRowImagesLoader).toHaveBeenCalledWith(
+      { artworkImportID: "artwork-import-1", rowID: "row-1" },
       {
-        positions: ["image-3", "image-2", "image-1"],
+        sorted_image_ids: ["image-3", "image-2", "image-1"],
       }
     )
 
@@ -55,16 +54,18 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
   })
 
   it("handles single image in batch", async () => {
-    const artworkImportBatchUpdateImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        images: [{ id: "image-1", position: 3 }],
-      })
+    const artworkImportUpdateRowImagesLoader = jest.fn().mockResolvedValue({
+      images: [{ id: "image-1", position: 0 }],
+    })
 
     const mutation = gql`
       mutation {
         updateArtworkImportRowImages(
-          input: { artworkImportID: "artwork-import-1", positions: ["image-1"] }
+          input: {
+            artworkImportID: "artwork-import-1"
+            rowID: "row-1"
+            sortedImageIDs: ["image-1"]
+          }
         ) {
           updateArtworkImportRowImagesOrError {
             ... on UpdateArtworkImportRowImagesSuccess {
@@ -76,17 +77,17 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     `
 
     const context = {
-      artworkImportBatchUpdateImageMatchesLoader,
+      artworkImportUpdateRowImagesLoader,
       artworkImportLoader: jest
         .fn()
         .mockResolvedValue({ id: "artwork-import-1" }),
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportBatchUpdateImageMatchesLoader).toHaveBeenCalledWith(
-      "artwork-import-1",
+    expect(artworkImportUpdateRowImagesLoader).toHaveBeenCalledWith(
+      { artworkImportID: "artwork-import-1", rowID: "row-1" },
       {
-        positions: ["image-1"],
+        sorted_image_ids: ["image-1"],
       }
     )
 
@@ -100,14 +101,18 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
   })
 
   it("returns an error when loader throws", async () => {
-    const artworkImportBatchUpdateImageMatchesLoader = jest
+    const artworkImportUpdateRowImagesLoader = jest
       .fn()
       .mockRejectedValue(new Error("Batch update failed"))
 
     const mutation = gql`
       mutation {
         updateArtworkImportRowImages(
-          input: { artworkImportID: "artwork-import-1", positions: ["image-1"] }
+          input: {
+            artworkImportID: "artwork-import-1"
+            rowID: "row-1"
+            sortedImageIDs: ["image-1"]
+          }
         ) {
           updateArtworkImportRowImagesOrError {
             ... on UpdateArtworkImportRowImagesSuccess {
@@ -119,7 +124,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     `
 
     const context = {
-      artworkImportBatchUpdateImageMatchesLoader,
+      artworkImportUpdateRowImagesLoader,
       artworkImportLoader: jest
         .fn()
         .mockResolvedValue({ id: "artwork-import-1" }),
