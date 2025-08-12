@@ -26,6 +26,9 @@ interface Input {
     artistIds?: string[]
     availability?: string
     category?: string
+    certificateOfAuthenticity?: boolean
+    coaByGallery?: boolean
+    coaByAuthenticatingBody?: boolean
     conditionDescription?: string
     domesticShippingFeeCents?: number
     ecommerce: boolean
@@ -65,6 +68,19 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     category: {
       type: GraphQLString,
       description: "The category (medium type) to be assigned",
+    },
+    certificateOfAuthenticity: {
+      type: GraphQLBoolean,
+      description:
+        "Whether a certificate of authenticity is provided for these artworks.",
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+      description: "If COA is provided by the gallery.",
+    },
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+      description: "If COA is provided by a third-party authenticating body.",
     },
     conditionDescription: {
       type: GraphQLString,
@@ -244,6 +260,9 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         artist_ids: metadata.artistIds,
         availability: metadata.availability,
         category: metadata.category,
+        certificate_of_authenticity: metadata.certificateOfAuthenticity,
+        coa_by_gallery: metadata.coaByGallery,
+        coa_by_authenticating_body: metadata.coaByAuthenticatingBody,
         condition_description: metadata.conditionDescription,
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         ecommerce: metadata.ecommerce,
