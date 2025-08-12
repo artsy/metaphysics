@@ -4677,14 +4677,14 @@ input BulkUpdateArtworksMetadataInput {
   # The artist IDs to be assigned
   artistIds: [String]
 
-  # The artwork condition to be assigned
-  artworkCondition: String
-
   # The availaiblity to be assigned
   availability: Availability
 
   # The category (medium type) to be assigned
   category: String
+
+  # The artwork condition to be assigned
+  condition: String
 
   # Flat fee for domestic shipping. It must be entered in cents.
   domesticShippingFeeCents: Int

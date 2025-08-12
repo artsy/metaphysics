@@ -12,7 +12,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           metadata: {
             artistIds: ["artist1", "artist2"]
             availability: SOLD
-            artworkCondition: "Excellent"
+            condition: "Excellent"
             domesticShippingFeeCents: 20000
             locationId: "location456"
             category: "Painting"
@@ -75,7 +75,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       {
         metadata: {
           artist_ids: ["artist1", "artist2"],
-          artwork_condition: "Excellent",
+          condition: "Excellent",
           availability: "sold",
           domestic_shipping_fee_cents: 20000,
           location_id: "location456",
