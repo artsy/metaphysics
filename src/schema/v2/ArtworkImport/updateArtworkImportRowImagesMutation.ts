@@ -3,9 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
   GraphQLList,
-  GraphQLInputObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -14,20 +12,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ArtworkImportType } from "./artworkImport"
-
-const ImagePositionInputType = new GraphQLInputObjectType({
-  name: "ImagePositionInput",
-  fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the image to update",
-    },
-    position: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "The new position for the image (0-based)",
-    },
-  },
-})
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateArtworkImportRowImagesSuccess",
@@ -72,11 +56,11 @@ export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    images: {
+    positions: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ImagePositionInputType))
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
       ),
-      description: "Array of image position updates",
+      description: "Array of image IDs in desired position order",
     },
   },
   outputFields: {
@@ -86,7 +70,7 @@ export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, images },
+    { artworkImportID, positions },
     { artworkImportBatchUpdateImageMatchesLoader }
   ) => {
     if (!artworkImportBatchUpdateImageMatchesLoader) {
@@ -95,7 +79,7 @@ export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId
 
     try {
       await artworkImportBatchUpdateImageMatchesLoader(artworkImportID, {
-        images,
+        positions,
       })
 
       return {

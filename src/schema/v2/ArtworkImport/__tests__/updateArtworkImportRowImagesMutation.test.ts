@@ -18,11 +18,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
         updateArtworkImportRowImages(
           input: {
             artworkImportID: "artwork-import-1"
-            images: [
-              { id: "image-1", position: 2 }
-              { id: "image-2", position: 1 }
-              { id: "image-3", position: 0 }
-            ]
+            positions: ["image-3", "image-2", "image-1"]
           }
         ) {
           updateArtworkImportRowImagesOrError {
@@ -45,11 +41,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     expect(artworkImportBatchUpdateImageMatchesLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
-        images: [
-          { id: "image-1", position: 2 },
-          { id: "image-2", position: 1 },
-          { id: "image-3", position: 0 },
-        ],
+        positions: ["image-3", "image-2", "image-1"],
       }
     )
 
@@ -72,10 +64,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     const mutation = gql`
       mutation {
         updateArtworkImportRowImages(
-          input: {
-            artworkImportID: "artwork-import-1"
-            images: [{ id: "image-1", position: 3 }]
-          }
+          input: { artworkImportID: "artwork-import-1", positions: ["image-1"] }
         ) {
           updateArtworkImportRowImagesOrError {
             ... on UpdateArtworkImportRowImagesSuccess {
@@ -97,7 +86,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     expect(artworkImportBatchUpdateImageMatchesLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
-        images: [{ id: "image-1", position: 3 }],
+        positions: ["image-1"],
       }
     )
 
@@ -118,10 +107,7 @@ describe("UpdateArtworkImportRowImagesMutation", () => {
     const mutation = gql`
       mutation {
         updateArtworkImportRowImages(
-          input: {
-            artworkImportID: "artwork-import-1"
-            images: [{ id: "image-1", position: 5 }]
-          }
+          input: { artworkImportID: "artwork-import-1", positions: ["image-1"] }
         ) {
           updateArtworkImportRowImagesOrError {
             ... on UpdateArtworkImportRowImagesSuccess {
