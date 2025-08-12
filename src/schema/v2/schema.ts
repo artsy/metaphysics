@@ -91,7 +91,18 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateCollectionMutation } from "./me/updateCollectionMutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
+import {
+  UserAddressType,
+  UserAddressOrErrorsUnion,
+} from "./me/userAddress/index"
+import {
+  createUserAddressMutation,
+  updateUserAddressMutation,
+  deleteUserAddressMutation,
+  updateUserDefaultAddressMutation,
+} from "./me/userAddress/mutations"
 import ObjectIdentification from "./object_identification"
+import config from "config"
 import { OrderedSet } from "./OrderedSet"
 import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
 import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
@@ -305,6 +316,8 @@ import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtwo
 import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
+import { UpdateArtworkImportRowImageMutation } from "./ArtworkImport/updateArtworkImportRowImageMutation"
+import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/updateArtworkImportRowImagesMutation"
 import { UpdateArtworkImportCurrencyMutation } from "./ArtworkImport/updateArtworkImportCurrencyMutation"
 import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/updateArtworkImportDimensionMetricMutation"
 import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
@@ -633,6 +646,8 @@ export default new GraphQLSchema({
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
+      updateArtworkImportRowImage: UpdateArtworkImportRowImageMutation,
+      updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,
       updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
       updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
       updateArtworkImportWeightMetric: UpdateArtworkImportWeightMetricMutation,
@@ -679,6 +694,14 @@ export default new GraphQLSchema({
       updateViewingRoom: updateViewingRoomMutation,
       updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
       updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
+      ...(config.USE_UNSTITCHED_USER_ADDRESS
+        ? {
+            createUserAddress: createUserAddressMutation,
+            updateUserAddress: updateUserAddressMutation,
+            deleteUserAddress: deleteUserAddressMutation,
+            updateUserDefaultAddress: updateUserDefaultAddressMutation,
+          }
+        : {}),
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
@@ -708,6 +731,9 @@ export default new GraphQLSchema({
     AppSecondFactor,
     SmsSecondFactor,
     BackupSecondFactors,
+    ...(config.USE_UNSTITCHED_USER_ADDRESS
+      ? [UserAddressType, UserAddressOrErrorsUnion]
+      : []),
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,

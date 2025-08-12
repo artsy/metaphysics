@@ -172,6 +172,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    artworkImportUpdateImageMatchLoader: gravityLoader<
+      any,
+      { artworkImportID: string; imageID: string }
+    >(
+      ({ artworkImportID, imageID }) =>
+        `artwork_import/${artworkImportID}/image_matches/${imageID}`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportBatchUpdateImageMatchesLoader: gravityLoader(
+      (id) => `artwork_import/${id}/image_matches`,
+      {},
+      { method: "PUT" }
+    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
@@ -879,6 +893,36 @@ export default (accessToken, userID, opts) => {
       "me/user_interests",
       {},
       { headers: true }
+    ),
+    meUserAddressesLoader: gravityLoader(
+      "me/user_addresses",
+      {},
+      { headers: true }
+    ),
+    meUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { headers: true }
+    ),
+    meCreateUserAddressLoader: gravityLoader(
+      "me/user_addresses",
+      {},
+      { method: "POST" }
+    ),
+    meUpdateUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    meDeleteUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    meUpdateUserDefaultAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}/set_default`,
+      {},
+      { method: "PUT" }
     ),
     meMyCollectionArtworksLoader: gravityLoader(
       "me/my_collection_artworks",
