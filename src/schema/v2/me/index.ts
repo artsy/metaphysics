@@ -92,11 +92,13 @@ import { TaskType } from "./task"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { UserAddressesConnection } from "./userAddress/index"
 import {
   SecondFactorInterface,
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
 import { MeOrder } from "../order"
+import config from "config"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
 import { UserPricePreference } from "./userPricePreference"
@@ -206,6 +208,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
+    ...(config.USE_UNSTITCHED_USER_ADDRESS
+      ? { addressConnection: UserAddressesConnection }
+      : {}),
     artistRecommendations: ArtistRecommendations,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
@@ -829,6 +834,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "newWorksByInterestingArtists",
       "artistRecommendations",
       "artworkRecommendations",
+      "addressConnection",
     ]
 
     if (xImpersonateUserID) {

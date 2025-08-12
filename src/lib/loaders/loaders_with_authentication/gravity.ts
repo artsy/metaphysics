@@ -894,6 +894,36 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    meUserAddressesLoader: gravityLoader(
+      "me/user_addresses",
+      {},
+      { headers: true }
+    ),
+    meUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { headers: true }
+    ),
+    meCreateUserAddressLoader: gravityLoader(
+      "me/user_addresses",
+      {},
+      { method: "POST" }
+    ),
+    meUpdateUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    meDeleteUserAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    meUpdateUserDefaultAddressLoader: gravityLoader(
+      (id) => `me/user_address/${id}/set_default`,
+      {},
+      { method: "PUT" }
+    ),
     meMyCollectionArtworksLoader: gravityLoader(
       "me/my_collection_artworks",
       {},
