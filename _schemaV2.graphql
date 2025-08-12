@@ -4684,7 +4684,7 @@ input BulkUpdateArtworksMetadataInput {
   category: String
 
   # The artwork condition to be assigned
-  condition: String
+  conditionDescription: String
 
   # Flat fee for domestic shipping. It must be entered in cents.
   domesticShippingFeeCents: Int
