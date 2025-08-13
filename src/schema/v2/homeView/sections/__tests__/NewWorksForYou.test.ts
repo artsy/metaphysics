@@ -71,7 +71,7 @@ describe("NewWorksForYou", () => {
     // see artworksForUser.test.ts
   })
 
-  describe("when the onyx_nwfy-at-risk-gallery-boost-experiment experiment is enabled", () => {
+  describe("when the onyx_nwfy-view-frequency-penalty-experiment experiment is enabled", () => {
     it("serves Version C to the control group", async () => {
       mockGetExperimentVariant.mockImplementation(() => ({
         name: "control",
