@@ -267,6 +267,7 @@ import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/Partner
 import { deletePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistMutation"
 import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
 import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistDocumentMutation"
+import { assignArtistToPartnerMutation } from "./partner/Mutations/PartnerArtist/assignArtistToPartnerMutation"
 import { updatePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
@@ -680,6 +681,7 @@ export default new GraphQLSchema({
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateInstallShotForPartnerShow: updateInstallShotForPartnerShowMutation,
+      assignArtistToPartner: assignArtistToPartnerMutation,
       updatePartnerArtist: updatePartnerArtistMutation,
       updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
