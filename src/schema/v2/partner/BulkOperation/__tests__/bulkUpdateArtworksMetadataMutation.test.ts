@@ -24,6 +24,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             provenance: "Owned by a famous collector"
             published: true
             signature: "Signed by the artist in the bottom right corner"
+            title: "A Beautiful Artwork"
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
@@ -88,6 +89,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           provenance: "Owned by a famous collector",
           medium: "Oil on Canvas",
           signature: "Signed by the artist in the bottom right corner",
+          title: "A Beautiful Artwork",
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],
