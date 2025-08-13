@@ -16,8 +16,8 @@ import {
 } from "lib/gravityErrorHandler"
 import { Availability } from "schema/v2/types/availability"
 import { ResolverContext } from "types/graphql"
-import { BulkArtworkFilterInput } from "./shared"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
+import { BulkArtworkFilterInput } from "./shared"
 
 interface Input {
   id: string
@@ -123,6 +123,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     signature: {
       type: GraphQLString,
       description: "Details about the signature",
+    },
+    title: {
+      type: GraphQLString,
+      description: "The title of the artwork",
     },
   },
 })
@@ -254,6 +258,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         provenance: metadata.provenance,
         published: metadata.published,
         signature: metadata.signature,
+        title: metadata.title,
       }
     }
 
