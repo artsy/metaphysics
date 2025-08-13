@@ -12,7 +12,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           metadata: {
             artistIds: ["artist1", "artist2"]
             availability: SOLD
-            certificateOfAuthenticity: true
+            hasCertificateOfAuthenticity: true
             coaByGallery: true
             coaByAuthenticatingBody: null
             conditionDescription: "Excellent"
