@@ -56,7 +56,11 @@ export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    positions: {
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row to update images for",
+    },
+    sortedImageIDs: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
       ),
@@ -70,17 +74,20 @@ export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, positions },
-    { artworkImportBatchUpdateImageMatchesLoader }
+    { artworkImportID, rowID, sortedImageIDs },
+    { artworkImportUpdateRowImagesLoader }
   ) => {
-    if (!artworkImportBatchUpdateImageMatchesLoader) {
+    if (!artworkImportUpdateRowImagesLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      await artworkImportBatchUpdateImageMatchesLoader(artworkImportID, {
-        positions,
-      })
+      await artworkImportUpdateRowImagesLoader(
+        { artworkImportID, rowID },
+        {
+          sorted_image_ids: sortedImageIDs,
+        }
+      )
 
       return {
         artworkImportID,

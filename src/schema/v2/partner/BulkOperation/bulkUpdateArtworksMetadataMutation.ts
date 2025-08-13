@@ -16,8 +16,8 @@ import {
 } from "lib/gravityErrorHandler"
 import { Availability } from "schema/v2/types/availability"
 import { ResolverContext } from "types/graphql"
-import { BulkArtworkFilterInput } from "./shared"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
+import { BulkArtworkFilterInput } from "./shared"
 
 interface Input {
   id: string
@@ -25,10 +25,14 @@ interface Input {
   metadata?: {
     artistIds?: string[]
     availability?: string
+    category?: string
+    conditionDescription?: string
     domesticShippingFeeCents?: number
     ecommerce: boolean
+    exhibitionHistory?: string
+    imageRights?: string
+    literature?: string
     locationId?: string
-    category?: string
     medium?: string
     offer: boolean
     priceAdjustment?: number
@@ -58,26 +62,46 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: Availability,
       description: "The availaiblity to be assigned",
     },
+    category: {
+      type: GraphQLString,
+      description: "The category (medium type) to be assigned",
+    },
+    conditionDescription: {
+      type: GraphQLString,
+      description: "The artwork condition to be assigned",
+    },
     domesticShippingFeeCents: {
       type: GraphQLInt,
       description:
         "Flat fee for domestic shipping. It must be entered in cents.",
     },
-    locationId: {
-      type: GraphQLString,
-      description: "The partner location ID to assign",
-    },
-    category: {
-      type: GraphQLString,
-      description: "The category (medium type) to be assigned",
-    },
     ecommerce: {
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Purchase",
     },
+    exhibitionHistory: {
+      type: GraphQLString,
+      description: "The exhibition history to be assigned",
+    },
+    imageRights: {
+      type: GraphQLString,
+      description: "The image rights to be assigned",
+    },
+    literature: {
+      type: GraphQLString,
+      description: "The literature to be assigned",
+    },
+    locationId: {
+      type: GraphQLString,
+      description: "The partner location ID to assign",
+    },
     medium: {
       type: GraphQLString,
       description: "The medium (materials) to be assigned, E.g. Oil on Canvas",
+    },
+    offer: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks must be listed as Make Offer",
     },
     priceAdjustment: {
       type: GraphQLInt,
@@ -92,10 +116,6 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The provenance to be assigned",
     },
-    offer: {
-      type: GraphQLBoolean,
-      description: "Whether the artworks must be listed as Make Offer",
-    },
     published: {
       type: GraphQLBoolean,
       description: "Publish or unpublish artworks",
@@ -103,6 +123,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     signature: {
       type: GraphQLString,
       description: "Details about the signature",
+    },
+    title: {
+      type: GraphQLString,
+      description: "The title of the artwork",
     },
   },
 })
@@ -219,17 +243,22 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
         availability: metadata.availability,
-        domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
-        location_id: metadata.locationId,
         category: metadata.category,
-        medium: metadata.medium,
-        price_adjustment: metadata.priceAdjustment,
-        provenance: metadata.provenance,
-        price_listed: metadata.priceListed,
-        published: metadata.published,
-        offer: metadata.offer,
-        signature: metadata.signature,
+        condition_description: metadata.conditionDescription,
+        domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         ecommerce: metadata.ecommerce,
+        exhibition_history: metadata.exhibitionHistory,
+        image_rights: metadata.imageRights,
+        literature: metadata.literature,
+        location_id: metadata.locationId,
+        medium: metadata.medium,
+        offer: metadata.offer,
+        price_adjustment: metadata.priceAdjustment,
+        price_listed: metadata.priceListed,
+        provenance: metadata.provenance,
+        published: metadata.published,
+        signature: metadata.signature,
+        title: metadata.title,
       }
     }
 

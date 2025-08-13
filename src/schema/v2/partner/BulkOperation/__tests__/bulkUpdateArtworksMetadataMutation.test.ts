@@ -12,6 +12,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           metadata: {
             artistIds: ["artist1", "artist2"]
             availability: SOLD
+            conditionDescription: "Excellent"
             domesticShippingFeeCents: 20000
             locationId: "location456"
             category: "Painting"
@@ -23,6 +24,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             provenance: "Owned by a famous collector"
             published: true
             signature: "Signed by the artist in the bottom right corner"
+            title: "A Beautiful Artwork"
           }
           filters: {
             artworkIds: ["artwork1", "artwork2"]
@@ -74,6 +76,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       {
         metadata: {
           artist_ids: ["artist1", "artist2"],
+          condition_description: "Excellent",
           availability: "sold",
           domestic_shipping_fee_cents: 20000,
           location_id: "location456",
@@ -86,6 +89,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           provenance: "Owned by a famous collector",
           medium: "Oil on Canvas",
           signature: "Signed by the artist in the bottom right corner",
+          title: "A Beautiful Artwork",
         },
         filters: {
           artwork_ids: ["artwork1", "artwork2"],

@@ -119,10 +119,10 @@ export default (accessToken, userID, opts) => {
     ),
     artworkImportRemoveImageLoader: gravityLoader<
       any,
-      { artworkImportID: string; imageID: string }
+      { artworkImportID: string; rowID: string; imageID: string }
     >(
-      ({ artworkImportID, imageID }) =>
-        `artwork_import/${artworkImportID}/image/${imageID}`,
+      ({ artworkImportID, rowID, imageID }) =>
+        `artwork_import/${artworkImportID}/row/${rowID}/images/${imageID}`,
       {},
       { method: "DELETE" }
     ),
@@ -181,8 +181,12 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    artworkImportBatchUpdateImageMatchesLoader: gravityLoader(
-      (id) => `artwork_import/${id}/image_matches`,
+    artworkImportUpdateRowImagesLoader: gravityLoader<
+      any,
+      { artworkImportID: string; rowID: string }
+    >(
+      ({ artworkImportID, rowID }) =>
+        `artwork_import/${artworkImportID}/row/${rowID}/images`,
       {},
       { method: "PUT" }
     ),
