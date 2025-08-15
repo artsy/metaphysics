@@ -1,6 +1,11 @@
 {
   "permissions": {
     "allow": [],
-    "deny": ["Read(.env)", "Read(.env.shared)"]
+    "deny": [
+      "Read(.env)",
+      "Read(.env.shared)",
+      "Bash(hokusai:*)",
+      "Bash(aws:*)]"
+    ]
   }
 }
