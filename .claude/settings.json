@@ -5,7 +5,7 @@
       "Read(.env)",
       "Read(.env.shared)",
       "Bash(hokusai:*)",
-      "Bash(aws:*)]"
+      "Bash(aws:*)"
     ]
   }
 }
