@@ -84,13 +84,65 @@ describe("constructUrlAndParams", () => {
     expect(json).toBeUndefined()
   })
 
-  it("passes thru the url for a GET with query params", () => {
+  it("passes thru the url for a GET with simple query params", () => {
     const { url, body, json } = constructUrlAndParams(
       "GET",
       "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
     )
     expect(url).toEqual(
       "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("converts GET request array params to bracket notation", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?tags[0]=painting&tags[1]=sculpture"
+    )
+    // URL-encoded brackets: %5B = [ and %5D = ]
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?tags%5B%5D=painting&tags%5B%5D=sculpture"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("handles GET request with multiple array params using indices", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?artist_ids[0]=id1&artist_ids[1]=id2&gene_ids[0]=gene1"
+    )
+    // URL-encoded brackets: %5B = [ and %5D = ]
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?artist_ids%5B%5D=id1&artist_ids%5B%5D=id2&gene_ids%5B%5D=gene1"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("handles GET request with nested arrays", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?filter[0][type]=painting&filter[0][medium]=oil&filter[1][type]=sculpture"
+    )
+    // Nested arrays get converted to bracket notation with URL encoding
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?filter%5B%5D%5Btype%5D=painting&filter%5B%5D%5Bmedium%5D=oil&filter%5B%5D%5Btype%5D=sculpture"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("preserves GET request with already bracket notation arrays", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?tags[]=painting&tags[]=sculpture"
+    )
+    // Even with existing brackets, they get URL-encoded
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?tags%5B%5D=painting&tags%5B%5D=sculpture"
     )
     expect(body).toBeUndefined()
     expect(json).toBeUndefined()
