@@ -45,8 +45,8 @@ describe("updateViewingRoomArtworksMutation", () => {
       "viewing-room-id",
       {
         artworks: [
-          { "0": { artwork_id: "artwork-1" } },
-          { "1": { artwork_id: "artwork-2", delete: true } },
+          { artwork_id: "artwork-1" },
+          { artwork_id: "artwork-2", delete: true },
         ],
       }
     )
