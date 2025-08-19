@@ -4,6 +4,8 @@ const mockRequest = (request as any) as jest.Mock
 
 import fetch from "../../apis/fetch"
 import { constructUrlAndParams } from "../../apis/fetch"
+import { toQueryString } from "../../helpers"
+import { parse } from "qs"
 
 declare const expectPromiseRejectionToMatch: any
 
@@ -82,13 +84,65 @@ describe("constructUrlAndParams", () => {
     expect(json).toBeUndefined()
   })
 
-  it("passes thru the url for a GET with query params", () => {
+  it("passes thru the url for a GET with simple query params", () => {
     const { url, body, json } = constructUrlAndParams(
       "GET",
       "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
     )
     expect(url).toEqual(
       "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("converts GET request array params to bracket notation", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?tags[0]=painting&tags[1]=sculpture"
+    )
+    // URL-encoded brackets: %5B = [ and %5D = ]
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?tags%5B%5D=painting&tags%5B%5D=sculpture"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("handles GET request with multiple array params using indices", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?artist_ids[0]=id1&artist_ids[1]=id2&gene_ids[0]=gene1"
+    )
+    // URL-encoded brackets: %5B = [ and %5D = ]
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?artist_ids%5B%5D=id1&artist_ids%5B%5D=id2&gene_ids%5B%5D=gene1"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("handles GET request with nested arrays", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?filter[0][type]=painting&filter[0][medium]=oil&filter[1][type]=sculpture"
+    )
+    // Nested arrays get converted to bracket notation with URL encoding
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?filter%5B%5D%5Btype%5D=painting&filter%5B%5D%5Bmedium%5D=oil&filter%5B%5D%5Btype%5D=sculpture"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("preserves GET request with already bracket notation arrays", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?tags[]=painting&tags[]=sculpture"
+    )
+    // Even with existing brackets, they get URL-encoded
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?tags%5B%5D=painting&tags%5B%5D=sculpture"
     )
     expect(body).toBeUndefined()
     expect(json).toBeUndefined()
@@ -129,5 +183,124 @@ describe("constructUrlAndParams", () => {
     )
 
     expect(body).toEqual(["foo", "bar"])
+  })
+
+  it("correctly handles simple arrays with bracket notation", () => {
+    const { body } = constructUrlAndParams(
+      "POST",
+      "https://staging.artsy.net/api/v1/artworks/collections/batch?artwork_ids[]=id1&artwork_ids[]=id2&add_to[]=coll1"
+    )
+
+    expect(body).toEqual({
+      artwork_ids: ["id1", "id2"],
+      add_to: ["coll1"],
+    })
+  })
+
+  it("correctly handles mixed data types", () => {
+    const { body } = constructUrlAndParams(
+      "PUT",
+      "https://staging.artsy.net/api/v1/artist/banksy?name=Banksy&tags[]=street&tags[]=graffiti&public=true"
+    )
+
+    expect(body).toEqual({
+      name: "Banksy",
+      tags: ["street", "graffiti"],
+      public: "true",
+    })
+  })
+
+  it("correctly handles nested arrays with objects using indexed notation", () => {
+    const { body } = constructUrlAndParams(
+      "PUT",
+      "https://staging.artsy.net/api/v1/artwork_import/123/image_matches?images[0][id]=img1&images[0][position]=0&images[1][id]=img2&images[1][position]=1"
+    )
+
+    expect(body).toEqual({
+      images: [
+        { id: "img1", position: "0" },
+        { id: "img2", position: "1" },
+      ],
+    })
+  })
+
+  it("handles double bracket notation", () => {
+    const { body } = constructUrlAndParams(
+      "PUT",
+      "artwork_import/123/image_matches?images[][id]=img1&images[][position]=0&images[][id]=img2&images[][position]=1"
+    )
+
+    // Current behavior - creates arrays within single object
+    expect(body).toEqual({
+      images: [
+        {
+          id: ["img1", "img2"],
+          position: ["0", "1"],
+        },
+      ],
+    })
+  })
+
+  it("should handle indexed notation correctly", () => {
+    const { body } = constructUrlAndParams(
+      "PUT",
+      "artwork_import/123/image_matches?images[0][id]=img1&images[0][position]=0&images[1][id]=img2&images[1][position]=1"
+    )
+
+    expect(body).toEqual({
+      images: [
+        { id: "img1", position: "0" },
+        { id: "img2", position: "1" },
+      ],
+    })
+  })
+
+  it("test backwards compatibility with toQueryString helper", () => {
+    // Test simple arrays
+    const simpleArray = { tags: ["tag1", "tag2"] }
+    const simpleQuery = toQueryString(simpleArray)
+    const simpleParsed = parse(simpleQuery, { arrayLimit: 1000 })
+
+    expect(simpleParsed).toEqual({ tags: ["tag1", "tag2"] })
+
+    // Test complex nested objects
+    const complexArray = {
+      images: [
+        { id: "img1", position: 0 },
+        { id: "img2", position: 1 },
+      ],
+    }
+    const complexQuery = toQueryString(complexArray)
+    const complexParsed = parse(complexQuery, { arrayLimit: 1000 })
+
+    expect(complexParsed).toEqual({
+      images: [
+        { id: "img1", position: "0" },
+        { id: "img2", position: "1" },
+      ],
+    })
+
+    // Test that the generated query uses indices format
+    expect(complexQuery).toContain("images%5B0%5D")
+    expect(complexQuery).toContain("images%5B1%5D")
+  })
+
+  it("handles deeply nested complex structures", () => {
+    const deeplyNested = {
+      images: [
+        { id: "img1", position: { foo: [1, 2, 3] } },
+        { id: "img2", position: { bar: [1, { a: "hi" }] } },
+      ],
+    }
+
+    const query = toQueryString(deeplyNested)
+    const parsed = parse(query, { arrayLimit: 1000 })
+
+    expect(parsed).toEqual({
+      images: [
+        { id: "img1", position: { foo: ["1", "2", "3"] } },
+        { id: "img2", position: { bar: ["1", { a: "hi" }] } },
+      ],
+    })
   })
 })

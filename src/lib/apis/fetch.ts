@@ -2,7 +2,7 @@ import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import { HTTPError } from "lib/HTTPError"
-import { parse } from "qs"
+import { parse, stringify } from "qs"
 import { isExisty } from "lib/helpers"
 
 interface RequestBodyParams {
@@ -14,7 +14,10 @@ interface URLAndRequestBodyParams extends RequestBodyParams {
   url: string
 }
 
-export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
+export const constructUrlAndParams = (
+  method: string,
+  url: string
+): URLAndRequestBodyParams => {
   const opts: RequestBodyParams = {}
 
   if (method === "PUT" || method === "POST" || method === "DELETE") {
@@ -51,13 +54,24 @@ export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
     }
   }
 
-  return { url }
+  const [path, queryParams] = url.split("?")
+  const parsedParams = parse(queryParams, { arrayLimit: 1000 })
+
+  // For GETs, we need to be sure we're making requests using brackets notation
+  // since backends dont understand indicies (for GET)
+  const reformattedQueryParams = stringify(parsedParams, {
+    arrayFormat: "brackets",
+  })
+
+  return {
+    url: reformattedQueryParams ? `${path}?${reformattedQueryParams}` : path,
+  }
 }
 
 // TODO: This `any` is a shame, but
 // the type seems to be a bit of a mix of the original
 // response and some faffing
-export default (url, options = {}) => {
+export default (url: string, options = {}) => {
   return new Promise<any>((resolve, reject) => {
     const opts: any = clone(
       defaults(options, {

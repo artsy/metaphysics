@@ -58,13 +58,11 @@ export const updateViewingRoomArtworksMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const artworks = args.artworks.map((artwork, index) => {
+    const artworks = args.artworks.map((artwork) => {
       return pickBy(
         {
-          [index]: {
-            artwork_id: artwork.artworkID,
-            delete: artwork.delete,
-          },
+          artwork_id: artwork.artworkID,
+          delete: artwork.delete,
         },
         identity
       )

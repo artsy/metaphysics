@@ -5,7 +5,7 @@ const { USER_ACCESS_TOKEN: accessToken, USER_ID: userID } = process.env
 
 if (!accessToken && !userID) {
   console.error(`
-  Cannot run queries without a user access token and user ID. You can get one by 
+  Cannot run queries without a user access token and user ID. You can get one by
   - 1. Signing in on staging.artsy.net
   - 2. Open a dev console
   - 3. and get the values \`copy(sd.CURRENT_USER.id)\` and \`copy(sd.CURRENT_USER.accessToken)\`
@@ -128,7 +128,7 @@ const go = async () => {
 }
 
 const request = (query: string, variables?: any) =>
-  fetch(url, {
+  fetch(url as string, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

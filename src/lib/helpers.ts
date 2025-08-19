@@ -82,10 +82,10 @@ export const toQueryString = (options = {}) => {
   // @ts-ignore
   return options.batched || optionsIncludeArray
     ? stringify(options, {
-        arrayFormat: "brackets",
+        arrayFormat: "indices",
       })
     : stringify(options, {
-        arrayFormat: "brackets",
+        arrayFormat: "indices",
         sort: (a, b) => a.localeCompare(b),
       })
 }

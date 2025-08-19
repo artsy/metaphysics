@@ -37,7 +37,7 @@ describe("toQueryString", () => {
   it("stringifies regular arraies", () => {
     expect(
       toQueryString({ ids: [13, 27], visible: true, availability: "for sale" })
-    ).toBe("ids%5B%5D=13&ids%5B%5D=27&visible=true&availability=for%20sale")
+    ).toBe("ids%5B0%5D=13&ids%5B1%5D=27&visible=true&availability=for%20sale")
   })
 
   it("ignores empty arraies", () => {
@@ -49,7 +49,7 @@ describe("toQueryString", () => {
   it("stringifies [null] as an empty array", () => {
     expect(
       toQueryString({ ids: [null], visible: true, availability: "for sale" })
-    ).toBe("ids%5B%5D=&visible=true&availability=for%20sale")
+    ).toBe("ids%5B0%5D=&visible=true&availability=for%20sale")
   })
 
   it("keeps order when request is batched", () => {
@@ -80,7 +80,20 @@ describe("toQueryString", () => {
         ],
       })
     ).toBe(
-      "ids%5B%5D=63f115629648b4000c707e37&ids%5B%5D=63c08f8408c833000db6ef58&ids%5B%5D=63ffbe494cc6f7000c920e0f&ids%5B%5D=63fcbacb68aa09000bd2609e&ids%5B%5D=63e67f5a70b792000b9e57c3&ids%5B%5D=63f89ccae5957d000c2ed8a3&ids%5B%5D=63e67f5a9e7407000bec0ec3&ids%5B%5D=63f89d924cc87a000e474c6e&ids%5B%5D=63f38b52380b9e000d788778&ids%5B%5D=63f38510f56dbb000d16e196&ids%5B%5D=63f5421caff176000c3c9c82"
+      "ids%5B0%5D=63f115629648b4000c707e37&ids%5B1%5D=63c08f8408c833000db6ef58&ids%5B2%5D=63ffbe494cc6f7000c920e0f&ids%5B3%5D=63fcbacb68aa09000bd2609e&ids%5B4%5D=63e67f5a70b792000b9e57c3&ids%5B5%5D=63f89ccae5957d000c2ed8a3&ids%5B6%5D=63e67f5a9e7407000bec0ec3&ids%5B7%5D=63f89d924cc87a000e474c6e&ids%5B8%5D=63f38b52380b9e000d788778&ids%5B9%5D=63f38510f56dbb000d16e196&ids%5B10%5D=63f5421caff176000c3c9c82"
+    )
+  })
+
+  it("handles complex nested arrays with objects", () => {
+    const result = toQueryString({
+      images: [
+        { id: "img1", position: 0 },
+        { id: "img2", position: 1 },
+      ],
+    })
+
+    expect(result).toBe(
+      "images%5B0%5D%5Bid%5D=img1&images%5B0%5D%5Bposition%5D=0&images%5B1%5D%5Bid%5D=img2&images%5B1%5D%5Bposition%5D=1"
     )
   })
 })
