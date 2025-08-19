@@ -30,6 +30,11 @@ const ImageInputType = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: "S3 bucket of the uploaded image asset",
     },
+    rowID: {
+      type: GraphQLString,
+      description:
+        "ID of the row to associate the images with (required if images don't already exist)",
+    },
   },
 })
 
@@ -83,11 +88,6 @@ export const MatchArtworkImportImagesMutation = mutationWithClientMutationId<
       ),
       description: "Array of image objects to match",
     },
-    rowID: {
-      type: GraphQLString,
-      description:
-        "ID of the row to associate the images with (required if images don't already exist)",
-    },
   },
   outputFields: {
     matchArtworkImportImagesOrError: {
@@ -96,7 +96,7 @@ export const MatchArtworkImportImagesMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, images, rowID },
+    { artworkImportID, images },
     { artworkImportMatchImagesLoader }
   ) => {
     if (!artworkImportMatchImagesLoader) {
@@ -104,12 +104,12 @@ export const MatchArtworkImportImagesMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs = {
-      images: images.map(({ fileName, s3Key, s3Bucket }) => ({
+      images: images.map(({ fileName, s3Key, s3Bucket, rowID }) => ({
         file_name: fileName,
         s3_key: s3Key,
         s3_bucket: s3Bucket,
+        ...(rowID && { row_id: rowID }),
       })),
-      ...(rowID && { row_id: rowID }),
     }
 
     try {

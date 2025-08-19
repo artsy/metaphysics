@@ -17,14 +17,15 @@ describe("MatchArtworkImportImagesMutation", () => {
                 fileName: "cat.jpg"
                 s3Key: "/some/path/cat.jpg"
                 s3Bucket: "someBucket"
+                rowID: "row-1"
               }
               {
                 fileName: "dog.jpg"
                 s3Key: "/some/path/dog.jpg"
                 s3Bucket: "someBucket"
+                rowID: "row-1"
               }
             ]
-            rowID: "row-1"
           }
         ) {
           matchArtworkImportImagesOrError {
@@ -52,14 +53,15 @@ describe("MatchArtworkImportImagesMutation", () => {
             file_name: "cat.jpg",
             s3_key: "/some/path/cat.jpg",
             s3_bucket: "someBucket",
+            row_id: "row-1",
           },
           {
             file_name: "dog.jpg",
             s3_key: "/some/path/dog.jpg",
             s3_bucket: "someBucket",
+            row_id: "row-1",
           },
         ],
-        row_id: "row-1",
       }
     )
 
