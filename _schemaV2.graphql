@@ -10866,8 +10866,19 @@ type DiscoveryCategoriesConnectionEdge {
 
 # A category for discovering and browsing art
 type DiscoveryCategory {
+  # A connection of filtered artwork connections for this category
+  artworkConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): FilteredArtworkConnection
+
   # The ID of the category
   category: String!
+
+  # The href of the category
+  href: String!
 
   # The URL of the image representing this category
   imageUrl: String
@@ -12020,6 +12031,21 @@ type FilterSaleArtworksCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+type FilteredArtworkConnection {
+  edges: [FilteredArtworkConnectionEdge]
+}
+
+type FilteredArtworkConnectionEdge {
+  # The href for this filtered connection
+  href: String!
+
+  # The filtered artwork connection
+  node: ArtworkConnection
+
+  # The display title for this filtered connection
+  title: String!
 }
 
 type FlagArtworkImportCellFailure {
