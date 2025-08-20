@@ -139,14 +139,10 @@ describe("discoveryCategoriesConnection", () => {
               node {
                 category
                 title
-                artworkConnection(first: 5) {
-                  edges {
-                    href
-                    title
-                    node {
-                      totalCount
-                    }
-                  }
+                artworkConnections(first: 5) {
+                  href
+                  title
+                  totalCount
                 }
               }
             }
@@ -162,13 +158,13 @@ describe("discoveryCategoriesConnection", () => {
       )?.node
 
       expect(priceCategory).toBeDefined()
-      expect(priceCategory.artworkConnection.edges).toHaveLength(7) // 7 price ranges
+      expect(priceCategory.artworkConnections).toHaveLength(7) // 7 price ranges
 
       // Check first price range connection
-      const firstConnection = priceCategory.artworkConnection.edges[0]
+      const firstConnection = priceCategory.artworkConnections[0]
       expect(firstConnection.href).toBe("/collect?price_range=*-500")
       expect(firstConnection.title).toBe("Art under $500")
-      expect(firstConnection.node.totalCount).toBe(2)
+      expect(firstConnection.totalCount).toBe(2)
 
       // Check that filterArtworksLoader was called with correct parameters
       expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
@@ -186,11 +182,9 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnection(first: 5) {
-                  edges {
-                    href
-                    title
-                  }
+                artworkConnections(first: 5) {
+                  href
+                  title
                 }
               }
             }
@@ -204,7 +198,7 @@ describe("discoveryCategoriesConnection", () => {
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
-      const connections = priceCategory.artworkConnection.edges
+      const connections = priceCategory.artworkConnections
 
       expect(connections).toEqual([
         {
@@ -245,11 +239,9 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnection(first: 5) {
-                  edges {
-                    href
-                    title
-                  }
+                artworkConnections(first: 5) {
+                  href
+                  title
                 }
               }
             }
@@ -265,7 +257,7 @@ describe("discoveryCategoriesConnection", () => {
       )?.node
 
       expect(mediumCategory).toBeDefined()
-      expect(mediumCategory.artworkConnection.edges).toHaveLength(0)
+      expect(mediumCategory.artworkConnections).toHaveLength(0)
     })
 
     it("handles errors gracefully and returns empty connections", async () => {
@@ -280,14 +272,10 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnection(first: 5) {
-                  edges {
-                    href
-                    title
-                    node {
-                      totalCount
-                    }
-                  }
+                artworkConnections(first: 5) {
+                  href
+                  title
+                  totalCount
                 }
               }
             }
@@ -301,11 +289,11 @@ describe("discoveryCategoriesConnection", () => {
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
-      expect(priceCategory.artworkConnection.edges).toHaveLength(7)
+      expect(priceCategory.artworkConnections).toHaveLength(7)
 
       // All connections should have empty results due to errors
-      priceCategory.artworkConnection.edges.forEach((connection: any) => {
-        expect(connection.node.totalCount).toBe(0)
+      priceCategory.artworkConnections.forEach((connection: any) => {
+        expect(connection.totalCount).toBe(0)
         expect(connection.href).toContain("")
         expect(connection.title).toBeDefined()
       })
@@ -320,11 +308,9 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnection(first: 5) {
-                  edges {
-                    href
-                    title
-                  }
+                artworkConnections(first: 5) {
+                  href
+                  title
                 }
               }
             }
@@ -338,7 +324,7 @@ describe("discoveryCategoriesConnection", () => {
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
-      expect(priceCategory.artworkConnection.edges).toHaveLength(0)
+      expect(priceCategory.artworkConnections).toHaveLength(0)
     })
   })
 })

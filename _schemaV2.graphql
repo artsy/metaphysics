@@ -10866,13 +10866,13 @@ type DiscoveryCategoriesConnectionEdge {
 
 # A category for discovering and browsing art
 type DiscoveryCategory {
-  # A connection of filtered artwork connections for this category
-  artworkConnection(
+  # A list of filtered artwork connections for this category
+  artworkConnections(
     after: String
     before: String
     first: Int
     last: Int
-  ): FilteredArtworkConnection
+  ): [FilteredArtworkConnection]
 
   # The ID of the category
   category: String!
@@ -12034,18 +12034,20 @@ type FilterSaleArtworksCounts {
 }
 
 type FilteredArtworkConnection {
-  edges: [FilteredArtworkConnectionEdge]
-}
+  # The edges of artwork connections
+  edges: [ArtworkEdge]
 
-type FilteredArtworkConnectionEdge {
   # The href for this filtered connection
   href: String!
 
-  # The filtered artwork connection
-  node: ArtworkConnection
+  # Information to aid in pagination
+  pageInfo: PageInfo!
 
   # The display title for this filtered connection
   title: String!
+
+  # Total count of artworks in this connection
+  totalCount: Int
 }
 
 type FlagArtworkImportCellFailure {
@@ -19679,6 +19681,12 @@ type Query {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
+  # A single discovery category for browsing art by slug
+  discoveryCategoryConnection(
+    # The slug of the discovery category to retrieve
+    slug: String!
+  ): DiscoveryCategory
+
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
     after: String
@@ -25727,6 +25735,12 @@ type Viewer {
     first: Int
     last: Int
   ): DiscoveryCategoriesConnectionConnection
+
+  # A single discovery category for browsing art by slug
+  discoveryCategoryConnection(
+    # The slug of the discovery category to retrieve
+    slug: String!
+  ): DiscoveryCategory
 
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
