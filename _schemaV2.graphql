@@ -11055,8 +11055,19 @@ type DiscoveryCategoriesConnectionEdge {
 
 # A category for discovering and browsing art
 type DiscoveryCategory {
+  # A connection of filtered artwork connections for this category
+  artworkConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): FilteredArtworkConnection
+
   # The ID of the category
   category: String!
+
+  # The href of the category
+  href: String!
 
   # The URL of the image representing this category
   imageUrl: String
