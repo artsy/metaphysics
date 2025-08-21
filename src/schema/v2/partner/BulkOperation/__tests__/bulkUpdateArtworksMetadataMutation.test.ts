@@ -23,7 +23,9 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             medium: "Oil on Canvas"
             offer: false
             priceAdjustment: -5
+            priceHidden: false
             priceListed: 1000
+            displayPriceRange: true
             provenance: "Owned by a famous collector"
             published: true
             signature: "Signed by the artist in the bottom right corner"
@@ -90,7 +92,9 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           ecommerce: true,
           offer: false,
           price_adjustment: -5,
+          price_hidden: false,
           price_listed: 1000,
+          display_price_range: true,
           published: true,
           provenance: "Owned by a famous collector",
           medium: "Oil on Canvas",
@@ -162,6 +166,45 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
         },
         filters: {
           partner_artist_id: "artist789",
+        },
+      }
+    )
+  })
+
+  it("updates price visibility fields correctly", async () => {
+    const priceVisibilityMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: { priceHidden: true, displayPriceRange: false }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 3,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(priceVisibilityMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          price_hidden: true,
+          display_price_range: false,
         },
       }
     )
