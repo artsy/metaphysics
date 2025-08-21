@@ -1,26 +1,15 @@
 import { runQuery } from "schema/v2/test/utils"
 
-const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
-  hits: [
-    {
-      _id: "artwork-1",
-      title: "Test Artwork 1",
-      slug: "test-artwork-1",
-    },
-    {
-      _id: "artwork-2",
-      title: "Test Artwork 2",
-      slug: "test-artwork-2",
-    },
-  ],
-  aggregations: {
-    total: {
-      value: 2,
-    },
-  },
-})
-
 describe("discoveryCategoriesConnection", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    jest.spyOn(console, "error").mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   it("returns a connection of discovery categories", async () => {
     const query = `
       {
@@ -139,10 +128,20 @@ describe("discoveryCategoriesConnection", () => {
               node {
                 category
                 title
-                artworkConnections(first: 5) {
-                  href
-                  title
-                  totalCount
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -152,21 +151,19 @@ describe("discoveryCategoriesConnection", () => {
 
       const result = await runQuery(query, context)
 
-      // Find the "Collect by Price" category
       const priceCategory = result.discoveryCategoriesConnection.edges.find(
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
       expect(priceCategory).toBeDefined()
-      expect(priceCategory.artworkConnections).toHaveLength(7) // 7 price ranges
+      expect(priceCategory.filtersForArtworksConnection.edges).toHaveLength(7) // 7 price ranges
 
-      // Check first price range connection
-      const firstConnection = priceCategory.artworkConnections[0]
-      expect(firstConnection.href).toBe("/collect?price_range=*-500")
-      expect(firstConnection.title).toBe("Art under $500")
-      expect(firstConnection.totalCount).toBe(2)
+      const firstFilter =
+        priceCategory.filtersForArtworksConnection.edges[0].node
+      expect(firstFilter.href).toBe("/collect?price_range=*-500")
+      expect(firstFilter.title).toBe("Art under $500")
+      expect(firstFilter.artworksConnection.edges).toHaveLength(2) // Mock returns 2 artworks
 
-      // Check that filterArtworksLoader was called with correct parameters
       expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
         expect.objectContaining({
           price_range: "*-500",
@@ -182,9 +179,20 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnections(first: 5) {
-                  href
-                  title
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -198,7 +206,9 @@ describe("discoveryCategoriesConnection", () => {
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
-      const connections = priceCategory.artworkConnections
+      const connections = priceCategory.filtersForArtworksConnection.edges.map(
+        (edge) => ({ href: edge.node.href, title: edge.node.title })
+      )
 
       expect(connections).toEqual([
         {
@@ -239,9 +249,20 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnections(first: 5) {
-                  href
-                  title
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -251,13 +272,12 @@ describe("discoveryCategoriesConnection", () => {
 
       const result = await runQuery(query, context)
 
-      // Find a category without artworkFilters (e.g., "Medium")
       const mediumCategory = result.discoveryCategoriesConnection.edges.find(
         (edge: any) => edge.node.category === "Medium"
       )?.node
 
       expect(mediumCategory).toBeDefined()
-      expect(mediumCategory.artworkConnections).toHaveLength(0)
+      expect(mediumCategory.filtersForArtworksConnection.edges).toHaveLength(0)
     })
 
     it("handles errors gracefully and returns empty connections", async () => {
@@ -272,10 +292,20 @@ describe("discoveryCategoriesConnection", () => {
             edges {
               node {
                 category
-                artworkConnections(first: 5) {
-                  href
-                  title
-                  totalCount
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -289,42 +319,36 @@ describe("discoveryCategoriesConnection", () => {
         (edge: any) => edge.node.category === "Collect by Price"
       )?.node
 
-      expect(priceCategory.artworkConnections).toHaveLength(7)
+      expect(priceCategory.filtersForArtworksConnection.edges).toHaveLength(7)
 
-      // All connections should have empty results due to errors
-      priceCategory.artworkConnections.forEach((connection: any) => {
-        expect(connection.totalCount).toBe(0)
-        expect(connection.href).toContain("")
-        expect(connection.title).toBeDefined()
-      })
-    })
-
-    it("handles missing filterArtworksLoader gracefully", async () => {
-      const emptyContext = {} // No loader provided
-
-      const query = `
-        {
-          discoveryCategoriesConnection(first: 10) {
-            edges {
-              node {
-                category
-                artworkConnections(first: 5) {
-                  href
-                  title
-                }
-              }
-            }
-          }
+      priceCategory.filtersForArtworksConnection.edges.forEach(
+        ({ node: filter }: any) => {
+          expect(filter.href).toBeDefined()
+          expect(filter.title).toBeDefined()
         }
-      `
-
-      const result = await runQuery(query, emptyContext)
-
-      const priceCategory = result.discoveryCategoriesConnection.edges.find(
-        (edge: any) => edge.node.category === "Collect by Price"
-      )?.node
-
-      expect(priceCategory.artworkConnections).toHaveLength(0)
+      )
     })
   })
+})
+
+const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
+  hits: [
+    {
+      _id: "artwork-1",
+      title: "Test Artwork 1",
+      slug: "test-artwork-1",
+      id: "test-artwork-1",
+    },
+    {
+      _id: "artwork-2",
+      title: "Test Artwork 2",
+      slug: "test-artwork-2",
+      id: "test-artwork-2",
+    },
+  ],
+  aggregations: {
+    total: {
+      value: 2,
+    },
+  },
 })

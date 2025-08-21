@@ -1,11 +1,10 @@
 import {
   GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { NodeInterface, GlobalIDField } from "./object_identification"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import {
   ArtworkFilters,
@@ -23,40 +22,69 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { withTimeout } from "lib/loaders/helpers"
 import config from "config"
 
-// Custom type that extends artwork connection with href and title
-const FilteredArtworkConnectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "FilteredArtworkConnection",
+const ArtworkFilterNodeType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ArtworkFilterNode",
   fields: {
     href: {
       type: GraphQLNonNull(GraphQLString),
       description: "The href for this filtered connection",
-      resolve: (parent) => parent.href,
+      resolve: ({ href }) => href,
     },
     title: {
       type: GraphQLNonNull(GraphQLString),
       description: "The display title for this filtered connection",
-      resolve: (parent) => parent.title,
+      resolve: ({ title }) => title,
     },
-    totalCount: {
-      type: GraphQLInt,
-      description: "Total count of artworks in this connection",
-      resolve: (parent) => parent.totalCount,
-    },
-    edges: {
-      type: artworkConnection.connectionType.getFields().edges.type,
-      description: "The edges of artwork connections",
-      resolve: (parent) => parent.edges,
-    },
-    pageInfo: {
-      type: artworkConnection.connectionType.getFields().pageInfo.type,
-      description: "Information to aid in pagination",
-      resolve: (parent) => parent.pageInfo,
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({}),
+      description: "Artworks matching this filter",
+      resolve: async (
+        { filterKey, filterItem },
+        args,
+        { filterArtworksLoader }
+      ) => {
+        if (!filterArtworksLoader) {
+          return emptyConnection
+        }
+
+        try {
+          const response = (await withTimeout(
+            filterArtworksLoader({
+              ...convertConnectionArgsToGravityArgs(args),
+              aggregations: ["total"],
+              [filterKey]: filterItem[filterKey],
+            }),
+            config.RESOLVER_TIMEOUT_MS || 5000
+          )) as any
+
+          const artworks = response.hits || []
+          const totalCount =
+            response.aggregations?.total?.value || artworks.length
+
+          return {
+            ...connectionFromArraySlice(artworks, args, {
+              arrayLength: totalCount,
+              sliceStart: convertConnectionArgsToGravityArgs(args).offset || 0,
+            }),
+            totalCount,
+          }
+        } catch (error) {
+          console.error(
+            `[ArtworkFilterNode] Error fetching artworks for ${filterItem.title}:`,
+            error
+          )
+          return emptyConnection
+        }
+      },
     },
   },
 })
+
+const FiltersForArtworksConnectionType = connectionWithCursorInfo({
+  nodeType: ArtworkFilterNodeType,
+  name: "FiltersForArtworksConnection",
+}).connectionType
 
 const orderedCategoryKeys: MarketingCollectionCategoriesKeys[] = [
   "Medium",
@@ -68,6 +96,7 @@ const orderedCategoryKeys: MarketingCollectionCategoriesKeys[] = [
 ]
 
 export type DiscoveryCategory = {
+  id: string
   category: string
   imageUrl: string
   href: string
@@ -82,7 +111,14 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
 >({
   name: "DiscoveryCategory",
   description: "A category for discovering and browsing art",
+  interfaces: [NodeInterface],
   fields: {
+    id: GlobalIDField,
+    internalID: {
+      type: GraphQLNonNull(GraphQLString),
+      description: "A type-specific ID",
+      resolve: ({ slug }) => slug,
+    },
     category: {
       type: GraphQLNonNull(GraphQLString),
       description: "The ID of the category",
@@ -103,112 +139,43 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
       type: GraphQLNonNull(GraphQLString),
       description: "The display title of the category",
     },
-    artworkConnections: {
-      type: new GraphQLList(FilteredArtworkConnectionType),
+    filtersForArtworksConnection: {
+      type: FiltersForArtworksConnectionType,
       args: pageable({}),
-      description: "A list of filtered artwork connections for this category",
-      resolve: async (parent, args, { filterArtworksLoader }) => {
-        // Only provide filtered connections for categories with artworkFilters
+      description: "A connection of artwork filters for this category",
+      resolve: (parent, args) => {
         if (!parent.artworkFilters) {
-          return []
-        }
-
-        if (!filterArtworksLoader) {
-          return []
-        }
-
-        try {
-          // Collect all filter requests to execute in parallel
-          const filterRequests: Array<{
-            filterKey: string
-            filterItem: any
-            gravityOptions: any
-          }> = []
-
-          for (const [filterKey, filterItems] of Object.entries(
-            parent.artworkFilters
-          )) {
-            for (const filterItem of filterItems) {
-              const gravityOptions = {
-                ...convertConnectionArgsToGravityArgs(args),
-                aggregations: ["total"],
-                [filterKey]: filterItem[filterKey],
-              }
-
-              filterRequests.push({
-                filterKey,
-                filterItem,
-                gravityOptions,
-              })
-            }
+          return {
+            ...connectionFromArray([], args),
+            totalCount: 0,
           }
+        }
 
-          // Execute all API calls in parallel with timeout
-          const results = await Promise.allSettled(
-            filterRequests.map(
-              async ({ filterKey, filterItem, gravityOptions }) => {
-                const response = (await withTimeout(
-                  filterArtworksLoader(gravityOptions),
-                  config.RESOLVER_TIMEOUT_MS || 5000
-                )) as any
+        const filters: Array<{
+          href: string
+          title: string
+          filterKey: string
+          filterItem: any
+        }> = []
 
-                // Extract data from the correct structure
-                const artworks = response.hits || []
-                const totalCount =
-                  response.aggregations?.total?.value || artworks.length
+        for (const [filterKey, filterItems] of Object.entries(
+          parent.artworkFilters
+        )) {
+          for (const filterItem of filterItems) {
+            filters.push({
+              href: `/collect?${filterKey}=${encodeURIComponent(
+                filterItem[filterKey]
+              )}`,
+              title: filterItem.title,
+              filterKey,
+              filterItem,
+            })
+          }
+        }
 
-                const artworkConnectionResult = {
-                  totalCount,
-                  ...connectionFromArraySlice(artworks, args, {
-                    arrayLength: totalCount,
-                    sliceStart: gravityOptions.offset || 0,
-                  }),
-                }
-
-                return {
-                  href: `/collect?${filterKey}=${encodeURIComponent(
-                    filterItem[filterKey]
-                  )}`,
-                  title: filterItem.title,
-                  ...artworkConnectionResult,
-                }
-              }
-            )
-          )
-
-          // Process results and handle any failures
-          const connections: Array<{
-            href: string
-            title: string
-            totalCount?: number
-            edges?: any[]
-            pageInfo?: any
-          }> = []
-
-          results.forEach((result, index) => {
-            if (result.status === "fulfilled") {
-              connections.push(result.value)
-            } else {
-              const { filterItem } = filterRequests[index]
-              console.error(
-                `[DiscoveryCategoryType] Error fetching artworks for ${filterItem.title}:`,
-                result.reason
-              )
-              connections.push({
-                href: "",
-                title: "",
-                ...emptyConnection,
-              })
-            }
-          })
-
-          return connections
-        } catch (error) {
-          console.error(
-            "[DiscoveryCategoryType] Error creating filtered connections:",
-            error
-          )
-          return []
+        return {
+          ...connectionFromArray(filters, args),
+          totalCount: filters.length,
         }
       },
     },
@@ -232,6 +199,7 @@ export const discoveryCategoriesConnection: GraphQLFieldConfig<
       const category = marketingCollectionCategories[key]
 
       const discoveryType: DiscoveryCategory = {
+        id: category.slug,
         category: category.id,
         imageUrl: category.imageUrl,
         href: category.href,
