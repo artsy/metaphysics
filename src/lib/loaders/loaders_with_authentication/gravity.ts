@@ -1,6 +1,7 @@
 import { gravityGraphQL } from "lib/apis/gravityGraphQL"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
+import { searchLoader } from "../searchLoader"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -769,6 +770,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    internalSearchLoader: searchLoader(gravityLoader),
     inquiryIntroductionLoader: gravityLoader(
       "me/inquiry_introduction",
       {},

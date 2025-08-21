@@ -73,11 +73,20 @@ export const MatchConnection: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     { term, entities, mode, ...args },
-    { searchLoader, ...loaders }
+    { searchLoader, internalSearchLoader, ...loaders }
   ) => {
+    if (mode === "INTERNAL_AUTOSUGGEST" && !internalSearchLoader) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await searchLoader({
+    const loader =
+      mode === "INTERNAL_AUTOSUGGEST" ? internalSearchLoader : searchLoader
+
+    const { body, headers } = await loader({
       term,
       entities,
       mode,
