@@ -147,16 +147,3 @@ export const marketingCollectionCategories: Record<
 } as const
 
 export type MarketingCollectionsCategories = typeof marketingCollectionCategories
-
-// export const collectByPriceHref: Record<PriceSlugs[number], string> = {
-//   "art-under-500-dollars": "",
-//   "art-under-1000-dollars": "",
-//   "art-under-2500-dollars": "",
-//   "art-under-5000-dollars": "",
-//   "art-under-10000-dollars": "",
-//   "art-under-25000-dollars": "",
-//   "art-under-50000-dollars": "",
-// }
-
-// /collections-by-category/collect-by-price?filter_key[]="priceRange"&filter_title[]="Art%20under%20$500"&filter_value[]="%2A-500"&filter_key[]="priceRange"&filter_title[]="Art%20under%20$1000"&filter_value[]="501-1000"&slug="collect-by-price"&title=Collect%20by%20price
-// /collections-by-category/collect-by-price?filters=[{"key":"priceRange","title":"Art under $500","value":"*-500"},{"key":"priceRange","title":"Art under $1000","value":"501-1000"}]&slug=collect-by-price&title=Collect%20by%20price

@@ -59,18 +59,21 @@ const SupportedTypes: any = {
     "./user",
     "./homeView/index",
     "./ArtworkImport/artworkImport",
+    "./discoveryCategoryConnection",
   ],
 }
 
 const typeNames = {
   "./filterArtworksConnection": "filterArtworksConnection",
   "./homeView/index": "HomeViewSection",
+  "./discoveryCategoryConnection": "DiscoveryCategory",
 }
 
 const exportNames = {
   filterArtworksConnection: "filterArtworksConnection",
   HomeViewSection: "Section",
   ArtworkImport: "ArtworkImport",
+  DiscoveryCategory: "default",
 }
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {

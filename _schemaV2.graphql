@@ -3193,6 +3193,22 @@ union ArtworkFigures = Image | Video
 
 union ArtworkFilterFacet = Gene | Tag
 
+type ArtworkFilterNode {
+  # Artworks matching this filter
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+
+  # The href for this filtered connection
+  href: String!
+
+  # The display title for this filtered connection
+  title: String!
+}
+
 union ArtworkHighlight = Article | Show
 
 type ArtworkImport implements Node {
@@ -11054,23 +11070,29 @@ type DiscoveryCategoriesConnectionEdge {
 }
 
 # A category for discovering and browsing art
-type DiscoveryCategory {
-  # A list of filtered artwork connections for this category
-  artworkConnections(
+type DiscoveryCategory implements Node {
+  # The ID of the category
+  category: String!
+
+  # A connection of artwork filters for this category
+  filtersForArtworksConnection(
     after: String
     before: String
     first: Int
     last: Int
-  ): [FilteredArtworkConnection]
-
-  # The ID of the category
-  category: String!
+  ): FiltersForArtworksConnectionConnection
 
   # The href of the category
   href: String!
 
+  # A globally unique ID.
+  id: ID!
+
   # The URL of the image representing this category
   imageUrl: String
+
+  # A type-specific ID
+  internalID: String!
 
   # The slug of the category
   slug: String
