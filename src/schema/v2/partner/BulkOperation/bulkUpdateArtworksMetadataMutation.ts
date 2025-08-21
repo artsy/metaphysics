@@ -35,6 +35,7 @@ interface Input {
     ecommerce: boolean
     exhibitionHistory?: string
     imageRights?: string
+    internationalShippingFeeCents?: number
     literature?: string
     locationId?: string
     medium?: string
@@ -109,6 +110,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     imageRights: {
       type: GraphQLString,
       description: "The image rights to be assigned",
+    },
+    internationalShippingFeeCents: {
+      type: GraphQLInt,
+      description:
+        "Flat fee for international shipping. It must be entered in cents.",
     },
     literature: {
       type: GraphQLString,
@@ -280,6 +286,8 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         ecommerce: metadata.ecommerce,
         exhibition_history: metadata.exhibitionHistory,
         image_rights: metadata.imageRights,
+        international_shipping_fee_cents:
+          metadata.internationalShippingFeeCents,
         literature: metadata.literature,
         location_id: metadata.locationId,
         medium: metadata.medium,

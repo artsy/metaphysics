@@ -18,6 +18,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             conditionDescription: "Excellent"
             domesticShippingFeeCents: 20000
             locationId: "location456"
+            internationalShippingFeeCents: 30000
             category: "Painting"
             ecommerce: true
             medium: "Oil on Canvas"
@@ -88,6 +89,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           coa_by_authenticating_body: null,
           domestic_shipping_fee_cents: 20000,
           location_id: "location456",
+          international_shipping_fee_cents: 30000,
           category: "Painting",
           ecommerce: true,
           offer: false,
