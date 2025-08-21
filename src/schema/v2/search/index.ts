@@ -26,6 +26,9 @@ export const SearchMode = new GraphQLEnumType({
     AUTOSUGGEST: {
       value: "AUTOSUGGEST",
     },
+    INTERNAL_AUTOSUGGEST: {
+      value: "INTERNAL_AUTOSUGGEST",
+    },
     SITE: {
       value: "SITE",
     },

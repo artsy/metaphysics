@@ -26,6 +26,7 @@ import { SearchMode } from "./search"
 import { SearchEntity } from "./search/SearchEntity"
 import { ShowType } from "./show"
 import { TagType } from "./tag"
+import { compact } from "lodash"
 
 const MODELS = {
   Article: { loader: "articleLoader", type: ArticleType },
@@ -72,11 +73,20 @@ export const MatchConnection: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     { term, entities, mode, ...args },
-    { searchLoader, ...loaders }
+    { searchLoader, internalSearchLoader, ...loaders }
   ) => {
+    if (mode === "INTERNAL_AUTOSUGGEST" && !internalSearchLoader) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await searchLoader({
+    const loader =
+      mode === "INTERNAL_AUTOSUGGEST" ? internalSearchLoader : searchLoader
+
+    const { body, headers } = await loader({
       term,
       entities,
       mode,
@@ -89,7 +99,9 @@ export const MatchConnection: GraphQLFieldConfig<void, ResolverContext> = {
 
     const results = await Promise.all(
       body.map(async ({ id, label }) => {
-        const loader = loaders[MODELS[label].loader]
+        const loader = loaders[MODELS[label]?.loader]
+        if (!loader) return
+
         const body = await loader(id)
 
         return { ...body, __typename: label }
@@ -101,7 +113,7 @@ export const MatchConnection: GraphQLFieldConfig<void, ResolverContext> = {
       offset,
       page,
       size,
-      body: results,
+      body: compact(results),
       args,
     })
   },

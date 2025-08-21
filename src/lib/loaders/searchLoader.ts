@@ -9,6 +9,10 @@ const modeMap = {
     fallbackEntities: SUGGEST_ENTITIES,
     pathname: "/match/suggest",
   },
+  INTERNAL_AUTOSUGGEST: {
+    fallbackEntities: SUGGEST_ENTITIES,
+    pathname: "/match/suggest/internal",
+  },
   DEFAULT: { fallbackEntities: DEFAULT_ENTITIES, pathname: "/match" },
 }
 
