@@ -53,7 +53,7 @@ async function updateSchemaFile({
           prettierArgs = "--parser=graphql"
 
           // Running the compiler directly for Rails projects
-          const relayCompilerCommand = ["pulse", "volt"].includes(repo)
+          const relayCompilerCommand = ["volt"].includes(repo)
             ? "./node_modules/.bin/relay-compiler"
             : "yarn relay"
 
@@ -77,7 +77,6 @@ const supportedRepos = {
   prediction: {},
   force: {},
   forque: {},
-  pulse: { destinations: ["vendor/graphql/schema/metaphysics.json"] },
   volt: {
     destinations: [
       "vendor/graphql/schema/schema.graphql",
