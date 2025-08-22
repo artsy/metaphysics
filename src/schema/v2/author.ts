@@ -106,3 +106,31 @@ export const Author: GraphQLFieldConfig<void, ResolverContext> = {
     return authorLoader(id)
   },
 }
+
+export const AuthorsConnection: GraphQLFieldConfig<void, ResolverContext> = {
+  type: connectionWithCursorInfo({
+    nodeType: AuthorType,
+  }).connectionType,
+  args: pageable({
+    page: { type: GraphQLInt },
+    size: { type: GraphQLInt },
+  }),
+  resolve: async (_root, args, { authorsLoader }) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const { results: body, count: totalCount } = await authorsLoader({
+      count: true,
+      limit: size,
+      offset,
+    })
+
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
+      totalCount,
+    })
+  },
+}
