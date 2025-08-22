@@ -12,7 +12,7 @@ import { mergeArtistsMutation } from "./artists/mergeArtistsMutation"
 import Artwork from "./artwork"
 import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
 import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArtworkGrid"
-import { Author } from "./author"
+import { Author, AuthorsConnection } from "./author"
 import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArtworkGrid"
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
@@ -392,6 +392,7 @@ const rootFields = {
   auctionResult: AuctionResult,
   authenticationStatus,
   author: Author,
+  authorsConnection: AuthorsConnection,
   bankAccount: BankAccount,
   channel,
   cities,
