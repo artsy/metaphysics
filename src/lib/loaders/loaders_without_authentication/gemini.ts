@@ -11,7 +11,7 @@ export default () => ({
   // The outer function is so that we can pass params from the schema,
   // into the gemini api options.
   createNewGeminiAssetLoader: ({ name, acl }) =>
-    geminiUncachedLoader(`uploads/new.json?acl=${acl}`, {
+    geminiUncachedLoader("uploads/new.json", {
       acl,
       headers: {
         Authorization: "Basic " + toBase64(name + ":"),
