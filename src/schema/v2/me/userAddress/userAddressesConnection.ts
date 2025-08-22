@@ -22,6 +22,9 @@ export const UserAddressesConnection: GraphQLFieldConfig<
     if (!meUserAddressesLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
+    if (!args.first) {
+      args.first = 20 // TODO: Remove this once clients are updated
+    }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
