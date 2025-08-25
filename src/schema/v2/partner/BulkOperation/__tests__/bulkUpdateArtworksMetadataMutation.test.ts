@@ -232,4 +232,132 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       },
     })
   })
+
+  it("updates artworks with single signature type", async () => {
+    const signatureTypeMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: { signatureTypes: [HAND_SIGNED_BY_ARTIST] }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(signatureTypeMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          not_signed: false,
+          signed_by_artist: true,
+          signed_in_plate: false,
+          stamped_by_artist_estate: false,
+          sticker_label: false,
+          signed_other: false,
+        },
+      }
+    )
+  })
+
+  it("updates artworks with multiple signature types", async () => {
+    const signatureTypeMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: {
+              signatureTypes: [HAND_SIGNED_BY_ARTIST, SIGNED_IN_PLATE]
+            }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(signatureTypeMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          not_signed: false,
+          signed_by_artist: true,
+          signed_in_plate: true,
+          stamped_by_artist_estate: false,
+          sticker_label: false,
+          signed_other: false,
+        },
+      }
+    )
+  })
+
+  it("updates artworks with empty signature types array", async () => {
+    const signatureTypeMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: { id: "partner123", metadata: { signatureTypes: [] } }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(signatureTypeMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          not_signed: false,
+          signed_by_artist: false,
+          signed_in_plate: false,
+          stamped_by_artist_estate: false,
+          sticker_label: false,
+          signed_other: false,
+        },
+      }
+    )
+  })
 })
