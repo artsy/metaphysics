@@ -22,6 +22,7 @@ interface ConversationsArguments extends CursorPageable {
   fromId?: string
   artistId?: string
   type?: "Partner" | "User"
+  conversationType?: "inquiry" | "order"
 }
 
 const ConversationsInputModeEnum = new GraphQLEnumType({
@@ -32,6 +33,18 @@ const ConversationsInputModeEnum = new GraphQLEnumType({
     },
     USER: {
       value: "User",
+    },
+  },
+})
+
+const ConversationTypeEnum = new GraphQLEnumType({
+  name: "ConversationType",
+  values: {
+    INQUIRY: {
+      value: "inquiry",
+    },
+    ORDER: {
+      value: "order",
     },
   },
 })
@@ -81,6 +94,9 @@ const Conversations: GraphQLFieldConfig<
     toBeReplied: {
       type: GraphQLBoolean,
     },
+    conversationType: {
+      type: ConversationTypeEnum,
+    },
   }),
   resolve: (_root, args, { conversationsLoader, userID }) => {
     if (!conversationsLoader) {
@@ -108,6 +124,7 @@ const Conversations: GraphQLFieldConfig<
         has_message: args.hasMessage ?? undefined,
         dismissed: !!args.dismissed,
         to_be_replied: args.toBeReplied ?? undefined,
+        conversation_type: args.conversationType ?? undefined,
       }
       // User
     } else {
