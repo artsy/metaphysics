@@ -37,12 +37,62 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
       },
       bio: markdown(({ bio }) => bio),
       twitterHandle: {
+        deprecationReason: "Use `socials.x` instead",
         type: GraphQLString,
         resolve: ({ twitter_handle }) => twitter_handle,
       },
       instagramHandle: {
+        deprecationReason: "Use `socials.instagram` instead",
         type: GraphQLString,
         resolve: ({ instagram_handle }) => instagram_handle,
+      },
+      socials: {
+        type: new GraphQLObjectType({
+          name: "AuthorSocials",
+          fields: {
+            x: {
+              type: new GraphQLObjectType({
+                name: "AuthorSocialsX",
+                fields: {
+                  handle: { type: new GraphQLNonNull(GraphQLString) },
+                  url: { type: new GraphQLNonNull(GraphQLString) },
+                },
+              }),
+              resolve: ({ twitter_handle }) => {
+                if (!twitter_handle) return null
+                const handle = twitter_handle.replace("@", "")
+
+                return {
+                  handle,
+                  url: `https://x.com/${handle}`,
+                }
+              },
+            },
+            instagram: {
+              type: new GraphQLObjectType({
+                name: "AuthorSocialsInstagram",
+                fields: {
+                  handle: { type: new GraphQLNonNull(GraphQLString) },
+                  url: { type: new GraphQLNonNull(GraphQLString) },
+                },
+              }),
+              resolve: ({ instagram_handle }) => {
+                if (!instagram_handle) return null
+                const handle = instagram_handle.replace("@", "")
+
+                return {
+                  handle,
+                  url: `https://instagram.com/${handle}`,
+                }
+              },
+            },
+          },
+        }),
+        resolve: ({ twitter_handle, instagram_handle }) => {
+          if (!twitter_handle && !instagram_handle) return null
+
+          return { instagram_handle, twitter_handle }
+        },
       },
       role: {
         type: GraphQLString,
