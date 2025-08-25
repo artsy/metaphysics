@@ -35,9 +35,9 @@ interface Input {
     coaByGallery?: boolean
     coaByAuthenticatingBody?: boolean
     conditionDescription?: string
-    displayPriceRange?: boolean
     domesticShippingFeeCents?: number
     ecommerce: boolean
+    exactPrice?: boolean
     exhibitionHistory?: string
     imageRights?: string
     internationalShippingFeeCents?: number
@@ -46,6 +46,7 @@ interface Input {
     medium?: string
     offer: boolean
     priceAdjustment?: number
+    displayPriceRange?: boolean
     priceHidden?: boolean
     priceListed?: number
     provenance?: string
@@ -99,10 +100,6 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The artwork condition to be assigned",
     },
-    displayPriceRange: {
-      type: GraphQLBoolean,
-      description: "Show/Hide the price range of an artwork",
-    },
     domesticShippingFeeCents: {
       type: GraphQLInt,
       description:
@@ -111,6 +108,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     ecommerce: {
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Purchase",
+    },
+    exactPrice: {
+      type: GraphQLBoolean,
+      description: "Set artwork price visibility to exact price",
     },
     exhibitionHistory: {
       type: GraphQLString,
@@ -146,13 +147,17 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       description:
         "Adjusts the artworks' prices according to the value passed (percentage).",
     },
-    priceListed: {
-      type: GraphQLFloat,
-      description: "The price for the artworks",
+    displayPriceRange: {
+      type: GraphQLBoolean,
+      description: "Set artwork price visibility to price range",
     },
     priceHidden: {
       type: GraphQLBoolean,
-      description: "Show/Hide the price of an artwork",
+      description: "Set artwork price visibility to price on request",
+    },
+    priceListed: {
+      type: GraphQLFloat,
+      description: "The price for the artworks",
     },
     provenance: {
       type: GraphQLString,
@@ -295,9 +300,9 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         coa_by_gallery: metadata.coaByGallery,
         coa_by_authenticating_body: metadata.coaByAuthenticatingBody,
         condition_description: metadata.conditionDescription,
-        display_price_range: metadata.displayPriceRange,
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         ecommerce: metadata.ecommerce,
+        exact_price: metadata.exactPrice,
         exhibition_history: metadata.exhibitionHistory,
         image_rights: metadata.imageRights,
         international_shipping_fee_cents:
@@ -307,6 +312,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         medium: metadata.medium,
         offer: metadata.offer,
         price_adjustment: metadata.priceAdjustment,
+        display_price_range: metadata.displayPriceRange,
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
         provenance: metadata.provenance,
