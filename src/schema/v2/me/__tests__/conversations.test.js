@@ -100,6 +100,43 @@ describe("Conversations", () => {
         }
       )
     })
+
+    it("passes conversationType parameter to loader for partner conversations", () => {
+      const query = `
+        {
+          me {
+            conversationsConnection(first: 10, type: PARTNER, partnerId: "foo", conversationType: INQUIRY) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const mockConversationsLoader = jest.fn(() =>
+        Promise.resolve({
+          total_unread_count: 0,
+          total_count: 1,
+          conversations: [{ id: "1" }],
+        })
+      )
+
+      const context = {
+        meLoader: jest.fn().mockResolvedValue({}),
+        conversationsLoader: mockConversationsLoader,
+      }
+
+      return runAuthenticatedQuery(query, context).then(() => {
+        expect(mockConversationsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({
+            conversation_type: "inquiry",
+          })
+        )
+      })
+    })
   })
 
   describe("User", () => {
