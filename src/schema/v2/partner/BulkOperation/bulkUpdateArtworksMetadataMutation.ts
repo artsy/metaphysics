@@ -30,6 +30,7 @@ interface Input {
     artistIds?: string[]
     availability?: string
     category?: string
+    dates?: number[]
     hasCertificateOfAuthenticity?: boolean
     coaByGallery?: boolean
     coaByAuthenticatingBody?: boolean
@@ -76,6 +77,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     category: {
       type: GraphQLString,
       description: "The category (medium type) to be assigned",
+    },
+    dates: {
+      type: GraphQLList(GraphQLInt),
+      description: "Array of dates as numbers to be assigned",
     },
     hasCertificateOfAuthenticity: {
       type: GraphQLBoolean,
@@ -285,6 +290,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         artist_ids: metadata.artistIds,
         availability: metadata.availability,
         category: metadata.category,
+        dates: metadata.dates,
         certificate_of_authenticity: metadata.hasCertificateOfAuthenticity,
         coa_by_gallery: metadata.coaByGallery,
         coa_by_authenticating_body: metadata.coaByAuthenticatingBody,
