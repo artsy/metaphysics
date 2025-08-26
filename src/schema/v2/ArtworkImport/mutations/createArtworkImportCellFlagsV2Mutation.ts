@@ -1,10 +1,9 @@
-// DEPRECATED: This mutation is deprecated. Use CreateArtworkImportArtistAssignmentsV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -12,17 +11,15 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "AssignArtworkImportArtistSuccess",
-  isTypeOf: (data) => !!data.artworkImportID,
+  name: "CreateArtworkImportCellFlagsV2Success",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    updatedRowsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -35,7 +32,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "AssignArtworkImportArtistFailure",
+  name: "CreateArtworkImportCellFlagsV2Failure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -46,54 +43,77 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "AssignArtworkImportArtistResponseOrError",
+  name: "CreateArtworkImportCellFlagsV2ResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const AssignArtworkImportArtistMutation = mutationWithClientMutationId<
+export const CreateArtworkImportCellFlagsV2Mutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "AssignArtworkImportArtist",
-  deprecationReason:
-    "This mutation is deprecated. Use CreateArtworkImportArtistAssignmentsV2 instead.",
+  name: "CreateArtworkImportCellFlagsV2",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    artistName: {
+    rowID: {
       type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the row containing the cell to flag",
     },
-    artistID: {
+    columnName: {
       type: new GraphQLNonNull(GraphQLString),
+      description: "Name of the column containing the cell to flag",
+    },
+    flaggedValue: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The value being flagged",
+    },
+    originalValue: {
+      type: GraphQLString,
+      description: "The original value before flagging",
+    },
+    userNote: {
+      type: GraphQLString,
+      description: "User note explaining why the cell was flagged",
     },
   },
   outputFields: {
-    assignArtworkImportArtistOrError: {
+    createArtworkImportCellFlagsV2OrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, artistName, artistID },
-    { artworkImportAssignArtistLoader }
+    {
+      artworkImportID,
+      rowID,
+      columnName,
+      flaggedValue,
+      originalValue,
+      userNote,
+    },
+    { artworkImportV2CreateCellFlagsLoader }
   ) => {
-    if (!artworkImportAssignArtistLoader) {
+    if (!artworkImportV2CreateCellFlagsLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    try {
-      const { updated_rows_count } = await artworkImportAssignArtistLoader(
-        artworkImportID,
-        {
-          artist_name: artistName,
-          artist_id: artistID,
-        }
-      )
+    const flagData: any = {
+      row_id: rowID,
+      column_name: columnName,
+      flagged_value: flaggedValue,
+    }
 
+    if (originalValue) flagData.original_value = originalValue
+    if (userNote) flagData.user_note = userNote
+
+    try {
       return {
-        updatedRowsCount: updated_rows_count,
+        ...(await artworkImportV2CreateCellFlagsLoader(
+          artworkImportID,
+          flagData
+        )),
         artworkImportID,
       }
     } catch (error) {

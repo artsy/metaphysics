@@ -1,10 +1,9 @@
-// DEPRECATED: This mutation is deprecated. Use CreateArtworkImportArtistMatchesV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -12,20 +11,15 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportArtistsSuccess",
-  isTypeOf: (data) => !!data.artworkImportID,
+  name: "CreateArtworkImportImageMatchesV2Success",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    matched: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    unmatched: {
-      type: new GraphQLNonNull(GraphQLInt),
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -38,7 +32,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportArtistsFailure",
+  name: "CreateArtworkImportImageMatchesV2Failure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -49,45 +43,59 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "MatchArtworkImportArtistsResponseOrError",
+  name: "CreateArtworkImportImageMatchesV2ResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const MatchArtworkImportArtistsMutation = mutationWithClientMutationId<
+export const CreateArtworkImportImageMatchesV2Mutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "MatchArtworkImportArtists",
-  deprecationReason:
-    "This mutation is deprecated. Use CreateArtworkImportArtistMatchesV2 instead.",
+  name: "CreateArtworkImportImageMatchesV2",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    fileName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The image filename",
+    },
+    s3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the uploaded image asset",
+    },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket of the uploaded image asset",
+    },
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the row to associate the image with",
+    },
   },
   outputFields: {
-    matchArtworkImportArtistsOrError: {
+    createArtworkImportImageMatchesV2OrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportMatchArtistsLoader }
+    { artworkImportID, fileName, s3Key, s3Bucket, rowID },
+    { artworkImportV2CreateImageMatchesLoader }
   ) => {
-    if (!artworkImportMatchArtistsLoader) {
+    if (!artworkImportV2CreateImageMatchesLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      const { matched, unmatched } = await artworkImportMatchArtistsLoader(
-        artworkImportID
-      )
-
       return {
-        matched,
-        unmatched,
+        ...(await artworkImportV2CreateImageMatchesLoader(artworkImportID, {
+          file_name: fileName,
+          s3_key: s3Key,
+          s3_bucket: s3Bucket,
+          row_id: rowID,
+        })),
         artworkImportID,
       }
     } catch (error) {

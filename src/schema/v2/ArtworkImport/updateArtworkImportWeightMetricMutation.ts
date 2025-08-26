@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportV2 with weightMetric parameter instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -45,6 +46,8 @@ export const UpdateArtworkImportWeightMetricMutation = mutationWithClientMutatio
   ResolverContext
 >({
   name: "UpdateArtworkImportWeightMetric",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportV2 with weightMetric parameter instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

@@ -8992,6 +8992,59 @@ type CreateArtworkFailure {
   mutationError: GravityMutationError
 }
 
+type CreateArtworkImportArtistAssignmentsV2Failure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkImportArtistAssignmentsV2Input {
+  # The artist ID to assign to the unmatched name
+  artistID: String!
+
+  # The unmatched artist name to assign
+  artistName: String!
+  artworkImportID: String!
+  clientMutationId: String
+}
+
+type CreateArtworkImportArtistAssignmentsV2Payload {
+  clientMutationId: String
+  createArtworkImportArtistAssignmentsV2OrError: CreateArtworkImportArtistAssignmentsV2ResponseOrError
+}
+
+union CreateArtworkImportArtistAssignmentsV2ResponseOrError =
+    CreateArtworkImportArtistAssignmentsV2Failure
+  | CreateArtworkImportArtistAssignmentsV2Success
+
+type CreateArtworkImportArtistAssignmentsV2Success {
+  artworkImport: ArtworkImport
+  artworkImportID: String!
+  updatedRowsCount: Int!
+}
+
+type CreateArtworkImportArtistMatchesV2Failure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkImportArtistMatchesV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+}
+
+type CreateArtworkImportArtistMatchesV2Payload {
+  clientMutationId: String
+  createArtworkImportArtistMatchesV2OrError: CreateArtworkImportArtistMatchesV2ResponseOrError
+}
+
+union CreateArtworkImportArtistMatchesV2ResponseOrError =
+    CreateArtworkImportArtistMatchesV2Failure
+  | CreateArtworkImportArtistMatchesV2Success
+
+type CreateArtworkImportArtistMatchesV2Success {
+  artworkImport: ArtworkImport
+  artworkImportID: String!
+  matchedArtistsCount: Int!
+}
+
 type CreateArtworkImportArtworksFailure {
   mutationError: GravityMutationError
 }
@@ -9017,8 +9070,105 @@ type CreateArtworkImportArtworksSuccess {
   errors: Int!
 }
 
+type CreateArtworkImportArtworksV2Failure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkImportArtworksV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+}
+
+type CreateArtworkImportArtworksV2Payload {
+  clientMutationId: String
+  createArtworkImportArtworksV2OrError: CreateArtworkImportArtworksV2ResponseOrError
+}
+
+union CreateArtworkImportArtworksV2ResponseOrError =
+    CreateArtworkImportArtworksV2Failure
+  | CreateArtworkImportArtworksV2Success
+
+type CreateArtworkImportArtworksV2Success {
+  artworkImport: ArtworkImport
+  artworkImportID: String!
+  createdArtworksCount: Int!
+}
+
+type CreateArtworkImportCellFlagsV2Failure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkImportCellFlagsV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+
+  # Name of the column containing the cell to flag
+  columnName: String!
+
+  # The value being flagged
+  flaggedValue: String!
+
+  # The original value before flagging
+  originalValue: String
+
+  # ID of the row containing the cell to flag
+  rowID: String!
+
+  # User note explaining why the cell was flagged
+  userNote: String
+}
+
+type CreateArtworkImportCellFlagsV2Payload {
+  clientMutationId: String
+  createArtworkImportCellFlagsV2OrError: CreateArtworkImportCellFlagsV2ResponseOrError
+}
+
+union CreateArtworkImportCellFlagsV2ResponseOrError =
+    CreateArtworkImportCellFlagsV2Failure
+  | CreateArtworkImportCellFlagsV2Success
+
+type CreateArtworkImportCellFlagsV2Success {
+  artworkImport: ArtworkImport
+  success: Boolean!
+}
+
 type CreateArtworkImportFailure {
   mutationError: GravityMutationError
+}
+
+type CreateArtworkImportImageMatchesV2Failure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkImportImageMatchesV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+
+  # The image filename
+  fileName: String!
+
+  # ID of the row to associate the image with
+  rowID: String!
+
+  # S3 bucket of the uploaded image asset
+  s3Bucket: String!
+
+  # S3 key of the uploaded image asset
+  s3Key: String!
+}
+
+type CreateArtworkImportImageMatchesV2Payload {
+  clientMutationId: String
+  createArtworkImportImageMatchesV2OrError: CreateArtworkImportImageMatchesV2ResponseOrError
+}
+
+union CreateArtworkImportImageMatchesV2ResponseOrError =
+    CreateArtworkImportImageMatchesV2Failure
+  | CreateArtworkImportImageMatchesV2Success
+
+type CreateArtworkImportImageMatchesV2Success {
+  artworkImport: ArtworkImport
+  success: Boolean!
 }
 
 input CreateArtworkImportInput {
@@ -15606,6 +15756,9 @@ type Mutation {
   assignArtworkImportArtist(
     input: AssignArtworkImportArtistInput!
   ): AssignArtworkImportArtistPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportArtistAssignmentsV2 instead."
+    )
 
   # Bulk add artworks to a show
   bulkAddArtworksToShow(
@@ -15619,6 +15772,9 @@ type Mutation {
   cancelArtworkImport(
     input: CancelArtworkImportInput!
   ): CancelArtworkImportPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportV2 with status: 'cancelled' instead."
+    )
 
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
@@ -15831,9 +15987,27 @@ type Mutation {
   createArtworkImport(
     input: CreateArtworkImportInput!
   ): CreateArtworkImportPayload
+  createArtworkImportArtistAssignmentsV2(
+    input: CreateArtworkImportArtistAssignmentsV2Input!
+  ): CreateArtworkImportArtistAssignmentsV2Payload
+  createArtworkImportArtistMatchesV2(
+    input: CreateArtworkImportArtistMatchesV2Input!
+  ): CreateArtworkImportArtistMatchesV2Payload
   createArtworkImportArtworks(
     input: CreateArtworkImportArtworksInput!
   ): CreateArtworkImportArtworksPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportArtworksV2 instead."
+    )
+  createArtworkImportArtworksV2(
+    input: CreateArtworkImportArtworksV2Input!
+  ): CreateArtworkImportArtworksV2Payload
+  createArtworkImportCellFlagsV2(
+    input: CreateArtworkImportCellFlagsV2Input!
+  ): CreateArtworkImportCellFlagsV2Payload
+  createArtworkImportImageMatchesV2(
+    input: CreateArtworkImportImageMatchesV2Input!
+  ): CreateArtworkImportImageMatchesV2Payload
   createBackupSecondFactors(
     input: CreateBackupSecondFactorsInput!
   ): CreateBackupSecondFactorsPayload
@@ -16186,6 +16360,9 @@ type Mutation {
   flagArtworkImportCell(
     input: FlagArtworkImportCellInput!
   ): FlagArtworkImportCellPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportCellFlagsV2 instead."
+    )
 
   # Follow (or unfollow) an artist
   followArtist(input: FollowArtistInput!): FollowArtistPayload
@@ -16221,12 +16398,21 @@ type Mutation {
   matchArtworkImportArtists(
     input: MatchArtworkImportArtistsInput!
   ): MatchArtworkImportArtistsPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportArtistMatchesV2 instead."
+    )
   matchArtworkImportImages(
     input: MatchArtworkImportImagesInput!
   ): MatchArtworkImportImagesPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportImageMatchesV2 for single image matches instead."
+    )
   matchArtworkImportRowImage(
     input: MatchArtworkImportRowImageInput!
   ): MatchArtworkImportRowImagePayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use CreateArtworkImportImageMatchesV2 instead."
+    )
 
   # Merge multiple artist records in order to deduplicate artists
   mergeArtists(input: MergeArtistsMutationInput!): MergeArtistsMutationPayload
@@ -16258,6 +16444,12 @@ type Mutation {
   removeArtworkImportImage(
     input: RemoveArtworkImportImageInput!
   ): RemoveArtworkImportImagePayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead."
+    )
+  removeArtworkImportImageMatchesV2(
+    input: RemoveArtworkImportImageMatchesV2Input!
+  ): RemoveArtworkImportImageMatchesV2Payload
   removeAssetFromConsignmentSubmission(
     # Parameters for RemoveAssetFromConsignmentSubmission
     input: RemoveAssetFromConsignmentSubmissionInput!
@@ -16348,6 +16540,9 @@ type Mutation {
   toggleArtworkImportRowExclusion(
     input: ToggleArtworkImportRowExclusionInput!
   ): ToggleArtworkImportRowExclusionPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportRowV2 instead."
+    )
   transferMyCollection(
     # Parameters for TransferMyCollection
     input: TransferMyCollectionInput!
@@ -16393,21 +16588,39 @@ type Mutation {
   updateArtworkImportCurrency(
     input: UpdateArtworkImportCurrencyInput!
   ): UpdateArtworkImportCurrencyPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportV2 with currency parameter instead."
+    )
   updateArtworkImportDimensionMetric(
     input: UpdateArtworkImportDimensionMetricInput!
   ): UpdateArtworkImportDimensionMetricPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportV2 with dimensionMetric parameter instead."
+    )
   updateArtworkImportRow(
     input: UpdateArtworkImportRowInput!
   ): UpdateArtworkImportRowPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportRowV2 instead."
+    )
   updateArtworkImportRowImage(
     input: UpdateArtworkImportRowImageInput!
   ): UpdateArtworkImportRowImagePayload
   updateArtworkImportRowImages(
     input: UpdateArtworkImportRowImagesInput!
   ): UpdateArtworkImportRowImagesPayload
+  updateArtworkImportRowV2(
+    input: UpdateArtworkImportRowV2Input!
+  ): UpdateArtworkImportRowV2Payload
+  updateArtworkImportV2(
+    input: UpdateArtworkImportV2Input!
+  ): UpdateArtworkImportV2Payload
   updateArtworkImportWeightMetric(
     input: UpdateArtworkImportWeightMetricInput!
   ): UpdateArtworkImportWeightMetricPayload
+    @deprecated(
+      reason: "This mutation is deprecated. Use UpdateArtworkImportV2 with weightMetric parameter instead."
+    )
 
   # Updates the flags on a partner.
   updateCMSLastAccessTimestamp(
@@ -20761,6 +20974,32 @@ input RemoveArtworkImportImageInput {
   rowID: String!
 }
 
+type RemoveArtworkImportImageMatchesV2Failure {
+  mutationError: GravityMutationError
+}
+
+input RemoveArtworkImportImageMatchesV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+
+  # ID of the image match to remove
+  imageID: String!
+}
+
+type RemoveArtworkImportImageMatchesV2Payload {
+  clientMutationId: String
+  removeArtworkImportImageMatchesV2OrError: RemoveArtworkImportImageMatchesV2ResponseOrError
+}
+
+union RemoveArtworkImportImageMatchesV2ResponseOrError =
+    RemoveArtworkImportImageMatchesV2Failure
+  | RemoveArtworkImportImageMatchesV2Success
+
+type RemoveArtworkImportImageMatchesV2Success {
+  artworkImport: ArtworkImport
+  success: Boolean!
+}
+
 type RemoveArtworkImportImagePayload {
   clientMutationId: String
   removeArtworkImportImageOrError: RemoveArtworkImportImageResponseOrError
@@ -23273,7 +23512,74 @@ type UpdateArtworkImportRowSuccess {
   success: Boolean!
 }
 
+type UpdateArtworkImportRowV2Failure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtworkImportRowV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+
+  # Whether to exclude this row from import
+  excludedFromImport: Boolean
+
+  # Name of the field to update
+  fieldName: String
+
+  # New value for the field
+  fieldValue: String
+  rowID: String!
+}
+
+type UpdateArtworkImportRowV2Payload {
+  clientMutationId: String
+  updateArtworkImportRowV2OrError: UpdateArtworkImportRowV2ResponseOrError
+}
+
+union UpdateArtworkImportRowV2ResponseOrError =
+    UpdateArtworkImportRowV2Failure
+  | UpdateArtworkImportRowV2Success
+
+type UpdateArtworkImportRowV2Success {
+  artworkImport: ArtworkImport
+  artworkImportID: String!
+}
+
 type UpdateArtworkImportSuccess {
+  artworkImport: ArtworkImport
+}
+
+type UpdateArtworkImportV2Failure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtworkImportV2Input {
+  artworkImportID: String!
+  clientMutationId: String
+
+  # Currency to set for all rows in the import
+  currency: String
+
+  # Dimension metric to set for all rows in the import
+  dimensionMetric: String
+
+  # Status to update the import to (e.g., 'cancelled')
+  status: String
+
+  # Weight metric to set for all rows in the import
+  weightMetric: String
+}
+
+type UpdateArtworkImportV2Payload {
+  clientMutationId: String
+  updateArtworkImportV2OrError: UpdateArtworkImportV2ResponseOrError
+}
+
+union UpdateArtworkImportV2ResponseOrError =
+    UpdateArtworkImportV2Failure
+  | UpdateArtworkImportV2Success
+
+type UpdateArtworkImportV2Success {
   artworkImport: ArtworkImport
 }
 

@@ -3,7 +3,6 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,29 +10,21 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportSuccess",
-  isTypeOf: (data) => !!data.id || !!data.queued,
+  name: "UpdateArtworkImportV2Success",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
     artworkImport: {
       type: ArtworkImportType,
-      resolve: (result) => {
-        if (result.id) {
-          return result
-        }
-      },
-    },
-    queued: {
-      type: GraphQLBoolean,
-      resolve: ({ queued }) => queued,
+      resolve: (result) => result,
     },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportFailure",
+  name: "UpdateArtworkImportV2Failure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -44,67 +35,60 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportResponseOrError",
+  name: "UpdateArtworkImportV2ResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportMutation = mutationWithClientMutationId<
+export const UpdateArtworkImportV2Mutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImport",
+  name: "UpdateArtworkImportV2",
   inputFields: {
-    async: {
-      type: GraphQLBoolean,
-    },
-    partnerID: {
+    artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    fileName: {
+    status: {
       type: GraphQLString,
+      description: "Status to update the import to (e.g., 'cancelled')",
     },
-    parseWithAI: {
-      type: GraphQLBoolean,
-    },
-    parseWithAIModel: {
+    currency: {
       type: GraphQLString,
+      description: "Currency to set for all rows in the import",
     },
-    locationID: {
+    dimensionMetric: {
       type: GraphQLString,
+      description: "Dimension metric to set for all rows in the import",
+    },
+    weightMetric: {
+      type: GraphQLString,
+      description: "Weight metric to set for all rows in the import",
     },
   },
   outputFields: {
-    artworkImportOrError: {
+    updateArtworkImportV2OrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createArtworkImportLoader }) => {
-    if (!createArtworkImportLoader) {
+  mutateAndGetPayload: async (
+    { artworkImportID, status, currency, dimensionMetric, weightMetric },
+    { artworkImportV2UpdateLoader }
+  ) => {
+    if (!artworkImportV2UpdateLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const gravityArgs = {
-      async: args.async,
-      partner_id: args.partnerID,
-      s3_bucket: args.s3Bucket,
-      s3_key: args.s3Key,
-      file_name: args.fileName,
-      parse_with_ai: args.parseWithAI,
-      parse_with_ai_model: args.parseWithAIModel,
-      location_id: args.locationID,
-    }
+    const updateParams: any = {}
+
+    if (status) updateParams.status = status
+    if (currency) updateParams.currency = currency
+    if (dimensionMetric) updateParams.dimension_metric = dimensionMetric
+    if (weightMetric) updateParams.weight_metric = weightMetric
 
     try {
-      const result = await createArtworkImportLoader(gravityArgs)
-      return result
+      return await artworkImportV2UpdateLoader(artworkImportID, updateParams)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

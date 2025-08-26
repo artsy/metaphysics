@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportV2 with dimensionMetric parameter instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -45,6 +46,8 @@ export const UpdateArtworkImportDimensionMetricMutation = mutationWithClientMuta
   ResolverContext
 >({
   name: "UpdateArtworkImportDimensionMetric",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportV2 with dimensionMetric parameter instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
