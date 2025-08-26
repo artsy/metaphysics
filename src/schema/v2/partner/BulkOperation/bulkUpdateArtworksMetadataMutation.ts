@@ -14,6 +14,10 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "schema/v2/artwork/artworkSignatureTypes"
 import { Availability } from "schema/v2/types/availability"
 import { ResolverContext } from "types/graphql"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
@@ -157,6 +161,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Details about the signature",
     },
+    signatureTypes: {
+      type: new GraphQLList(ArtworkSignatureTypeEnum),
+      description: "Types of signatures on the artwork",
+    },
     title: {
       type: GraphQLString,
       description: "The title of the artwork",
@@ -298,6 +306,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         provenance: metadata.provenance,
         published: metadata.published,
         signature: metadata.signature,
+        ...transformSignatureFieldsToGravityFields(metadata.signatureTypes),
         title: metadata.title,
       }
     }
