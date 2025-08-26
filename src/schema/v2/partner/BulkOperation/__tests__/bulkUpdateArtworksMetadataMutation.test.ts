@@ -12,6 +12,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           metadata: {
             artistIds: ["artist1", "artist2"]
             availability: SOLD
+            dates: [2020, 2021]
             hasCertificateOfAuthenticity: true
             coaByGallery: true
             coaByAuthenticatingBody: null
@@ -84,6 +85,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           artist_ids: ["artist1", "artist2"],
           condition_description: "Excellent",
           availability: "sold",
+          dates: [2020, 2021],
           certificate_of_authenticity: true,
           coa_by_gallery: true,
           coa_by_authenticating_body: null,
@@ -356,6 +358,41 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           stamped_by_artist_estate: false,
           sticker_label: false,
           signed_other: false,
+        },
+      }
+    )
+  })
+
+  it("updates artworks with dates field", async () => {
+    const datesMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: { id: "partner123", metadata: { dates: [1990, 1995, 2000] } }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 2,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(datesMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          dates: [1990, 1995, 2000],
         },
       }
     )
