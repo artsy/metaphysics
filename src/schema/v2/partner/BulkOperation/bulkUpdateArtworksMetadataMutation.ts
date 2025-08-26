@@ -35,6 +35,7 @@ interface Input {
     coaByGallery?: boolean
     coaByAuthenticatingBody?: boolean
     conditionDescription?: string
+    displayPriceRange?: boolean
     domesticShippingFeeCents?: number
     ecommerce: boolean
     exactPrice?: boolean
@@ -46,7 +47,6 @@ interface Input {
     medium?: string
     offer: boolean
     priceAdjustment?: number
-    displayPriceRange?: boolean
     priceHidden?: boolean
     priceListed?: number
     provenance?: string
@@ -100,6 +100,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The artwork condition to be assigned",
     },
+    displayPriceRange: {
+      type: GraphQLBoolean,
+      description: "Set artwork price visibility to price range",
+    },
     domesticShippingFeeCents: {
       type: GraphQLInt,
       description:
@@ -146,10 +150,6 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLInt,
       description:
         "Adjusts the artworks' prices according to the value passed (percentage).",
-    },
-    displayPriceRange: {
-      type: GraphQLBoolean,
-      description: "Set artwork price visibility to price range",
     },
     priceHidden: {
       type: GraphQLBoolean,
@@ -311,8 +311,8 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         location_id: metadata.locationId,
         medium: metadata.medium,
         offer: metadata.offer,
-        price_adjustment: metadata.priceAdjustment,
         display_price_range: metadata.displayPriceRange,
+        price_adjustment: metadata.priceAdjustment,
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
         provenance: metadata.provenance,
