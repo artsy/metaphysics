@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -53,6 +54,8 @@ export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "RemoveArtworkImportImage",
+  deprecationReason:
+    "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

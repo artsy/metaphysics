@@ -92,22 +92,26 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    // DEPRECATED: Use artworkImportV2CreateArtistAssignmentsLoader instead
     artworkImportAssignArtistLoader: gravityLoader(
       (id) => `artwork_import/${id}/assign_artist`,
       {},
       { method: "PUT" }
     ),
+    // DEPRECATED: Use artworkImportV2CreateArtworksLoader instead
     artworkImportCreateArtworksLoader: gravityLoader(
       (id) => `artwork_import/${id}/create_artworks`,
       {},
       { method: "POST" }
     ),
+    // DEPRECATED: Use artworkImportV2CreateCellFlagsLoader instead
     artworkImportFlagCellLoader: gravityLoader(
       (id) => `artwork_import/${id}/flag_cell`,
       {},
       { method: "POST" }
     ),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
+    // DEPRECATED: Use artworkImportV2CreateArtistMatchesLoader instead
     artworkImportMatchArtistsLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_artists`,
       {},
@@ -118,6 +122,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    // DEPRECATED: Use artworkImportV2CreateImageMatchesLoader instead
     artworkImportRowMatchImageLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_image`,
       {},
@@ -145,6 +150,7 @@ export default (accessToken, userID, opts) => {
     artworkImportSummaryLoader: gravityLoader(
       (id) => `artwork_import/${id}/summary`
     ),
+    // DEPRECATED: Use artworkImportV2UpdateRowLoader instead
     artworkImportToggleRowExclusionLoader: gravityLoader(
       (id) => `artwork_import/${id}/toggle_row_exclusion`,
       {},
@@ -153,16 +159,19 @@ export default (accessToken, userID, opts) => {
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),
+    // DEPRECATED: Use artworkImportV2UpdateLoader instead
     artworkImportUpdateCurrencyLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_currency`,
       {},
       { method: "PUT" }
     ),
+    // DEPRECATED: Use artworkImportV2UpdateLoader instead
     artworkImportUpdateDimensionMetricLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_dimension_metric`,
       {},
       { method: "PUT" }
     ),
+    // DEPRECATED: Use artworkImportV2UpdateLoader instead
     artworkImportUpdateWeightMetricLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_weight_metric`,
       {},
@@ -173,6 +182,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    // DEPRECATED: Use artworkImportV2UpdateRowLoader instead
     artworkImportUpdateRowLoader: gravityLoader(
       (id) => `artwork_import/${id}/update_row`,
       {},
@@ -196,6 +206,58 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+
+    // V2 Artwork Import Loaders
+    // These are the new RESTful endpoints to replace action-based ones
+    artworkImportV2UpdateLoader: gravityLoader(
+      (id) => `artwork_import/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportV2UpdateRowLoader: gravityLoader<
+      any,
+      { artworkImportID: string; rowID: string }
+    >(
+      ({ artworkImportID, rowID }) =>
+        `artwork_import/${artworkImportID}/rows/${rowID}`,
+      {},
+      { method: "PUT" }
+    ),
+    artworkImportV2CreateArtworksLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artworks`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportV2CreateArtistMatchesLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artist_matches`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportV2CreateArtistAssignmentsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artist_assignments`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportV2CreateImageMatchesLoader: gravityLoader(
+      (id) => `artwork_import/${id}/image_matches`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportV2RemoveImageMatchesLoader: gravityLoader<
+      any,
+      { artworkImportID: string; imageID: string }
+    >(
+      ({ artworkImportID, imageID }) =>
+        `artwork_import/${artworkImportID}/image/${imageID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    artworkImportV2CreateCellFlagsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/cell_flags`,
+      {},
+      { method: "POST" }
+    ),
+    // End V2 Artwork Import Loaders
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
@@ -212,6 +274,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
+    // DEPRECATED: Use artworkImportV2UpdateLoader instead
     cancelArtworkImportLoader: gravityLoader(
       (id) => `artwork_import/${id}/cancel`,
       {},

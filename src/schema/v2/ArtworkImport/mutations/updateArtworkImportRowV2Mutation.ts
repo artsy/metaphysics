@@ -3,7 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,10 +11,10 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportRowImageSuccess",
+  name: "UpdateArtworkImportRowV2Success",
   isTypeOf: (data) => !!data.artworkImportID,
   fields: () => ({
     artworkImportID: {
@@ -31,7 +31,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportRowImageFailure",
+  name: "UpdateArtworkImportRowV2Failure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -42,46 +42,65 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdateArtworkImportRowImageResponseOrError",
+  name: "UpdateArtworkImportRowV2ResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdateArtworkImportRowImageMutation = mutationWithClientMutationId<
+export const UpdateArtworkImportRowV2Mutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "UpdateArtworkImportRowImage",
+  name: "UpdateArtworkImportRowV2",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    imageID: {
+    rowID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    position: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "New position for the image (0-based)",
+    fieldName: {
+      type: GraphQLString,
+      description: "Name of the field to update",
+    },
+    fieldValue: {
+      type: GraphQLString,
+      description: "New value for the field",
+    },
+    excludedFromImport: {
+      type: GraphQLBoolean,
+      description: "Whether to exclude this row from import",
     },
   },
   outputFields: {
-    updateArtworkImportRowImageOrError: {
+    updateArtworkImportRowV2OrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, imageID, position },
-    { artworkImportUpdateImageMatchLoader }
+    { artworkImportID, rowID, fieldName, fieldValue, excludedFromImport },
+    { artworkImportV2UpdateRowLoader }
   ) => {
-    if (!artworkImportUpdateImageMatchLoader) {
+    if (!artworkImportV2UpdateRowLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
+    const updateParams: any = {}
+
+    if (fieldName && fieldValue !== undefined) {
+      updateParams.field_name = fieldName
+      updateParams.field_value = fieldValue
+    }
+
+    if (excludedFromImport !== undefined) {
+      updateParams.excluded_from_import = excludedFromImport
+    }
+
     try {
-      await artworkImportUpdateImageMatchLoader(
-        { artworkImportID, imageID },
-        { position }
+      await artworkImportV2UpdateRowLoader(
+        { artworkImportID, rowID },
+        updateParams
       )
 
       return {

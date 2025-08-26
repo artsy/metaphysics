@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportV2 with currency parameter instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -45,6 +46,8 @@ export const UpdateArtworkImportCurrencyMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdateArtworkImportCurrency",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportV2 with currency parameter instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

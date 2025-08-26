@@ -1,9 +1,9 @@
-// DEPRECATED: This mutation is deprecated. Use CreateArtworkImportCellFlagsV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,24 +11,29 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FlagArtworkImportCellSuccess",
-  isTypeOf: (data) => !!data.artworkImportID,
+  name: "CreateArtworkImportSuccess",
+  isTypeOf: (data) => !!data.id || !!data.queued,
   fields: () => ({
     artworkImport: {
       type: ArtworkImportType,
-      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
-        if (!artworkImportLoader) return null
-        return artworkImportLoader(artworkImportID)
+      resolve: (result) => {
+        if (result.id) {
+          return result
+        }
       },
+    },
+    queued: {
+      type: GraphQLBoolean,
+      resolve: ({ queued }) => queued,
     },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FlagArtworkImportCellFailure",
+  name: "CreateArtworkImportFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -39,69 +44,67 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "FlagArtworkImportCellResponseOrError",
+  name: "CreateArtworkImportResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const FlagArtworkImportCellMutation = mutationWithClientMutationId<
+export const CreateArtworkImportMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "FlagArtworkImportCell",
-  deprecationReason:
-    "This mutation is deprecated. Use CreateArtworkImportCellFlagsV2 instead.",
+  name: "CreateArtworkImport",
   inputFields: {
-    artworkImportID: {
+    async: {
+      type: GraphQLBoolean,
+    },
+    partnerID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    rowID: {
+    s3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    columnName: {
+    s3Key: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    userNote: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    flaggedValue: {
+    fileName: {
       type: GraphQLString,
     },
-    originalValue: {
+    parseWithAI: {
+      type: GraphQLBoolean,
+    },
+    parseWithAIModel: {
+      type: GraphQLString,
+    },
+    locationID: {
       type: GraphQLString,
     },
   },
   outputFields: {
-    flagArtworkImportCellOrError: {
+    artworkImportOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    {
-      artworkImportID,
-      rowID,
-      columnName,
-      userNote,
-      flaggedValue,
-      originalValue,
-    },
-    { artworkImportFlagCellLoader }
-  ) => {
-    if (!artworkImportFlagCellLoader) {
+  mutateAndGetPayload: async (args, { createArtworkImportLoader }) => {
+    if (!createArtworkImportLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    try {
-      await artworkImportFlagCellLoader(artworkImportID, {
-        row_id: rowID,
-        column_name: columnName,
-        user_note: userNote,
-        flagged_value: flaggedValue,
-        original_value: originalValue,
-      })
+    const gravityArgs = {
+      async: args.async,
+      partner_id: args.partnerID,
+      s3_bucket: args.s3Bucket,
+      s3_key: args.s3Key,
+      file_name: args.fileName,
+      parse_with_ai: args.parseWithAI,
+      parse_with_ai_model: args.parseWithAIModel,
+      location_id: args.locationID,
+    }
 
-      return { artworkImportID }
+    try {
+      const result = await createArtworkImportLoader(gravityArgs)
+      return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

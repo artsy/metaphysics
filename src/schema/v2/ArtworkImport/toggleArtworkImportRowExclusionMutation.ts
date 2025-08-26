@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportRowV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -46,6 +47,8 @@ export const ToggleArtworkImportRowExclusionMutation = mutationWithClientMutatio
   ResolverContext
 >({
   name: "ToggleArtworkImportRowExclusion",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportRowV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

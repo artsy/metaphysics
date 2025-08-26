@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use CreateArtworkImportArtworksV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -58,6 +59,8 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateArtworkImportArtworks",
+  deprecationReason:
+    "This mutation is deprecated. Use CreateArtworkImportArtworksV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

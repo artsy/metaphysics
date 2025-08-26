@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportRowV2 instead.
 import {
   GraphQLBoolean,
   GraphQLNonNull,
@@ -53,6 +54,8 @@ export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdateArtworkImportRow",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportRowV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),

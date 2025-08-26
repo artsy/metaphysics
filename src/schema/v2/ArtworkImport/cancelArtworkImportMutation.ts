@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use UpdateArtworkImportV2 with status: "cancelled" instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -48,6 +49,8 @@ export const CancelArtworkImportMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CancelArtworkImport",
+  deprecationReason:
+    "This mutation is deprecated. Use UpdateArtworkImportV2 with status: 'cancelled' instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
