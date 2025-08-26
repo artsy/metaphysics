@@ -25,7 +25,6 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             medium: "Oil on Canvas"
             offer: false
             priceAdjustment: -5
-            priceHidden: false
             priceListed: 1000
             displayPriceRange: true
             provenance: "Owned by a famous collector"
@@ -96,7 +95,6 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           ecommerce: true,
           offer: false,
           price_adjustment: -5,
-          price_hidden: false,
           price_listed: 1000,
           display_price_range: true,
           published: true,
@@ -175,14 +173,11 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
     )
   })
 
-  it("updates price visibility fields correctly", async () => {
-    const priceVisibilityMutation = gql`
+  it("updates price visibility for exact price", async () => {
+    const exactPriceMutation = gql`
       mutation {
         bulkUpdateArtworksMetadata(
-          input: {
-            id: "partner123"
-            metadata: { priceHidden: true, displayPriceRange: false }
-          }
+          input: { id: "partner123", metadata: { exactPrice: true } }
         ) {
           bulkUpdateArtworksMetadataOrError {
             __typename
@@ -201,14 +196,83 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       }),
     }
 
-    await runAuthenticatedQuery(priceVisibilityMutation, context)
+    await runAuthenticatedQuery(exactPriceMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          exact_price: true,
+        },
+      }
+    )
+  })
+
+  it("updates price visibility for price range", async () => {
+    const priceRangeMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: { id: "partner123", metadata: { displayPriceRange: true } }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 3,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(priceRangeMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          display_price_range: true,
+        },
+      }
+    )
+  })
+
+  it("updates price visibility for price on request", async () => {
+    const priceOnRequestMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: { id: "partner123", metadata: { priceHidden: true } }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 3,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(priceOnRequestMutation, context)
 
     expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
       "partner123",
       {
         metadata: {
           price_hidden: true,
-          display_price_range: false,
         },
       }
     )
