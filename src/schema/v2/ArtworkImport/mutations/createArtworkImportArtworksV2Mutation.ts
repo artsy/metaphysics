@@ -82,7 +82,7 @@ export const CreateArtworkImportArtworksV2Mutation = mutationWithClientMutationI
 
       return {
         artworkImportID,
-        createdArtworksCount: result.created_artworks_count,
+        createdArtworksCount: result.created || 0,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)

@@ -4,7 +4,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("CreateArtworkImportArtworksV2Mutation", () => {
   it("creates artworks successfully", async () => {
     const artworkImportV2CreateArtworksLoader = jest.fn().mockResolvedValue({
-      created_artworks_count: 5,
+      created: 5,
+      errors: 0,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
@@ -54,7 +55,8 @@ describe("CreateArtworkImportArtworksV2Mutation", () => {
 
   it("handles zero artworks created", async () => {
     const artworkImportV2CreateArtworksLoader = jest.fn().mockResolvedValue({
-      created_artworks_count: 0,
+      created: 0,
+      errors: 0,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",

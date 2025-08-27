@@ -9042,7 +9042,7 @@ union CreateArtworkImportArtistMatchV2ResponseOrError =
 type CreateArtworkImportArtistMatchV2Success {
   artworkImport: ArtworkImport
   artworkImportID: String!
-  matchedArtistsCount: Int!
+  success: Boolean!
 }
 
 type CreateArtworkImportArtworksFailure {
