@@ -14,7 +14,7 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportCellFlagsV2Success",
+  name: "CreateArtworkImportImageMatchV2Success",
   isTypeOf: (data) => !!data.id,
   fields: () => ({
     success: {
@@ -32,7 +32,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportCellFlagsV2Failure",
+  name: "CreateArtworkImportImageMatchV2Failure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -43,77 +43,59 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportCellFlagsV2ResponseOrError",
+  name: "CreateArtworkImportImageMatchV2ResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportCellFlagsV2Mutation = mutationWithClientMutationId<
+export const CreateArtworkImportImageMatchV2Mutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImportCellFlagsV2",
+  name: "CreateArtworkImportImageMatchV2",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    fileName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The image filename",
+    },
+    s3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the uploaded image asset",
+    },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket of the uploaded image asset",
+    },
     rowID: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the row containing the cell to flag",
-    },
-    columnName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Name of the column containing the cell to flag",
-    },
-    flaggedValue: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The value being flagged",
-    },
-    originalValue: {
-      type: GraphQLString,
-      description: "The original value before flagging",
-    },
-    userNote: {
-      type: GraphQLString,
-      description: "User note explaining why the cell was flagged",
+      description: "ID of the row to associate the image with",
     },
   },
   outputFields: {
-    createArtworkImportCellFlagsV2OrError: {
+    createArtworkImportImageMatchV2OrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    {
-      artworkImportID,
-      rowID,
-      columnName,
-      flaggedValue,
-      originalValue,
-      userNote,
-    },
-    { artworkImportV2CreateCellFlagsLoader }
+    { artworkImportID, fileName, s3Key, s3Bucket, rowID },
+    { artworkImportV2CreateImageMatchLoader }
   ) => {
-    if (!artworkImportV2CreateCellFlagsLoader) {
+    if (!artworkImportV2CreateImageMatchLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const flagData: any = {
-      row_id: rowID,
-      column_name: columnName,
-      flagged_value: flaggedValue,
-    }
-
-    if (originalValue) flagData.original_value = originalValue
-    if (userNote) flagData.user_note = userNote
-
     try {
       return {
-        ...(await artworkImportV2CreateCellFlagsLoader(
-          artworkImportID,
-          flagData
-        )),
+        ...(await artworkImportV2CreateImageMatchLoader(artworkImportID, {
+          file_name: fileName,
+          s3_key: s3Key,
+          s3_bucket: s3Bucket,
+          row_id: rowID,
+        })),
         artworkImportID,
       }
     } catch (error) {

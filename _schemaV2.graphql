@@ -8992,11 +8992,11 @@ type CreateArtworkFailure {
   mutationError: GravityMutationError
 }
 
-type CreateArtworkImportArtistAssignmentsV2Failure {
+type CreateArtworkImportArtistAssignmentV2Failure {
   mutationError: GravityMutationError
 }
 
-input CreateArtworkImportArtistAssignmentsV2Input {
+input CreateArtworkImportArtistAssignmentV2Input {
   # The artist ID to assign to the unmatched name
   artistID: String!
 
@@ -9006,40 +9006,40 @@ input CreateArtworkImportArtistAssignmentsV2Input {
   clientMutationId: String
 }
 
-type CreateArtworkImportArtistAssignmentsV2Payload {
+type CreateArtworkImportArtistAssignmentV2Payload {
   clientMutationId: String
-  createArtworkImportArtistAssignmentsV2OrError: CreateArtworkImportArtistAssignmentsV2ResponseOrError
+  createArtworkImportArtistAssignmentV2OrError: CreateArtworkImportArtistAssignmentV2ResponseOrError
 }
 
-union CreateArtworkImportArtistAssignmentsV2ResponseOrError =
-    CreateArtworkImportArtistAssignmentsV2Failure
-  | CreateArtworkImportArtistAssignmentsV2Success
+union CreateArtworkImportArtistAssignmentV2ResponseOrError =
+    CreateArtworkImportArtistAssignmentV2Failure
+  | CreateArtworkImportArtistAssignmentV2Success
 
-type CreateArtworkImportArtistAssignmentsV2Success {
+type CreateArtworkImportArtistAssignmentV2Success {
   artworkImport: ArtworkImport
   artworkImportID: String!
   updatedRowsCount: Int!
 }
 
-type CreateArtworkImportArtistMatchesV2Failure {
+type CreateArtworkImportArtistMatchV2Failure {
   mutationError: GravityMutationError
 }
 
-input CreateArtworkImportArtistMatchesV2Input {
+input CreateArtworkImportArtistMatchV2Input {
   artworkImportID: String!
   clientMutationId: String
 }
 
-type CreateArtworkImportArtistMatchesV2Payload {
+type CreateArtworkImportArtistMatchV2Payload {
   clientMutationId: String
-  createArtworkImportArtistMatchesV2OrError: CreateArtworkImportArtistMatchesV2ResponseOrError
+  createArtworkImportArtistMatchV2OrError: CreateArtworkImportArtistMatchV2ResponseOrError
 }
 
-union CreateArtworkImportArtistMatchesV2ResponseOrError =
-    CreateArtworkImportArtistMatchesV2Failure
-  | CreateArtworkImportArtistMatchesV2Success
+union CreateArtworkImportArtistMatchV2ResponseOrError =
+    CreateArtworkImportArtistMatchV2Failure
+  | CreateArtworkImportArtistMatchV2Success
 
-type CreateArtworkImportArtistMatchesV2Success {
+type CreateArtworkImportArtistMatchV2Success {
   artworkImport: ArtworkImport
   artworkImportID: String!
   matchedArtistsCount: Int!
@@ -9094,11 +9094,11 @@ type CreateArtworkImportArtworksV2Success {
   createdArtworksCount: Int!
 }
 
-type CreateArtworkImportCellFlagsV2Failure {
+type CreateArtworkImportCellFlagV2Failure {
   mutationError: GravityMutationError
 }
 
-input CreateArtworkImportCellFlagsV2Input {
+input CreateArtworkImportCellFlagV2Input {
   artworkImportID: String!
   clientMutationId: String
 
@@ -9118,16 +9118,16 @@ input CreateArtworkImportCellFlagsV2Input {
   userNote: String
 }
 
-type CreateArtworkImportCellFlagsV2Payload {
+type CreateArtworkImportCellFlagV2Payload {
   clientMutationId: String
-  createArtworkImportCellFlagsV2OrError: CreateArtworkImportCellFlagsV2ResponseOrError
+  createArtworkImportCellFlagV2OrError: CreateArtworkImportCellFlagV2ResponseOrError
 }
 
-union CreateArtworkImportCellFlagsV2ResponseOrError =
-    CreateArtworkImportCellFlagsV2Failure
-  | CreateArtworkImportCellFlagsV2Success
+union CreateArtworkImportCellFlagV2ResponseOrError =
+    CreateArtworkImportCellFlagV2Failure
+  | CreateArtworkImportCellFlagV2Success
 
-type CreateArtworkImportCellFlagsV2Success {
+type CreateArtworkImportCellFlagV2Success {
   artworkImport: ArtworkImport
   success: Boolean!
 }
@@ -9136,11 +9136,11 @@ type CreateArtworkImportFailure {
   mutationError: GravityMutationError
 }
 
-type CreateArtworkImportImageMatchesV2Failure {
+type CreateArtworkImportImageMatchV2Failure {
   mutationError: GravityMutationError
 }
 
-input CreateArtworkImportImageMatchesV2Input {
+input CreateArtworkImportImageMatchV2Input {
   artworkImportID: String!
   clientMutationId: String
 
@@ -9157,16 +9157,16 @@ input CreateArtworkImportImageMatchesV2Input {
   s3Key: String!
 }
 
-type CreateArtworkImportImageMatchesV2Payload {
+type CreateArtworkImportImageMatchV2Payload {
   clientMutationId: String
-  createArtworkImportImageMatchesV2OrError: CreateArtworkImportImageMatchesV2ResponseOrError
+  createArtworkImportImageMatchV2OrError: CreateArtworkImportImageMatchV2ResponseOrError
 }
 
-union CreateArtworkImportImageMatchesV2ResponseOrError =
-    CreateArtworkImportImageMatchesV2Failure
-  | CreateArtworkImportImageMatchesV2Success
+union CreateArtworkImportImageMatchV2ResponseOrError =
+    CreateArtworkImportImageMatchV2Failure
+  | CreateArtworkImportImageMatchV2Success
 
-type CreateArtworkImportImageMatchesV2Success {
+type CreateArtworkImportImageMatchV2Success {
   artworkImport: ArtworkImport
   success: Boolean!
 }
@@ -15987,12 +15987,12 @@ type Mutation {
   createArtworkImport(
     input: CreateArtworkImportInput!
   ): CreateArtworkImportPayload
-  createArtworkImportArtistAssignmentsV2(
-    input: CreateArtworkImportArtistAssignmentsV2Input!
-  ): CreateArtworkImportArtistAssignmentsV2Payload
-  createArtworkImportArtistMatchesV2(
-    input: CreateArtworkImportArtistMatchesV2Input!
-  ): CreateArtworkImportArtistMatchesV2Payload
+  createArtworkImportArtistAssignmentV2(
+    input: CreateArtworkImportArtistAssignmentV2Input!
+  ): CreateArtworkImportArtistAssignmentV2Payload
+  createArtworkImportArtistMatchV2(
+    input: CreateArtworkImportArtistMatchV2Input!
+  ): CreateArtworkImportArtistMatchV2Payload
   createArtworkImportArtworks(
     input: CreateArtworkImportArtworksInput!
   ): CreateArtworkImportArtworksPayload
@@ -16002,12 +16002,12 @@ type Mutation {
   createArtworkImportArtworksV2(
     input: CreateArtworkImportArtworksV2Input!
   ): CreateArtworkImportArtworksV2Payload
-  createArtworkImportCellFlagsV2(
-    input: CreateArtworkImportCellFlagsV2Input!
-  ): CreateArtworkImportCellFlagsV2Payload
-  createArtworkImportImageMatchesV2(
-    input: CreateArtworkImportImageMatchesV2Input!
-  ): CreateArtworkImportImageMatchesV2Payload
+  createArtworkImportCellFlagV2(
+    input: CreateArtworkImportCellFlagV2Input!
+  ): CreateArtworkImportCellFlagV2Payload
+  createArtworkImportImageMatchV2(
+    input: CreateArtworkImportImageMatchV2Input!
+  ): CreateArtworkImportImageMatchV2Payload
   createBackupSecondFactors(
     input: CreateBackupSecondFactorsInput!
   ): CreateBackupSecondFactorsPayload
@@ -16447,9 +16447,9 @@ type Mutation {
     @deprecated(
       reason: "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead."
     )
-  removeArtworkImportImageMatchesV2(
-    input: RemoveArtworkImportImageMatchesV2Input!
-  ): RemoveArtworkImportImageMatchesV2Payload
+  removeArtworkImportImageMatchV2(
+    input: RemoveArtworkImportImageMatchV2Input!
+  ): RemoveArtworkImportImageMatchV2Payload
   removeAssetFromConsignmentSubmission(
     # Parameters for RemoveAssetFromConsignmentSubmission
     input: RemoveAssetFromConsignmentSubmissionInput!
@@ -20974,11 +20974,11 @@ input RemoveArtworkImportImageInput {
   rowID: String!
 }
 
-type RemoveArtworkImportImageMatchesV2Failure {
+type RemoveArtworkImportImageMatchV2Failure {
   mutationError: GravityMutationError
 }
 
-input RemoveArtworkImportImageMatchesV2Input {
+input RemoveArtworkImportImageMatchV2Input {
   artworkImportID: String!
   clientMutationId: String
 
@@ -20986,16 +20986,16 @@ input RemoveArtworkImportImageMatchesV2Input {
   imageID: String!
 }
 
-type RemoveArtworkImportImageMatchesV2Payload {
+type RemoveArtworkImportImageMatchV2Payload {
   clientMutationId: String
-  removeArtworkImportImageMatchesV2OrError: RemoveArtworkImportImageMatchesV2ResponseOrError
+  removeArtworkImportImageMatchV2OrError: RemoveArtworkImportImageMatchV2ResponseOrError
 }
 
-union RemoveArtworkImportImageMatchesV2ResponseOrError =
-    RemoveArtworkImportImageMatchesV2Failure
-  | RemoveArtworkImportImageMatchesV2Success
+union RemoveArtworkImportImageMatchV2ResponseOrError =
+    RemoveArtworkImportImageMatchV2Failure
+  | RemoveArtworkImportImageMatchV2Success
 
-type RemoveArtworkImportImageMatchesV2Success {
+type RemoveArtworkImportImageMatchV2Success {
   artworkImport: ArtworkImport
   success: Boolean!
 }

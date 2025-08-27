@@ -1,21 +1,19 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("CreateArtworkImportImageMatchesV2Mutation", () => {
+describe("CreateArtworkImportImageMatchV2Mutation", () => {
   it("creates image match successfully", async () => {
-    const artworkImportV2CreateImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        id: "image-match-1",
-        success: true,
-      })
+    const artworkImportV2CreateImageMatchLoader = jest.fn().mockResolvedValue({
+      id: "image-match-1",
+      success: true,
+    })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
     })
 
     const mutation = gql`
       mutation {
-        createArtworkImportImageMatchesV2(
+        createArtworkImportImageMatchV2(
           input: {
             artworkImportID: "artwork-import-1"
             fileName: "artwork.jpg"
@@ -24,8 +22,8 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
             rowID: "row-123"
           }
         ) {
-          createArtworkImportImageMatchesV2OrError {
-            ... on CreateArtworkImportImageMatchesV2Success {
+          createArtworkImportImageMatchV2OrError {
+            ... on CreateArtworkImportImageMatchV2Success {
               success
               artworkImport {
                 internalID
@@ -37,12 +35,12 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateImageMatchesLoader,
+      artworkImportV2CreateImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateImageMatchesLoader).toHaveBeenCalledWith(
+    expect(artworkImportV2CreateImageMatchLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         file_name: "artwork.jpg",
@@ -53,8 +51,8 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportImageMatchesV2: {
-        createArtworkImportImageMatchesV2OrError: {
+      createArtworkImportImageMatchV2: {
+        createArtworkImportImageMatchV2OrError: {
           success: true,
           artworkImport: {
             internalID: "artwork-import-1",
@@ -65,19 +63,17 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
   })
 
   it("handles different image formats", async () => {
-    const artworkImportV2CreateImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        id: "image-match-2",
-        success: true,
-      })
+    const artworkImportV2CreateImageMatchLoader = jest.fn().mockResolvedValue({
+      id: "image-match-2",
+      success: true,
+    })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
     })
 
     const mutation = gql`
       mutation {
-        createArtworkImportImageMatchesV2(
+        createArtworkImportImageMatchV2(
           input: {
             artworkImportID: "artwork-import-1"
             fileName: "sculpture.png"
@@ -86,8 +82,8 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
             rowID: "row-456"
           }
         ) {
-          createArtworkImportImageMatchesV2OrError {
-            ... on CreateArtworkImportImageMatchesV2Success {
+          createArtworkImportImageMatchV2OrError {
+            ... on CreateArtworkImportImageMatchV2Success {
               success
             }
           }
@@ -96,12 +92,12 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateImageMatchesLoader,
+      artworkImportV2CreateImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateImageMatchesLoader).toHaveBeenCalledWith(
+    expect(artworkImportV2CreateImageMatchLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         file_name: "sculpture.png",
@@ -112,8 +108,8 @@ describe("CreateArtworkImportImageMatchesV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportImageMatchesV2: {
-        createArtworkImportImageMatchesV2OrError: {
+      createArtworkImportImageMatchV2: {
+        createArtworkImportImageMatchV2OrError: {
           success: true,
         },
       },

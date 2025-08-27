@@ -209,9 +209,9 @@ mutation {
 
 ```graphql
 mutation {
-  createArtworkImportArtistMatchesV2(input: { artworkImportID: "import-123" }) {
-    createArtworkImportArtistMatchesV2OrError {
-      ... on CreateArtworkImportArtistMatchesV2Success {
+  createArtworkImportArtistMatchV2(input: { artworkImportID: "import-123" }) {
+    createArtworkImportArtistMatchV2OrError {
+      ... on CreateArtworkImportArtistMatchV2Success {
         matchedArtistsCount
       }
     }
@@ -249,15 +249,15 @@ mutation {
 
 ```graphql
 mutation {
-  createArtworkImportArtistAssignmentsV2(
+  createArtworkImportArtistAssignmentV2(
     input: {
       artworkImportID: "import-123"
       artistName: "Unknown Artist"
       artistID: "artist-789"
     }
   ) {
-    createArtworkImportArtistAssignmentsV2OrError {
-      ... on CreateArtworkImportArtistAssignmentsV2Success {
+    createArtworkImportArtistAssignmentV2OrError {
+      ... on CreateArtworkImportArtistAssignmentV2Success {
         updatedRowsCount
       }
     }
@@ -297,7 +297,7 @@ mutation {
 
 ```graphql
 mutation {
-  createArtworkImportImageMatchesV2(
+  createArtworkImportImageMatchV2(
     input: {
       artworkImportID: "import-123"
       fileName: "image.jpg"
@@ -306,8 +306,8 @@ mutation {
       rowID: "row-456"
     }
   ) {
-    createArtworkImportImageMatchesV2OrError {
-      ... on CreateArtworkImportImageMatchesV2Success {
+    createArtworkImportImageMatchV2OrError {
+      ... on CreateArtworkImportImageMatchV2Success {
         success
       }
     }
@@ -345,11 +345,11 @@ mutation {
 
 ```graphql
 mutation {
-  removeArtworkImportImageMatchesV2(
+  removeArtworkImportImageMatchV2(
     input: { artworkImportID: "import-123", imageID: "image-789" }
   ) {
-    removeArtworkImportImageMatchesV2OrError {
-      ... on RemoveArtworkImportImageMatchesV2Success {
+    removeArtworkImportImageMatchV2OrError {
+      ... on RemoveArtworkImportImageMatchV2Success {
         success
       }
     }
@@ -392,7 +392,7 @@ mutation {
 
 ```graphql
 mutation {
-  createArtworkImportCellFlagsV2(
+  createArtworkImportCellFlagV2(
     input: {
       artworkImportID: "import-123"
       rowID: "row-456"
@@ -402,8 +402,8 @@ mutation {
       userNote: "Suspicious value"
     }
   ) {
-    createArtworkImportCellFlagsV2OrError {
-      ... on CreateArtworkImportCellFlagsV2Success {
+    createArtworkImportCellFlagV2OrError {
+      ... on CreateArtworkImportCellFlagV2Success {
         success
       }
     }
@@ -481,7 +481,7 @@ mutation {
 ### 1. Naming Conventions
 
 - **V2 suffix**: All new mutations end with `V2`
-- **Resource collections**: Actions become collections (`match` → `matches`, `flag` → `flags`)
+- **Singular resource names**: Clear, singular resource naming (`createArtworkImportArtistMatchV2`, `createArtworkImportCellFlagV2`)
 - **Consistent parameters**: `rowID` instead of `artworkImportRowID`
 
 ### 2. Response Changes
