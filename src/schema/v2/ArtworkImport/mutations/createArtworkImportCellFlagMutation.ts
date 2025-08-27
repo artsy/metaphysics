@@ -14,14 +14,13 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtistMatchV2Success",
-  isTypeOf: (data) => data.success === true,
+  name: "CreateArtworkImportCellFlagSuccess",
+  isTypeOf: (data) =>
+    !!data.artworkImportID && data._type !== "GravityMutationError",
   fields: () => ({
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     success: {
       type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -34,7 +33,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtistMatchV2Failure",
+  name: "CreateArtworkImportCellFlagFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -45,44 +44,75 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportArtistMatchV2ResponseOrError",
+  name: "CreateArtworkImportCellFlagResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtistMatchV2Mutation = mutationWithClientMutationId<
+export const CreateArtworkImportCellFlagMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImportArtistMatchV2",
+  name: "CreateArtworkImportCellFlag",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the row containing the cell to flag",
+    },
+    columnName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Name of the column containing the cell to flag",
+    },
+    flaggedValue: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The value being flagged",
+    },
+    originalValue: {
+      type: GraphQLString,
+      description: "The original value before flagging",
+    },
+    userNote: {
+      type: GraphQLString,
+      description: "User note explaining why the cell was flagged",
+    },
   },
   outputFields: {
-    createArtworkImportArtistMatchV2OrError: {
+    createArtworkImportCellFlagOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportV2CreateArtistMatchLoader }
+    {
+      artworkImportID,
+      rowID,
+      columnName,
+      flaggedValue,
+      originalValue,
+      userNote,
+    },
+    { artworkImportCreateCellFlagLoader }
   ) => {
-    if (!artworkImportV2CreateArtistMatchLoader) {
+    if (!artworkImportCreateCellFlagLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    try {
-      const result = await artworkImportV2CreateArtistMatchLoader(
-        artworkImportID,
-        {}
-      )
+    const flagData: any = {
+      row_id: rowID,
+      column_name: columnName,
+      flagged_value: flaggedValue,
+    }
 
+    if (originalValue) flagData.original_value = originalValue
+    if (userNote) flagData.user_note = userNote
+
+    try {
       return {
+        ...(await artworkImportCreateCellFlagLoader(artworkImportID, flagData)),
         artworkImportID,
-        success: result.success,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)

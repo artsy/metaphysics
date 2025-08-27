@@ -14,13 +14,13 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtworksV2Success",
+  name: "CreateArtworkImportArtistAssignmentSuccess",
   isTypeOf: (data) => !!data.artworkImportID,
   fields: () => ({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    createdArtworksCount: {
+    updatedRowsCount: {
       type: new GraphQLNonNull(GraphQLInt),
     },
     artworkImport: {
@@ -34,7 +34,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtworksV2Failure",
+  name: "CreateArtworkImportArtistAssignmentFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -45,44 +45,55 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportArtworksV2ResponseOrError",
+  name: "CreateArtworkImportArtistAssignmentResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtworksV2Mutation = mutationWithClientMutationId<
+export const CreateArtworkImportArtistAssignmentMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImportArtworksV2",
+  name: "CreateArtworkImportArtistAssignment",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    artistName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The unmatched artist name to assign",
+    },
+    artistID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The artist ID to assign to the unmatched name",
+    },
   },
   outputFields: {
-    createArtworkImportArtworksV2OrError: {
+    createArtworkImportArtistAssignmentOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportV2CreateArtworksLoader }
+    { artworkImportID, artistName, artistID },
+    { artworkImportCreateArtistAssignmentLoader }
   ) => {
-    if (!artworkImportV2CreateArtworksLoader) {
+    if (!artworkImportCreateArtistAssignmentLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      const result = await artworkImportV2CreateArtworksLoader(
+      const result = await artworkImportCreateArtistAssignmentLoader(
         artworkImportID,
-        {}
+        {
+          artist_name: artistName,
+          artist_id: artistID,
+        }
       )
 
       return {
         artworkImportID,
-        createdArtworksCount: result.created || 0,
+        updatedRowsCount: result.updated_rows_count,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)

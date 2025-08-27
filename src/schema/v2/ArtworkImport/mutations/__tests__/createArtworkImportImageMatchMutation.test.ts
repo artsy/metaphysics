@@ -1,9 +1,9 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("CreateArtworkImportImageMatchV2Mutation", () => {
+describe("CreateArtworkImportImageMatchMutation", () => {
   it("creates image match successfully", async () => {
-    const artworkImportV2CreateImageMatchLoader = jest.fn().mockResolvedValue({
+    const artworkImportCreateImageMatchLoader = jest.fn().mockResolvedValue({
       id: "image-match-1",
       success: true,
     })
@@ -13,7 +13,7 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportImageMatchV2(
+        createArtworkImportImageMatch(
           input: {
             artworkImportID: "artwork-import-1"
             fileName: "artwork.jpg"
@@ -22,8 +22,8 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
             rowID: "row-123"
           }
         ) {
-          createArtworkImportImageMatchV2OrError {
-            ... on CreateArtworkImportImageMatchV2Success {
+          createArtworkImportImageMatchOrError {
+            ... on CreateArtworkImportImageMatchSuccess {
               success
               artworkImport {
                 internalID
@@ -35,12 +35,12 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateImageMatchLoader,
+      artworkImportCreateImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateImageMatchLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateImageMatchLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         file_name: "artwork.jpg",
@@ -51,8 +51,8 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportImageMatchV2: {
-        createArtworkImportImageMatchV2OrError: {
+      createArtworkImportImageMatch: {
+        createArtworkImportImageMatchOrError: {
           success: true,
           artworkImport: {
             internalID: "artwork-import-1",
@@ -63,7 +63,7 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
   })
 
   it("handles different image formats", async () => {
-    const artworkImportV2CreateImageMatchLoader = jest.fn().mockResolvedValue({
+    const artworkImportCreateImageMatchLoader = jest.fn().mockResolvedValue({
       id: "image-match-2",
       success: true,
     })
@@ -73,7 +73,7 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportImageMatchV2(
+        createArtworkImportImageMatch(
           input: {
             artworkImportID: "artwork-import-1"
             fileName: "sculpture.png"
@@ -82,8 +82,8 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
             rowID: "row-456"
           }
         ) {
-          createArtworkImportImageMatchV2OrError {
-            ... on CreateArtworkImportImageMatchV2Success {
+          createArtworkImportImageMatchOrError {
+            ... on CreateArtworkImportImageMatchSuccess {
               success
             }
           }
@@ -92,12 +92,12 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateImageMatchLoader,
+      artworkImportCreateImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateImageMatchLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateImageMatchLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         file_name: "sculpture.png",
@@ -108,8 +108,8 @@ describe("CreateArtworkImportImageMatchV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportImageMatchV2: {
-        createArtworkImportImageMatchV2OrError: {
+      createArtworkImportImageMatch: {
+        createArtworkImportImageMatchOrError: {
           success: true,
         },
       },

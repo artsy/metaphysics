@@ -313,16 +313,15 @@ import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
-import { UpdateArtworkImportRowImageMutation } from "./ArtworkImport/mutations/updateArtworkImportRowImageMutation"
+import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
+import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/mutations/createArtworkImportArtworksMutation"
+import { CreateArtworkImportArtistMatchMutation } from "./ArtworkImport/mutations/createArtworkImportArtistMatchMutation"
+import { CreateArtworkImportArtistAssignmentMutation } from "./ArtworkImport/mutations/createArtworkImportArtistAssignmentMutation"
+import { CreateArtworkImportImageMatchMutation } from "./ArtworkImport/mutations/createArtworkImportImageMatchMutation"
+import { CreateArtworkImportCellFlagMutation } from "./ArtworkImport/mutations/createArtworkImportCellFlagMutation"
+import { BatchArtworkImportImagesMutation } from "./ArtworkImport/mutations/batchArtworkImportImagesMutation"
 import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/mutations/updateArtworkImportRowImagesMutation"
-import { UpdateArtworkImportV2Mutation } from "./ArtworkImport/mutations/updateArtworkImportV2Mutation"
-import { UpdateArtworkImportRowV2Mutation } from "./ArtworkImport/mutations/updateArtworkImportRowV2Mutation"
-import { CreateArtworkImportArtworksV2Mutation } from "./ArtworkImport/mutations/createArtworkImportArtworksV2Mutation"
-import { CreateArtworkImportArtistMatchV2Mutation } from "./ArtworkImport/mutations/createArtworkImportArtistMatchV2Mutation"
-import { CreateArtworkImportArtistAssignmentV2Mutation } from "./ArtworkImport/mutations/createArtworkImportArtistAssignmentV2Mutation"
-import { CreateArtworkImportImageMatchV2Mutation } from "./ArtworkImport/mutations/createArtworkImportImageMatchV2Mutation"
-import { RemoveArtworkImportImageMatchV2Mutation } from "./ArtworkImport/mutations/removeArtworkImportImageMatchV2Mutation"
-import { CreateArtworkImportCellFlagV2Mutation } from "./ArtworkImport/mutations/createArtworkImportCellFlagV2Mutation"
+import { RemoveArtworkImportImageMutation } from "./ArtworkImport/mutations/removeArtworkImportImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import {
   updateOrderMutation,
@@ -637,18 +636,15 @@ export default new GraphQLSchema({
       updateArtist: updateArtistMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
-      updateArtworkImportRowImage: UpdateArtworkImportRowImageMutation,
+      updateArtworkImportRow: UpdateArtworkImportRowMutation,
+      createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
+      createArtworkImportArtistMatch: CreateArtworkImportArtistMatchMutation,
+      createArtworkImportArtistAssignment: CreateArtworkImportArtistAssignmentMutation,
+      createArtworkImportImageMatch: CreateArtworkImportImageMatchMutation,
+      createArtworkImportCellFlag: CreateArtworkImportCellFlagMutation,
+      batchArtworkImportImages: BatchArtworkImportImagesMutation,
       updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,
-      // V2 Artwork Import Mutations (RESTful replacements)
-      updateArtworkImportV2: UpdateArtworkImportV2Mutation,
-      updateArtworkImportRowV2: UpdateArtworkImportRowV2Mutation,
-      createArtworkImportArtworksV2: CreateArtworkImportArtworksV2Mutation,
-      createArtworkImportArtistMatchV2: CreateArtworkImportArtistMatchV2Mutation,
-      createArtworkImportArtistAssignmentV2: CreateArtworkImportArtistAssignmentV2Mutation,
-      createArtworkImportImageMatchV2: CreateArtworkImportImageMatchV2Mutation,
-      removeArtworkImportImageMatchV2: RemoveArtworkImportImageMatchV2Mutation,
-      createArtworkImportCellFlagV2: CreateArtworkImportCellFlagV2Mutation,
-      // End V2 Artwork Import Mutations
+      removeArtworkImportImage: RemoveArtworkImportImageMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollection: updateCollectionMutation,

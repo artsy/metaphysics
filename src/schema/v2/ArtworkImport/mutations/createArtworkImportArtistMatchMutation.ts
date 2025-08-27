@@ -3,7 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -14,14 +14,14 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtistAssignmentV2Success",
-  isTypeOf: (data) => !!data.artworkImportID,
+  name: "CreateArtworkImportArtistMatchSuccess",
+  isTypeOf: (data) => data.success === true,
   fields: () => ({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    updatedRowsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -34,7 +34,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportArtistAssignmentV2Failure",
+  name: "CreateArtworkImportArtistMatchFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -45,55 +45,44 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportArtistAssignmentV2ResponseOrError",
+  name: "CreateArtworkImportArtistMatchResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtistAssignmentV2Mutation = mutationWithClientMutationId<
+export const CreateArtworkImportArtistMatchMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImportArtistAssignmentV2",
+  name: "CreateArtworkImportArtistMatch",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    artistName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The unmatched artist name to assign",
-    },
-    artistID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The artist ID to assign to the unmatched name",
-    },
   },
   outputFields: {
-    createArtworkImportArtistAssignmentV2OrError: {
+    createArtworkImportArtistMatchOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, artistName, artistID },
-    { artworkImportV2CreateArtistAssignmentLoader }
+    { artworkImportID },
+    { artworkImportCreateArtistMatchLoader }
   ) => {
-    if (!artworkImportV2CreateArtistAssignmentLoader) {
+    if (!artworkImportCreateArtistMatchLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      const result = await artworkImportV2CreateArtistAssignmentLoader(
+      const result = await artworkImportCreateArtistMatchLoader(
         artworkImportID,
-        {
-          artist_name: artistName,
-          artist_id: artistID,
-        }
+        {}
       )
 
       return {
         artworkImportID,
-        updatedRowsCount: result.updated_rows_count,
+        success: result.success,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)

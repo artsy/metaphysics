@@ -1,9 +1,9 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
+describe("CreateArtworkImportArtistAssignmentMutation", () => {
   it("creates artist assignment successfully", async () => {
-    const artworkImportV2CreateArtistAssignmentLoader = jest
+    const artworkImportCreateArtistAssignmentLoader = jest
       .fn()
       .mockResolvedValue({
         updated_rows_count: 3,
@@ -14,15 +14,15 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportArtistAssignmentV2(
+        createArtworkImportArtistAssignment(
           input: {
             artworkImportID: "artwork-import-1"
             artistName: "Unknown Artist"
             artistID: "artist-123"
           }
         ) {
-          createArtworkImportArtistAssignmentV2OrError {
-            ... on CreateArtworkImportArtistAssignmentV2Success {
+          createArtworkImportArtistAssignmentOrError {
+            ... on CreateArtworkImportArtistAssignmentSuccess {
               artworkImportID
               updatedRowsCount
               artworkImport {
@@ -35,12 +35,12 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateArtistAssignmentLoader,
+      artworkImportCreateArtistAssignmentLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateArtistAssignmentLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateArtistAssignmentLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         artist_name: "Unknown Artist",
@@ -49,8 +49,8 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportArtistAssignmentV2: {
-        createArtworkImportArtistAssignmentV2OrError: {
+      createArtworkImportArtistAssignment: {
+        createArtworkImportArtistAssignmentOrError: {
           artworkImportID: "artwork-import-1",
           updatedRowsCount: 3,
           artworkImport: {
@@ -62,7 +62,7 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
   })
 
   it("handles zero rows updated", async () => {
-    const artworkImportV2CreateArtistAssignmentLoader = jest
+    const artworkImportCreateArtistAssignmentLoader = jest
       .fn()
       .mockResolvedValue({
         updated_rows_count: 0,
@@ -73,15 +73,15 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportArtistAssignmentV2(
+        createArtworkImportArtistAssignment(
           input: {
             artworkImportID: "artwork-import-1"
             artistName: "Non-existent Artist"
             artistID: "artist-456"
           }
         ) {
-          createArtworkImportArtistAssignmentV2OrError {
-            ... on CreateArtworkImportArtistAssignmentV2Success {
+          createArtworkImportArtistAssignmentOrError {
+            ... on CreateArtworkImportArtistAssignmentSuccess {
               updatedRowsCount
             }
           }
@@ -90,14 +90,14 @@ describe("CreateArtworkImportArtistAssignmentV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateArtistAssignmentLoader,
+      artworkImportCreateArtistAssignmentLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toEqual({
-      createArtworkImportArtistAssignmentV2: {
-        createArtworkImportArtistAssignmentV2OrError: {
+      createArtworkImportArtistAssignment: {
+        createArtworkImportArtistAssignmentOrError: {
           updatedRowsCount: 0,
         },
       },
