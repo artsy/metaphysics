@@ -1,24 +1,22 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("RemoveArtworkImportImageMatchesV2Mutation", () => {
+describe("RemoveArtworkImportImageMatchV2Mutation", () => {
   it("removes image match successfully", async () => {
-    const artworkImportV2RemoveImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        success: true,
-      })
+    const artworkImportV2RemoveImageMatchLoader = jest.fn().mockResolvedValue({
+      success: true,
+    })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
     })
 
     const mutation = gql`
       mutation {
-        removeArtworkImportImageMatchesV2(
+        removeArtworkImportImageMatchV2(
           input: { artworkImportID: "artwork-import-1", imageID: "image-123" }
         ) {
-          removeArtworkImportImageMatchesV2OrError {
-            ... on RemoveArtworkImportImageMatchesV2Success {
+          removeArtworkImportImageMatchV2OrError {
+            ... on RemoveArtworkImportImageMatchV2Success {
               success
               artworkImport {
                 internalID
@@ -30,19 +28,19 @@ describe("RemoveArtworkImportImageMatchesV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2RemoveImageMatchesLoader,
+      artworkImportV2RemoveImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2RemoveImageMatchesLoader).toHaveBeenCalledWith(
+    expect(artworkImportV2RemoveImageMatchLoader).toHaveBeenCalledWith(
       { artworkImportID: "artwork-import-1", imageID: "image-123" },
       {}
     )
 
     expect(result).toEqual({
-      removeArtworkImportImageMatchesV2: {
-        removeArtworkImportImageMatchesV2OrError: {
+      removeArtworkImportImageMatchV2: {
+        removeArtworkImportImageMatchV2OrError: {
           success: true,
           artworkImport: {
             internalID: "artwork-import-1",
@@ -53,25 +51,23 @@ describe("RemoveArtworkImportImageMatchesV2Mutation", () => {
   })
 
   it("handles non-existent image ID gracefully", async () => {
-    const artworkImportV2RemoveImageMatchesLoader = jest
-      .fn()
-      .mockResolvedValue({
-        success: true,
-      })
+    const artworkImportV2RemoveImageMatchLoader = jest.fn().mockResolvedValue({
+      success: true,
+    })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
     })
 
     const mutation = gql`
       mutation {
-        removeArtworkImportImageMatchesV2(
+        removeArtworkImportImageMatchV2(
           input: {
             artworkImportID: "artwork-import-1"
             imageID: "non-existent-image"
           }
         ) {
-          removeArtworkImportImageMatchesV2OrError {
-            ... on RemoveArtworkImportImageMatchesV2Success {
+          removeArtworkImportImageMatchV2OrError {
+            ... on RemoveArtworkImportImageMatchV2Success {
               success
             }
           }
@@ -80,14 +76,14 @@ describe("RemoveArtworkImportImageMatchesV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2RemoveImageMatchesLoader,
+      artworkImportV2RemoveImageMatchLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toEqual({
-      removeArtworkImportImageMatchesV2: {
-        removeArtworkImportImageMatchesV2OrError: {
+      removeArtworkImportImageMatchV2: {
+        removeArtworkImportImageMatchV2OrError: {
           success: true,
         },
       },
