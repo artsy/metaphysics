@@ -137,6 +137,43 @@ describe("Conversations", () => {
         )
       })
     })
+
+    it("passes artworkId parameter to loader for partner conversations", () => {
+      const query = `
+        {
+          me {
+            conversationsConnection(first: 10, type: PARTNER, partnerId: "foo", artworkId: "artwork-123") {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const mockConversationsLoader = jest.fn(() =>
+        Promise.resolve({
+          total_unread_count: 0,
+          total_count: 1,
+          conversations: [{ id: "1" }],
+        })
+      )
+
+      const context = {
+        meLoader: jest.fn().mockResolvedValue({}),
+        conversationsLoader: mockConversationsLoader,
+      }
+
+      return runAuthenticatedQuery(query, context).then(() => {
+        expect(mockConversationsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({
+            artwork_id: "artwork-123",
+          })
+        )
+      })
+    })
   })
 
   describe("User", () => {
