@@ -1,3 +1,4 @@
+// DEPRECATED: This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -14,8 +15,8 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "RemoveArtworkImportImageMatchV2Success",
-  isTypeOf: (data) => data.success === true,
+  name: "RemoveArtworkImportImageSuccess",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
     success: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -32,7 +33,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "RemoveArtworkImportImageMatchV2Failure",
+  name: "RemoveArtworkImportImageFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -43,47 +44,51 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "RemoveArtworkImportImageMatchV2ResponseOrError",
+  name: "RemoveArtworkImportImageResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const RemoveArtworkImportImageMatchV2Mutation = mutationWithClientMutationId<
+export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "RemoveArtworkImportImageMatchV2",
+  name: "RemoveArtworkImportImage",
+  deprecationReason:
+    "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row containing the image",
+    },
     imageID: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the image match to remove",
     },
   },
   outputFields: {
-    removeArtworkImportImageMatchV2OrError: {
+    removeArtworkImportImageOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, imageID },
-    { artworkImportV2RemoveImageMatchLoader }
+    { artworkImportID, rowID, imageID },
+    { artworkImportRemoveImageLoader }
   ) => {
-    if (!artworkImportV2RemoveImageMatchLoader) {
+    if (!artworkImportRemoveImageLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      await artworkImportV2RemoveImageMatchLoader(
-        { artworkImportID, imageID },
-        {}
-      )
-
       return {
-        success: true,
+        ...(await artworkImportRemoveImageLoader({
+          artworkImportID,
+          rowID,
+          imageID,
+        })),
         artworkImportID,
       }
     } catch (error) {

@@ -14,7 +14,7 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportRowV2Success",
+  name: "UpdateArtworkImportRowSuccess",
   isTypeOf: (data) => !!data.artworkImportID,
   fields: () => ({
     artworkImportID: {
@@ -31,7 +31,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportRowV2Failure",
+  name: "UpdateArtworkImportRowFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -42,16 +42,16 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdateArtworkImportRowV2ResponseOrError",
+  name: "UpdateArtworkImportRowResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdateArtworkImportRowV2Mutation = mutationWithClientMutationId<
+export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "UpdateArtworkImportRowV2",
+  name: "UpdateArtworkImportRow",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
@@ -73,16 +73,16 @@ export const UpdateArtworkImportRowV2Mutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    updateArtworkImportRowV2OrError: {
+    updateArtworkImportRowOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
     { artworkImportID, rowID, fieldName, fieldValue, excludedFromImport },
-    { artworkImportV2UpdateRowLoader }
+    { artworkImportUpdateRowLoader }
   ) => {
-    if (!artworkImportV2UpdateRowLoader) {
+    if (!artworkImportUpdateRowLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
@@ -98,7 +98,7 @@ export const UpdateArtworkImportRowV2Mutation = mutationWithClientMutationId<
     }
 
     try {
-      await artworkImportV2UpdateRowLoader(
+      await artworkImportUpdateRowLoader(
         { artworkImportID, rowID },
         updateParams
       )

@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLInt,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -13,18 +14,27 @@ import {
 import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportV2Success",
-  isTypeOf: (data) => !!data.id,
+  name: "CreateArtworkImportArtworksSuccess",
+  isTypeOf: (data) => !!data.artworkImportID,
   fields: () => ({
+    artworkImportID: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    createdArtworksCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
     artworkImport: {
       type: ArtworkImportType,
-      resolve: (result) => result,
+      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
+        if (!artworkImportLoader) return null
+        return artworkImportLoader(artworkImportID)
+      },
     },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportV2Failure",
+  name: "CreateArtworkImportArtworksFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -35,60 +45,45 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdateArtworkImportV2ResponseOrError",
+  name: "CreateArtworkImportArtworksResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdateArtworkImportV2Mutation = mutationWithClientMutationId<
+export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "UpdateArtworkImportV2",
+  name: "CreateArtworkImportArtworks",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    status: {
-      type: GraphQLString,
-      description: "Status to update the import to (e.g., 'cancelled')",
-    },
-    currency: {
-      type: GraphQLString,
-      description: "Currency to set for all rows in the import",
-    },
-    dimensionMetric: {
-      type: GraphQLString,
-      description: "Dimension metric to set for all rows in the import",
-    },
-    weightMetric: {
-      type: GraphQLString,
-      description: "Weight metric to set for all rows in the import",
-    },
   },
   outputFields: {
-    updateArtworkImportV2OrError: {
+    createArtworkImportArtworksOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, status, currency, dimensionMetric, weightMetric },
-    { artworkImportV2UpdateLoader }
+    { artworkImportID },
+    { artworkImportCreateArtworksLoader }
   ) => {
-    if (!artworkImportV2UpdateLoader) {
+    if (!artworkImportCreateArtworksLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const updateParams: any = {}
-
-    if (status) updateParams.status = status
-    if (currency) updateParams.currency = currency
-    if (dimensionMetric) updateParams.dimension_metric = dimensionMetric
-    if (weightMetric) updateParams.weight_metric = weightMetric
-
     try {
-      return await artworkImportV2UpdateLoader(artworkImportID, updateParams)
+      const result = await artworkImportCreateArtworksLoader(
+        artworkImportID,
+        {}
+      )
+
+      return {
+        artworkImportID,
+        createdArtworksCount: result.created || 0,
+      }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

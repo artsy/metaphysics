@@ -1,9 +1,9 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("CreateArtworkImportCellFlagV2Mutation", () => {
+describe("CreateArtworkImportCellFlagMutation", () => {
   it("creates cell flag successfully", async () => {
-    const artworkImportV2CreateCellFlagLoader = jest.fn().mockResolvedValue({
+    const artworkImportCreateCellFlagLoader = jest.fn().mockResolvedValue({
       id: "cell-flag-1",
       success: true,
     })
@@ -13,7 +13,7 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportCellFlagV2(
+        createArtworkImportCellFlag(
           input: {
             artworkImportID: "artwork-import-1"
             rowID: "row-123"
@@ -23,8 +23,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
             userNote: "This looks AI-generated"
           }
         ) {
-          createArtworkImportCellFlagV2OrError {
-            ... on CreateArtworkImportCellFlagV2Success {
+          createArtworkImportCellFlagOrError {
+            ... on CreateArtworkImportCellFlagSuccess {
               success
               artworkImport {
                 internalID
@@ -36,12 +36,12 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateCellFlagLoader,
+      artworkImportCreateCellFlagLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateCellFlagLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateCellFlagLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         row_id: "row-123",
@@ -53,8 +53,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportCellFlagV2: {
-        createArtworkImportCellFlagV2OrError: {
+      createArtworkImportCellFlag: {
+        createArtworkImportCellFlagOrError: {
           success: true,
           artworkImport: {
             internalID: "artwork-import-1",
@@ -65,7 +65,7 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
   })
 
   it("creates cell flag with minimal data", async () => {
-    const artworkImportV2CreateCellFlagLoader = jest.fn().mockResolvedValue({
+    const artworkImportCreateCellFlagLoader = jest.fn().mockResolvedValue({
       id: "cell-flag-2",
       success: true,
     })
@@ -75,7 +75,7 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportCellFlagV2(
+        createArtworkImportCellFlag(
           input: {
             artworkImportID: "artwork-import-1"
             rowID: "row-456"
@@ -83,8 +83,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
             flaggedValue: "Unknown Artist"
           }
         ) {
-          createArtworkImportCellFlagV2OrError {
-            ... on CreateArtworkImportCellFlagV2Success {
+          createArtworkImportCellFlagOrError {
+            ... on CreateArtworkImportCellFlagSuccess {
               success
             }
           }
@@ -93,12 +93,12 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateCellFlagLoader,
+      artworkImportCreateCellFlagLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateCellFlagLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateCellFlagLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         row_id: "row-456",
@@ -108,8 +108,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportCellFlagV2: {
-        createArtworkImportCellFlagV2OrError: {
+      createArtworkImportCellFlag: {
+        createArtworkImportCellFlagOrError: {
           success: true,
         },
       },
@@ -117,7 +117,7 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
   })
 
   it("creates cell flag with user note only", async () => {
-    const artworkImportV2CreateCellFlagLoader = jest.fn().mockResolvedValue({
+    const artworkImportCreateCellFlagLoader = jest.fn().mockResolvedValue({
       id: "cell-flag-3",
       success: true,
     })
@@ -127,7 +127,7 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportCellFlagV2(
+        createArtworkImportCellFlag(
           input: {
             artworkImportID: "artwork-import-1"
             rowID: "row-789"
@@ -136,8 +136,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
             userNote: "Price seems too high for this artist"
           }
         ) {
-          createArtworkImportCellFlagV2OrError {
-            ... on CreateArtworkImportCellFlagV2Success {
+          createArtworkImportCellFlagOrError {
+            ... on CreateArtworkImportCellFlagSuccess {
               success
             }
           }
@@ -146,12 +146,12 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateCellFlagLoader,
+      artworkImportCreateCellFlagLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateCellFlagLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateCellFlagLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {
         row_id: "row-789",
@@ -162,8 +162,8 @@ describe("CreateArtworkImportCellFlagV2Mutation", () => {
     )
 
     expect(result).toEqual({
-      createArtworkImportCellFlagV2: {
-        createArtworkImportCellFlagV2OrError: {
+      createArtworkImportCellFlag: {
+        createArtworkImportCellFlagOrError: {
           success: true,
         },
       },

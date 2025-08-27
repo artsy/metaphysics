@@ -3,6 +3,8 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLList,
+  GraphQLInputObjectType,
   GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -13,9 +15,33 @@ import {
 } from "lib/gravityErrorHandler"
 import { ArtworkImportType } from "../artworkImport"
 
+const ImageInputType = new GraphQLInputObjectType({
+  name: "BatchArtworkImportImagesImageInput",
+  fields: {
+    fileName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The image filename",
+    },
+    s3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the uploaded image asset",
+    },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket of the uploaded image asset",
+    },
+    rowID: {
+      type: GraphQLString,
+      description:
+        "ID of the row to associate the images with (required if images don't already exist)",
+    },
+  },
+})
+
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportCellFlagV2Success",
-  isTypeOf: (data) => !!data.id,
+  name: "BatchArtworkImportImagesSuccess",
+  isTypeOf: (data) =>
+    !!data.artworkImportID && data._type !== "GravityMutationError",
   fields: () => ({
     success: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -32,7 +58,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CreateArtworkImportCellFlagV2Failure",
+  name: "BatchArtworkImportImagesFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -43,77 +69,53 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateArtworkImportCellFlagV2ResponseOrError",
+  name: "BatchArtworkImportImagesResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportCellFlagV2Mutation = mutationWithClientMutationId<
+export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "CreateArtworkImportCellFlagV2",
+  name: "BatchArtworkImportImages",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    rowID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the row containing the cell to flag",
-    },
-    columnName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Name of the column containing the cell to flag",
-    },
-    flaggedValue: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The value being flagged",
-    },
-    originalValue: {
-      type: GraphQLString,
-      description: "The original value before flagging",
-    },
-    userNote: {
-      type: GraphQLString,
-      description: "User note explaining why the cell was flagged",
+    images: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ImageInputType))
+      ),
+      description: "Array of image objects to match",
     },
   },
   outputFields: {
-    createArtworkImportCellFlagV2OrError: {
+    batchArtworkImportImagesOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    {
-      artworkImportID,
-      rowID,
-      columnName,
-      flaggedValue,
-      originalValue,
-      userNote,
-    },
-    { artworkImportV2CreateCellFlagLoader }
+    { artworkImportID, images },
+    { artworkImportMatchImagesLoader }
   ) => {
-    if (!artworkImportV2CreateCellFlagLoader) {
+    if (!artworkImportMatchImagesLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const flagData: any = {
-      row_id: rowID,
-      column_name: columnName,
-      flagged_value: flaggedValue,
+    const gravityArgs = {
+      images: images.map(({ fileName, s3Key, s3Bucket, rowID }) => ({
+        file_name: fileName,
+        s3_key: s3Key,
+        s3_bucket: s3Bucket,
+        ...(rowID && { row_id: rowID }),
+      })),
     }
-
-    if (originalValue) flagData.original_value = originalValue
-    if (userNote) flagData.user_note = userNote
 
     try {
       return {
-        ...(await artworkImportV2CreateCellFlagLoader(
-          artworkImportID,
-          flagData
-        )),
+        ...(await artworkImportMatchImagesLoader(artworkImportID, gravityArgs)),
         artworkImportID,
       }
     } catch (error) {

@@ -1,10 +1,11 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("CreateArtworkImportArtistMatchV2Mutation", () => {
-  it("creates artist matches successfully", async () => {
-    const artworkImportV2CreateArtistMatchLoader = jest.fn().mockResolvedValue({
-      success: true,
+describe("CreateArtworkImportArtworksMutation", () => {
+  it("creates artworks successfully", async () => {
+    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
+      created: 5,
+      errors: 0,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
@@ -12,13 +13,13 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportArtistMatchV2(
+        createArtworkImportArtworks(
           input: { artworkImportID: "artwork-import-1" }
         ) {
-          createArtworkImportArtistMatchV2OrError {
-            ... on CreateArtworkImportArtistMatchV2Success {
+          createArtworkImportArtworksOrError {
+            ... on CreateArtworkImportArtworksSuccess {
               artworkImportID
-              success
+              createdArtworksCount
               artworkImport {
                 internalID
               }
@@ -29,21 +30,21 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateArtistMatchLoader,
+      artworkImportCreateArtworksLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(artworkImportV2CreateArtistMatchLoader).toHaveBeenCalledWith(
+    expect(artworkImportCreateArtworksLoader).toHaveBeenCalledWith(
       "artwork-import-1",
       {}
     )
 
     expect(result).toEqual({
-      createArtworkImportArtistMatchV2: {
-        createArtworkImportArtistMatchV2OrError: {
+      createArtworkImportArtworks: {
+        createArtworkImportArtworksOrError: {
           artworkImportID: "artwork-import-1",
-          success: true,
+          createdArtworksCount: 5,
           artworkImport: {
             internalID: "artwork-import-1",
           },
@@ -52,9 +53,10 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
     })
   })
 
-  it("handles successful matching", async () => {
-    const artworkImportV2CreateArtistMatchLoader = jest.fn().mockResolvedValue({
-      success: true,
+  it("handles zero artworks created", async () => {
+    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
+      created: 0,
+      errors: 0,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
@@ -62,12 +64,12 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
 
     const mutation = gql`
       mutation {
-        createArtworkImportArtistMatchV2(
+        createArtworkImportArtworks(
           input: { artworkImportID: "artwork-import-1" }
         ) {
-          createArtworkImportArtistMatchV2OrError {
-            ... on CreateArtworkImportArtistMatchV2Success {
-              success
+          createArtworkImportArtworksOrError {
+            ... on CreateArtworkImportArtworksSuccess {
+              createdArtworksCount
             }
           }
         }
@@ -75,15 +77,15 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
     `
 
     const context = {
-      artworkImportV2CreateArtistMatchLoader,
+      artworkImportCreateArtworksLoader,
       artworkImportLoader,
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toEqual({
-      createArtworkImportArtistMatchV2: {
-        createArtworkImportArtistMatchV2OrError: {
-          success: true,
+      createArtworkImportArtworks: {
+        createArtworkImportArtworksOrError: {
+          createdArtworksCount: 0,
         },
       },
     })
