@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("CreateArtworkImportArtistMatchV2Mutation", () => {
   it("creates artist matches successfully", async () => {
     const artworkImportV2CreateArtistMatchLoader = jest.fn().mockResolvedValue({
-      matched_artists_count: 8,
+      success: true,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
@@ -18,7 +18,7 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
           createArtworkImportArtistMatchV2OrError {
             ... on CreateArtworkImportArtistMatchV2Success {
               artworkImportID
-              matchedArtistsCount
+              success
               artworkImport {
                 internalID
               }
@@ -43,7 +43,7 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
       createArtworkImportArtistMatchV2: {
         createArtworkImportArtistMatchV2OrError: {
           artworkImportID: "artwork-import-1",
-          matchedArtistsCount: 8,
+          success: true,
           artworkImport: {
             internalID: "artwork-import-1",
           },
@@ -52,9 +52,9 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
     })
   })
 
-  it("handles zero matches", async () => {
+  it("handles successful matching", async () => {
     const artworkImportV2CreateArtistMatchLoader = jest.fn().mockResolvedValue({
-      matched_artists_count: 0,
+      success: true,
     })
     const artworkImportLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-1",
@@ -67,7 +67,7 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
         ) {
           createArtworkImportArtistMatchV2OrError {
             ... on CreateArtworkImportArtistMatchV2Success {
-              matchedArtistsCount
+              success
             }
           }
         }
@@ -83,7 +83,7 @@ describe("CreateArtworkImportArtistMatchV2Mutation", () => {
     expect(result).toEqual({
       createArtworkImportArtistMatchV2: {
         createArtworkImportArtistMatchV2OrError: {
-          matchedArtistsCount: 0,
+          success: true,
         },
       },
     })

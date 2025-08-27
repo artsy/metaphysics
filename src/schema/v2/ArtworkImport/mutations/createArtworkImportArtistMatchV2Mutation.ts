@@ -3,7 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -15,13 +15,13 @@ import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkImportArtistMatchV2Success",
-  isTypeOf: (data) => !!data.artworkImportID,
+  isTypeOf: (data) => data.success === true,
   fields: () => ({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    matchedArtistsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -82,7 +82,7 @@ export const CreateArtworkImportArtistMatchV2Mutation = mutationWithClientMutati
 
       return {
         artworkImportID,
-        matchedArtistsCount: result.matched_artists_count,
+        success: result.success,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)
