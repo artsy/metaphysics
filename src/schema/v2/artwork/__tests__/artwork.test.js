@@ -5181,6 +5181,7 @@ describe("Artwork type", () => {
       beforeEach(() => {
         artwork.purchasable = false
         artwork.sale_ids = ["sale-id-not-auction", "sale-id-auction"]
+        artwork.inquireable = true
       })
 
       const futureTime = moment().add(1, "day").toISOString()
@@ -5361,7 +5362,7 @@ describe("Artwork type", () => {
     })
 
     describe("curatorsPick", () => {
-      it("returns true if the artwork id is in a curated collection but has sale_ids", async () => {
+      it("returns true if the artwork id is in a curated collection and has sale_ids", async () => {
         artwork.purchasable = true
         artwork.sale_ids = ["sale-id-auction"]
         context.marketingCollectionLoader.mockResolvedValue({
@@ -5375,6 +5376,17 @@ describe("Artwork type", () => {
       it("returns true if the artwork id is in a curated collection with no sale ids", async () => {
         artwork.purchasable = true
         artwork.sale_ids = []
+        context.marketingCollectionLoader.mockResolvedValue({
+          artwork_ids: [artwork._id],
+        })
+
+        const data = await runQuery(query, context)
+        expect(data.artwork.collectorSignals.curatorsPick).toBe(true)
+      })
+
+      it("returns true if the artwork id is in a curated collection and not purchasable but inquireable", async () => {
+        artwork.purchasable = false
+        artwork.inquireable = true
         context.marketingCollectionLoader.mockResolvedValue({
           artwork_ids: [artwork._id],
         })
@@ -5423,8 +5435,9 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is null if the artwork has never been in auction and is not purchasable", async () => {
+    it("is null if the artwork is neither inquireable nor purchasable and not in the auction", async () => {
       artwork.purchasable = false
+      artwork.inquireable = false
       artwork.sale_ids = []
 
       const data = await runQuery(query, context)
@@ -5436,6 +5449,7 @@ describe("Artwork type", () => {
 
     it("does not query partner offer signal loaders if the artwork is not purchasable", async () => {
       artwork.purchasable = false
+      artwork.inquireable = true
 
       const data = await runQuery(query, context)
 
@@ -5445,6 +5459,8 @@ describe("Artwork type", () => {
     })
 
     it("does not query partner offer signal loaders if the partnerOffer field is not requested", async () => {
+      artwork.purchasable = true
+
       context.salesLoader.mockResolvedValue([])
 
       const noPartnerOfferQuery = `
@@ -5471,6 +5487,8 @@ describe("Artwork type", () => {
     })
 
     it("does not query auction loaders if the auction field is not requested", async () => {
+      artwork.inquireable = true
+
       const noAuctionFieldsQuery = `
 
       {
