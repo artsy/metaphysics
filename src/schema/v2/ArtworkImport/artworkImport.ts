@@ -282,6 +282,26 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ Weight }) => Weight,
             },
+            series: {
+              type: GraphQLString,
+              resolve: ({ Series }) => Series,
+            },
+            provenance: {
+              type: GraphQLString,
+              resolve: ({ Provenance }) => Provenance,
+            },
+            exhibitionHistory: {
+              type: GraphQLString,
+              resolve: ({ ExhibitionHistory }) => ExhibitionHistory,
+            },
+            imageRights: {
+              type: GraphQLString,
+              resolve: ({ ImageRights }) => ImageRights,
+            },
+            artworkDescription: {
+              type: GraphQLString,
+              resolve: ({ ArtworkDescription }) => ArtworkDescription,
+            },
           },
         })
       ),
