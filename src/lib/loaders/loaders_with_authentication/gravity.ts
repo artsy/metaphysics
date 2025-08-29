@@ -92,34 +92,9 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
-    artworkImportAssignArtistLoader: gravityLoader(
-      (id) => `artwork_import/${id}/assign_artist`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportCreateArtworksLoader: gravityLoader(
-      (id) => `artwork_import/${id}/create_artworks`,
-      {},
-      { method: "POST" }
-    ),
-    artworkImportFlagCellLoader: gravityLoader(
-      (id) => `artwork_import/${id}/flag_cell`,
-      {},
-      { method: "POST" }
-    ),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
-    artworkImportMatchArtistsLoader: gravityLoader(
-      (id) => `artwork_import/${id}/match_artists`,
-      {},
-      { method: "PUT" }
-    ),
     artworkImportMatchImagesLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_images`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportRowMatchImageLoader: gravityLoader(
-      (id) => `artwork_import/${id}/match_image`,
       {},
       { method: "PUT" }
     ),
@@ -131,6 +106,15 @@ export default (accessToken, userID, opts) => {
         `artwork_import/${artworkImportID}/row/${rowID}/images/${imageID}`,
       {},
       { method: "DELETE" }
+    ),
+    artworkImportUpdateRowImagesLoader: gravityLoader<
+      any,
+      { artworkImportID: string; rowID: string }
+    >(
+      ({ artworkImportID, rowID }) =>
+        `artwork_import/${artworkImportID}/row/${rowID}/images`,
+      {},
+      { method: "PUT" }
     ),
     artworkImportRowsLoader: gravityLoader(
       (id) => `artwork_import/${id}/rows`,
@@ -145,57 +129,49 @@ export default (accessToken, userID, opts) => {
     artworkImportSummaryLoader: gravityLoader(
       (id) => `artwork_import/${id}/summary`
     ),
-    artworkImportToggleRowExclusionLoader: gravityLoader(
-      (id) => `artwork_import/${id}/toggle_row_exclusion`,
-      {},
-      { method: "PUT" }
-    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
-    ),
-    artworkImportUpdateCurrencyLoader: gravityLoader(
-      (id) => `artwork_import/${id}/update_currency`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportUpdateDimensionMetricLoader: gravityLoader(
-      (id) => `artwork_import/${id}/update_dimension_metric`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportUpdateWeightMetricLoader: gravityLoader(
-      (id) => `artwork_import/${id}/update_weight_metric`,
-      {},
-      { method: "PUT" }
     ),
     artworkImportUpdateLoader: gravityLoader(
       (id) => `artwork_import/${id}`,
       {},
       { method: "PUT" }
     ),
-    artworkImportUpdateRowLoader: gravityLoader(
-      (id) => `artwork_import/${id}/update_row`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportUpdateImageMatchLoader: gravityLoader<
-      any,
-      { artworkImportID: string; imageID: string }
-    >(
-      ({ artworkImportID, imageID }) =>
-        `artwork_import/${artworkImportID}/image_matches/${imageID}`,
-      {},
-      { method: "PUT" }
-    ),
-    artworkImportUpdateRowImagesLoader: gravityLoader<
+    artworkImportUpdateRowLoader: gravityLoader<
       any,
       { artworkImportID: string; rowID: string }
     >(
       ({ artworkImportID, rowID }) =>
-        `artwork_import/${artworkImportID}/row/${rowID}/images`,
+        `artwork_import/${artworkImportID}/rows/${rowID}`,
       {},
       { method: "PUT" }
     ),
+    artworkImportCreateArtworksLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artworks`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportCreateArtistMatchLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artist_matches`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportCreateArtistAssignmentLoader: gravityLoader(
+      (id) => `artwork_import/${id}/artist_assignments`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportCreateImageMatchLoader: gravityLoader(
+      (id) => `artwork_import/${id}/image_matches`,
+      {},
+      { method: "POST" }
+    ),
+    artworkImportCreateCellFlagLoader: gravityLoader(
+      (id) => `artwork_import/${id}/cell_flags`,
+      {},
+      { method: "POST" }
+    ),
+    // End RESTful Artwork Import Loaders
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
@@ -212,11 +188,6 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
-    cancelArtworkImportLoader: gravityLoader(
-      (id) => `artwork_import/${id}/cancel`,
-      {},
-      { method: "PUT" }
-    ),
     collectionArtistsLoader: gravityLoader(
       (id) => `collection/${id}/artists`,
       { user_id: userID },

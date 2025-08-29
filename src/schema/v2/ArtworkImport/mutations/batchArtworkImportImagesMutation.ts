@@ -3,6 +3,8 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLList,
+  GraphQLInputObjectType,
   GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -11,11 +13,35 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
+
+const ImageInputType = new GraphQLInputObjectType({
+  name: "BatchArtworkImportImagesImageInput",
+  fields: {
+    fileName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The image filename",
+    },
+    s3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the uploaded image asset",
+    },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket of the uploaded image asset",
+    },
+    rowID: {
+      type: GraphQLString,
+      description:
+        "ID of the row to associate the images with (required if images don't already exist)",
+    },
+  },
+})
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportRowImageSuccess",
-  isTypeOf: (data) => !!data.id,
+  name: "BatchArtworkImportImagesSuccess",
+  isTypeOf: (data) =>
+    !!data.artworkImportID && data._type !== "GravityMutationError",
   fields: () => ({
     success: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -32,7 +58,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportRowImageFailure",
+  name: "BatchArtworkImportImagesFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -43,60 +69,53 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "MatchArtworkImportRowImageResponseOrError",
+  name: "BatchArtworkImportImagesResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const MatchArtworkImportRowImageMutation = mutationWithClientMutationId<
+export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "MatchArtworkImportRowImage",
+  name: "BatchArtworkImportImages",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    fileName: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    rowID: {
-      type: GraphQLString,
+    images: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ImageInputType))
+      ),
+      description: "Array of image objects to match",
     },
   },
   outputFields: {
-    matchArtworkImportRowImageOrError: {
+    batchArtworkImportImagesOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, fileName, s3Key, s3Bucket, rowID },
-    { artworkImportRowMatchImageLoader }
+    { artworkImportID, images },
+    { artworkImportMatchImagesLoader }
   ) => {
-    if (!artworkImportRowMatchImageLoader) {
+    if (!artworkImportMatchImagesLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     const gravityArgs = {
-      file_name: fileName,
-      s3_key: s3Key,
-      s3_bucket: s3Bucket,
-      ...(rowID && { row_id: rowID }),
+      images: images.map(({ fileName, s3Key, s3Bucket, rowID }) => ({
+        file_name: fileName,
+        s3_key: s3Key,
+        s3_bucket: s3Bucket,
+        ...(rowID && { row_id: rowID }),
+      })),
     }
 
     try {
       return {
-        ...(await artworkImportRowMatchImageLoader(
-          artworkImportID,
-          gravityArgs
-        )),
+        ...(await artworkImportMatchImagesLoader(artworkImportID, gravityArgs)),
         artworkImportID,
       }
     } catch (error) {

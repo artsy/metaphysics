@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -10,21 +11,30 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportCurrencySuccess",
-  isTypeOf: (data) => !!data.id,
+  name: "CreateArtworkImportArtistMatchSuccess",
+  isTypeOf: (data) => data.success === true,
   fields: () => ({
+    artworkImportID: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+    },
     artworkImport: {
       type: ArtworkImportType,
-      resolve: (result) => result,
+      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
+        if (!artworkImportLoader) return null
+        return artworkImportLoader(artworkImportID)
+      },
     },
   }),
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateArtworkImportCurrencyFailure",
+  name: "CreateArtworkImportArtistMatchFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -35,46 +45,45 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdateArtworkImportCurrencyResponseOrError",
+  name: "CreateArtworkImportArtistMatchResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const UpdateArtworkImportCurrencyMutation = mutationWithClientMutationId<
+export const CreateArtworkImportArtistMatchMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "UpdateArtworkImportCurrency",
+  name: "CreateArtworkImportArtistMatch",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    fromCurrency: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    toCurrency: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
   },
   outputFields: {
-    updateArtworkImportCurrencyOrError: {
+    createArtworkImportArtistMatchOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, fromCurrency, toCurrency },
-    { artworkImportUpdateCurrencyLoader }
+    { artworkImportID },
+    { artworkImportCreateArtistMatchLoader }
   ) => {
-    if (!artworkImportUpdateCurrencyLoader) {
+    if (!artworkImportCreateArtistMatchLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      return await artworkImportUpdateCurrencyLoader(artworkImportID, {
-        from_currency: fromCurrency,
-        to_currency: toCurrency,
-      })
+      const result = await artworkImportCreateArtistMatchLoader(
+        artworkImportID,
+        {}
+      )
+
+      return {
+        artworkImportID,
+        success: result.success,
+      }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

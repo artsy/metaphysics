@@ -1,7 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("MatchArtworkImportImagesMutation", () => {
+describe("BatchArtworkImportImagesMutation", () => {
   it("matches multiple images for a row", async () => {
     const artworkImportMatchImagesLoader = jest.fn().mockResolvedValue({
       id: "artwork-import-id",
@@ -9,7 +9,7 @@ describe("MatchArtworkImportImagesMutation", () => {
 
     const mutation = gql`
       mutation {
-        matchArtworkImportImages(
+        batchArtworkImportImages(
           input: {
             artworkImportID: "artwork-import-1"
             images: [
@@ -28,8 +28,8 @@ describe("MatchArtworkImportImagesMutation", () => {
             ]
           }
         ) {
-          matchArtworkImportImagesOrError {
-            ... on MatchArtworkImportImagesSuccess {
+          batchArtworkImportImagesOrError {
+            ... on BatchArtworkImportImagesSuccess {
               success
             }
           }
@@ -66,8 +66,8 @@ describe("MatchArtworkImportImagesMutation", () => {
     )
 
     expect(result).toEqual({
-      matchArtworkImportImages: {
-        matchArtworkImportImagesOrError: {
+      batchArtworkImportImages: {
+        batchArtworkImportImagesOrError: {
           success: true,
         },
       },
@@ -81,7 +81,7 @@ describe("MatchArtworkImportImagesMutation", () => {
 
     const mutation = gql`
       mutation {
-        matchArtworkImportImages(
+        batchArtworkImportImages(
           input: {
             artworkImportID: "artwork-import-1"
             images: [
@@ -93,8 +93,8 @@ describe("MatchArtworkImportImagesMutation", () => {
             ]
           }
         ) {
-          matchArtworkImportImagesOrError {
-            ... on MatchArtworkImportImagesSuccess {
+          batchArtworkImportImagesOrError {
+            ... on BatchArtworkImportImagesSuccess {
               success
             }
           }
@@ -124,8 +124,8 @@ describe("MatchArtworkImportImagesMutation", () => {
     )
 
     expect(result).toEqual({
-      matchArtworkImportImages: {
-        matchArtworkImportImagesOrError: {
+      batchArtworkImportImages: {
+        batchArtworkImportImagesOrError: {
           success: true,
         },
       },
@@ -139,7 +139,7 @@ describe("MatchArtworkImportImagesMutation", () => {
 
     const mutation = gql`
       mutation {
-        matchArtworkImportImages(
+        batchArtworkImportImages(
           input: {
             artworkImportID: "artwork-import-1"
             images: [
@@ -151,8 +151,8 @@ describe("MatchArtworkImportImagesMutation", () => {
             ]
           }
         ) {
-          matchArtworkImportImagesOrError {
-            ... on MatchArtworkImportImagesFailure {
+          batchArtworkImportImagesOrError {
+            ... on BatchArtworkImportImagesFailure {
               mutationError {
                 message
               }

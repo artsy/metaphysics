@@ -11,7 +11,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkImportArtworksSuccess",
@@ -20,10 +20,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    created: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    errors: {
+    createdArtworksCount: {
       type: new GraphQLNonNull(GraphQLInt),
     },
     artworkImport: {
@@ -78,14 +75,14 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      const { created, errors } = await artworkImportCreateArtworksLoader(
-        artworkImportID
+      const result = await artworkImportCreateArtworksLoader(
+        artworkImportID,
+        {}
       )
 
       return {
-        created,
-        errors,
         artworkImportID,
+        createdArtworksCount: result.created || 0,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)
