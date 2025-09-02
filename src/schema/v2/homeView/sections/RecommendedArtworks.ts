@@ -1,10 +1,10 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
-import { HomeViewSection } from "."
-import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { ArtworkRecommendations } from "schema/v2/me/artworkRecommendations"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
+import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
-export const RecommendedArtworks: HomeViewSection = {
+export const RecommendedArtworks: HomeViewArtworksSection = {
   id: "home-view-section-recommended-artworks",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.artworkRecommendationsRail,
@@ -18,6 +18,6 @@ export const RecommendedArtworks: HomeViewSection = {
   },
   ownerType: OwnerType.artworkRecommendations,
   requiresAuthentication: true,
-
+  trackItemImpressions: true,
   resolver: withHomeViewTimeout(ArtworkRecommendations.resolve!),
 }
