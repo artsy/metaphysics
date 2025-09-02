@@ -310,25 +310,19 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
-import { CreateArtworkImportMutation } from "./ArtworkImport/createArtworkImportMutation"
+import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
-import { MatchArtworkImportArtistsMutation } from "./ArtworkImport/matchArtworkImportArtistsMutation"
-import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/createArtworkImportArtworksMutation"
-import { AssignArtworkImportArtistMutation } from "./ArtworkImport/assignArtworkImportArtistMutation"
-import { UpdateArtworkImportMutation } from "./ArtworkImport/updateArtworkImportMutation"
-import { UpdateArtworkImportRowMutation } from "./ArtworkImport/updateArtworkImportRowMutation"
-import { UpdateArtworkImportRowImageMutation } from "./ArtworkImport/updateArtworkImportRowImageMutation"
-import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/updateArtworkImportRowImagesMutation"
-import { UpdateArtworkImportCurrencyMutation } from "./ArtworkImport/updateArtworkImportCurrencyMutation"
-import { UpdateArtworkImportDimensionMetricMutation } from "./ArtworkImport/updateArtworkImportDimensionMetricMutation"
-import { UpdateArtworkImportWeightMetricMutation } from "./ArtworkImport/updateArtworkImportWeightMetricMutation"
-import { ToggleArtworkImportRowExclusionMutation } from "./ArtworkImport/toggleArtworkImportRowExclusionMutation"
-import { FlagArtworkImportCellMutation } from "./ArtworkImport/flagArtworkImportCellMutation"
-import { MatchArtworkImportRowImageMutation } from "./ArtworkImport/matchArtworkImportRowImageMutation"
-import { MatchArtworkImportImagesMutation } from "./ArtworkImport/matchArtworkImportImagesMutation"
-import { RemoveArtworkImportImageMutation } from "./ArtworkImport/removeArtworkImportImageMutation"
+import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
+import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
+import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/mutations/createArtworkImportArtworksMutation"
+import { CreateArtworkImportArtistMatchMutation } from "./ArtworkImport/mutations/createArtworkImportArtistMatchMutation"
+import { CreateArtworkImportArtistAssignmentMutation } from "./ArtworkImport/mutations/createArtworkImportArtistAssignmentMutation"
+import { CreateArtworkImportImageMatchMutation } from "./ArtworkImport/mutations/createArtworkImportImageMatchMutation"
+import { CreateArtworkImportCellFlagMutation } from "./ArtworkImport/mutations/createArtworkImportCellFlagMutation"
+import { BatchArtworkImportImagesMutation } from "./ArtworkImport/mutations/batchArtworkImportImagesMutation"
+import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/mutations/updateArtworkImportRowImagesMutation"
+import { RemoveArtworkImportImageMutation } from "./ArtworkImport/mutations/removeArtworkImportImageMutation"
 import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
-import { CancelArtworkImportMutation } from "./ArtworkImport/cancelArtworkImportMutation"
 import {
   updateOrderMutation,
   setOrderFulfillmentOptionMutation,
@@ -516,10 +510,8 @@ export default new GraphQLSchema({
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
       artsyShippingOptIn: artsyShippingOptInMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
-      assignArtworkImportArtist: AssignArtworkImportArtistMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
-      cancelArtworkImport: CancelArtworkImportMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
@@ -529,7 +521,6 @@ export default new GraphQLSchema({
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
       createArtworkImport: CreateArtworkImportMutation,
-      createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
       createBackupSecondFactors: createBackupSecondFactorsMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
@@ -613,10 +604,6 @@ export default new GraphQLSchema({
       markAllNotificationsAsRead: markAllNotificationsAsReadMutation,
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
-      matchArtworkImportArtists: MatchArtworkImportArtistsMutation,
-      matchArtworkImportRowImage: MatchArtworkImportRowImageMutation,
-      matchArtworkImportImages: MatchArtworkImportImagesMutation,
-      removeArtworkImportImage: RemoveArtworkImportImageMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
@@ -650,14 +637,15 @@ export default new GraphQLSchema({
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
-      updateArtworkImportRowImage: UpdateArtworkImportRowImageMutation,
+      createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
+      createArtworkImportArtistMatch: CreateArtworkImportArtistMatchMutation,
+      createArtworkImportArtistAssignment: CreateArtworkImportArtistAssignmentMutation,
+      createArtworkImportImageMatch: CreateArtworkImportImageMatchMutation,
+      createArtworkImportCellFlag: CreateArtworkImportCellFlagMutation,
+      batchArtworkImportImages: BatchArtworkImportImagesMutation,
       updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,
-      updateArtworkImportCurrency: UpdateArtworkImportCurrencyMutation,
-      updateArtworkImportDimensionMetric: UpdateArtworkImportDimensionMetricMutation,
-      updateArtworkImportWeightMetric: UpdateArtworkImportWeightMetricMutation,
-      toggleArtworkImportRowExclusion: ToggleArtworkImportRowExclusionMutation,
+      removeArtworkImportImage: RemoveArtworkImportImageMutation,
       updateCareerHighlight: updateCareerHighlightMutation,
-      flagArtworkImportCell: FlagArtworkImportCellMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollection: updateCollectionMutation,
       updateCollectorProfile: UpdateCollectorProfile,
