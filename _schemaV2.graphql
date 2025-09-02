@@ -3193,6 +3193,22 @@ union ArtworkFigures = Image | Video
 
 union ArtworkFilterFacet = Gene | Tag
 
+type ArtworkFilterNode {
+  # Artworks matching this filter
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+
+  # The href for this filtered connection
+  href: String!
+
+  # The display title for this filtered connection
+  title: String!
+}
+
 union ArtworkHighlight = Article | Show
 
 type ArtworkImport implements Node {
@@ -10929,12 +10945,29 @@ type DiscoveryCategoriesConnectionEdge {
 }
 
 # A category for discovering and browsing art
-type DiscoveryCategory {
+type DiscoveryCategory implements Node {
   # The ID of the category
   category: String!
 
+  # A connection of artwork filters for this category
+  filtersForArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): FiltersForArtworksConnectionConnection
+
+  # The href of the category
+  href: String!
+
+  # A globally unique ID.
+  id: ID!
+
   # The URL of the image representing this category
   imageUrl: String
+
+  # A type-specific ID
+  internalID: String!
 
   # The slug of the category
   slug: String
@@ -12084,6 +12117,26 @@ type FilterSaleArtworksCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+# A connection to a list of items.
+type FiltersForArtworksConnectionConnection {
+  # A list of edges.
+  edges: [FiltersForArtworksConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type FiltersForArtworksConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkFilterNode
 }
 
 type FlagArtworkImportCellFailure {
@@ -19772,6 +19825,12 @@ type Query {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
+  # A single discovery category for browsing art by slug
+  discoveryCategoryConnection(
+    # The slug of the discovery category to retrieve
+    slug: String!
+  ): DiscoveryCategory
+
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
     after: String
@@ -25831,6 +25890,12 @@ type Viewer {
     first: Int
     last: Int
   ): DiscoveryCategoriesConnectionConnection
+
+  # A single discovery category for browsing art by slug
+  discoveryCategoryConnection(
+    # The slug of the discovery category to retrieve
+    slug: String!
+  ): DiscoveryCategory
 
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
