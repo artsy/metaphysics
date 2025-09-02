@@ -14,6 +14,7 @@ import {
 } from "google-libphonenumber"
 
 interface PhoneNumberTypeSource {
+  regionCode?: string
   phoneNumber: string
   parsedPhone?: GooglePhoneNumber
   phoneUtil: PhoneNumberUtil
@@ -101,7 +102,10 @@ export const PhoneNumberType: GraphQLObjectType<
     regionCode: {
       description: "Two-letter region code (ISO 3166-1 alpha-2)",
       type: GraphQLString,
-      resolve: ({ parsedPhone, phoneUtil }) => {
+      resolve: ({ regionCode, parsedPhone, phoneUtil }) => {
+        if (regionCode) {
+          return regionCode.toLowerCase()
+        }
         const countryCode = parsedPhone?.getCountryCode()
         return (
           countryCode &&
@@ -137,6 +141,7 @@ export const resolvePhoneNumber = ({ phoneNumber, regionCode }) => {
 
   return {
     phoneNumber,
+    regionCode,
     parsedPhone,
     phoneUtil,
   }
