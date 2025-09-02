@@ -3,7 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,20 +11,14 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportArtistsSuccess",
+  name: "UpdateArtworkImportRowImagesSuccess",
   isTypeOf: (data) => !!data.artworkImportID,
   fields: () => ({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
-    },
-    matched: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    unmatched: {
-      type: new GraphQLNonNull(GraphQLInt),
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -37,7 +31,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MatchArtworkImportArtistsFailure",
+  name: "UpdateArtworkImportRowImagesFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -48,43 +42,54 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "MatchArtworkImportArtistsResponseOrError",
+  name: "UpdateArtworkImportRowImagesResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const MatchArtworkImportArtistsMutation = mutationWithClientMutationId<
+export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "MatchArtworkImportArtists",
+  name: "UpdateArtworkImportRowImages",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    rowID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row to update images for",
+    },
+    sortedImageIDs: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+      description: "Array of image IDs in desired position order",
+    },
   },
   outputFields: {
-    matchArtworkImportArtistsOrError: {
+    updateArtworkImportRowImagesOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportMatchArtistsLoader }
+    { artworkImportID, rowID, sortedImageIDs },
+    { artworkImportUpdateRowImagesLoader }
   ) => {
-    if (!artworkImportMatchArtistsLoader) {
+    if (!artworkImportUpdateRowImagesLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      const { matched, unmatched } = await artworkImportMatchArtistsLoader(
-        artworkImportID
+      await artworkImportUpdateRowImagesLoader(
+        { artworkImportID, rowID },
+        {
+          sorted_image_ids: sortedImageIDs,
+        }
       )
 
       return {
-        matched,
-        unmatched,
         artworkImportID,
       }
     } catch (error) {

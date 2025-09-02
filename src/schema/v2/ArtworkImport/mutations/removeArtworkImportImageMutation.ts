@@ -1,9 +1,10 @@
+// DEPRECATED: This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -11,17 +12,15 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "./artworkImport"
+import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "AssignArtworkImportArtistSuccess",
-  isTypeOf: (data) => !!data.artworkImportID,
+  name: "RemoveArtworkImportImageSuccess",
+  isTypeOf: (data) => !!data.id,
   fields: () => ({
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    updatedRowsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
+    success: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: () => true,
     },
     artworkImport: {
       type: ArtworkImportType,
@@ -34,7 +33,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "AssignArtworkImportArtistFailure",
+  name: "RemoveArtworkImportImageFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -45,52 +44,51 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "AssignArtworkImportArtistResponseOrError",
+  name: "RemoveArtworkImportImageResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const AssignArtworkImportArtistMutation = mutationWithClientMutationId<
+export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "AssignArtworkImportArtist",
+  name: "RemoveArtworkImportImage",
+  deprecationReason:
+    "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    artistName: {
+    rowID: {
       type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row containing the image",
     },
-    artistID: {
+    imageID: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
   outputFields: {
-    assignArtworkImportArtistOrError: {
+    removeArtworkImportImageOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, artistName, artistID },
-    { artworkImportAssignArtistLoader }
+    { artworkImportID, rowID, imageID },
+    { artworkImportRemoveImageLoader }
   ) => {
-    if (!artworkImportAssignArtistLoader) {
+    if (!artworkImportRemoveImageLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
     try {
-      const { updated_rows_count } = await artworkImportAssignArtistLoader(
-        artworkImportID,
-        {
-          artist_name: artistName,
-          artist_id: artistID,
-        }
-      )
-
       return {
-        updatedRowsCount: updated_rows_count,
+        ...(await artworkImportRemoveImageLoader({
+          artworkImportID,
+          rowID,
+          imageID,
+        })),
         artworkImportID,
       }
     } catch (error) {
