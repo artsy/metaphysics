@@ -22,6 +22,9 @@ describe("RecommendedArtworks", () => {
                 }
               }
             }
+            ... on HomeViewSectionArtworks {
+              trackItemImpressions
+            }
           }
         }
       }
@@ -51,6 +54,7 @@ describe("RecommendedArtworks", () => {
           "contextModule": "artworkRecommendationsRail",
           "internalID": "home-view-section-recommended-artworks",
           "ownerType": "artworkRecommendations",
+          "trackItemImpressions": true,
         },
       }
     `)
@@ -70,6 +74,9 @@ describe("RecommendedArtworks", () => {
                   }
                 }
               }
+            }
+            ... on HomeViewSectionArtworks {
+              trackItemImpressions
             }
           }
         }
@@ -166,6 +173,7 @@ describe("RecommendedArtworks", () => {
               },
             ],
           },
+          "trackItemImpressions": true,
         },
       }
     `)
