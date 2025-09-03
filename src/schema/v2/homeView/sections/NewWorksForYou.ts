@@ -1,5 +1,4 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
-import { getExperimentVariant } from "lib/featureFlags"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
@@ -21,18 +20,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   requiresAuthentication: true,
   trackItemImpressions: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    const variant = getExperimentVariant(
-      "onyx_nwfy-view-frequency-penalty-experiment",
-      {
-        userId: context.userID,
-      }
-    )
-
-    let recommendationsVersion = "C"
-
-    if (variant && variant.enabled && variant.name === "variant-a") {
-      recommendationsVersion = "A"
-    }
+    const recommendationsVersion = "C"
 
     const finalArgs = {
       // formerly specified client-side
