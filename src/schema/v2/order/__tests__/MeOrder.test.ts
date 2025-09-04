@@ -635,7 +635,7 @@ describe("Me", () => {
       })
 
       it("returns phoneNumber with rich values with a valid region code", async () => {
-        orderJson.buyer_phone_number_country_code = "us"
+        orderJson.buyer_phone_number_country_code = "ca"
         orderJson.buyer_phone_number = "7738675309"
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
@@ -668,7 +668,7 @@ describe("Me", () => {
           display: "+1 773-867-5309",
           isValid: true,
           originalNumber: "7738675309",
-          regionCode: "us",
+          regionCode: "ca",
         })
       })
 
