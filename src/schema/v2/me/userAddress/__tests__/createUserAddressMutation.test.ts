@@ -1,10 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const shouldSkip = !config.USE_UNSTITCHED_USER_ADDRESS
-
-;(shouldSkip ? describe.skip : describe)("createUserAddressMutation", () => {
+describe("createUserAddressMutation", () => {
   const mockMeCreateUserAddressLoader = jest.fn()
   const mockMeLoader = jest.fn()
 
