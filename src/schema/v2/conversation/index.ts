@@ -652,8 +652,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       description: "True if there is an unread message by the Partner(to).",
       resolve: (conversation) => {
-        const { to_last_viewed_message_id } = conversation
-        return unreadConversation(conversation, to_last_viewed_message_id)
+        return conversation.is_unread_by_partner
       },
     },
   },
