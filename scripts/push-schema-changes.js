@@ -71,6 +71,10 @@ async function updateSchemaFile({
   })
 }
 
+/**
+ * IMPORTANT: When updating or removing a repo from this list, be sure to *also*
+ * update .circleci/config.yml `push-schema-changes` job parallelism count to match
+ */
 const supportedRepos = {
   "artsy-mcp": {},
   eigen: { body: `${defaultBody} #nochangelog` },
