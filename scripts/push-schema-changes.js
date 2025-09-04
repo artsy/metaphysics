@@ -72,6 +72,7 @@ async function updateSchemaFile({
 }
 
 const supportedRepos = {
+  "artsy-mcp": {},
   eigen: { body: `${defaultBody} #nochangelog` },
   energy: {},
   prediction: {},
