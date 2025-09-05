@@ -53,6 +53,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
+    UNSUPPORTED_IMAGE_SEPERATOR: { value: "unsupported_image_separator" },
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
   },
 })
