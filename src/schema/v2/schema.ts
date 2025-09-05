@@ -102,7 +102,6 @@ import {
   updateUserDefaultAddressMutation,
 } from "./me/userAddress/mutations"
 import ObjectIdentification from "./object_identification"
-import config from "config"
 import { OrderedSet } from "./OrderedSet"
 import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
 import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
@@ -549,6 +548,7 @@ export default new GraphQLSchema({
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
       createUserAdminNote: createUserAdminNoteMutation,
+      createUserAddress: createUserAddressMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
       createUserInterests: createUserInterestsMutation,
@@ -584,6 +584,7 @@ export default new GraphQLSchema({
       deletePurchase: deletePurchaseMutation,
       deleteUser: deleteUserMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
+      deleteUserAddress: deleteUserAddressMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserInterestForUser: deleteUserInterestForUser,
       deleteUserInterests: deleteUserInterestsMutation,
@@ -687,14 +688,8 @@ export default new GraphQLSchema({
       updateViewingRoom: updateViewingRoomMutation,
       updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
       updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
-      ...(config.USE_UNSTITCHED_USER_ADDRESS
-        ? {
-            createUserAddress: createUserAddressMutation,
-            updateUserAddress: updateUserAddressMutation,
-            deleteUserAddress: deleteUserAddressMutation,
-            updateUserDefaultAddress: updateUserDefaultAddressMutation,
-          }
-        : {}),
+      updateUserAddress: updateUserAddressMutation,
+      updateUserDefaultAddress: updateUserDefaultAddressMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
@@ -724,9 +719,8 @@ export default new GraphQLSchema({
     AppSecondFactor,
     SmsSecondFactor,
     BackupSecondFactors,
-    ...(config.USE_UNSTITCHED_USER_ADDRESS
-      ? [UserAddressType, UserAddressOrErrorsUnion]
-      : []),
+    UserAddressType,
+    UserAddressOrErrorsUnion,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,

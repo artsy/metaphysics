@@ -98,7 +98,6 @@ import {
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
 import { MeOrder } from "../order"
-import config from "config"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
 import { UserPricePreference } from "./userPricePreference"
@@ -208,9 +207,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
-    ...(config.USE_UNSTITCHED_USER_ADDRESS
-      ? { addressConnection: UserAddressesConnection }
-      : {}),
+    addressConnection: UserAddressesConnection,
     artistRecommendations: ArtistRecommendations,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
