@@ -10,4 +10,4 @@ jobs:
       danger-token: ${{ secrets.DANGER_TOKEN }}
     with:
       dangerfile: "peril/compareForceSchema.ts"
-      use-caller-repo-deps: true
+      install-from-caller: false
