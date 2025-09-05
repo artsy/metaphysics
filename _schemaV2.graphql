@@ -4766,9 +4766,6 @@ input BulkArtworkFilterInput {
 }
 
 input BulkUpdateArtworksMetadataInput {
-  # Number of additional edition sets to be created for each artwork
-  additionalEditionSetsCount: Int
-
   # The artist IDs to be assigned
   artistIds: [String]
 
@@ -4801,6 +4798,9 @@ input BulkUpdateArtworksMetadataInput {
 
   # Whether the artworks must be listed as Purchase
   ecommerce: Boolean
+
+  # Number of additional edition sets to be created for each artwork
+  editionSetsCount: Int
 
   # Set artwork price visibility to exact price
   exactPrice: Boolean
