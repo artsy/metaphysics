@@ -364,14 +364,6 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
     },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ s3_key }) => s3_key,
-    },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ s3_bucket }) => s3_bucket,
-    },
     locationID: {
       type: GraphQLString,
       resolve: ({ location_id }) => location_id,
