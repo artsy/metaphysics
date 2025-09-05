@@ -24,6 +24,7 @@ async function updateSchemaFile({
   body = defaultBody,
 }) {
   console.log(`Updating schema for ${repo}`)
+
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -37,8 +38,12 @@ async function updateSchemaFile({
     assignees: ["artsyit"],
     labels: ["Squash On Green"],
     update: (repoDir) => {
-      execSync("yarn config set ignore-engines true", { cwd: repoDir })
-      execSync("yarn install", { cwd: repoDir })
+      const repoConfig = supportedRepos[repo] || {}
+
+      if (!repoConfig.skipInstall) {
+        execSync("yarn config set ignore-engines true", { cwd: repoDir })
+        execSync("yarn install", { cwd: repoDir })
+      }
 
       destinations.forEach((dest) => {
         const repoDest = path.join(repoDir, dest)
@@ -52,27 +57,42 @@ async function updateSchemaFile({
           execSync(`cp _schemaV2.graphql '${repoDest}'`)
           prettierArgs = "--parser=graphql"
 
-          // Running the compiler directly for Rails projects
-          const relayCompilerCommand = ["volt"].includes(repo)
-            ? "./node_modules/.bin/relay-compiler"
-            : "yarn relay"
+          if (!repoConfig.skipRelay) {
+            // Running the compiler directly for Rails projects
+            const relayCompilerCommand = ["volt"].includes(repo)
+              ? "./node_modules/.bin/relay-compiler"
+              : "yarn relay"
 
-          execSync(relayCompilerCommand, { cwd: repoDir })
+            execSync(relayCompilerCommand, { cwd: repoDir })
+          }
         }
 
-        execSync(
-          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier ${prettierArgs} --write ${dest}`,
-          {
-            cwd: repoDir,
-          }
-        )
+        if (!repoConfig.skipPrettier) {
+          execSync(
+            `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier ${prettierArgs} --write ${dest}`,
+            {
+              cwd: repoDir,
+            }
+          )
+        }
       })
     },
   })
 }
 
+/**
+ * IMPORTANT: When updating or removing a repo from this list, be sure to *also*
+ * update .circleci/config.yml `push-schema-changes` job parallelism count to match
+ */
 const supportedRepos = {
-  eigen: { body: `${defaultBody} #nochangelog` },
+  "artsy-mcp": {
+    skipInstall: true,
+    skipRelay: true,
+    skipPrettier: true,
+  },
+  eigen: {
+    body: `${defaultBody} #nochangelog`,
+  },
   energy: {},
   prediction: {},
   force: {},
