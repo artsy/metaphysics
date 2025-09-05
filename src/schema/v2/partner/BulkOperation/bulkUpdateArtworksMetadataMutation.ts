@@ -27,7 +27,9 @@ interface Input {
   id: string
   source: string
   metadata?: {
+    editionSetsCount?: number
     artistIds?: string[]
+    attributionClass?: string
     availability?: string
     category?: string
     dates?: number[]
@@ -71,6 +73,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLList(GraphQLString),
       description: "The artist IDs to be assigned",
     },
+    attributionClass: {
+      type: GraphQLString,
+      description:
+        "The attribution class to be assigned, E.g. unique, open edition, limited edition",
+    },
     availability: {
       type: Availability,
       description: "The availaiblity to be assigned",
@@ -82,6 +89,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     dates: {
       type: GraphQLList(GraphQLInt),
       description: "Array of dates as numbers to be assigned",
+    },
+    editionSetsCount: {
+      type: GraphQLInt,
+      description:
+        "Number of additional edition sets to be created for each artwork",
     },
     hasCertificateOfAuthenticity: {
       type: GraphQLBoolean,
@@ -293,9 +305,11 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     if (metadata) {
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
+        attribution_class: metadata.attributionClass,
         availability: metadata.availability,
         category: metadata.category,
         dates: metadata.dates,
+        edition_sets_count: metadata.editionSetsCount,
         certificate_of_authenticity: metadata.hasCertificateOfAuthenticity,
         coa_by_gallery: metadata.coaByGallery,
         coa_by_authenticating_body: metadata.coaByAuthenticatingBody,

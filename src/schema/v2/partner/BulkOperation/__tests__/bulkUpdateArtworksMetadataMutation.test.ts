@@ -11,8 +11,10 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           source: ARTWORKS_LIST
           metadata: {
             artistIds: ["artist1", "artist2"]
+            attributionClass: "limited edition"
             availability: SOLD
             dates: [2020, 2021]
+            editionSetsCount: 2
             hasCertificateOfAuthenticity: true
             coaByGallery: true
             coaByAuthenticatingBody: null
@@ -82,9 +84,11 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       {
         metadata: {
           artist_ids: ["artist1", "artist2"],
+          attribution_class: "limited edition",
           condition_description: "Excellent",
           availability: "sold",
           dates: [2020, 2021],
+          edition_sets_count: 2,
           certificate_of_authenticity: true,
           coa_by_gallery: true,
           coa_by_authenticating_body: null,

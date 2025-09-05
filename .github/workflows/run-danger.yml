@@ -1,0 +1,14 @@
+name: ☢️ Run Danger
+
+on:
+  pull_request:
+
+jobs:
+  run-danger:
+    uses: artsy/duchamp/.github/workflows/run-danger.yml@main
+    secrets:
+      danger-token: ${{ secrets.DANGER_TOKEN }}
+    with:
+      dangerfile: "danger/compareForceSchema.ts"
+      install-from-caller: true
+      fail-on-errors: false
