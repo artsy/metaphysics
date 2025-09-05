@@ -2079,6 +2079,13 @@ describe("Artwork type", () => {
           expect(signature).toBe("<p>Foo <em>bar</em></p>\n")
         })
       })
+
+      it("tolerates null signatures", () => {
+        artwork.signature = null
+        return runQuery(query, context).then(({ artwork: { signature } }) => {
+          expect(signature).toBe(null)
+        })
+      })
     })
   })
 
