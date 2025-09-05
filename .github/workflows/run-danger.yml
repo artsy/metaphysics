@@ -9,6 +9,6 @@ jobs:
     secrets:
       danger-token: ${{ secrets.DANGER_TOKEN }}
     with:
-      dangerfile: "peril/compareForceSchema.ts"
+      dangerfile: "danger/compareForceSchema.ts"
       install-from-caller: true
       fail-on-errors: false
