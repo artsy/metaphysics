@@ -4766,8 +4766,14 @@ input BulkArtworkFilterInput {
 }
 
 input BulkUpdateArtworksMetadataInput {
+  # Number of additional edition sets to be created for each artwork
+  additionalEditionSetsCount: Int
+
   # The artist IDs to be assigned
   artistIds: [String]
+
+  # The attribution class to be assigned, E.g. unique, open edition, limited edition
+  attributionClass: String
 
   # The availaiblity to be assigned
   availability: Availability

@@ -10,7 +10,9 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           id: "partner123"
           source: ARTWORKS_LIST
           metadata: {
+            additionalEditionSetsCount: 2
             artistIds: ["artist1", "artist2"]
+            attributionClass: "limited edition"
             availability: SOLD
             dates: [2020, 2021]
             hasCertificateOfAuthenticity: true
@@ -81,7 +83,9 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       "partner123",
       {
         metadata: {
+          additional_edition_sets_count: 2,
           artist_ids: ["artist1", "artist2"],
+          attribution_class: "limited edition",
           condition_description: "Excellent",
           availability: "sold",
           dates: [2020, 2021],
