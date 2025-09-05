@@ -1,0 +1,12 @@
+name: ☢️ Run Danger
+
+on:
+  pull_request:
+
+jobs:
+  danger-yarn:
+    uses: artsy/duchamp/.github/workflows/run-danger.yml@PHIRE-2171
+    secrets:
+      danger-token: ${{ secrets.DANGER_TOKEN }}
+    with:
+      dangerfile: "peril/compareForceSchema.ts"
