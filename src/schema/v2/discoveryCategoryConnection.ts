@@ -1,5 +1,5 @@
 import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
-import { marketingCollectionCategories } from "lib/marketingCollectionCategories"
+import { discoveryCategories } from "lib/discoveryCategories"
 import { ResolverContext } from "types/graphql"
 import {
   DiscoveryCategoryType,
@@ -19,7 +19,7 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
     },
   },
   resolve: (_parent, args) => {
-    const categoryEntry = Object.entries(marketingCollectionCategories).find(
+    const categoryEntry = Object.entries(discoveryCategories).find(
       ([, category]) => category.slug === args.slug
     )
 
@@ -44,7 +44,7 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
 }
 
 export const discoveryCategoryResolver = async (_source: any, args: any) => {
-  const categoryEntry = Object.entries(marketingCollectionCategories).find(
+  const categoryEntry = Object.entries(discoveryCategories).find(
     ([, category]) => category.slug === args?.id
   )
 

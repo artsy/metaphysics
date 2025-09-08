@@ -8,9 +8,9 @@ import { NodeInterface, GlobalIDField } from "./object_identification"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import {
   ArtworkFilters,
-  marketingCollectionCategories,
-  MarketingCollectionCategoriesKeys,
-} from "lib/marketingCollectionCategories"
+  discoveryCategories,
+  DiscoveryCategoriesKeys,
+} from "lib/discoveryCategories"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import {
@@ -86,7 +86,7 @@ const FiltersForArtworksConnectionType = connectionWithCursorInfo({
   name: "FiltersForArtworksConnection",
 }).connectionType
 
-const orderedCategoryKeys: MarketingCollectionCategoriesKeys[] = [
+const orderedCategoryKeys: DiscoveryCategoriesKeys[] = [
   "Medium",
   "Movement",
   "Collect by Size",
@@ -158,10 +158,11 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
           filterItem: any
         }> = []
 
-        for (const [filterKey, filterItems] of Object.entries(
-          parent.artworkFilters
-        )) {
-          for (const filterItem of filterItems) {
+        parent.artworkFilters.forEach((filterItem) => {
+          const filterKeys = Object.keys(filterItem).filter(
+            (key) => key !== "title"
+          )
+          filterKeys.forEach((filterKey) => {
             filters.push({
               href: `/collect?${filterKey}=${encodeURIComponent(
                 filterItem[filterKey]
@@ -170,8 +171,8 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
               filterKey,
               filterItem,
             })
-          }
-        }
+          })
+        })
 
         return {
           ...connectionFromArray(filters, args),
@@ -196,7 +197,7 @@ export const discoveryCategoriesConnection: GraphQLFieldConfig<
   args: pageable({}),
   resolve: (_parent, args: CursorPageable) => {
     const cards = orderedCategoryKeys.map((key) => {
-      const category = marketingCollectionCategories[key]
+      const category = discoveryCategories[key]
 
       const discoveryType: DiscoveryCategory = {
         id: category.slug,

@@ -12244,6 +12244,26 @@ type FilterSaleArtworksCounts {
   ): FormattedNumber
 }
 
+# A connection to a list of items.
+type FiltersForArtworksConnectionConnection {
+  # A list of edges.
+  edges: [FiltersForArtworksConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type FiltersForArtworksConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkFilterNode
+}
+
 type FollowArtist {
   artist: Artist
   auto: Boolean

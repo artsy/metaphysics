@@ -1,4 +1,4 @@
-export type MarketingCollectionCategoriesKeys =
+export type DiscoveryCategoriesKeys =
   | "Medium"
   | "Movement"
   | "Collect by Size"
@@ -7,18 +7,14 @@ export type MarketingCollectionCategoriesKeys =
   | "Gallery"
 
 // Gravity snake_cased params
-type ArtworkFilterPayloads = {
+type ArtworkFilterItem = {
+  title: string
   price_range: string
 }
-type ArtworkFiltersKeys = keyof ArtworkFilterPayloads
-type ArtworkFiltersItem<K extends ArtworkFiltersKeys> = { title: string } & {
-  [P in K]: ArtworkFilterPayloads[P]
-}
-export type ArtworkFilters = {
-  [K in ArtworkFiltersKeys]?: readonly ArtworkFiltersItem<K>[]
-}
 
-type MarketingCollectionCategory = {
+export type ArtworkFilters = readonly ArtworkFilterItem[]
+
+type DiscoveryCategory = {
   id: string
   slug: string
   title: string
@@ -28,9 +24,9 @@ type MarketingCollectionCategory = {
   artworkFilters?: ArtworkFilters
 }
 
-export const marketingCollectionCategories: Record<
-  MarketingCollectionCategoriesKeys,
-  MarketingCollectionCategory
+export const discoveryCategories: Record<
+  DiscoveryCategoriesKeys,
+  DiscoveryCategory
 > = {
   Medium: {
     id: "Medium",
@@ -117,17 +113,15 @@ export const marketingCollectionCategories: Record<
       "art-under-25000-dollars",
       "art-under-50000-dollars",
     ] as const,
-    artworkFilters: {
-      price_range: [
-        { title: "Art under $500", price_range: "*-500" },
-        { title: "Art under $1000", price_range: "501-1000" },
-        { title: "Art under $2500", price_range: "1001-2500" },
-        { title: "Art under $5000", price_range: "2501-5000" },
-        { title: "Art under $10000", price_range: "5001-10000" },
-        { title: "Art under $25000", price_range: "10001-25000" },
-        { title: "Art above $25000", price_range: "25001-*" },
-      ],
-    },
+    artworkFilters: [
+      { title: "Art under $500", price_range: "*-500" },
+      { title: "Art under $1000", price_range: "501-1000" },
+      { title: "Art under $2500", price_range: "1001-2500" },
+      { title: "Art under $5000", price_range: "2501-5000" },
+      { title: "Art under $10000", price_range: "5001-10000" },
+      { title: "Art under $25000", price_range: "10001-25000" },
+      { title: "Art above $25000", price_range: "25001-*" },
+    ],
   },
   Gallery: {
     id: "Gallery",
@@ -146,4 +140,4 @@ export const marketingCollectionCategories: Record<
   },
 } as const
 
-export type MarketingCollectionsCategories = typeof marketingCollectionCategories
+export type DiscoveryCategories = typeof discoveryCategories

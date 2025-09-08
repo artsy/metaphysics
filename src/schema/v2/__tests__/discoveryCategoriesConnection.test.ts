@@ -1,5 +1,27 @@
 import { runQuery } from "schema/v2/test/utils"
 
+const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
+  hits: [
+    {
+      _id: "artwork-1",
+      title: "Test Artwork 1",
+      slug: "test-artwork-1",
+      id: "test-artwork-1",
+    },
+    {
+      _id: "artwork-2",
+      title: "Test Artwork 2",
+      slug: "test-artwork-2",
+      id: "test-artwork-2",
+    },
+  ],
+  aggregations: {
+    total: {
+      value: 2,
+    },
+  },
+})
+
 describe("discoveryCategoriesConnection", () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -329,26 +351,4 @@ describe("discoveryCategoriesConnection", () => {
       )
     })
   })
-})
-
-const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
-  hits: [
-    {
-      _id: "artwork-1",
-      title: "Test Artwork 1",
-      slug: "test-artwork-1",
-      id: "test-artwork-1",
-    },
-    {
-      _id: "artwork-2",
-      title: "Test Artwork 2",
-      slug: "test-artwork-2",
-      id: "test-artwork-2",
-    },
-  ],
-  aggregations: {
-    total: {
-      value: 2,
-    },
-  },
 })
