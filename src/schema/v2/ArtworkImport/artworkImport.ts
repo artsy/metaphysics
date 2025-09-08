@@ -53,6 +53,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
+    UNSUPPORTED_IMAGE_SEPERATOR: { value: "unsupported_image_separator" },
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
   },
 })
@@ -363,14 +364,6 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     fileName: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ file_name }) => file_name,
-    },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ s3_key }) => s3_key,
-    },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ s3_bucket }) => s3_bucket,
     },
     locationID: {
       type: GraphQLString,
