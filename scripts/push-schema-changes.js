@@ -41,7 +41,6 @@ async function updateSchemaFile({
       const repoConfig = supportedRepos[repo] || {}
 
       if (!repoConfig.skipInstall) {
-        execSync("yarn config set ignore-engines true", { cwd: repoDir })
         execSync("yarn install", { cwd: repoDir })
       }
 
