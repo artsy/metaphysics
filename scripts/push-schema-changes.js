@@ -40,6 +40,10 @@ async function updateSchemaFile({
     update: (repoDir) => {
       const repoConfig = supportedRepos[repo] || {}
 
+      if (!repoConfig.skipDeprecatedEngineCheck) {
+        execSync("yarn config set ignore-engines true", { cwd: repoDir })
+      }
+
       if (!repoConfig.skipInstall) {
         execSync("yarn install", { cwd: repoDir })
       }
@@ -94,9 +98,10 @@ const supportedRepos = {
   },
   energy: {},
   prediction: {},
-  force: {},
+  force: { skipDeprecatedEngineCheck: true },
   forque: {},
   volt: {
+    skipDeprecatedEngineCheck: true,
     destinations: [
       "vendor/graphql/schema/schema.graphql",
       "vendor/graphql/schema/metaphysics.json",
