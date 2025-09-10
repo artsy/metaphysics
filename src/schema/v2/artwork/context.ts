@@ -45,7 +45,7 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
         .then((sale) => {
           if (!sale) return null
           return assign(
-            { context_type: sale.is_auction ? "Auction" : "Sale" },
+            { context_type: (sale as any).is_auction ? "Auction" : "Sale" },
             sale
           )
         })
@@ -54,7 +54,7 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
     const fair_promise = relatedFairsLoader({ artwork: [id], size: 1 })
       .then(first)
       .then((fair) => {
-        if (!fair || (fair && !fair.has_full_feature)) return null
+        if (!fair || (fair && !(fair as any).has_full_feature)) return null
         return assign({ context_type: "Fair" }, fair)
       })
 

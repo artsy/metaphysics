@@ -94,7 +94,7 @@
     "postinstall-prepare": "1.0.1",
     "proportional-scale": "4.0.0",
     "qs": "^6.14.0",
-    "rate-limit-memcached": "^0.6.0",
+    "rate-limit-memcached": "0.6.0",
     "react-relay-network-modern": "4.7.7",
     "relay-cursor-paging": "0.2.0",
     "relay-runtime": "10.0.1",
@@ -122,7 +122,7 @@
     "@types/graphql-upload": "^8.0.11",
     "@types/invariant": "^2.2.37",
     "@types/jest": "^29.5.14",
-    "@types/lodash": "4.14.86",
+    "@types/lodash": "4.17.20",
     "@types/node": "22.5.1",
     "@types/node-fetch": "^2.6.13",
     "@types/qs": "^6.14.0",
@@ -149,7 +149,7 @@
     "sinon": "1.17.7",
     "superagent": "3.8.3",
     "supertest": "3.1.0",
-    "typescript": "4.6.4",
+    "typescript": "5.9.2",
     "wrangler": "^3.114.14"
   },
   "prettier": {

@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es5",
+    "target": "es2018",
     "useUnknownInCatchVariables": false
   },
   "include": ["index.js", "src/**/*"],

@@ -103,15 +103,13 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     closed: Array<MyBid>
   } | null> => {
     if (
-      !(
-        causalityGraphQLLoader &&
-        meLoader &&
-        saleArtworksLoader &&
-        saleArtworksAllLoader &&
-        salesLoaderWithHeaders &&
-        saleLoader &&
-        lotStandingLoader
-      )
+      !causalityGraphQLLoader ||
+      !meLoader ||
+      !saleArtworksLoader ||
+      !saleArtworksAllLoader ||
+      !salesLoaderWithHeaders ||
+      !saleLoader ||
+      !lotStandingLoader
     ) {
       return null
     }

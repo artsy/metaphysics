@@ -93,7 +93,7 @@ export const formatGravityError = (error) => {
         type: "error",
         error: freeBody,
         statusCode: error.statusCode,
-        message: parsedError.error || parsedError.message,
+        message: (parsedError as any).error || (parsedError as any).message,
       }
     } else if (freeBody.error) {
       return {

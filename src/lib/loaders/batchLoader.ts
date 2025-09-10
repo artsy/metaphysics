@@ -53,7 +53,7 @@ type ParamGrouping = [SerializedParams, IdWithParams[][]]
  * @returns a tuple of an array of group strings and an array of grouped keys
  */
 export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
-  const paramGrouping: ParamGrouping = chain(params)
+  const paramGrouping = chain(params)
     .groupBy(serializeParams)
     .entries()
     .thru((entries) => {
@@ -64,7 +64,7 @@ export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
       }
       return result
     })
-    .value()
+    .value() as ParamGrouping
 
   return paramGrouping
 }
