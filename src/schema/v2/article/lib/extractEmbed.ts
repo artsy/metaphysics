@@ -39,9 +39,12 @@ const detectProvider = ({ hostname }: URL): Provider | null => {
 const detectId = ({ pathname, search }: URL, provider: Provider): string => {
   switch (provider) {
     case "youtube":
-      return search === ""
-        ? pathname.split("/").pop()
-        : parse(search.slice(1)).v
+      if (search === "") {
+        return pathname.split("/").pop() as string
+      } else {
+        const parsed = parse(search.slice(1))
+        return String(parsed.v || "")
+      }
     case "vimeo":
       return pathname.split("/").pop() as string
   }
