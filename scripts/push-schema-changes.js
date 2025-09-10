@@ -92,6 +92,7 @@ const supportedRepos = {
     skipInstall: true,
     skipRelay: true,
     skipPrettier: true,
+    destinations: ["apps/artsy-mcp/data/schema.graphql"],
   },
   eigen: {
     body: `${defaultBody} #nochangelog`,
