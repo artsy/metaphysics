@@ -72,7 +72,7 @@ function createMemcachedClient() {
     poolSize: MEMCACHED_MAX_POOL,
   })
   VerboseEvents.forEach((event) => {
-    client.on(event, () => verbose(`[Cache] ${event}`))
+    client.on(event as any, () => verbose(`[Cache] ${event}`))
   })
   return client
 }
