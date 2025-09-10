@@ -135,7 +135,12 @@ describe("discoveryCategoriesConnection", () => {
 
   describe("artworkConnection filtering", () => {
     const context = {
-      filterArtworksLoader: mockFilterArtworksLoader,
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
     }
 
     beforeEach(() => {
@@ -302,10 +307,15 @@ describe("discoveryCategoriesConnection", () => {
       expect(mediumCategory.filtersForArtworksConnection.edges).toHaveLength(0)
     })
 
-    it("handles errors gracefully and returns empty connections", async () => {
+    it("propagates errors from the filterArtworksLoader", async () => {
       const errorLoader = jest.fn().mockRejectedValue(new Error("API Error"))
       const errorContext = {
-        filterArtworksLoader: errorLoader,
+        unauthenticatedLoaders: {
+          filterArtworksLoader: errorLoader,
+        },
+        authenticatedLoaders: {
+          filterArtworksLoader: errorLoader,
+        },
       }
 
       const query = `
@@ -335,19 +345,8 @@ describe("discoveryCategoriesConnection", () => {
         }
       `
 
-      const result = await runQuery(query, errorContext)
-
-      const priceCategory = result.discoveryCategoriesConnection.edges.find(
-        (edge: any) => edge.node.category === "Collect by Price"
-      )?.node
-
-      expect(priceCategory.filtersForArtworksConnection.edges).toHaveLength(7)
-
-      priceCategory.filtersForArtworksConnection.edges.forEach(
-        ({ node: filter }: any) => {
-          expect(filter.href).toBeDefined()
-          expect(filter.title).toBeDefined()
-        }
+      await expect(runQuery(query, errorContext)).rejects.toThrow(
+        "Multiple errors occurred."
       )
     })
   })

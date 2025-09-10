@@ -5,7 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { NodeInterface, GlobalIDField } from "./object_identification"
-import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArray } from "graphql-relay"
 import {
   ArtworkFilters,
   discoveryCategories,
@@ -13,14 +13,8 @@ import {
 } from "lib/discoveryCategories"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import {
-  connectionWithCursorInfo,
-  emptyConnection,
-} from "schema/v2/fields/pagination"
-import { artworkConnection } from "schema/v2/artwork"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { withTimeout } from "lib/loaders/helpers"
-import config from "config"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { filterArtworksConnectionWithParams } from "schema/v2/filterArtworksConnection"
 
 const ArtworkFilterNodeType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkFilterNode",
@@ -35,49 +29,11 @@ const ArtworkFilterNodeType = new GraphQLObjectType<any, ResolverContext>({
       description: "The display title for this filtered connection",
       resolve: ({ title }) => title,
     },
-    artworksConnection: {
-      type: artworkConnection.connectionType,
-      args: pageable({}),
-      description: "Artworks matching this filter",
-      resolve: async (
-        { filterKey, filterItem },
-        args,
-        { filterArtworksLoader }
-      ) => {
-        if (!filterArtworksLoader) {
-          return emptyConnection
-        }
-
-        try {
-          const response = (await withTimeout(
-            filterArtworksLoader({
-              ...convertConnectionArgsToGravityArgs(args),
-              aggregations: ["total"],
-              [filterKey]: filterItem[filterKey],
-            }),
-            config.RESOLVER_TIMEOUT_MS || 5000
-          )) as any
-
-          const artworks = response.hits || []
-          const totalCount =
-            response.aggregations?.total?.value || artworks.length
-
-          return {
-            ...connectionFromArraySlice(artworks, args, {
-              arrayLength: totalCount,
-              sliceStart: convertConnectionArgsToGravityArgs(args).offset || 0,
-            }),
-            totalCount,
-          }
-        } catch (error) {
-          console.error(
-            `[ArtworkFilterNode] Error fetching artworks for ${filterItem.title}:`,
-            error
-          )
-          return emptyConnection
-        }
-      },
-    },
+    artworksConnection: filterArtworksConnectionWithParams(
+      ({ filterKey, filterItem }) => ({
+        [filterKey]: filterItem[filterKey],
+      })
+    ),
   },
 })
 
