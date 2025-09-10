@@ -9,6 +9,12 @@ import { isArray, isObject, omit, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { HTTPError } from "./HTTPError"
 
+interface ParsedGravityError {
+  error?: string
+  message?: string
+  [key: string]: any
+}
+
 // Gravity-defined error types: https://github.com/artsy/gravity/blob/main/app/graphql/types/errors_type.rb
 
 const ErrorType = new GraphQLObjectType<any, ResolverContext>({
@@ -81,7 +87,7 @@ export const formatGravityError = (error) => {
   if (error instanceof HTTPError) {
     const freeBody: any = error.body
 
-    let parsedError
+    let parsedError: ParsedGravityError | undefined
     try {
       parsedError = JSON.parse(freeBody)
     } catch {
@@ -93,7 +99,7 @@ export const formatGravityError = (error) => {
         type: "error",
         error: freeBody,
         statusCode: error.statusCode,
-        message: (parsedError as any).error || (parsedError as any).message,
+        message: parsedError.error || parsedError.message,
       }
     } else if (freeBody.error) {
       return {

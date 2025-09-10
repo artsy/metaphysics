@@ -20,11 +20,13 @@ const isTest = NODE_ENV === "test"
 
 const VerboseEvents = [
   "issue",
-  "failure",
+  "failure", 
   "reconnecting",
   "reconnect",
   "remove",
-]
+] as const
+
+type MemcachedEvent = typeof VerboseEvents[number]
 
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
@@ -71,8 +73,8 @@ function createMemcachedClient() {
   const client = new Memcached(MEMCACHED_URL, {
     poolSize: MEMCACHED_MAX_POOL,
   })
-  VerboseEvents.forEach((event) => {
-    client.on(event as any, () => verbose(`[Cache] ${event}`))
+  VerboseEvents.forEach((event: MemcachedEvent) => {
+    client.on(event, () => verbose(`[Cache] ${event}`))
   })
   return client
 }
@@ -110,7 +112,7 @@ function _get<T>(key) {
         if (CACHE_COMPRESSION_DISABLED) {
           resolve(JSON.parse(data.toString()))
         } else {
-          zlib.inflate(Buffer.from(data, "base64") as any, (er, inflatedData) => {
+          zlib.inflate(Buffer.from(data, "base64"), (er, inflatedData) => {
             if (er) {
               reject(er)
             } else {

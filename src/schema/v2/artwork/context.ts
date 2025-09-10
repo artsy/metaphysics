@@ -5,6 +5,17 @@ import { ShowType } from "schema/v2/show"
 import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+interface SaleWithAuctionInfo {
+  id: string
+  is_auction: boolean
+  [key: string]: any
+}
+
+interface FairWithFeatureInfo {
+  has_full_feature: boolean
+  [key: string]: any
+}
+
 export const ArtworkContextType = new GraphQLUnionType({
   name: "ArtworkContext",
   types: [FairType, SaleType, ShowType],
@@ -42,10 +53,10 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
     if (sale_ids && sale_ids.length > 0) {
       sale_promise = salesLoader({ id: sale_ids })
         .then(first)
-        .then((sale) => {
+        .then((sale: SaleWithAuctionInfo | null) => {
           if (!sale) return null
           return assign(
-            { context_type: (sale as any).is_auction ? "Auction" : "Sale" },
+            { context_type: sale.is_auction ? "Auction" : "Sale" },
             sale
           )
         })
@@ -53,8 +64,8 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
 
     const fair_promise = relatedFairsLoader({ artwork: [id], size: 1 })
       .then(first)
-      .then((fair) => {
-        if (!fair || (fair && !(fair as any).has_full_feature)) return null
+      .then((fair: FairWithFeatureInfo | null) => {
+        if (!fair || (fair && !fair.has_full_feature)) return null
         return assign({ context_type: "Fair" }, fair)
       })
 
