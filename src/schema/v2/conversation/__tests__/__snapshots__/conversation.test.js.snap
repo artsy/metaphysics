@@ -41,7 +41,7 @@ exports[`Me Conversation concerning unread indicator returns the right unread st
 `;
 
 exports[`Me Conversation inquiry request returns the formatted first message as just the formatted questions if no message is present 1`] = `
-"I would like to request the following information about this artwork:
+"I'm interested in information regarding:
 • Condition & Provenance"
 `;
 
@@ -67,11 +67,11 @@ exports[`Me Conversation inquiry request returns the formatted first message, qu
 `;
 
 exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 3`] = `
-"Hello world!
-
-I would like to request the following information about this artwork:
+"I'm interested in information regarding:
 • Shipping Quote to New York City, US
-• Condition & Provenance"
+• Condition & Provenance
+
+Hello world!"
 `;
 
 exports[`Me Conversation returns a conversation 1`] = `
