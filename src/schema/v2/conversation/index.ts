@@ -212,18 +212,6 @@ const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")
 }
 
-const unreadConversation = (
-  conversation: any,
-  lastViewedMessageId?: number
-) => {
-  const memoizedLastMessageId = lastMessageId(conversation)
-  return (
-    !!lastViewedMessageId &&
-    !!memoizedLastMessageId &&
-    lastViewedMessageId < memoizedLastMessageId
-  )
-}
-
 // TODO: Move back inside ConversationType after messages is removed
 const messagesConnection = {
   type: MessageConnection,
@@ -636,16 +624,14 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       description: "True if there is an unread message by the Collector(from).",
       deprecationReason: "Use `unreadByCollector` instead",
       resolve: (conversation) => {
-        const { from_last_viewed_message_id } = conversation
-        return unreadConversation(conversation, from_last_viewed_message_id)
+        return conversation.is_unread_by_collector
       },
     },
     unreadByCollector: {
       type: GraphQLBoolean,
       description: "True if there is an unread message by the Collector(from).",
       resolve: (conversation) => {
-        const { from_last_viewed_message_id } = conversation
-        return unreadConversation(conversation, from_last_viewed_message_id)
+        return conversation.is_unread_by_collector
       },
     },
     unreadByPartner: {
