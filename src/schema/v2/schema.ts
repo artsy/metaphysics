@@ -230,6 +230,7 @@ import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
+import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
@@ -400,6 +401,7 @@ const rootFields = {
   curatedTrendingArtists: CuratedTrendingArtists,
   discoverArtworks: DiscoverArtworks,
   discoveryCategoriesConnection,
+  discoveryCategoryConnection,
   departments,
   external: externalField,
   fair: Fair,

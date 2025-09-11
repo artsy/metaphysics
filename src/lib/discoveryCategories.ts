@@ -1,8 +1,38 @@
-export const marketingCollectionCategories = {
+export type DiscoveryCategoriesKeys =
+  | "Medium"
+  | "Movement"
+  | "Collect by Size"
+  | "Collect by Color"
+  | "Collect by Price"
+  | "Gallery"
+
+// Gravity snake_cased params
+type ArtworkFilterItem = {
+  title: string
+  price_range: string
+}
+
+export type ArtworkFilters = readonly ArtworkFilterItem[]
+
+type DiscoveryCategory = {
+  id: string
+  slug: string
+  title: string
+  href: string
+  imageUrl: string
+  sortedCollectionSlugs: readonly string[]
+  artworkFilters?: ArtworkFilters
+}
+
+export const discoveryCategories: Record<
+  DiscoveryCategoriesKeys,
+  DiscoveryCategory
+> = {
   Medium: {
     id: "Medium",
     slug: "medium",
     title: "Medium",
+    href: "/collections-by-category/medium",
     imageUrl:
       "https://files.artsy.net/images/collections-mediums-category.jpeg",
     sortedCollectionSlugs: [
@@ -22,6 +52,7 @@ export const marketingCollectionCategories = {
     id: "Movement",
     slug: "movement",
     title: "Movement",
+    href: "/collections-by-category/movement",
     imageUrl:
       "https://files.artsy.net/images/collections-movement-category.jpeg",
     sortedCollectionSlugs: [
@@ -41,6 +72,7 @@ export const marketingCollectionCategories = {
     id: "Collect by Size",
     slug: "collect-by-size",
     title: "Size",
+    href: "/collections-by-category/collect-by-size",
     imageUrl: "https://files.artsy.net/images/collections-size-category.jpeg",
     sortedCollectionSlugs: [
       "art-for-small-spaces",
@@ -52,6 +84,7 @@ export const marketingCollectionCategories = {
     id: "Collect by Color",
     slug: "collect-by-color",
     title: "Color",
+    href: "/collections-by-category/collect-by-color",
     imageUrl: "https://files.artsy.net/images/collections-color-category.png",
     sortedCollectionSlugs: [
       "black-and-white-artworks",
@@ -69,6 +102,7 @@ export const marketingCollectionCategories = {
     id: "Collect by Price",
     slug: "collect-by-price",
     title: "Price",
+    href: "/collections-by-filter/collect-by-price",
     imageUrl: "https://files.artsy.net/images/collections-price-category.jpeg",
     sortedCollectionSlugs: [
       "art-under-500-dollars",
@@ -78,12 +112,22 @@ export const marketingCollectionCategories = {
       "art-under-10000-dollars",
       "art-under-25000-dollars",
       "art-under-50000-dollars",
+    ] as const,
+    artworkFilters: [
+      { title: "Art under $500", price_range: "*-500" },
+      { title: "Art under $1000", price_range: "501-1000" },
+      { title: "Art under $2500", price_range: "1001-2500" },
+      { title: "Art under $5000", price_range: "2501-5000" },
+      { title: "Art under $10000", price_range: "5001-10000" },
+      { title: "Art under $25000", price_range: "10001-25000" },
+      { title: "Art above $25000", price_range: "25001-*" },
     ],
   },
   Gallery: {
     id: "Gallery",
     slug: "gallery",
     title: "Gallery",
+    href: "/collections-by-category/gallery",
     imageUrl:
       "https://files.artsy.net/images/collections-gallery-category.jpeg",
     sortedCollectionSlugs: [
@@ -94,4 +138,6 @@ export const marketingCollectionCategories = {
       "new-to-artsy",
     ],
   },
-}
+} as const
+
+export type DiscoveryCategories = typeof discoveryCategories
