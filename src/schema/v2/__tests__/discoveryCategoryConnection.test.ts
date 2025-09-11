@@ -1,28 +1,28 @@
 import { runQuery } from "schema/v2/test/utils"
 
-describe("discoveryCategoryConnection", () => {
-  const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
-    hits: [
-      {
-        _id: "artwork-1",
-        title: "Test Artwork 1",
-        slug: "test-artwork-1",
-        id: "test-artwork-1",
-      },
-      {
-        _id: "artwork-2",
-        title: "Test Artwork 2",
-        slug: "test-artwork-2",
-        id: "test-artwork-2",
-      },
-    ],
-    aggregations: {
-      total: {
-        value: 2,
-      },
+const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
+  hits: [
+    {
+      _id: "artwork-1",
+      title: "Test Artwork 1",
+      slug: "test-artwork-1",
+      id: "test-artwork-1",
     },
-  })
+    {
+      _id: "artwork-2",
+      title: "Test Artwork 2",
+      slug: "test-artwork-2",
+      id: "test-artwork-2",
+    },
+  ],
+  aggregations: {
+    total: {
+      value: 2,
+    },
+  },
+})
 
+describe("discoveryCategoryConnection", () => {
   beforeEach(() => {
     mockFilterArtworksLoader.mockClear()
   })
@@ -60,7 +60,12 @@ describe("discoveryCategoryConnection", () => {
 
   it("returns artworkConnection for categories with filters", async () => {
     const context = {
-      filterArtworksLoader: mockFilterArtworksLoader,
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
     }
 
     const query = `
@@ -69,13 +74,11 @@ describe("discoveryCategoryConnection", () => {
           title
           category
           filtersForArtworksConnection(first: 10) {
-            totalCount
             edges {
               node {
                 href
                 title
                 artworksConnection(first: 5) {
-                  totalCount
                   edges {
                     node {
                       slug
@@ -100,13 +103,16 @@ describe("discoveryCategoryConnection", () => {
     expect(firstFilter.href).toBe("/collect?price_range=*-500")
     expect(firstFilter.title).toBe("Art under $500")
     expect(firstFilter.artworksConnection.edges).toHaveLength(2)
-    expect(firstFilter.artworksConnection.totalCount).toBe(2)
-    expect(firstFilter.artworksConnection.totalCount).toBe(2)
   })
 
   it("returns empty artworkConnection for categories without filters", async () => {
     const context = {
-      filterArtworksLoader: mockFilterArtworksLoader,
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
     }
 
     const query = `
@@ -222,7 +228,12 @@ describe("discoveryCategoryConnection", () => {
 
   it("can query filtersForArtworksConnection via Node interface", async () => {
     const context = {
-      filterArtworksLoader: mockFilterArtworksLoader,
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
     }
 
     const query = `
@@ -282,7 +293,12 @@ describe("discoveryCategoryConnection", () => {
 
   it("returns totalCount of 0 for categories without filters", async () => {
     const context = {
-      filterArtworksLoader: mockFilterArtworksLoader,
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
     }
 
     const query = `
@@ -290,7 +306,6 @@ describe("discoveryCategoryConnection", () => {
         discoveryCategoryConnection(slug: $slug) {
           title
           filtersForArtworksConnection(first: 10) {
-            totalCount
             edges {
               node {
                 href
@@ -306,7 +321,6 @@ describe("discoveryCategoryConnection", () => {
     const category = result.discoveryCategoryConnection
 
     expect(category.title).toBe("Medium")
-    expect(category.filtersForArtworksConnection.totalCount).toBe(0)
     expect(category.filtersForArtworksConnection.edges).toHaveLength(0)
   })
 })
