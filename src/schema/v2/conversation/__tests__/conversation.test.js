@@ -29,6 +29,7 @@ describe("Me", () => {
           from_last_viewed_message_id: "20",
           to_last_viewed_message_id: "25",
           is_unread_by_partner: false,
+          is_unread_by_collector: true,
           items: [
             {
               item_type: "Artwork",
