@@ -26,6 +26,9 @@ const FulfillmentOptionTypeInputEnum = new GraphQLEnumType({
     DOMESTIC_FLAT: { value: "DOMESTIC_FLAT" },
     INTERNATIONAL_FLAT: { value: "INTERNATIONAL_FLAT" },
     PICKUP: { value: "PICKUP" },
+    ARTSY_STANDARD: { value: "ARTSY_STANDARD" },
+    ARTSY_EXPRESS: { value: "ARTSY_EXPRESS" },
+    ARTSY_WHITE_GLOVE: { value: "ARTSY_WHITE_GLOVE" },
   },
 })
 

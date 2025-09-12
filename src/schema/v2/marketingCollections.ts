@@ -22,7 +22,7 @@ import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
-import { marketingCollectionCategories } from "lib/marketingCollectionCategories"
+import { discoveryCategories } from "lib/discoveryCategories"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -337,8 +337,8 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
       const categorySlug = args.categorySlug
 
       const marketingCollectionCategory = category
-        ? marketingCollectionCategories[category]
-        : Object.values(marketingCollectionCategories).find(
+        ? discoveryCategories[category]
+        : Object.values(discoveryCategories).find(
             (c) => c.slug === categorySlug
           )
 

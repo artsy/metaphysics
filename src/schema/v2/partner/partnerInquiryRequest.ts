@@ -29,9 +29,7 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
           const stateOrCountry = country === "United States" ? state : country
           return `• Shipping Quote to ${[city, stateOrCountry].join(", ")}`
         }
-        const lines = [
-          "I would like to request the following information about this artwork:",
-        ]
+        const lines = ["I'm interested in information regarding:"]
 
         inquiry_questions.forEach((question) => {
           lines.push(
@@ -40,7 +38,7 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
               : `• ${question?.question}`
           )
         })
-        if (message) lines.unshift(`${message}\n`)
+        if (message) lines.push("", message)
         return lines.join("\n")
       },
     },

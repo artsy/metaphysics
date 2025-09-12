@@ -127,6 +127,9 @@ const FulfillmentOptionTypeEnum = new GraphQLEnumType({
     INTERNATIONAL_FLAT: { value: "INTERNATIONAL_FLAT" },
     PICKUP: { value: "PICKUP" },
     SHIPPING_TBD: { value: "SHIPPING_TBD" },
+    ARTSY_STANDARD: { value: "ARTSY_STANDARD" },
+    ARTSY_EXPRESS: { value: "ARTSY_EXPRESS" },
+    ARTSY_WHITE_GLOVE: { value: "ARTSY_WHITE_GLOVE" },
   },
 })
 
@@ -146,6 +149,9 @@ const FulfillmentOptionType = new GraphQLObjectType<
         if (type === "international_flat") return "INTERNATIONAL_FLAT"
         if (type === "pickup") return "PICKUP"
         if (type === "shipping_tbd") return "SHIPPING_TBD"
+        if (type === "artsy_standard") return "ARTSY_STANDARD"
+        if (type === "artsy_express") return "ARTSY_EXPRESS"
+        if (type === "artsy_white_glove") return "ARTSY_WHITE_GLOVE"
         throw Error(`Invalid fulfillment option type ${type}`)
       },
     },

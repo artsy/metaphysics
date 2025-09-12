@@ -1,6 +1,37 @@
 import { runQuery } from "schema/v2/test/utils"
 
+const mockFilterArtworksLoader = jest.fn().mockResolvedValue({
+  hits: [
+    {
+      _id: "artwork-1",
+      title: "Test Artwork 1",
+      slug: "test-artwork-1",
+      id: "test-artwork-1",
+    },
+    {
+      _id: "artwork-2",
+      title: "Test Artwork 2",
+      slug: "test-artwork-2",
+      id: "test-artwork-2",
+    },
+  ],
+  aggregations: {
+    total: {
+      value: 2,
+    },
+  },
+})
+
 describe("discoveryCategoriesConnection", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    jest.spyOn(console, "error").mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   it("returns a connection of discovery categories", async () => {
     const query = `
       {
@@ -100,5 +131,223 @@ describe("discoveryCategoriesConnection", () => {
     expect(result.discoveryCategoriesConnection.pageInfo.hasPreviousPage).toBe(
       false
     )
+  })
+
+  describe("artworkConnection filtering", () => {
+    const context = {
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    beforeEach(() => {
+      mockFilterArtworksLoader.mockClear()
+    })
+
+    it("returns filtered artwork connections for categories with artworkFilters", async () => {
+      const query = `
+        {
+          discoveryCategoriesConnection(first: 10) {
+            edges {
+              node {
+                category
+                title
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context)
+
+      const priceCategory = result.discoveryCategoriesConnection.edges.find(
+        (edge: any) => edge.node.category === "Collect by Price"
+      )?.node
+
+      expect(priceCategory).toBeDefined()
+      expect(priceCategory.filtersForArtworksConnection.edges).toHaveLength(7) // 7 price ranges
+
+      const firstFilter =
+        priceCategory.filtersForArtworksConnection.edges[0].node
+      expect(firstFilter.href).toBe("/collect?price_range=*-500")
+      expect(firstFilter.title).toBe("Art under $500")
+      expect(firstFilter.artworksConnection.edges).toHaveLength(2) // Mock returns 2 artworks
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          price_range: "*-500",
+          aggregations: ["total"],
+        })
+      )
+    })
+
+    it("returns all price range connections with correct hrefs and titles", async () => {
+      const query = `
+        {
+          discoveryCategoriesConnection(first: 10) {
+            edges {
+              node {
+                category
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context)
+
+      const priceCategory = result.discoveryCategoriesConnection.edges.find(
+        (edge: any) => edge.node.category === "Collect by Price"
+      )?.node
+
+      const connections = priceCategory.filtersForArtworksConnection.edges.map(
+        (edge) => ({ href: edge.node.href, title: edge.node.title })
+      )
+
+      expect(connections).toEqual([
+        {
+          href: "/collect?price_range=*-500",
+          title: "Art under $500",
+        },
+        {
+          href: "/collect?price_range=501-1000",
+          title: "Art under $1000",
+        },
+        {
+          href: "/collect?price_range=1001-2500",
+          title: "Art under $2500",
+        },
+        {
+          href: "/collect?price_range=2501-5000",
+          title: "Art under $5000",
+        },
+        {
+          href: "/collect?price_range=5001-10000",
+          title: "Art under $10000",
+        },
+        {
+          href: "/collect?price_range=10001-25000",
+          title: "Art under $25000",
+        },
+        {
+          href: "/collect?price_range=25001-*",
+          title: "Art above $25000",
+        },
+      ])
+    })
+
+    it("returns empty connections for categories without artworkFilters", async () => {
+      const query = `
+        {
+          discoveryCategoriesConnection(first: 10) {
+            edges {
+              node {
+                category
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context)
+
+      const mediumCategory = result.discoveryCategoriesConnection.edges.find(
+        (edge: any) => edge.node.category === "Medium"
+      )?.node
+
+      expect(mediumCategory).toBeDefined()
+      expect(mediumCategory.filtersForArtworksConnection.edges).toHaveLength(0)
+    })
+
+    it("propagates errors from the filterArtworksLoader", async () => {
+      const errorLoader = jest.fn().mockRejectedValue(new Error("API Error"))
+      const errorContext = {
+        unauthenticatedLoaders: {
+          filterArtworksLoader: errorLoader,
+        },
+        authenticatedLoaders: {
+          filterArtworksLoader: errorLoader,
+        },
+      }
+
+      const query = `
+        {
+          discoveryCategoriesConnection(first: 10) {
+            edges {
+              node {
+                category
+                filtersForArtworksConnection(first: 10) {
+                  edges {
+                    node {
+                      href
+                      title
+                      artworksConnection(first: 3) {
+                        edges {
+                          node {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, errorContext)).rejects.toThrow(
+        "Multiple errors occurred."
+      )
+    })
   })
 })
