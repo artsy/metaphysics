@@ -7,6 +7,7 @@ import {
 } from "graphql"
 import { IDFields } from "../../object_identification"
 import { ResolverContext } from "types/graphql"
+import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 
 export const UserAddressType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAddress",
@@ -52,6 +53,15 @@ export const UserAddressType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "Phone number",
       resolve: ({ phone_number }) => phone_number,
+    },
+    phoneNumberParsed: {
+      type: PhoneNumberType,
+      description: "Phone number with parsing and validation details",
+      resolve: ({ phone_number, phone_number_country_code }) =>
+        resolvePhoneNumber({
+          phoneNumber: phone_number,
+          regionCode: phone_number_country_code,
+        }),
     },
     phoneNumberCountryCode: {
       type: GraphQLString,
