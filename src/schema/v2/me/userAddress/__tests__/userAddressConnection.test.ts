@@ -1,16 +1,6 @@
 import { UserAddressesConnection } from "../userAddressesConnection"
-import config from "config"
 
-const shouldSkip = !config.USE_UNSTITCHED_USER_ADDRESS
-
-;(shouldSkip ? describe.skip : describe)("addressConnection", () => {
-  beforeAll(() => {
-    if (!config.USE_UNSTITCHED_USER_ADDRESS) {
-      console.log(
-        "Skipping addressConnection tests - USE_UNSTITCHED_USER_ADDRESS is false"
-      )
-    }
-  })
+describe("addressConnection", () => {
   const mockUserAddress = {
     id: 77379,
     name: "Address 1",

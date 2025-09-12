@@ -11,7 +11,6 @@ import { executableVortexSchema } from "lib/stitching/vortex/schema"
 
 import { GraphQLSchema } from "graphql"
 import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/v2/stitching"
-import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "./gravity/v2/stitching"
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
 import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
@@ -40,10 +39,6 @@ export const incrementalMergeSchemas = (localSchema) => {
 
   const gravitySchema = executableGravitySchema()
   schemas.push(gravitySchema)
-
-  useStitchingEnvironment(
-    gravityStitchingEnvironmentV2(localSchema, gravitySchema)
-  )
 
   const causalitySchema = executableCausalitySchema()
   schemas.push(causalitySchema)
