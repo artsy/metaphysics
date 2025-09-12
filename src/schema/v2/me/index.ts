@@ -47,7 +47,7 @@ import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
 } from "../partnerOfferToCollector"
-import { PhoneNumber } from "../phoneNumber"
+import { PhoneNumber, resolvePhoneNumber } from "../phoneNumber"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 import { quiz } from "../quiz"
 import { SaleArtworksConnectionField } from "../sale_artworks"
@@ -555,10 +555,18 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     phone: {
       type: GraphQLString,
     },
+    phoneCountryCode: {
+      type: GraphQLString,
+      description: "Two-letter country code for the user's phone number",
+      resolve: ({ phone_country_code }) => phone_country_code,
+    },
     phoneNumber: {
       type: PhoneNumber.type,
-      resolve: ({ phone }, _, context, info) =>
-        PhoneNumber.resolve?.(null, { phoneNumber: phone }, context, info),
+      resolve: ({ phone, phone_country_code }) =>
+        resolvePhoneNumber({
+          phoneNumber: phone,
+          regionCode: phone_country_code,
+        }),
     },
     pricePreference: UserPricePreference,
     priceRange: {
