@@ -251,4 +251,74 @@ describe("UpdateMeMutation", () => {
 
     expect(mockUpdateCollectorProfileIconLoader).not.toHaveBeenCalled()
   })
+
+  it("updates phone number and returns correct region code", async () => {
+    const mutation = gql`
+      mutation {
+        updateMyUserProfile(
+          input: {
+            clientMutationId: "test-mutation-id"
+            phone: "416-555-0123"
+            phoneCountryCode: "ca"
+          }
+        ) {
+          me {
+            phone
+            phoneCountryCode
+            phoneNumber {
+              isValid
+              regionCode
+              countryCode
+              originalNumber
+              nationalFormat: display(format: NATIONAL)
+              internationalFormat: display(format: INTERNATIONAL)
+            }
+          }
+        }
+      }
+    `
+
+    const mockUpdateMeLoader = jest.fn().mockReturnValue(
+      Promise.resolve({
+        id: "test-id",
+        phone: "416-555-0123",
+        phone_country_code: "CA",
+      })
+    )
+
+    const mockUpdateCollectorProfileIconLoader = jest.fn()
+
+    const context = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "test-id",
+          phone: "416-555-0123",
+          phone_country_code: "CA",
+        }),
+      updateMeLoader: mockUpdateMeLoader,
+      updateCollectorProfileIconLoader: mockUpdateCollectorProfileIconLoader,
+    }
+
+    await runAuthenticatedQuery(mutation, context).then((data) => {
+      expect(mockUpdateMeLoader).toHaveBeenCalledWith({
+        client_mutation_id: "test-mutation-id",
+        phone: "416-555-0123",
+        phone_country_code: "ca",
+      })
+
+      expect(data.updateMyUserProfile.me.phone).toBe("416-555-0123")
+      expect(data.updateMyUserProfile.me.phoneNumber.isValid).toBe(true)
+      expect(data.updateMyUserProfile.me.phoneNumber.regionCode).toBe("ca")
+      expect(data.updateMyUserProfile.me.phoneNumber.countryCode).toBe("1")
+      expect(data.updateMyUserProfile.me.phoneNumber.originalNumber).toBe(
+        "416-555-0123"
+      )
+      expect(data.updateMyUserProfile.me.phoneNumber.nationalFormat).toBe(
+        "(416) 555-0123"
+      )
+      expect(data.updateMyUserProfile.me.phoneNumber.internationalFormat).toBe(
+        "+1 416-555-0123"
+      )
+    })
+  })
 })
