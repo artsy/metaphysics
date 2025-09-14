@@ -69,6 +69,20 @@ describe("gravity/stitching", () => {
       expect(userAddressField).toContain("id")
     })
 
+    it("extends the UserAddress type with a phoneNumberParsed field", async () => {
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      const mergedSchema = await getGravityMergedSchema()
+      const userAddressField = await getFieldsForTypeFromSchema(
+        "UserAddress",
+        mergedSchema
+      )
+
+      expect(userAddressField).toContain("phoneNumberParsed")
+    })
+
     it("includes stitched id resolver when stitching enabled", async () => {
       const { resolvers } = await getGravityStitchedSchema()
 
@@ -78,6 +92,38 @@ describe("gravity/stitching", () => {
 
       expect(resolvers.UserAddress).toBeDefined()
       expect(resolvers.UserAddress!.id).toBeDefined()
+    })
+
+    it("includes stitched phoneNumberParsed resolver when stitching enabled", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      expect(resolvers.UserAddress).toBeDefined()
+      expect(resolvers.UserAddress!.phoneNumberParsed).toBeDefined()
+    })
+
+    it("phoneNumberParsed resolver returns parsed phone number data", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+
+      if (config.USE_UNSTITCHED_USER_ADDRESS) {
+        return
+      }
+
+      const mockUserAddress = {
+        phoneNumber: "+1 415 555-0132",
+        phoneNumberCountryCode: "us",
+      }
+
+      const result = resolvers.UserAddress!.phoneNumberParsed!.resolve(
+        mockUserAddress
+      )
+
+      expect(result).toBeDefined()
+      expect(result!.phoneNumber).toBe("+1 415 555-0132")
+      expect(result!.regionCode).toBe("us")
     })
   })
 })

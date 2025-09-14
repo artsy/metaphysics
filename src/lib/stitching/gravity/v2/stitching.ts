@@ -3,6 +3,7 @@ import { GraphQLSchema } from "graphql"
 import { toGlobalId } from "graphql-relay"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import config from "config"
+import { resolvePhoneNumber } from "../../../../schema/v2/phoneNumber"
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -25,6 +26,8 @@ export const gravityStitchingEnvironment = (
 
         extend type UserAddress {
           id: ID!
+          # Phone number with parsing and validation details
+          phoneNumberParsed: PhoneNumberType
         }
 
         # Mutation Payloads
@@ -81,6 +84,19 @@ export const gravityStitchingEnvironment = (
                 const internalID = parent.internalID
                 return toGlobalId("UserAddress", internalID)
               },
+            },
+            phoneNumberParsed: {
+              fragment: gql`
+              ... on UserAddress {
+                phoneNumber
+                phoneNumberCountryCode
+              }
+              `,
+              resolve: ({ phoneNumber, phoneNumberCountryCode }) =>
+                resolvePhoneNumber({
+                  phoneNumber,
+                  regionCode: phoneNumberCountryCode,
+                }),
             },
           },
 
