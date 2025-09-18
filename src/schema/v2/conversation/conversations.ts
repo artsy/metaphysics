@@ -24,6 +24,7 @@ interface ConversationsArguments extends CursorPageable {
   artworkId?: string
   type?: "Partner" | "User"
   conversationType?: "inquiry" | "order"
+  unreadByPartner?: boolean
 }
 
 const ConversationsInputModeEnum = new GraphQLEnumType({
@@ -101,6 +102,9 @@ const Conversations: GraphQLFieldConfig<
     conversationType: {
       type: ConversationTypeEnum,
     },
+    unreadByPartner: {
+      type: GraphQLBoolean,
+    },
   }),
   resolve: (_root, args, { conversationsLoader, userID }) => {
     if (!conversationsLoader) {
@@ -130,6 +134,7 @@ const Conversations: GraphQLFieldConfig<
         dismissed: !!args.dismissed,
         to_be_replied: args.toBeReplied ?? undefined,
         conversation_type: args.conversationType ?? undefined,
+        unread_by_partner: args.unreadByPartner ?? undefined,
       }
       // User
     } else {
