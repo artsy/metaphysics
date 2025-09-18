@@ -249,6 +249,91 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       return paragraph
     },
   },
+  summaryCheckmarks: {
+    type: new GraphQLList(GraphQLString),
+    description:
+      "Up to three checkmark strings describing the collector in relation to the artwork/partner.",
+    args: {
+      artworkID: {
+        type: GraphQLString,
+        description:
+          "This can be specified, and is injected in a conversation context for convenience.",
+      },
+    },
+    resolve: async (
+      { id: collector_profile_id, artworkID },
+      { artworkID: artworkIDFromArgs },
+      { collectorProfileSummaryLoader }
+    ) => {
+      if (!collectorProfileSummaryLoader) {
+        throw new Error("You must be signed in to perform this action.")
+      }
+
+      const { raw_attributes = {} } = await collectorProfileSummaryLoader({
+        artwork_id: artworkIDFromArgs || artworkID,
+        collector_profile_id,
+      })
+
+      const results: string[] = []
+      const checks = [
+        {
+          flag: raw_attributes.has_demonstrated_budget,
+          text: "Budget similar to artwork",
+        },
+        {
+          flag: raw_attributes.has_bought_works_from_partner,
+          text: "Purchased from your gallery before",
+        },
+        {
+          flag: raw_attributes.has_followed_partner,
+          text: "Follows your gallery",
+        },
+        {
+          flag: raw_attributes.has_inquired_about_works_from_partner,
+          text: "Inquired on works from your gallery before",
+        },
+        {
+          flag: raw_attributes.has_inquired_about_works_from_artist,
+          text: "Inquired on artworks by this artist before",
+        },
+        {
+          flag: raw_attributes.has_enabled_alerts_on_artist,
+          text: "Enabled alerts on this artist",
+        },
+        {
+          flag: raw_attributes.has_enabled_alerts_on_a_represented_artist,
+          text: "Enabled alerts on artists your gallery represents",
+        },
+        {
+          flag: raw_attributes.has_followed_a_represented_artist,
+          text: "Follows an artist your gallery represents",
+        },
+        {
+          flag: raw_attributes.has_saved_works_from_partner,
+          text: "Saved works from your gallery before",
+        },
+      ]
+
+      let i = 0
+      while (results.length < 3 && i < checks.length) {
+        if (checks[i].flag) {
+          results.push(checks[i].text)
+        }
+        i++
+      }
+
+      // Recent sign up status (last in priority). If not recent => Active user; if recent => New user
+      if (results.length < 3) {
+        if (raw_attributes.is_recent_sign_up === false) {
+          results.push("Active user")
+        } else if (raw_attributes.is_recent_sign_up === true) {
+          results.push("New user")
+        }
+      }
+
+      return results
+    },
+  },
 }
 
 export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
