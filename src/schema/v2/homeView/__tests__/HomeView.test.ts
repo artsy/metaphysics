@@ -28,7 +28,7 @@ const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 describe("homeView", () => {
   describe("sectionsConnection", () => {
     beforeEach(() => {
-      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+      mockIsFeatureFlagEnabled.mockImplementation((_flag: string) => {
         return false // Default to false for any flags that might still be checked
       })
     })

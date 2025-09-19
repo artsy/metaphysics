@@ -23,9 +23,7 @@ export const QuickLinks: HomeViewSection = {
 }
 
 function getDisplayableQuickLinks(context: ResolverContext) {
-  const quickLinks = isFeatureFlagEnabled("onyx_enable-quick-links-v2")
-    ? QUICK_LINKS_V2
-    : QUICK_LINKS
+  const quickLinks = QUICK_LINKS
 
   return quickLinks.filter((quickLink) => {
     let isDisplayable = true
@@ -42,7 +40,7 @@ function getDisplayableQuickLinks(context: ResolverContext) {
   })
 }
 
-export const QUICK_LINKS_V2: Array<NavigationPill> = [
+export const QUICK_LINKS: Array<NavigationPill> = [
   {
     title: "Discover Daily",
     href: "/infinite-discovery",
@@ -103,58 +101,6 @@ export const QUICK_LINKS_V2: Array<NavigationPill> = [
   },
 ]
 
-export const QUICK_LINKS: Array<NavigationPill> = [
-  {
-    title: "Saves",
-    href: "/favorites/saves",
-    ownerType: OwnerType.saves,
-    icon: "HeartStrokeIcon",
-  },
-  {
-    title: "Auctions",
-    href: "/auctions",
-    ownerType: OwnerType.auctions,
-    icon: "GavelIcon",
-  },
-  {
-    title: "New This Week",
-    href: "/collection/new-this-week",
-    ownerType: OwnerType.collection,
-    icon: undefined,
-  },
-  {
-    title: "Editorial",
-    href: "/articles",
-    ownerType: OwnerType.articles,
-    icon: "PublicationIcon",
-  },
-  {
-    title: "Statement Pieces",
-    href: "/collection/statement-pieces",
-    ownerType: OwnerType.collection,
-    icon: undefined,
-  },
-  {
-    title: "Medium",
-    href:
-      "/collections-by-category/Medium?homeViewSectionId=home-view-section-explore-by-category&entityID=Medium",
-    ownerType: OwnerType.collectionsCategory,
-    icon: "ArtworkIcon",
-  },
-  {
-    title: "Shows for You",
-    href: "/shows-for-you",
-    ownerType: OwnerType.shows,
-    icon: undefined,
-  },
-  {
-    title: "Featured Fairs",
-    href: "/featured-fairs",
-    ownerType: OwnerType.featuredFairs,
-    icon: "FairIcon",
-  },
-]
-
 /**
  * If the user has currently active bids then we insert
  * the **Your Bids** link immediately after the **Auctions** link.
@@ -164,22 +110,21 @@ async function maybeInsertYourBidsLink(
   links: NavigationPill[],
   context: ResolverContext
 ): Promise<NavigationPill[]> {
-  if (isFeatureFlagEnabled("onyx_enable-quick-links-v2")) {
-    const { MyBids } = require("schema/v2/me/myBids")
-    const bids = await MyBids.resolve?.({}, {}, context, {} as any)
-    const hasBids = bids?.active?.length > 0
-    const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
+  const { MyBids } = require("schema/v2/me/myBids")
+  const bids = await MyBids.resolve?.({}, {}, context, {} as any)
+  const hasBids = bids?.active?.length > 0
+  const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
 
-    if (hasBids && auctionsIndex >= 0) {
-      const yourBids: NavigationPill = {
-        title: "Your Bids",
-        href: "/inbox",
-        ownerType: OwnerType.inbox,
-        icon: undefined,
-      }
-      links.splice(auctionsIndex + 1, 0, yourBids)
+  if (hasBids && auctionsIndex >= 0) {
+    const yourBids: NavigationPill = {
+      title: "Your Bids",
+      href: "/inbox",
+      ownerType: OwnerType.inbox,
+      icon: undefined,
     }
+    links.splice(auctionsIndex + 1, 0, yourBids)
   }
+
   return links
 }
 
