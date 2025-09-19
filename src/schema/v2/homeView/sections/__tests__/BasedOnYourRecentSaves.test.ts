@@ -1,15 +1,11 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
-import { isFeatureFlagEnabled } from "lib/featureFlags"
-
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => true),
+}))
 
 describe("BasedOnYourRecentSaves", () => {
-  beforeEach(() => {
-    mockIsFeatureFlagEnabled.mockResolvedValue(true)
-  })
-
   it("returns the section's metadata", async () => {
     const query = gql`
       {

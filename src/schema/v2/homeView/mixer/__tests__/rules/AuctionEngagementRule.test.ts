@@ -3,16 +3,12 @@ import { AuctionEngagementRule } from "../../rules/AuctionEngagementRule"
 import { ResolverContext } from "types/graphql"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../../../sections/AuctionLotsForYou"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => true),
+}))
 
 describe("AuctionEngagementRule", () => {
-  beforeEach(() => {
-    mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-      if (flag === "onyx_enable-home-view-auction-segmentation") return true
-    })
-  })
   it("moves only AuctionLotsForYou after NewWorksForYou for engaged users", async () => {
     const mockContext: Partial<ResolverContext> = {
       userID: "123",
