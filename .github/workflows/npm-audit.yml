@@ -1,0 +1,33 @@
+name: 🔒 NPM Audit
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'yarn.lock'
+  push:
+    paths:
+      - 'yarn.lock'
+    branches-ignore:
+      - 'staging'
+      - 'release'
+    tags-ignore:
+      - 'staging'
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.5.1'
+          cache: 'yarn'
+
+      - name: Run npm audit
+        run: yarn npm audit --severity critical --recursive
