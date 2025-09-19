@@ -5366,7 +5366,7 @@ type CollectorProfileType implements Node {
   selfReportedPurchases: String
 
   # Up to three checkmark strings describing the collector in relation to the artwork/partner.
-  summaryCheckmarks(
+  summaryAttributes(
     # This can be specified, and is injected in a conversation context for convenience.
     artworkID: String
   ): [String]
@@ -14155,7 +14155,7 @@ type InquirerCollectorProfile {
   selfReportedPurchases: String
 
   # Up to three checkmark strings describing the collector in relation to the artwork/partner.
-  summaryCheckmarks(
+  summaryAttributes(
     # This can be specified, and is injected in a conversation context for convenience.
     artworkID: String
   ): [String]

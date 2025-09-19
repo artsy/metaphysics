@@ -249,7 +249,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       return paragraph
     },
   },
-  summaryCheckmarks: {
+  summaryAttributes: {
     type: new GraphQLList(GraphQLString),
     description:
       "Up to three checkmark strings describing the collector in relation to the artwork/partner.",
@@ -314,20 +314,19 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
         },
       ]
 
-      let i = 0
-      while (results.length < 3 && i < checks.length) {
-        if (checks[i].flag) {
-          results.push(checks[i].text)
+      for (const { flag, text } of checks) {
+        if (results.length >= 3) break
+        if (flag) {
+          results.push(text)
         }
-        i++
       }
 
-      // Recent sign up status (last in priority). If not recent => Active user; if recent => New user
+      // User status is prepended if there is less than 3 attributes in result.
       if (results.length < 3) {
         if (raw_attributes.is_recent_sign_up === false) {
-          results.push("Active user")
+          results.unshift("Active user")
         } else if (raw_attributes.is_recent_sign_up === true) {
-          results.push("New user")
+          results.unshift("New user")
         }
       }
 

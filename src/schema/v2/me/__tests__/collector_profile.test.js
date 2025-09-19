@@ -170,13 +170,13 @@ describe("Me", () => {
       })
     })
 
-    describe("summaryCheckmarks", () => {
-      it("returns up to 3 checkmarks when many attributes are true", () => {
+    describe("summaryAttributes", () => {
+      it("returns up to 3 attributes when many attributes are true", () => {
         const query = `
           {
             me {
               collectorProfile {
-                summaryCheckmarks(artworkID: "blah")
+                summaryAttributes(artworkID: "blah")
               }
             }
           }
@@ -207,7 +207,7 @@ describe("Me", () => {
 
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summaryCheckmarks).toEqual([
+            expect(collectorProfile.summaryAttributes).toEqual([
               "Budget similar to artwork",
               "Purchased from your gallery before",
               "Follows your gallery",
@@ -221,7 +221,7 @@ describe("Me", () => {
           {
             me {
               collectorProfile {
-                summaryCheckmarks(artworkID: "blah")
+                summaryAttributes(artworkID: "blah")
               }
             }
           }
@@ -252,17 +252,17 @@ describe("Me", () => {
 
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summaryCheckmarks).toEqual([])
+            expect(collectorProfile.summaryAttributes).toEqual([])
           }
         )
       })
 
-      it("returns checkmarks with recent sign up fallback when few attributes are true", () => {
+      it("returns attributes with user info prepended when few attributes are true", () => {
         const query = `
           {
             me {
               collectorProfile {
-                summaryCheckmarks(artworkID: "blah")
+                summaryAttributes(artworkID: "blah")
               }
             }
           }
@@ -293,9 +293,9 @@ describe("Me", () => {
 
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summaryCheckmarks).toEqual([
-              "Budget similar to artwork",
+            expect(collectorProfile.summaryAttributes).toEqual([
               "New user",
+              "Budget similar to artwork",
             ])
           }
         )
@@ -306,7 +306,7 @@ describe("Me", () => {
           {
             me {
               collectorProfile {
-                summaryCheckmarks(artworkID: "blah")
+                summaryAttributes(artworkID: "blah")
               }
             }
           }
@@ -337,9 +337,9 @@ describe("Me", () => {
 
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summaryCheckmarks).toEqual([
-              "Purchased from your gallery before",
+            expect(collectorProfile.summaryAttributes).toEqual([
               "Active user",
+              "Purchased from your gallery before",
             ])
           }
         )
