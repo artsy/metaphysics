@@ -29,7 +29,7 @@ describe("homeView", () => {
   describe("sectionsConnection", () => {
     beforeEach(() => {
       mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-        return ["onyx_enable-home-view-section-featured-fairs"].includes(flag)
+        return false // Default to false for any flags that might still be checked
       })
     })
 

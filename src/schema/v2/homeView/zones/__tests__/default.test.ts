@@ -78,41 +78,7 @@ describe("getSections", () => {
     })
   })
 
-  describe("FeaturedFairs section", () => {
-    describe("when the feature flag is enabled", () => {
-      beforeEach(() => {
-        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-          if (flag === "onyx_enable-home-view-section-featured-fairs")
-            return true
-        })
-      })
 
-      it("returns the section", async () => {
-        const context: Partial<ResolverContext> = {}
-        const sections = await getSections(context as ResolverContext)
-        const sectionIds = sections.map((section) => section.id)
-
-        expect(sectionIds).toInclude("home-view-section-featured-fairs")
-      })
-    })
-
-    describe("when the feature flag is not enabled", () => {
-      beforeEach(() => {
-        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-          if (flag === "onyx_enable-home-view-section-featured-fairs")
-            return false
-        })
-      })
-
-      it("does not return the section", async () => {
-        const context: Partial<ResolverContext> = {}
-        const sections = await getSections(context as ResolverContext)
-        const sectionIds = sections.map((section) => section.id)
-
-        expect(sectionIds).not.toInclude("home-view-section-featured-fairs")
-      })
-    })
-  })
 
   describe("Auction segmentation", () => {
     describe("when the feature flag is enabled", () => {
