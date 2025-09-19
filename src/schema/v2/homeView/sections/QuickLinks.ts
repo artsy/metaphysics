@@ -4,7 +4,6 @@ import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import { ResolverContext } from "types/graphql"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { priceBucketBasedOnPricePreference } from "../helpers/priceBucketBasedOnPricePreference"
 
 export const QuickLinks: HomeViewSection = {
@@ -137,35 +136,33 @@ async function maybeInsertArtworksWithinPriceBudgetLink(
   links: NavigationPill[],
   context: ResolverContext
 ): Promise<NavigationPill[]> {
-  if (isFeatureFlagEnabled("onyx_enable-quick-links-price-budget")) {
-    const { UserPricePreference } = require("schema/v2/me/userPricePreference")
+  const { UserPricePreference } = require("schema/v2/me/userPricePreference")
 
-    const pricePreference = await UserPricePreference.resolve?.(
-      {},
-      {},
-      context,
-      {} as any
-    )
+  const pricePreference = await UserPricePreference.resolve?.(
+    {},
+    {},
+    context,
+    {} as any
+  )
 
-    if (pricePreference) {
-      const priceBucket = priceBucketBasedOnPricePreference(pricePreference)
+  if (pricePreference) {
+    const priceBucket = priceBucketBasedOnPricePreference(pricePreference)
 
-      if (!priceBucket) {
-        return links
-      }
-
-      const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
-
-      const priceBudgetPill: NavigationPill = {
-        title: priceBucket.text,
-        href: `/collect?price_range=${priceBucket.priceRange}`,
-        ownerType: OwnerType.collect,
-        icon: undefined,
-        minimumEigenVersion: { major: 8, minor: 75, patch: 0 }, // when /collect screen was added to the app
-      }
-
-      links.splice(auctionsIndex + 1, 0, priceBudgetPill)
+    if (!priceBucket) {
+      return links
     }
+
+    const auctionsIndex = links.findIndex((link) => link.href === "/auctions")
+
+    const priceBudgetPill: NavigationPill = {
+      title: priceBucket.text,
+      href: `/collect?price_range=${priceBucket.priceRange}`,
+      ownerType: OwnerType.collect,
+      icon: undefined,
+      minimumEigenVersion: { major: 8, minor: 75, patch: 0 }, // when /collect screen was added to the app
+    }
+
+    links.splice(auctionsIndex + 1, 0, priceBudgetPill)
   }
 
   return links

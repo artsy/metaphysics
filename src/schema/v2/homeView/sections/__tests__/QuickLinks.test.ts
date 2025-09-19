@@ -1,7 +1,10 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
-import { OwnerType } from "@artsy/cohesion"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => false),
+}))
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 

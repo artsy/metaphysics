@@ -1,12 +1,5 @@
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { getSections } from "../default"
-
-jest.mock("lib/featureFlags", () => ({
-  isFeatureFlagEnabled: jest.fn(() => true),
-}))
-
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("getSections", () => {
   describe("with an authenticated user", () => {
