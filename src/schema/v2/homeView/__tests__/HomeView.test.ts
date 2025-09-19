@@ -255,6 +255,14 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
+                    "title": "Inspired by Your Saved Artworks",
+                  },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
                     "title": "Curators' Picks Emerging",
                   },
                 },

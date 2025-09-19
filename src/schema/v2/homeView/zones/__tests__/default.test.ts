@@ -171,6 +171,3 @@ describe("getSections", () => {
     })
   })
 })
-    })
-  })
-})
