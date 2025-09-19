@@ -5,5 +5,5 @@ import { FeatureFlag } from "lib/featureFlags"
  * should be exposed as part of the current home view response
  */
 export const CURRENTLY_RUNNING_EXPERIMENTS: FeatureFlag[] = [
-  "onyx_experiment_home_view_test",
+  // No experiments are currently running - all previous experiments have been rolled out to 100%
 ]

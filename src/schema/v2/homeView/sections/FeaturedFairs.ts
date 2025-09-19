@@ -14,7 +14,6 @@ export const FeaturedFairs: HomeViewSection = {
     title: "Featured Fairs",
     description: "See works in top art fairs",
   },
-  featureFlag: "onyx_enable-home-view-section-featured-fairs",
   requiresAuthentication: false,
   ownerType: OwnerType.featuredFairs,
 

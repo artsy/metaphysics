@@ -9,13 +9,7 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * @see https://tools.artsy.net/feature-flags
  */
 const FEATURE_FLAGS_LIST = [
-  "onyx_enable-home-view-section-featured-fairs",
-  "onyx_experiment_home_view_test",
-  "onyx_enable-home-view-mixer",
-  "onyx_enable-quick-links-v2",
-  "onyx_enable-home-view-auction-segmentation",
-  "onyx_enable-quick-links-price-budget",
-  "onyx_based_on_your_saves_home_view_section",
+  // All completed feature flags have been removed - they are now active by default
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]

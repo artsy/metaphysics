@@ -4,7 +4,6 @@ import { HomeViewMixerRule } from "../HomeViewMixerRule"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../../sections/AuctionLotsForYou"
 import { compact } from "lodash"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 /**
  * Rule that moves auction-related sections near the top for eligible users
@@ -17,27 +16,26 @@ export class AuctionEngagementRule extends HomeViewMixerRule {
     sections: HomeViewSection[],
     context: ResolverContext
   ): Promise<HomeViewSection[]> {
-    if (isFeatureFlagEnabled("onyx_enable-home-view-auction-segmentation")) {
-      const segment = await getUserAuctionSegmentation(context)
+    // Auction segmentation is now enabled for all users since the feature flag has been rolled out to 100%
+    const segment = await getUserAuctionSegmentation(context)
 
-      // for eligible user segments
-      if (segment === "adjacent" || segment === "engaged") {
-        // find the auction-related sections
-        const auctionRelatedSections = [AuctionLotsForYou]
-        // and remove them
-        const sectionsToMove = auctionRelatedSections.map((section) => {
-          const index = sections.findIndex((s) => s.id === section.id)
-          if (index !== -1) {
-            const [removed] = sections.splice(index, 1)
-            return removed
-          }
-        })
-        // then re-insert them right after NewWorksForYou
-        const newWorksForYouIndex = sections.findIndex(
-          (section) => section.id === NewWorksForYou.id
-        )
-        sections.splice(newWorksForYouIndex + 1, 0, ...compact(sectionsToMove))
-      }
+    // for eligible user segments
+    if (segment === "adjacent" || segment === "engaged") {
+      // find the auction-related sections
+      const auctionRelatedSections = [AuctionLotsForYou]
+      // and remove them
+      const sectionsToMove = auctionRelatedSections.map((section) => {
+        const index = sections.findIndex((s) => s.id === section.id)
+        if (index !== -1) {
+          const [removed] = sections.splice(index, 1)
+          return removed
+        }
+      })
+      // then re-insert them right after NewWorksForYou
+      const newWorksForYouIndex = sections.findIndex(
+        (section) => section.id === NewWorksForYou.id
+      )
+      sections.splice(newWorksForYouIndex + 1, 0, ...compact(sectionsToMove))
     }
 
     return sections
