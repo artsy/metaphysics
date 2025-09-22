@@ -61,10 +61,6 @@ const SECTIONS: HomeViewSection[] = [
  * Assemble the list of sections that can be displayed
  */
 export async function getSections(context: ResolverContext) {
-  return await getSectionsViaMixer(context)
-}
-
-async function getSectionsViaMixer(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new AuctionEngagementRule(),
