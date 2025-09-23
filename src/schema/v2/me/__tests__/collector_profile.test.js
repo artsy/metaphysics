@@ -169,5 +169,181 @@ describe("Me", () => {
         )
       })
     })
+
+    describe("summaryAttributes", () => {
+      it("returns up to 3 attributes when many attributes are true", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                summaryAttributes(artworkID: "blah")
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+          collectorProfileSummaryLoader: () =>
+            Promise.resolve({
+              raw_attributes: {
+                has_demonstrated_budget: true,
+                has_bought_works_from_partner: true,
+                has_followed_partner: true,
+                has_inquired_about_works_from_partner: true,
+                has_inquired_about_works_from_artist: true,
+                has_enabled_alerts_on_artist: true,
+                has_enabled_alerts_on_a_represented_artist: true,
+                has_followed_a_represented_artist: true,
+                has_saved_works_from_partner: true,
+                is_recent_sign_up: false,
+              },
+            }),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.summaryAttributes).toEqual([
+              "Budget similar to artwork",
+              "Purchased from your gallery before",
+              "Follows your gallery",
+            ])
+          }
+        )
+      })
+
+      it("returns empty array when no attributes are true", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                summaryAttributes(artworkID: "blah")
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+          collectorProfileSummaryLoader: () =>
+            Promise.resolve({
+              raw_attributes: {
+                has_demonstrated_budget: false,
+                has_bought_works_from_partner: false,
+                has_followed_partner: false,
+                has_inquired_about_works_from_partner: false,
+                has_inquired_about_works_from_artist: false,
+                has_enabled_alerts_on_artist: false,
+                has_enabled_alerts_on_a_represented_artist: false,
+                has_followed_a_represented_artist: false,
+                has_saved_works_from_partner: false,
+                is_recent_sign_up: null,
+              },
+            }),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.summaryAttributes).toEqual([])
+          }
+        )
+      })
+
+      it("returns attributes with user info prepended when few attributes are true", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                summaryAttributes(artworkID: "blah")
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+          collectorProfileSummaryLoader: () =>
+            Promise.resolve({
+              raw_attributes: {
+                has_demonstrated_budget: true,
+                has_bought_works_from_partner: false,
+                has_followed_partner: false,
+                has_inquired_about_works_from_partner: false,
+                has_inquired_about_works_from_artist: false,
+                has_enabled_alerts_on_artist: false,
+                has_enabled_alerts_on_a_represented_artist: false,
+                has_followed_a_represented_artist: false,
+                has_saved_works_from_partner: false,
+                is_recent_sign_up: true,
+              },
+            }),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.summaryAttributes).toEqual([
+              "New user",
+              "Budget similar to artwork",
+            ])
+          }
+        )
+      })
+
+      it("returns active user when is_recent_sign_up is false and few other attributes are true", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                summaryAttributes(artworkID: "blah")
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+          collectorProfileSummaryLoader: () =>
+            Promise.resolve({
+              raw_attributes: {
+                has_demonstrated_budget: false,
+                has_bought_works_from_partner: true,
+                has_followed_partner: false,
+                has_inquired_about_works_from_partner: false,
+                has_inquired_about_works_from_artist: false,
+                has_enabled_alerts_on_artist: false,
+                has_enabled_alerts_on_a_represented_artist: false,
+                has_followed_a_represented_artist: false,
+                has_saved_works_from_partner: false,
+                is_recent_sign_up: false,
+              },
+            }),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.summaryAttributes).toEqual([
+              "Active user",
+              "Purchased from your gallery before",
+            ])
+          }
+        )
+      })
+    })
   })
 })
