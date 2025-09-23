@@ -13,7 +13,6 @@ const TIMEOUT_MS = 6000
 export const BasedOnYourRecentSaves: HomeViewSection = {
   id: "home-view-section-based-on-your-recent-saves",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  featureFlag: "onyx_based_on_your_saves_home_view_section",
   contextModule: ContextModule.basedOnYourRecentSavesRail,
   component: {
     title: "Inspired by Your Saved Artworks",

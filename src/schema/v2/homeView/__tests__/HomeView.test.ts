@@ -28,8 +28,8 @@ const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 describe("homeView", () => {
   describe("sectionsConnection", () => {
     beforeEach(() => {
-      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-        return ["onyx_enable-home-view-section-featured-fairs"].includes(flag)
+      mockIsFeatureFlagEnabled.mockImplementation((_flag: string) => {
+        return false // Default to false for any flags that might still be checked
       })
     })
 
@@ -248,6 +248,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
                     "title": "We Think You’ll Love",
+                  },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Inspired by Your Saved Artworks",
                   },
                 },
               },

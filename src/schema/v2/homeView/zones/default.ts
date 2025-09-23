@@ -26,8 +26,6 @@ import { TrendingArtists } from "../sections/TrendingArtists"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
-import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 
@@ -63,32 +61,10 @@ const SECTIONS: HomeViewSection[] = [
  * Assemble the list of sections that can be displayed
  */
 export async function getSections(context: ResolverContext) {
-  const isMixerEnabled = isFeatureFlagEnabled("onyx_enable-home-view-mixer")
-
-  if (isMixerEnabled) {
-    return await getSectionsViaMixer(context)
-  } else {
-    return await getSectionsLegacy(context)
-  }
-}
-
-async function getSectionsViaMixer(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new AuctionEngagementRule(),
   ])
 
   return await mixer.mix(SECTIONS, context)
-}
-
-async function getSectionsLegacy(context: ResolverContext) {
-  const displayableSections: HomeViewSection[] = []
-
-  SECTIONS.forEach((section) => {
-    if (isSectionDisplayable(section, context)) {
-      displayableSections.push(section)
-    }
-  })
-
-  return displayableSections
 }
