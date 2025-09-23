@@ -7,7 +7,6 @@ const { buildSchema, getIntrospectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
 const introspectionQuery = getIntrospectionQuery()
-const DRY_RUN = process.argv.includes("--dry-run")
 
 const defaultBody =
   "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process."
@@ -49,37 +48,37 @@ async function updateSchemaFile({
         execSync("yarn install", { cwd: repoDir })
       }
 
-      // destinations.forEach((dest) => {
-      //   const repoDest = path.join(repoDir, dest)
-      //   let prettierArgs = ""
-      //   if (dest.endsWith(".json")) {
-      //     const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
-      //     const schema = buildSchema(sdl, { commentDescriptions: true })
-      //     const gql = graphqlSync(schema, introspectionQuery)
-      //     writeFileSync(repoDest, JSON.stringify(gql, null, 2))
-      //   } else {
-      //     execSync(`cp _schemaV2.graphql '${repoDest}'`)
-      //     prettierArgs = "--parser=graphql"
+      destinations.forEach((dest) => {
+        const repoDest = path.join(repoDir, dest)
+        let prettierArgs = ""
+        if (dest.endsWith(".json")) {
+          const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
+          const schema = buildSchema(sdl, { commentDescriptions: true })
+          const gql = graphqlSync(schema, introspectionQuery)
+          writeFileSync(repoDest, JSON.stringify(gql, null, 2))
+        } else {
+          execSync(`cp _schemaV2.graphql '${repoDest}'`)
+          prettierArgs = "--parser=graphql"
 
-      //     if (!repoConfig.skipRelay) {
-      //       // Running the compiler directly for Rails projects
-      //       const relayCompilerCommand = ["volt"].includes(repo)
-      //         ? "./node_modules/.bin/relay-compiler"
-      //         : "yarn relay"
+          if (!repoConfig.skipRelay) {
+            // Running the compiler directly for Rails projects
+            const relayCompilerCommand = ["volt"].includes(repo)
+              ? "./node_modules/.bin/relay-compiler"
+              : "yarn relay"
 
-      //       execSync(relayCompilerCommand, { cwd: repoDir })
-      //     }
-      //   }
+            execSync(relayCompilerCommand, { cwd: repoDir })
+          }
+        }
 
-      //   if (!repoConfig.skipPrettier) {
-      //     execSync(
-      //       `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier ${prettierArgs} --write ${dest}`,
-      //       {
-      //         cwd: repoDir,
-      //       }
-      //     )
-      //   }
-      // })
+        if (!repoConfig.skipPrettier) {
+          execSync(
+            `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier ${prettierArgs} --write ${dest}`,
+            {
+              cwd: repoDir,
+            }
+          )
+        }
+      })
     },
   })
 }

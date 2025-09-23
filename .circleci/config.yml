@@ -85,35 +85,18 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
+      - run: corepack enable
       - yarn_install
       - run:
           name: Push schema changes
           command: |
             # Run the Node.js script, passing total_nodes and node_index as arguments
             node scripts/push-schema-changes.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
-  test-schema-changes:
-    executor:
-      name: node/default
-      tag: "22.5"
-    steps:
-      - checkout
-      - setup_hokusai
-      - run: corepack enable # <-- test enabling Corepack
-      - yarn_install
-      - run:
-          name: Run schema script (dry-run mode)
-          command: |
-            # Run with modified script to avoid pushes
-            node scripts/push-schema-changes.js --dry-run
 
 workflows:
   default:
     jobs:
       - test:
-          <<: *not_staging_or_release
-
-      - test-schema-changes:
-          context: hokusai
           <<: *not_staging_or_release
 
       - node/run:
