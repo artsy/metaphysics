@@ -113,6 +113,7 @@ workflows:
           <<: *not_staging_or_release
 
       - test-schema-changes:
+          context: hokusai
           <<: *not_staging_or_release
 
       - node/run:
