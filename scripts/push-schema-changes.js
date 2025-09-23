@@ -96,6 +96,7 @@ const supportedRepos = {
   },
   eigen: {
     body: `${defaultBody} #nochangelog`,
+    skipDeprecatedEngineCheck: true,
   },
   energy: {},
   prediction: {},
