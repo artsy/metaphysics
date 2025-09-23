@@ -29,7 +29,7 @@ export const ExploreByCategory: HomeViewSection = {
       return {
         entityID: category.id,
         entityType: OwnerType.collectionsCategory,
-        image_url: category.imageUrl,
+        imageURL: category.imageUrl,
         title: category.title,
       }
     })
