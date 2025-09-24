@@ -1121,6 +1121,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               },
             }),
           },
+          term: {
+            type: GraphQLString,
+            description: "Search term for locations.",
+          },
         }),
         resolve: async (
           { id },
@@ -1147,6 +1151,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             total_count: true,
             offset,
             size,
+            term: args.term,
           })
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
