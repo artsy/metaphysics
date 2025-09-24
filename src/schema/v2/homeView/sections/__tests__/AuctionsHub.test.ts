@@ -1,4 +1,4 @@
-import { AuctionsHub } from "../AuctionsHub"
+import { AuctionsHub, shouldDisplayAuctionsHub } from "../AuctionsHub"
 
 describe("AuctionsHub", () => {
   it("returns the correct section configuration", () => {
@@ -7,7 +7,19 @@ describe("AuctionsHub", () => {
     expect(AuctionsHub.requiresAuthentication).toBe(false)
     expect(AuctionsHub.component?.title).toBe("Auctions Hub")
     expect(AuctionsHub.component?.type).toBe("3UpImageLayout")
-    expect(AuctionsHub.featureFlag).toBe("onyx_auctions_hub")
+    expect(AuctionsHub.shouldBeDisplayed).toBeDefined()
+  })
+
+  describe("shouldDisplayAuctionsHub", () => {
+    it("returns false when no user agent is provided", () => {
+      const context = { userAgent: undefined, userID: "user123" } as any
+      expect(shouldDisplayAuctionsHub(context)).toBe(false)
+    })
+
+    it("returns false when user agent doesn't have version info", () => {
+      const context = { userAgent: "Mozilla/5.0", userID: "user123" } as any
+      expect(shouldDisplayAuctionsHub(context)).toBe(false)
+    })
   })
 
   it("returns 3 auction-related cards with correct image configurations", () => {
