@@ -704,6 +704,65 @@ describe("Show type", () => {
     })
   })
 
+  it("includes exhibition period with explicit timezone", async () => {
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          exhibitionPeriod(timezone: "America/New_York")
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        exhibitionPeriod: "February 25 – May 24, 2015",
+      },
+    })
+  })
+
+  it("includes exhibition period respecting X-TIMEZONE header via defaultTimezone", async () => {
+    const contextWithTimezone = {
+      ...context,
+      defaultTimezone: "America/Los_Angeles",
+    }
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithTimezone)
+    expect(data).toEqual({
+      show: {
+        exhibitionPeriod: "February 25 – May 24, 2015",
+      },
+    })
+  })
+
+  it("exhibitionPeriod falls back to UTC when no timezone provided", async () => {
+    const contextWithoutTimezone = {
+      ...context,
+      defaultTimezone: undefined,
+    }
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithoutTimezone)
+    expect(data).toEqual({
+      show: {
+        exhibitionPeriod: "February 25 – May 24, 2015",
+      },
+    })
+  })
+
   it("includes an update on upcoming status changes", async () => {
     showData.end_at = moment().add(1, "d")
     const query = gql`

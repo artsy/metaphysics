@@ -421,10 +421,19 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             description: "Formatting option to apply to exhibition period",
             defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
+          timezone: {
+            type: GraphQLString,
+            description:
+              'A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones',
+          },
         },
-        resolve: ({ start_at, end_at }, args) => {
-          const { format } = args
-          return dateRange(start_at, end_at, "UTC", format)
+        resolve: (
+          { start_at, end_at },
+          { format, timezone },
+          { defaultTimezone }
+        ) => {
+          const timezoneString = timezone ? timezone : defaultTimezone || "UTC"
+          return dateRange(start_at, end_at, timezoneString, format)
         },
       },
       fair: {
