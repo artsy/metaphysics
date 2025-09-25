@@ -28,7 +28,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -48,7 +47,6 @@ describe("AuctionEngagementRule", () => {
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
-      { id: "final-section" },
     ])
     expect(outputSections.length).toEqual(inputSections.length)
   })
@@ -75,7 +73,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -95,7 +92,6 @@ describe("AuctionEngagementRule", () => {
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
-      { id: "final-section" },
     ])
     expect(outputSections.length).toEqual(inputSections.length)
   })
@@ -122,7 +118,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -158,7 +153,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -189,7 +183,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -220,7 +213,6 @@ describe("AuctionEngagementRule", () => {
       AuctionLotsForYou,
       { id: "yet-another-section" },
       AuctionsHub,
-      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
