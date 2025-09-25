@@ -52,23 +52,17 @@ describe("AuctionsHub", () => {
     const mockSales = [
       {
         id: "sale1",
-        cover_image: {
-          image_urls: { main: "https://example.com/auction1-cover.jpg" },
-        },
+        image_urls: { source: "https://example.com/auction1-cover.jpg" },
         name: "Modern Art Auction",
       },
       {
         id: "sale2",
-        cover_image: {
-          image_urls: { main: "https://example.com/auction2-cover.jpg" },
-        },
+        image_urls: { source: "https://example.com/auction2-cover.jpg" },
         name: "Contemporary Art Sale",
       },
       {
         id: "sale3",
-        cover_image: {
-          image_urls: { main: "https://example.com/auction3-cover.jpg" },
-        },
+        image_urls: { source: "https://example.com/auction3-cover.jpg" },
         name: "Impressionist Works",
       },
     ]
@@ -103,25 +97,19 @@ describe("AuctionsHub", () => {
       edges: [
         {
           node: {
-            images: [
-              { thumbnail: { image_url: "https://example.com/result1.jpg" } },
-            ],
+            images: [{ larger: "https://example.com/result1.jpg" }],
             title: "Artwork 1",
           },
         },
         {
           node: {
-            images: [
-              { thumbnail: { image_url: "https://example.com/result2.jpg" } },
-            ],
+            images: [{ larger: "https://example.com/result2.jpg" }],
             title: "Artwork 2",
           },
         },
         {
           node: {
-            images: [
-              { thumbnail: { image_url: "https://example.com/result3.jpg" } },
-            ],
+            images: [{ larger: "https://example.com/result3.jpg" }],
             title: "Artwork 3",
           },
         },
