@@ -3,9 +3,10 @@ import { AuctionEngagementRule } from "../../rules/AuctionEngagementRule"
 import { ResolverContext } from "types/graphql"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../../../sections/AuctionLotsForYou"
+import { AuctionsHub } from "../../../sections/AuctionsHub"
 
 describe("AuctionEngagementRule", () => {
-  it("moves only AuctionLotsForYou after NewWorksForYou for engaged users", async () => {
+  it("moves auction-related sections after NewWorksForYou for engaged users", async () => {
     const mockContext: Partial<ResolverContext> = {
       userID: "123",
       auctionUserSegmentationLoader: jest.fn().mockResolvedValue({
@@ -26,6 +27,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -35,20 +38,22 @@ describe("AuctionEngagementRule", () => {
       mockContext as ResolverContext
     )
 
-    // Expect only AuctionLotsForYou to be moved right after NewWorksForYou
+    // Expect auction-related sections to be moved right after NewWorksForYou
     expect(outputSections).toEqual([
       { id: "quick-links-section" },
       { id: "tasks-section" },
       NewWorksForYou,
       AuctionLotsForYou,
+      AuctionsHub,
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
+      { id: "final-section" },
     ])
     expect(outputSections.length).toEqual(inputSections.length)
   })
 
-  it("moves only AuctionLotsForYou after NewWorksForYou for adjacent users", async () => {
+  it("moves auction-related sections after NewWorksForYou for adjacent users", async () => {
     const mockContext: Partial<ResolverContext> = {
       userID: "123",
       auctionUserSegmentationLoader: jest.fn().mockResolvedValue({
@@ -69,6 +74,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -78,15 +85,17 @@ describe("AuctionEngagementRule", () => {
       mockContext as ResolverContext
     )
 
-    // Expect only AuctionLotsForYou to be moved right after NewWorksForYou
+    // Expect auction-related sections to be moved right after NewWorksForYou
     expect(outputSections).toEqual([
       { id: "quick-links-section" },
       { id: "tasks-section" },
       NewWorksForYou,
       AuctionLotsForYou,
+      AuctionsHub,
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
+      { id: "final-section" },
     ])
     expect(outputSections.length).toEqual(inputSections.length)
   })
@@ -112,6 +121,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -146,6 +157,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -175,6 +188,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -204,6 +219,8 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
+      AuctionsHub,
+      { id: "final-section" },
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
