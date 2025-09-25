@@ -1,16 +1,16 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
-import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { map } from "lodash"
 import { paginationResolver } from "schema/v2/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
 
 const SAVED_ARTWORKS_SIZE = 3
 const SIMILAR_ARTWORKS_SIZE = 10
 const TIMEOUT_MS = 6000
 
-export const BasedOnYourRecentSaves: HomeViewSection = {
+export const BasedOnYourRecentSaves: HomeViewArtworksSection = {
   id: "home-view-section-based-on-your-recent-saves",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.basedOnYourRecentSavesRail,
@@ -19,6 +19,7 @@ export const BasedOnYourRecentSaves: HomeViewSection = {
   },
   ownerType: OwnerType.basedOnYourRecentSaves,
   requiresAuthentication: true,
+  trackItemImpressions: true,
   resolver: withHomeViewTimeout(
     async (
       _parent,

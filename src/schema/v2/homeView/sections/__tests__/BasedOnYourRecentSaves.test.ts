@@ -30,6 +30,9 @@ describe("BasedOnYourRecentSaves", () => {
                 }
               }
             }
+            ... on HomeViewSectionArtworks {
+              trackItemImpressions
+            }
           }
         }
       }
@@ -53,6 +56,7 @@ describe("BasedOnYourRecentSaves", () => {
           "contextModule": "basedOnYourRecentSavesRail",
           "internalID": "home-view-section-based-on-your-recent-saves",
           "ownerType": "basedOnYourRecentSaves",
+          "trackItemImpressions": true,
         },
       }
     `)
