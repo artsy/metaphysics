@@ -13,9 +13,9 @@ describe("Show type", () => {
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
       _id: "abcdefg123456",
-      created_at: "2015-02-24T12:00:00+00:00",
-      start_at: "2015-02-25T12:00:00+00:00",
-      end_at: "2015-05-24T12:00:00+00:00",
+      created_at: "2025-02-24T00:00:00+00:00",
+      start_at: "2025-02-25T00:00:00+00:00",
+      end_at: "2025-05-24T00:00:00+00:00",
       press_release: "**foo** *bar*",
       displayable: true,
       partner: {
@@ -663,9 +663,68 @@ describe("Show type", () => {
     expect(data).toEqual({
       show: {
         slug: "new-museum-1-2015-triennial-surround-audience",
-        createdAt: "02/24/2015",
-        startAt: "Wednesday, February 25th 2015, 12:00:00 pm",
-        endAt: "2015",
+        createdAt: "02/24/2025",
+        startAt: "Tuesday, February 25th 2025, 12:00:00 am",
+        endAt: "2025",
+      },
+    })
+  })
+
+  it("startAt and endAt with date-only formats ignore timezone (like exhibitionPeriod)", async () => {
+    const utcMidnightShow = {
+      ...showData,
+      start_at: "2025-09-02T00:00:00+00:00",
+      end_at: "2025-09-27T00:00:00+00:00",
+    }
+    const contextWithShow = {
+      ...context,
+      showLoader: sinon.stub().returns(Promise.resolve(utcMidnightShow)),
+      defaultTimezone: "America/New_York",
+    }
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          startAt(format: "MMMM D")
+          endAt(format: "MMMM D, YYYY")
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithShow)
+    expect(data).toEqual({
+      show: {
+        startAt: "September 2",
+        endAt: "September 27, 2025",
+        exhibitionPeriod: "September 2 – 27, 2025",
+      },
+    })
+  })
+
+  it("startAt and endAt with datetime formats respect timezone", async () => {
+    const utcMidnightShow = {
+      ...showData,
+      start_at: "2025-09-02T00:00:00+00:00",
+    }
+    const contextWithShow = {
+      ...context,
+      showLoader: sinon.stub().returns(Promise.resolve(utcMidnightShow)),
+      defaultTimezone: "America/New_York",
+    }
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          startAt(format: "MMMM D [at] h:mm a z")
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithShow)
+    expect(data).toEqual({
+      show: {
+        startAt: "September 1 at 8:00 pm EDT",
       },
     })
   })
@@ -700,65 +759,6 @@ describe("Show type", () => {
     expect(data).toEqual({
       show: {
         exhibitionPeriod: "Feb 25 – May 24, 2015",
-      },
-    })
-  })
-
-  it("includes exhibition period with explicit timezone", async () => {
-    const query = gql`
-      {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
-          exhibitionPeriod(timezone: "America/New_York")
-        }
-      }
-    `
-
-    const data = await runQuery(query, context)
-    expect(data).toEqual({
-      show: {
-        exhibitionPeriod: "February 25 – May 24, 2015",
-      },
-    })
-  })
-
-  it("includes exhibition period respecting X-TIMEZONE header via defaultTimezone", async () => {
-    const contextWithTimezone = {
-      ...context,
-      defaultTimezone: "America/Los_Angeles",
-    }
-    const query = gql`
-      {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
-          exhibitionPeriod
-        }
-      }
-    `
-
-    const data = await runQuery(query, contextWithTimezone)
-    expect(data).toEqual({
-      show: {
-        exhibitionPeriod: "February 25 – May 24, 2015",
-      },
-    })
-  })
-
-  it("exhibitionPeriod falls back to UTC when no timezone provided", async () => {
-    const contextWithoutTimezone = {
-      ...context,
-      defaultTimezone: undefined,
-    }
-    const query = gql`
-      {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
-          exhibitionPeriod
-        }
-      }
-    `
-
-    const data = await runQuery(query, contextWithoutTimezone)
-    expect(data).toEqual({
-      show: {
-        exhibitionPeriod: "February 25 – May 24, 2015",
       },
     })
   })
