@@ -13,9 +13,9 @@ describe("Show type", () => {
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
       _id: "abcdefg123456",
-      created_at: "2025-02-24T00:00:00+00:00",
-      start_at: "2025-02-25T00:00:00+00:00",
-      end_at: "2025-05-24T00:00:00+00:00",
+      created_at: "2015-02-24T00:00:00+00:00",
+      start_at: "2015-02-25T00:00:00+00:00",
+      end_at: "2015-05-24T00:00:00+00:00",
       press_release: "**foo** *bar*",
       displayable: true,
       partner: {
@@ -663,9 +663,9 @@ describe("Show type", () => {
     expect(data).toEqual({
       show: {
         slug: "new-museum-1-2015-triennial-surround-audience",
-        createdAt: "02/24/2025",
-        startAt: "Tuesday, February 25th 2025, 12:00:00 am",
-        endAt: "2025",
+        createdAt: "02/24/2015",
+        startAt: "Wednesday, February 25th 2015, 12:00:00 am",
+        endAt: "2015",
       },
     })
   })
