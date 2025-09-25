@@ -6,6 +6,7 @@ import type { HomeViewCard } from "../sectionTypes/Card"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { ResolverContext } from "types/graphql"
+import { artworksForUser } from "schema/v2/artworksForUser"
 
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
@@ -26,25 +27,56 @@ const auctionsHubCards: HomeViewCard[] = [
   {
     title: "Your Auction Picks",
     href: "/your-auction-picks",
-    entityType: "AuctionPicks",
-    imageURL: "https://cdn.artsy.net/auction-picks.jpg",
+    entityType: "card",
+    entityID: "card-your-auction-picks",
   },
   {
     title: "Browse All Auctions",
     href: "/auctions",
-    entityType: "Auctions",
-    imageURLs: [
-      "https://cdn.artsy.net/auctions-1.jpg",
-      "https://cdn.artsy.net/auctions-2.jpg",
-      "https://cdn.artsy.net/auctions-3.jpg",
-    ],
+    entityType: "card",
+    entityID: "card-browse-all-auctions",
   },
   {
     title: "Latest Auction Results",
     href: "/latest-auction-results",
-    entityType: "AuctionResults",
+    entityType: "card",
+    entityID: "card-latest-auction-results",
   },
 ]
+
+const yourAuctionPicksCard = async (context): Promise<HomeViewCard | null> => {
+  const isAuthenticatedUser = !!context.accessToken
+
+  const args = {
+    includeBackfill: true,
+    onlyAtAuction: true,
+    first: 3,
+    excludeDislikedArtworks: true,
+    excludeArtworkIds: [],
+  }
+
+  if (isAuthenticatedUser) {
+    const artworks = await artworksForUser.resolve!(
+      context._root,
+      args,
+      context,
+      context.info
+    )
+    const imageURLs = artworks.edges.map(({ node }) => {
+      return node.images[0].image_urls["main"]
+    })
+
+    return {
+      title: "Your Auction Picks",
+      href: "/your-auction-picks",
+      entityType: "card",
+      entityID: "card-your-auction-picks",
+      imageURLs,
+    }
+  } else {
+    return null
+  }
+}
 
 export const AuctionsHub: HomeViewSection = {
   id: "home-view-section-auctions-hub",
@@ -59,7 +91,9 @@ export const AuctionsHub: HomeViewSection = {
     return shouldDisplayAuctionsHub(context)
   },
 
-  resolver: (_parent, args, _context, _info) => {
-    return connectionFromArray(auctionsHubCards, args)
+  resolver: async (_parent, args, context, _info) => {
+    const cards = [await yourAuctionPicksCard(context)]
+
+    return connectionFromArray(cards, args)
   },
 }
