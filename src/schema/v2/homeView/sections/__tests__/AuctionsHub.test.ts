@@ -52,17 +52,23 @@ describe("AuctionsHub", () => {
     const mockSales = [
       {
         id: "sale1",
-        cover_image: { image_url: "https://example.com/auction1.jpg" },
+        cover_image: {
+          image_urls: { main: "https://example.com/auction1-cover.jpg" },
+        },
         name: "Modern Art Auction",
       },
       {
         id: "sale2",
-        cover_image: { image_url: "https://example.com/auction2.jpg" },
+        cover_image: {
+          image_urls: { main: "https://example.com/auction2-cover.jpg" },
+        },
         name: "Contemporary Art Sale",
       },
       {
         id: "sale3",
-        cover_image: { image_url: "https://example.com/auction3.jpg" },
+        cover_image: {
+          image_urls: { main: "https://example.com/auction3-cover.jpg" },
+        },
         name: "Impressionist Works",
       },
     ]
@@ -194,9 +200,9 @@ describe("AuctionsHub", () => {
       expect(auctionsCard.entityType).toBe("card")
       expect(auctionsCard.entityID).toBe("card-browse-all-auctions")
       expect(auctionsCard.imageURLs).toEqual([
-        "https://example.com/auction1.jpg",
-        "https://example.com/auction2.jpg",
-        "https://example.com/auction3.jpg",
+        "https://example.com/auction1-cover.jpg",
+        "https://example.com/auction2-cover.jpg",
+        "https://example.com/auction3-cover.jpg",
       ])
 
       // Latest Auction Results card
@@ -212,40 +218,15 @@ describe("AuctionsHub", () => {
       ])
     })
 
-    it("handles errors gracefully when loaders fail", async () => {
+    it("throws error when loaders fail", async () => {
       mockContext.salesLoader.mockRejectedValue(
         new Error("Sales loader failed")
       )
-      mockContext.saleArtworksLoader.mockRejectedValue(
-        new Error("Sale artworks loader failed")
-      )
 
-      // Mock the AuctionResultsByFollowedArtists resolver to fail
-      const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
-        .default
-      AuctionResultsByFollowedArtists.resolve.mockRejectedValue(
-        new Error("Auction results loader failed")
-      )
-
-      const result = await AuctionsHub.resolver!(
-        {},
-        {},
-        mockContext as any,
-        {} as any
-      )
-
-      // Should still return cards but without images due to error handling
-      expect(result.edges).toHaveLength(3)
-
-      const auctionsCard = result.edges.find(
-        (edge) => edge.node.title === "Browse All Auctions"
-      )?.node
-      expect(auctionsCard?.imageURLs).toBeUndefined()
-
-      const resultsCard = result.edges.find(
-        (edge) => edge.node.title === "Latest Auction Results"
-      )?.node
-      expect(resultsCard?.imageURLs).toBeUndefined()
+      // Should throw the error instead of handling gracefully
+      await expect(
+        AuctionsHub.resolver!({}, {}, mockContext as any, {} as any)
+      ).rejects.toThrow("Sales loader failed")
     })
   })
 })
