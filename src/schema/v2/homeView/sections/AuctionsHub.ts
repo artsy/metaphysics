@@ -20,12 +20,13 @@ type CardFunction = (ctx: CardFunctionContext) => Promise<HomeViewCard | null>
 const extractImageUrls = (
   items: any[],
   pathExtractor: (item: any) => string | undefined,
-  maxCount = 3
+  maxCount?: number
 ): string[] => {
-  return items
+  const urls = items
     .map(pathExtractor)
     .filter((url): url is string => Boolean(url))
-    .slice(0, maxCount)
+
+  return maxCount !== undefined ? urls.slice(0, maxCount) : urls
 }
 
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
