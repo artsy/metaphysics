@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=22.5.1",
     "npm": "5.6.0",
-    "yarn": "1.*"
+    "yarn": "^4.9.4"
   },
   "scripts": {
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
@@ -175,5 +175,5 @@
       "pre-push": "yarn run type-check"
     }
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
 }
