@@ -54,6 +54,8 @@ COPY --chown=deploy:deploy --from=builder-base /app/build ./build
 COPY --chown=deploy:deploy --from=builder-base /app/src/data ./src/data
 COPY --chown=deploy:deploy --from=builder-base /opt/node_modules.prod ./node_modules
 COPY --chown=deploy:deploy --from=builder-base /app/scripts/load_secrets_and_run.sh load_secrets_and_run.sh
+COPY --chown=deploy:deploy --from=builder-base /app/.yarnrc.yml .
+COPY --chown=deploy:deploy --from=builder-base /app/.yarn ./.yarn
 
 ENTRYPOINT ["/usr/bin/dumb-init", "./load_secrets_and_run.sh"]
 
