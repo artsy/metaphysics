@@ -98,7 +98,9 @@ const supportedRepos = {
     body: `${defaultBody} #nochangelog`,
     skipDeprecatedEngineCheck: true,
   },
-  energy: {},
+  energy: {
+    skipDeprecatedEngineCheck: true,
+  },
   prediction: {},
   force: { skipDeprecatedEngineCheck: true },
   forque: {},
