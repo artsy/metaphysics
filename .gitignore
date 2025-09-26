@@ -18,3 +18,7 @@ tmp
 coverage*
 .hokusai-tmp
 Brewfile.lock.json
+
+# Yarn 4
+.yarn/cache
+.yarn/install-state.gz
