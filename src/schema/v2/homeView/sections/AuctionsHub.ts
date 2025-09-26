@@ -45,10 +45,11 @@ const yourAuctionPicksCard: CardFunction = async ({
   info,
 }) => {
   const args = {
-    includeBackfill: false,
+    includeBackfill: true,
     onlyAtAuction: true,
     first: 3,
     excludeDislikedArtworks: true,
+    excludeArtworkIds: [],
   }
 
   const artworks = await artworksForUser.resolve!(parent, args, context, info)
