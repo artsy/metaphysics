@@ -79,17 +79,33 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   const gravityOptions = {
     live: true,
     is_auction: true,
-    size: 10,
+    size: 3,
     sort: "-is_artsy_licensed,timely_at,name",
   }
 
   const sales = await context.salesLoader(gravityOptions)
 
-  const imageURLs = extractImageUrls(
-    sales,
-    (sale) => sale.image_urls?.source,
-    3
-  )
+  // Process sales with async fallback logic
+  const imageURLPromises = sales.slice(0, 3).map(async (sale: any) => {
+    const coverImage = sale.image_urls?.source
+
+    if (coverImage) {
+      return coverImage
+    }
+
+    // Fallback: get first artwork image from the sale
+    try {
+      const { body: saleArtworks } = await context.saleArtworksLoader(sale.id, {
+        size: 1,
+      })
+      return saleArtworks[0]?.artwork?.images?.[0]?.image_urls?.larger
+    } catch {
+      return undefined
+    }
+  })
+
+  const resolvedImages = await Promise.all(imageURLPromises)
+  const imageURLs = resolvedImages.filter((url): url is string => Boolean(url))
 
   return {
     title: "Browse All Auctions",
