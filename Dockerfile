@@ -12,14 +12,15 @@ RUN apk --no-cache --quiet add \
   git
 
 # Copy files required to install application dependencies
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
 COPY patches ./patches
 
 # Install packages
-RUN yarn install --production --frozen-lockfile --quiet && \
-  mv node_modules /opt/node_modules.prod && \
-  yarn install --frozen-lockfile --quiet && \
-  yarn cache clean --force
+RUN corepack enable && \
+  yarn install --immutable && \
+  cp -R node_modules /opt/node_modules.prod && \
+  yarn cache clean
 
 # Copy application code
 COPY  . ./
