@@ -104,6 +104,8 @@ workflows:
           name: type-check
           pkg-manager: yarn
           yarn-run: type-check
+          pre-steps:
+            - run: sudo corepack enable
 
       - ensure-schema-update:
           context: hokusai
@@ -135,6 +137,8 @@ workflows:
           context: cloudflare
           pkg-manager: yarn
           yarn-run: deploy-cloudflare-workers:staging
+          pre-steps:
+            - run: sudo corepack enable
           requires:
             - deploy-staging
 
@@ -155,5 +159,7 @@ workflows:
           context: cloudflare
           pkg-manager: yarn
           yarn-run: deploy-cloudflare-workers
+          pre-steps:
+            - run: sudo corepack enable
           requires:
             - hokusai/deploy-production
