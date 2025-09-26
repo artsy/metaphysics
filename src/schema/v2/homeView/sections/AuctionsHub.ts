@@ -49,8 +49,6 @@ const yourAuctionPicksCard: CardFunction = async ({
   context,
   info,
 }) => {
-  if (!context.accessToken) return null
-
   const args = {
     includeBackfill: false,
     onlyAtAuction: true,
