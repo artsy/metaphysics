@@ -22,6 +22,9 @@ describe("SimilarToRecentlyViewed", () => {
                 }
               }
             }
+            ... on HomeViewSectionArtworks {
+              trackItemImpressions
+            }
           }
         }
       }
@@ -50,6 +53,7 @@ describe("SimilarToRecentlyViewed", () => {
         "contextModule": "similarToWorksYouViewedRail",
         "internalID": "home-view-section-similar-to-recently-viewed-artworks",
         "ownerType": "similarToRecentlyViewed",
+        "trackItemImpressions": true,
       }
     `)
   })
