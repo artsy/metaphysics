@@ -57,6 +57,10 @@ const yourAuctionPicksCard: CardFunction = async ({
     ({ node }) => node.images?.[0]?.image_urls?.main
   )
 
+  if (imageURLs.length === 0) {
+    return null
+  }
+
   return {
     title: "Your Auction Picks",
     href: "/your-auction-picks",
@@ -98,6 +102,10 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   const resolvedImages = await Promise.all(imageURLPromises)
   const imageURLs = resolvedImages.filter((url): url is string => Boolean(url))
 
+  if (imageURLs.length === 0) {
+    return null
+  }
+
   return {
     title: "Browse All Auctions",
     href: "/auctions",
@@ -133,6 +141,10 @@ const latestAuctionResultsCard: CardFunction = async ({
     response.edges,
     (edge) => edge.node.images?.[0]?.larger
   )
+
+  if (imageURLs.length === 0) {
+    return null
+  }
 
   return {
     title: "Latest Auction Results",
