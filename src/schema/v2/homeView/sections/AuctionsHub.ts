@@ -86,7 +86,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   const sales = await context.salesLoader(gravityOptions)
 
   // Process sales with async fallback logic
-  const imageURLPromises = sales.slice(0, 3).map(async (sale: any) => {
+  const imageURLPromises = sales.map(async (sale: any) => {
     const coverImage = sale.image_urls?.source
 
     if (coverImage) {
