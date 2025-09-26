@@ -60,13 +60,7 @@ export const HomeViewCardType = new GraphQLObjectType<
           )
         }
 
-        if (imageURL) {
-          return [
-            {
-              image_url: imageURL,
-            },
-          ]
-        } else if (imageURLs) {
+        if (imageURLs) {
           return imageURLs.map((imageURL) => {
             return {
               image_url: imageURL,
