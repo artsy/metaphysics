@@ -216,5 +216,82 @@ describe("AuctionsHub", () => {
         AuctionsHub.resolver!({}, {}, mockContext as any, {} as any)
       ).rejects.toThrow("Sales loader failed")
     })
+
+    it("filters out cards with no images", async () => {
+      // Mock empty results for all data sources
+      const { artworksForUser } = require("schema/v2/artworksForUser")
+      artworksForUser.resolve.mockResolvedValue({ edges: [] })
+
+      mockContext.salesLoader.mockResolvedValue([])
+
+      const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
+        .default
+      AuctionResultsByFollowedArtists.resolve.mockResolvedValue({ edges: [] })
+
+      const result = await AuctionsHub.resolver!(
+        {},
+        {},
+        mockContext as any,
+        {} as any
+      )
+
+      // Should return no cards since all return null due to no images
+      expect(result.edges).toHaveLength(0)
+    })
+
+    it("returns only cards with images when some have no images", async () => {
+      // Mock yourAuctionPicksCard to have images
+      const { artworksForUser } = require("schema/v2/artworksForUser")
+      artworksForUser.resolve.mockResolvedValue(mockArtworks)
+
+      // Mock browseAllAuctionsCard to have no images (empty sales)
+      mockContext.salesLoader.mockResolvedValue([])
+
+      // Mock latestAuctionResultsCard to have no images
+      const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
+        .default
+      AuctionResultsByFollowedArtists.resolve.mockResolvedValue({ edges: [] })
+
+      const result = await AuctionsHub.resolver!(
+        {},
+        {},
+        mockContext as any,
+        {} as any
+      )
+
+      // Should return only the Your Auction Picks card
+      expect(result.edges).toHaveLength(1)
+      expect(result.edges[0].node.title).toBe("Your Auction Picks")
+    })
+
+    it("handles sales with no cover images or artwork images", async () => {
+      // Mock sales without cover images
+      const salesWithoutImages = [
+        { id: "sale1", name: "Sale 1" }, // No image_urls property
+        { id: "sale2", image_urls: {}, name: "Sale 2" }, // Empty image_urls
+      ]
+      mockContext.salesLoader.mockResolvedValue(salesWithoutImages)
+
+      // Mock saleArtworksLoader to return empty results (no artwork images)
+      mockContext.saleArtworksLoader.mockResolvedValue({ body: [] })
+
+      // Mock other cards to have no images
+      const { artworksForUser } = require("schema/v2/artworksForUser")
+      artworksForUser.resolve.mockResolvedValue({ edges: [] })
+
+      const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
+        .default
+      AuctionResultsByFollowedArtists.resolve.mockResolvedValue({ edges: [] })
+
+      const result = await AuctionsHub.resolver!(
+        {},
+        {},
+        mockContext as any,
+        {} as any
+      )
+
+      // Should return no cards since browseAllAuctionsCard returns null
+      expect(result.edges).toHaveLength(0)
+    })
   })
 })
