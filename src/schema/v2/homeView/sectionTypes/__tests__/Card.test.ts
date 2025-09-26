@@ -26,6 +26,25 @@ describe("HomeViewCardType", () => {
 
       expect(result).toBeUndefined()
     })
+
+    it("throws error when both imageURL and imageURLs are provided", () => {
+      const card: HomeViewCard = {
+        title: "Test Card",
+        imageURL: "https://example.com/single.jpg",
+        imageURLs: [
+          "https://example.com/multiple1.jpg",
+          "https://example.com/multiple2.jpg",
+        ],
+      }
+
+      const imageResolver = HomeViewCardType.getFields().image.resolve!
+
+      expect(() => {
+        imageResolver(card, {}, {} as any, {} as any)
+      }).toThrow(
+        "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+      )
+    })
   })
 
   describe("images resolver", () => {
@@ -65,7 +84,7 @@ describe("HomeViewCardType", () => {
       ])
     })
 
-    it("prioritizes imageURL over imageURLs when both are provided", () => {
+    it("throws error when both imageURL and imageURLs are provided", () => {
       const card: HomeViewCard = {
         title: "Test Card",
         imageURL: "https://example.com/single.jpg",
@@ -76,13 +95,12 @@ describe("HomeViewCardType", () => {
       }
 
       const imagesResolver = HomeViewCardType.getFields().images.resolve!
-      const result = imagesResolver(card, {}, {} as any, {} as any)
 
-      expect(result).toEqual([
-        {
-          image_url: "https://example.com/single.jpg",
-        },
-      ])
+      expect(() => {
+        imagesResolver(card, {}, {} as any, {} as any)
+      }).toThrow(
+        "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+      )
     })
 
     it("returns undefined when no images are provided", () => {
