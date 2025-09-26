@@ -95,7 +95,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     href: "/auctions",
     entityType: "card",
     entityID: "card-browse-all-auctions",
-    imageURLs: imageURLs.length > 0 ? imageURLs : undefined,
+    imageURLs,
   }
 }
 
