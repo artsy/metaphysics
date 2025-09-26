@@ -56,7 +56,6 @@ const yourAuctionPicksCard: CardFunction = async ({
     onlyAtAuction: true,
     first: 3,
     excludeDislikedArtworks: true,
-    excludeArtworkIds: [],
   }
 
   const artworks = await artworksForUser.resolve!(parent, args, context, info)
