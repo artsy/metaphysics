@@ -8,12 +8,14 @@ export const formatDate = (
   format?: string | null,
   timezone?: string
 ) => {
-  if (timezone && format) {
-    return moment(rawDate).tz(timezone).format(format)
+  const isDateOnlyFormat = format && !format.match(/[Hh]|m|s|[Aa]|[zZ]/)
+
+  if (timezone && format && !isDateOnlyFormat) {
+    return moment.utc(rawDate).tz(timezone).format(format)
   }
 
-  if (timezone) {
-    return moment(rawDate).tz(timezone).format()
+  if (timezone && !format) {
+    return moment.utc(rawDate).tz(timezone).format()
   }
 
   if (format) {
