@@ -52,6 +52,7 @@ commands:
   yarn_install:
     steps:
       - yarn/load_dependencies
+      - run: corepack enable
       - yarn/install
       - yarn/save_dependencies
 
@@ -85,7 +86,6 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
-      - run: corepack enable
       - yarn_install
       - run:
           name: Push schema changes
