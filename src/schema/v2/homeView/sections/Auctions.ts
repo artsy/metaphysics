@@ -5,6 +5,7 @@ import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageSalesModuleType } from "schema/v2/home/home_page_sales_module"
 import { connectionFromArray } from "graphql-relay"
 import { emptyConnection } from "schema/v2/fields/pagination"
+import { shouldDisplayAuctionsHub } from "./AuctionsHub"
 
 export const Auctions: HomeViewSection = {
   id: "home-view-section-auctions",
@@ -21,6 +22,9 @@ export const Auctions: HomeViewSection = {
     },
   },
   requiresAuthentication: false,
+  shouldBeDisplayed: (context) => {
+    return !shouldDisplayAuctionsHub(context)
+  },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const { results: resolver } = HomePageSalesModuleType.getFields()

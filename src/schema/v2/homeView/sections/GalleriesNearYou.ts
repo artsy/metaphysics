@@ -21,7 +21,7 @@ export const GalleriesNearYou: HomeViewSection = {
       title: parent.component.title,
       subtitle: parent.component.description,
       buttonText: "Explore",
-      image_url: "https://files.artsy.net/images/galleries_for_you.webp",
+      imageURL: "https://files.artsy.net/images/galleries_for_you.webp",
       entityType: "Page",
       entityID: parent.ownerType,
     }

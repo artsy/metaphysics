@@ -41,7 +41,7 @@ export const DiscoverSomethingNew: HomeViewSection = {
         entityType: "MarketingCollection",
         subtitle: marketingCollection.category,
         title: marketingCollection.title,
-        image_url: marketingCollection.thumbnail,
+        imageURL: marketingCollection.thumbnail,
       }
     })
 

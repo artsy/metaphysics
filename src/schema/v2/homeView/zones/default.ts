@@ -28,6 +28,7 @@ import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
+import { AuctionsHub } from "../sections/AuctionsHub"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -42,6 +43,7 @@ const SECTIONS: HomeViewSection[] = [
   CuratorsPicksEmerging,
   ExploreByCategory,
   HeroUnits,
+  AuctionsHub,
   AuctionLotsForYou,
   Auctions,
   LatestAuctionResults,

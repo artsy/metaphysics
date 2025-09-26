@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { emptyConnection } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
@@ -13,7 +18,8 @@ export type HomeViewCard = {
   entityID?: string
   entityType?: string
   href?: string
-  image_url?: string
+  imageURL?: string
+  imageURLs?: string[]
   subtitle?: string
   title?: string
 }
@@ -31,11 +37,35 @@ export const HomeViewCardType = new GraphQLObjectType<
     entityID: { type: GraphQLString },
     image: {
       type: Image.type,
-      resolve: ({ image_url }) => {
-        if (image_url) {
+      resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
+        if (imageURL) {
           return {
-            image_url,
+            image_url: imageURL,
           }
+        }
+      },
+    },
+    images: {
+      type: new GraphQLList(Image.type),
+      resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
+        if (imageURLs) {
+          return imageURLs.map((imageURL) => {
+            return {
+              image_url: imageURL,
+            }
+          })
         }
       },
     },
