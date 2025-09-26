@@ -37,7 +37,13 @@ export const HomeViewCardType = new GraphQLObjectType<
     entityID: { type: GraphQLString },
     image: {
       type: Image.type,
-      resolve: ({ imageURL }) => {
+      resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
         if (imageURL) {
           return {
             image_url: imageURL,
@@ -48,6 +54,12 @@ export const HomeViewCardType = new GraphQLObjectType<
     images: {
       type: new GraphQLList(Image.type),
       resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
         if (imageURL) {
           return [
             {
