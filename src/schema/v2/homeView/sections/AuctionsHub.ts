@@ -19,14 +19,9 @@ type CardFunction = (ctx: CardFunctionContext) => Promise<HomeViewCard | null>
 
 const extractImageUrls = (
   items: any[],
-  pathExtractor: (item: any) => string | undefined,
-  maxCount?: number
+  pathExtractor: (item: any) => string | undefined
 ): string[] => {
-  const urls = items
-    .map(pathExtractor)
-    .filter((url): url is string => Boolean(url))
-
-  return maxCount !== undefined ? urls.slice(0, maxCount) : urls
+  return items.map(pathExtractor).filter((url): url is string => Boolean(url))
 }
 
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
@@ -59,8 +54,7 @@ const yourAuctionPicksCard: CardFunction = async ({
   const artworks = await artworksForUser.resolve!(parent, args, context, info)
   const imageURLs = extractImageUrls(
     artworks.edges,
-    ({ node }) => node.images?.[0]?.image_urls?.main,
-    3
+    ({ node }) => node.images?.[0]?.image_urls?.main
   )
 
   return {
@@ -137,8 +131,7 @@ const latestAuctionResultsCard: CardFunction = async ({
 
   const imageURLs = extractImageUrls(
     response.edges,
-    (edge) => edge.node.images?.[0]?.larger,
-    3
+    (edge) => edge.node.images?.[0]?.larger
   )
 
   return {
