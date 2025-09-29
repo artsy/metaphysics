@@ -76,6 +76,12 @@ export default (opts) => {
       { headers: true }
     ),
     collectionLoader: gravityLoader((id) => `collection/${id}`),
+    collectorProfilesLoader: gravityLoader(
+      "collector_profiles",
+      {},
+      { headers: true }
+    ),
+    collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
     createInvoicePaymentLoader: gravityLoader(
       (id) => `invoice/${id}/payment`,
       {},
