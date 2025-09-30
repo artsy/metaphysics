@@ -31,13 +31,15 @@ describe("discoveryCategoryConnection", () => {
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          id
-          internalID
-          title
-          category  
-          imageUrl
-          slug
-          href
+          ... on DiscoveryArtworksWithFiltersCollection {
+            id
+            internalID
+            title
+            category  
+            imageUrl
+            slug
+            href
+          }
         }
       }
     `
@@ -71,17 +73,19 @@ describe("discoveryCategoryConnection", () => {
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          title
-          category
-          filtersForArtworksConnection(first: 10) {
-            edges {
-              node {
-                href
-                title
-                artworksConnection(first: 5) {
-                  edges {
-                    node {
-                      slug
+          ... on DiscoveryArtworksWithFiltersCollection {
+            title
+            category
+            filtersForArtworksConnection(first: 10) {
+              edges {
+                node {
+                  href
+                  title
+                  artworksConnection(first: 5) {
+                    edges {
+                      node {
+                        slug
+                      }
                     }
                   }
                 }
@@ -105,34 +109,27 @@ describe("discoveryCategoryConnection", () => {
     expect(firstFilter.artworksConnection.edges).toHaveLength(2)
   })
 
-  it("returns empty artworkConnection for categories without filters", async () => {
+  it("returns DiscoveryMarketingCollection for categories without filters", async () => {
+    const mockMarketingCollectionLoader = jest.fn().mockResolvedValue({
+      id: "medium-collection",
+      slug: "medium",
+      title: "Medium Collection",
+    })
+
     const context = {
-      unauthenticatedLoaders: {
-        filterArtworksLoader: mockFilterArtworksLoader,
-      },
-      authenticatedLoaders: {
-        filterArtworksLoader: mockFilterArtworksLoader,
-      },
+      marketingCollectionLoader: mockMarketingCollectionLoader,
     }
 
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          title
-          category
-          filtersForArtworksConnection(first: 10) {
-            edges {
-              node {
-                href
-                title
-                artworksConnection(first: 5) {
-                  edges {
-                    node {
-                      slug
-                    }
-                  }
-                }
-              }
+          __typename
+          ... on DiscoveryMarketingCollection {
+            title
+            category
+            marketingCollection {
+              slug
+              title
             }
           }
         }
@@ -142,16 +139,23 @@ describe("discoveryCategoryConnection", () => {
     const result = await runQuery(query, context, { slug: "medium" })
     const category = result.discoveryCategoryConnection
 
+    expect(category.__typename).toBe("DiscoveryMarketingCollection")
     expect(category.title).toBe("Medium")
     expect(category.category).toBe("Medium")
-    expect(category.filtersForArtworksConnection.edges).toHaveLength(0)
+    expect(category.marketingCollection).toBeDefined()
+    expect(category.marketingCollection.slug).toBe("medium")
   })
 
   it("throws error for non-existent slug", async () => {
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          title
+          ... on DiscoveryArtworksWithFiltersCollection {
+            title
+          }
+          ... on DiscoveryMarketingCollection {
+            title
+          }
         }
       }
     `
@@ -176,8 +180,14 @@ describe("discoveryCategoryConnection", () => {
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          slug
-          title
+          ... on DiscoveryArtworksWithFiltersCollection {
+            slug
+            title
+          }
+          ... on DiscoveryMarketingCollection {
+            slug
+            title
+          }
         }
       }
     `
@@ -194,7 +204,7 @@ describe("discoveryCategoryConnection", () => {
       query($id: ID!) {
         node(id: $id) {
           __typename
-          ... on DiscoveryCategory {
+          ... on DiscoveryArtworksWithFiltersCollection {
             id
             internalID
             title
@@ -208,7 +218,9 @@ describe("discoveryCategoryConnection", () => {
     const categoryQuery = `
       query {
         discoveryCategoryConnection(slug: "collect-by-price") {
-          id
+          ... on DiscoveryArtworksWithFiltersCollection {
+            id
+          }
         }
       }
     `
@@ -219,7 +231,9 @@ describe("discoveryCategoryConnection", () => {
     const result = await runQuery(query, {}, { id: globalId })
 
     expect(result.node).toBeDefined()
-    expect(result.node.__typename).toBe("DiscoveryCategory")
+    expect(result.node.__typename).toBe(
+      "DiscoveryArtworksWithFiltersCollection"
+    )
     expect(result.node.title).toBe("Price")
     expect(result.node.category).toBe("Collect by Price")
     expect(result.node.slug).toBe("collect-by-price")
@@ -240,7 +254,7 @@ describe("discoveryCategoryConnection", () => {
       query($id: ID!) {
         node(id: $id) {
           __typename
-          ... on DiscoveryCategory {
+          ... on DiscoveryArtworksWithFiltersCollection {
             id
             title
             category
@@ -267,7 +281,9 @@ describe("discoveryCategoryConnection", () => {
     const categoryQuery = `
       query {
         discoveryCategoryConnection(slug: "collect-by-price") {
-          id
+          ... on DiscoveryArtworksWithFiltersCollection {
+            id
+          }
         }
       }
     `
@@ -277,7 +293,9 @@ describe("discoveryCategoryConnection", () => {
     const result = await runQuery(query, context, { id: globalId })
 
     expect(result.node).toBeDefined()
-    expect(result.node.__typename).toBe("DiscoveryCategory")
+    expect(result.node.__typename).toBe(
+      "DiscoveryArtworksWithFiltersCollection"
+    )
     expect(result.node.title).toBe("Price")
     expect(result.node.category).toBe("Collect by Price")
     expect(result.node.filtersForArtworksConnection.edges).toHaveLength(2)
@@ -304,14 +322,8 @@ describe("discoveryCategoryConnection", () => {
     const query = `
       query($slug: String!) {
         discoveryCategoryConnection(slug: $slug) {
-          title
-          filtersForArtworksConnection(first: 10) {
-            edges {
-              node {
-                href
-                title
-              }
-            }
+          ... on DiscoveryMarketingCollection {
+            title
           }
         }
       }
@@ -321,6 +333,178 @@ describe("discoveryCategoryConnection", () => {
     const category = result.discoveryCategoryConnection
 
     expect(category.title).toBe("Medium")
-    expect(category.filtersForArtworksConnection.edges).toHaveLength(0)
+    expect(category.filtersForArtworksConnection).toBeUndefined()
+  })
+
+  describe("DiscoveryMarketingCollection type", () => {
+    const mockMarketingCollectionLoader = jest.fn((slug) => {
+      return Promise.resolve({
+        id: `test-collection-id-${slug}`,
+        slug: slug,
+        title: `${slug} Collection`,
+        artworks_connection: {
+          edges: [
+            {
+              node: {
+                id: "artwork-1",
+                slug: "test-artwork-1",
+                title: "Test Artwork 1",
+              },
+            },
+            {
+              node: {
+                id: "artwork-2",
+                slug: "test-artwork-2",
+                title: "Test Artwork 2",
+              },
+            },
+          ],
+        },
+      })
+    })
+
+    beforeEach(() => {
+      mockMarketingCollectionLoader.mockClear()
+    })
+
+    it("returns DiscoveryMarketingCollection for categories without artworkFilters", async () => {
+      const context = {
+        marketingCollectionLoader: mockMarketingCollectionLoader,
+      }
+
+      const query = `
+        query($slug: String!) {
+          discoveryCategoryConnection(slug: $slug) {
+            __typename
+            ... on DiscoveryMarketingCollection {
+              id
+              internalID
+              title
+              category
+              slug
+              href
+              marketingCollection {
+                slug
+                title
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context, { slug: "medium" })
+      const category = result.discoveryCategoryConnection
+
+      expect(category.__typename).toBe("DiscoveryMarketingCollection")
+      expect(category.title).toBe("Medium")
+      expect(category.category).toBe("Medium")
+      expect(category.slug).toBe("medium")
+      expect(category.marketingCollection).toBeDefined()
+      expect(category.marketingCollection.slug).toBe("medium")
+      expect(mockMarketingCollectionLoader).toHaveBeenCalledWith("medium")
+    })
+
+    it("can query artworksConnection with pagination through marketingCollection", async () => {
+      const mockFilterArtworksConnectionLoader = jest.fn().mockResolvedValue({
+        hits: [
+          {
+            _id: "artwork-1",
+            title: "Test Artwork 1",
+            slug: "test-artwork-1",
+            id: "test-artwork-1",
+          },
+          {
+            _id: "artwork-2",
+            title: "Test Artwork 2",
+            slug: "test-artwork-2",
+            id: "test-artwork-2",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 2,
+          },
+        },
+      })
+
+      const context = {
+        marketingCollectionLoader: mockMarketingCollectionLoader,
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksConnectionLoader,
+        },
+        authenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksConnectionLoader,
+        },
+      }
+
+      const query = `
+        query($slug: String!) {
+          discoveryCategoryConnection(slug: $slug) {
+            ... on DiscoveryMarketingCollection {
+              marketingCollection {
+                slug
+                title
+                artworksConnection(first: 5, after: null) {
+                  edges {
+                    node {
+                      slug
+                      title
+                    }
+                  }
+                  pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context, { slug: "movement" })
+      const marketingCollection =
+        result.discoveryCategoryConnection.marketingCollection
+
+      expect(marketingCollection).toBeDefined()
+      expect(marketingCollection.slug).toBe("movement")
+      expect(marketingCollection.artworksConnection).toBeDefined()
+      expect(marketingCollection.artworksConnection.edges).toHaveLength(2)
+      expect(marketingCollection.artworksConnection.edges[0].node.slug).toBe(
+        "test-artwork-1"
+      )
+      expect(marketingCollection.artworksConnection.pageInfo).toBeDefined()
+    })
+
+    it("handles marketingCollection loading errors gracefully", async () => {
+      const mockErrorLoader = jest
+        .fn()
+        .mockRejectedValue(new Error("Marketing collection not found"))
+
+      const context = {
+        marketingCollectionLoader: mockErrorLoader,
+      }
+
+      const query = `
+        query($slug: String!) {
+          discoveryCategoryConnection(slug: $slug) {
+            ... on DiscoveryMarketingCollection {
+              title
+              marketingCollection {
+                slug
+                title
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context, { slug: "gallery" })
+      const category = result.discoveryCategoryConnection
+
+      expect(category.title).toBe("Gallery")
+      expect(category.marketingCollection).toBeNull()
+      expect(mockErrorLoader).toHaveBeenCalledWith("gallery")
+    })
   })
 })

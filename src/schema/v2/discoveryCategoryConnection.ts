@@ -1,9 +1,8 @@
 import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
-import { discoveryCategories } from "lib/discoveryCategories"
 import { ResolverContext } from "types/graphql"
 import {
-  DiscoveryCategoryType,
-  DiscoveryCategory,
+  DiscoveryCategoryUnion,
+  resolveDiscoveryCategoryBySlug,
 } from "./discoveryCategoriesConnection"
 
 export const discoveryCategoryConnection: GraphQLFieldConfig<
@@ -11,7 +10,7 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
   ResolverContext
 > = {
   description: "A single discovery category for browsing art by slug",
-  type: DiscoveryCategoryType,
+  type: DiscoveryCategoryUnion,
   args: {
     slug: {
       type: GraphQLNonNull(GraphQLString),
@@ -19,24 +18,10 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
     },
   },
   resolve: (_parent, args) => {
-    const categoryEntry = Object.entries(discoveryCategories).find(
-      ([, category]) => category.slug === args.slug
-    )
+    const discoveryType = resolveDiscoveryCategoryBySlug(args.slug)
 
-    if (!categoryEntry) {
+    if (!discoveryType) {
       throw new Error(`Discovery category not found for slug: ${args.slug}`)
-    }
-
-    const [, category] = categoryEntry
-
-    const discoveryType: DiscoveryCategory = {
-      id: category.slug,
-      category: category.id,
-      imageUrl: category.imageUrl,
-      href: category.href,
-      slug: category.slug,
-      title: category.title,
-      artworkFilters: category.artworkFilters,
     }
 
     return discoveryType
@@ -44,31 +29,11 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
 }
 
 export const discoveryCategoryResolver = async (_source: any, args: any) => {
-  const categoryEntry = Object.entries(discoveryCategories).find(
-    ([, category]) => category.slug === args?.id
-  )
-
-  if (!categoryEntry) {
-    return null
-  }
-
-  const [, category] = categoryEntry
-
-  const discoveryType: DiscoveryCategory = {
-    id: category.slug,
-    category: category.id,
-    imageUrl: category.imageUrl,
-    href: category.href,
-    slug: category.slug,
-    title: category.title,
-    artworkFilters: category.artworkFilters,
-  }
-
-  return discoveryType
+  return resolveDiscoveryCategoryBySlug(args?.id)
 }
 
 const DiscoveryCategoryNode: GraphQLFieldConfig<void, ResolverContext> = {
-  type: DiscoveryCategoryType,
+  type: DiscoveryCategoryUnion,
   description: "A Discovery Category",
   args: {
     id: {
