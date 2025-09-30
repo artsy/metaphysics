@@ -1,4 +1,4 @@
-import { SlugAndInternalIDFields } from "./object_identification"
+import { GlobalIDField } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -6,6 +6,7 @@ import {
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLInt,
+  GraphQLID,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ImageType } from "./image"
@@ -23,7 +24,17 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => {
     const { ArticleType } = require("./article")
     return {
-      ...SlugAndInternalIDFields,
+      id: GlobalIDField,
+      slug: {
+        description: "A slug ID.",
+        type: GraphQLID,
+        resolve: ({ id }) => id,
+      },
+      internalID: {
+        description: "A type-specific ID likely used as a database ID.",
+        type: new GraphQLNonNull(GraphQLID),
+        resolve: ({ _id }) => _id,
+      },
       name: {
         type: new GraphQLNonNull(GraphQLString),
       },

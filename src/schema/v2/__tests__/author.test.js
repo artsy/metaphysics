@@ -81,6 +81,30 @@ describe("Author", () => {
     })
   })
 
+  it("handles author without slug", () => {
+    const authorWithoutSlug = {
+      ...authorData,
+      id: null, // No slug available
+    }
+    context.authorLoader.mockResolvedValue(authorWithoutSlug)
+
+    const query = gql`
+      {
+        author(id: "author-internal-id") {
+          slug
+          internalID
+          name
+        }
+      }
+    `
+
+    return runQuery(query, context).then((data) => {
+      expect(data.author.slug).toBeNull()
+      expect(data.author.internalID).toBe("author-internal-id")
+      expect(data.author.name).toBe("Jane Doe")
+    })
+  })
+
   it("handles author with image", () => {
     const query = gql`
       {

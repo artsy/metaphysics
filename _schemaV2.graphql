@@ -4483,7 +4483,7 @@ type Author {
   role: String
 
   # A slug ID.
-  slug: ID!
+  slug: ID
   socials: AuthorSocials
   twitterHandle: String @deprecated(reason: "Use `socials.x` instead")
 }
