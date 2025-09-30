@@ -1,4 +1,4 @@
-import { IDFields } from "./object_identification"
+import { SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -23,7 +23,7 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => {
     const { ArticleType } = require("./article")
     return {
-      ...IDFields,
+      ...SlugAndInternalIDFields,
       name: {
         type: new GraphQLNonNull(GraphQLString),
       },
@@ -149,7 +149,7 @@ export const Author: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the author",
+      description: "The slug or ID of the author",
     },
   },
   resolve: async (_root, { id }, { authorLoader }) => {
