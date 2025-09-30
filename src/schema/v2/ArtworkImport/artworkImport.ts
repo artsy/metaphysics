@@ -308,6 +308,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ Bibliography }) => Bibliography,
             },
+            importSource: {
+              type: GraphQLString,
+              resolve: ({ ImportSource }) => ImportSource,
+            },
           },
         })
       ),
