@@ -160,6 +160,7 @@ describe("discoveryCategoriesConnection", () => {
                     node {
                       href
                       title
+                      slug
                       artworksConnection(first: 3) {
                         edges {
                           node {
@@ -189,6 +190,7 @@ describe("discoveryCategoriesConnection", () => {
         priceCategory.filtersForArtworksConnection.edges[0].node
       expect(firstFilter.href).toBe("/collect?price_range=*-500")
       expect(firstFilter.title).toBe("Art under $500")
+      expect(firstFilter.slug).toBe("art-under-500")
       expect(firstFilter.artworksConnection.edges).toHaveLength(2) // Mock returns 2 artworks
 
       expect(mockFilterArtworksLoader).toHaveBeenCalledWith(

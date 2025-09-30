@@ -102,7 +102,7 @@ export const discoveryCategories: Record<
     id: "Collect by Price",
     slug: "collect-by-price",
     title: "Price",
-    href: "/collections-by-filter/collect-by-price",
+    href: "/collections-by-category/collect-by-price",
     imageUrl: "https://files.artsy.net/images/collections-price-category.jpeg",
     sortedCollectionSlugs: [
       "art-under-500-dollars",

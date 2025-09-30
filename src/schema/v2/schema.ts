@@ -230,6 +230,7 @@ import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
+import { discoveryCategoryArtworksConnection } from "./discoveryCategoryArtworksConnection"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
@@ -401,6 +402,7 @@ const rootFields = {
   discoverArtworks: DiscoverArtworks,
   discoveryCategoriesConnection,
   discoveryCategoryConnection,
+  discoveryCategoryArtworksConnection,
   departments,
   external: externalField,
   fair: Fair,
