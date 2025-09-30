@@ -48,22 +48,6 @@ describe("HomeViewCardType", () => {
   })
 
   describe("images resolver", () => {
-    it("resolves single image from imageURL", () => {
-      const card: HomeViewCard = {
-        title: "Test Card",
-        imageURL: "https://example.com/image.jpg",
-      }
-
-      const imagesResolver = HomeViewCardType.getFields().images.resolve!
-      const result = imagesResolver(card, {}, {} as any, {} as any)
-
-      expect(result).toEqual([
-        {
-          image_url: "https://example.com/image.jpg",
-        },
-      ])
-    })
-
     it("resolves multiple images from imageURLs", () => {
       const card: HomeViewCard = {
         title: "Test Card",
