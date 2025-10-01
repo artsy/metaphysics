@@ -11,7 +11,7 @@
   "scripts": {
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:index": "babel index.js -s inline -d build",
-    "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
+    "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore 'src/test,src/integration,src/**/__tests__' -s inline -d build/src",
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
     "ci": "yarn test",
