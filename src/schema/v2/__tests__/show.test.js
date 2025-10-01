@@ -13,9 +13,9 @@ describe("Show type", () => {
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
       _id: "abcdefg123456",
-      created_at: "2015-02-24T12:00:00+00:00",
-      start_at: "2015-02-25T12:00:00+00:00",
-      end_at: "2015-05-24T12:00:00+00:00",
+      created_at: "2015-02-24T00:00:00+00:00",
+      start_at: "2015-02-25T00:00:00+00:00",
+      end_at: "2015-05-24T00:00:00+00:00",
       press_release: "**foo** *bar*",
       displayable: true,
       partner: {
@@ -664,8 +664,67 @@ describe("Show type", () => {
       show: {
         slug: "new-museum-1-2015-triennial-surround-audience",
         createdAt: "02/24/2015",
-        startAt: "Wednesday, February 25th 2015, 12:00:00 pm",
+        startAt: "Wednesday, February 25th 2015, 12:00:00 am",
         endAt: "2015",
+      },
+    })
+  })
+
+  it("startAt and endAt with date-only formats ignore timezone (like exhibitionPeriod)", async () => {
+    const utcMidnightShow = {
+      ...showData,
+      start_at: "2025-09-02T00:00:00+00:00",
+      end_at: "2025-09-27T00:00:00+00:00",
+    }
+    const contextWithShow = {
+      ...context,
+      showLoader: sinon.stub().returns(Promise.resolve(utcMidnightShow)),
+      defaultTimezone: "America/New_York",
+    }
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          startAt(format: "MMMM D")
+          endAt(format: "MMMM D, YYYY")
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithShow)
+    expect(data).toEqual({
+      show: {
+        startAt: "September 2",
+        endAt: "September 27, 2025",
+        exhibitionPeriod: "September 2 – 27, 2025",
+      },
+    })
+  })
+
+  it("startAt and endAt with datetime formats respect timezone", async () => {
+    const utcMidnightShow = {
+      ...showData,
+      start_at: "2025-09-02T00:00:00+00:00",
+    }
+    const contextWithShow = {
+      ...context,
+      showLoader: sinon.stub().returns(Promise.resolve(utcMidnightShow)),
+      defaultTimezone: "America/New_York",
+    }
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          startAt(format: "MMMM D [at] h:mm a z")
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithShow)
+    expect(data).toEqual({
+      show: {
+        startAt: "September 1 at 8:00 pm EDT",
       },
     })
   })
