@@ -112,6 +112,9 @@ const has_multiple_editions = (edition_sets) => {
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
+  ARTLOGIC: { value: "artlogic" },
+  ARTCLOUD: { value: "artcloud" },
+  BATCH_UPLOAD: { value: "BATCH_UPLOAD" },
 } as const
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
