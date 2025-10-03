@@ -208,7 +208,7 @@ describe("Me", () => {
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
             expect(collectorProfile.summaryAttributes).toEqual([
-              "Budget similar to artwork",
+              "Demonstrated a budget in line with this artwork's price",
               "Purchased from your gallery before",
               "Follows your gallery",
             ])
@@ -295,7 +295,7 @@ describe("Me", () => {
           ({ me: { collectorProfile } }) => {
             expect(collectorProfile.summaryAttributes).toEqual([
               "New user",
-              "Budget similar to artwork",
+              "Demonstrated a budget in line with this artwork's price",
             ])
           }
         )

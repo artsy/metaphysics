@@ -278,7 +278,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       const checks = [
         {
           flag: raw_attributes.has_demonstrated_budget,
-          text: "Budget similar to artwork",
+          text: "Demonstrated a budget in line with this artwork's price",
         },
         {
           flag: raw_attributes.has_bought_works_from_partner,

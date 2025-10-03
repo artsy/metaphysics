@@ -41,7 +41,7 @@
     "string-width": "4.2.3"
   },
   "dependencies": {
-    "@artsy/cohesion": "^4.305.0",
+    "@artsy/cohesion": "^4.306.0",
     "@artsy/img": "1.0.3",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
@@ -174,5 +174,6 @@
       "pre-commit": "lint-staged; yarn dump:staging; git add _schemaV2.graphql",
       "pre-push": "yarn run type-check"
     }
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
