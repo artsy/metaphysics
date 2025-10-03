@@ -175,5 +175,5 @@
       "pre-push": "yarn run type-check"
     }
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.10.3"
 }
