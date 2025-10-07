@@ -308,7 +308,6 @@ import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublish
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
-import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
@@ -465,7 +464,6 @@ const rootFields = {
   saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
-  seoExperimentArtists,
   shortcut,
   show: Show,
   showsConnection: Shows,
