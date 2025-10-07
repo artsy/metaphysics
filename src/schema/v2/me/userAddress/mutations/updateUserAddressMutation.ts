@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLID } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { formatGravityError } from "lib/gravityErrorHandler"
@@ -14,7 +14,7 @@ export const updateUserAddressMutation = mutationWithClientMutationId<
 >({
   name: "UpdateUserAddress",
   inputFields: {
-    userAddressID: { type: new GraphQLNonNull(GraphQLString) },
+    userAddressID: { type: new GraphQLNonNull(GraphQLID) },
     attributes: { type: new GraphQLNonNull(UserAddressAttributesInput) },
   },
   outputFields: {

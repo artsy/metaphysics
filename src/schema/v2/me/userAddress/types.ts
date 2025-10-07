@@ -9,18 +9,36 @@ import { UserAddressType } from "./userAddress"
 
 export const UserAddressAttributesInput = new GraphQLInputObjectType({
   name: "UserAddressAttributes",
-  description: "Attributes for creating a user address",
+  description: "Shipping address input attributes",
   fields: {
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    addressLine1: { type: new GraphQLNonNull(GraphQLString) },
-    addressLine2: { type: GraphQLString },
-    addressLine3: { type: GraphQLString },
-    city: { type: new GraphQLNonNull(GraphQLString) },
-    region: { type: GraphQLString },
-    postalCode: { type: GraphQLString },
-    country: { type: new GraphQLNonNull(GraphQLString) },
-    phoneNumber: { type: GraphQLString },
-    phoneNumberCountryCode: { type: GraphQLString },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Name",
+    },
+    addressLine1: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Address line 1",
+    },
+    addressLine2: { type: GraphQLString, description: "Address line 2" },
+    addressLine3: { type: GraphQLString, description: "Address line 3" },
+    city: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "City",
+    },
+    region: { type: GraphQLString, description: "Region" },
+    postalCode: { type: GraphQLString, description: "Postal code" },
+    country: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Country",
+    },
+    phoneNumber: {
+      type: GraphQLString,
+      description: "Phone number",
+    },
+    phoneNumberCountryCode: {
+      type: GraphQLString,
+      description: "ISO Phone number country code",
+    },
   },
 })
 
