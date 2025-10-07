@@ -8,7 +8,10 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * Feature flags are defined within Unleash.
  * @see https://tools.artsy.net/feature-flags
  */
-const FEATURE_FLAGS_LIST = ["onyx_auctions_hub"] as const
+const FEATURE_FLAGS_LIST = [
+  "onyx_auctions_hub",
+  "onyx_nwfy-price-reranking-test",
+] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
 
