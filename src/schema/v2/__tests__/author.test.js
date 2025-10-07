@@ -6,8 +6,8 @@ describe("Author", () => {
   let context = null
 
   const authorData = {
-    id: "author-slug",
-    _id: "author-internal-id",
+    id: "68e5291d85794e91342744e0",
+    slug: "jane-doe",
     name: "Jane Doe",
     bio: "An amazing author",
     image_url: "https://example.com/author.jpg",
@@ -26,7 +26,7 @@ describe("Author", () => {
   it("fetches an author by slug", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           slug
           internalID
           name
@@ -36,9 +36,9 @@ describe("Author", () => {
     `
 
     return runQuery(query, context).then((data) => {
-      expect(context.authorLoader).toHaveBeenCalledWith("author-slug")
-      expect(data.author.slug).toBe("author-slug")
-      expect(data.author.internalID).toBe("author-internal-id")
+      expect(context.authorLoader).toHaveBeenCalledWith("jane-doe")
+      expect(data.author.slug).toBe("jane-doe")
+      expect(data.author.internalID).toBe("68e5291d85794e91342744e0")
       expect(data.author.name).toBe("Jane Doe")
       expect(data.author.bio).toBe("An amazing author")
     })
@@ -47,7 +47,7 @@ describe("Author", () => {
   it("fetches an author by internal ID", () => {
     const query = gql`
       {
-        author(id: "author-internal-id") {
+        author(id: "68e5291d85794e91342744e0") {
           slug
           internalID
           name
@@ -56,9 +56,11 @@ describe("Author", () => {
     `
 
     return runQuery(query, context).then((data) => {
-      expect(context.authorLoader).toHaveBeenCalledWith("author-internal-id")
-      expect(data.author.slug).toBe("author-slug")
-      expect(data.author.internalID).toBe("author-internal-id")
+      expect(context.authorLoader).toHaveBeenCalledWith(
+        "68e5291d85794e91342744e0"
+      )
+      expect(data.author.slug).toBe("jane-doe")
+      expect(data.author.internalID).toBe("68e5291d85794e91342744e0")
       expect(data.author.name).toBe("Jane Doe")
     })
   })
@@ -66,7 +68,7 @@ describe("Author", () => {
   it("includes all slug and ID fields", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           id
           slug
           internalID
@@ -76,21 +78,21 @@ describe("Author", () => {
 
     return runQuery(query, context).then((data) => {
       expect(data.author.id).toBeDefined() // Global Relay ID
-      expect(data.author.slug).toBe("author-slug")
-      expect(data.author.internalID).toBe("author-internal-id")
+      expect(data.author.slug).toBe("jane-doe")
+      expect(data.author.internalID).toBe("68e5291d85794e91342744e0")
     })
   })
 
   it("handles author without slug", () => {
     const authorWithoutSlug = {
       ...authorData,
-      id: null, // No slug available
+      slug: null, // No slug available
     }
     context.authorLoader.mockResolvedValue(authorWithoutSlug)
 
     const query = gql`
       {
-        author(id: "author-internal-id") {
+        author(id: "68e5291d85794e91342744e0") {
           slug
           internalID
           name
@@ -100,7 +102,7 @@ describe("Author", () => {
 
     return runQuery(query, context).then((data) => {
       expect(data.author.slug).toBeNull()
-      expect(data.author.internalID).toBe("author-internal-id")
+      expect(data.author.internalID).toBe("68e5291d85794e91342744e0")
       expect(data.author.name).toBe("Jane Doe")
     })
   })
@@ -108,7 +110,7 @@ describe("Author", () => {
   it("handles author with image", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           name
           image {
             url
@@ -126,7 +128,7 @@ describe("Author", () => {
   it("returns initials", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           initials
         }
       }
@@ -140,7 +142,7 @@ describe("Author", () => {
   it("returns social media handles", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           twitterHandle
           instagramHandle
           socials {
@@ -172,7 +174,7 @@ describe("Author", () => {
   it("returns role", () => {
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           role
         }
       }
@@ -192,7 +194,7 @@ describe("Author", () => {
 
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           articles {
             internalID
           }
@@ -202,7 +204,7 @@ describe("Author", () => {
 
     return runQuery(query, context).then((data) => {
       expect(context.articlesLoader).toHaveBeenCalledWith({
-        author_ids: "author-slug",
+        author_ids: "68e5291d85794e91342744e0",
       })
       expect(data.author.articles).toHaveLength(2)
     })
@@ -218,7 +220,7 @@ describe("Author", () => {
 
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           socials {
             x {
               handle
@@ -245,7 +247,7 @@ describe("Author", () => {
 
     const query = gql`
       {
-        author(id: "author-slug") {
+        author(id: "jane-doe") {
           image {
             url
           }

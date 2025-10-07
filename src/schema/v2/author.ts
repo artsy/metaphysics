@@ -28,12 +28,12 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
       slug: {
         description: "A slug ID.",
         type: GraphQLID,
-        resolve: ({ id }) => id,
+        resolve: ({ slug }) => slug,
       },
       internalID: {
         description: "A type-specific ID likely used as a database ID.",
         type: new GraphQLNonNull(GraphQLID),
-        resolve: ({ _id }) => _id,
+        resolve: ({ id }) => id,
       },
       name: {
         type: new GraphQLNonNull(GraphQLString),
