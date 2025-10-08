@@ -104,7 +104,7 @@ describe("discoveryCategoryConnection", () => {
     expect(category.filtersForArtworksConnection.edges).toHaveLength(7)
 
     const firstFilter = category.filtersForArtworksConnection.edges[0].node
-    expect(firstFilter.href).toBe("/collect?price_range=*-500")
+    expect(firstFilter.href).toBe("/collect?price_range=%2A-500")
     expect(firstFilter.title).toBe("Art under $500")
     expect(firstFilter.artworksConnection.edges).toHaveLength(2)
   })
@@ -303,7 +303,7 @@ describe("discoveryCategoryConnection", () => {
     expect(result.node.filtersForArtworksConnection.edges).toHaveLength(2)
 
     const firstFilter = result.node.filtersForArtworksConnection.edges[0].node
-    expect(firstFilter.href).toBe("/collect?price_range=*-500")
+    expect(firstFilter.href).toBe("/collect?price_range=%2A-500")
     expect(firstFilter.title).toBe("Art under $500")
     expect(firstFilter.artworksConnection.edges).toHaveLength(1)
     expect(firstFilter.artworksConnection.edges[0].node.slug).toBe(
