@@ -1,7 +1,6 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { discoveryCategories } from "lib/discoveryCategories"
 import filterArtworksConnection from "./filterArtworksConnection"
-import { createSlugFromTitle } from "./discoveryCategoriesConnection"
 
 const baseConnection = filterArtworksConnection()
 
@@ -33,13 +32,14 @@ export const discoveryCategoryArtworksConnection = {
 
     const categoryFilters: Record<string, any> = {}
 
-    if (!category.artworkFilters || category.artworkFilters.length === 0) {
+    if (
+      !category.artworkFilters ||
+      Object.keys(category.artworkFilters).length === 0
+    ) {
       throw new Error(`Category ${categorySlug} has no filters available`)
     }
 
-    const specificFilter = category.artworkFilters.find(
-      (filterItem) => createSlugFromTitle(filterItem.title) === filterSlug
-    )
+    const specificFilter = category.artworkFilters[filterSlug]
 
     if (!specificFilter) {
       throw new Error(

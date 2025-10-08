@@ -37,7 +37,7 @@ const ArtworkFilterNodeType = new GraphQLObjectType<any, ResolverContext>({
     slug: {
       type: GraphQLNonNull(GraphQLString),
       description: "The slug for this filter, derived from the title",
-      resolve: ({ title }) => createSlugFromTitle(title),
+      resolve: ({ slug }) => slug,
     },
     artworksConnection: filterArtworksConnectionWithParams(
       ({ filterKey, filterItem }) => ({
@@ -163,20 +163,20 @@ export const DiscoveryArtworksWithFiltersCollectionType = new GraphQLObjectType<
         const filters: Array<{
           href: string
           title: string
+          slug: string
           filterKey: string
           filterItem: any
         }> = []
 
-        parent.artworkFilters.forEach((filterItem) => {
+        Object.entries(parent.artworkFilters).forEach(([slug, filterItem]) => {
           const filterKeys = Object.keys(filterItem).filter(
-            (key) => key !== "title"
+            (key) => key !== "title" && key !== "href"
           )
           filterKeys.forEach((filterKey) => {
             filters.push({
-              href: `/collect?${filterKey}=${encodeURIComponent(
-                filterItem[filterKey]
-              )}`,
+              href: filterItem.href,
               title: filterItem.title,
+              slug,
               filterKey,
               filterItem,
             })
@@ -277,20 +277,20 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
         const filters: Array<{
           href: string
           title: string
+          slug: string
           filterKey: string
           filterItem: any
         }> = []
 
-        parent.artworkFilters.forEach((filterItem) => {
+        Object.entries(parent.artworkFilters).forEach(([slug, filterItem]) => {
           const filterKeys = Object.keys(filterItem).filter(
-            (key) => key !== "title"
+            (key) => key !== "title" && key !== "href"
           )
           filterKeys.forEach((filterKey) => {
             filters.push({
-              href: `/collect?${filterKey}=${encodeURIComponent(
-                filterItem[filterKey]
-              )}`,
+              href: filterItem.href,
               title: filterItem.title,
+              slug,
               filterKey,
               filterItem,
             })
@@ -376,13 +376,4 @@ export const DiscoveryCategoryNodeResolver = {
   resolve: async (_source: any, args: any, _context: ResolverContext) => {
     return resolveDiscoveryCategoryBySlug(args?.id)
   },
-}
-
-export const createSlugFromTitle = (title: string): string => {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim()
 }

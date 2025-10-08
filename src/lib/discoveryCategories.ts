@@ -10,9 +10,10 @@ export type DiscoveryCategoriesKeys =
 type ArtworkFilterItem = {
   title: string
   price_range: string
+  href: string
 }
 
-export type ArtworkFilters = readonly ArtworkFilterItem[]
+export type ArtworkFilters = Record<string, ArtworkFilterItem>
 
 type DiscoveryCategory = {
   id: string
@@ -113,15 +114,43 @@ export const discoveryCategories: Record<
       "art-under-25000-dollars",
       "art-under-50000-dollars",
     ] as const,
-    artworkFilters: [
-      { title: "Art under $500", price_range: "*-500" },
-      { title: "Art under $1000", price_range: "501-1000" },
-      { title: "Art under $2500", price_range: "1001-2500" },
-      { title: "Art under $5000", price_range: "2501-5000" },
-      { title: "Art under $10000", price_range: "5001-10000" },
-      { title: "Art under $25000", price_range: "10001-25000" },
-      { title: "Art above $25000", price_range: "25001-*" },
-    ],
+    artworkFilters: {
+      "art-under-500": {
+        title: "Art under $500",
+        price_range: "*-500",
+        href: "/collect?price_range=%2A-500",
+      },
+      "art-under-1000": {
+        title: "Art under $1000",
+        price_range: "501-1000",
+        href: "/collect?price_range=501-1000",
+      },
+      "art-under-2500": {
+        title: "Art under $2500",
+        price_range: "1001-2500",
+        href: "/collect?price_range=1001-2500",
+      },
+      "art-under-5000": {
+        title: "Art under $5000",
+        price_range: "2501-5000",
+        href: "/collect?price_range=2501-5000",
+      },
+      "art-under-10000": {
+        title: "Art under $10000",
+        price_range: "5001-10000",
+        href: "/collect?price_range=5001-10000",
+      },
+      "art-under-25000": {
+        title: "Art under $25000",
+        price_range: "10001-25000",
+        href: "/collect?price_range=10001-25000",
+      },
+      "art-above-25000": {
+        title: "Art above $25000",
+        price_range: "25001-*",
+        href: "/collect?price_range=25001-%2A",
+      },
+    },
   },
   Gallery: {
     id: "Gallery",
