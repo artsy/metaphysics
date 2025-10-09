@@ -230,6 +230,7 @@ import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
+import { discoveryCategoryArtworksConnection } from "./discoveryCategoryArtworksConnection"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
@@ -308,7 +309,6 @@ import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublish
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
-import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
@@ -401,6 +401,7 @@ const rootFields = {
   discoverArtworks: DiscoverArtworks,
   discoveryCategoriesConnection,
   discoveryCategoryConnection,
+  discoveryCategoryArtworksConnection,
   departments,
   external: externalField,
   fair: Fair,
@@ -465,7 +466,6 @@ const rootFields = {
   saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
-  seoExperimentArtists,
   shortcut,
   show: Show,
   showsConnection: Shows,
