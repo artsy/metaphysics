@@ -5,7 +5,7 @@ on:
 
 jobs:
   run-danger:
-    uses: artsy/duchamp/.github/workflows/run-danger.yml@mc-jones/refactor-structure-naming
+    uses: artsy/duchamp/.github/workflows/danger.yml@mc-jones/refactor-structure-naming
     secrets:
       danger-token: ${{ secrets.DANGER_TOKEN }}
     with:
