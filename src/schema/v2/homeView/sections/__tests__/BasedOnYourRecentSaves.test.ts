@@ -213,7 +213,9 @@ describe("BasedOnYourRecentSaves", () => {
     expect(response.homeView).toMatchInlineSnapshot(`
       {
         "section": {
-          "artworksConnection": null,
+          "artworksConnection": {
+            "edges": [],
+          },
         },
       }
     `)
