@@ -6,4 +6,4 @@ on:
 
 jobs:
   run-conventional-commits-check:
-    uses: artsy/duchamp/.github/workflows/conventional-commits-check.yml@mc-jones/refactor-structure-naming
+    uses: artsy/duchamp/.github/workflows/conventional-commits-check.yml@mc-jones/feat-add-templates

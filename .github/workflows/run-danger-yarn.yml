@@ -6,4 +6,4 @@ on:
 
 jobs:
   run-danger-yarn:
-    uses: artsy/duchamp/.github/workflows/danger-yarn.yml@mc-jones/refactor-structure-naming
+    uses: artsy/duchamp/.github/workflows/danger-yarn.yml@mc-jones/feat-add-templates
