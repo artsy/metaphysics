@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("CreateArtworkImportArtworksMutation", () => {
-  it("creates artworks successfully", async () => {
+  it("creates artworks successfully synchronously", async () => {
     const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
       created: 5,
       errors: 0,
@@ -86,6 +86,43 @@ describe("CreateArtworkImportArtworksMutation", () => {
       createArtworkImportArtworks: {
         createArtworkImportArtworksOrError: {
           createdArtworksCount: 0,
+        },
+      },
+    })
+  })
+
+  it("creates artworks successfully asynchronously", async () => {
+    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
+      queued: true,
+    })
+
+    const mutation = gql`
+      mutation {
+        createArtworkImportArtworks(
+          input: { artworkImportID: "artwork-import-1", async: true }
+        ) {
+          createArtworkImportArtworksOrError {
+            ... on CreateArtworkImportArtworksSuccess {
+              queued
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      artworkImportCreateArtworksLoader,
+    }
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(
+      artworkImportCreateArtworksLoader
+    ).toHaveBeenCalledWith("artwork-import-1", { async: true })
+
+    expect(result).toEqual({
+      createArtworkImportArtworks: {
+        createArtworkImportArtworksOrError: {
+          queued: true,
         },
       },
     })
