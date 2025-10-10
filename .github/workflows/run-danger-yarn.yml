@@ -1,0 +1,9 @@
+name: ☢️ Danger - Yarn
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  run-danger-yarn:
+    uses: artsy/duchamp/.github/workflows/danger-yarn.yml@mc-jones/refactor-structure-naming
