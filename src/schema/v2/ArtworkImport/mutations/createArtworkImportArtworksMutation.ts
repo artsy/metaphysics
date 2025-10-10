@@ -31,6 +31,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         return artworkImportLoader(artworkImportID)
       },
     },
+    queued: {
+      type: GraphQLBoolean,
+      resolve: ({ queued }) => queued,
+    },
   }),
 })
 

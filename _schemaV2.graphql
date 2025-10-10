@@ -9175,6 +9175,7 @@ type CreateArtworkImportArtworksSuccess {
   artworkImport: ArtworkImport
   artworkImportID: String!
   createdArtworksCount: Int!
+  queued: Boolean
 }
 
 type CreateArtworkImportCellFlagFailure {
