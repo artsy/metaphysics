@@ -138,7 +138,9 @@ describe("basedOnUserSaves", () => {
     expect(similarArtworksLoader).not.toHaveBeenCalled()
     expect(response).toMatchInlineSnapshot(`
       {
-        "basedOnUserSaves": null,
+        "basedOnUserSaves": {
+          "edges": [],
+        },
       }
     `)
   })

@@ -19722,6 +19722,7 @@ type Query {
     before: String
     first: Int
     last: Int
+    userId: String
   ): ArtworkConnection
   channel(id: ID!): Channel!
 
@@ -25886,6 +25887,7 @@ type Viewer {
     before: String
     first: Int
     last: Int
+    userId: String
   ): ArtworkConnection
   channel(id: ID!): Channel!
 
