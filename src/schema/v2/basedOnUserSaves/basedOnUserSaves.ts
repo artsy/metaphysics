@@ -22,7 +22,7 @@ export const BasedOnUserSaves: GraphQLFieldConfig<void, ResolverContext> = {
     _info
   ) => {
     const userId = userID || args.userId
-    if (!savedArtworksLoader || !userId) return null
+    if (!userId) return null
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs

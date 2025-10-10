@@ -300,6 +300,11 @@ export default (opts) => {
       { headers: true }
     ),
     saleSaleAgreementLoader: gravityLoader((id) => `sale/${id}/sale_agreement`),
+    savedArtworksLoader: gravityLoader(
+      "collection/saved-artwork/artworks",
+      {},
+      { headers: true }
+    ),
     searchLoader: searchLoader(gravityLoader),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     setItemsLoader: gravityLoader(
