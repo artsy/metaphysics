@@ -347,6 +347,7 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
+import { BasedOnUserSaves } from "./basedOnUserSaves/basedOnUserSaves"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -388,6 +389,7 @@ const rootFields = {
   author: Author,
   authorsConnection: AuthorsConnection,
   bankAccount: BankAccount,
+  basedOnUserSaves: BasedOnUserSaves,
   channel,
   cities,
   city: City,
