@@ -4,6 +4,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -15,7 +16,7 @@ import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkImportArtworksSuccess",
-  isTypeOf: (data) => !!data.artworkImportID,
+  isTypeOf: (data) => !!data.artworkImportID || !!data.queued,
   fields: () => ({
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
@@ -29,6 +30,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         if (!artworkImportLoader) return null
         return artworkImportLoader(artworkImportID)
       },
+    },
+    queued: {
+      type: GraphQLBoolean,
+      resolve: ({ queued }) => queued,
     },
   }),
 })
@@ -56,6 +61,9 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtworkImportArtworks",
   inputFields: {
+    async: {
+      type: GraphQLBoolean,
+    },
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -67,22 +75,26 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID },
+    { artworkImportID, async },
     { artworkImportCreateArtworksLoader }
   ) => {
     if (!artworkImportCreateArtworksLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
+    const gravityArgs: any = {}
+    if (async) gravityArgs.async = async
+
     try {
       const result = await artworkImportCreateArtworksLoader(
         artworkImportID,
-        {}
+        gravityArgs
       )
 
       return {
-        artworkImportID,
+        artworkImportID: artworkImportID,
         createdArtworksCount: result.created || 0,
+        queued: result.queued,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)
