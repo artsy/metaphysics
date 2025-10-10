@@ -34,6 +34,7 @@ export interface OrderJSON {
   buyer_state_expires_at?: string
   buyer_total_cents?: number
   buyer_type: string
+  created_at: string
   code: string
   credit_card_id?: string
   credit_card_wallet_type?: "apple_pay" | "google_pay"
