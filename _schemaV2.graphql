@@ -9158,6 +9158,7 @@ type CreateArtworkImportArtworksFailure {
 
 input CreateArtworkImportArtworksInput {
   artworkImportID: String!
+  async: Boolean
   clientMutationId: String
 }
 

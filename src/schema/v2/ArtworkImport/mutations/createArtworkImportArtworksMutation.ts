@@ -4,6 +4,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -56,6 +57,9 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtworkImportArtworks",
   inputFields: {
+    async: {
+      type: GraphQLBoolean,
+    },
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -66,22 +70,21 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportCreateArtworksLoader }
-  ) => {
+  mutateAndGetPayload: async (args, { artworkImportCreateArtworksLoader }) => {
     if (!artworkImportCreateArtworksLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
+    const gravityArgs = {
+      async: args.async,
+      artworkImportID: args.artworkImportID,
+    }
+
     try {
-      const result = await artworkImportCreateArtworksLoader(
-        artworkImportID,
-        {}
-      )
+      const result = await artworkImportCreateArtworksLoader(gravityArgs, {})
 
       return {
-        artworkImportID,
+        artworkImportID: args.artworkImportID,
         createdArtworksCount: result.created || 0,
       }
     } catch (error) {
