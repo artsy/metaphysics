@@ -381,7 +381,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     createdAt: {
       type: GraphQLString,
-      description: "Order creation date",
+      description: "Order creation time",
       resolve: ({ created_at }) => created_at,
     },
     creditCardWalletType: {

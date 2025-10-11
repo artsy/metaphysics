@@ -5,7 +5,7 @@ export const baseOrderJson = {
   buyer_total_cents: null,
   buyer_state: "pending",
   code: "order-code",
-  created_at: "January 1, 2035 19:00 EST",
+  created_at: "2025-10-21T00:00:00Z",
   currency_code: "USD",
   items_total_cents: 10000,
   shipping_total_cents: null,
