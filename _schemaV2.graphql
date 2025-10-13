@@ -15057,6 +15057,14 @@ type Me implements Node {
     type: BankAccountTypes
   ): BankAccountConnection
 
+  # A connection of artwork recommendations, based on user saves
+  basedOnUserSaves(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
 
@@ -19715,15 +19723,6 @@ type Query {
     # The ID of the bank account
     id: String!
   ): BankAccount
-
-  # A connection of artwork recommendations, based on user saves
-  basedOnUserSaves(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    userId: String
-  ): ArtworkConnection
   channel(id: ID!): Channel!
 
   # A list of cities
@@ -25880,15 +25879,6 @@ type Viewer {
     # The ID of the bank account
     id: String!
   ): BankAccount
-
-  # A connection of artwork recommendations, based on user saves
-  basedOnUserSaves(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    userId: String
-  ): ArtworkConnection
   channel(id: ID!): Channel!
 
   # A list of cities

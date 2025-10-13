@@ -1,6 +1,6 @@
 import { pageable } from "relay-cursor-paging"
 import { artworkConnection } from "../artwork"
-import { GraphQLFieldConfig, GraphQLString } from "graphql"
+import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { map } from "lodash"
@@ -12,17 +12,16 @@ const SIMILAR_ARTWORKS_SIZE = 10
 export const BasedOnUserSaves: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artwork recommendations, based on user saves",
   type: artworkConnection.connectionType,
-  args: pageable({
-    userId: { type: GraphQLString },
-  }),
+  args: pageable({}),
   resolve: async (
     _parent,
     args,
-    { savedArtworksLoader, userID, similarArtworksLoader },
+    { savedArtworksLoader, xImpersonateUserID, userID, similarArtworksLoader },
     _info
   ) => {
-    const userId = userID || args.userId
-    if (!userId) return null
+    if (!savedArtworksLoader) return null
+
+    const userId = userID || xImpersonateUserID
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
