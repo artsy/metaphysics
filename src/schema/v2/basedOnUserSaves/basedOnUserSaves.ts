@@ -19,9 +19,9 @@ export const BasedOnUserSaves: GraphQLFieldConfig<void, ResolverContext> = {
     { savedArtworksLoader, xImpersonateUserID, userID, similarArtworksLoader },
     _info
   ) => {
-    if (!savedArtworksLoader) return null
-
     const userId = userID || xImpersonateUserID
+
+    if (!userId || !savedArtworksLoader) return null
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
