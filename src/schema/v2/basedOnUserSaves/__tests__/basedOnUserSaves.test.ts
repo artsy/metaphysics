@@ -5,11 +5,13 @@ describe("basedOnUserSaves", () => {
   it("returns artworks", async () => {
     const query = gql`
       {
-        basedOnUserSaves(userId: "user-id", first: 2) {
-          edges {
-            node {
-              internalID
-              slug
+        me {
+          basedOnUserSaves(first: 2) {
+            edges {
+              node {
+                internalID
+                slug
+              }
             }
           }
         }
@@ -54,6 +56,9 @@ describe("basedOnUserSaves", () => {
 
     const context: any = {
       accessToken: "424242",
+      meLoader: async () => ({
+        id: "user-id",
+      }),
       savedArtworksLoader,
       similarArtworksLoader,
       userID: "user-id",
@@ -78,21 +83,23 @@ describe("basedOnUserSaves", () => {
 
     expect(response).toMatchInlineSnapshot(`
       {
-        "basedOnUserSaves": {
-          "edges": [
-            {
-              "node": {
-                "internalID": "similar-artwork-1",
-                "slug": "similar-artwork-1",
+        "me": {
+          "basedOnUserSaves": {
+            "edges": [
+              {
+                "node": {
+                  "internalID": "similar-artwork-1",
+                  "slug": "similar-artwork-1",
+                },
               },
-            },
-            {
-              "node": {
-                "internalID": "similar-artwork-2",
-                "slug": "similar-artwork-2",
+              {
+                "node": {
+                  "internalID": "similar-artwork-2",
+                  "slug": "similar-artwork-2",
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       }
     `)
@@ -101,11 +108,13 @@ describe("basedOnUserSaves", () => {
   it("returns null when user has no saved artworks", async () => {
     const query = gql`
       {
-        basedOnUserSaves(userId: "user-id", first: 2) {
-          edges {
-            node {
-              id
-              title
+        me {
+          basedOnUserSaves(first: 2) {
+            edges {
+              node {
+                id
+                title
+              }
             }
           }
         }
@@ -121,6 +130,9 @@ describe("basedOnUserSaves", () => {
 
     const context: any = {
       accessToken: "424242",
+      meLoader: async () => ({
+        id: "user-id",
+      }),
       savedArtworksLoader,
       similarArtworksLoader,
       userID: "user-id",
@@ -138,8 +150,10 @@ describe("basedOnUserSaves", () => {
     expect(similarArtworksLoader).not.toHaveBeenCalled()
     expect(response).toMatchInlineSnapshot(`
       {
-        "basedOnUserSaves": {
-          "edges": [],
+        "me": {
+          "basedOnUserSaves": {
+            "edges": [],
+          },
         },
       }
     `)
