@@ -82,8 +82,7 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const gravityArgs: any = {}
-    if (async) gravityArgs.async = async
+    const gravityArgs = { async }
 
     try {
       const result = await artworkImportCreateArtworksLoader(
