@@ -90,6 +90,10 @@ const OrderBuyerStateEnum = new GraphQLEnumType({
       description: "Order is incomplete (pending or abandoned)",
     },
     SUBMITTED: { value: "SUBMITTED", description: "Order has been submitted" },
+    OFFER_RECEIVED: {
+      value: "OFFER_RECEIVED",
+      description: "Order is an offer avaiting responce from the buyer",
+    },
     PAYMENT_FAILED: {
       value: "PAYMENT_FAILED",
       description: "Payment has failed",
@@ -710,6 +714,8 @@ const resolveBuyerState = (order) => {
       return "INCOMPLETE"
     case "submitted":
       return "SUBMITTED"
+    case "offer_received":
+      return "OFFER_RECEIVED"
     case "payment_failed":
       return "PAYMENT_FAILED"
     case "processing_payment":
