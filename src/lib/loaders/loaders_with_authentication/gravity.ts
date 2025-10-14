@@ -229,6 +229,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    setDefaultArtworkImageLoader: gravityLoader<
+      any,
+      { artworkId: string; imageId: string }
+    >(
+      ({ artworkId, imageId }) =>
+        `artwork/${artworkId}/images/default/${imageId}`,
+      {},
+      { method: "PUT" }
+    ),
     createCommerceOptInEligibleArtworksReportLoader: gravityLoader(
       (id) => `partner/${id}/commerce_opt_in_eligible_artworks_report`,
       {},
