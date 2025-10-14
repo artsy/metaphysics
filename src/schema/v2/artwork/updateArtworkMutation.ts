@@ -1,21 +1,21 @@
 import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLUnionType,
-  GraphQLList,
-  GraphQLInputObjectType,
   GraphQLBoolean,
   GraphQLFloat,
+  GraphQLInputObjectType,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
-import Artwork from "schema/v2/artwork"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import Artwork from "schema/v2/artwork"
+import { ResolverContext } from "types/graphql"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "updateArtworkSuccess",
@@ -52,6 +52,7 @@ interface S3LocationInput {
 interface UpdateArtworkMutationInputProps {
   artistProofs?: string
   availability?: string
+  defaultImageID?: string
   delete?: boolean
   displayPriceRange?: boolean
   ecommerce?: boolean
@@ -86,6 +87,10 @@ const inputFields = {
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
+  },
+  defaultImageID: {
+    type: GraphQLString,
+    description: "The ID of the image to set as the default for this artwork",
   },
   displayPriceRange: {
     type: GraphQLBoolean,
@@ -207,11 +212,12 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, editionSets, imageS3Locations, ...args },
+    { id, editionSets, imageS3Locations, defaultImageID, ...args },
     {
       updateArtworkLoader,
       updateArtworkEditionSetLoader,
       addImageToArtworkLoader,
+      setDefaultArtworkImageLoader,
     }
   ) => {
     if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
@@ -263,6 +269,14 @@ export const updateArtworkMutation = mutationWithClientMutationId<
             })
           )
         )
+      }
+
+      // Set default image if provided
+      if (defaultImageID && setDefaultArtworkImageLoader) {
+        await setDefaultArtworkImageLoader({
+          artworkId: id,
+          imageId: defaultImageID,
+        })
       }
 
       if (editionSets?.length > 0) {
