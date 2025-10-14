@@ -101,6 +101,7 @@ import { MeOrder } from "../order"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
 import { UserPricePreference } from "./userPricePreference"
+import { BasedOnUserSaves } from "../basedOnUserSaves/basedOnUserSaves"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -215,6 +216,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     auctionSegmentation: AuctionSegmentation,
     authentications: authentications,
     bankAccounts: BankAccounts,
+    basedOnUserSaves: BasedOnUserSaves,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
@@ -840,6 +842,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "artistRecommendations",
       "artworkRecommendations",
       "addressConnection",
+      "basedOnUserSaves",
     ]
 
     if (xImpersonateUserID) {
