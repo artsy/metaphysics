@@ -17,6 +17,9 @@ const DisplayTextsMessageTypeEnum = new GraphQLEnumType({
     SUBMITTED_OFFER: {
       value: "SUBMITTED_OFFER",
     },
+    OFFER_RECEIVED: {
+      value: "OFFER_RECEIVED",
+    },
     PAYMENT_FAILED: {
       value: "PAYMENT_FAILED",
     },
@@ -76,14 +79,22 @@ const DisplayTextsType = new GraphQLObjectType<any, ResolverContext>({
   description:
     "Display texts for the order based on its state and order shipping/payment states",
   fields: {
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Text to display as a first message on the page (header)",
+    actionPrompt: {
+      type: GraphQLString,
+      description: "Text prompt for the buyer to take action",
     },
     messageType: {
       type: new GraphQLNonNull(DisplayTextsMessageTypeEnum),
       description:
         "Granular order states specific type that should be directly interpreted by clients",
+    },
+    stateName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Collector facing name for buyer state",
+    },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Text to display as a first message on the page (header)",
     },
   },
 })
@@ -102,26 +113,40 @@ const resolveDisplayTexts = (order: OrderJSON) => {
   switch (order.buyer_state) {
     case "submitted": {
       return {
-        title: "Great choice!",
         messageType: isBuyOrder ? "SUBMITTED_ORDER" : "SUBMITTED_OFFER",
+        stateName: "Submitted",
+        title: "Great choice!",
+      }
+    }
+    case "offer_received": {
+      return {
+        actionPrompt: "Respond to Counteroffer",
+        messageType: "OFFER_RECEIVED",
+        stateName: "Counteroffer received",
+        title: "Great choice!",
       }
     }
     case "payment_failed":
       return {
-        title: "Payment failed",
+        actionPrompt: "Update Payment Method",
         messageType: "PAYMENT_FAILED",
+        stateName: "Payment failed",
+        title: "Payment failed",
       }
     case "processing_payment":
       return {
-        title: "Your payment is processing",
         messageType: isPickup
           ? "PROCESSING_PAYMENT_PICKUP"
           : "PROCESSING_PAYMENT_SHIP",
+        stateName: "Payment processing",
+        title: "Your payment is processing",
       }
     case "processing_offline_payment":
       return {
-        title: "Congratulations!",
+        actionPrompt: "Complete payment",
         messageType: "PROCESSING_WIRE",
+        stateName: "Confirmed",
+        title: "Congratulations!",
       }
     case "approved": {
       let messageType = "UNKNOWN"
@@ -145,47 +170,55 @@ const resolveDisplayTexts = (order: OrderJSON) => {
       }
 
       return {
-        title: "Congratulations!",
         messageType: messageType,
+        stateName: "Confirmed",
+        title: "Congratulations!",
       }
     }
     case "shipped": {
       return {
-        title: "Good news, your order has shipped!",
         messageType: "SHIPPED",
+        stateName: "Shipped",
+        title: "Good news, your order has shipped!",
       }
     }
     case "completed":
       return {
+        messageType: isPickup ? "COMPLETED_PICKUP" : "COMPLETED_SHIP",
+        stateName: "Completed",
         title: isPickup
           ? "Your order has been picked up"
           : "Your order has been delivered",
-        messageType: isPickup ? "COMPLETED_PICKUP" : "COMPLETED_SHIP",
       }
     case "declined_by_seller":
       return {
-        title: "Your offer was declined",
         messageType: "DECLINED_BY_SELLER",
+        stateName: "Canceled",
+        title: "Your offer was declined",
       }
     case "declined_by_buyer":
       return {
-        title: "You declined the offer",
         messageType: "DECLINED_BY_BUYER",
+        stateName: "Canceled",
+        title: "You declined the offer",
       }
     case "canceled":
       return {
-        title: "Your order was canceled",
         messageType: "CANCELED",
+        stateName: "Canceled",
+        title: "Your order was canceled",
       }
     case "refunded":
       return {
-        title: "Your order was canceled and refunded",
         messageType: "REFUNDED",
+        stateName: "Canceled",
+        title: "Your order was canceled and refunded",
       }
     default:
       return {
-        title: "Your order",
         messageType: "UNKNOWN",
+        stateName: "Unknown",
+        title: "Your order",
       }
   }
 }

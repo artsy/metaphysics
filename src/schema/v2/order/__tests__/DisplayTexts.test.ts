@@ -24,6 +24,8 @@ describe("DisplayTexts", () => {
           displayTexts {
             title
             messageType
+            stateName
+            actionPrompt
           }
         }
       }
@@ -43,6 +45,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Great choice!",
         messageType: "SUBMITTED_ORDER",
+        stateName: "Submitted",
+        actionPrompt: null,
       })
     })
 
@@ -58,6 +62,27 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Great choice!",
         messageType: "SUBMITTED_OFFER",
+        stateName: "Submitted",
+        actionPrompt: null,
+      })
+    })
+  })
+
+  describe("buyer_state: offer_received", () => {
+    it("returns correct display texts", async () => {
+      orderJson.buyer_state = "offer_received"
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.order.displayTexts).toEqual({
+        title: "Great choice!",
+        messageType: "OFFER_RECEIVED",
+        stateName: "Counteroffer received",
+        actionPrompt: "Respond to Counteroffer",
       })
     })
   })
@@ -75,6 +100,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Payment failed",
         messageType: "PAYMENT_FAILED",
+        stateName: "Payment failed",
+        actionPrompt: "Update Payment Method",
       })
     })
   })
@@ -93,6 +120,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your payment is processing",
         messageType: "PROCESSING_PAYMENT_PICKUP",
+        stateName: "Payment processing",
+        actionPrompt: null,
       })
     })
 
@@ -109,6 +138,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your payment is processing",
         messageType: "PROCESSING_PAYMENT_SHIP",
+        stateName: "Payment processing",
+        actionPrompt: null,
       })
     })
   })
@@ -127,6 +158,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "PROCESSING_WIRE",
+        stateName: "Confirmed",
+        actionPrompt: "Complete payment",
       })
     })
   })
@@ -145,6 +178,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_PICKUP",
+        stateName: "Confirmed",
+        actionPrompt: null,
       })
     })
 
@@ -165,6 +200,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_STANDARD",
+        stateName: "Confirmed",
+        actionPrompt: null,
       })
     })
 
@@ -185,6 +222,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_EXPRESS",
+        stateName: "Confirmed",
+        actionPrompt: null,
       })
     })
 
@@ -205,6 +244,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP_WHITE_GLOVE",
+        stateName: "Confirmed",
+        actionPrompt: null,
       })
     })
 
@@ -222,6 +263,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Congratulations!",
         messageType: "APPROVED_SHIP",
+        stateName: "Confirmed",
+        actionPrompt: null,
       })
     })
   })
@@ -239,6 +282,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Good news, your order has shipped!",
         messageType: "SHIPPED",
+        stateName: "Shipped",
+        actionPrompt: null,
       })
     })
   })
@@ -257,6 +302,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order has been picked up",
         messageType: "COMPLETED_PICKUP",
+        stateName: "Completed",
+        actionPrompt: null,
       })
     })
 
@@ -273,6 +320,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order has been delivered",
         messageType: "COMPLETED_SHIP",
+        stateName: "Completed",
+        actionPrompt: null,
       })
     })
   })
@@ -290,6 +339,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order was canceled",
         messageType: "CANCELED",
+        stateName: "Canceled",
+        actionPrompt: null,
       })
     })
   })
@@ -307,6 +358,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order was canceled and refunded",
         messageType: "REFUNDED",
+        stateName: "Canceled",
+        actionPrompt: null,
       })
     })
   })
@@ -324,6 +377,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "You declined the offer",
         messageType: "DECLINED_BY_BUYER",
+        stateName: "Canceled",
+        actionPrompt: null,
       })
     })
   })
@@ -341,6 +396,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your offer was declined",
         messageType: "DECLINED_BY_SELLER",
+        stateName: "Canceled",
+        actionPrompt: null,
       })
     })
   })
@@ -358,6 +415,8 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "Your order",
         messageType: "UNKNOWN",
+        stateName: "Unknown",
+        actionPrompt: null,
       })
     })
   })
