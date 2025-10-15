@@ -3081,7 +3081,7 @@ enum ArtworkConditionEnumType {
 }
 
 # A connection to a list of items.
-type ArtworkConnection implements ArtworkConnectionInterface {
+type ArtworkConnection {
   # A list of edges.
   edges: [ArtworkEdge]
   pageCursors: PageCursors!
@@ -3089,12 +3089,6 @@ type ArtworkConnection implements ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
-}
-
-interface ArtworkConnectionInterface {
-  edges: [ArtworkEdgeInterface]
-  pageCursors: PageCursors!
-  pageInfo: PageInfo!
 }
 
 type ArtworkConsignmentSubmission {
@@ -3170,7 +3164,7 @@ interface ArtworkContextGrid {
 }
 
 # An edge in a connection.
-type ArtworkEdge implements ArtworkEdgeInterface {
+type ArtworkEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -3449,6 +3443,9 @@ type ArtworkImportRowImage {
 }
 
 enum ArtworkImportSource {
+  ARTCLOUD
+  ARTLOGIC
+  BATCH_UPLOAD
   CONVECTION
   MY_COLLECTION
 }
@@ -12171,7 +12168,7 @@ type FieldErrorResults {
 }
 
 # A connection to a list of items.
-type FilterArtworksConnection implements ArtworkConnectionInterface & Node {
+type FilterArtworksConnection {
   # Returns aggregation counts for the given filter query.
   aggregations: [ArtworksAggregationResults]
   counts: FilterArtworksCounts
@@ -12212,7 +12209,7 @@ type FilterArtworksCounts {
 }
 
 # An edge in a connection.
-type FilterArtworksEdge implements ArtworkEdgeInterface {
+type FilterArtworksEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -21683,18 +21680,27 @@ type SaleArtworksAggregationResults {
 }
 
 # A connection to a list of items.
-type SaleArtworksConnection implements ArtworkConnectionInterface {
+type SaleArtworksConnection {
   # Returns aggregation counts for the given filter query.
   aggregations: [SaleArtworksAggregationResults]
   counts: FilterSaleArtworksCounts
 
   # A list of edges.
-  edges: [SaleArtwork]
+  edges: [SaleArtworksEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
+}
+
+# An edge in a connection.
+type SaleArtworksEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artwork
 }
 
 type SaleCascadingEndTime {

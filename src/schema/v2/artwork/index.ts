@@ -12,7 +12,17 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import { PageInfoType } from "graphql-relay"
+// PageInfoType is not exported from graphql-relay, so we define it here
+// based on the Relay Cursor Connections Specification
+const PageInfoType = new GraphQLObjectType({
+  name: "PageInfo",
+  fields: {
+    hasNextPage: { type: new GraphQLNonNull(GraphQLBoolean) },
+    hasPreviousPage: { type: new GraphQLNonNull(GraphQLBoolean) },
+    startCursor: { type: GraphQLString },
+    endCursor: { type: GraphQLString },
+  },
+})
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -112,6 +122,9 @@ const has_multiple_editions = (edition_sets) => {
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
+  ARTLOGIC: { value: "artlogic" },
+  ARTCLOUD: { value: "artcloud" },
+  BATCH_UPLOAD: { value: "BATCH_UPLOAD" },
 } as const
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
