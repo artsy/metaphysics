@@ -29,11 +29,7 @@ interface GravityError {
   body: { error?: string; text?: string; message?: string }
 }
 
-export const updateUserSaleProfileMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const updateUserSaleProfileMutation = mutationWithClientMutationId({
   name: "UpdateUserSaleProfileMutation",
   description: "Update the user sale profile",
   inputFields: {

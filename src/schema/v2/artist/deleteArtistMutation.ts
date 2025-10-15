@@ -41,11 +41,7 @@ const SuccessOrErrorType = new GraphQLUnionType({
   types: [DeleteArtistSuccessType, DeleteArtistFailureType],
 })
 
-export const deleteArtistMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteArtistMutation = mutationWithClientMutationId({
   name: "DeleteArtist",
   description: "Delete an artist",
   inputFields: {

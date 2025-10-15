@@ -85,11 +85,7 @@ const BulkAddArtworksToShowMutationType = new GraphQLUnionType({
   },
 })
 
-export const bulkAddArtworksToShowMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const bulkAddArtworksToShowMutation = mutationWithClientMutationId({
   name: "BulkAddArtworksToShowMutation",
   description: "Bulk add artworks to a show",
   inputFields: {

@@ -50,11 +50,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const updateProfileMutation = mutationWithClientMutationId<
-  UpdateProfileMutationInputProps,
-  any,
-  ResolverContext
->({
+export const updateProfileMutation = mutationWithClientMutationId({
   name: "UpdateProfileMutation",
   description: "Updates a profile.",
   inputFields: {
@@ -96,15 +92,7 @@ export const updateProfileMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    {
-      id,
-      handle,
-      bio,
-      fullBio,
-      website,
-      location,
-      isPrivate,
-    },
+    { id, handle, bio, fullBio, website, location, isPrivate },
     { updateProfileLoader }
   ) => {
     if (!updateProfileLoader) {

@@ -11,11 +11,7 @@ interface Input {
   id: string
 }
 
-export const unsetOrderPaymentMethodMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const unsetOrderPaymentMethodMutation = mutationWithClientMutationId({
   name: "unsetOrderPaymentMethod",
   description: "Unset payment method and credit card wallet type on an order",
   inputFields: {

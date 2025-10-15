@@ -54,11 +54,7 @@ const SuccessOrErrorType = new GraphQLUnionType({
   types: [CreateArtistSuccessType, CreateArtistFailureType],
 })
 
-export const createArtistMutation = mutationWithClientMutationId<
-  CreateArtistMutationInput,
-  any | null,
-  ResolverContext
->({
+export const createArtistMutation = mutationWithClientMutationId({
   name: "CreateArtistMutation",
   description:
     "Create an artist, used for MyCollection. use CreateCanonicalArtistMutation for all other cases",

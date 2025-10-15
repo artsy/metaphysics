@@ -42,11 +42,7 @@ export const UserIconDeletionMutationType = new GraphQLUnionType({
   types: [UserIconDeleteSuccessType, UserIconDeleteFailureType],
 })
 
-export const deleteCollectorProfileIconMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteCollectorProfileIconMutation = mutationWithClientMutationId({
   name: "DeleteUserIcon",
   description: "Remove the user icon",
   inputFields: {},

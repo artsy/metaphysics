@@ -58,11 +58,7 @@ const OutputType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const startIdentityVerificationMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const startIdentityVerificationMutation = mutationWithClientMutationId({
   name: "startIdentityVerificationMutation",
   description:
     "Start an identity verification flow for a pending identity verification",

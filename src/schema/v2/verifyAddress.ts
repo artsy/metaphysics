@@ -132,11 +132,7 @@ const VerifyAddressMutationType = new GraphQLUnionType({
   },
 })
 
-export const VerifyAddress = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const VerifyAddress = mutationWithClientMutationId({
   name: "VerifyAddress",
   description: "Verify a given address.",
   inputFields: {

@@ -62,11 +62,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createUserSaleProfileMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const createUserSaleProfileMutation = mutationWithClientMutationId({
   name: "CreateUserSaleProfileMutation",
   description: "Create a sale profile for a user",
   inputFields: {

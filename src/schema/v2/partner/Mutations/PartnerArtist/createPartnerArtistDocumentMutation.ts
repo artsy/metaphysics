@@ -53,68 +53,66 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createPartnerArtistDocumentMutation = mutationWithClientMutationId<
-  CreatePartnerArtistDocumentMutationInputProps,
-  any,
-  ResolverContext
->({
-  name: "CreatePartnerArtistDocumentMutation",
-  description: "Creates a partner artist document.",
-  inputFields: {
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the partner.",
+export const createPartnerArtistDocumentMutation = mutationWithClientMutationId(
+  {
+    name: "CreatePartnerArtistDocumentMutation",
+    description: "Creates a partner artist document.",
+    inputFields: {
+      partnerId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the partner.",
+      },
+      artistId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the artist.",
+      },
+      remoteDocumentUrl: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The URL of the document to upload.",
+      },
+      title: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The title of the document.",
+      },
     },
-    artistId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artist.",
+    outputFields: {
+      documentOrError: {
+        type: ResponseOrErrorType,
+        description:
+          "On success: the created document. On error: the error that occurred.",
+        resolve: (result) => result,
+      },
     },
-    remoteDocumentUrl: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The URL of the document to upload.",
-    },
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The title of the document.",
-    },
-  },
-  outputFields: {
-    documentOrError: {
-      type: ResponseOrErrorType,
-      description:
-        "On success: the created document. On error: the error that occurred.",
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { partnerId, artistId, remoteDocumentUrl, title },
-    { createPartnerArtistDocumentLoader }
-  ) => {
-    if (!createPartnerArtistDocumentLoader) {
-      return new Error("You need to be signed in to perform this action")
-    }
-
-    const artistIdentifiers = { partnerID: partnerId, artistID: artistId }
-
-    const gravityArgs = {
-      remote_document_url: remoteDocumentUrl,
-      title,
-    }
-
-    try {
-      const response = await createPartnerArtistDocumentLoader(
-        artistIdentifiers,
-        gravityArgs
-      )
-
-      return { ...response, partnerId }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { partnerId, artistId, remoteDocumentUrl, title },
+      { createPartnerArtistDocumentLoader }
+    ) => {
+      if (!createPartnerArtistDocumentLoader) {
+        return new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      const artistIdentifiers = { partnerID: partnerId, artistID: artistId }
+
+      const gravityArgs = {
+        remote_document_url: remoteDocumentUrl,
+        title,
+      }
+
+      try {
+        const response = await createPartnerArtistDocumentLoader(
+          artistIdentifiers,
+          gravityArgs
+        )
+
+        return { ...response, partnerId }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

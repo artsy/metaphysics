@@ -44,11 +44,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const addArtworkToPartnerShowMutation = mutationWithClientMutationId<
-  AddArtworkToPartnerShowMutationInputProps,
-  any,
-  ResolverContext
->({
+export const addArtworkToPartnerShowMutation = mutationWithClientMutationId({
   name: "AddArtworkToPartnerShowMutation",
   description: "Adds an artwork to a partner show.",
   inputFields: {

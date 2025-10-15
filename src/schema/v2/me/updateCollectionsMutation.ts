@@ -55,11 +55,7 @@ export const UpdateMeCollectionInput = new GraphQLInputObjectType({
   },
 })
 
-export const updateMeCollectionsMutation = mutationWithClientMutationId<
-  any,
-  any | null,
-  ResolverContext
->({
+export const updateMeCollectionsMutation = mutationWithClientMutationId({
   name: "updateMeCollectionsMutation",
   description: "Updates the user's collections in batch.",
   inputFields: {

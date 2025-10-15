@@ -73,11 +73,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const BatchArtworkImportImagesMutation = mutationWithClientMutationId({
   name: "BatchArtworkImportImages",
   inputFields: {
     artworkImportID: {

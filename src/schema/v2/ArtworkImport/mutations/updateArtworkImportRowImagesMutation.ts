@@ -46,59 +46,57 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "UpdateArtworkImportRowImages",
-  inputFields: {
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
+export const UpdateArtworkImportRowImagesMutation = mutationWithClientMutationId(
+  {
+    name: "UpdateArtworkImportRowImages",
+    inputFields: {
+      artworkImportID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      rowID: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the row to update images for",
+      },
+      sortedImageIDs: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description: "Array of image IDs in desired position order",
+      },
     },
-    rowID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the row to update images for",
+    outputFields: {
+      updateArtworkImportRowImagesOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-    sortedImageIDs: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
-      description: "Array of image IDs in desired position order",
-    },
-  },
-  outputFields: {
-    updateArtworkImportRowImagesOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { artworkImportID, rowID, sortedImageIDs },
-    { artworkImportUpdateRowImagesLoader }
-  ) => {
-    if (!artworkImportUpdateRowImagesLoader) {
-      throw new Error("This operation requires an `X-Access-Token` header.")
-    }
+    mutateAndGetPayload: async (
+      { artworkImportID, rowID, sortedImageIDs },
+      { artworkImportUpdateRowImagesLoader }
+    ) => {
+      if (!artworkImportUpdateRowImagesLoader) {
+        throw new Error("This operation requires an `X-Access-Token` header.")
+      }
 
-    try {
-      await artworkImportUpdateRowImagesLoader(
-        { artworkImportID, rowID },
-        {
-          sorted_image_ids: sortedImageIDs,
+      try {
+        await artworkImportUpdateRowImagesLoader(
+          { artworkImportID, rowID },
+          {
+            sorted_image_ids: sortedImageIDs,
+          }
+        )
+
+        return {
+          artworkImportID,
         }
-      )
-
-      return {
-        artworkImportID,
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
-  },
-})
+    },
+  }
+)

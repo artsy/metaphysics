@@ -48,57 +48,55 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createIdentityVerificationOverrideMutation = mutationWithClientMutationId<
-  { identityVerificationID: string; state: string; reason: string },
-  any,
-  ResolverContext
->({
-  name: "CreateIdentityVerificationOverrideMutation",
-  description: "Create an identity verification override",
-  inputFields: {
-    identityVerificationID: {
-      description: "The identity verification ID",
-      type: new GraphQLNonNull(GraphQLString),
+export const createIdentityVerificationOverrideMutation = mutationWithClientMutationId(
+  {
+    name: "CreateIdentityVerificationOverrideMutation",
+    description: "Create an identity verification override",
+    inputFields: {
+      identityVerificationID: {
+        description: "The identity verification ID",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      state: {
+        description: "The state of the identity verification override",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      reason: {
+        description: "The reason for the identity verification override",
+        type: new GraphQLNonNull(GraphQLString),
+      },
     },
-    state: {
-      description: "The state of the identity verification override",
-      type: new GraphQLNonNull(GraphQLString),
+    outputFields: {
+      createIdentityVerificationOverrideResponseOrError: {
+        type: ResponseOrErrorType,
+        description: "On success: an identity verification with overrides",
+        resolve: (result) => result,
+      },
     },
-    reason: {
-      description: "The reason for the identity verification override",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-  outputFields: {
-    createIdentityVerificationOverrideResponseOrError: {
-      type: ResponseOrErrorType,
-      description: "On success: an identity verification with overrides",
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (input, context) => {
-    const { identityVerificationID, state, reason } = input
-    const { createIdentityVerificationOverrideLoader } = context
+    mutateAndGetPayload: async (input, context) => {
+      const { identityVerificationID, state, reason } = input
+      const { createIdentityVerificationOverrideLoader } = context
 
-    if (!createIdentityVerificationOverrideLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-    try {
-      const result = await createIdentityVerificationOverrideLoader(
-        identityVerificationID,
-        { state, reason }
-      )
-      return {
-        ...result,
-        identityVerificationID,
+      if (!createIdentityVerificationOverrideLoader) {
+        throw new Error("You need to be signed in to perform this action")
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+      try {
+        const result = await createIdentityVerificationOverrideLoader(
+          identityVerificationID,
+          { state, reason }
+        )
+        return {
+          ...result,
+          identityVerificationID,
+        }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    }
-  },
-})
+    },
+  }
+)

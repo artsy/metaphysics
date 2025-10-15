@@ -3,11 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ViewingRoomType } from "schema/v2/viewingRoom"
 import { ResolverContext } from "types/graphql"
 
-export const publishViewingRoomMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const publishViewingRoomMutation = mutationWithClientMutationId({
   name: "PublishViewingRoom",
   inputFields: {
     viewingRoomID: {

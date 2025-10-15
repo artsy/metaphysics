@@ -52,11 +52,7 @@ const MyCollectionArtistInputType = new GraphQLInputObjectType({
   },
 })
 
-export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const myCollectionCreateArtworkMutation = mutationWithClientMutationId({
   name: "MyCollectionCreateArtwork",
   description: "Create an artwork in my collection",
   inputFields: {

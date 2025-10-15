@@ -250,11 +250,7 @@ const BulkUpdateArtworksMetadataMutationType = new GraphQLUnionType({
   },
 })
 
-export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId({
   name: "BulkUpdateArtworksMetadataMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {

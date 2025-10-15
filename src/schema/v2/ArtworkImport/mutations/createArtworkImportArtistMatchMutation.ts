@@ -49,48 +49,46 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtistMatchMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "CreateArtworkImportArtistMatch",
-  inputFields: {
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
+export const CreateArtworkImportArtistMatchMutation = mutationWithClientMutationId(
+  {
+    name: "CreateArtworkImportArtistMatch",
+    inputFields: {
+      artworkImportID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
     },
-  },
-  outputFields: {
-    createArtworkImportArtistMatchOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
+    outputFields: {
+      createArtworkImportArtistMatchOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-  },
-  mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportCreateArtistMatchLoader }
-  ) => {
-    if (!artworkImportCreateArtistMatchLoader) {
-      throw new Error("This operation requires an `X-Access-Token` header.")
-    }
-
-    try {
-      const result = await artworkImportCreateArtistMatchLoader(
-        artworkImportID,
-        {}
-      )
-
-      return {
-        artworkImportID,
-        success: result.success,
+    mutateAndGetPayload: async (
+      { artworkImportID },
+      { artworkImportCreateArtistMatchLoader }
+    ) => {
+      if (!artworkImportCreateArtistMatchLoader) {
+        throw new Error("This operation requires an `X-Access-Token` header.")
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+
+      try {
+        const result = await artworkImportCreateArtistMatchLoader(
+          artworkImportID,
+          {}
+        )
+
+        return {
+          artworkImportID,
+          success: result.success,
+        }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    }
-  },
-})
+    },
+  }
+)

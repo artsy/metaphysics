@@ -9,11 +9,7 @@ interface Input {
   provider: string
 }
 
-export const unlinkAuthenticationMutation = mutationWithClientMutationId<
-  Input,
-  any | null, // TODO: Type Me return type
-  ResolverContext
->({
+export const unlinkAuthenticationMutation = mutationWithClientMutationId({
   name: "UnlinkAuthenticationMutation",
   description: "Unlinks a 3rd party account",
   inputFields: {

@@ -40,11 +40,7 @@ const SendConfirmationEmailMutationFailure = new GraphQLObjectType<
   }),
 })
 
-export const sendConfirmationEmailMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const sendConfirmationEmailMutation = mutationWithClientMutationId({
   name: "SendConfirmationEmailMutation",
   description: "Send a confirmation email",
   inputFields: {}, // TODO: Is this the right way to say "This mutation does not take any arguments"?

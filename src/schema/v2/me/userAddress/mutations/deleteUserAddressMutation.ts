@@ -5,11 +5,7 @@ import { formatGravityError } from "lib/gravityErrorHandler"
 import { UserAddressOrErrorsUnion } from "../types"
 import { meType } from "../../index"
 
-export const deleteUserAddressMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteUserAddressMutation = mutationWithClientMutationId({
   name: "DeleteUserAddress",
   inputFields: {
     userAddressID: { type: new GraphQLNonNull(GraphQLID) },

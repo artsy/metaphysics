@@ -74,11 +74,7 @@ const ArtsyShippingOptInMutationType = new GraphQLUnionType({
   },
 })
 
-export const artsyShippingOptInMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const artsyShippingOptInMutation = mutationWithClientMutationId({
   name: "ArtsyShippingOptInMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {

@@ -57,11 +57,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const assignArtistToPartnerMutation = mutationWithClientMutationId<
-  AssignArtistToPartnerMutationInputProps,
-  any,
-  ResolverContext
->({
+export const assignArtistToPartnerMutation = mutationWithClientMutationId({
   name: "AssignArtistToPartnerMutation",
   description:
     "Assigns an artist to a partner, creating a PartnerArtist record.",

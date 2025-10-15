@@ -5,7 +5,7 @@ import { CreditCardMutationType } from "../credit_card"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "CreditCard",
   description: "Create a credit card",
   inputFields: {

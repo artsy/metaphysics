@@ -29,11 +29,7 @@ const ViewingRoomArtworkInput = new GraphQLInputObjectType({
   },
 })
 
-export const updateViewingRoomArtworksMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const updateViewingRoomArtworksMutation = mutationWithClientMutationId({
   name: "UpdateViewingRoomArtworks",
   inputFields: {
     viewingRoomID: {

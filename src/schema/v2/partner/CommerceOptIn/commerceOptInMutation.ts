@@ -80,11 +80,7 @@ const CommerceOptInMutationType = new GraphQLUnionType({
   },
 })
 
-export const commerceOptInMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const commerceOptInMutation = mutationWithClientMutationId({
   name: "CommerceOptInMutation",
   description: "Opt all eligible artworks into BNMO",
   inputFields: {

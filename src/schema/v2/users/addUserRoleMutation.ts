@@ -44,11 +44,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const addUserRoleMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const addUserRoleMutation = mutationWithClientMutationId({
   name: "addUserRoleMutation",
   description: "Add a role associated with a user",
   inputFields: {

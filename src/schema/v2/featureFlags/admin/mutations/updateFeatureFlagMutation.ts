@@ -10,11 +10,7 @@ export interface UpdateFeatureFlagInput {
   type?: string
 }
 
-export const updateFeatureFlagMutation = mutationWithClientMutationId<
-  UpdateFeatureFlagInput,
-  any,
-  ResolverContext
->({
+export const updateFeatureFlagMutation = mutationWithClientMutationId({
   name: "AdminUpdateFeatureFlag",
   description: "Updates a feature flag",
   inputFields: {

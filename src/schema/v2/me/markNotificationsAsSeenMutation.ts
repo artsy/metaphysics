@@ -46,11 +46,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const markNotificationsAsSeenMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const markNotificationsAsSeenMutation = mutationWithClientMutationId({
   name: "MarkNotificationsAsSeen",
   description: "Mark notifications as seen",
   inputFields: {

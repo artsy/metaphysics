@@ -18,11 +18,7 @@ interface Input {
   oneTimeUse?: boolean
 }
 
-export const submitOrderMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const submitOrderMutation = mutationWithClientMutationId({
   name: "submitOrder",
   description: "Submit an order",
   inputFields: {

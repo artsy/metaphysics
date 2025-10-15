@@ -16,11 +16,7 @@ interface Input {
   stripeConfirmationToken?: string
 }
 
-export const updateOrderMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const updateOrderMutation = mutationWithClientMutationId({
   name: "updateOrder",
   description: "Update an order",
   inputFields: {

@@ -6,11 +6,7 @@ import {
 } from "../secondFactors"
 import { ResolverContext } from "types/graphql"
 
-export const createSmsSecondFactorMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const createSmsSecondFactorMutation = mutationWithClientMutationId({
   name: "CreateSmsSecondFactor",
   inputFields: {
     password: {

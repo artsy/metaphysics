@@ -49,59 +49,57 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtistAssignmentMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "CreateArtworkImportArtistAssignment",
-  inputFields: {
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
+export const CreateArtworkImportArtistAssignmentMutation = mutationWithClientMutationId(
+  {
+    name: "CreateArtworkImportArtistAssignment",
+    inputFields: {
+      artworkImportID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      artistName: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The unmatched artist name to assign",
+      },
+      artistID: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The artist ID to assign to the unmatched name",
+      },
     },
-    artistName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The unmatched artist name to assign",
+    outputFields: {
+      createArtworkImportArtistAssignmentOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-    artistID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The artist ID to assign to the unmatched name",
-    },
-  },
-  outputFields: {
-    createArtworkImportArtistAssignmentOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { artworkImportID, artistName, artistID },
-    { artworkImportCreateArtistAssignmentLoader }
-  ) => {
-    if (!artworkImportCreateArtistAssignmentLoader) {
-      throw new Error("This operation requires an `X-Access-Token` header.")
-    }
+    mutateAndGetPayload: async (
+      { artworkImportID, artistName, artistID },
+      { artworkImportCreateArtistAssignmentLoader }
+    ) => {
+      if (!artworkImportCreateArtistAssignmentLoader) {
+        throw new Error("This operation requires an `X-Access-Token` header.")
+      }
 
-    try {
-      const result = await artworkImportCreateArtistAssignmentLoader(
-        artworkImportID,
-        {
-          artist_name: artistName,
-          artist_id: artistID,
+      try {
+        const result = await artworkImportCreateArtistAssignmentLoader(
+          artworkImportID,
+          {
+            artist_name: artistName,
+            artist_id: artistID,
+          }
+        )
+
+        return {
+          artworkImportID,
+          updatedRowsCount: result.updated_rows_count,
         }
-      )
-
-      return {
-        artworkImportID,
-        updatedRowsCount: result.updated_rows_count,
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
-  },
-})
+    },
+  }
+)

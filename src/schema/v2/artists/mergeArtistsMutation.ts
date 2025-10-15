@@ -42,11 +42,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const mergeArtistsMutation = mutationWithClientMutationId<
-  { goodId: string; badIds: string[]; overrides: string },
-  unknown,
-  ResolverContext
->({
+export const mergeArtistsMutation = mutationWithClientMutationId({
   name: "MergeArtistsMutation",
   description: "Merge multiple artist records in order to deduplicate artists",
   inputFields: {

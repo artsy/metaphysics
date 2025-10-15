@@ -42,7 +42,7 @@ const ResponseOrError = new GraphQLUnionType({
   types: [Success, Failure],
 })
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "UpdateCollectorProfile",
   description: "Update a collector profile.",
   inputFields: {

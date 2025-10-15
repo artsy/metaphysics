@@ -47,64 +47,62 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportImageMatchMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "CreateArtworkImportImageMatch",
-  inputFields: {
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
+export const CreateArtworkImportImageMatchMutation = mutationWithClientMutationId(
+  {
+    name: "CreateArtworkImportImageMatch",
+    inputFields: {
+      artworkImportID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      fileName: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The image filename",
+      },
+      s3Key: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "S3 key of the uploaded image asset",
+      },
+      s3Bucket: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "S3 bucket of the uploaded image asset",
+      },
+      rowID: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "ID of the row to associate the image with",
+      },
     },
-    fileName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The image filename",
+    outputFields: {
+      createArtworkImportImageMatchOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-    s3Key: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "S3 key of the uploaded image asset",
-    },
-    s3Bucket: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "S3 bucket of the uploaded image asset",
-    },
-    rowID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the row to associate the image with",
-    },
-  },
-  outputFields: {
-    createArtworkImportImageMatchOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { artworkImportID, fileName, s3Key, s3Bucket, rowID },
-    { artworkImportCreateImageMatchLoader }
-  ) => {
-    if (!artworkImportCreateImageMatchLoader) {
-      throw new Error("This operation requires an `X-Access-Token` header.")
-    }
+    mutateAndGetPayload: async (
+      { artworkImportID, fileName, s3Key, s3Bucket, rowID },
+      { artworkImportCreateImageMatchLoader }
+    ) => {
+      if (!artworkImportCreateImageMatchLoader) {
+        throw new Error("This operation requires an `X-Access-Token` header.")
+      }
 
-    try {
-      return {
-        ...(await artworkImportCreateImageMatchLoader(artworkImportID, {
-          file_name: fileName,
-          s3_key: s3Key,
-          s3_bucket: s3Bucket,
-          row_id: rowID,
-        })),
-        artworkImportID,
+      try {
+        return {
+          ...(await artworkImportCreateImageMatchLoader(artworkImportID, {
+            file_name: fileName,
+            s3_key: s3Key,
+            s3_bucket: s3Bucket,
+            row_id: rowID,
+          })),
+          artworkImportID,
+        }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
-  },
-})
+    },
+  }
+)

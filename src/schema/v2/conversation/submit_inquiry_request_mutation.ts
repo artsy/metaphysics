@@ -79,11 +79,7 @@ export const InquiryRequest = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const submitInquiryRequestMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const submitInquiryRequestMutation = mutationWithClientMutationId({
   name: "SubmitInquiryRequestMutation",
   description: "Create an artwork inquiry request",
   inputFields: {

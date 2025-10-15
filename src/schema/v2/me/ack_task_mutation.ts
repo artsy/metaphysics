@@ -51,11 +51,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
     data._type === "GravityMutationError" ? ErrorType : SuccessType,
 })
 
-export const ackTaskMutation = mutationWithClientMutationId<
-  Input,
-  Task | null,
-  ResolverContext
->({
+export const ackTaskMutation = mutationWithClientMutationId({
   name: "AckTaskMutation",
   description: "Updates a Task on the logged in User",
   inputFields: {

@@ -55,47 +55,48 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createVerifiedRepresentativeMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
-  name: "CreateVerifiedRepresentative",
-  description: "Creates Verified Representative.",
-  inputFields,
-  outputFields: {
-    verifiedRepresentativeOrError: {
-      type: ResponseOrErrorType,
-      description: "On success: the created Verified Representative.",
-      resolve: (result) => result,
+export const createVerifiedRepresentativeMutation = mutationWithClientMutationId(
+  {
+    name: "CreateVerifiedRepresentative",
+    description: "Creates Verified Representative.",
+    inputFields,
+    outputFields: {
+      verifiedRepresentativeOrError: {
+        type: ResponseOrErrorType,
+        description: "On success: the created Verified Representative.",
+        resolve: (result) => result,
+      },
     },
-  },
-  mutateAndGetPayload: async (args, { createVerifiedRepresentativeLoader }) => {
-    if (!createVerifiedRepresentativeLoader) {
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-    }
-
-    const createVerifiedRepresentativeLoaderPayload = Object.keys(args)
-      .filter((key) => key !== "id")
-      .reduce(
-        (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
-        {} as GravityInput
-      )
-
-    try {
-      return await createVerifiedRepresentativeLoader(
-        createVerifiedRepresentativeLoaderPayload
-      )
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      args,
+      { createVerifiedRepresentativeLoader }
+    ) => {
+      if (!createVerifiedRepresentativeLoader) {
+        throw new Error(
+          "You need to pass a X-Access-Token header to perform this action"
+        )
       }
-    }
-  },
-})
+
+      const createVerifiedRepresentativeLoaderPayload = Object.keys(args)
+        .filter((key) => key !== "id")
+        .reduce(
+          (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
+          {} as GravityInput
+        )
+
+      try {
+        return await createVerifiedRepresentativeLoader(
+          createVerifiedRepresentativeLoaderPayload
+        )
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

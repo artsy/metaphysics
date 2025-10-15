@@ -22,11 +22,7 @@ interface GravityError {
   body: { error?: string; text?: string; message?: string }
 }
 
-export const updateMyPasswordMutation = mutationWithClientMutationId<
-  Input,
-  any | null, // TODO: Type Me return type
-  ResolverContext
->({
+export const updateMyPasswordMutation = mutationWithClientMutationId({
   name: "UpdateMyPasswordMutation",
   description: "Updates the logged in user's password",
   inputFields: {

@@ -43,40 +43,38 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const deleteVerifiedRepresentativeMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
-  name: "DeleteVerifiedRepresentativeMutation",
-  description: "Deletes a Verified Representative.",
-  inputFields,
-  outputFields: {
-    verifiedRepresentativeOrError: {
-      type: ResponseOrErrorType,
-      description: "On success: the deleted Verified Representative.",
-      resolve: (result) => result,
+export const deleteVerifiedRepresentativeMutation = mutationWithClientMutationId(
+  {
+    name: "DeleteVerifiedRepresentativeMutation",
+    description: "Deletes a Verified Representative.",
+    inputFields,
+    outputFields: {
+      verifiedRepresentativeOrError: {
+        type: ResponseOrErrorType,
+        description: "On success: the deleted Verified Representative.",
+        resolve: (result) => result,
+      },
     },
-  },
-  mutateAndGetPayload: async (
-    { id },
-    { deleteVerifiedRepresetativeLoader }
-  ) => {
-    if (!deleteVerifiedRepresetativeLoader) {
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-    }
-
-    try {
-      return await deleteVerifiedRepresetativeLoader(id)
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { id },
+      { deleteVerifiedRepresetativeLoader }
+    ) => {
+      if (!deleteVerifiedRepresetativeLoader) {
+        throw new Error(
+          "You need to pass a X-Access-Token header to perform this action"
+        )
       }
-    }
-  },
-})
+
+      try {
+        return await deleteVerifiedRepresetativeLoader(id)
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

@@ -48,68 +48,66 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const repositionPartnerArtistArtworksMutation = mutationWithClientMutationId<
-  RepositionPartnerArtistArtworksMutationInputProps,
-  any,
-  ResolverContext
->({
-  name: "RepositionPartnerArtistArtworksMutation",
-  description:
-    "Reposition artworks for a partner artist, determining their display order.",
-  inputFields: {
-    artistId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artist.",
+export const repositionPartnerArtistArtworksMutation = mutationWithClientMutationId(
+  {
+    name: "RepositionPartnerArtistArtworksMutation",
+    description:
+      "Reposition artworks for a partner artist, determining their display order.",
+    inputFields: {
+      artistId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the artist.",
+      },
+      partnerId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the partner.",
+      },
+      artworkIds: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description:
+          "An ordered array of artwork IDs representing the new display order.",
+      },
     },
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the partner.",
+    outputFields: {
+      partnerOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-    artworkIds: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
-      description:
-        "An ordered array of artwork IDs representing the new display order.",
-    },
-  },
-  outputFields: {
-    partnerOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { artistId, partnerId, artworkIds },
-    { repositionPartnerArtistArtworksLoader }
-  ) => {
-    if (!repositionPartnerArtistArtworksLoader) {
-      return new Error("You need to be signed in to perform this action")
-    }
-
-    const identifiers = {
-      artistId,
-      partnerId,
-    }
-
-    const data = {
-      artwork_ids: artworkIds,
-    }
-
-    try {
-      const response = await repositionPartnerArtistArtworksLoader(
-        identifiers,
-        data
-      )
-
-      return { ...response, partnerId }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { artistId, partnerId, artworkIds },
+      { repositionPartnerArtistArtworksLoader }
+    ) => {
+      if (!repositionPartnerArtistArtworksLoader) {
+        return new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      const identifiers = {
+        artistId,
+        partnerId,
+      }
+
+      const data = {
+        artwork_ids: artworkIds,
+      }
+
+      try {
+        const response = await repositionPartnerArtistArtworksLoader(
+          identifiers,
+          data
+        )
+
+        return { ...response, partnerId }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

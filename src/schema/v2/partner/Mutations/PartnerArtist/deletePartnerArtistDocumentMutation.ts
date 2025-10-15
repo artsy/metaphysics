@@ -52,56 +52,58 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const deletePartnerArtistDocumentMutation = mutationWithClientMutationId<
-  DeletePartnerArtistDocumentMutationInputProps,
-  any,
-  ResolverContext
->({
-  name: "DeletePartnerArtistDocumentMutation",
-  description: "Deletes a partner artist document.",
-  inputFields: {
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the partner.",
+export const deletePartnerArtistDocumentMutation = mutationWithClientMutationId(
+  {
+    name: "DeletePartnerArtistDocumentMutation",
+    description: "Deletes a partner artist document.",
+    inputFields: {
+      partnerId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the partner.",
+      },
+      artistId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the artist.",
+      },
+      documentId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the document to delete.",
+      },
     },
-    artistId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artist.",
+    outputFields: {
+      documentOrError: {
+        type: ResponseOrErrorType,
+        description:
+          "On success: the deleted document. On error: the error that occurred.",
+        resolve: (result) => result,
+      },
     },
-    documentId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the document to delete.",
-    },
-  },
-  outputFields: {
-    documentOrError: {
-      type: ResponseOrErrorType,
-      description:
-        "On success: the deleted document. On error: the error that occurred.",
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { partnerId, artistId, documentId },
-    { deletePartnerArtistDocumentLoader }
-  ) => {
-    if (!deletePartnerArtistDocumentLoader) {
-      return new Error("You need to be signed in to perform this action")
-    }
-
-    const identifiers = { partnerID: partnerId, artistID: artistId, documentId }
-
-    try {
-      const response = await deletePartnerArtistDocumentLoader(identifiers)
-
-      return { ...response, partnerId }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { partnerId, artistId, documentId },
+      { deletePartnerArtistDocumentLoader }
+    ) => {
+      if (!deletePartnerArtistDocumentLoader) {
+        return new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      const identifiers = {
+        partnerID: partnerId,
+        artistID: artistId,
+        documentId,
+      }
+
+      try {
+        const response = await deletePartnerArtistDocumentLoader(identifiers)
+
+        return { ...response, partnerId }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

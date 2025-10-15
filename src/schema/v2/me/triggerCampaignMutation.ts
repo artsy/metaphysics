@@ -67,11 +67,7 @@ const SuccessOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const triggerCampaignMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const triggerCampaignMutation = mutationWithClientMutationId({
   name: "TriggerCampaign",
   description: "Triggers a campaign send.",
   inputFields: {

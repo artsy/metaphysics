@@ -46,11 +46,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId<
-  UpdatePartnerProfileImageInputProps,
-  any,
-  ResolverContext
->({
+export const UpdatePartnerProfileImageMutation = mutationWithClientMutationId({
   name: "UpdatePartnerProfileImage",
   description: "Updates the icon or cover image for a partner's profile page",
   inputFields: {

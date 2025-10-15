@@ -106,43 +106,41 @@ export const notificationPreferences: GraphQLFieldConfig<
   },
 }
 
-export const updateNotificationPreferencesMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "updateNotificationPreferencesMutation",
-  description: "Update notification preferences.",
-  inputFields: {
-    authenticationToken: {
-      type: GraphQLString,
+export const updateNotificationPreferencesMutation = mutationWithClientMutationId(
+  {
+    name: "updateNotificationPreferencesMutation",
+    description: "Update notification preferences.",
+    inputFields: {
+      authenticationToken: {
+        type: GraphQLString,
+      },
+      subscriptionGroups: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(NotificationPreferenceInputType))
+        ),
+      },
     },
-    subscriptionGroups: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(NotificationPreferenceInputType))
-      ),
+    outputFields: {
+      notificationPreferences,
     },
-  },
-  outputFields: {
-    notificationPreferences,
-  },
-  mutateAndGetPayload: (
-    args,
-    {
-      anonUpdateNotificationPreferencesLoader,
-      updateNotificationPreferencesLoader,
-    }
-  ) => {
-    const subGroups = args.subscriptionGroups
-    const params = convertSubGroups(subGroups)
+    mutateAndGetPayload: (
+      args,
+      {
+        anonUpdateNotificationPreferencesLoader,
+        updateNotificationPreferencesLoader,
+      }
+    ) => {
+      const subGroups = args.subscriptionGroups
+      const params = convertSubGroups(subGroups)
 
-    if (updateNotificationPreferencesLoader) {
-      return updateNotificationPreferencesLoader(params)
-    }
+      if (updateNotificationPreferencesLoader) {
+        return updateNotificationPreferencesLoader(params)
+      }
 
-    return anonUpdateNotificationPreferencesLoader(
-      args.authenticationToken,
-      params
-    )
-  },
-})
+      return anonUpdateNotificationPreferencesLoader(
+        args.authenticationToken,
+        params
+      )
+    },
+  }
+)

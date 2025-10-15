@@ -57,11 +57,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const updateHeroUnitMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const updateHeroUnitMutation = mutationWithClientMutationId({
   name: "UpdateHeroUnitMutation",
   description: "updates a hero unit.",
   inputFields: {

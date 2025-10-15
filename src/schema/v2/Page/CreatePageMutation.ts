@@ -46,11 +46,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreatePageMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const CreatePageMutation = mutationWithClientMutationId({
   name: "CreatePageMutation",
   description: "Creates a static Markdown-backed page.",
   inputFields: {

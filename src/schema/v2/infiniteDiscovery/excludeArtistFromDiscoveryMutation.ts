@@ -50,11 +50,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const excludeArtistFromDiscoveryMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const excludeArtistFromDiscoveryMutation = mutationWithClientMutationId({
   name: "ExcludeArtistFromDiscovery",
   description:
     "Excludes an artist from appearing in Infinite Discovery recommendations.",

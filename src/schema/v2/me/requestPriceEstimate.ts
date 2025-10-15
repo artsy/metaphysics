@@ -72,11 +72,7 @@ const RequestPriceEstimateMutationType = new GraphQLUnionType({
   types: [MutationSuccessType, MutationFailureType],
 })
 
-export const requestPriceEstimateMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const requestPriceEstimateMutation = mutationWithClientMutationId({
   name: "RequestPriceEstimate",
   description: "Request price estimate of an artwork",
   inputFields: {

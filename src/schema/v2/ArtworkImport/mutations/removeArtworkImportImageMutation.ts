@@ -48,11 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const RemoveArtworkImportImageMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const RemoveArtworkImportImageMutation = mutationWithClientMutationId({
   name: "RemoveArtworkImportImage",
   deprecationReason:
     "This mutation is deprecated. Use RemoveArtworkImportImageMatchesV2 instead.",

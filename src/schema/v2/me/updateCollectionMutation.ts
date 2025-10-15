@@ -51,11 +51,7 @@ interface InputProps {
   private: boolean
 }
 
-export const updateCollectionMutation = mutationWithClientMutationId<
-  InputProps,
-  any,
-  ResolverContext
->({
+export const updateCollectionMutation = mutationWithClientMutationId({
   name: "updateCollection",
   description: "Update a collection",
   inputFields: {

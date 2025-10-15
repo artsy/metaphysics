@@ -5,7 +5,7 @@ import { PopularArtistsField } from "schema/v2/Highlights/PopularArtists"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "FollowArtist",
   description: "Follow (or unfollow) an artist",
   inputFields: {

@@ -4,7 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 import { ArtworkType } from "../artwork"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "DislikeArtwork",
   description: "Add (or remove) an artwork to (from) a users dislikes.",
   inputFields: {

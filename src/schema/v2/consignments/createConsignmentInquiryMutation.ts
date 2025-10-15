@@ -90,11 +90,7 @@ const CreateConsignmentInquiryMutationType = new GraphQLUnionType({
   types: [MutationSuccessType, MutationFailureType],
 })
 
-export const createConsignmentInquiryMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const createConsignmentInquiryMutation = mutationWithClientMutationId({
   name: "CreateConsignmentInquiryMutation",
   description: "Make inquiry about consignments",
   inputFields: {

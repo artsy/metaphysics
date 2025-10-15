@@ -45,11 +45,7 @@ export const AccountMutationType = new GraphQLUnionType({
   types: [AccountMutationDeleteSuccessType, AccountMutationFailureType],
 })
 
-export const deleteUserAccountMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteUserAccountMutation = mutationWithClientMutationId({
   name: "DeleteAccount",
   description: "Delete User Artsy Account",
   inputFields: {

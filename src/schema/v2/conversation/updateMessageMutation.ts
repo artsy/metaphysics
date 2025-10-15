@@ -45,11 +45,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export default mutationWithClientMutationId<
-  UpdateMessageMutationInputProps,
-  any,
-  ResolverContext
->({
+export default mutationWithClientMutationId({
   name: "UpdateMessageMutation",
   description: "Update a message.",
   inputFields: {

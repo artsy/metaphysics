@@ -54,11 +54,7 @@ const userInterestOrErrorType = new GraphQLUnionType({
       : userInterestType,
 })
 
-export const createUserInterestsMutation = mutationWithClientMutationId<
-  Input,
-  typeof userInterestOrErrorType[] | null,
-  ResolverContext
->({
+export const createUserInterestsMutation = mutationWithClientMutationId({
   name: "CreateUserInterestsMutation",
   description: "Collect Multiple Artists",
   inputFields: {

@@ -51,11 +51,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createUserSeenArtworkMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const createUserSeenArtworkMutation = mutationWithClientMutationId({
   name: "CreateUserSeenArtwork",
   description:
     "Marks an artwork as seen when a user swipes through Infinite Discovery.",

@@ -45,66 +45,64 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const updateInstallShotForPartnerShowMutation = mutationWithClientMutationId<
-  UpdateInstallShotForPartnerShowMutationInputProps,
-  any,
-  ResolverContext
->({
-  name: "UpdateInstallShotForPartnerShowMutation",
-  description: "Updates an installation shot for a partner show.",
-  inputFields: {
-    showId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the show.",
+export const updateInstallShotForPartnerShowMutation = mutationWithClientMutationId(
+  {
+    name: "UpdateInstallShotForPartnerShowMutation",
+    description: "Updates an installation shot for a partner show.",
+    inputFields: {
+      showId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the show.",
+      },
+      imageId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the installation shot image to update.",
+      },
+      caption: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The updated caption for the installation shot.",
+      },
     },
-    imageId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the installation shot image to update.",
+    outputFields: {
+      showOrError: {
+        type: ResponseOrErrorType,
+        description:
+          "On success: the show that contains the updated installation shot. On error: the error that occurred.",
+        resolve: (result) => result,
+      },
     },
-    caption: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The updated caption for the installation shot.",
-    },
-  },
-  outputFields: {
-    showOrError: {
-      type: ResponseOrErrorType,
-      description:
-        "On success: the show that contains the updated installation shot. On error: the error that occurred.",
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { showId, imageId, caption },
-    { updateInstallShotLoader }
-  ) => {
-    if (!updateInstallShotLoader) {
-      return new Error("You need to be signed in to perform this action")
-    }
+    mutateAndGetPayload: async (
+      { showId, imageId, caption },
+      { updateInstallShotLoader }
+    ) => {
+      if (!updateInstallShotLoader) {
+        return new Error("You need to be signed in to perform this action")
+      }
 
-    const identifiers = {
-      showId,
-      imageId,
-    }
-
-    const data = {
-      caption,
-    }
-
-    try {
-      const response = await updateInstallShotLoader(identifiers, data)
-
-      return {
-        ...response,
+      const identifiers = {
         showId,
+        imageId,
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+
+      const data = {
+        caption,
       }
-    }
-  },
-})
+
+      try {
+        const response = await updateInstallShotLoader(identifiers, data)
+
+        return {
+          ...response,
+          showId,
+        }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

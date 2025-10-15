@@ -46,70 +46,68 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const repositionArtworksInPartnerShowMutation = mutationWithClientMutationId<
-  RepositionArtworksInPartnerShowMutationInputProps,
-  any,
-  ResolverContext
->({
-  name: "RepositionArtworksInPartnerShowMutation",
-  description:
-    "Reposition artworks in a partner show, determining their display order.",
-  inputFields: {
-    showId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the show.",
+export const repositionArtworksInPartnerShowMutation = mutationWithClientMutationId(
+  {
+    name: "RepositionArtworksInPartnerShowMutation",
+    description:
+      "Reposition artworks in a partner show, determining their display order.",
+    inputFields: {
+      showId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the show.",
+      },
+      partnerId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The ID of the partner.",
+      },
+      artworkIds: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description:
+          "An ordered array of artwork IDs representing the new display order.",
+      },
     },
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the partner.",
+    outputFields: {
+      showOrError: {
+        type: ResponseOrErrorType,
+        description:
+          "On success: the show with repositioned artworks. On error: the error that occurred.",
+        resolve: (result) => result,
+      },
     },
-    artworkIds: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
-      description:
-        "An ordered array of artwork IDs representing the new display order.",
-    },
-  },
-  outputFields: {
-    showOrError: {
-      type: ResponseOrErrorType,
-      description:
-        "On success: the show with repositioned artworks. On error: the error that occurred.",
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { showId, partnerId, artworkIds },
-    { repositionArtworksInPartnerShowLoader }
-  ) => {
-    if (!repositionArtworksInPartnerShowLoader) {
-      return new Error("You need to be signed in to perform this action")
-    }
-
-    const identifiers = {
-      showId,
-      partnerId,
-    }
-
-    const data = {
-      artwork_ids: artworkIds,
-    }
-
-    try {
-      const response = await repositionArtworksInPartnerShowLoader(
-        identifiers,
-        data
-      )
-
-      return response
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { showId, partnerId, artworkIds },
+      { repositionArtworksInPartnerShowLoader }
+    ) => {
+      if (!repositionArtworksInPartnerShowLoader) {
+        return new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      const identifiers = {
+        showId,
+        partnerId,
+      }
+
+      const data = {
+        artwork_ids: artworkIds,
+      }
+
+      try {
+        const response = await repositionArtworksInPartnerShowLoader(
+          identifiers,
+          data
+        )
+
+        return response
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

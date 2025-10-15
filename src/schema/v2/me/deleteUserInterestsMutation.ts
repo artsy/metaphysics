@@ -38,11 +38,7 @@ const deleteUserInterestOrErrorType = new GraphQLUnionType({
       : userInterestType,
 })
 
-export const deleteUserInterestsMutation = mutationWithClientMutationId<
-  Input,
-  UserInterest[] | null,
-  ResolverContext
->({
+export const deleteUserInterestsMutation = mutationWithClientMutationId({
   name: "DeleteUserInterestsMutation",
   description:
     "Deletes multiple UserInterests on the logged in User's CollectorProfile.",

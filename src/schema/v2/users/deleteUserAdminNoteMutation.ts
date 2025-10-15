@@ -44,11 +44,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const deleteUserAdminNoteMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const deleteUserAdminNoteMutation = mutationWithClientMutationId({
   name: "deleteUserAdminNoteMutation",
   description: "delete an admin note for the user",
   inputFields: {

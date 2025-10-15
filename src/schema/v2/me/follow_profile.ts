@@ -4,7 +4,7 @@ import { meType } from "schema/v2/me"
 import { ProfileType } from "schema/v2/profile"
 import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "FollowProfile",
   description: "Follow (or unfollow) a profile",
   inputFields: {

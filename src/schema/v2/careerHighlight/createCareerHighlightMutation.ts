@@ -65,11 +65,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createCareerHighlightMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const createCareerHighlightMutation = mutationWithClientMutationId({
   name: "CreateCareerHighlight",
   description: "Creates Artist Career Highlight.",
   inputFields,

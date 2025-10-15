@@ -45,11 +45,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const repositionPartnerLocationsMutation = mutationWithClientMutationId<
-  RepositionPartnerLocationsProps,
-  any,
-  ResolverContext
->({
+export const repositionPartnerLocationsMutation = mutationWithClientMutationId({
   name: "RepositionPartnerLocationsMutation",
   description:
     "Reposition partners locations in various CMS surfaces, settings, Artwork Form, etc.",

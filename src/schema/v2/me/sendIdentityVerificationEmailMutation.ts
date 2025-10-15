@@ -89,78 +89,78 @@ const IdentityVerificationEmailMutationType = new GraphQLUnionType({
   ],
 })
 
-export const sendIdentityVerificationEmailMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "SendIdentityVerificationEmailMutation",
-  description: "Send a identity verification email",
-  inputFields: {
-    userID: {
-      description: "The user Id for the user undergoing identity verification",
-      type: GraphQLString,
+export const sendIdentityVerificationEmailMutation = mutationWithClientMutationId(
+  {
+    name: "SendIdentityVerificationEmailMutation",
+    description: "Send a identity verification email",
+    inputFields: {
+      userID: {
+        description:
+          "The user Id for the user undergoing identity verification",
+        type: GraphQLString,
+      },
+      email: {
+        description: "The email for the user undergoing identity verification",
+        type: GraphQLString,
+      },
+      name: {
+        description:
+          "The name to be used for the user undergoing identity verification",
+        type: GraphQLString,
+      },
+      sendEmail: {
+        description:
+          "Whether an automated identity verification is sent or not",
+        type: GraphQLBoolean,
+      },
+      saleID: {
+        description: "The ID of the sale where the IDV process was initiated",
+        type: GraphQLString,
+      },
+      initiatorID: {
+        description:
+          "The ID of the user (self or admin) who initiated the IDV process",
+        type: GraphQLString,
+      },
+      orderID: {
+        description: "The ID of the order where the IDV process was initiated",
+        type: GraphQLString,
+      },
     },
-    email: {
-      description: "The email for the user undergoing identity verification",
-      type: GraphQLString,
+    outputFields: {
+      confirmationOrError: {
+        type: IdentityVerificationEmailMutationType,
+        resolve: (result) => result,
+      },
     },
-    name: {
-      description:
-        "The name to be used for the user undergoing identity verification",
-      type: GraphQLString,
-    },
-    sendEmail: {
-      description: "Whether an automated identity verification is sent or not",
-      type: GraphQLBoolean,
-    },
-    saleID: {
-      description: "The ID of the sale where the IDV process was initiated",
-      type: GraphQLString,
-    },
-    initiatorID: {
-      description:
-        "The ID of the user (self or admin) who initiated the IDV process",
-      type: GraphQLString,
-    },
-    orderID: {
-      description: "The ID of the order where the IDV process was initiated",
-      type: GraphQLString,
-    },
-  },
-  outputFields: {
-    confirmationOrError: {
-      type: IdentityVerificationEmailMutationType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { userID, email, name, sendEmail, saleID, initiatorID, orderID },
-    { sendIdentityVerificationEmailLoader }
-  ) => {
-    if (!sendIdentityVerificationEmailLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    try {
-      const response = await sendIdentityVerificationEmailLoader({
-        user_id: userID,
-        email,
-        name,
-        send_email: sendEmail,
-        sale_id: saleID,
-        initiator_id: initiatorID,
-        order_id: orderID,
-      })
-
-      return response
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { userID, email, name, sendEmail, saleID, initiatorID, orderID },
+      { sendIdentityVerificationEmailLoader }
+    ) => {
+      if (!sendIdentityVerificationEmailLoader) {
+        throw new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      try {
+        const response = await sendIdentityVerificationEmailLoader({
+          user_id: userID,
+          email,
+          name,
+          send_email: sendEmail,
+          sale_id: saleID,
+          initiator_id: initiatorID,
+          order_id: orderID,
+        })
+
+        return response
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

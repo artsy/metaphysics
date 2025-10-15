@@ -14,11 +14,7 @@ export interface ToggleFeatureFlagInput {
   environment: "development" | "production"
 }
 
-export const toggleFeatureFlagMutation = mutationWithClientMutationId<
-  ToggleFeatureFlagInput,
-  any,
-  ResolverContext
->({
+export const toggleFeatureFlagMutation = mutationWithClientMutationId({
   name: "AdminToggleFeatureFlag",
   description: "Toggles a feature flag on or off for a given environment",
   inputFields: {

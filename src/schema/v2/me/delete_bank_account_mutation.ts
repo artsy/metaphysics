@@ -5,11 +5,7 @@ import { BankAccountMutationType } from "../bank_account"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
-export const deleteBankAccountMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteBankAccountMutation = mutationWithClientMutationId({
   name: "DeleteBankAccount",
   description: "Remove a bank account",
   inputFields: {

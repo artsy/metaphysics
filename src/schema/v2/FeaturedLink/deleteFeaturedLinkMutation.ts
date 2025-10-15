@@ -39,11 +39,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const DeleteFeaturedLinkMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const DeleteFeaturedLinkMutation = mutationWithClientMutationId({
   name: "DeleteFeaturedLinkMutation",
   description: "deletes a featured link.",
   inputFields: {

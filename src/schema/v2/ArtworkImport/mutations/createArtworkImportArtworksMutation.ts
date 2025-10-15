@@ -49,48 +49,46 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "CreateArtworkImportArtworks",
-  inputFields: {
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
+export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId(
+  {
+    name: "CreateArtworkImportArtworks",
+    inputFields: {
+      artworkImportID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
     },
-  },
-  outputFields: {
-    createArtworkImportArtworksOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
+    outputFields: {
+      createArtworkImportArtworksOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-  },
-  mutateAndGetPayload: async (
-    { artworkImportID },
-    { artworkImportCreateArtworksLoader }
-  ) => {
-    if (!artworkImportCreateArtworksLoader) {
-      throw new Error("This operation requires an `X-Access-Token` header.")
-    }
-
-    try {
-      const result = await artworkImportCreateArtworksLoader(
-        artworkImportID,
-        {}
-      )
-
-      return {
-        artworkImportID,
-        createdArtworksCount: result.created || 0,
+    mutateAndGetPayload: async (
+      { artworkImportID },
+      { artworkImportCreateArtworksLoader }
+    ) => {
+      if (!artworkImportCreateArtworksLoader) {
+        throw new Error("This operation requires an `X-Access-Token` header.")
       }
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+
+      try {
+        const result = await artworkImportCreateArtworksLoader(
+          artworkImportID,
+          {}
+        )
+
+        return {
+          artworkImportID,
+          createdArtworksCount: result.created || 0,
+        }
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
       }
-    }
-  },
-})
+    },
+  }
+)

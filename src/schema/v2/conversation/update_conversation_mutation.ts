@@ -17,11 +17,7 @@ interface UpdateMessageMutationInputProps {
  * Note that this mutation doesn't use our `thingOrError` pattern due because
  * its a breaking change to existing clients.
  */
-export default mutationWithClientMutationId<
-  UpdateMessageMutationInputProps,
-  any,
-  ResolverContext
->({
+export default mutationWithClientMutationId({
   name: "UpdateConversationMutation",
   description: "Update a conversation.",
   inputFields: {

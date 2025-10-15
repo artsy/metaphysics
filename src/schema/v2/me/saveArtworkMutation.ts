@@ -4,7 +4,7 @@ import { ArtworkType } from "schema/v2/artwork/index"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "SaveArtwork",
   description:
     "Save (or remove) an artwork to (from) a users default collection.",

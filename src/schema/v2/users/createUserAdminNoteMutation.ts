@@ -44,11 +44,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createUserAdminNoteMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const createUserAdminNoteMutation = mutationWithClientMutationId({
   name: "createUserAdminNoteMutation",
   description: "Create a admin note for the user",
   inputFields: {

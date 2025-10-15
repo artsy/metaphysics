@@ -6,11 +6,7 @@ import { ViewingRoomInputAttributesType } from "./viewingRoomInputAttributes"
 import { ViewingRoomOrErrorType } from "./viewingRoomOrError"
 import { ARImageInputType } from "./ARImageInput"
 
-export const createViewingRoomMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const createViewingRoomMutation = mutationWithClientMutationId({
   name: "CreateViewingRoom",
   inputFields: {
     // If you scroll futher down, you'll notice that some attributes from attributes are duplicated in the inputFields

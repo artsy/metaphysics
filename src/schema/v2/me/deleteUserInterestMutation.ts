@@ -12,11 +12,7 @@ interface Input {
   sessionId?: string
 }
 
-export const deleteUserInterestMutation = mutationWithClientMutationId<
-  Input,
-  UserInterest | null,
-  ResolverContext
->({
+export const deleteUserInterestMutation = mutationWithClientMutationId({
   name: "DeleteUserInterestMutation",
   description:
     "Deletes a UserInterest on the logged in User's CollectorProfile.",

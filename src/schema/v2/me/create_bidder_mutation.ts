@@ -3,7 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import Bidder from "schema/v2/bidder"
 import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "CreateBidder",
   description: "Create a bidder",
   inputFields: {

@@ -65,11 +65,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateFeatureMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const CreateFeatureMutation = mutationWithClientMutationId({
   name: "CreateFeatureMutation",
   description: "Creates a feature.",
   inputFields: {

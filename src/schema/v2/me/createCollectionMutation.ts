@@ -49,11 +49,7 @@ interface InputProps {
   shareableWithPartners: boolean
 }
 
-export const createCollectionMutation = mutationWithClientMutationId<
-  InputProps,
-  any,
-  ResolverContext
->({
+export const createCollectionMutation = mutationWithClientMutationId({
   name: "createCollection",
   description: "Create a collection",
   inputFields: {

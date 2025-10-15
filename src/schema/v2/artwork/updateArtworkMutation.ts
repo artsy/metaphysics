@@ -180,11 +180,7 @@ const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   fields: inputFields,
 })
 
-export const updateArtworkMutation = mutationWithClientMutationId<
-  UpdateArtworkMutationInputProps,
-  any,
-  ResolverContext
->({
+export const updateArtworkMutation = mutationWithClientMutationId({
   name: "UpdateArtworkMutation",
   description: "Updates an artwork.",
   inputFields: {

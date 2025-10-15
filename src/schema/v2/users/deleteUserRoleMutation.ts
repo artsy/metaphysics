@@ -44,11 +44,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const deleteUserRoleMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const deleteUserRoleMutation = mutationWithClientMutationId({
   name: "deleteUserRoleMutation",
   description: "Delete a role associated with a user",
   inputFields: {

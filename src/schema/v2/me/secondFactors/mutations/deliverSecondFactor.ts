@@ -3,11 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { SecondFactorOrErrorsUnionType } from "../secondFactors"
 import { ResolverContext } from "types/graphql"
 
-export const deliverSecondFactorMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deliverSecondFactorMutation = mutationWithClientMutationId({
   name: "DeliverSecondFactor",
   inputFields: {
     secondFactorID: {

@@ -82,11 +82,7 @@ const CommerceOptInReportMutationType = new GraphQLUnionType({
   },
 })
 
-export const commerceOptInReportMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const commerceOptInReportMutation = mutationWithClientMutationId({
   name: "CommerceOptInReportMutation",
   description:
     "Generate CommerceOptIn report about artworks eligibility for a given partner",

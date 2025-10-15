@@ -3,7 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ShowType } from "../show"
 import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "FollowShow",
   description: "Follow (or unfollow) a show",
   inputFields: {

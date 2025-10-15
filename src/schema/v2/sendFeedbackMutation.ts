@@ -81,11 +81,7 @@ const SendFeedbackMutationInputType = new GraphQLInputObjectType({
   },
 })
 
-export const sendFeedbackMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const sendFeedbackMutation = mutationWithClientMutationId({
   name: "SendFeedbackMutation",
   description: "Send a feedback message",
   inputFields: SendFeedbackMutationInputType.getFields(),

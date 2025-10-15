@@ -53,11 +53,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const UpdateFeaturedLinkMutation = mutationWithClientMutationId<
-  Input & { id: string },
-  any | null,
-  ResolverContext
->({
+export const UpdateFeaturedLinkMutation = mutationWithClientMutationId({
   name: "UpdateFeaturedLinkMutation",
   description: "updates a featured link.",
   inputFields: {

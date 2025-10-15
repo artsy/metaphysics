@@ -3,11 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { SecondFactorOrErrorsUnionType } from "../secondFactors"
 import { ResolverContext } from "types/graphql"
 
-export const disableSecondFactorMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const disableSecondFactorMutation = mutationWithClientMutationId({
   name: "DisableSecondFactor",
   inputFields: {
     password: {

@@ -10,11 +10,7 @@ import { last } from "lodash"
 const { PREDICTION_ENDPOINT } = config
 
 // @ts-ignore
-export const BidderPositionMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const BidderPositionMutation = mutationWithClientMutationId({
   name: "BidderPosition",
   description: "Creates a bidder position",
   inputFields: {

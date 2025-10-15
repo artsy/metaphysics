@@ -48,11 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreateArtworkImportMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const CreateArtworkImportMutation = mutationWithClientMutationId({
   name: "CreateArtworkImport",
   inputFields: {
     async: {

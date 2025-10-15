@@ -5,11 +5,7 @@ import { formatGravityError } from "lib/gravityErrorHandler"
 import { UserAddressOrErrorsUnion } from "../types"
 import { meType } from "../../index"
 
-export const updateUserDefaultAddressMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const updateUserDefaultAddressMutation = mutationWithClientMutationId({
   name: "UpdateUserDefaultAddress",
   inputFields: {
     userAddressID: { type: new GraphQLNonNull(GraphQLString) },

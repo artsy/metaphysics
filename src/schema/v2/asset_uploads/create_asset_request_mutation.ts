@@ -80,7 +80,7 @@ export const CredentialsType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "RequestCredentialsForAssetUpload",
   description: "Attach an gemini asset to a consignment submission",
   inputFields: {

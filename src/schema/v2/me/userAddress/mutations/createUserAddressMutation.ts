@@ -7,11 +7,7 @@ import { UserAddressAttributesInput } from "../types"
 import { meType } from "../../index"
 import { snakeCaseKeys } from "lib/helpers"
 
-export const createUserAddressMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const createUserAddressMutation = mutationWithClientMutationId({
   name: "CreateUserAddress",
   inputFields: {
     attributes: { type: new GraphQLNonNull(UserAddressAttributesInput) },

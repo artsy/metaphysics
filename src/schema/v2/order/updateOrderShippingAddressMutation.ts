@@ -20,11 +20,7 @@ interface Input {
   shippingPostalCode?: string
 }
 
-export const updateOrderShippingAddressMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const updateOrderShippingAddressMutation = mutationWithClientMutationId({
   name: "updateOrderShippingAddress",
   description: "Update an order's shipping address",
   inputFields: {

@@ -117,11 +117,7 @@ export interface Variant {
   weightType: string
 }
 
-export const createFeatureFlagMutation = mutationWithClientMutationId<
-  CreateFeatureFlagInput,
-  any,
-  ResolverContext
->({
+export const createFeatureFlagMutation = mutationWithClientMutationId({
   name: "AdminCreateFeatureFlag",
   description: "Creates a new feature flag",
   inputFields: FeatureFlagInputFields,

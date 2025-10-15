@@ -16,16 +16,7 @@ export const GeminiEntryType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export default mutationWithClientMutationId<
-  {
-    templateKey: string
-    sourceKey: string
-    sourceBucket: string
-    metadata: any
-  },
-  any,
-  ResolverContext
->({
+export default mutationWithClientMutationId({
   name: "CreateGeminiEntryForAsset",
   description: "Attach an gemini asset to a consignment submission",
   inputFields: {

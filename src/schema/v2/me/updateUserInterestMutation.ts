@@ -53,11 +53,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const updateUserInterestMutation = mutationWithClientMutationId<
-  Input,
-  UserInterest | null,
-  ResolverContext
->({
+export const updateUserInterestMutation = mutationWithClientMutationId({
   name: "UpdateUserInterestMutation",
   description:
     "Updates a UserInterest on the logged in User's CollectorProfile.",

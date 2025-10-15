@@ -20,11 +20,7 @@ interface GravityError {
   body: { error?: string; text?: string; message?: string }
 }
 
-export const linkAuthenticationMutation = mutationWithClientMutationId<
-  Input,
-  any | null, // TODO: Type Me return type
-  ResolverContext
->({
+export const linkAuthenticationMutation = mutationWithClientMutationId({
   name: "LinkAuthenticationMutation",
   description: "Links a 3rd party account",
   inputFields: {

@@ -63,67 +63,65 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const CreatePartnerLocationDaySchedulesMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
-  name: "CreatePartnerLocationDaySchedules",
-  description: "Creates a new weekly schedule for a partner location",
-  inputFields: {
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the partner",
+export const CreatePartnerLocationDaySchedulesMutation = mutationWithClientMutationId(
+  {
+    name: "CreatePartnerLocationDaySchedules",
+    description: "Creates a new weekly schedule for a partner location",
+    inputFields: {
+      partnerId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "ID of the partner",
+      },
+      locationId: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "ID of the location",
+      },
+      daySchedules: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(DayScheduleInputType))
+        ),
+        description: "List of day schedules for the full week",
+      },
     },
-    locationId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of the location",
+    outputFields: {
+      daySchedulesOrError: {
+        type: ResponseOrErrorType,
+        resolve: (result) => result,
+      },
     },
-    daySchedules: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(DayScheduleInputType))
-      ),
-      description: "List of day schedules for the full week",
-    },
-  },
-  outputFields: {
-    daySchedulesOrError: {
-      type: ResponseOrErrorType,
-      resolve: (result) => result,
-    },
-  },
-  mutateAndGetPayload: async (
-    { partnerId, locationId, daySchedules },
-    { createPartnerLocationDaySchedulesLoader }
-  ) => {
-    if (!createPartnerLocationDaySchedulesLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    try {
-      const identifiers = { partnerId, locationId }
-
-      const formatDayScheduleDataForQueryString = Object.fromEntries(
-        daySchedules.flatMap((schedule, index) => [
-          [`day_schedules[${index}][day]`, schedule.day],
-          [`day_schedules[${index}][start_time]`, schedule.startTime],
-          [`day_schedules[${index}][end_time]`, schedule.endTime],
-        ])
-      )
-
-      const response = await createPartnerLocationDaySchedulesLoader(
-        identifiers,
-        formatDayScheduleDataForQueryString
-      )
-
-      return response
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
+    mutateAndGetPayload: async (
+      { partnerId, locationId, daySchedules },
+      { createPartnerLocationDaySchedulesLoader }
+    ) => {
+      if (!createPartnerLocationDaySchedulesLoader) {
+        throw new Error("You need to be signed in to perform this action")
       }
-    }
-  },
-})
+
+      try {
+        const identifiers = { partnerId, locationId }
+
+        const formatDayScheduleDataForQueryString = Object.fromEntries(
+          daySchedules.flatMap((schedule, index) => [
+            [`day_schedules[${index}][day]`, schedule.day],
+            [`day_schedules[${index}][start_time]`, schedule.startTime],
+            [`day_schedules[${index}][end_time]`, schedule.endTime],
+          ])
+        )
+
+        const response = await createPartnerLocationDaySchedulesLoader(
+          identifiers,
+          formatDayScheduleDataForQueryString
+        )
+
+        return response
+      } catch (error) {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      }
+    },
+  }
+)

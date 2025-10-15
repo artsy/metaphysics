@@ -7,11 +7,7 @@ export interface DeleteFeatureFlagInput {
   name: string
 }
 
-export const deleteFeatureFlagMutation = mutationWithClientMutationId<
-  DeleteFeatureFlagInput,
-  any,
-  ResolverContext
->({
+export const deleteFeatureFlagMutation = mutationWithClientMutationId({
   name: "AdminDeleteFeatureFlag",
   description: "Deletes a feature flag",
   inputFields: {

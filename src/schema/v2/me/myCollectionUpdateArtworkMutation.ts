@@ -57,11 +57,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   submissionId?: string
 }
 
-export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
-  MyCollectionArtworkUpdateMutationInput,
-  any,
-  ResolverContext
->({
+export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId({
   name: "MyCollectionUpdateArtwork",
   description: "Update an artwork in my collection",
   inputFields: {

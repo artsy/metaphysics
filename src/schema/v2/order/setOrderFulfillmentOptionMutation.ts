@@ -40,11 +40,7 @@ const FulfillmentOptionInputType = new GraphQLInputObjectType({
   },
 })
 
-export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
-  Input,
-  any,
-  ResolverContext
->({
+export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId({
   name: "setOrderFulfillmentOption",
   description: "Set fulfillment option on an order",
   inputFields: {

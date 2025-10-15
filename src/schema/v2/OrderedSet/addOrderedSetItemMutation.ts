@@ -51,11 +51,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const addOrderedSetItemMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const addOrderedSetItemMutation = mutationWithClientMutationId({
   name: "addOrderedSetItemMutation",
   description: "adds an item to an ordered set.",
   inputFields: {

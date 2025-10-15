@@ -3,11 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { SaleType } from "schema/v2/sale/index"
 import { ResolverContext } from "types/graphql"
 
-export const endSaleMutation = mutationWithClientMutationId<
-  { saleID: string },
-  { sale: any },
-  ResolverContext
->({
+export const endSaleMutation = mutationWithClientMutationId({
   name: "EndSale",
   description: "Mark sale as ended.",
   inputFields: {

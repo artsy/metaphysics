@@ -42,11 +42,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const updateAlertMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const updateAlertMutation = mutationWithClientMutationId({
   name: "updateAlert",
   description: "Create an alert",
   inputFields: {

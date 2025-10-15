@@ -47,11 +47,7 @@ interface InputProps {
   id: string
 }
 
-export const deleteCollectionMutation = mutationWithClientMutationId<
-  InputProps,
-  any,
-  ResolverContext
->({
+export const deleteCollectionMutation = mutationWithClientMutationId({
   name: "deleteCollection",
   description: "Delete a collection",
   inputFields: {

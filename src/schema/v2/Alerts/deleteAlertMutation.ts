@@ -41,11 +41,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const deleteAlertMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteAlertMutation = mutationWithClientMutationId({
   name: "deleteAlert",
   description: "Deletes an alert",
   inputFields: {

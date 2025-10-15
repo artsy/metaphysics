@@ -4,11 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 
-export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId({
   name: "MyCollectionDeleteArtwork",
   description: "Deletes an artwork from my collection",
   inputFields: {

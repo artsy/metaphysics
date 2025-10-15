@@ -3,15 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { quiz, QuizType } from "./quiz"
 import { ResolverContext } from "types/graphql"
 
-export const updateQuizMutation = mutationWithClientMutationId<
-  {
-    artworkId: string
-    clearInteraction?: boolean
-    userId: string
-  },
-  any,
-  ResolverContext
->({
+export const updateQuizMutation = mutationWithClientMutationId({
   name: "updateQuizMutation",
   description: "Update a quiz artwork interacted_with flag",
   inputFields: {

@@ -48,11 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-export const markNotificationAsReadMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const markNotificationAsReadMutation = mutationWithClientMutationId({
   name: "MarkNotificationAsRead",
   description: "Mark an unread notifications as read",
   inputFields: {

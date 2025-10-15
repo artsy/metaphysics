@@ -5,11 +5,7 @@ import { ViewingRoomInputAttributesType } from "./viewingRoomInputAttributes"
 import { ViewingRoomOrErrorType } from "./viewingRoomOrError"
 import { ARImageInputType } from "./ARImageInput"
 
-export const updateViewingRoomMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const updateViewingRoomMutation = mutationWithClientMutationId({
   name: "UpdateViewingRoom",
   inputFields: {
     attributes: {

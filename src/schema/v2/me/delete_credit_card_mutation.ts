@@ -5,11 +5,7 @@ import { CreditCardMutationType } from "../credit_card"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
-export const deleteCreditCardMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const deleteCreditCardMutation = mutationWithClientMutationId({
   name: "DeleteCreditCard",
   description: "Remove a credit card",
   inputFields: {

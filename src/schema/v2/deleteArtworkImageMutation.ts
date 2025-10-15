@@ -51,11 +51,7 @@ interface DeleteArtworkImageMutationInput {
   imageID: string
 }
 
-export const DeleteArtworkImageMutation = mutationWithClientMutationId<
-  DeleteArtworkImageMutationInput,
-  any,
-  ResolverContext
->({
+export const DeleteArtworkImageMutation = mutationWithClientMutationId({
   name: "DeleteArtworkImage",
   description: "Deletes an image from an artwork in my collection",
   inputFields: {

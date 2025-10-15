@@ -31,11 +31,7 @@ export const userInterestInputFields = {
   sessionID: { type: GraphQLString },
 }
 
-export const createUserInterestMutation = mutationWithClientMutationId<
-  Input,
-  UserInterest | null,
-  ResolverContext
->({
+export const createUserInterestMutation = mutationWithClientMutationId({
   name: "CreateUserInterestMutation",
   description:
     "Creates a UserInterest on the logged in User's CollectorProfile.",

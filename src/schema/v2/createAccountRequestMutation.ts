@@ -85,11 +85,7 @@ const CreateAccountRequestInputType = new GraphQLInputObjectType({
   },
 })
 
-export const createAccountRequestMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const createAccountRequestMutation = mutationWithClientMutationId({
   name: "CreateAccountRequestMutation",
   description: "Create an account request",
   inputFields: CreateAccountRequestInputType.getFields(),

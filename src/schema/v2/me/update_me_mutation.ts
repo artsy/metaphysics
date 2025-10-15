@@ -104,7 +104,7 @@ const UpdateMyProfileMutationType = new GraphQLUnionType({
   ],
 })
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export default mutationWithClientMutationId({
   name: "UpdateMyProfile",
   description: "Update the current logged in user.",
   inputFields: {

@@ -62,11 +62,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const createUserInterestForUser = mutationWithClientMutationId<
-  Input,
-  UserInterest | null,
-  ResolverContext
->({
+export const createUserInterestForUser = mutationWithClientMutationId({
   name: "CreateUserInterestForUser",
   description: "Creates a UserInterest for a user.",
   inputFields: {

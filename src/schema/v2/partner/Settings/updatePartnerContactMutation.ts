@@ -51,11 +51,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const UpdatePartnerContactMutation = mutationWithClientMutationId<
-  UpdatePartnerContactInputProps,
-  any,
-  ResolverContext
->({
+export const UpdatePartnerContactMutation = mutationWithClientMutationId({
   name: "UpdatePartnerContact",
   description: "Updates an existing contact for a partner",
   inputFields: {

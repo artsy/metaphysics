@@ -39,11 +39,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const deleteOrderedSetMutation = mutationWithClientMutationId<
-  Input,
-  any | null,
-  ResolverContext
->({
+export const deleteOrderedSetMutation = mutationWithClientMutationId({
   name: "deleteOrderedSetMutation",
   description: "deletes an ordered set.",
   inputFields: {

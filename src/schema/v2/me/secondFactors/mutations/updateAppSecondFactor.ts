@@ -6,11 +6,7 @@ import {
 } from "../secondFactors"
 import { ResolverContext } from "types/graphql"
 
-export const updateAppSecondFactorMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
+export const updateAppSecondFactorMutation = mutationWithClientMutationId({
   name: "UpdateAppSecondFactor",
   inputFields: {
     secondFactorID: {

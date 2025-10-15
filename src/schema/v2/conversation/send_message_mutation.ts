@@ -30,11 +30,7 @@ interface SendConversationMessageMutationProps {
   to?: string[]
 }
 
-export default mutationWithClientMutationId<
-  SendConversationMessageMutationProps,
-  any,
-  ResolverContext
->({
+export default mutationWithClientMutationId({
   name: "SendConversationMessageMutation",
   description: "Appending a message to a conversation thread",
   inputFields: {
