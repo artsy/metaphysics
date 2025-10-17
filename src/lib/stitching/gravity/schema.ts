@@ -8,6 +8,7 @@ import {
   FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import config from "config"
 
 const rootFieldsAllowList = ["agreement"]
 
@@ -45,7 +46,19 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
+  if (config.USE_UNSTITCHED_REQUEST_CONDITION_REPORT) {
+    duplicatedTypes.push(
+      "ConditionReportRequest",
+      "RequestConditionReportInput",
+      "RequestConditionReportPayload"
+    )
+  }
+
   const excludedMutations: string[] = []
+
+  if (config.USE_UNSTITCHED_REQUEST_CONDITION_REPORT) {
+    excludedMutations.push("requestConditionReport")
+  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
