@@ -9,12 +9,6 @@ import {
 import { OrderedSetItemType } from "../item"
 import { OrderedSetType } from "./OrderedSet"
 
-interface Input {
-  id: string
-  itemId: string
-  setId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteOrderedSetItemSuccess",
   isTypeOf: (data) => data.id,

@@ -13,12 +13,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerDocumentType } from "../../partnerDocumentsConnection"
 import Partner from "../../partner"
 
-interface DeletePartnerArtistDocumentMutationInputProps {
-  partnerId: string
-  artistId: string
-  documentId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePartnerArtistDocumentSuccess",
   isTypeOf: (data) => data._id,

@@ -13,13 +13,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerDocumentType } from "../partner/partnerDocumentsConnection"
 import { ShowType } from "../show"
 
-interface UpdatePartnerShowDocumentMutationInputProps {
-  partnerId: string
-  showId: string
-  documentId: string
-  title?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerShowDocumentSuccess",
   isTypeOf: (data) => data._id,

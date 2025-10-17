@@ -13,15 +13,6 @@ import {
 import Partner from "./partner"
 import { ResolverContext } from "types/graphql"
 
-interface UpdatePartnerFlagsMutationInputProps {
-  id: string
-  inquireAvailabilityPriceDisplayEnabledByPartner?: boolean | null
-  artworksDefaultMetric?: string | null
-  artworksDefaultCurrency?: string | null
-  artworksDefaultPartnerLocationId?: string | null
-  artworksDefaultWeightMetric?: string | null
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerFlagsSuccess",
   isTypeOf: (data) => data._id,

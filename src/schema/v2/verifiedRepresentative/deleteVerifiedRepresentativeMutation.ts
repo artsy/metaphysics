@@ -8,10 +8,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface Input {
-  id: string
-}
-
 const inputFields = {
   id: { type: new GraphQLNonNull(GraphQLString) },
 }

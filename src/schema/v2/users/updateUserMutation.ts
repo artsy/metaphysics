@@ -2,15 +2,6 @@ import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { snakeCase } from "lodash"
 
-interface Input {
-  id: string
-  dataTransferOptOut?: boolean
-  email: string
-  name: string
-  phone?: string
-  adminNote?: string
-}
-
 interface GravityInput {
   id: string
   data_transfer_opt_out?: boolean

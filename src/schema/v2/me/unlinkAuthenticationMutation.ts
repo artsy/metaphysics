@@ -4,10 +4,6 @@ import { meType } from "./index"
 import { AuthenticationProviderType } from "./authentications"
 import { formatGravityError } from "lib/gravityErrorHandler"
 
-interface Input {
-  provider: string
-}
-
 export const unlinkAuthenticationMutation = mutationWithClientMutationId({
   name: "UnlinkAuthenticationMutation",
   description: "Unlinks a 3rd party account",

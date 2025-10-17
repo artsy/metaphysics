@@ -14,13 +14,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
 
-interface Input {
-  solo: boolean
-  group: boolean
-  collected: boolean
-  id: string
-}
-
 const inputFields = {
   solo: { type: GraphQLBoolean },
   group: { type: GraphQLBoolean },

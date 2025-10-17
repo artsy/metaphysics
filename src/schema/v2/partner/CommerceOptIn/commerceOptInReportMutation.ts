@@ -22,25 +22,6 @@ export const CommerceOptInReportResponseType = new GraphQLObjectType<
   }),
 })
 
-interface Input {
-  id: string
-  exactPrice?: boolean
-  pickupAvailable?: boolean
-  framed?: boolean
-  certificateOfAuthenticity?: boolean
-  coaByGallery?: boolean
-  coaByAuthenticatingBody?: boolean
-  eligible?: boolean
-  locationId?: string
-  artsyShippingDomestic?: boolean
-  signedByArtist?: boolean
-  stampedByArtistEstate?: boolean
-  stickerLabel?: boolean
-  signedInPlate?: boolean
-  signedOther?: boolean
-  notSigned?: boolean
-}
-
 const CommerceOptInReportSuccesssType = new GraphQLObjectType<
   any,
   ResolverContext

@@ -29,22 +29,6 @@ type ItemType =
 
 type OwnerType = "Fair" | "Feature" | "Sale"
 
-interface Input {
-  description: string
-  id: string
-  internalName: string
-  itemId: string
-  itemIds: string
-  itemType: ItemType
-  key: string
-  layout: string
-  name: string
-  ownerType: OwnerType
-  ownerId: string
-  published: boolean
-  unsetOwner: boolean
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateOrderedSetSuccess",
   isTypeOf: (data) => data.id,

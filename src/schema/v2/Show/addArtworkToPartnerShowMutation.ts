@@ -12,11 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ShowType } from "../show"
 
-interface AddArtworkToPartnerShowMutationInputProps {
-  showId: string
-  artworkId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "AddArtworkToPartnerShowSuccess",
   isTypeOf: (data) => data._id,

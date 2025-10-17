@@ -15,13 +15,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
-interface Input {
-  id: string
-  source: string
-  artsyShippingDomestic: boolean | null
-  artsyShippingInternational: boolean | null
-}
-
 const ArtsyShippingOptInResponseType = new GraphQLObjectType<
   any,
   ResolverContext

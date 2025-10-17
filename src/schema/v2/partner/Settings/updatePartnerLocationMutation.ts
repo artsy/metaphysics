@@ -13,21 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { LocationType } from "../../location"
 
-interface UpdatePartnerLocationInputProps {
-  locationId: string
-  partnerId: string
-  addressType?: string
-  country?: string
-  address?: string
-  address2?: string
-  city?: string
-  state?: string
-  postalCode?: string
-  email?: string
-  phone?: string
-  publiclyViewable?: boolean
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerLocationSuccess",
   isTypeOf: (data) => !!data.id,

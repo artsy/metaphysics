@@ -14,12 +14,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerOfferType } from "./partnerOffer"
 import { PartnerType } from "schema/v2/partner/partner"
 
-interface Input {
-  artwork_id: string
-  discount_percentage: number
-  note?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "createPartnerOfferSuccess",
   isTypeOf: (data) => data.id,

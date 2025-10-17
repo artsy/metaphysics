@@ -12,11 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ShowType } from "../show"
 
-interface RemoveInstallShotFromPartnerShowMutationInputProps {
-  showId: string
-  imageId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "RemoveInstallShotFromPartnerShowSuccess",
   isTypeOf: ({ showId }) => !!showId,

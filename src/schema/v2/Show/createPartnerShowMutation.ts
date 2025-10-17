@@ -16,25 +16,6 @@ import { ResolverContext } from "types/graphql"
 import Show from "../show"
 import moment from "moment"
 
-interface CreatePartnerShowMutationInputProps {
-  description?: string
-  endAt?: string
-  featured?: boolean
-  locationId?: string
-  name: string
-  partnerId: string
-  pressRelease?: string
-  startAt?: string
-  fairLocation?: {
-    booth?: string
-    floor?: string
-    hall?: string
-    pier?: string
-    room?: string
-    section?: string
-  }
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerShowSuccess",
   isTypeOf: (data) => data._id,

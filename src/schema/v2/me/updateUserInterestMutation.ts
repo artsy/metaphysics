@@ -17,11 +17,6 @@ import {
   userInterestType,
 } from "../userInterests"
 
-interface Input {
-  id: string
-  private?: boolean
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateUserInterestSuccess",
   isTypeOf: (data) => data.id,

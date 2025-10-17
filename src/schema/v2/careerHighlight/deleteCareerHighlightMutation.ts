@@ -12,10 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { CareerHighlightType } from "./careerHighlight"
 
-interface Input {
-  id: string
-}
-
 const inputFields = {
   id: { type: new GraphQLNonNull(GraphQLString) },
 }

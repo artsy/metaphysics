@@ -13,14 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 
-interface CreateArtworkMutationInputProps {
-  artistIds: string[]
-  partnerId: string
-  imageS3Bucket: string
-  imageS3Key: string
-  partnerShowId?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkSuccess",
   isTypeOf: ({ artworkId }) => !!artworkId,

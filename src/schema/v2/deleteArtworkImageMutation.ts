@@ -46,11 +46,6 @@ export const ArtworkMutationType = new GraphQLUnionType({
   types: [ArtworkMutationDeleteSuccessType, ArtworkMutationFailureType],
 })
 
-interface DeleteArtworkImageMutationInput {
-  artworkID: string
-  imageID: string
-}
-
 export const DeleteArtworkImageMutation = mutationWithClientMutationId({
   name: "DeleteArtworkImage",
   description: "Deletes an image from an artwork in my collection",

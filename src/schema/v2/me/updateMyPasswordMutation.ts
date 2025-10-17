@@ -4,12 +4,6 @@ import { GraphQLNonNull } from "graphql"
 import { snakeCase } from "lodash"
 import { meType } from "./index"
 
-interface Input {
-  currentPassword: string
-  newPassword: string
-  passwordConfirmation: string
-}
-
 interface GravityInput {
   current_password: string
   new_password: string

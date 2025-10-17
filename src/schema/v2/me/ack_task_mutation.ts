@@ -14,10 +14,6 @@ import { Task, TaskType } from "./task"
 import { HomeViewTasksSectionType } from "../homeView/sectionTypes/Tasks"
 import { Tasks } from "../homeView/sections/Tasks"
 
-interface Input {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "AckTaskSuccess",
   isTypeOf: (data) => data.id,

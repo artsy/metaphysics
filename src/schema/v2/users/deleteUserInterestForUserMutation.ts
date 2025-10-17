@@ -10,11 +10,6 @@ import {
 import { GraphQLUnionType } from "graphql"
 import { UserType } from "../user"
 
-interface Input {
-  id: string
-  userId?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteUserInterestForUserSuccess",
   isTypeOf: (data) => data.id,

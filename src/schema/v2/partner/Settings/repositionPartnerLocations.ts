@@ -13,11 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { PartnerType } from "../partner"
 
-interface RepositionPartnerLocationsProps {
-  partnerId: string
-  locationIds: string[]
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "RepositionPartnerLocationsSuccess",
   isTypeOf: (data) => !!data._id,

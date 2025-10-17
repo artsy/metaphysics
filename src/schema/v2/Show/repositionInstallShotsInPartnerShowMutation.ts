@@ -13,11 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ShowType } from "../show"
 
-interface RepositionInstallShotsInPartnerShowMutationInputProps {
-  showId: string
-  imageIds: string[]
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "RepositionInstallShotsInPartnerShowSuccess",
   isTypeOf: ({ showId }) => !!showId,

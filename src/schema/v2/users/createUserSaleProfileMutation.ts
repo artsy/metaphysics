@@ -13,17 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { UserSaleProfileType } from "../userSaleProfile"
 
-interface Input {
-  userId: string
-  addressLine1?: string
-  addressLine2?: string
-  city?: string
-  state?: string
-  zip?: string
-  country?: string
-  requireBidderApproval?: boolean
-}
-
 interface GravityInput {
   user_id: string
   address_1?: string

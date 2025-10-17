@@ -11,12 +11,6 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
-interface Input {
-  id: string
-  confirmationToken?: string
-  oneTimeUse?: boolean
-}
-
 export const submitOrderMutation = mutationWithClientMutationId({
   name: "submitOrder",
   description: "Submit an order",

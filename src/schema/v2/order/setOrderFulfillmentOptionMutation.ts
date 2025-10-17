@@ -11,11 +11,6 @@ import {
 } from "./types/sharedOrderTypes"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
-interface Input {
-  id: string
-  type?: string
-}
-
 // Similar to `FulfillmentOptionTypeEnum` but for input: Expects an all-caps
 // enum and converts back to exchange's lower-cased enum for the API.
 // Does not permit the SHIPPING_TBD placeholder option (but maybe should allow null?)

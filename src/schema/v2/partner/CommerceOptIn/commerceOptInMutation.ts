@@ -26,25 +26,6 @@ export const CommerceOptInResponseType = new GraphQLObjectType<
   }),
 })
 
-interface Input {
-  id: string
-  source: string
-  exactPrice?: boolean
-  pickupAvailable?: boolean
-  framed?: boolean
-  certificateOfAuthenticity?: boolean
-  coaByGallery?: boolean
-  coaByAuthenticatingBody?: boolean
-  locationId?: string
-  artsyShippingDomestic?: boolean
-  signedByArtist?: boolean
-  stampedByArtistEstate?: boolean
-  stickerLabel?: boolean
-  signedInPlate?: boolean
-  signedOther?: boolean
-  notSigned?: boolean
-}
-
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
   name: "CommerceOptInSuccess",
   fields: () => ({

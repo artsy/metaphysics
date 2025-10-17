@@ -6,19 +6,6 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
-interface Input {
-  id: string
-  buyerPhoneNumber?: string
-  buyerPhoneNumberCountryCode?: string
-  shippingName?: string
-  shippingAddressLine1?: string
-  shippingAddressLine2?: string
-  shippingCity?: string
-  shippingRegion?: string
-  shippingCountry?: string
-  shippingPostalCode?: string
-}
-
 export const updateOrderShippingAddressMutation = mutationWithClientMutationId({
   name: "updateOrderShippingAddress",
   description: "Update an order's shipping address",

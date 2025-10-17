@@ -13,12 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import Partner from "../../partner"
 
-interface RepositionPartnerArtistArtworksMutationInputProps {
-  artistId: string
-  partnerId: string
-  artworkIds: string[]
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "RepositionPartnerArtistArtworksSuccess",
   isTypeOf: (data) => data.id,

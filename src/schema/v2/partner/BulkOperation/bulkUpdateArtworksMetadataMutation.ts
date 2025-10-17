@@ -23,49 +23,6 @@ import { ResolverContext } from "types/graphql"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 import { BulkArtworkFilterInput } from "./shared"
 
-interface Input {
-  id: string
-  source: string
-  metadata?: {
-    editionSetsCount?: number
-    artistIds?: string[]
-    attributionClass?: string
-    availability?: string
-    category?: string
-    dates?: number[]
-    hasCertificateOfAuthenticity?: boolean
-    coaByGallery?: boolean
-    coaByAuthenticatingBody?: boolean
-    conditionDescription?: string
-    displayPriceRange?: boolean
-    domesticShippingFeeCents?: number
-    ecommerce: boolean
-    exactPrice?: boolean
-    exhibitionHistory?: string
-    imageRights?: string
-    internationalShippingFeeCents?: number
-    literature?: string
-    locationId?: string
-    medium?: string
-    offer: boolean
-    priceAdjustment?: number
-    priceHidden?: boolean
-    priceListed?: number
-    provenance?: string
-    published?: boolean
-    signature?: string
-    title?: string
-  }
-  filters?: {
-    artistId?: string
-    availability?: string
-    artworkIds?: string[]
-    locationId?: string
-    partnerArtistId?: string
-    published?: boolean
-  }
-}
-
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
   fields: {

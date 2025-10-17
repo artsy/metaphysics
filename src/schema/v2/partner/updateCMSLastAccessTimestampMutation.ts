@@ -12,10 +12,6 @@ import {
 import Partner from "./partner"
 import { ResolverContext } from "types/graphql"
 
-interface UpdateCMSLastAccessTimestampMutationInputProps {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateCMSLastAccessTimestampSuccess",
   isTypeOf: (data) => data._id,

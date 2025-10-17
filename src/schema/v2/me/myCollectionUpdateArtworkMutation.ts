@@ -21,41 +21,6 @@ import {
 } from "../artwork/artworkSignatureTypes"
 import { ArtworkConditionEnum } from "../artwork/artworkCondition"
 
-interface MyCollectionArtworkUpdateMutationInput {
-  additionalInformation?: string
-  artworkId: string
-  artistIds?: [string]
-  attributionClass?: string
-  category?: string
-  coaByAuthenticatingBody?: boolean
-  coaByGallery?: boolean
-  condition?: string
-  conditionDescription?: string
-  confidentialNotes?: string
-  costCurrencyCode?: string
-  costMajor?: number
-  costMinor?: number
-  date?: string
-  depth?: string
-  hasCertificateOfAuthenticity?: boolean
-  isEdition?: boolean
-  isFramed?: boolean
-  framedDepth?: string
-  framedHeight?: string
-  framedMetric?: string
-  framedWidth?: string
-  editionNumber?: string
-  editionSize?: string
-  externalImageUrls?: [string]
-  artworkLocation?: string
-  collectorLocation?: Record<string, string>
-  pricePaidCents?: number
-  pricePaidCurrency?: string
-  signatureDetails?: string
-  signatureTypes?: [string]
-  submissionId?: string
-}
-
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId({
   name: "MyCollectionUpdateArtwork",
   description: "Update an artwork in my collection",

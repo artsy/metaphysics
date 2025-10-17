@@ -15,20 +15,6 @@ import { ResolverContext } from "types/graphql"
 import { BulkArtworkFilterInput } from "./shared"
 import { BulkUpdateSourceEnum } from "../BulkUpdateSourceEnum"
 
-interface Input {
-  id: string
-  showId: string
-  source: string
-  filters?: {
-    artistId?: string
-    availability?: string
-    artworkIds?: string[]
-    locationId?: string
-    partnerArtistId?: string
-    published?: boolean
-  }
-}
-
 const BulkAddArtworksToShowResponseType = new GraphQLObjectType<
   any,
   ResolverContext

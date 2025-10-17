@@ -16,50 +16,6 @@ import {
 import Partner from "./partner"
 import { ResolverContext } from "types/graphql"
 
-interface UpdatePartnerMutationInputProps {
-  id: string
-  adminId?: string | null
-  alternateNames?: string[] | null
-  artsyCollectsSalesTax?: boolean | null
-  commissionRate?: number | null
-  commerceEnabled?: boolean | null
-  criteoEligible?: boolean | null
-  contractType?: string | null
-  directlyContactable?: boolean | null
-  displayArtistsSection?: boolean | null
-  displayName?: string | null
-  displayWorksSection?: boolean | null
-  distinguishRepresentedArtists?: boolean | null
-  email?: string | null
-  enableAchPaymentMethod?: boolean | null
-  enforceOnPlatformTransactions?: boolean | null
-  featuredKeywords?: string[] | null
-  givenName?: string | null
-  hasFullProfile?: boolean | null
-  hasLimitedFolioAccess?: boolean | null
-  implicitOfferEnabled?: boolean | null
-  inquiryOrderEnabled?: boolean | null
-  managedByErp?: boolean | null
-  outreachAdminId?: string | null
-  partnerCategories?: string[] | null
-  preQualify?: boolean | null
-  profileArtistsLayout?: string | null
-  profileBannerDisplay?: string | null
-  referralContactId?: string | null
-  region?: string | null
-  relativeSize?: number | null
-  requiresMerchantAccount?: boolean | null
-  shortName?: string | null
-  sortableName?: string | null
-  type?: string | null
-  vatNumber?: string | null
-  vatStatus?: string | null
-  vatExemptApproved?: boolean | null
-  verifiedSeller?: boolean | null
-  website?: string | null
-  wireTransferEnabled?: boolean | null
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerSuccess",
   isTypeOf: (data) => data._id,

@@ -12,11 +12,6 @@ import {
 import { ContactType } from "schema/v2/Contacts"
 import { ResolverContext } from "types/graphql"
 
-interface DeletePartnerContactInputProps {
-  contactId: string
-  partnerId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePartnerContactSuccess",
   isTypeOf: (data) => !!data._id,

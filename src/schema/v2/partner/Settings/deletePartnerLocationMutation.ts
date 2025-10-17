@@ -12,11 +12,6 @@ import {
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 
-interface DeletePartnerLocationInputProps {
-  LocationId: string
-  partnerId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePartnerLocationSuccess",
   isTypeOf: (data) => !!data.id,

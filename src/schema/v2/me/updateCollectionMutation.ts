@@ -44,13 +44,6 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-interface InputProps {
-  id: string
-  name: string
-  shareableWithPartners: boolean
-  private: boolean
-}
-
 export const updateCollectionMutation = mutationWithClientMutationId({
   name: "updateCollection",
   description: "Update a collection",

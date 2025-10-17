@@ -8,10 +8,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface Input {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteOrderedSetSuccess",
   isTypeOf: (data) => data.id,

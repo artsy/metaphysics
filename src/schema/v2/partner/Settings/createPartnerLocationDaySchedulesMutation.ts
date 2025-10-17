@@ -21,12 +21,6 @@ type DayScheduleInput = {
   endTime?: number
 }
 
-interface Input {
-  partnerId: string
-  locationId: string
-  daySchedules: DayScheduleInput[]
-}
-
 const DayScheduleInputType = new GraphQLInputObjectType({
   name: "DayScheduleInput",
   fields: {

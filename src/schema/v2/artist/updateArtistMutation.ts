@@ -25,35 +25,6 @@ import {
   ArtistGroupIndicatorEnum,
 } from "schema/v2/artist/groupIndicator"
 
-interface Input {
-  alternateNames: string[]
-  awards?: string
-  biennials?: string
-  birthday?: string
-  blurb?: string
-  criticallyAcclaimed?: boolean
-  coverArtworkId?: string
-  deathday?: string
-  displayName?: string
-  first?: string
-  foundations?: string
-  gender?: string
-  groupIndicator?: ArtistGroupIndicator
-  hometown?: string
-  id: string
-  last?: string
-  location?: string
-  middle?: string
-  nationality?: string
-  public?: boolean
-  recentShow?: string
-  residencies?: string
-  reviewSources?: string
-  targetSupplyPriority?: ArtistTargetSupplyPriority
-  targetSupplyType?: ArtistTargetSupplyType
-  vanguardYear?: string
-}
-
 const inputFields = {
   alternateNames: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
   awards: { type: GraphQLString },

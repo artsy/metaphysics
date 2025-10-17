@@ -12,11 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 
-interface Input {
-  id: string
-  role_type: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteUserRoleSuccess",
   isTypeOf: (data) => data.id,

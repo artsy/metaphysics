@@ -21,10 +21,6 @@ interface UserInterestInput {
   private?: boolean
 }
 
-interface Input {
-  userInterests: UserInterestInput[]
-}
-
 export const UpdateUserInterestInputType = new GraphQLInputObjectType({
   name: "UpdateUserInterestInput",
   fields: {

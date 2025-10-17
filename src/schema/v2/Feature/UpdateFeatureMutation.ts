@@ -14,19 +14,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
 
-interface Input {
-  active?: boolean
-  callout?: string
-  description?: string
-  id: string
-  layout?: string
-  metaTitle?: string
-  name?: string
-  sourceBucket?: string
-  sourceKey?: string
-  subheadline?: string
-}
-
 interface GravityInput {
   active?: boolean
   callout?: string

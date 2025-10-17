@@ -11,24 +11,6 @@ import {
 import { ConversationType, MessageEdge } from "./index"
 import { GraphQLInputObjectType } from "graphql"
 
-interface SendConversationMessageMutationProps {
-  attachments?: {
-    name: string
-    type: string
-    url: string
-    id?: string
-    size?: string
-  }[]
-  bodyHTML?: string
-  bodyText: string
-  from: string
-  fromId?: string
-  id: string
-  replyAll?: boolean
-  replyToMessageID: string
-  to?: string[]
-}
-
 export default mutationWithClientMutationId({
   name: "SendConversationMessageMutation",
   description: "Appending a message to a conversation thread",

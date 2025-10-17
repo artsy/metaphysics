@@ -13,13 +13,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { PageType } from "./Page"
 
-interface Input {
-  published: boolean
-  name: string
-  content: string
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePageSuccess",
   isTypeOf: (data) => data.id,

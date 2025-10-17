@@ -13,13 +13,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerDocumentType } from "../partner/partnerDocumentsConnection"
 import { ShowType } from "../show"
 
-interface CreatePartnerShowDocumentMutationInputProps {
-  partnerId: string
-  showId: string
-  remoteDocumentUrl: string
-  title: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerShowDocumentSuccess",
   isTypeOf: (data) => data._id,

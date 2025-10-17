@@ -14,15 +14,6 @@ import ShowEventType from "../show_event"
 import momentTimezone from "moment-timezone"
 import { ShowType } from "../show"
 
-interface CreatePartnerShowEventMutationInputProps {
-  partnerId: string
-  showId: string
-  startAt: string
-  endAt: string
-  eventType: string
-  description?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerShowEventSuccess",
   isTypeOf: (data) => data._id,

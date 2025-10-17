@@ -43,10 +43,6 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-interface InputProps {
-  id: string
-}
-
 export const deleteCollectionMutation = mutationWithClientMutationId({
   name: "deleteCollection",
   description: "Delete a collection",

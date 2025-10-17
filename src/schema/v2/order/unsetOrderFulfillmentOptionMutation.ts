@@ -6,10 +6,6 @@ import {
 } from "./types/sharedOrderTypes"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
-interface Input {
-  id: string
-}
-
 export const unsetOrderFulfillmentOptionMutation = mutationWithClientMutationId(
   {
     name: "unsetOrderFulfillmentOption",

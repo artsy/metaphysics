@@ -13,16 +13,6 @@ import {
 import { ProfileType } from "../profile"
 import { ResolverContext } from "types/graphql"
 
-interface UpdateProfileMutationInputProps {
-  id: string
-  handle?: string | null
-  bio?: string | null
-  fullBio?: string | null
-  website?: string | null
-  location?: string | null
-  isPrivate?: boolean | null
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateProfileSuccess",
   isTypeOf: (data) => data._id,

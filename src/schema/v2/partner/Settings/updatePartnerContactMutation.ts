@@ -13,17 +13,6 @@ import {
 import { ContactType } from "schema/v2/Contacts"
 import { ResolverContext } from "types/graphql"
 
-interface UpdatePartnerContactInputProps {
-  contactId: string
-  partnerId: string
-  name?: string
-  position?: string
-  canContact?: boolean
-  email?: string
-  phone?: string
-  locationId?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerContactSuccess",
   isTypeOf: (data) => !!data._id,

@@ -14,15 +14,6 @@ import {
 import { SaleAgreementType } from "./SaleAgreement"
 import { SaleAgreementStatusEnum } from "./SaleAgreementStatusEnum"
 
-interface Input {
-  content: string
-  displayStartAt: string
-  displayEndAt: string
-  published: boolean
-  saleId: string
-  status: "past" | "current" | "archived"
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateSaleAgreementSuccess",
   isTypeOf: (data) => data.id,

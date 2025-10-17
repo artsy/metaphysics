@@ -13,11 +13,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
 
-interface Input {
-  artistId: string
-  partnerId: string
-}
-
 const inputFields = {
   artistId: { type: new GraphQLNonNull(GraphQLString) },
   partnerId: { type: new GraphQLNonNull(GraphQLString) },

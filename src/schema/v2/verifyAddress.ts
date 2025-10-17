@@ -13,16 +13,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-interface Input {
-  addressLine1: string
-  addressLine2: string
-  city: string
-  region: string
-  postalCode: string
-  country: string
-  lines: string[]
-}
-
 const addressFieldsFromGravity = {
   addressLine1: {
     type: new GraphQLNonNull(GraphQLString),

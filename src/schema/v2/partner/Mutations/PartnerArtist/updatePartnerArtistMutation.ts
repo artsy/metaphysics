@@ -14,11 +14,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerArtistType } from "../../partner_artist"
 import Partner from "../../partner"
 
-interface UpdatePartnerArtistMutationInputProps {
-  id: string
-  remoteImageUrl?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerArtistSuccess",
   isTypeOf: (data) => data.id,

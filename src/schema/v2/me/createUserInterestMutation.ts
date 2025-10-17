@@ -10,16 +10,6 @@ import {
 } from "../userInterests"
 import { meType } from "./index"
 
-interface Input {
-  interestId: string
-  interestType: "Artist" | "Gene"
-  category: UserInterestCategory
-  body?: string
-  anonymousSessionId?: string
-  private?: boolean
-  sessionId?: string
-}
-
 export const userInterestInputFields = {
   interestId: { type: new GraphQLNonNull(GraphQLString) },
   interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },

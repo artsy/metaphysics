@@ -13,11 +13,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface UpdateMessageMutationInputProps {
-  id: string
-  spam: boolean
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateMessageSuccess",
   isTypeOf: (data) => data.id,

@@ -89,12 +89,6 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, ErrorType],
 })
 
-interface InputProps {
-  artworkIDs: string[]
-  addToCollectionIDs: string[]
-  removeFromCollectionIDs: string[]
-}
-
 export const artworksCollectionsBatchUpdateMutation = mutationWithClientMutationId(
   {
     name: "ArtworksCollectionsBatchUpdate",

@@ -12,13 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { PartnerType } from "../partner"
 
-interface UpdatePartnerProfileImageInputProps {
-  partnerId: string
-  type: string
-  remoteImageS3Key: string
-  remoteImageS3Bucket: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdatePartnerProfileImageSuccess",
   isTypeOf: (data) => !!data.id,

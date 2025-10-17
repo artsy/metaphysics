@@ -12,10 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 
-interface DeleteUserMutationInputProps {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteUserSuccess",
   isTypeOf: (data) => data.id,

@@ -5,15 +5,6 @@ import { meType } from "./index"
 import { AuthenticationProviderType, Provider } from "./authentications"
 import { snakeCase } from "lodash"
 
-interface Input {
-  provider: Provider
-  oauthToken: string
-  appleUid?: string
-  idToken?: string
-  name?: string
-  email?: string
-}
-
 interface GravityError {
   statusCode: number
   body: { error?: string; text?: string; message?: string }

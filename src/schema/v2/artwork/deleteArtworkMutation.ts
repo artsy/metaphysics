@@ -12,10 +12,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface DeleteArtworkMutationInputProps {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteArtworkSuccess",
   isTypeOf: (data) => data.id,

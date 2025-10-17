@@ -3,15 +3,6 @@ import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Conversation from "schema/v2/conversation"
 
-interface UpdateMessageMutationInputProps {
-  conversationId: string
-  dismissed: boolean
-  fromLastViewedMessageId: string
-  toLastViewedMessageId: string
-  sellerOutcome: string
-  sellerOutcomeComment: string
-}
-
 /**
  * Note that this mutation doesn't use our `thingOrError` pattern due because
  * its a breaking change to existing clients.

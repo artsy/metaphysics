@@ -11,10 +11,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface Input {
-  artistId: string
-}
-
 const inputFields = {
   artistId: { type: new GraphQLNonNull(GraphQLString) },
 }

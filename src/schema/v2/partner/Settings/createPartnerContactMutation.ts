@@ -13,16 +13,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ContactType } from "../../Contacts"
 
-interface Input {
-  partnerID: string
-  name?: string
-  position?: string
-  canContact?: boolean
-  email?: string
-  phone?: string
-  locationId?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerContactSuccess",
   isTypeOf: (data) => !!data._id,

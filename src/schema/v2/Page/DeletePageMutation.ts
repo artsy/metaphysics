@@ -8,10 +8,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { PageType } from "./Page"
 
-interface Input {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePageSuccess",
   isTypeOf: (data) => data.id,

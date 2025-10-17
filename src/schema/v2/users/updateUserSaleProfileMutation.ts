@@ -1,17 +1,6 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-interface Input {
-  id: string
-  addressLine1?: string
-  addressLine2?: string
-  city?: string
-  state?: string
-  zip?: string
-  country?: string
-  requireBidderApproval?: boolean
-}
-
 interface GravityInput {
   id: string
   address_1?: string

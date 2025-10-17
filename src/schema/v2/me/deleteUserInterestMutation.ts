@@ -5,12 +5,6 @@ import { UserInterest, userInterestType } from "../userInterests"
 import { snakeCase } from "lodash"
 import { meType } from "./index"
 
-interface Input {
-  id: string
-  anonymousSessionId?: string
-  sessionId?: string
-}
-
 export const deleteUserInterestMutation = mutationWithClientMutationId({
   name: "DeleteUserInterestMutation",
   description:

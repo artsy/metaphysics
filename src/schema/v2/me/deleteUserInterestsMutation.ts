@@ -15,10 +15,6 @@ import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
 import { meType } from "./index"
 
-interface Input {
-  ids: [string]
-}
-
 const deleteUserInterestFailure = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteUserInterestFailure",
   fields: () => ({

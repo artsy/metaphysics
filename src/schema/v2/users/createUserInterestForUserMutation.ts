@@ -18,15 +18,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { UserType } from "../user"
 
-interface Input {
-  body?: string
-  category: UserInterestCategory
-  interestId: string
-  interestType: UserInterestInterestType
-  ownerType: UserInterestOwnerType
-  userId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "createUserInterestForUserSuccess",
   isTypeOf: (data) => data.id,

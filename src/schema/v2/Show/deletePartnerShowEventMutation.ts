@@ -13,12 +13,6 @@ import { ResolverContext } from "types/graphql"
 import ShowEventType from "../show_event"
 import { ShowType } from "../show"
 
-interface DeletePartnerShowEventMutationInputProps {
-  partnerId: string
-  showId: string
-  eventId: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeletePartnerShowEventSuccess",
   isTypeOf: (data) => data._id,

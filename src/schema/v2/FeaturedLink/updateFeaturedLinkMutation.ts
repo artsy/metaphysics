@@ -8,15 +8,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface Input {
-  description?: string
-  title?: string
-  href?: string
-  subtitle?: string
-  sourceBucket?: string
-  sourceKey?: string
-}
-
 interface GravityInput {
   description?: string
   title?: string

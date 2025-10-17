@@ -13,13 +13,6 @@ import { ResolverContext } from "types/graphql"
 import { PartnerDocumentType } from "../../partnerDocumentsConnection"
 import Partner from "../../partner"
 
-interface CreatePartnerArtistDocumentMutationInputProps {
-  partnerId: string
-  artistId: string
-  remoteDocumentUrl: string
-  title: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerArtistDocumentSuccess",
   isTypeOf: (data) => data._id,

@@ -12,11 +12,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { UserAdminNoteType } from "../user"
 
-interface Input {
-  id: string
-  body: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "createUserAdminNoteSuccess",
   isTypeOf: (data) => data.id,

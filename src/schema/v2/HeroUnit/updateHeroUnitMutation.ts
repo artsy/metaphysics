@@ -14,22 +14,6 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-interface Input {
-  body: string
-  credit?: string
-  endAt?: string
-  id: string
-  imageUrl?: string
-  label?: string
-  link: {
-    text: string
-    url: string
-  }
-  position?: number
-  startAt?: string
-  title: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "updateHeroUnitSuccess",
   isTypeOf: (data) => data.id,

@@ -15,13 +15,6 @@ import { PartnerArtistType } from "../../partner_artist"
 import { ArtistType } from "../../../artist"
 import { PartnerType } from "../../partner"
 
-interface AssignArtistToPartnerMutationInputProps {
-  artistID: string
-  partnerID: string
-  featured?: boolean
-  remoteImageUrl?: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "AssignArtistToPartnerSuccess",
   isTypeOf: (data) => data.id,

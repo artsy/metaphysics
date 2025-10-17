@@ -12,10 +12,6 @@ import {
 import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
-interface DeleteConversationMutationInputProps {
-  id: string
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteConversationSuccess",
   isTypeOf: (data) => data.id,

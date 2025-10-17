@@ -8,13 +8,6 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
-interface Input {
-  id: string
-  paymentMethod?: string
-  creditCardWalletType?: string
-  stripeConfirmationToken?: string
-}
-
 export const updateOrderMutation = mutationWithClientMutationId({
   name: "updateOrder",
   description: "Update an order",

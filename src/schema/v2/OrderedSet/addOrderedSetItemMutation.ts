@@ -14,13 +14,6 @@ import {
 import { OrderedSetItemType } from "../item"
 import { OrderedSetType } from "./OrderedSet"
 
-interface Input {
-  geminiToken: string
-  id: string
-  itemId: string
-  position: number
-}
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "addOrderedSetItemSuccess",
   isTypeOf: (data) => data.id,
