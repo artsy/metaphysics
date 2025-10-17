@@ -2,7 +2,7 @@ import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { meType } from "./index"
-import { AuthenticationProviderType, Provider } from "./authentications"
+import { AuthenticationProviderType } from "./authentications"
 import { snakeCase } from "lodash"
 
 interface GravityError {

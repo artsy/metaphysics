@@ -15,12 +15,6 @@ import {
 import DayScheduleType from "schema/v2/day_schedule"
 import { ResolverContext } from "types/graphql"
 
-type DayScheduleInput = {
-  day: number
-  startTime?: number
-  endTime?: number
-}
-
 const DayScheduleInputType = new GraphQLInputObjectType({
   name: "DayScheduleInput",
   fields: {

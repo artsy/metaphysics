@@ -16,14 +16,9 @@ import {
 } from "lib/gravityErrorHandler"
 import {
   ArtistTargetSupplyPriorityEnum,
-  ArtistTargetSupplyPriority,
-  ArtistTargetSupplyType,
   ArtistTargetSupplyTypeEnum,
 } from "./targetSupply/index"
-import {
-  ArtistGroupIndicator,
-  ArtistGroupIndicatorEnum,
-} from "schema/v2/artist/groupIndicator"
+import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 
 const inputFields = {
   alternateNames: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },

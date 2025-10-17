@@ -16,11 +16,6 @@ import { ResolverContext } from "types/graphql"
 import { userInterestType } from "../userInterests"
 import { meType } from "./index"
 
-interface UserInterestInput {
-  id: string
-  private?: boolean
-}
-
 export const UpdateUserInterestInputType = new GraphQLInputObjectType({
   name: "UpdateUserInterestInput",
   fields: {

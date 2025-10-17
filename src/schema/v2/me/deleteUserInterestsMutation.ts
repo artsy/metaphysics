@@ -12,7 +12,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { uniq } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { UserInterest, userInterestType } from "../userInterests"
+import { userInterestType } from "../userInterests"
 import { meType } from "./index"
 
 const deleteUserInterestFailure = new GraphQLObjectType<any, ResolverContext>({

@@ -4,11 +4,8 @@ import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   UserInterest,
-  UserInterestCategory,
   userInterestCategoryEnum,
-  UserInterestInterestType,
   userInterestInterestTypeEnum,
-  UserInterestOwnerType,
   userInterestOwnerTypeEnum,
   userInterestType,
 } from "../userInterests"

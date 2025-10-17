@@ -16,13 +16,6 @@ import { UserInterestCategory, userInterestType } from "../userInterests"
 import { userInterestInputFields } from "./createUserInterestMutation"
 import { meType } from "./index"
 
-interface UserInterestInput {
-  category: UserInterestCategory
-  interestId: string
-  interestType: "Artist" | "Gene"
-  private?: boolean
-}
-
 export const UserInterestInputType = new GraphQLInputObjectType({
   name: "UserInterestInput",
   fields: userInterestInputFields,

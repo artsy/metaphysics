@@ -3,7 +3,6 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { snakeCase } from "lodash"
 import {
   UserInterest,
-  UserInterestCategory,
   userInterestCategoryEnum,
   userInterestInterestTypeEnum,
   userInterestType,

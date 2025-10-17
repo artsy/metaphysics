@@ -27,8 +27,6 @@ type ItemType =
   | "Sale"
   | "User"
 
-type OwnerType = "Fair" | "Feature" | "Sale"
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateOrderedSetSuccess",
   isTypeOf: (data) => data.id,
