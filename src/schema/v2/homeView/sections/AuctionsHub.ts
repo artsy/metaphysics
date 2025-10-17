@@ -53,6 +53,7 @@ const yourAuctionPicksCard: CardFunction = async ({
   }
 
   const artworks = await artworksForUser.resolve!(parent, args, context, info)
+
   const imageURLs = extractImageUrls(
     artworks.edges,
     ({ node }) => node.images?.[0]?.image_urls?.main
@@ -64,7 +65,7 @@ const yourAuctionPicksCard: CardFunction = async ({
 
   return {
     title: "Your Auction Picks",
-    href: "/your-auction-picks",
+    href: "/auctions/lots-for-you-ending-soon",
     entityType: "card",
     entityID: "card-your-auction-picks",
     imageURLs,
@@ -79,7 +80,20 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     sort: "-is_artsy_licensed,timely_at,name",
   }
 
+  // TODO: sales returns too much data, should we have a lighter loader?
   const sales = await context.salesLoader(gravityOptions)
+
+  const cardDetails = {
+    title: "No Current or Upcoming Auctions at this time",
+    href: "/auctions",
+    entityType: "card",
+    entityID: "card-browse-all-auctions",
+    imageURLs: [] as string[],
+  }
+
+  if (!sales || sales.length === 0) {
+    return cardDetails
+  }
 
   // Process sales with async fallback logic
   const imageURLPromises = sales.map(async (sale: any) => {
@@ -108,10 +122,8 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   }
 
   return {
-    title: "Browse All Auctions",
-    href: "/auctions",
-    entityType: "card",
-    entityID: "card-browse-all-auctions",
+    ...cardDetails,
+    title: "Current and Upcoming Auctions",
     imageURLs,
   }
 }
@@ -121,6 +133,7 @@ const latestAuctionResultsCard: CardFunction = async ({
   context,
   info,
 }) => {
+  // FIX TIMEOUT [withTimeout]: getaddrinfo ENOTFOUND diffusion.stg.artsy.systems
   const finalArgs = {
     state: "past",
     sort: "-sale_date",
@@ -131,12 +144,24 @@ const latestAuctionResultsCard: CardFunction = async ({
   const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
     .default
 
+  const cardDetails = {
+    title: "Follow and engage with artists to see auction results",
+    href: "/auction-results-for-artists-you-follow",
+    entityType: "card",
+    entityID: "card-auction-results-for-artist-you-follow",
+    imageURLs: [],
+  }
+
   const response = await AuctionResultsByFollowedArtists.resolve!(
     parent,
     finalArgs,
     context,
     info
   )
+
+  if (!response || response.edges.length === 0) {
+    return cardDetails
+  }
 
   const imageURLs = extractImageUrls(
     response.edges,
@@ -148,10 +173,8 @@ const latestAuctionResultsCard: CardFunction = async ({
   }
 
   return {
-    title: "Latest Auction Results",
-    href: "/latest-auction-results",
-    entityType: "card",
-    entityID: "card-latest-auction-results",
+    ...cardDetails,
+    title: "Auction Results for Artist You Follow",
     imageURLs,
   }
 }
@@ -175,7 +198,7 @@ export const AuctionsHub: HomeViewSection = {
     const cards = await Promise.all([
       yourAuctionPicksCard(cardContext),
       browseAllAuctionsCard(cardContext),
-      latestAuctionResultsCard(cardContext),
+      // latestAuctionResultsCard(cardContext),
     ])
 
     const validCards = cards.filter(Boolean)

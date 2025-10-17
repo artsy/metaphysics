@@ -172,7 +172,7 @@ describe("AuctionsHub", () => {
       // Your Auction Picks card
       const auctionPicksCard = result.edges[0].node
       expect(auctionPicksCard.title).toBe("Your Auction Picks")
-      expect(auctionPicksCard.href).toBe("/your-auction-picks")
+      expect(auctionPicksCard.href).toBe("/auctions/lots-for-you-ending-soon")
       expect(auctionPicksCard.entityType).toBe("card")
       expect(auctionPicksCard.entityID).toBe("card-your-auction-picks")
       expect(auctionPicksCard.imageURLs).toEqual([
@@ -181,9 +181,9 @@ describe("AuctionsHub", () => {
         "https://example.com/artwork3.jpg",
       ])
 
-      // Browse All Auctions card
+      // Current and Upcoming Auctions card
       const auctionsCard = result.edges[1].node
-      expect(auctionsCard.title).toBe("Browse All Auctions")
+      expect(auctionsCard.title).toBe("Current and Upcoming Auctions")
       expect(auctionsCard.href).toBe("/auctions")
       expect(auctionsCard.entityType).toBe("card")
       expect(auctionsCard.entityID).toBe("card-browse-all-auctions")
@@ -193,12 +193,14 @@ describe("AuctionsHub", () => {
         "https://example.com/auction3-cover.jpg",
       ])
 
-      // Latest Auction Results card
+      // Auction Results for Artist You Follow card
       const resultsCard = result.edges[2].node
-      expect(resultsCard.title).toBe("Latest Auction Results")
-      expect(resultsCard.href).toBe("/latest-auction-results")
+      expect(resultsCard.title).toBe("Auction Results for Artist You Follow")
+      expect(resultsCard.href).toBe("/auction-results-for-artists-you-follow")
       expect(resultsCard.entityType).toBe("card")
-      expect(resultsCard.entityID).toBe("card-latest-auction-results")
+      expect(resultsCard.entityID).toBe(
+        "card-auction-results-for-artist-you-follow"
+      )
       expect(resultsCard.imageURLs).toEqual([
         "https://example.com/result1.jpg",
         "https://example.com/result2.jpg",
@@ -217,7 +219,7 @@ describe("AuctionsHub", () => {
       ).rejects.toThrow("Sales loader failed")
     })
 
-    it("filters out cards with no images", async () => {
+    it("shows empty states when AuctionResultsByFollowedArtists is empty", async () => {
       // Mock empty results for all data sources
       const { artworksForUser } = require("schema/v2/artworksForUser")
       artworksForUser.resolve.mockResolvedValue({ edges: [] })
@@ -235,11 +237,17 @@ describe("AuctionsHub", () => {
         {} as any
       )
 
-      // Should return no cards since all return null due to no images
-      expect(result.edges).toHaveLength(0)
+      // Should return two empty state cards when AuctionsHub reasults are empty
+      expect(result.edges).toHaveLength(2)
+      expect(result.edges[0].node.title).toBe(
+        "No Current or Upcoming Auctions at this time"
+      )
+      expect(result.edges[1].node.title).toBe(
+        "Follow and engage with artists to see auction results"
+      )
     })
 
-    it("returns only cards with images when some have no images", async () => {
+    it("returns cards with images and empty states when some have no images", async () => {
       // Mock yourAuctionPicksCard to have images
       const { artworksForUser } = require("schema/v2/artworksForUser")
       artworksForUser.resolve.mockResolvedValue(mockArtworks)
@@ -259,9 +267,15 @@ describe("AuctionsHub", () => {
         {} as any
       )
 
-      // Should return only the Your Auction Picks card
-      expect(result.edges).toHaveLength(1)
+      // Should return the Your Auction Picks card and two empty state cards for the others
+      expect(result.edges).toHaveLength(3)
       expect(result.edges[0].node.title).toBe("Your Auction Picks")
+      expect(result.edges[1].node.title).toBe(
+        "No Current or Upcoming Auctions at this time"
+      )
+      expect(result.edges[2].node.title).toBe(
+        "Follow and engage with artists to see auction results"
+      )
     })
 
     it("handles sales with no cover images or artwork images", async () => {
@@ -290,8 +304,11 @@ describe("AuctionsHub", () => {
         {} as any
       )
 
-      // Should return no cards since browseAllAuctionsCard returns null
-      expect(result.edges).toHaveLength(0)
+      // Should return only emty state card for AuctionResultsByFollowedArtists
+      expect(result.edges).toHaveLength(1)
+      expect(result.edges[0].node.title).toBe(
+        "Follow and engage with artists to see auction results"
+      )
     })
   })
 })
