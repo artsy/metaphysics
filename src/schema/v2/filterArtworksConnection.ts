@@ -443,6 +443,7 @@ const filterArtworksConnectionType = connectionDefinitions({
       type: new GraphQLNonNull(PageCursorsType),
     },
   },
+  // @ts-ignore - connectionInterfaces and edgeInterfaces are custom Artsy extensions
   connectionInterfaces: [NodeInterface, ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
 }).connectionType

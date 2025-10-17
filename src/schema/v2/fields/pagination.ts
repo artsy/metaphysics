@@ -171,7 +171,7 @@ export function createPageCursors(
 }
 
 export function connectionWithCursorInfo(
-  config: ConnectionConfig
+  config: ConnectionConfig & { [key: string]: any }
 ): GraphQLConnectionDefinitions {
   return connectionDefinitions({
     ...config,
