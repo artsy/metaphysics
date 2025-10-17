@@ -1,7 +1,6 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { quiz, QuizType } from "./quiz"
-import { ResolverContext } from "types/graphql"
 
 export const updateQuizMutation = mutationWithClientMutationId({
   name: "updateQuizMutation",

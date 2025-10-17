@@ -1,6 +1,5 @@
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
-import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 import { AuthenticationProviderType } from "./authentications"
 import { formatGravityError } from "lib/gravityErrorHandler"

@@ -1,7 +1,6 @@
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtworkType } from "schema/v2/artwork/index"
-import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
 export default mutationWithClientMutationId({

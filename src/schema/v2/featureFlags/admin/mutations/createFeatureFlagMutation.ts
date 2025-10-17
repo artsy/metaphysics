@@ -9,7 +9,6 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { omit } from "lodash"
-import { ResolverContext } from "types/graphql"
 import { FeatureFlags } from "../featureFlags"
 
 export const FeatureFlagInputFields = {

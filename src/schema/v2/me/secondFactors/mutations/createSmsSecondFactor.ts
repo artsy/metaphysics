@@ -4,7 +4,6 @@ import {
   SmsSecondFactorMutationResponseOrErrorsType,
   SmsSecondFactorAttributes,
 } from "../secondFactors"
-import { ResolverContext } from "types/graphql"
 
 export const createSmsSecondFactorMutation = mutationWithClientMutationId({
   name: "CreateSmsSecondFactor",

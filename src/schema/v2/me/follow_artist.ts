@@ -2,7 +2,6 @@ import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/v2/artist/index"
 import { PopularArtistsField } from "schema/v2/Highlights/PopularArtists"
-import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
 export default mutationWithClientMutationId({

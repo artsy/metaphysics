@@ -1,7 +1,6 @@
 import { GraphQLBoolean, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GeneType } from "../gene"
-import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId({
   name: "FollowGene",

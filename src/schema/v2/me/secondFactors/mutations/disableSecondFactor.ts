@@ -1,7 +1,6 @@
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SecondFactorOrErrorsUnionType } from "../secondFactors"
-import { ResolverContext } from "types/graphql"
 
 export const disableSecondFactorMutation = mutationWithClientMutationId({
   name: "DisableSecondFactor",

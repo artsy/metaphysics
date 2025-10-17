@@ -1,7 +1,6 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Bidder from "schema/v2/bidder"
-import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId({
   name: "CreateBidder",

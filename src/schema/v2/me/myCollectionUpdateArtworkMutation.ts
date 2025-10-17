@@ -8,7 +8,6 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { formatGravityError } from "lib/gravityErrorHandler"
-import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import {
   ArtworkAttributionClassEnum,

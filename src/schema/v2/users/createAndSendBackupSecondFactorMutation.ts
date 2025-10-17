@@ -1,6 +1,5 @@
 import { GraphQLID, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import { BackupSecondFactor } from "../me/secondFactors/secondFactors"
 
 export const createAndSendBackupSecondFactorMutation = mutationWithClientMutationId(

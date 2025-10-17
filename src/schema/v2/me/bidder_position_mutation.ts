@@ -4,7 +4,6 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { BidderPositionResultType } from "../types/bidder_position_result"
 import { bidderPositionMessages } from "./bidder_position_messages"
 import config from "config"
-import { ResolverContext } from "types/graphql"
 import { last } from "lodash"
 
 const { PREDICTION_ENDPOINT } = config

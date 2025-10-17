@@ -1,7 +1,6 @@
 import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
-import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 import { AuthenticationProviderType, Provider } from "./authentications"
 import { snakeCase } from "lodash"

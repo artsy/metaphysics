@@ -4,7 +4,6 @@ import {
   AppSecondFactorAttributes,
   AppSecondFactorMutationResponseOrErrorsType,
 } from "../secondFactors"
-import { ResolverContext } from "types/graphql"
 
 export const updateAppSecondFactorMutation = mutationWithClientMutationId({
   name: "UpdateAppSecondFactor",

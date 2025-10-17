@@ -7,7 +7,6 @@ import {
   GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import { ARImageInputType } from "./ARImageInput"
 import { ViewingRoomSubsectionType } from "schema/v2/viewingRoomSubsection"
 import { identity, pickBy } from "lodash"

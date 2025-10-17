@@ -1,7 +1,6 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { snakeCase } from "lodash"
-import { ResolverContext } from "types/graphql"
 import {
   UserInterest,
   UserInterestCategory,

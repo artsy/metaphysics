@@ -1,6 +1,5 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 

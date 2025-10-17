@@ -2,7 +2,6 @@ import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { BankAccountMutationType } from "../bank_account"
-import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 
 export const deleteBankAccountMutation = mutationWithClientMutationId({

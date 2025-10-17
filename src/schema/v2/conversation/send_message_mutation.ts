@@ -9,7 +9,6 @@ import {
   cursorForObjectInConnection,
 } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"
-import { ResolverContext } from "types/graphql"
 import { GraphQLInputObjectType } from "graphql"
 
 interface SendConversationMessageMutationProps {

@@ -6,7 +6,6 @@ import {
   OrderCreditCardWalletTypeEnum,
 } from "./types/sharedOrderTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {

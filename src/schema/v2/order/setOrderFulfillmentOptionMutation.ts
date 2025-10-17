@@ -5,7 +5,6 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import {
   OrderMutationResponseType,
   ORDER_MUTATION_FLAGS,

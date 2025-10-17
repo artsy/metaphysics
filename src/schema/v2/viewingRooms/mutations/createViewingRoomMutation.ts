@@ -1,7 +1,6 @@
 import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { identity, pickBy } from "lodash"
-import { ResolverContext } from "types/graphql"
 import { ViewingRoomInputAttributesType } from "./viewingRoomInputAttributes"
 import { ViewingRoomOrErrorType } from "./viewingRoomOrError"
 import { ARImageInputType } from "./ARImageInput"

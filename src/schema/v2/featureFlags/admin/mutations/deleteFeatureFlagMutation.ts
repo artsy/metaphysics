@@ -1,6 +1,5 @@
 import { GraphQLBoolean, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 import { FeatureFlags } from "../featureFlags"
 
 export interface DeleteFeatureFlagInput {

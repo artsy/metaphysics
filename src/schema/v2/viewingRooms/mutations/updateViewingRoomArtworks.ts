@@ -9,7 +9,6 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { identity, pickBy } from "lodash"
-import { ResolverContext } from "types/graphql"
 
 const ViewingRoomArtworkInput = new GraphQLInputObjectType({
   name: "ViewingRoomArtworkInput",
