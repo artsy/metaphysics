@@ -314,7 +314,7 @@ export const FilterArtworksFields = () => {
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
       //deprecationReason:
-      //  "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments.",
+      //  "Use only for filtering over search-backed fields, otherwise favor artwork connections that take filter arguments.",
       args: pageable({
         sort: {
           type: GraphQLString,
@@ -658,9 +658,9 @@ const filterArtworksConnectionTypeFactory = (
 
     let hits, aggregations
 
-    // For simple CMS requests, use partnerArtworksAllLoader instead of ElasticSearch.
-    // This is a workaround to try to not use ElasticSearch if we don't need to (for resiliency).
-    // We've seen ElasticSearch can not be stable and partners notice that in CMS.
+    // For simple CMS requests, use partnerArtworksAllLoader instead of search.
+    // This is a workaround to try to not use search if we don't need to (for resiliency).
+    // We've seen search can not be stable and partners notice that in CMS.
     // Currently, this will serve requests for the landing page of /artworks listings in CMS.
     if (isCMSRequest && partnerArtworksAllLoader) {
       const {
@@ -707,7 +707,7 @@ const filterArtworksConnectionTypeFactory = (
       }
     }
 
-    // If we didn't already load the data via a different loader, use ElasticSearch.
+    // If we didn't already load the data via a different loader, use search.
     if (!hits || !aggregations) {
       const result = await loader(gravityOptions)
       hits = result.hits
