@@ -115,13 +115,13 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
         )
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+        const interests = body.map((node) => node.interest)
         return {
           totalCount,
           pageCursors: createPageCursors({ page, size }, totalCount),
-          ...connectionFromArraySlice(body, args, {
+          ...connectionFromArraySlice(interests, args, {
             arrayLength: totalCount,
             sliceStart: offset,
-            resolveNode: (node) => node.interest,
           }),
         }
       } catch (error) {
