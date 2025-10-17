@@ -198,7 +198,7 @@ export const AuctionsHub: HomeViewSection = {
     const cards = await Promise.all([
       yourAuctionPicksCard(cardContext),
       browseAllAuctionsCard(cardContext),
-      // latestAuctionResultsCard(cardContext),
+      latestAuctionResultsCard(cardContext),
     ])
 
     const validCards = cards.filter(Boolean)
