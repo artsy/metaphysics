@@ -1019,7 +1019,7 @@ describe("artworksConnection", () => {
     })
 
     describe("complex CMS requests", () => {
-      it("falls back to ElasticSearch for CMS requests with additional filters", async () => {
+      it("falls back to search for CMS requests with additional filters", async () => {
         const mockFilterArtworksLoader = jest.fn(() =>
           Promise.resolve({
             hits: [
