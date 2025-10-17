@@ -76,10 +76,10 @@ describe("ViewingRoomSubsection", () => {
               "body": "subsection body",
               "caption": "subsection caption",
               "image": {
-                "__typename": "ARImage",
+                "__typename": "GravityARImage",
                 "height": 100,
                 "imageURLs": {
-                  "__typename": "ImageURLs",
+                  "__typename": "GravityImageURLs",
                   "normalized": "https://example.com/image.jpg",
                 },
                 "internalID": "example-image",
@@ -93,10 +93,10 @@ describe("ViewingRoomSubsection", () => {
               "body": "another subsection body",
               "caption": "another subsection caption",
               "image": {
-                "__typename": "ARImage",
+                "__typename": "GravityARImage",
                 "height": 200,
                 "imageURLs": {
-                  "__typename": "ImageURLs",
+                  "__typename": "GravityImageURLs",
                   "normalized": "https://example.com/another-image.jpg",
                 },
                 "internalID": "another-example-image",
