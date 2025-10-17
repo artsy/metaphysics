@@ -21,6 +21,7 @@ const ViewingRoomArtworkInput = new GraphQLInputObjectType({
       type: GraphQLInt,
     },
     delete: {
+      defaultValue: false,
       type: GraphQLBoolean,
     },
     internalID: {
