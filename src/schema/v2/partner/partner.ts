@@ -513,12 +513,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               )
             })
             .then((body) => {
+              const artists = body.map((node) => node.artist)
               return {
                 totalCount: body.length,
-                ...connectionFromArraySlice(body, args, {
+                ...connectionFromArraySlice(artists, args, {
                   arrayLength: body.length,
                   sliceStart: 0,
-                  resolveNode: (node) => node.artist,
                 }),
               }
             })

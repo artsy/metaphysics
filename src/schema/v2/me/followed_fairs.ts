@@ -25,10 +25,12 @@ const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     return followedFairsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+      const profiles = body.map(
+        (follow_profile) => follow_profile.profile.owner
+      )
+      return connectionFromArraySlice(profiles, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
-        resolveNode: (follow_profile) => follow_profile.profile.owner,
       })
     })
   },

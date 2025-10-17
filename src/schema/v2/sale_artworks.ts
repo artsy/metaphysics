@@ -183,7 +183,6 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, connectionOptions, {
-        useValueAsEdge: true,
         arrayLength: response.aggregations.total.value,
         sliceStart: params.offset,
       }),

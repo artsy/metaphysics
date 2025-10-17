@@ -10,12 +10,14 @@ import {
 import {
   connectionDefinitions,
   toGlobalId,
-  ConnectionConfig,
-  GraphQLConnectionDefinitions,
   connectionFromArraySlice,
   ConnectionArguments,
   connectionFromArray,
 } from "graphql-relay"
+import type {
+  ConnectionConfig,
+  GraphQLConnectionDefinitions,
+} from "graphql-relay/connection/connection"
 import { warn } from "lib/loggers"
 import { pick } from "lodash"
 import { ResolverContext } from "types/graphql"
@@ -221,13 +223,17 @@ export const paginationResolver = <T>({
     ...pick(args, "before", "after", "first", "last"),
   }
 
+  // Apply resolveNode transformation if provided
+  const resolvedBody = resolveNode
+    ? body.map((node) => resolveNode(node, {}, {}, {} as any))
+    : body
+
   return {
     totalCount,
     pageCursors: createPageCursors({ page, size }, totalCount),
-    ...connectionFromArraySlice(body, connectionArgs, {
+    ...connectionFromArraySlice(resolvedBody, connectionArgs, {
       arrayLength: totalCount,
       sliceStart: offset,
-      resolveNode,
     }),
   }
 }

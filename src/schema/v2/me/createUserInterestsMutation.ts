@@ -12,7 +12,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { UserInterestCategory, userInterestType } from "../userInterests"
+import { userInterestType } from "../userInterests"
 import { userInterestInputFields } from "./createUserInterestMutation"
 import { meType } from "./index"
 

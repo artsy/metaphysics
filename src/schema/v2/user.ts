@@ -169,18 +169,18 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           )
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          const properties = body.map(
+            ({ property, property_type: propertyType }) => ({
+              propertyType,
+              ...property,
+            })
+          )
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(body, args, {
+            ...connectionFromArraySlice(properties, args, {
               arrayLength: totalCount,
               sliceStart: offset,
-              resolveNode: ({ property, property_type: propertyType }) => {
-                return {
-                  propertyType,
-                  ...property,
-                }
-              },
             }),
           }
         },
@@ -291,13 +291,13 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           })
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          const inquireables = body.map((node) => node.inquireable)
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(body, args, {
+            ...connectionFromArraySlice(inquireables, args, {
               arrayLength: totalCount,
               sliceStart: offset,
-              resolveNode: (node) => node.inquireable,
             }),
           }
         },
@@ -322,13 +322,13 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           })
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          const interests = body.map((node) => node.interest)
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(body, args, {
+            ...connectionFromArraySlice(interests, args, {
               arrayLength: totalCount,
               sliceStart: offset,
-              resolveNode: (node) => node.interest,
             }),
           }
         },
@@ -471,13 +471,13 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           })
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          const artworks = body.map((node) => node.artwork)
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(body, args, {
+            ...connectionFromArraySlice(artworks, args, {
               arrayLength: totalCount,
               sliceStart: offset,
-              resolveNode: (node) => node.artwork,
             }),
           }
         },

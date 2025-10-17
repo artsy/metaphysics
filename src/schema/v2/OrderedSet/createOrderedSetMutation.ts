@@ -15,17 +15,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 
-type ItemType =
-  | "Artist"
-  | "Artwork"
-  | "Feature Link"
-  | "Gene"
-  | "Ordered Set"
-  | "Partner Show"
-  | "Profile"
-  | "Sale"
-  | "User"
-
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "createOrderedSetSuccess",
   isTypeOf: (data) => data.id,

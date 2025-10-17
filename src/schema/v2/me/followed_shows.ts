@@ -62,10 +62,10 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+      const shows = body.map((follow_show) => follow_show.partner_show)
+      return connectionFromArraySlice(shows, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
-        resolveNode: (follow_show) => follow_show.partner_show,
       })
     })
   },

@@ -207,12 +207,12 @@ export const fields: Thunk<GraphQLFieldConfigMap<
         ).then(({ body, headers }) => {
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          const artworks = body.map((node) => node.artwork)
           return {
             totalCount,
-            ...connectionFromArraySlice(body, args, {
+            ...connectionFromArraySlice(artworks, args, {
               arrayLength: totalCount,
               sliceStart: offset,
-              resolveNode: (node) => node.artwork,
             }),
           }
         })
@@ -379,10 +379,10 @@ export const partnersForArtist = (
   }
 
   return loader(gravityArgs).then(({ body, headers }) => {
-    return connectionFromArraySlice(body, options, {
+    const partners = body.map((node) => node.partner)
+    return connectionFromArraySlice(partners, options, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
-      resolveNode: (node) => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
   })
 }
