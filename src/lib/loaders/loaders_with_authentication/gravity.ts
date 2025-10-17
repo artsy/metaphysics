@@ -1151,6 +1151,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    requestConditionReportLoader: gravityLoader(
+      "condition_report_request",
+      {},
+      { method: "POST" }
+    ),
     userRolesLoader: gravityLoader("system/roles"),
     saleAgreementsLoader: gravityLoader(
       "sale_agreements",
