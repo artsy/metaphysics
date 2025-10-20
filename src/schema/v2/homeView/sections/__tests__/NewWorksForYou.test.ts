@@ -176,4 +176,94 @@ describe("NewWorksForYou", () => {
       expect(vortexGraphqlQuery).toMatch('version: "A"')
     })
   })
+
+  describe("showArtworksCardView", () => {
+    afterEach(() => {
+      mockGetExperimentVariant.mockReset()
+    })
+
+    it("returns true when variant-a is enabled", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "variant-a",
+        enabled: true,
+      }))
+
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-new-works-for-you") {
+              ... on HomeViewSectionArtworks {
+                showArtworksCardView
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(true)
+      expect(mockGetExperimentVariant).toHaveBeenCalledWith(
+        "onyx_nwfy-artworks-card-test"
+      )
+    })
+
+    it("returns false when in control group", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "control",
+        enabled: true,
+      }))
+
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-new-works-for-you") {
+              ... on HomeViewSectionArtworks {
+                showArtworksCardView
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(false)
+    })
+
+    it("returns false when experiment is not enabled", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "variant-a",
+        enabled: false,
+      }))
+
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-new-works-for-you") {
+              ... on HomeViewSectionArtworks {
+                showArtworksCardView
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(false)
+    })
+  })
 })
