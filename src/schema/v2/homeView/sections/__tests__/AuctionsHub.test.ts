@@ -20,7 +20,7 @@ describe("AuctionsHub", () => {
     expect(AuctionsHub.id).toBe("home-view-section-auctions-hub")
     expect(AuctionsHub.type).toBe("HomeViewSectionCards")
     expect(AuctionsHub.requiresAuthentication).toBe(true)
-    expect(AuctionsHub.component?.title).toBe("Auctions Hub")
+    expect(AuctionsHub.component?.title).toBe("Discover Auctions on Artsy")
     expect(AuctionsHub.component?.type).toBe("3UpImageLayout")
     expect(AuctionsHub.shouldBeDisplayed).toBeDefined()
   })
