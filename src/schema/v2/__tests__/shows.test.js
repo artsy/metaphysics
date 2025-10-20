@@ -54,6 +54,7 @@ describe("Shows", () => {
           sort: START_AT_DESC
           displayable: true
           atAFair: false
+          maxPerPartner: 2
         ) {
           totalCount
           edges {
@@ -77,6 +78,7 @@ describe("Shows", () => {
       size: 5,
       sort: "-start_at",
       total_count: true,
+      max_per_partner: 2,
     })
 
     expect(showsConnection.totalCount).toBe(1)
