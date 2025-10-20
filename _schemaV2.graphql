@@ -13561,6 +13561,7 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
+  showArtworksCardView: Boolean!
   trackItemImpressions: Boolean!
 }
 
@@ -20780,6 +20781,9 @@ type Query {
     hasLocation: Boolean
     ids: [String]
     last: Int
+
+    # Caps number of shows per partner (may result in uneven page sizes)
+    maxPerPartner: Int
     sort: ShowSorts
     status: EventStatus
 
@@ -26778,6 +26782,9 @@ type Viewer {
     hasLocation: Boolean
     ids: [String]
     last: Int
+
+    # Caps number of shows per partner (may result in uneven page sizes)
+    maxPerPartner: Int
     sort: ShowSorts
     status: EventStatus
 

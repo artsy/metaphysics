@@ -2005,18 +2005,36 @@ describe("Artwork type", () => {
         }
       `
 
-    it("returns available inquiry questions if an artwork is not inquirable", () => {
+    it("returns inquiry questions if an artwork is not inquirable", () => {
       const context = {
         artworkLoader: () => {
           return Promise.resolve({ id: "blah", inquireable: false })
         },
         inquiryRequestQuestionsLoader: () => {
-          return Promise.reject()
+          return Promise.resolve([
+            {
+              id: "shipping",
+              question: "Shipping",
+            },
+            {
+              id: "condition_and_provenance",
+              question: "Condition & Provenance",
+            },
+          ])
         },
       }
 
       return runQuery(query, context).then((data) => {
-        expect(data.artwork.inquiryQuestions).toEqual([])
+        expect(data.artwork.inquiryQuestions).toEqual([
+          {
+            internalID: "shipping",
+            question: "Shipping",
+          },
+          {
+            internalID: "condition_and_provenance",
+            question: "Condition & Provenance",
+          },
+        ])
       })
     })
 

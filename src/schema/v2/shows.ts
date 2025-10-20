@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLInt,
   GraphQLList,
   GraphQLString,
 } from "graphql"
@@ -27,6 +28,7 @@ export const Shows: GraphQLFieldConfig<
     displayable?: boolean
     atAFair?: boolean
     status?: EventStatusType
+    maxPerPartner?: number
   } & CursorPageable
 > = {
   type: ShowsConnection.connectionType,
@@ -54,6 +56,11 @@ export const Shows: GraphQLFieldConfig<
     term: {
       description: "If present, will search by term",
       type: GraphQLString,
+    },
+    maxPerPartner: {
+      description:
+        "Caps number of shows per partner (may result in uneven page sizes)",
+      type: GraphQLInt,
     },
   }),
   resolve: async (
@@ -104,6 +111,7 @@ export const Shows: GraphQLFieldConfig<
       displayable: args.displayable,
       at_a_fair: args.atAFair,
       status: args.status,
+      max_per_partner: args.maxPerPartner,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
