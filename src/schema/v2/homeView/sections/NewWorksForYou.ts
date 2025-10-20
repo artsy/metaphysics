@@ -20,6 +20,11 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   ownerType: OwnerType.newWorksForYou,
   requiresAuthentication: true,
   trackItemImpressions: true,
+  showArtworksCardView: () => {
+    const variant = getExperimentVariant("onyx_nwfy-artworks-card-test")
+
+    return variant && variant.enabled && variant.name === "variant-a"
+  },
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const variant = getExperimentVariant("onyx_nwfy-price-reranking-test", {
       userId: context.userID,
