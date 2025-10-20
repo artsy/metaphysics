@@ -184,7 +184,7 @@ export const AuctionsHub: HomeViewSection = {
   contextModule: ContextModule.auctionRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
-    title: "Auctions Hub",
+    title: "Discover Auctions on Artsy",
     type: "3UpImageLayout",
   },
   requiresAuthentication: true,
