@@ -1,5 +1,5 @@
+import type { GraphQLFieldConfig } from "graphql"
 import {
-  GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -11,7 +11,7 @@ import {
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import type { ResolverContext } from "types/graphql"
-import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
+import type { FulfillmentOptionJson, OrderJSON } from "./exchangeJson"
 
 const COPY = {
   subtotal: {
@@ -40,6 +40,14 @@ const COPY = {
     amountFallbackText: "Waiting for final costs",
   },
 } as const
+
+const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
+  if (!offers || offers.length === 0) return null
+  const lastOffer = offers
+    ?.filter((offer) => offer.from_participant === buyerOrSeller)
+    ?.sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0]
+  return lastOffer?.amount_cents
+}
 
 const PricingBreakdownLineUnion = new GraphQLUnionType({
   name: "PricingBreakdownLineUnion",
@@ -85,6 +93,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       awaiting_response_from: awaitingResponseFrom,
       mode,
       source,
+      offers,
     } = order
 
     const resolveMoney = (amount: number) => {
@@ -102,15 +111,19 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     }
 
     let subtotalDisplayName: string
+    let subtotalAmount: number | undefined
     switch (true) {
       case mode === "buy" && source === "partner_offer":
         subtotalDisplayName = COPY.subtotal.displayName.partnerOffer
+        subtotalAmount = itemsTotalCents
         break
       case mode === "offer" && awaitingResponseFrom === "buyer":
         subtotalDisplayName = COPY.subtotal.displayName.counterOffer
+        subtotalAmount = extractLastOfferAmountFrom("seller", offers)
         break
       case mode === "offer":
         subtotalDisplayName = COPY.subtotal.displayName.makeOffer
+        subtotalAmount = extractLastOfferAmountFrom("buyer", offers)
         break
       default:
         subtotalDisplayName = COPY.subtotal.displayName.buyNow
@@ -119,7 +132,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     const subtotalLine = {
       __typename: "SubtotalLine",
       displayName: subtotalDisplayName,
-      amount: itemsTotalCents && resolveMoney(itemsTotalCents),
+      amount: subtotalAmount && resolveMoney(subtotalAmount),
     }
 
     const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
