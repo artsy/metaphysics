@@ -80,7 +80,6 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     sort: "-is_artsy_licensed,timely_at,name",
   }
 
-  // TODO: sales returns too much data, should we have a lighter loader?
   const sales = await context.salesLoader(gravityOptions)
 
   const cardDetails = {
@@ -133,7 +132,6 @@ const latestAuctionResultsCard: CardFunction = async ({
   context,
   info,
 }) => {
-  // FIX TIMEOUT [withTimeout]: getaddrinfo ENOTFOUND diffusion.stg.artsy.systems
   const finalArgs = {
     state: "past",
     sort: "-sale_date",
