@@ -16,6 +16,26 @@ export interface FulfillmentOptionJson {
   shipping_quote_id?: string
 }
 
+export interface OfferJSON {
+  id: string
+  amount_cents: number
+  buyer_total_cents?: number
+  creator_id: string
+  created_at: string
+  currency_code: string
+  defines_total?: boolean
+  from_id: string
+  from_participant: string
+  from_type: string
+  has_definite_total?: boolean
+  note?: string
+  offer_amount_changed?: boolean
+  responds_to_id?: string
+  shipping_total_cents?: number
+  submitted_at?: string
+  tax_total_cents?: number
+}
+
 type OrderPaymentMethodEnum =
   | "credit card"
   | "wire_transfer"
@@ -65,6 +85,7 @@ export interface OrderJSON {
     tax_cents?: number
   }>
   mode: "buy" | "offer"
+  offers?: OfferJSON[]
   payment_method?: OrderPaymentMethodEnum
   selected_fulfillment_option?: FulfillmentOptionJson
   seller_id: string
