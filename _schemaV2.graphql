@@ -9452,6 +9452,7 @@ input CreateFeatureMutationInput {
   sourceBucket: String
   sourceKey: String
   subheadline: String
+  videoURL: String
 }
 
 type CreateFeatureMutationPayload {
