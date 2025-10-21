@@ -27,6 +27,7 @@ const FEATURE: Gravity.Feature = {
   },
   created_at: "2020-06-25T20:42:07+00:00",
   meta_title: "Milan Gallery Community | Artsy",
+  video_url: "https://somevideo.url",
 }
 
 const featureLoader = (_id: string) => Promise.resolve(FEATURE)
