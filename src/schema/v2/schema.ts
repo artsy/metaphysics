@@ -229,6 +229,9 @@ import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
+import createConversationMessageTemplateMutation from "./conversationMessageTemplate/createConversationMessageTemplateMutation"
+import updateConversationMessageTemplateMutation from "./conversationMessageTemplate/updateConversationMessageTemplateMutation"
+import deleteConversationMessageTemplateMutation from "./conversationMessageTemplate/deleteConversationMessageTemplateMutation"
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
 import { discoveryCategoryArtworksConnection } from "./discoveryCategoryArtworksConnection"
@@ -530,6 +533,7 @@ export default new GraphQLSchema({
       createCareerHighlight: createCareerHighlightMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
+      createConversationMessageTemplate: createConversationMessageTemplateMutation,
       createCreditCard: createCreditCardMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
@@ -563,6 +567,7 @@ export default new GraphQLSchema({
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
       deleteArtwork: deleteArtworkMutation,
+      deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
@@ -639,6 +644,7 @@ export default new GraphQLSchema({
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
+      updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,

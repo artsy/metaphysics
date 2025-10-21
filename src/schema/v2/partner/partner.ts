@@ -61,6 +61,11 @@ import {
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
 import { contactsConnection, ContactType } from "schema/v2/Contacts"
+import { ConversationMessageTemplatesConnection } from "schema/v2/conversationMessageTemplate/conversationMessageTemplatesConnection"
+import {
+  ConversationMessageTemplateExampleType,
+  EXAMPLE_TEMPLATES,
+} from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -792,6 +797,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args,
           })
         },
+      },
+      conversationMessageTemplatesConnection: ConversationMessageTemplatesConnection,
+      conversationMessageTemplateExamples: {
+        type: new GraphQLNonNull(
+          new GraphQLList(
+            new GraphQLNonNull(ConversationMessageTemplateExampleType)
+          )
+        ),
+        description: "Static example templates to help users get started",
+        resolve: () => EXAMPLE_TEMPLATES,
       },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
