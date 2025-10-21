@@ -16,7 +16,7 @@ import { ContextModule, OwnerType } from "@artsy/cohesion"
 export type HomeViewCard = {
   badgeText?: string
   buttonText?: string
-  entityID: string
+  entityID?: string
   entityType?: string
   href?: string
   imageURL?: string
