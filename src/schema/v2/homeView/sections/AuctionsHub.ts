@@ -82,12 +82,11 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
 
   const sales = await context.salesLoader(gravityOptions)
 
-  const cardDetails = {
+  const cardDetails: HomeViewCard = {
     title: "No Current or Upcoming Auctions at this time",
     href: "/auctions",
     entityType: "card",
     entityID: "card-browse-all-auctions",
-    imageURLs: [] as string[],
   }
 
   if (!sales || sales.length === 0) {
@@ -142,12 +141,11 @@ const latestAuctionResultsCard: CardFunction = async ({
   const AuctionResultsByFollowedArtists = require("schema/v2/me/auctionResultsByFollowedArtists")
     .default
 
-  const cardDetails = {
+  const cardDetails: HomeViewCard = {
     title: "Follow and engage with artists to see auction results",
     href: "/auction-results-for-artists-you-follow",
     entityType: "card",
     entityID: "card-auction-results-for-artist-you-follow",
-    imageURLs: [],
   }
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
