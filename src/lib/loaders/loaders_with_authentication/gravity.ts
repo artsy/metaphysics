@@ -29,6 +29,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    repositionArtworkImagesLoader: gravityLoader<any, { artworkId: string }>(
+      ({ artworkId }) => `artwork/${artworkId}/images/reposition`,
+      {},
+      { method: "POST" }
+    ),
     repositionArtworksInPartnerShowLoader: gravityLoader<
       any,
       { showId: string; partnerId: string }
