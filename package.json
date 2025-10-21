@@ -41,7 +41,7 @@
     "string-width": "4.2.3"
   },
   "dependencies": {
-    "@artsy/cohesion": "^4.306.0",
+    "@artsy/cohesion": "^4.307.0",
     "@artsy/img": "1.0.3",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
