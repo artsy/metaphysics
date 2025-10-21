@@ -2,96 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("CreateArtworkImportArtworksMutation", () => {
-  it("creates artworks successfully synchronously", async () => {
-    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
-      created: 5,
-      errors: 0,
-    })
-    const artworkImportLoader = jest.fn().mockResolvedValue({
-      id: "artwork-import-1",
-    })
-
-    const mutation = gql`
-      mutation {
-        createArtworkImportArtworks(
-          input: { artworkImportID: "artwork-import-1" }
-        ) {
-          createArtworkImportArtworksOrError {
-            ... on CreateArtworkImportArtworksSuccess {
-              artworkImportID
-              createdArtworksCount
-              artworkImport {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const context = {
-      artworkImportCreateArtworksLoader,
-      artworkImportLoader,
-    }
-    const result = await runAuthenticatedQuery(mutation, context)
-
-    expect(artworkImportCreateArtworksLoader).toHaveBeenCalledWith(
-      "artwork-import-1",
-      {}
-    )
-
-    expect(result).toEqual({
-      createArtworkImportArtworks: {
-        createArtworkImportArtworksOrError: {
-          artworkImportID: "artwork-import-1",
-          createdArtworksCount: 5,
-          artworkImport: {
-            internalID: "artwork-import-1",
-          },
-        },
-      },
-    })
-  })
-
-  it("handles zero artworks created", async () => {
-    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
-      created: 0,
-      errors: 0,
-    })
-    const artworkImportLoader = jest.fn().mockResolvedValue({
-      id: "artwork-import-1",
-    })
-
-    const mutation = gql`
-      mutation {
-        createArtworkImportArtworks(
-          input: { artworkImportID: "artwork-import-1" }
-        ) {
-          createArtworkImportArtworksOrError {
-            ... on CreateArtworkImportArtworksSuccess {
-              createdArtworksCount
-            }
-          }
-        }
-      }
-    `
-
-    const context = {
-      artworkImportCreateArtworksLoader,
-      artworkImportLoader,
-    }
-    const result = await runAuthenticatedQuery(mutation, context)
-
-    expect(result).toEqual({
-      createArtworkImportArtworks: {
-        createArtworkImportArtworksOrError: {
-          createdArtworksCount: 0,
-        },
-      },
-    })
-  })
-
-  it("creates artworks successfully asynchronously", async () => {
+  it("creates artworks asynchronously and returns queued status", async () => {
     const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
       queued: true,
     })
@@ -99,7 +10,7 @@ describe("CreateArtworkImportArtworksMutation", () => {
     const mutation = gql`
       mutation {
         createArtworkImportArtworks(
-          input: { artworkImportID: "artwork-import-1", async: true }
+          input: { artworkImportID: "artwork-import-1" }
         ) {
           createArtworkImportArtworksOrError {
             ... on CreateArtworkImportArtworksSuccess {
@@ -115,9 +26,10 @@ describe("CreateArtworkImportArtworksMutation", () => {
     }
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(
-      artworkImportCreateArtworksLoader
-    ).toHaveBeenCalledWith("artwork-import-1", { async: true })
+    expect(artworkImportCreateArtworksLoader).toHaveBeenCalledWith(
+      "artwork-import-1",
+      {}
+    )
 
     expect(result).toEqual({
       createArtworkImportArtworks: {
@@ -126,5 +38,79 @@ describe("CreateArtworkImportArtworksMutation", () => {
         },
       },
     })
+  })
+
+  it("handles queued response correctly", async () => {
+    const artworkImportCreateArtworksLoader = jest.fn().mockResolvedValue({
+      queued: true,
+    })
+
+    const mutation = gql`
+      mutation {
+        createArtworkImportArtworks(
+          input: { artworkImportID: "artwork-import-2" }
+        ) {
+          createArtworkImportArtworksOrError {
+            ... on CreateArtworkImportArtworksSuccess {
+              queued
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      artworkImportCreateArtworksLoader,
+    }
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(artworkImportCreateArtworksLoader).toHaveBeenCalledWith(
+      "artwork-import-2",
+      {}
+    )
+
+    expect(result).toEqual({
+      createArtworkImportArtworks: {
+        createArtworkImportArtworksOrError: {
+          queued: true,
+        },
+      },
+    })
+  })
+
+  it("handles errors correctly", async () => {
+    const artworkImportCreateArtworksLoader = jest
+      .fn()
+      .mockRejectedValue(new Error("Test error"))
+
+    const mutation = gql`
+      mutation {
+        createArtworkImportArtworks(
+          input: { artworkImportID: "artwork-import-error" }
+        ) {
+          createArtworkImportArtworksOrError {
+            ... on CreateArtworkImportArtworksFailure {
+              mutationError {
+                type
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      artworkImportCreateArtworksLoader,
+    }
+
+    await expect(runAuthenticatedQuery(mutation, context)).rejects.toThrow(
+      "Test error"
+    )
+
+    expect(artworkImportCreateArtworksLoader).toHaveBeenCalledWith(
+      "artwork-import-error",
+      {}
+    )
   })
 })
