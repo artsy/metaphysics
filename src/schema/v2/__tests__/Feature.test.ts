@@ -44,7 +44,9 @@ describe("Feature", () => {
         layout
         isActive
         metaTitle
-        videoURL
+        video {
+          url
+        }
         meta {
           name
           description
@@ -67,7 +69,9 @@ describe("Feature", () => {
         name: "Milan Gallery Community",
         subheadline: "July 1–August 1, 2020\n",
         metaTitle: "Milan Gallery Community | Artsy",
-        videoURL: "https://somevideo.url",
+        video: {
+          url: "https://somevideo.url",
+        },
         meta: {
           description: "Milan is an art center like no other...",
           name: "Milan Gallery Community | Artsy",
