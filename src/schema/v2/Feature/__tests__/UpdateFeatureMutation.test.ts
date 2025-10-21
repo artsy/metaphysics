@@ -19,7 +19,9 @@ const mutation = gql`
           feature {
             name
             isActive
-            videoURL
+            video {
+              url
+            }
           }
         }
         ... on UpdateFeatureFailure {
@@ -76,7 +78,9 @@ describe("UpdateFeatureMutation", () => {
             __typename: "UpdateFeatureSuccess",
             feature: {
               name: "Catty Feature",
-              videoURL: "https://somevideo.url",
+              video: {
+                url: "https://somevideo.url",
+              },
               isActive: true,
             },
           },
