@@ -154,6 +154,7 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
+import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
@@ -614,6 +615,7 @@ export default new GraphQLSchema({
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
+      repositionArtworkImages: repositionArtworkImagesMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
