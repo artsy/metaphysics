@@ -1058,6 +1058,29 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    conversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`
+    ),
+    conversationMessageTemplatesLoader: gravityLoader(
+      "conversation_message_templates",
+      {},
+      { headers: true }
+    ),
+    createConversationMessageTemplateLoader: gravityLoader(
+      "conversation_message_template",
+      {},
+      { method: "POST" }
+    ),
+    updateConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
