@@ -23,7 +23,6 @@ export const FeatureVideo = new GraphQLObjectType<any, ResolverContext>({
       },
       type: GraphQLString,
       resolve: ({ url }, { autoPlay }) => {
-        if (!url) return null
         const options = { autoplay: autoPlay ? 1 : 0 }
         return extractEmbed(url, options)
       },
