@@ -37,7 +37,14 @@ describe("Feature", () => {
     {
       feature(id: "milan-gallery-community") {
         id
+        name
+        description
+        subheadline
+        callout
         layout
+        isActive
+        metaTitle
+        videoURL
         meta {
           name
           description
@@ -53,6 +60,14 @@ describe("Feature", () => {
       feature: {
         id: "RmVhdHVyZTo1ZWY1MGMxZjg5NjE1ODAwMGQ2MzViMzQ=",
         layout: "DEFAULT",
+        callout:
+          "Sponsored by APALAZZOGALLERY, [CARDI GALLERY](https://www.artsy.net/cardi-gallery)...",
+        description: "Milan is an art center like no other...",
+        isActive: true,
+        name: "Milan Gallery Community",
+        subheadline: "July 1–August 1, 2020\n",
+        metaTitle: "Milan Gallery Community | Artsy",
+        videoURL: "https://somevideo.url",
         meta: {
           description: "Milan is an art center like no other...",
           name: "Milan Gallery Community | Artsy",
