@@ -12070,6 +12070,7 @@ type Feature {
   # A slug ID.
   slug: ID!
   subheadline(format: Format): String
+  videoURL: String
 }
 
 # A connection to a list of items.
@@ -23757,6 +23758,7 @@ input UpdateFeatureMutationInput {
   sourceBucket: String
   sourceKey: String
   subheadline: String
+  videoURL: String
 }
 
 type UpdateFeatureMutationPayload {

@@ -48,6 +48,10 @@ export const FeatureType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ meta_title }) => existyValue(meta_title),
     },
+    videoURL: {
+      type: GraphQLString,
+      resolve: ({ video_url }) => existyValue(video_url),
+    },
     setsConnection: {
       type: OrderedSetConnection.connectionType,
       args: pageable({
