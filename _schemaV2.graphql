@@ -12070,7 +12070,7 @@ type Feature {
   # A slug ID.
   slug: ID!
   subheadline(format: Format): String
-  videoURL: String
+  video: FeatureVideo
 }
 
 # A connection to a list of items.
@@ -12184,6 +12184,12 @@ enum FeatureSorts {
   CREATED_AT_DESC
   NAME_ASC
   NAME_DESC
+}
+
+type FeatureVideo {
+  # Only YouTube and Vimeo are supported
+  embed(autoPlay: Boolean = false): String
+  url: String!
 }
 
 # An illustrated link chosen to highlight a Gene from a given GeneFamily

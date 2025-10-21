@@ -17,6 +17,7 @@ import { OrderedSetSortsEnum } from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
 import { FeatureMetaType } from "./FeatureMeta"
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
+import { FeatureVideo } from "./FeatureVideo"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -48,9 +49,12 @@ export const FeatureType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ meta_title }) => existyValue(meta_title),
     },
-    videoURL: {
-      type: GraphQLString,
-      resolve: ({ video_url }) => existyValue(video_url),
+    video: {
+      type: FeatureVideo,
+      resolve: ({ video_url }) => {
+        if (!video_url) return null
+        return { url: video_url }
+      },
     },
     setsConnection: {
       type: OrderedSetConnection.connectionType,
