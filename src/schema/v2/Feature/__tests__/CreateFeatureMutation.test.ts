@@ -8,6 +8,7 @@ const mutation = gql`
         sourceBucket: "catty-bucket"
         sourceKey: "catty-key"
         name: "Catty Feature"
+        videoURL: "https://somevideo.url"
         active: true
       }
     ) {
@@ -17,6 +18,7 @@ const mutation = gql`
           feature {
             name
             isActive
+            videoURL
           }
         }
         ... on CreateFeatureFailure {
@@ -33,12 +35,13 @@ const mutation = gql`
 
 describe("CreateFeatureMutation", () => {
   describe("on success", () => {
-    const set = {
+    const feature = {
       name: "Catty Feature",
       active: true,
       id: "feature-id",
       source_bucket: "catty-bucket",
       source_key: "catty-key",
+      video_url: "https://somevideo.url",
     }
 
     const mockCreateFeatureLoader = jest.fn()
@@ -48,7 +51,7 @@ describe("CreateFeatureMutation", () => {
     }
 
     beforeEach(() => {
-      mockCreateFeatureLoader.mockResolvedValue(Promise.resolve(set))
+      mockCreateFeatureLoader.mockResolvedValue(Promise.resolve(feature))
     })
 
     afterEach(() => {
@@ -62,6 +65,7 @@ describe("CreateFeatureMutation", () => {
         name: "Catty Feature",
         active: true,
         source_bucket: "catty-bucket",
+        video_url: "https://somevideo.url",
         source_key: "catty-key",
       })
 
@@ -72,6 +76,7 @@ describe("CreateFeatureMutation", () => {
             feature: {
               name: "Catty Feature",
               isActive: true,
+              videoURL: "https://somevideo.url",
             },
           },
         },
