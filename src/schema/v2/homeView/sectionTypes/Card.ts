@@ -11,17 +11,20 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 
 export type HomeViewCard = {
   badgeText?: string
   buttonText?: string
-  entityID?: string
+  entityID: string
   entityType?: string
   href?: string
   imageURL?: string
   imageURLs?: string[]
   subtitle?: string
   title?: string
+  contextModule?: ContextModule
+  ownerType?: OwnerType
 }
 
 export const HomeViewCardType = new GraphQLObjectType<
@@ -34,7 +37,9 @@ export const HomeViewCardType = new GraphQLObjectType<
     buttonText: { type: GraphQLString },
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
-    entityID: { type: GraphQLString },
+    entityID: { type: new GraphQLNonNull(GraphQLString) },
+    contextModule: { type: GraphQLString },
+    ownerType: { type: GraphQLString },
     image: {
       type: Image.type,
       resolve: ({ imageURL, imageURLs }) => {

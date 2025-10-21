@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
@@ -63,13 +63,17 @@ const yourAuctionPicksCard: CardFunction = async ({
     return null
   }
 
-  return {
+  const cardDetails: HomeViewCard = {
     title: "Your Auction Picks",
     href: "/auctions/lots-for-you-ending-soon",
     entityType: "card",
     entityID: "card-your-auction-picks",
     imageURLs,
+    contextModule: ContextModule.lotsForYouCard,
+    ownerType: OwnerType.lotsForYou,
   }
+
+  return cardDetails
 }
 
 const browseAllAuctionsCard: CardFunction = async ({ context }) => {
@@ -87,6 +91,8 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     href: "/auctions",
     entityType: "card",
     entityID: "card-browse-all-auctions",
+    contextModule: ContextModule.auctionsCard,
+    ownerType: OwnerType.auctions,
   }
 
   if (!sales || sales.length === 0) {
@@ -146,6 +152,8 @@ const latestAuctionResultsCard: CardFunction = async ({
     href: "/auction-results-for-artists-you-follow",
     entityType: "card",
     entityID: "card-auction-results-for-artist-you-follow",
+    contextModule: ContextModule.auctionResultsForArtistsYouFollowCard,
+    ownerType: OwnerType.auctionResultsForArtistsYouFollow,
   }
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
@@ -177,11 +185,17 @@ const latestAuctionResultsCard: CardFunction = async ({
 
 export const AuctionsHub: HomeViewSection = {
   id: "home-view-section-auctions-hub",
-  contextModule: ContextModule.auctionRail,
+  contextModule: "auctionsHubRail" as ContextModule, // ContextModule.auctionsHubRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
     title: "Discover Auctions on Artsy",
     type: "3UpImageLayout",
+    behaviors: {
+      viewAll: {
+        href: "/auctions",
+        ownerType: OwnerType.auctions,
+      },
+    },
   },
   requiresAuthentication: true,
   shouldBeDisplayed: (context) => {
