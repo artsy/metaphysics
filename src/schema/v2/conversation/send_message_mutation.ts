@@ -28,6 +28,7 @@ interface SendConversationMessageMutationProps {
   replyAll?: boolean
   replyToMessageID: string
   to?: string[]
+  conversationMessageTemplateVersionId?: string
 }
 
 export default mutationWithClientMutationId<
@@ -99,6 +100,11 @@ export default mutationWithClientMutationId<
       description: "Recepients emails.",
       type: new GraphQLList(GraphQLString),
     },
+    conversationMessageTemplateVersionId: {
+      description:
+        "Optional ID of the template version used to send this message",
+      type: GraphQLString,
+    },
   },
   outputFields: {
     conversation: {
@@ -140,6 +146,8 @@ export default mutationWithClientMutationId<
       reply_all: replyAll,
       reply_to_message_id: args.replyToMessageID,
       to: args.to,
+      conversation_message_template_version_id:
+        args.conversationMessageTemplateVersionId,
     })
       .then(({ id: newMessageID }) => {
         return conversationLoader(args.id).then((updatedConversation) => {

@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
+import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -194,6 +195,7 @@ import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_
 import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
+import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
@@ -229,6 +231,9 @@ import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
+import createConversationMessageTemplateMutation from "./conversationMessageTemplate/createConversationMessageTemplateMutation"
+import updateConversationMessageTemplateMutation from "./conversationMessageTemplate/updateConversationMessageTemplateMutation"
+import deleteConversationMessageTemplateMutation from "./conversationMessageTemplate/deleteConversationMessageTemplateMutation"
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
 import { discoveryCategoryArtworksConnection } from "./discoveryCategoryArtworksConnection"
@@ -530,6 +535,7 @@ export default new GraphQLSchema({
       createCareerHighlight: createCareerHighlightMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
+      createConversationMessageTemplate: createConversationMessageTemplateMutation,
       createCreditCard: createCreditCardMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
@@ -563,6 +569,7 @@ export default new GraphQLSchema({
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
       deleteArtwork: deleteArtworkMutation,
+      deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
@@ -621,6 +628,9 @@ export default new GraphQLSchema({
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
+      ...(config.USE_UNSTITCHED_REQUEST_CONDITION_REPORT
+        ? { requestConditionReport: requestConditionReportMutation }
+        : {}),
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
@@ -639,6 +649,7 @@ export default new GraphQLSchema({
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
+      updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,

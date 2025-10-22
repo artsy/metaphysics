@@ -27,6 +27,7 @@ const FEATURE: Gravity.Feature = {
   },
   created_at: "2020-06-25T20:42:07+00:00",
   meta_title: "Milan Gallery Community | Artsy",
+  video_url: "https://somevideo.url",
 }
 
 const featureLoader = (_id: string) => Promise.resolve(FEATURE)
@@ -36,7 +37,16 @@ describe("Feature", () => {
     {
       feature(id: "milan-gallery-community") {
         id
+        name
+        description
+        subheadline
+        callout
         layout
+        isActive
+        metaTitle
+        video {
+          url
+        }
         meta {
           name
           description
@@ -52,6 +62,16 @@ describe("Feature", () => {
       feature: {
         id: "RmVhdHVyZTo1ZWY1MGMxZjg5NjE1ODAwMGQ2MzViMzQ=",
         layout: "DEFAULT",
+        callout:
+          "Sponsored by APALAZZOGALLERY, [CARDI GALLERY](https://www.artsy.net/cardi-gallery)...",
+        description: "Milan is an art center like no other...",
+        isActive: true,
+        name: "Milan Gallery Community",
+        subheadline: "July 1–August 1, 2020\n",
+        metaTitle: "Milan Gallery Community | Artsy",
+        video: {
+          url: "https://somevideo.url",
+        },
         meta: {
           description: "Milan is an art center like no other...",
           name: "Milan Gallery Community | Artsy",

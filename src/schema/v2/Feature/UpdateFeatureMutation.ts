@@ -25,6 +25,7 @@ interface Input {
   sourceBucket?: string
   sourceKey?: string
   subheadline?: string
+  videoURL?: string
 }
 
 interface GravityInput {
@@ -37,6 +38,7 @@ interface GravityInput {
   source_bucket?: string
   source_key?: string
   subheadline?: string
+  video_url?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -84,6 +86,7 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
     sourceBucket: { type: GraphQLString },
     sourceKey: { type: GraphQLString },
     subheadline: { type: GraphQLString },
+    videoURL: { type: GraphQLString },
   },
   outputFields: {
     featureOrError: {
@@ -109,6 +112,7 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
       source_bucket: args.sourceBucket,
       source_key: args.sourceKey,
       subheadline: args.subheadline,
+      video_url: args.videoURL,
     }
 
     try {
