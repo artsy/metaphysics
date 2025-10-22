@@ -94,6 +94,7 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { listingOptions } from "./listingOptions"
 import Meta, { artistNames } from "./meta"
+import { PartnerGenomeType } from "./partnerGenome"
 import { TaxInfo } from "./taxInfo"
 import {
   embed,
@@ -104,18 +105,6 @@ import {
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { error } from "lib/loggers"
-import { PartnerOfferType } from "../partnerOffer"
-import currencyCodes from "lib/currency_codes.json"
-import { date } from "../fields/date"
-import { ArtworkVisibility } from "./artworkVisibility"
-import { ArtworkConditionType } from "./artworkCondition"
-import { CollectorSignals } from "./collectorSignals"
-import { ArtistSeriesConnectionType } from "../artistSeries"
-import { listingOptions } from "./listingOptions"
-import { PartnerGenomeType } from "./partnerGenome"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
