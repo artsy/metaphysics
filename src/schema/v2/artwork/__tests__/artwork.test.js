@@ -4002,6 +4002,230 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#signatureMeta", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          signatureMeta {
+            hasSignature
+            hasStickerLabel
+            isSignedByArtist
+            isSignedOther
+            isStampedByArtistEstate
+            isSignedInPlate
+          }
+        }
+      }
+    `
+
+    it("returns all false when no signature fields are set", () => {
+      artwork.sticker_label = null
+      artwork.signed_by_artist = null
+      artwork.signed_other = null
+      artwork.stamped_by_artist_estate = null
+      artwork.signed_in_plate = null
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: false,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns all false when all signature fields are explicitly false", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: false,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when sticker_label is true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_by_artist is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = true
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: true,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_other is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = true
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: true,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when stamped_by_artist_estate is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_in_plate is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: true,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct values when multiple signature fields are true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = true
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: true,
+              isSignedOther: false,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct values when all signature fields are true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = true
+      artwork.signed_other = true
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: true,
+              isSignedOther: true,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: true,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#conditionDescription", () => {
     const query = `
       {
