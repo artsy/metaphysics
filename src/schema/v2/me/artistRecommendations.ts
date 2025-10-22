@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt } from "graphql"
+import { GraphQLEnumType, GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -10,39 +10,81 @@ import { artistConnection } from "schema/v2/artist"
 // This limits the maximum number of artists we receive from Vortex and is related to how we implement the Connection in this resolver.
 const MAX_ARTISTS = 50
 
-export const ArtistRecommendations: GraphQLFieldConfig<
-  void,
-  ResolverContext
-> = {
-  description: "A connection of artist recommendations for the current user.",
-  type: artistConnection.connectionType,
-  args: pageable({
-    page: { type: GraphQLInt },
-  }),
-  resolve: async (
-    _root,
-    args: CursorPageable,
-    {
-      artistsLoader,
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-      },
-      xImpersonateUserID,
-      userID,
-    }
-  ) => {
-    if (!artistsLoader || !vortexGraphQLAuthenticatedLoader) return
+const ArtistRecommendationSourceEnum = new GraphQLEnumType({
+  name: "ArtistRecommendationSource",
+  values: {
+    HYBRID: {
+      value: "HYBRID",
+      description: "Hybrid machine learning-based recommendations from Vortex.",
+    },
+    SIMILAR_TO_FOLLOWED: {
+      value: "SIMILAR_TO_FOLLOWED",
+      description:
+        "Based on UserSuggestedSimilarArtistsIndex in Gravity to find artists similar to the user's followed artists.",
+    },
+  },
+})
 
-    const { page, size } = convertConnectionArgsToGravityArgs(args)
+/**
+ * Fetches artists similar to those the user follows using UserSuggestedSimilarArtistsIndex index in Gravity.
+ */
+const fetchSimilarToFollowedArtists = async (
+  page: number,
+  size: number,
+  suggestedSimilarArtistsLoader: any,
+  args: any
+) => {
+  if (!suggestedSimilarArtistsLoader) {
+    throw new Error(
+      "A X-Access-Token header is required to perform this action."
+    )
+  }
 
-    const userId = userID || xImpersonateUserID
+  const loaderParams = {
+    size,
+    page,
+    exclude_followed_artists: true,
+    exclude_artists_without_forsale_artworks: true,
+  }
 
-    // Fetch artist IDs from Vortex
-    const query = {
-      query: gql`
+  const { body } = await suggestedSimilarArtistsLoader(loaderParams)
+  const artists = body ? body.map(({ artist }) => artist) : []
+
+  return {
+    totalCount: artists.length,
+    pageCursors: createPageCursors({ page, size }, artists.length),
+    ...connectionFromArray(artists, args),
+  }
+}
+
+/**
+ * Fetches hybrid ML-based recommendations from Vortex
+ */
+const fetchHybridRecommendations = async (
+  page: number,
+  size: number,
+  context: ResolverContext,
+  args: any
+) => {
+  const {
+    artistsLoader,
+    authenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+    } = {},
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+    } = {},
+    xImpersonateUserID,
+    userID,
+  } = context
+
+  if (!artistsLoader || !vortexGraphQLAuthenticatedLoader) return
+
+  const userId = userID || xImpersonateUserID
+
+  // Fetch artist IDs from Vortex
+  const query = {
+    query: gql`
         query artistRecommendationsQuery {
           artistRecommendations(first: ${MAX_ARTISTS}, userId: "${userId}") {
             totalCount
@@ -55,31 +97,66 @@ export const ArtistRecommendations: GraphQLFieldConfig<
           }
         }
       `,
-    }
+  }
 
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphQLUnauthenticatedLoader(query)()
-      : await vortexGraphQLAuthenticatedLoader(query)()
+  const vortexLoader = xImpersonateUserID
+    ? vortexGraphQLUnauthenticatedLoader
+    : vortexGraphQLAuthenticatedLoader
 
-    const artistIds = extractNodes(
-      vortexResult.data?.artistRecommendations
-    ).map((node: any) => node?.artistId)
+  if (!vortexLoader) return
 
-    // Fetch artist details from Gravity
-    const artists = artistIds?.length
-      ? (
-          await artistsLoader({
-            ids: artistIds,
-          })
-        ).body
-      : []
+  const vortexResult = await vortexLoader(query)()
 
-    const count = artists.length
+  const artistIds = extractNodes(vortexResult.data?.artistRecommendations).map(
+    (node: any) => node?.artistId
+  )
 
-    return {
-      totalCount: count,
-      pageCursors: createPageCursors({ ...args, page, size }, count),
-      ...connectionFromArray(artists, args),
+  // Fetch artist details from Gravity
+  const artists = artistIds?.length
+    ? (await artistsLoader({ ids: artistIds })).body
+    : []
+
+  return {
+    totalCount: artists.length,
+    pageCursors: createPageCursors({ ...args, page, size }, artists.length),
+    ...connectionFromArray(artists, args),
+  }
+}
+
+export const ArtistRecommendations: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  description: "A connection of artist recommendations for the current user.",
+  type: artistConnection.connectionType,
+  args: pageable({
+    page: { type: GraphQLInt },
+    source: {
+      type: ArtistRecommendationSourceEnum,
+      description: "The source/algorithm to use for recommendations",
+      defaultValue: "HYBRID",
+    },
+  }),
+  resolve: async (
+    _root,
+    args: CursorPageable & { source?: string },
+    context
+  ) => {
+    const { page, size } = convertConnectionArgsToGravityArgs(args)
+    const source = args.source || "HYBRID"
+
+    switch (source) {
+      case "SIMILAR_TO_FOLLOWED":
+        return fetchSimilarToFollowedArtists(
+          page,
+          size,
+          context.suggestedSimilarArtistsLoader,
+          args
+        )
+
+      case "HYBRID":
+      default:
+        return fetchHybridRecommendations(page, size, context, args)
     }
   },
 }
