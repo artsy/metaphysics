@@ -23,20 +23,18 @@ export const ConversationMessageTemplateExampleType = new GraphQLObjectType<
 export const EXAMPLE_TEMPLATES = [
   {
     title: "General Inquiry",
-    description: "Use for first-time inquiries",
-    body:
-      "Thank you for your interest in this piece. I would be happy to share additional information.",
+    body: `Thank you so much for reaching out and for your interest in this piece. I'd be happy to share more details with you, including pricing and shipping information.
+
+We'd also love to learn a bit about your collecting journey. What drew you to this work? Do you collect this artist already or own any of their other pieces?
+
+I look forward to hearing from you.`,
   },
   {
-    title: "Availability",
-    description: "Respond to availability questions",
-    body:
-      "Thank you for your interest. While this particular work is no longer available, I would be happy to share similar works.",
-  },
-  {
-    title: "Price",
-    description: "Share pricing information",
-    body:
-      "Thank you for sharing your budget. I believe we can find something wonderful within your range.",
+    title: "Work Not Available",
+    body: `Thank you for your interest in this piece! While this particular work is no longer available, I would be happy to source another suitable work for your collection.
+
+Are you focused on works by this artist for now, or considering other artists as well? Any insight you could share regarding your preferences — such as budget, medium, dimensions, subject matter — would be most helpful.
+
+I look forward to hearing from you and would be glad to continue the conversation.`,
   },
 ]
