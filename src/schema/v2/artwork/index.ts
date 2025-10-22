@@ -13,6 +13,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { PageInfoType } from "graphql-relay"
+import GraphQLJSON from "graphql-type-json"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -672,6 +673,35 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Featured slot (if set, will boost the work to the top of the artwork grid. Should be set between 1 and 20).",
         resolve: ({ featured_slot }) => featured_slot,
       },
+      partnerGenome: {
+        type: GraphQLJSON,
+        description:
+          'Artwork genome data from the partner, containing category scores (e.g., {"Illustration": 100, "Artists\' Books": 100})',
+        resolve: async (
+          { id, partner },
+          {},
+          { partnerArtworkGenomeLoader }
+        ) => {
+          if (!partnerArtworkGenomeLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+
+          if (!partner || !partner.id) {
+            return null
+          }
+
+          try {
+            const { body } = await partnerArtworkGenomeLoader({
+              partnerID: partner.id,
+              artworkID: id,
+            })
+            return body["genes"]
+          } catch (error) {
+            // If the genome data is not available, return null
+            return null
+          }
+        },
+      },
       formattedMetadata: {
         type: GraphQLString,
         description:
@@ -788,11 +818,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(InquiryQuestionType),
         description:
           "Structured questions a collector can inquire on about this work",
-        resolve: (
-          { id },
-          _params,
-          { inquiryRequestQuestionsLoader }
-        ) => {
+        resolve: ({ id }, _params, { inquiryRequestQuestionsLoader }) => {
           return inquiryRequestQuestionsLoader({
             inquireable_id: id,
             inquireable_type: "Artwork",

@@ -2926,6 +2926,9 @@ type Artwork implements Node & Searchable & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean = true
   ): Partner
+
+  # Artwork genome data from the partner, containing category scores (e.g., {"Illustration": 100, "Artists' Books": 100})
+  partnerGenome: JSON
   partnerOffersConnection(
     after: String
     before: String
