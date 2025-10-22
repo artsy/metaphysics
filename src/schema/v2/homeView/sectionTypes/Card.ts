@@ -37,7 +37,7 @@ export const HomeViewCardType = new GraphQLObjectType<
     buttonText: { type: GraphQLString },
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
-    entityID: { type: new GraphQLNonNull(GraphQLString) },
+    entityID: { type: GraphQLString },
     contextModule: { type: GraphQLString },
     ownerType: { type: GraphQLString },
     image: {
