@@ -13,7 +13,6 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { PageInfoType } from "graphql-relay"
-import GraphQLJSON from "graphql-type-json"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -101,6 +100,7 @@ import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
 import { ArtistSeriesConnectionType } from "../artistSeries"
 import { listingOptions } from "./listingOptions"
+import { PartnerGenomeType } from "./partnerGenome"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -674,12 +674,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ featured_slot }) => featured_slot,
       },
       partnerGenome: {
-        type: GraphQLJSON,
+        type: PartnerGenomeType,
         description:
-          'Artwork genome data from the partner, containing category scores (e.g., {"Illustration": 100, "Artists\' Books": 100})',
+          "Artwork genome data from the partner, containing category scores",
         resolve: async (
           { id, partner },
-          {},
+          _options,
           { partnerArtworkGenomeLoader }
         ) => {
           if (!partnerArtworkGenomeLoader) {
@@ -695,9 +695,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               partnerID: partner.id,
               artworkID: id,
             })
-            return body["genes"]
+            return { genes: body?.genes || {} }
           } catch (error) {
-            // If the genome data is not available, return null
+            console.error("Error fetching partner artwork genome:", error)
             return null
           }
         },
