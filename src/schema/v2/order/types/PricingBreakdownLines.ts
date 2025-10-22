@@ -127,6 +127,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
         break
       default:
         subtotalDisplayName = COPY.subtotal.displayName.buyNow
+        subtotalAmount = itemsTotalCents
     }
 
     const subtotalLine = {
