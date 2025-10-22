@@ -30,6 +30,7 @@ export const Feature = Record({
   }).Or(Null),
   created_at: String,
   meta_title: String.Or(Null).Or(Undefined),
+  video_url: String.Or(Null).Or(Undefined),
 })
 
 export type Feature = Static<typeof Feature>

@@ -29,6 +29,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    repositionArtworkImagesLoader: gravityLoader<any, { artworkId: string }>(
+      ({ artworkId }) => `artwork/${artworkId}/images/reposition`,
+      {},
+      { method: "POST" }
+    ),
     repositionArtworksInPartnerShowLoader: gravityLoader<
       any,
       { showId: string; partnerId: string }
@@ -1053,6 +1058,29 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    conversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`
+    ),
+    conversationMessageTemplatesLoader: gravityLoader(
+      "conversation_message_templates",
+      {},
+      { headers: true }
+    ),
+    createConversationMessageTemplateLoader: gravityLoader(
+      "conversation_message_template",
+      {},
+      { method: "POST" }
+    ),
+    updateConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
@@ -1148,6 +1176,11 @@ export default (accessToken, userID, opts) => {
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/Recently_viewed_artworks",
+      {},
+      { method: "POST" }
+    ),
+    requestConditionReportLoader: gravityLoader(
+      "condition_report_request",
       {},
       { method: "POST" }
     ),

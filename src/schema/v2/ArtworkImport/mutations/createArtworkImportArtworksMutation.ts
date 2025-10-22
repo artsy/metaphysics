@@ -3,7 +3,6 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLInt,
   GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -12,27 +11,13 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "../artworkImport"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtworkImportArtworksSuccess",
-  isTypeOf: (data) => !!data.artworkImportID || !!data.queued,
+  isTypeOf: (data) => !!data.queued,
   fields: () => ({
-    artworkImportID: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    createdArtworksCount: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    artworkImport: {
-      type: ArtworkImportType,
-      resolve: ({ artworkImportID }, _args, { artworkImportLoader }) => {
-        if (!artworkImportLoader) return null
-        return artworkImportLoader(artworkImportID)
-      },
-    },
     queued: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ queued }) => queued,
     },
   }),
@@ -61,9 +46,6 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtworkImportArtworks",
   inputFields: {
-    async: {
-      type: GraphQLBoolean,
-    },
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -75,24 +57,20 @@ export const CreateArtworkImportArtworksMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, async },
+    { artworkImportID },
     { artworkImportCreateArtworksLoader }
   ) => {
     if (!artworkImportCreateArtworksLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
-    const gravityArgs = { async }
-
     try {
       const result = await artworkImportCreateArtworksLoader(
         artworkImportID,
-        gravityArgs
+        {}
       )
 
       return {
-        artworkImportID: artworkImportID,
-        createdArtworksCount: result.created || 0,
         queued: result.queued,
       }
     } catch (error) {
