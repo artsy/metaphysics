@@ -1005,6 +1005,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworkGenomeLoader: gravityLoader<
+      any,
+      { partnerID: string; artworkID: string }
+    >(
+      ({ partnerID, artworkID }) =>
+        `partner/${partnerID}/artwork/${artworkID}/genome`,
+      {},
+      { headers: true }
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
