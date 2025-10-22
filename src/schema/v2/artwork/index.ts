@@ -17,22 +17,26 @@ import { PageInfoType } from "graphql-relay"
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
+import currencyCodes from "lib/currency_codes.json"
 import { deprecate } from "lib/deprecation"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { formatLargeNumber } from "lib/formatLargeNumber"
 import { getDemandRankDisplayText } from "lib/getDemandRank"
-import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
+import {
+  capitalizeFirstCharacter,
+  convertConnectionArgsToGravityArgs,
+  enhance,
+  existyValue,
+} from "lib/helpers"
 import { isFieldRequested } from "lib/isFieldRequested"
+import { error } from "lib/loggers"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
 import AttributionClass from "schema/v2/artwork/attributionClass"
-import {
-  CollectionsConnectionType,
-  CollectionSorts,
-} from "schema/v2/me/collectionsConnection"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
@@ -54,6 +58,10 @@ import Image, {
 import { setVersion } from "schema/v2/image/normalize"
 import { COUNTRIES, LocationType } from "schema/v2/location"
 import {
+  CollectionsConnectionType,
+  CollectionSorts,
+} from "schema/v2/me/collectionsConnection"
+import {
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
@@ -67,40 +75,36 @@ import ShowSorts from "schema/v2/sorts/show_sorts"
 import { VideoType } from "schema/v2/types/Video"
 import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
+import { ArtistSeriesConnectionType } from "../artistSeries"
+import { date } from "../fields/date"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
+import { PartnerOfferType } from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
+import { ArtworkConditionType } from "./artworkCondition"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
+import { ArtworkVisibility } from "./artworkVisibility"
+import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
+import { listingOptions } from "./listingOptions"
 import Meta, { artistNames } from "./meta"
+import { PartnerGenomeType } from "./partnerGenome"
 import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
-  isEligibleToCreateAlert,
   isEligibleForOnPlatformTransaction,
+  isEligibleToCreateAlert,
   isEmbeddedVideo,
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { error } from "lib/loggers"
-import { PartnerOfferType } from "../partnerOffer"
-import currencyCodes from "lib/currency_codes.json"
-import { date } from "../fields/date"
-import { ArtworkVisibility } from "./artworkVisibility"
-import { ArtworkConditionType } from "./artworkCondition"
-import { CollectorSignals } from "./collectorSignals"
-import { ArtistSeriesConnectionType } from "../artistSeries"
-import { listingOptions } from "./listingOptions"
-import { PartnerGenomeType } from "./partnerGenome"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1822,6 +1826,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
+        resolve: (artwork) => artwork,
       },
       savedSearch: {
         description: "Schema related to saved searches based on this artwork",
