@@ -185,7 +185,7 @@ const latestAuctionResultsCard: CardFunction = async ({
 
 export const AuctionsHub: HomeViewSection = {
   id: "home-view-section-auctions-hub",
-  contextModule: "auctionsHubRail" as ContextModule, // ContextModule.auctionsHubRail,
+  contextModule: ContextModule.auctionsHubRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
     title: "Discover Auctions on Artsy",
