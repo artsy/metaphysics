@@ -17360,6 +17360,9 @@ type Offer {
   # The buyer's total amount for this offer
   amount: Money
 
+  # Offer creation time
+  createdAt: String
+
   # Who the offer is from
   fromParticipant: FromParticipantEnum!
 
