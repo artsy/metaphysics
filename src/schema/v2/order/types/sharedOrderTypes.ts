@@ -21,6 +21,7 @@ import { OrderJSON } from "./exchangeJson"
 import { PaymentMethodUnion } from "schema/v2/payment_method_union"
 import { DeliveryInfo } from "./DeliveryInfo"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
+import { OfferType } from "../offers/OfferType"
 
 const OrderModeEnum = new GraphQLEnumType({
   name: "OrderModeEnum",
@@ -92,7 +93,7 @@ const OrderBuyerStateEnum = new GraphQLEnumType({
     SUBMITTED: { value: "SUBMITTED", description: "Order has been submitted" },
     OFFER_RECEIVED: {
       value: "OFFER_RECEIVED",
-      description: "Order is an offer avaiting responce from the buyer",
+      description: "Order is an offer awaiting response from the buyer",
     },
     PAYMENT_FAILED: {
       value: "PAYMENT_FAILED",
@@ -572,6 +573,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           _info
         )
       },
+    },
+    offers: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
+      description: "List of offers for this order",
+      resolve: ({ offers }) => offers || [],
     },
   },
 })
