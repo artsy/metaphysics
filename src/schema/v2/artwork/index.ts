@@ -1344,10 +1344,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       privateShortcutPath: {
         type: GraphQLString,
         description: "Private shortcut URL path for accessing the artwork",
-        resolve: (artwork) => {
-          console.log({ artwork })
-          return artwork.private_shortcut_path
-        },
+        resolve: ({ private_shortcut_path }) => private_shortcut_path,
       },
       priceCurrency: {
         type: GraphQLString,
