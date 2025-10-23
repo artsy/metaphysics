@@ -66,10 +66,10 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       type: new GraphQLNonNull(FromParticipantEnum),
       description: "Who the offer is from",
       resolve: ({ from_participant }) => {
-        switch (from_participant.toLowerCase()) {
-          case "buyer":
+        switch (from_participant.toUpperCase()) {
+          case "BUYER":
             return "BUYER"
-          case "seller":
+          case "SELLER":
             return "SELLER"
           default:
             throw new Error(`Unknown from_participant: ${from_participant}`)

@@ -155,6 +155,7 @@ describe("Me", () => {
                 }
                 note
                 fromParticipant
+                createdAt
               }
             }
           }
@@ -288,6 +289,7 @@ describe("Me", () => {
                 }
                 note
                 fromParticipant
+                createdAt
               }
             }
           }
@@ -305,6 +307,7 @@ describe("Me", () => {
             note: "This is my offer",
             shipping_total_cents: 2000,
             tax_total_cents: 2300,
+            created_at: "2023-01-02T00:00:00Z",
           },
           {
             id: "offer-2",
@@ -315,6 +318,7 @@ describe("Me", () => {
             note: null,
             shipping_total_cents: 2000,
             tax_total_cents: 2300,
+            created_at: "2023-01-01T00:00:00Z",
           },
         ]
 
@@ -341,6 +345,7 @@ describe("Me", () => {
             },
             note: "This is my offer",
             fromParticipant: "BUYER",
+            createdAt: "2023-01-02T00:00:00Z",
           },
           {
             internalID: "offer-2",
@@ -357,6 +362,7 @@ describe("Me", () => {
             },
             note: null,
             fromParticipant: "SELLER",
+            createdAt: "2023-01-01T00:00:00Z",
           },
         ])
       })
