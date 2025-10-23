@@ -137,13 +137,9 @@ export const ArtistRecommendations: GraphQLFieldConfig<
       defaultValue: "HYBRID",
     },
   }),
-  resolve: async (
-    _root,
-    args: CursorPageable & { source?: string },
-    context
-  ) => {
+  resolve: async (_root, args: CursorPageable, context) => {
     const { page, size } = convertConnectionArgsToGravityArgs(args)
-    const source = args.source || "HYBRID"
+    const source = args.source
 
     switch (source) {
       case "SIMILAR_TO_FOLLOWED":
