@@ -142,6 +142,21 @@ describe("Me", () => {
                 display
                 minor
               }
+              offers {
+                internalID
+                amount {
+                  display
+                }
+                taxTotal {
+                  display
+                }
+                shippingTotal {
+                  display
+                }
+                note
+                fromParticipant
+                createdAt
+              }
             }
           }
         }
@@ -250,6 +265,119 @@ describe("Me", () => {
         taxTotal: {
           minor: 4299,
         },
+        offers: [],
+      })
+    })
+
+    describe("offers", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              offers {
+                internalID
+                amount {
+                  display
+                  minor
+                  currencyCode
+                }
+                taxTotal {
+                  display
+                }
+                shippingTotal {
+                  display
+                }
+                note
+                fromParticipant
+                createdAt
+              }
+            }
+          }
+        }
+      `
+
+      it("returns offers when present", async () => {
+        orderJson.offers = [
+          {
+            id: "offer-1",
+            amount_cents: 450000,
+            buyer_total_cents: 475000,
+            currency_code: "USD",
+            from_participant: "buyer",
+            note: "This is my offer",
+            shipping_total_cents: 2000,
+            tax_total_cents: 2300,
+            created_at: "2023-01-02T00:00:00Z",
+          },
+          {
+            id: "offer-2",
+            amount_cents: 500000,
+            buyer_total_cents: 525000,
+            currency_code: "USD",
+            from_participant: "seller",
+            note: null,
+            shipping_total_cents: 2000,
+            tax_total_cents: 2300,
+            created_at: "2023-01-01T00:00:00Z",
+          },
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.offers).toEqual([
+          {
+            internalID: "offer-1",
+            amount: {
+              display: "US$4,750",
+              minor: 475000,
+              currencyCode: "USD",
+            },
+            taxTotal: {
+              display: "US$23",
+            },
+            shippingTotal: {
+              display: "US$20",
+            },
+            note: "This is my offer",
+            fromParticipant: "BUYER",
+            createdAt: "2023-01-02T00:00:00Z",
+          },
+          {
+            internalID: "offer-2",
+            amount: {
+              display: "US$5,250",
+              minor: 525000,
+              currencyCode: "USD",
+            },
+            taxTotal: {
+              display: "US$23",
+            },
+            shippingTotal: {
+              display: "US$20",
+            },
+            note: null,
+            fromParticipant: "SELLER",
+            createdAt: "2023-01-01T00:00:00Z",
+          },
+        ])
+      })
+
+      it("returns empty array when no offers", async () => {
+        orderJson.offers = undefined
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.offers).toEqual([])
       })
     })
 
