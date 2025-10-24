@@ -12,6 +12,7 @@ describe("UpdatePartnerMutation", () => {
             email: "contact@gallery.com"
             website: "https://gallery.com"
             hasFullProfile: true
+            analyticsPageTimeFrame: ONE_YEAR
           }
         ) {
           partnerOrError {
@@ -41,6 +42,7 @@ describe("UpdatePartnerMutation", () => {
             email: "contact@gallery.com",
             website: "https://gallery.com",
             has_full_profile: true,
+            analytics_page_time_frame: "one_year",
           })
           return Promise.resolve({
             _id: "partner-id",

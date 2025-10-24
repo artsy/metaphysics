@@ -20,6 +20,7 @@ describe("Partner type", () => {
       claimed: true,
       show_promoted: true,
       display_full_partner_page: true,
+      analytics_page_time_frame: "four_weeks",
       partner_categories: [
         {
           id: "blue-chip",
@@ -152,6 +153,23 @@ describe("Partner type", () => {
     expect(data).toEqual({
       partner: {
         displayFullPartnerPage: true,
+      },
+    })
+  })
+
+  it("returns analyticsPageTimeFrame field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          analyticsPageTimeFrame
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        analyticsPageTimeFrame: "FOUR_WEEKS",
       },
     })
   })

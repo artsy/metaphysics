@@ -156,6 +156,23 @@ const ArtistAlertsSort = {
   }),
 }
 
+export const AnalyticsQueryPeriodEnum = {
+  type: new GraphQLEnumType({
+    name: "AnalyticsQueryPeriodEnum",
+    values: {
+      FOUR_WEEKS: {
+        value: "four_weeks",
+      },
+      SIXTEEN_WEEKS: {
+        value: "sixteen_weeks",
+      },
+      ONE_YEAR: {
+        value: "one_year",
+      },
+    },
+  }),
+}
+
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -1231,6 +1248,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
+      },
+      analyticsPageTimeFrame: {
+        description: "Time frame selected for analytics page",
+        type: AnalyticsQueryPeriodEnum.type,
+        resolve: ({ analytics_page_time_frame }) => analytics_page_time_frame,
       },
       showsConnection: {
         description: "A connection of shows from a Partner.",
