@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -628,9 +627,7 @@ export default new GraphQLSchema({
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
-      ...(config.USE_UNSTITCHED_REQUEST_CONDITION_REPORT
-        ? { requestConditionReport: requestConditionReportMutation }
-        : {}),
+      requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
