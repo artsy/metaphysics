@@ -846,6 +846,12 @@ type AnalyticsPageInfo {
   startCursor: String
 }
 
+enum AnalyticsPageTimeFrameEnum {
+  FOUR_WEEKS
+  ONE_YEAR
+  SIXTEEN_WEEKS
+}
+
 # Stats for pageviews of partner content
 type AnalyticsPageviewStats {
   artworkViews: Int
@@ -17773,7 +17779,7 @@ type Partner implements Node {
   analytics: AnalyticsPartnerStats
 
   # Time frame selected for analytics page
-  analyticsPageTimeFrame: String
+  analyticsPageTimeFrame: AnalyticsPageTimeFrameEnum
 
   # A connection of articles related to a partner.
   articlesConnection(
@@ -24580,7 +24586,7 @@ input UpdatePartnerMutationInput {
   alternateNames: [String]
 
   # Time frame for partner analytics page.
-  analyticsPageTimeFrame: String
+  analyticsPageTimeFrame: AnalyticsPageTimeFrameEnum
 
   # Whether to charge sales tax on ecommerce orders.
   artsyCollectsSalesTax: Boolean

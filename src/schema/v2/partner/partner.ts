@@ -156,6 +156,23 @@ const ArtistAlertsSort = {
   }),
 }
 
+export const AnalyticsPageTimeFrameEnum = {
+  type: new GraphQLEnumType({
+    name: "AnalyticsPageTimeFrameEnum",
+    values: {
+      FOUR_WEEKS: {
+        value: "four_weeks",
+      },
+      SIXTEEN_WEEKS: {
+        value: "sixteen_weeks",
+      },
+      ONE_YEAR: {
+        value: "one_year",
+      },
+    },
+  }),
+}
+
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -1234,7 +1251,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       analyticsPageTimeFrame: {
         description: "Time frame selected for analytics page",
-        type: GraphQLString,
+        type: AnalyticsPageTimeFrameEnum.type,
         resolve: ({ analytics_page_time_frame }) => analytics_page_time_frame,
       },
       showsConnection: {
