@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLID,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export const ConversationMessageTemplateExampleType = new GraphQLObjectType<
@@ -8,6 +13,11 @@ export const ConversationMessageTemplateExampleType = new GraphQLObjectType<
   name: "ConversationMessageTemplateExample",
   description: "A static example template to help users get started",
   fields: () => ({
+    internalID: {
+      type: GraphQLID,
+      description:
+        "Internal identifier for the example, used for tracking purposes",
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -22,6 +32,7 @@ export const ConversationMessageTemplateExampleType = new GraphQLObjectType<
 
 export const EXAMPLE_TEMPLATES = [
   {
+    internalID: "general", // for internal use
     title: "General Inquiry",
     body: `Thank you so much for reaching out and for your interest in this piece. I'd be happy to share more details with you, including pricing and shipping information.
 
@@ -30,6 +41,7 @@ We'd also love to learn a bit about your collecting journey. What drew you to th
 I look forward to hearing from you.`,
   },
   {
+    internalID: "unavailable", // for internal use
     title: "Work Not Available",
     body: `Thank you for your interest in this piece! While this particular work is no longer available, I would be happy to source another suitable work for your collection.
 

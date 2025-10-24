@@ -88,7 +88,7 @@ export class SearchResolver {
               __typename: searchResultItem.label,
             }
           })
-          // Due to ElasticSearch indexing lag, it's possible for a search result
+          // Due to search indexing lag, it's possible for a search result
           // item to be returned but the corresponding object to not be found.
           // In this case, we return null and filter out the nulls in the resolver.
           .catch(() => null)
