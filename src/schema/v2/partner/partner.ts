@@ -1232,6 +1232,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
       },
+      analyticsPageTimeFrame: {
+        description: "Time frame selected for analytics page",
+        type: GraphQLString,
+        resolve: ({ analytics_page_time_frame }) => analytics_page_time_frame,
+      },
       showsConnection: {
         description: "A connection of shows from a Partner.",
         type: ShowsConnection.connectionType,

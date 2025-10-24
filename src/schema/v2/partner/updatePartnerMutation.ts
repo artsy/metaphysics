@@ -20,6 +20,7 @@ interface UpdatePartnerMutationInputProps {
   id: string
   adminId?: string | null
   alternateNames?: string[] | null
+  analyticsPageTimeFrame?: string | null
   artsyCollectsSalesTax?: boolean | null
   commissionRate?: number | null
   commerceEnabled?: boolean | null
@@ -103,6 +104,10 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       type: new GraphQLList(GraphQLString),
       description: "Alternate names or synonyms for this partner.",
     },
+    analyticsPageTimeFrame: {
+      type: GraphQLString,
+      description: "Time frame for partner analytics page.",
+    },
     artsyCollectsSalesTax: {
       type: GraphQLBoolean,
       description: "Whether to charge sales tax on ecommerce orders.",
@@ -113,7 +118,8 @@ export const updatePartnerMutation = mutationWithClientMutationId<
     },
     commerceEnabled: {
       type: GraphQLBoolean,
-      description: "Partner could opt their works to buy now / make offer and accept payments using their merchant account.",
+      description:
+        "Partner could opt their works to buy now / make offer and accept payments using their merchant account.",
     },
     criteoEligible: {
       type: GraphQLBoolean,
@@ -151,7 +157,8 @@ export const updatePartnerMutation = mutationWithClientMutationId<
     },
     enableAchPaymentMethod: {
       type: GraphQLBoolean,
-      description: "Whether the partner should have access to ACH payment method on subscriptions.",
+      description:
+        "Whether the partner should have access to ACH payment method on subscriptions.",
     },
     enforceOnPlatformTransactions: {
       type: GraphQLBoolean,
@@ -179,11 +186,13 @@ export const updatePartnerMutation = mutationWithClientMutationId<
     },
     implicitOfferEnabled: {
       type: GraphQLBoolean,
-      description: "Partner can have artworks implictly enrolled as 'Make Offer' on the artwork page.",
+      description:
+        "Partner can have artworks implictly enrolled as 'Make Offer' on the artwork page.",
     },
     inquiryOrderEnabled: {
       type: GraphQLBoolean,
-      description: "Partner could list artworks for purchasing from inquiry conversations.",
+      description:
+        "Partner could list artworks for purchasing from inquiry conversations.",
     },
     managedByErp: {
       type: GraphQLBoolean,
@@ -243,11 +252,13 @@ export const updatePartnerMutation = mutationWithClientMutationId<
     },
     vatStatus: {
       type: GraphQLString,
-      description: "Whether the partner is registered, registered_and_exempt, exempt, or ineligible for a VAT identification number.",
+      description:
+        "Whether the partner is registered, registered_and_exempt, exempt, or ineligible for a VAT identification number.",
     },
     vatExemptApproved: {
       type: GraphQLBoolean,
-      description: "Whether the partner's VAT exempt status is approved by Artsy.",
+      description:
+        "Whether the partner's VAT exempt status is approved by Artsy.",
     },
     verifiedSeller: {
       type: GraphQLBoolean,
@@ -259,7 +270,8 @@ export const updatePartnerMutation = mutationWithClientMutationId<
     },
     wireTransferEnabled: {
       type: GraphQLBoolean,
-      description: "Indicates the partner is eligible for manual wire transfers.",
+      description:
+        "Indicates the partner is eligible for manual wire transfers.",
     },
   },
   outputFields: {
@@ -349,7 +361,7 @@ export const updatePartnerMutation = mutationWithClientMutationId<
         pre_qualify: preQualify,
         profile_artists_layout: profileArtistsLayout,
         profile_banner_display: profileBannerDisplay,
-        referral_contact_id: referralContactId, 
+        referral_contact_id: referralContactId,
         region: region,
         relative_size: relativeSize,
         requires_merchant_account: requiresMerchantAccount,
