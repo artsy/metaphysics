@@ -11,7 +11,7 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
-import { ContextModule, OwnerType } from "@artsy/cohesion"
+import { ContextModule } from "@artsy/cohesion"
 
 export type HomeViewCard = {
   badgeText?: string
@@ -24,7 +24,6 @@ export type HomeViewCard = {
   subtitle?: string
   title?: string
   contextModule?: ContextModule
-  ownerType?: OwnerType
 }
 
 export const HomeViewCardType = new GraphQLObjectType<
@@ -39,7 +38,6 @@ export const HomeViewCardType = new GraphQLObjectType<
     entityType: { type: GraphQLString },
     entityID: { type: GraphQLString },
     contextModule: { type: GraphQLString },
-    ownerType: { type: GraphQLString },
     image: {
       type: Image.type,
       resolve: ({ imageURL, imageURLs }) => {
