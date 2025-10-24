@@ -173,7 +173,7 @@ describe("AuctionsHub", () => {
       const auctionPicksCard = result.edges[0].node
       expect(auctionPicksCard.title).toBe("Your Auction Picks")
       expect(auctionPicksCard.href).toBe("/auctions/lots-for-you-ending-soon")
-      expect(auctionPicksCard.entityType).toBe("card")
+      expect(auctionPicksCard.entityType).toBe("lotsForYou")
       expect(auctionPicksCard.entityID).toBe("card-your-auction-picks")
       expect(auctionPicksCard.imageURLs).toEqual([
         "https://example.com/artwork1.jpg",
@@ -185,7 +185,7 @@ describe("AuctionsHub", () => {
       const auctionsCard = result.edges[1].node
       expect(auctionsCard.title).toBe("Current and Upcoming Auctions")
       expect(auctionsCard.href).toBe("/auctions")
-      expect(auctionsCard.entityType).toBe("card")
+      expect(auctionsCard.entityType).toBe("auctions")
       expect(auctionsCard.entityID).toBe("card-browse-all-auctions")
       expect(auctionsCard.imageURLs).toEqual([
         "https://example.com/auction1-cover.jpg",
@@ -197,7 +197,7 @@ describe("AuctionsHub", () => {
       const resultsCard = result.edges[2].node
       expect(resultsCard.title).toBe("Auction Results for Artist You Follow")
       expect(resultsCard.href).toBe("/auction-results-for-artists-you-follow")
-      expect(resultsCard.entityType).toBe("card")
+      expect(resultsCard.entityType).toBe("auctionResultsForArtistsYouFollow")
       expect(resultsCard.entityID).toBe(
         "card-auction-results-for-artist-you-follow"
       )

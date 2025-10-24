@@ -66,11 +66,10 @@ const yourAuctionPicksCard: CardFunction = async ({
   const cardDetails: HomeViewCard = {
     title: "Your Auction Picks",
     href: "/auctions/lots-for-you-ending-soon",
-    entityType: "card",
+    entityType: OwnerType.lotsForYou,
     entityID: "card-your-auction-picks",
     imageURLs,
     contextModule: ContextModule.lotsForYouCard,
-    ownerType: OwnerType.lotsForYou,
   }
 
   return cardDetails
@@ -89,10 +88,9 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   const cardDetails: HomeViewCard = {
     title: "No Current or Upcoming Auctions at this time",
     href: "/auctions",
-    entityType: "card",
+    entityType: OwnerType.auctions,
     entityID: "card-browse-all-auctions",
     contextModule: ContextModule.auctionsCard,
-    ownerType: OwnerType.auctions,
   }
 
   if (!sales || sales.length === 0) {
@@ -150,10 +148,9 @@ const latestAuctionResultsCard: CardFunction = async ({
   const cardDetails: HomeViewCard = {
     title: "Follow and engage with artists to see auction results",
     href: "/auction-results-for-artists-you-follow",
-    entityType: "card",
+    entityType: OwnerType.auctionResultsForArtistsYouFollow,
     entityID: "card-auction-results-for-artist-you-follow",
     contextModule: ContextModule.auctionResultsForArtistsYouFollowCard,
-    ownerType: OwnerType.auctionResultsForArtistsYouFollow,
   }
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
