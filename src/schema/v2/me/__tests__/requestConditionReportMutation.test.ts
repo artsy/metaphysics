@@ -1,12 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const describeIfEnabled = config.USE_UNSTITCHED_REQUEST_CONDITION_REPORT
-  ? describe
-  : describe.skip
-
-describeIfEnabled("requestConditionReportMutation", () => {
+describe("requestConditionReportMutation", () => {
   const mockRequestConditionReportLoader = jest.fn()
 
   const context = {
