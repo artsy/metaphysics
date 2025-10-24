@@ -287,6 +287,7 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       id,
       adminId,
       alternateNames,
+      analyticsPageTimeFrame,
       artsyCollectsSalesTax,
       commissionRate,
       commerceEnabled,
@@ -336,6 +337,7 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       const partnerData = {
         admin_id: adminId,
         alternate_names: alternateNames,
+        analytics_page_time_frame: analyticsPageTimeFrame,
         artsy_collects_sales_tax: artsyCollectsSalesTax,
         commission_rate: commissionRate,
         commerce_enabled: commerceEnabled,
