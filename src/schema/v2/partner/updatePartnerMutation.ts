@@ -13,14 +13,14 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import Partner, { AnalyticsPageTimeFrameEnum } from "./partner"
+import Partner, { AnalyticsQueryPeriodEnum } from "./partner"
 import { ResolverContext } from "types/graphql"
 
 interface UpdatePartnerMutationInputProps {
   id: string
   adminId?: string | null
   alternateNames?: string[] | null
-  analyticsPageTimeFrame?: typeof AnalyticsPageTimeFrameEnum | null
+  analyticsPageTimeFrame?: typeof AnalyticsQueryPeriodEnum | null
   artsyCollectsSalesTax?: boolean | null
   commissionRate?: number | null
   commerceEnabled?: boolean | null
@@ -105,7 +105,7 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       description: "Alternate names or synonyms for this partner.",
     },
     analyticsPageTimeFrame: {
-      type: AnalyticsPageTimeFrameEnum.type,
+      type: AnalyticsQueryPeriodEnum.type,
       description: "Time frame for partner analytics page.",
     },
     artsyCollectsSalesTax: {

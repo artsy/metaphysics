@@ -156,9 +156,9 @@ const ArtistAlertsSort = {
   }),
 }
 
-export const AnalyticsPageTimeFrameEnum = {
+export const AnalyticsQueryPeriodEnum = {
   type: new GraphQLEnumType({
-    name: "AnalyticsPageTimeFrameEnum",
+    name: "AnalyticsQueryPeriodEnum",
     values: {
       FOUR_WEEKS: {
         value: "four_weeks",
@@ -1251,7 +1251,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       analyticsPageTimeFrame: {
         description: "Time frame selected for analytics page",
-        type: AnalyticsPageTimeFrameEnum.type,
+        type: AnalyticsQueryPeriodEnum.type,
         resolve: ({ analytics_page_time_frame }) => analytics_page_time_frame,
       },
       showsConnection: {
