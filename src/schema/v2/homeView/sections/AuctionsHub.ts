@@ -45,7 +45,7 @@ const yourAuctionPicksCard: CardFunction = async ({
   info,
 }) => {
   const args = {
-    includeBackfill: true,
+    includeBackfill: false,
     onlyAtAuction: true,
     first: 3,
     excludeDislikedArtworks: true,
@@ -91,6 +91,8 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     entityType: OwnerType.auctions,
     entityID: "card-browse-all-auctions",
     contextModule: ContextModule.auctionsCard,
+    imageURL:
+      "https://files.artsy.net/images/artsy-artwork-rails-backfill-05.png",
   }
 
   if (!sales || sales.length === 0) {
@@ -151,6 +153,8 @@ const latestAuctionResultsCard: CardFunction = async ({
     entityType: OwnerType.auctionResultsForArtistsYouFollow,
     entityID: "card-auction-results-for-artist-you-follow",
     contextModule: ContextModule.auctionResultsForArtistsYouFollowCard,
+    imageURL:
+      "https://files.artsy.net/images/artsy-artwork-rails-backfill-01.png",
   }
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
