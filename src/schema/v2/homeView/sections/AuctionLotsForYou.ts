@@ -26,7 +26,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {
       // formerly specified client-side
-      includeBackfill: true,
+      includeBackfill: !shouldDisplayAuctionsHub(context),
       onlyAtAuction: true,
       first: args.first,
       excludeDislikedArtworks: true,

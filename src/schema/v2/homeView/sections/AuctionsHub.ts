@@ -45,7 +45,7 @@ const yourAuctionPicksCard: CardFunction = async ({
   info,
 }) => {
   const args = {
-    includeBackfill: true,
+    includeBackfill: !shouldDisplayAuctionsHub(context),
     onlyAtAuction: true,
     first: 3,
     excludeDislikedArtworks: true,
@@ -91,8 +91,11 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     entityType: OwnerType.auctions,
     entityID: "card-browse-all-auctions",
     contextModule: ContextModule.auctionsCard,
+    imageURL:
+      "https://files.artsy.net/images/artsy-artwork-rails-backfill-05.png",
   }
 
+  return cardDetails
   if (!sales || sales.length === 0) {
     return cardDetails
   }
@@ -151,7 +154,10 @@ const latestAuctionResultsCard: CardFunction = async ({
     entityType: OwnerType.auctionResultsForArtistsYouFollow,
     entityID: "card-auction-results-for-artist-you-follow",
     contextModule: ContextModule.auctionResultsForArtistsYouFollowCard,
+    imageURL:
+      "https://files.artsy.net/images/artsy-artwork-rails-backfill-01.png",
   }
+  return cardDetails
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
     parent,
@@ -202,13 +208,15 @@ export const AuctionsHub: HomeViewSection = {
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const cardContext = { parent: _parent, context, info: _info }
 
-    const cards = await Promise.all([
+    const cards = await Promise.allSettled([
       yourAuctionPicksCard(cardContext),
       browseAllAuctionsCard(cardContext),
       latestAuctionResultsCard(cardContext),
     ])
 
-    const validCards = cards.filter(Boolean)
+    const validCards = cards
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value)
 
     return connectionFromArray(validCards, args)
   }),
