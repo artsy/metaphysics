@@ -45,7 +45,7 @@ const yourAuctionPicksCard: CardFunction = async ({
   info,
 }) => {
   const args = {
-    includeBackfill: !shouldDisplayAuctionsHub(context),
+    includeBackfill: false,
     onlyAtAuction: true,
     first: 3,
     excludeDislikedArtworks: true,
