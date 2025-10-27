@@ -45,15 +45,7 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  duplicatedTypes.push(
-    "ConditionReportRequest",
-    "RequestConditionReportInput",
-    "RequestConditionReportPayload"
-  )
-
   const excludedMutations: string[] = []
-
-  excludedMutations.push("requestConditionReport")
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
