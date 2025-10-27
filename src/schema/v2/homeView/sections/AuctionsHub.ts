@@ -95,7 +95,6 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
       "https://files.artsy.net/images/artsy-artwork-rails-backfill-05.png",
   }
 
-  return cardDetails
   if (!sales || sales.length === 0) {
     return cardDetails
   }
@@ -157,7 +156,6 @@ const latestAuctionResultsCard: CardFunction = async ({
     imageURL:
       "https://files.artsy.net/images/artsy-artwork-rails-backfill-01.png",
   }
-  return cardDetails
 
   const response = await AuctionResultsByFollowedArtists.resolve!(
     parent,
