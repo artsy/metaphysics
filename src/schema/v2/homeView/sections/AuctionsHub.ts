@@ -206,15 +206,13 @@ export const AuctionsHub: HomeViewSection = {
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const cardContext = { parent: _parent, context, info: _info }
 
-    const cards = await Promise.allSettled([
+    const cards = await Promise.all([
       yourAuctionPicksCard(cardContext),
       browseAllAuctionsCard(cardContext),
       latestAuctionResultsCard(cardContext),
     ])
 
-    const validCards = cards
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => result.value)
+    const validCards = cards.filter(Boolean)
 
     return connectionFromArray(validCards, args)
   }),
