@@ -164,8 +164,8 @@ type GravitySearchCriteriaJSON = {
   attribution_class: string[]
   additional_gene_names: string[]
   summary: JSON
-  count_30d?: number // only present when data is returned from ElasticSearch
-  count_7d?: number // only present when data is returned from ElasticSearch
+  count_30d?: number // only present when data is returned from search
+  count_7d?: number // only present when data is returned from search
   artist_ids: string[]
   artist_series_ids: string[]
   artist_series_names: string[]
