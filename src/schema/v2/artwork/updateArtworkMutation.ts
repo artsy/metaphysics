@@ -261,13 +261,12 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         }
 
         // Attach all images sequentially to avoid race conditions
-        await imageS3Locations.reduce(async (previousPromise, location) => {
-          await previousPromise
-          return addImageToArtworkLoader(id, {
+        for (const location of imageS3Locations) {
+          await addImageToArtworkLoader(id, {
             source_bucket: location.bucket,
             source_key: location.key,
           })
-        }, Promise.resolve())
+        }
       }
 
       // Set default image if provided
