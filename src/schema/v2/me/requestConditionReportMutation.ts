@@ -32,11 +32,10 @@ export const requestConditionReportMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "RequestConditionReport",
-  description: "Request a condition report for a sale artwork",
   inputFields: {
     saleArtworkID: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the sale artwork",
+      description: "ID of the sale artwork.",
     },
   },
   outputFields: {
