@@ -3148,10 +3148,20 @@ type ArtworkCompletenessChecklistItem {
   completed: Boolean!
 
   # The key/identifier of the validation
-  key: String!
+  key: ArtworkCompletenessChecklistItemKey!
 
   # The score weight of this validation
   weight: Int!
+}
+
+enum ArtworkCompletenessChecklistItemKey {
+  CERTIFICATE
+  DESCRIPTION
+  HIGH_RES_IMAGE
+  MULTIPLE_IMAGES
+  PRICE_VISIBILITY
+  PUBLISHABLE
+  SIGNATURE
 }
 
 type ArtworkCondition {

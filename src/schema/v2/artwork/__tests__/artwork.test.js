@@ -5930,8 +5930,12 @@ describe("Artwork type", () => {
       artwork = {
         ...artwork,
         completeness_checklist: {
-          more_than_2_images: { valid: true, weight: 20 },
-          price_visibility_bnmo: { valid: false, weight: 20 },
+          publishable: { valid: true, weight: 10 },
+          multiple_images: { valid: true, weight: 20 },
+          price_visibility: { valid: true, weight: 10 },
+          high_res_image: { valid: false, weight: 20 },
+          certificate: { valid: true, weight: 10 },
+          signature: { valid: false, weight: 5 },
           description: { valid: true, weight: 15 },
         },
       }
@@ -5942,21 +5946,40 @@ describe("Artwork type", () => {
 
       const data = await runQuery(query, context)
 
-      expect(data.artwork.completenessChecklist).toHaveLength(3)
       expect(data.artwork.completenessChecklist).toEqual(
         expect.arrayContaining([
           {
-            key: "more_than_2_images",
+            key: "PUBLISHABLE",
+            completed: true,
+            weight: 10,
+          },
+          {
+            key: "MULTIPLE_IMAGES",
             completed: true,
             weight: 20,
           },
           {
-            key: "price_visibility_bnmo",
+            key: "PRICE_VISIBILITY",
+            completed: true,
+            weight: 10,
+          },
+          {
+            key: "HIGH_RES_IMAGE",
             completed: false,
             weight: 20,
           },
           {
-            key: "description",
+            key: "CERTIFICATE",
+            completed: true,
+            weight: 10,
+          },
+          {
+            key: "SIGNATURE",
+            completed: false,
+            weight: 5,
+          },
+          {
+            key: "DESCRIPTION",
             completed: true,
             weight: 15,
           },
