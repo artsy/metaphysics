@@ -287,6 +287,11 @@ describe("Me", () => {
                 shippingTotal {
                   display
                 }
+                buyerTotal {
+                  display
+                  minor
+                  currencyCode
+                }
                 note
                 fromParticipant
                 createdAt
@@ -333,8 +338,8 @@ describe("Me", () => {
           {
             internalID: "offer-1",
             amount: {
-              display: "US$4,750",
-              minor: 475000,
+              display: "US$4,500",
+              minor: 450000,
               currencyCode: "USD",
             },
             taxTotal: {
@@ -342,6 +347,11 @@ describe("Me", () => {
             },
             shippingTotal: {
               display: "US$20",
+            },
+            buyerTotal: {
+              currencyCode: "USD",
+              display: "US$4,750",
+              minor: 475000,
             },
             note: "This is my offer",
             fromParticipant: "BUYER",
@@ -350,8 +360,8 @@ describe("Me", () => {
           {
             internalID: "offer-2",
             amount: {
-              display: "US$5,250",
-              minor: 525000,
+              display: "US$5,000",
+              minor: 500000,
               currencyCode: "USD",
             },
             taxTotal: {
@@ -359,6 +369,11 @@ describe("Me", () => {
             },
             shippingTotal: {
               display: "US$20",
+            },
+            buyerTotal: {
+              currencyCode: "USD",
+              display: "US$5,250",
+              minor: 525000,
             },
             note: null,
             fromParticipant: "SELLER",
