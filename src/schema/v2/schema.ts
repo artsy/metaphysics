@@ -154,6 +154,7 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
+import { createPartnerArtworkDuplicateMutation } from "./partner/Mutations/createPartnerArtworkDuplicateMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
@@ -523,6 +524,7 @@ export default new GraphQLSchema({
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
       createArtwork: createArtworkMutation,
+      createPartnerArtworkDuplicate: createPartnerArtworkDuplicateMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,

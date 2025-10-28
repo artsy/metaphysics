@@ -996,6 +996,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworksDuplicateLoader: gravityLoader(
+      (id) => `partner/${id}/artworks/duplicate`,
+      {},
+      { method: "POST" }
+    ),
     partnerArtworkOfferableActivityLoader: gravityLoader<
       any,
       { id: string; artworkId: string }

@@ -9825,6 +9825,39 @@ type CreatePartnerArtistDocumentSuccess {
   partner: Partner
 }
 
+type CreatePartnerArtworkDuplicateFailure {
+  mutationError: GravityMutationError
+}
+
+input CreatePartnerArtworkDuplicateMutationInput {
+  clientMutationId: String
+
+  # The ID of the existing artwork that is to be duplicated.
+  originalId: String!
+
+  # The ID of the partner under which the artwork is created.
+  partnerId: String!
+
+  # Title of the newly duplicated artwork.
+  title: String!
+
+  # The visibility level of the newly duplicated artwork.
+  visibilityLevel: Visibility
+}
+
+type CreatePartnerArtworkDuplicateMutationPayload {
+  artworkImportOrError: CreatePartnerArtworkDuplicateResponseOrError
+  clientMutationId: String
+}
+
+union CreatePartnerArtworkDuplicateResponseOrError =
+    CreatePartnerArtworkDuplicateFailure
+  | CreatePartnerArtworkDuplicateSuccess
+
+type CreatePartnerArtworkDuplicateSuccess {
+  artwork: Artwork
+}
+
 type CreatePartnerContactFailure {
   mutationError: GravityMutationError
 }
@@ -16320,6 +16353,11 @@ type Mutation {
   createPartnerArtistDocument(
     input: CreatePartnerArtistDocumentMutationInput!
   ): CreatePartnerArtistDocumentMutationPayload
+
+  # Creates a new artwork based off of an existing artwork
+  createPartnerArtworkDuplicate(
+    input: CreatePartnerArtworkDuplicateMutationInput!
+  ): CreatePartnerArtworkDuplicateMutationPayload
 
   # Creates a new contact for a partner
   createPartnerContact(
@@ -27347,6 +27385,7 @@ type ViewingRoomsEdge {
 
 enum Visibility {
   LISTED
+  TEMPLATE
   UNLISTED
 }
 
