@@ -304,9 +304,12 @@ describe("AuctionsHub", () => {
         {} as any
       )
 
-      // Should return only emty state card for AuctionResultsByFollowedArtists
-      expect(result.edges).toHaveLength(1)
+      // Should return only emty state card for Aucitons and AuctionResultsByFollowedArtists
+      expect(result.edges).toHaveLength(2)
       expect(result.edges[0].node.title).toBe(
+        "No Current or Upcoming Auctions at this time"
+      )
+      expect(result.edges[1].node.title).toBe(
         "Follow and engage with artists to see auction results"
       )
     })
