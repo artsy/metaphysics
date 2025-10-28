@@ -2676,7 +2676,7 @@ type Artwork implements Node & Searchable & Sellable {
   completenessScore: Int
 
   # The tier classification of the completeness score (Incomplete, Good, or Excellent)
-  completenessTier: String
+  completenessTier: ArtworkCompletenessTier
   condition: ArtworkCondition
   conditionDescription: ArtworkInfoRow
 
@@ -3093,9 +3093,6 @@ type ArtworkCompletenessChecklistItem {
 
   # The key/identifier of the validation
   key: ArtworkCompletenessChecklistItemKey!
-
-  # The score weight of this validation
-  weight: Int!
 }
 
 enum ArtworkCompletenessChecklistItemKey {
@@ -3106,6 +3103,12 @@ enum ArtworkCompletenessChecklistItemKey {
   PRICE_VISIBILITY
   PUBLISHABLE
   SIGNATURE
+}
+
+enum ArtworkCompletenessTier {
+  EXCELLENT
+  GOOD
+  INCOMPLETE
 }
 
 type ArtworkCondition {

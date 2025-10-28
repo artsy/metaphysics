@@ -89,6 +89,7 @@ import { ArtworkVisibility } from "./artworkVisibility"
 import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
+import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
@@ -516,13 +517,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ([key, data]: [string, any]) => ({
               key,
               completed: data.valid,
-              weight: data.weight,
             })
           )
         },
       },
       completenessTier: {
-        type: GraphQLString,
+        type: ArtworkCompletenessTier,
         description:
           "The tier classification of the completeness score (Incomplete, Good, or Excellent)",
         resolve: ({ completeness_tier }) => completeness_tier,
