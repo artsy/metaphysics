@@ -1,9 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLObjectType,
-} from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ArtworkCompletenessChecklistItemKey } from "./artworkCompletenessChecklistItemKey"
 
@@ -22,11 +17,6 @@ export const ArtworkCompletenessChecklistItemType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether this checklist item is completed",
       resolve: ({ completed }) => completed,
-    },
-    weight: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "The score weight of this validation",
-      resolve: ({ weight }) => weight,
     },
   },
 })

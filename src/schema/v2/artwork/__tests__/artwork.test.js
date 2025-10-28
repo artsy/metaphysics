@@ -5901,7 +5901,6 @@ describe("Artwork type", () => {
           completenessChecklist {
             key
             completed
-            weight
           }
         }
       }
@@ -5951,37 +5950,30 @@ describe("Artwork type", () => {
           {
             key: "PUBLISHABLE",
             completed: true,
-            weight: 10,
           },
           {
             key: "MULTIPLE_IMAGES",
             completed: true,
-            weight: 20,
           },
           {
             key: "PRICE_VISIBILITY",
             completed: true,
-            weight: 10,
           },
           {
             key: "HIGH_RES_IMAGE",
             completed: false,
-            weight: 20,
           },
           {
             key: "CERTIFICATE",
             completed: true,
-            weight: 10,
           },
           {
             key: "SIGNATURE",
             completed: false,
-            weight: 5,
           },
           {
             key: "DESCRIPTION",
             completed: true,
-            weight: 15,
           },
         ])
       )
