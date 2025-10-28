@@ -2721,6 +2721,15 @@ type Artwork implements Node & Searchable & Sellable {
     first: Int
     last: Int
   ): AuctionResultConnection
+
+  # A score representing the listing quality of the artwork
+  completenessScore: Int
+
+  # A checklist of items indicating how to improve the completeness score
+  completenessScoreChecklist: [ArtworkCompletenessChecklistItem]
+
+  # The tier classification of the completeness score (Incomplete, Good, or Excellent)
+  completenessScoreTier: String
   condition: ArtworkCondition
   conditionDescription: ArtworkInfoRow
 
@@ -3132,6 +3141,17 @@ enum ArtworkAttributionClassType {
   OPEN_EDITION
   UNIQUE
   UNKNOWN_EDITION
+}
+
+type ArtworkCompletenessChecklistItem {
+  # Whether this checklist item is completed
+  completed: Boolean!
+
+  # The type/identifier of the validation
+  type: String!
+
+  # The score weight of this validation
+  weight: Int!
 }
 
 type ArtworkCondition {

@@ -88,6 +88,7 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
+import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
@@ -499,6 +500,33 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       collectorSignals: CollectorSignals,
       comparableAuctionResults: ComparableAuctionResults,
+      completenessScore: {
+        type: GraphQLInt,
+        description: "A score representing the listing quality of the artwork",
+        resolve: ({ completeness_score }) => completeness_score,
+      },
+      completenessScoreChecklist: {
+        type: new GraphQLList(ArtworkCompletenessChecklistItemType),
+        description:
+          "A checklist of items indicating how to improve the completeness score",
+        resolve: ({ completeness_score_checklist }) => {
+          if (!completeness_score_checklist) return []
+
+          return Object.entries(completeness_score_checklist).map(
+            ([type, data]: [string, any]) => ({
+              type,
+              completed: data.valid,
+              weight: data.weight,
+            })
+          )
+        },
+      },
+      completenessScoreTier: {
+        type: GraphQLString,
+        description:
+          "The tier classification of the completeness score (Incomplete, Good, or Excellent)",
+        resolve: ({ completeness_score_tier }) => completeness_score_tier,
+      },
       confidentialNotes: {
         type: GraphQLString,
         resolve: ({ confidential_notes }) => confidential_notes,
