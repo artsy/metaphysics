@@ -5893,6 +5893,96 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#completenessScoreChecklist", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          completenessScoreChecklist {
+            type
+            completed
+            weight
+          }
+        }
+      }
+    `
+
+    it("returns an empty array when completeness_checklist is null", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: null,
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessScoreChecklist: [],
+        },
+      })
+    })
+
+    it("transforms the hash into an array of checklist items", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {
+          more_than_2_images: { valid: true, weight: 20 },
+          price_visibility_bnmo: { valid: false, weight: 20 },
+          description: { valid: true, weight: 15 },
+        },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data.artwork.completenessScoreChecklist).toHaveLength(3)
+      expect(data.artwork.completenessScoreChecklist).toEqual(
+        expect.arrayContaining([
+          {
+            type: "more_than_2_images",
+            completed: true,
+            weight: 20,
+          },
+          {
+            type: "price_visibility_bnmo",
+            completed: false,
+            weight: 20,
+          },
+          {
+            type: "description",
+            completed: true,
+            weight: 15,
+          },
+        ])
+      )
+    })
+
+    it("handles empty object", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {},
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessScoreChecklist: [],
+        },
+      })
+    })
+  })
 })
 
 describe("Artwork caption field", () => {

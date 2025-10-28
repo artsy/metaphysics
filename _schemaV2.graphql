@@ -2722,14 +2722,14 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): AuctionResultConnection
 
+  # A checklist of items indicating how to improve the completeness score
+  completenessChecklist: [ArtworkCompletenessChecklistItem]
+
   # A score representing the listing quality of the artwork
   completenessScore: Int
 
-  # A checklist of items indicating how to improve the completeness score
-  completenessScoreChecklist: [ArtworkCompletenessChecklistItem]
-
   # The tier classification of the completeness score (Incomplete, Good, or Excellent)
-  completenessScoreTier: String
+  completenessTier: String
   condition: ArtworkCondition
   conditionDescription: ArtworkInfoRow
 
