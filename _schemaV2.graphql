@@ -2722,7 +2722,7 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): AuctionResultConnection
 
-  # A checklist of items indicating how to improve the completeness score
+  # A checklist of items indicating how to improve the completeness score (ranked by importance)
   completenessChecklist: [ArtworkCompletenessChecklistItem]
 
   # A score representing the listing quality of the artwork
