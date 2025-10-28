@@ -509,7 +509,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       completenessChecklist: {
         type: new GraphQLList(ArtworkCompletenessChecklistItemType),
         description:
-          "A checklist of items indicating how to improve the completeness score",
+          "A checklist of items indicating how to improve the completeness score (ranked by importance)",
         resolve: ({ completeness_checklist }) => {
           if (!completeness_checklist) return []
 
