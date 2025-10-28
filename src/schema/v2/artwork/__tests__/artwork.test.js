@@ -5895,11 +5895,11 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#completenessScoreChecklist", () => {
+  describe("#completenessChecklist", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          completenessScoreChecklist {
+          completenessChecklist {
             type
             completed
             weight
@@ -5922,7 +5922,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          completenessScoreChecklist: [],
+          completenessChecklist: [],
         },
       })
     })
@@ -5943,8 +5943,8 @@ describe("Artwork type", () => {
 
       const data = await runQuery(query, context)
 
-      expect(data.artwork.completenessScoreChecklist).toHaveLength(3)
-      expect(data.artwork.completenessScoreChecklist).toEqual(
+      expect(data.artwork.completenessChecklist).toHaveLength(3)
+      expect(data.artwork.completenessChecklist).toEqual(
         expect.arrayContaining([
           {
             type: "more_than_2_images",
@@ -5979,7 +5979,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          completenessScoreChecklist: [],
+          completenessChecklist: [],
         },
       })
     })
