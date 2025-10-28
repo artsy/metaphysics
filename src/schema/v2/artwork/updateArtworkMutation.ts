@@ -260,15 +260,13 @@ export const updateArtworkMutation = mutationWithClientMutationId<
           return new Error("You need to be signed in to perform this action")
         }
 
-        // Attach all images
-        await Promise.all(
-          imageS3Locations.map((location) =>
-            addImageToArtworkLoader(id, {
-              source_bucket: location.bucket,
-              source_key: location.key,
-            })
-          )
-        )
+        // Attach all images sequentially to avoid race conditions
+        for (const location of imageS3Locations) {
+          await addImageToArtworkLoader(id, {
+            source_bucket: location.bucket,
+            source_key: location.key,
+          })
+        }
       }
 
       // Set default image if provided
