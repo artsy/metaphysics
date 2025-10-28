@@ -3,9 +3,9 @@ import {
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { ArtworkCompletenessChecklistItemKey } from "./artworkCompletenessChecklistItemKey"
 
 export const ArtworkCompletenessChecklistItemType = new GraphQLObjectType<
   any,
@@ -14,7 +14,7 @@ export const ArtworkCompletenessChecklistItemType = new GraphQLObjectType<
   name: "ArtworkCompletenessChecklistItem",
   fields: {
     key: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(ArtworkCompletenessChecklistItemKey),
       description: "The key/identifier of the validation",
       resolve: ({ key }) => key,
     },
