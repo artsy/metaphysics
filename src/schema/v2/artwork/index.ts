@@ -505,14 +505,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description: "A score representing the listing quality of the artwork",
         resolve: ({ completeness_score }) => completeness_score,
       },
-      completenessScoreChecklist: {
+      completenessChecklist: {
         type: new GraphQLList(ArtworkCompletenessChecklistItemType),
         description:
           "A checklist of items indicating how to improve the completeness score",
-        resolve: ({ completeness_score_checklist }) => {
-          if (!completeness_score_checklist) return []
+        resolve: ({ completeness_checklist }) => {
+          if (!completeness_checklist) return []
 
-          return Object.entries(completeness_score_checklist).map(
+          return Object.entries(completeness_checklist).map(
             ([type, data]: [string, any]) => ({
               type,
               completed: data.valid,
@@ -521,11 +521,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      completenessScoreTier: {
+      completenessTier: {
         type: GraphQLString,
         description:
           "The tier classification of the completeness score (Incomplete, Good, or Excellent)",
-        resolve: ({ completeness_score_tier }) => completeness_score_tier,
+        resolve: ({ completeness_tier }) => completeness_tier,
       },
       confidentialNotes: {
         type: GraphQLString,

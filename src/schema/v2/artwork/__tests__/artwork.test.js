@@ -5908,10 +5908,10 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns an empty array when completeness_score_checklist is null", async () => {
+    it("returns an empty array when completeness_checklist is null", async () => {
       artwork = {
         ...artwork,
-        completeness_score_checklist: null,
+        completeness_checklist: null,
       }
 
       context = {
@@ -5930,7 +5930,7 @@ describe("Artwork type", () => {
     it("transforms the hash into an array of checklist items", async () => {
       artwork = {
         ...artwork,
-        completeness_score_checklist: {
+        completeness_checklist: {
           more_than_2_images: { valid: true, weight: 20 },
           price_visibility_bnmo: { valid: false, weight: 20 },
           description: { valid: true, weight: 15 },
@@ -5968,7 +5968,7 @@ describe("Artwork type", () => {
     it("handles empty object", async () => {
       artwork = {
         ...artwork,
-        completeness_score_checklist: {},
+        completeness_checklist: {},
       }
 
       context = {
