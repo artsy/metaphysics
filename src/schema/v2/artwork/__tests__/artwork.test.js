@@ -5899,7 +5899,7 @@ describe("Artwork type", () => {
       {
         artwork(id: "richard-prince-untitled-portrait") {
           completenessChecklist {
-            type
+            key
             completed
             weight
           }
@@ -5946,17 +5946,17 @@ describe("Artwork type", () => {
       expect(data.artwork.completenessChecklist).toEqual(
         expect.arrayContaining([
           {
-            type: "more_than_2_images",
+            key: "more_than_2_images",
             completed: true,
             weight: 20,
           },
           {
-            type: "price_visibility_bnmo",
+            key: "price_visibility_bnmo",
             completed: false,
             weight: 20,
           },
           {
-            type: "description",
+            key: "description",
             completed: true,
             weight: 15,
           },

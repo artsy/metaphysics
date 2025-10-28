@@ -13,10 +13,10 @@ export const ArtworkCompletenessChecklistItemType = new GraphQLObjectType<
 >({
   name: "ArtworkCompletenessChecklistItem",
   fields: {
-    type: {
+    key: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The type/identifier of the validation",
-      resolve: ({ type }) => type,
+      description: "The key/identifier of the validation",
+      resolve: ({ key }) => key,
     },
     completed: {
       type: new GraphQLNonNull(GraphQLBoolean),

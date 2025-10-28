@@ -3147,8 +3147,8 @@ type ArtworkCompletenessChecklistItem {
   # Whether this checklist item is completed
   completed: Boolean!
 
-  # The type/identifier of the validation
-  type: String!
+  # The key/identifier of the validation
+  key: String!
 
   # The score weight of this validation
   weight: Int!
