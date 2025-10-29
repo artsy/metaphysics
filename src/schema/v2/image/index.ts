@@ -11,12 +11,13 @@ import {
 import { find, first, isArray } from "lodash"
 import { NullableIDField } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import { connectionWithCursorInfo } from "../fields/pagination"
 import CroppedUrl from "./cropped"
 import DeepZoom, { isZoomable } from "./deep_zoom"
+import { hasProcessingFailed, isProcessingImage } from "./imageHelper"
 import { ImageData, normalize } from "./normalize"
 import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
-import { connectionWithCursorInfo } from "../fields/pagination"
 
 export type OriginalImage = {
   original_width?: number
@@ -90,6 +91,16 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     isZoomable: {
       type: GraphQLBoolean,
       resolve: isZoomable,
+    },
+    isProcessing: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Indicates whether the image is currently being processed.",
+      resolve: isProcessingImage,
+    },
+    processingFailed: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Indicates whether image processing has failed.",
+      resolve: hasProcessingFailed,
     },
     maxTiledHeight: {
       type: GraphQLInt,
