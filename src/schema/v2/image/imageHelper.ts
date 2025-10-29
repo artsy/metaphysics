@@ -21,7 +21,7 @@ export const isMissingOriginal = (image) => {
 
 // Helper function to check if image has a specific version
 export const hasImageVersion = (image, version: string) => {
-  return image.image_versions?.includes(version)
+  return !!image.image_versions?.includes(version)
 }
 
 // Helper function to check if any expected image version is missing

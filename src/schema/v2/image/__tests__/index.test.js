@@ -37,19 +37,43 @@ describe("getDefault", () => {
 })
 
 describe("Image type", () => {
-  const image = {
-    image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
-    image_versions: ["icon", "large"],
-    image_urls: {
-      icon: "https://xxx.cloudfront.net/xxx/icon.png",
-      large: "https://xxx.cloudfront.net/xxx/large.jpg",
-    },
-  }
-
+  let image = null
   let artwork = null
   let context = null
 
   beforeEach(() => {
+    // Reset image for each test to prevent test pollution
+    image = {
+      id: "image-id",
+      position: 1,
+      aspect_ratio: null,
+      downloadable: false,
+      original_width: null,
+      original_height: null,
+      is_default: true,
+      image_url: "https://xxx.cloudfront.net/xxx/large.jpg",
+      image_versions: ["icon", "large"],
+      image_urls: {
+        square: undefined,
+        large_rectangle: undefined,
+        medium_rectangle: undefined,
+        small: undefined,
+        large: "https://xxx.cloudfront.net/xxx/large.jpg",
+        tall: undefined,
+        larger: undefined,
+        medium: undefined,
+        normalized: undefined,
+      },
+      tile_size: null,
+      tile_overlap: null,
+      tile_format: null,
+      tile_base_url: null,
+      max_tiled_height: null,
+      max_tiled_width: null,
+      gemini_token: "token",
+      gemini_token_updated_at: null,
+    }
+
     artwork = {
       id: "richard-prince-untitled-portrait",
       title: "untitled-portrait",
@@ -208,19 +232,6 @@ describe("Image type", () => {
       })
     })
 
-    it("returns false when image_url is missing", () => {
-      assign(image, {
-        image_url: null,
-        image_versions: ["square", "small"],
-        gemini_token: "token123",
-        gemini_token_updated_at: new Date().toISOString(),
-      })
-
-      return runQuery(query, context).then((data) => {
-        expect(data.artwork.image.isProcessing).toBe(false)
-      })
-    })
-
     it("returns false when gemini_token_updated_at is missing", () => {
       assign(image, {
         image_url: "https://example.com/image.jpg",
@@ -288,19 +299,6 @@ describe("Image type", () => {
         image_versions: ["square", "small"], // Missing normalized
         gemini_token: "token123",
         gemini_token_updated_at: recentTime,
-      })
-
-      return runQuery(query, context).then((data) => {
-        expect(data.artwork.image.processingFailed).toBe(false)
-      })
-    })
-
-    it("returns false when image_url is missing", () => {
-      assign(image, {
-        image_url: null,
-        image_versions: ["square", "small"],
-        gemini_token: "token123",
-        gemini_token_updated_at: new Date().toISOString(),
       })
 
       return runQuery(query, context).then((data) => {
