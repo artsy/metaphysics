@@ -147,4 +147,230 @@ describe("Image type", () => {
       })
     })
   })
+
+  describe("#isProcessing", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image {
+          isProcessing
+        }
+      }
+    }`
+
+    it("returns false when image has all expected versions", () => {
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: [
+          "square",
+          "small",
+          "medium",
+          "medium_rectangle",
+          "larger",
+          "large",
+          "large_rectangle",
+          "tall",
+          "normalized",
+        ],
+        gemini_token: "token123",
+        gemini_token_updated_at: new Date().toISOString(),
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+      })
+    })
+
+    it("returns true when image is missing versions and within grace period", () => {
+      const recentTime = new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small"], // Missing most versions
+        gemini_token: "token123",
+        gemini_token_updated_at: recentTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(true)
+      })
+    })
+
+    it("returns false when image is missing versions but outside grace period", () => {
+      const oldTime = new Date(Date.now() - 45 * 60 * 1000).toISOString() // 45 minutes ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small"], // Missing most versions
+        gemini_token: "token123",
+        gemini_token_updated_at: oldTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+      })
+    })
+
+    it("returns false when image_url is missing", () => {
+      assign(image, {
+        image_url: null,
+        image_versions: ["square", "small"],
+        gemini_token: "token123",
+        gemini_token_updated_at: new Date().toISOString(),
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+      })
+    })
+
+    it("returns false when gemini_token_updated_at is missing", () => {
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small"],
+        gemini_token: "token123",
+        gemini_token_updated_at: null,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+      })
+    })
+  })
+
+  describe("#processingFailed", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image {
+          processingFailed
+        }
+      }
+    }`
+
+    it("returns false when image has normalized version", () => {
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: [
+          "square",
+          "small",
+          "medium",
+          "medium_rectangle",
+          "larger",
+          "large",
+          "large_rectangle",
+          "tall",
+          "normalized",
+        ],
+        gemini_token: "token123",
+        gemini_token_updated_at: new Date().toISOString(),
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.processingFailed).toBe(false)
+      })
+    })
+
+    it("returns true when image is missing normalized version and not processing", () => {
+      const oldTime = new Date(Date.now() - 45 * 60 * 1000).toISOString() // 45 minutes ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small", "medium"], // Missing normalized
+        gemini_token: "token123",
+        gemini_token_updated_at: oldTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.processingFailed).toBe(true)
+      })
+    })
+
+    it("returns false when image is still processing", () => {
+      const recentTime = new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small"], // Missing normalized
+        gemini_token: "token123",
+        gemini_token_updated_at: recentTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.processingFailed).toBe(false)
+      })
+    })
+
+    it("returns false when image_url is missing", () => {
+      assign(image, {
+        image_url: null,
+        image_versions: ["square", "small"],
+        gemini_token: "token123",
+        gemini_token_updated_at: new Date().toISOString(),
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.processingFailed).toBe(false)
+      })
+    })
+  })
+
+  describe("#isProcessing and #processingFailed combined", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image {
+          isProcessing
+          processingFailed
+        }
+      }
+    }`
+
+    it("returns correct values for a fully processed image", () => {
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: [
+          "square",
+          "small",
+          "medium",
+          "medium_rectangle",
+          "larger",
+          "large",
+          "large_rectangle",
+          "tall",
+          "normalized",
+        ],
+        gemini_token: "token123",
+        gemini_token_updated_at: new Date().toISOString(),
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+        expect(data.artwork.image.processingFailed).toBe(false)
+      })
+    })
+
+    it("returns correct values for an image currently processing", () => {
+      const recentTime = new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small"],
+        gemini_token: "token123",
+        gemini_token_updated_at: recentTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(true)
+        expect(data.artwork.image.processingFailed).toBe(false)
+      })
+    })
+
+    it("returns correct values for an image with failed processing", () => {
+      const oldTime = new Date(Date.now() - 60 * 60 * 1000).toISOString() // 1 hour ago
+      assign(image, {
+        image_url: "https://example.com/image.jpg",
+        image_versions: ["square", "small", "medium"], // Missing normalized
+        gemini_token: "token123",
+        gemini_token_updated_at: oldTime,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.isProcessing).toBe(false)
+        expect(data.artwork.image.processingFailed).toBe(true)
+      })
+    })
+  })
 })
