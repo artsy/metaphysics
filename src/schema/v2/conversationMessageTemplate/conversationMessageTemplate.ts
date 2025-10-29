@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLFieldConfig,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "../object_identification"
@@ -26,6 +27,14 @@ export const ConversationMessageTemplateType = new GraphQLObjectType<
     currentVersionId: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ current_version_id }) => current_version_id,
+    },
+    sourceExampleId: {
+      type: GraphQLString,
+      resolve: ({ source_example_id }) => source_example_id,
+    },
+    isDeleted: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ is_deleted }) => is_deleted ?? false,
     },
   }),
 })
