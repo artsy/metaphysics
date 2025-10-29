@@ -5929,13 +5929,13 @@ describe("Artwork type", () => {
       artwork = {
         ...artwork,
         completeness_checklist: {
-          publishable: { valid: true, weight: 10 },
-          multiple_images: { valid: true, weight: 20 },
-          price_visibility: { valid: true, weight: 10 },
-          high_res_image: { valid: false, weight: 20 },
-          certificate: { valid: true, weight: 10 },
-          signature: { valid: false, weight: 5 },
-          description: { valid: true, weight: 15 },
+          publishable: { valid: true },
+          multiple_images: { valid: true },
+          price_visibility: { valid: true },
+          high_res_image: { valid: false },
+          certificate: { valid: true },
+          signature: { valid: false },
+          description: { valid: true },
         },
       }
 
