@@ -75,7 +75,7 @@ brew services stop memcached
 _Recommended:_ You can run the commands inside the terminal in VS Code, then the
 debugger will be hooked up by default.
 
-### Setting up your local GraphiQL
+### Setting up your local GraphiQ
 
 We recommend the [graphiql.app](https://github.com/skevy/graphiql-app) client
 for testing queries locally.
