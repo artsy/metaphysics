@@ -17869,6 +17869,7 @@ union OrderedSetItem =
   | Profile
   | Sale
   | Show
+  | Video
 
 # A connection to a list of items.
 type OrderedSetItemConnection {
@@ -21326,6 +21327,9 @@ type Query {
     # Recaptcha token.
     recaptchaToken: String!
   ): VerifyUser
+
+  # Find a video by ID
+  video(id: ID!): Video
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -27363,6 +27367,9 @@ type Viewer {
     # Recaptcha token.
     recaptchaToken: String!
   ): VerifyUser
+
+  # Find a video by ID
+  video(id: ID!): Video
 
   # Find a viewing room by ID
   viewingRoom(id: ID!): ViewingRoom

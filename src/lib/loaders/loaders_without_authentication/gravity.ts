@@ -350,6 +350,7 @@ export default (opts) => {
       {},
       { method: "GET" }
     ),
+    videoLoader: gravityLoader((id) => `video/${id}`),
     viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`

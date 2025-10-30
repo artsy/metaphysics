@@ -353,6 +353,7 @@ import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
+import { Video } from "./video"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -483,6 +484,7 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  video: Video,
   viewingRoom: ViewingRoom,
   viewingRoomsConnection: ViewingRoomsConnection,
   viewingRooms: ViewingRoomConnection,
