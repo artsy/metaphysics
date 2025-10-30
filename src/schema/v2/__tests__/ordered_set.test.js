@@ -125,6 +125,81 @@ describe("OrderedSet type", () => {
       },
     })
   })
+
+  it("can return a connection for an video set", async () => {
+    const query = gql`
+      {
+        orderedSet(id: "video-set-id") {
+          internalID
+          name
+          orderedItemsConnection(first: 2) {
+            totalCount
+            edges {
+              node {
+                __typename
+                ... on Video {
+                  playerUrl
+                  height
+                  width
+                  title
+                  description
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      setLoader: () => {
+        return Promise.resolve({
+          id: "internal-video-set-id",
+          name: "Featured Videos",
+          item_type: "Video",
+        })
+      },
+      setItemsLoader: () => {
+        return Promise.resolve({
+          body: [
+            {
+              id: "video-1",
+              player_embed_url: "https://www.youtube.com/embed/video1",
+              height: 720,
+              width: 1280,
+              title: "Educational Video",
+              description: "Learn about art history",
+            },
+          ],
+          headers: { "x-total-count": "1" },
+        })
+      },
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      orderedSet: {
+        internalID: "internal-video-set-id",
+        name: "Featured Videos",
+        orderedItemsConnection: {
+          edges: [
+            {
+              node: {
+                __typename: "Video",
+                description: "Learn about art history",
+                height: 720,
+                playerUrl: "https://www.youtube.com/embed/video1",
+                title: "Educational Video",
+                width: 1280,
+              },
+            },
+          ],
+          totalCount: 1,
+        },
+      },
+    })
+  })
 })
 
 /**
