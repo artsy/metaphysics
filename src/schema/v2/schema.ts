@@ -352,6 +352,7 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
+import { AI } from "./ai"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -372,6 +373,7 @@ const rootFields = {
     description: "Do not use (only used internally for stitching)",
   },
   admin: AdminField,
+  ai: AI,
   article: Article,
   articles: Articles,
   articlesConnection: ArticlesConnection,
