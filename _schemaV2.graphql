@@ -26129,12 +26129,17 @@ type VerifyUser {
 
 # An object containing video metadata
 type Video {
+  description(format: Format): String
+
   # The height of the video
   height: Int!
   id: ID!
 
   # Returns a full-qualified url that can be embedded in an iframe player
   playerUrl: String!
+
+  # Title of the video
+  title: String
 
   # The width of the video
   width: Int!

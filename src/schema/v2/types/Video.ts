@@ -7,6 +7,7 @@ import {
 } from "graphql"
 import uuid from "uuid/v5"
 import { ResolverContext } from "types/graphql"
+import { markdown } from "../fields/markdown"
 
 interface VideoTypeProps {
   id: string
@@ -26,6 +27,11 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
           return uuid(playerUrl, uuid.URL)
         },
       },
+      title: {
+        description: "Title of the video",
+        type: GraphQLString,
+      },
+      description: markdown(),
       playerUrl: {
         description:
           "Returns a full-qualified url that can be embedded in an iframe player",
