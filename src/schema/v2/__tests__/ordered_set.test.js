@@ -1,9 +1,9 @@
-/* eslint-disable promise/always-return */
+import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("OrderedSet type", () => {
-  it("fetches set by id", () => {
-    const query = `
+  it("fetches set by id", async () => {
+    const query = gql`
       {
         orderedSet(id: "52dd3c2e4b8480091700027f") {
           internalID
@@ -20,7 +20,7 @@ describe("OrderedSet type", () => {
     `
 
     const context = {
-      setLoader: sinon.stub().returns(
+      setLoader: jest.fn(() =>
         Promise.resolve({
           description: "",
           id: "52dd3c2e4b8480091700027f",
@@ -29,7 +29,7 @@ describe("OrderedSet type", () => {
           name: "Featured Artworks",
         })
       ),
-      setItemsLoader: sinon.stub().returns(
+      setItemsLoader: jest.fn(() =>
         Promise.resolve({
           body: [
             {
@@ -44,28 +44,28 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runQuery(query, context).then((data) => {
-      expect(data).toEqual({
-        orderedSet: {
-          internalID: "52dd3c2e4b8480091700027f",
-          name: "Featured Artworks",
-          description: null,
-          key: "artworks:featured-artworks",
-          artworks: [
-            {
-              title: "My Artwork",
-            },
-            {
-              title: "Another Artwork",
-            },
-          ],
-        },
-      })
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      orderedSet: {
+        internalID: "52dd3c2e4b8480091700027f",
+        name: "Featured Artworks",
+        description: null,
+        key: "artworks:featured-artworks",
+        artworks: [
+          {
+            title: "My Artwork",
+          },
+          {
+            title: "Another Artwork",
+          },
+        ],
+      },
     })
   })
 
-  it("can return a connection for an artwork set", () => {
-    const query = `
+  it("can return a connection for an artwork set", async () => {
+    const query = gql`
       {
         orderedSet(id: "52dd3c2e4b8480091700027f") {
           itemsConnection(first: 2) {
@@ -80,7 +80,7 @@ describe("OrderedSet type", () => {
     `
 
     const context = {
-      setLoader: sinon.stub().returns(
+      setLoader: jest.fn(() =>
         Promise.resolve({
           description: "",
           id: "52dd3c2e4b8480091700027f",
@@ -89,7 +89,7 @@ describe("OrderedSet type", () => {
           name: "Featured Artworks",
         })
       ),
-      setItemsLoader: sinon.stub().returns(
+      setItemsLoader: jest.fn(() =>
         Promise.resolve({
           body: [
             {
@@ -106,25 +106,25 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runQuery(query, context).then((data) => {
-      expect(data).toEqual({
-        orderedSet: {
-          itemsConnection: {
-            edges: [
-              {
-                node: {
-                  title: "My Artwork",
-                },
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      orderedSet: {
+        itemsConnection: {
+          edges: [
+            {
+              node: {
+                title: "My Artwork",
               },
-              {
-                node: {
-                  title: "Another Artwork",
-                },
+            },
+            {
+              node: {
+                title: "Another Artwork",
               },
-            ],
-          },
+            },
+          ],
         },
-      })
+      },
     })
   })
 })
