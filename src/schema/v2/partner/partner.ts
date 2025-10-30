@@ -66,6 +66,7 @@ import {
   ConversationMessageTemplateExampleType,
   EXAMPLE_TEMPLATES,
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
+import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -816,6 +817,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       conversationMessageTemplatesConnection: ConversationMessageTemplatesConnection,
+      artworkTemplatesConnection: ArtworkTemplatesConnection,
       conversationMessageTemplateExamples: {
         type: new GraphQLNonNull(
           new GraphQLList(
