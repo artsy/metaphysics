@@ -463,7 +463,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       },
     },
     offers: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
+      type: new GraphQLList(new GraphQLNonNull(OfferType)),
       description: "List of offers for this order",
       resolve: ({ offers }) => offers || [],
     },

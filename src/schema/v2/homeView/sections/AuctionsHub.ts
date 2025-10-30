@@ -122,7 +122,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   const imageURLs = resolvedImages.filter((url): url is string => Boolean(url))
 
   if (imageURLs.length === 0) {
-    return null
+    return cardDetails
   }
 
   return {
@@ -174,7 +174,7 @@ const latestAuctionResultsCard: CardFunction = async ({
   )
 
   if (imageURLs.length === 0) {
-    return null
+    return cardDetails
   }
 
   return {

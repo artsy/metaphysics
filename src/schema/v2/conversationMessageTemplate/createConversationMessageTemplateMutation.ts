@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -18,6 +19,8 @@ interface CreateConversationMessageTemplateInput {
   title: string
   body: string
   description?: string
+  sourceExampleId?: string
+  isDeleted?: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -79,6 +82,14 @@ export default mutationWithClientMutationId<
       type: GraphQLString,
       description: "Optional description of the template",
     },
+    sourceExampleId: {
+      type: GraphQLString,
+      description: "ID of the example template this was created from",
+    },
+    isDeleted: {
+      type: GraphQLBoolean,
+      description: "Whether this is a soft-deleted/dismissed template",
+    },
   },
   outputFields: {
     responseOrError: {
@@ -103,6 +114,8 @@ export default mutationWithClientMutationId<
           title: args.title,
           body: args.body,
           description: args.description,
+          source_example_id: args.sourceExampleId,
+          is_deleted: args.isDeleted,
         }
       )
 

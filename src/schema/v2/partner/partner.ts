@@ -822,8 +822,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             new GraphQLNonNull(ConversationMessageTemplateExampleType)
           )
         ),
-        description: "Static example templates to help users get started",
-        resolve: () => EXAMPLE_TEMPLATES,
+        description:
+          "Static example templates to help users get started, excluding those already claimed.",
+        async resolve({ id }, _args, { conversationMessageTemplatesLoader }) {
+          if (!conversationMessageTemplatesLoader) return EXAMPLE_TEMPLATES
+
+          try {
+            const loadTemplates = (is_deleted) =>
+              conversationMessageTemplatesLoader({
+                partner_id: id,
+                is_deleted,
+                size: 100,
+              })
+
+            const [active, deleted] = await Promise.all([
+              loadTemplates(false),
+              loadTemplates(true),
+            ])
+
+            const claimedIds = [...(active.body || []), ...(deleted.body || [])]
+              .map((t) => t.source_example_id)
+              .filter(Boolean)
+
+            return EXAMPLE_TEMPLATES.filter(
+              (ex) => !claimedIds.includes(ex.internalID)
+            )
+          } catch {
+            return EXAMPLE_TEMPLATES
+          }
+        },
       },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({

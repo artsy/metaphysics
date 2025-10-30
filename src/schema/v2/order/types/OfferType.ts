@@ -37,11 +37,12 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
   description: "An offer on an order",
   fields: {
     ...InternalIDFields,
+
     amount: {
       type: Money,
-      description: "The buyer's total amount for this offer",
+      description: "The amount for this offer",
       resolve: (
-        { buyer_total_cents: minor, currency_code: currencyCode },
+        { amount_cents: minor, currency_code: currencyCode },
         _args,
         context,
         _info
@@ -80,6 +81,27 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       type: GraphQLString,
       description: "Optional note for the offer",
       resolve: ({ note }) => note,
+    },
+    buyerTotal: {
+      type: Money,
+      description:
+        "The buyer total for this offer, if a complete total is available",
+      resolve: (
+        { buyer_total_cents: minor, currency_code: currencyCode },
+        _args,
+        context,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          context,
+          _info
+        )
+      },
     },
     shippingTotal: {
       type: Money,

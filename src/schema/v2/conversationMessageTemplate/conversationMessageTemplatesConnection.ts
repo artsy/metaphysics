@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt } from "graphql"
+import { GraphQLFieldConfig, GraphQLInt, GraphQLBoolean } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionWithCursorInfo } from "../fields/pagination"
@@ -22,6 +22,12 @@ export const ConversationMessageTemplatesConnection: GraphQLFieldConfig<
     "A connection of conversation message templates for this partner",
   args: pageable({
     page: { type: GraphQLInt },
+    isDeleted: {
+      type: GraphQLBoolean,
+      description:
+        "Filter by deleted status. Defaults to false (active templates only)",
+      defaultValue: false,
+    },
   }),
   resolve: async (
     { id },
@@ -41,6 +47,7 @@ export const ConversationMessageTemplatesConnection: GraphQLFieldConfig<
       page,
       size,
       total_count: true,
+      is_deleted: args.isDeleted ?? false,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

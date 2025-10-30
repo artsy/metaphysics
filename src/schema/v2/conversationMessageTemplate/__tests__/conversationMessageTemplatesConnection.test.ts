@@ -109,6 +109,7 @@ describe("conversationMessageTemplatesConnection", () => {
       page: 1,
       size: 10,
       total_count: true,
+      is_deleted: false,
     })
   })
 })
