@@ -15,6 +15,7 @@ import { amount } from "../fields/money"
 import AttributionClass from "../artwork/attributionClass"
 import { ArtworkVisibility } from "../artwork/artworkVisibility"
 import attributionClasses from "lib/attributionClasses"
+import Artist from "../artist"
 
 export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkTemplate",
@@ -30,6 +31,31 @@ export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
     artistIDs: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ artist_ids }) => artist_ids || [],
+    },
+    artists: {
+      type: new GraphQLList(Artist.type),
+      args: {
+        shallow: {
+          type: GraphQLBoolean,
+          description:
+            "Use whatever is in the original response instead of making a request",
+          defaultValue: false,
+        },
+      },
+      resolve: (
+        { artist_ids },
+        { shallow },
+        {
+          unauthenticatedLoaders: { artistLoader: unauthenticatedArtistLoader },
+        }
+      ) => {
+        if (!artist_ids || artist_ids.length === 0) return []
+        if (shallow) return artist_ids.map((id) => ({ id, _id: id }))
+
+        return Promise.all(
+          artist_ids.map((id) => unauthenticatedArtistLoader(id))
+        ).catch(() => [])
+      },
     },
     artsyShippingDomestic: {
       type: GraphQLBoolean,

@@ -73,6 +73,16 @@ describe("ArtworkTemplateType", () => {
         "x-total-count": "1",
       },
     }),
+    unauthenticatedLoaders: {
+      artistLoader: jest.fn((id) =>
+        Promise.resolve({
+          id,
+          _id: id,
+          name: id === "artist-1" ? "Artist One" : "Artist Two",
+          slug: id,
+        })
+      ),
+    },
   }
 
   beforeEach(() => {
@@ -327,5 +337,41 @@ describe("ArtworkTemplateType", () => {
     expect(
       data.partner.artworkTemplatesConnection.edges[0].node.signature
     ).toBe("Lower right corner")
+  })
+
+  it("resolves artists field", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-456") {
+          artworkTemplatesConnection(first: 1) {
+            edges {
+              node {
+                artistIDs
+                artists {
+                  internalID
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runAuthenticatedQuery(query, context)
+
+    expect(data.partner.artworkTemplatesConnection.edges[0].node).toEqual({
+      artistIDs: ["artist-1", "artist-2"],
+      artists: [
+        {
+          internalID: "artist-1",
+          name: "Artist One",
+        },
+        {
+          internalID: "artist-2",
+          name: "Artist Two",
+        },
+      ],
+    })
   })
 })

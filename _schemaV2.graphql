@@ -3733,6 +3733,10 @@ enum ArtworkSorts {
 
 type ArtworkTemplate {
   artistIDs: [String]
+  artists(
+    # Use whatever is in the original response instead of making a request
+    shallow: Boolean = false
+  ): [Artist]
   artsyShippingDomestic: Boolean
   artsyShippingInternational: Boolean
   attributionClass: AttributionClass
