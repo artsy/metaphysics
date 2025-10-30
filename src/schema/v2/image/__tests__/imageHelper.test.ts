@@ -2,33 +2,10 @@ import {
   hasImageVersion,
   hasMissingImageVersion,
   hasProcessingFailed,
-  isMissingOriginal,
   isProcessingImage,
 } from "../imageHelper"
 
 describe("imageHelper", () => {
-  describe("isMissingOriginal", () => {
-    it("returns true when image_url is null", () => {
-      const image = { image_url: null }
-      expect(isMissingOriginal(image)).toBe(true)
-    })
-
-    it("returns true when image_url is undefined", () => {
-      const image = { image_url: undefined }
-      expect(isMissingOriginal(image)).toBe(true)
-    })
-
-    it("returns true when image_url is empty string", () => {
-      const image = { image_url: "" }
-      expect(isMissingOriginal(image)).toBe(true)
-    })
-
-    it("returns false when image_url is present", () => {
-      const image = { image_url: "https://example.com/image.jpg" }
-      expect(isMissingOriginal(image)).toBe(false)
-    })
-  })
-
   describe("hasImageVersion", () => {
     it("returns true when version exists in image_versions", () => {
       const image = { image_versions: ["square", "small", "normalized"] }
@@ -162,15 +139,6 @@ describe("imageHelper", () => {
         image_url: "https://example.com/image.jpg",
         image_versions: ["square", "small"],
         gemini_token_updated_at: oldTime,
-      }
-      expect(isProcessingImage(image)).toBe(false)
-    })
-
-    it("returns false when image_url is missing", () => {
-      const image = {
-        image_url: null,
-        image_versions: ["square", "small"],
-        gemini_token_updated_at: new Date().toISOString(),
       }
       expect(isProcessingImage(image)).toBe(false)
     })
@@ -328,8 +296,8 @@ describe("imageHelper", () => {
         gemini_token_updated_at: new Date().toISOString(),
       }
 
-      expect(isProcessingImage(missingImage)).toBe(false)
-      expect(hasProcessingFailed(missingImage)).toBe(true)
+      expect(isProcessingImage(missingImage)).toBe(true)
+      expect(hasProcessingFailed(missingImage)).toBe(false)
     })
   })
 })
