@@ -51,6 +51,7 @@ export const Artwork = Record({
   edition_sets_count: Number,
   eu_shipping_origin: Boolean,
   exhibition_history: String,
+  external_id: String.Or(Null),
   feature_eligible: Boolean,
   forsale: Boolean,
   framed: Boolean.Or(Null),
