@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
-  node: circleci/node@6.3.0
+  node: circleci/node@7.2.1
 
 not_staging_or_release: &not_staging_or_release
   filters:
