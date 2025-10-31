@@ -1,4 +1,5 @@
 export { MeOrder } from "schema/v2/order/MeOrder"
+export { MeOrdersConnection } from "schema/v2/order/MeOrdersConnection"
 export { updateOrderMutation } from "schema/v2/order/updateOrderMutation"
 export { setOrderFulfillmentOptionMutation } from "schema/v2/order/setOrderFulfillmentOptionMutation"
 export { submitOrderMutation } from "schema/v2/order/submitOrderMutation"

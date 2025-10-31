@@ -15809,6 +15809,23 @@ type Me implements Node {
     sort: CommerceOrderConnectionSortEnum
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
+  ordersConnection(
+    after: String
+
+    # Filter by artwork ID in line items
+    artworkID: String
+    before: String
+
+    # Filter by buyer states
+    buyerState: [MeOrderBuyerStateEnum]
+
+    # Filter by edition set ID in line items
+    editionSetID: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): MeOrdersConnection
 
   # Collector's position with relevant institutions
   otherRelevantPosition: String
@@ -16033,6 +16050,79 @@ type MeCounts {
   followedProfiles: Int!
   savedArtworks: Int!
   savedSearches: Int!
+}
+
+enum MeOrderBuyerStateEnum {
+  # Action required from buyer
+  ACTION_REQUIRED
+
+  # Order has been approved
+  APPROVED
+
+  # Order has been canceled
+  CANCELED
+
+  # Order has been cancelled
+  CANCELLED
+
+  # Order is completed
+  COMPLETED
+
+  # Order was declined by the buyer
+  DECLINED_BY_BUYER
+
+  # Order was declined by the seller
+  DECLINED_BY_SELLER
+
+  # Order is incomplete (pending or abandoned)
+  INCOMPLETE
+
+  # Order is in transit
+  IN_TRANSIT
+
+  # Order is an offer awaiting response from the buyer
+  OFFER_RECEIVED
+
+  # Payment has failed
+  PAYMENT_FAILED
+
+  # Processing offline payment
+  PROCESSING_OFFLINE_PAYMENT
+
+  # Payment is processing
+  PROCESSING_PAYMENT
+
+  # Order has been successfully purchased
+  PURCHASED
+
+  # Order has been refunded
+  REFUNDED
+
+  # Order has been shipped
+  SHIPPED
+
+  # Order has been submitted
+  SUBMITTED
+}
+
+# A connection to a list of items.
+type MeOrdersConnection {
+  # A list of edges.
+  edges: [MeOrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type MeOrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
 }
 
 type MergeArtistsFailure {
