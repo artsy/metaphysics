@@ -1,5 +1,4 @@
 import {
-  GraphQLEnumType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -24,52 +23,12 @@ import { OfferType } from "./OfferType"
 import {
   FulfillmentOptionJSONWithCurrencyCode,
   FulfillmentOptionType,
+  OrderBuyerStateEnum,
   OrderCreditCardWalletTypeEnum,
   OrderModeEnum,
   OrderPaymentMethodEnum,
   OrderSourceEnum,
 } from "./sharedOrderTypes"
-
-const OrderBuyerStateEnum = new GraphQLEnumType({
-  name: "OrderBuyerStateEnum",
-  values: {
-    INCOMPLETE: {
-      value: "INCOMPLETE",
-      description: "Order is incomplete (pending or abandoned)",
-    },
-    SUBMITTED: { value: "SUBMITTED", description: "Order has been submitted" },
-    OFFER_RECEIVED: {
-      value: "OFFER_RECEIVED",
-      description: "Order is an offer awaiting response from the buyer",
-    },
-    PAYMENT_FAILED: {
-      value: "PAYMENT_FAILED",
-      description: "Payment has failed",
-    },
-    PROCESSING_PAYMENT: {
-      value: "PROCESSING_PAYMENT",
-      description: "Processing payment",
-    },
-    PROCESSING_OFFLINE_PAYMENT: {
-      value: "PROCESSING_OFFLINE_PAYMENT",
-      description: "Processing offline payment",
-    },
-    APPROVED: { value: "APPROVED", description: "Order has been approved" },
-    SHIPPED: { value: "SHIPPED", description: "Order has been shipped" },
-    COMPLETED: { value: "COMPLETED", description: "Order is completed" },
-    REFUNDED: { value: "REFUNDED", description: "Order has been refunded" },
-    DECLINED_BY_SELLER: {
-      value: "DECLINED_BY_SELLER",
-      description: "Order was declined by the seller",
-    },
-    DECLINED_BY_BUYER: {
-      value: "DECLINED_BY_BUYER",
-      description: "Order was declined by the buyer",
-    },
-    CANCELLED: { value: "CANCELLED", description: "Order has been cancelled" },
-    UNKNOWN: { value: "UNKNOWN", description: "Order status is unknown" },
-  },
-})
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -559,8 +518,8 @@ const resolveBuyerState = (order) => {
       return "DECLINED_BY_SELLER"
     case "declined_by_buyer":
       return "DECLINED_BY_BUYER"
-    case "cancelled":
-      return "CANCELLED"
+    case "canceled":
+      return "CANCELED"
     default:
       return "UNKNOWN"
   }

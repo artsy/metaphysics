@@ -98,6 +98,7 @@ import {
   SecondFactorKind,
 } from "./secondFactors/secondFactors"
 import { MeOrder } from "../order"
+import { MeOrdersConnection } from "../order/MeOrdersConnection"
 import { ConfirmationToken } from "../order/confirmationToken"
 import { AuctionSegmentation } from "./auctionSegmentation"
 import { UserPricePreference } from "./userPricePreference"
@@ -502,6 +503,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     initials: initials("name"),
     order: MeOrder,
+    ordersConnection: MeOrdersConnection,
     paddleNumber: {
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
