@@ -15817,7 +15817,7 @@ type Me implements Node {
     before: String
 
     # Filter by buyer states
-    buyerState: [MeOrderBuyerStateEnum]
+    buyerState: [OrderBuyerStateEnum]
 
     # Filter by edition set ID in line items
     editionSetID: String
@@ -16050,59 +16050,6 @@ type MeCounts {
   followedProfiles: Int!
   savedArtworks: Int!
   savedSearches: Int!
-}
-
-enum MeOrderBuyerStateEnum {
-  # Action required from buyer
-  ACTION_REQUIRED
-
-  # Order has been approved
-  APPROVED
-
-  # Order has been canceled
-  CANCELED
-
-  # Order has been cancelled
-  CANCELLED
-
-  # Order is completed
-  COMPLETED
-
-  # Order was declined by the buyer
-  DECLINED_BY_BUYER
-
-  # Order was declined by the seller
-  DECLINED_BY_SELLER
-
-  # Order is incomplete (pending or abandoned)
-  INCOMPLETE
-
-  # Order is in transit
-  IN_TRANSIT
-
-  # Order is an offer awaiting response from the buyer
-  OFFER_RECEIVED
-
-  # Payment has failed
-  PAYMENT_FAILED
-
-  # Processing offline payment
-  PROCESSING_OFFLINE_PAYMENT
-
-  # Payment is processing
-  PROCESSING_PAYMENT
-
-  # Order has been successfully purchased
-  PURCHASED
-
-  # Order has been refunded
-  REFUNDED
-
-  # Order has been shipped
-  SHIPPED
-
-  # Order has been submitted
-  SUBMITTED
 }
 
 # A connection to a list of items.
@@ -17954,8 +17901,8 @@ enum OrderBuyerStateEnum {
   # Order has been approved
   APPROVED
 
-  # Order has been cancelled
-  CANCELLED
+  # Order has been canceled
+  CANCELED
 
   # Order is completed
   COMPLETED
