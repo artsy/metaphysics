@@ -7,10 +7,12 @@ import {
 } from "graphql"
 import uuid from "uuid/v5"
 import { ResolverContext } from "types/graphql"
+import { markdown } from "../fields/markdown"
 
 interface VideoTypeProps {
   id: string
-  playerUrl: string
+  playerUrl?: string // if Artwork
+  player_embed_url?: string // if Video
   height: number
   width: number
 }
@@ -26,10 +28,22 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
           return uuid(playerUrl, uuid.URL)
         },
       },
+      title: {
+        description: "Title of the video",
+        type: GraphQLString,
+      },
+      description: markdown(),
       playerUrl: {
         description:
           "Returns a full-qualified url that can be embedded in an iframe player",
         type: GraphQLNonNull(GraphQLString),
+        resolve: (parent, _args, _context, _info) => {
+          const {
+            playerUrl, // if Artwork
+            player_embed_url, // if Video
+          } = parent
+          return playerUrl || player_embed_url
+        },
       },
       height: {
         description: "The height of the video",

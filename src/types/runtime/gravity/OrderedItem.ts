@@ -8,6 +8,7 @@ import { PartnerShow } from "./PartnerShow"
 import { Profile } from "./Profile"
 import { Sale } from "./Sale"
 import { User } from "./User"
+import { Video } from "./Video"
 
 export const OrderedItem = Union(
   Artist,
@@ -18,7 +19,8 @@ export const OrderedItem = Union(
   PartnerShow,
   Profile,
   Sale,
-  User
+  User,
+  Video
 )
 
 export type OrderedItem = Static<typeof OrderedItem>

@@ -16,7 +16,8 @@ export const OrderedSet = Record({
     .Or(Literal("PartnerShow"))
     .Or(Literal("Profile"))
     .Or(Literal("Sale"))
-    .Or(Literal("User")),
+    .Or(Literal("User"))
+    .Or(Literal("Video")),
   owner_type: Literal("Fair")
     .Or(Literal("Feature"))
     .Or(Literal("Post"))

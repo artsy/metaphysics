@@ -8,6 +8,7 @@ import { Gravity } from "types/runtime"
 import { SaleType } from "./sale"
 import { ShowType } from "./show"
 import { ProfileType } from "./profile"
+import { VideoType } from "./types/Video"
 
 export const OrderedSetItemType = new GraphQLUnionType({
   name: "OrderedSetItem",
@@ -19,6 +20,7 @@ export const OrderedSetItemType = new GraphQLUnionType({
     ProfileType,
     SaleType,
     ShowType,
+    VideoType,
   ],
   resolveType: (
     value: Gravity.OrderedItem & { item_type: Gravity.OrderedSet["item_type"] }
@@ -38,6 +40,8 @@ export const OrderedSetItemType = new GraphQLUnionType({
         return ProfileType
       case "Sale":
         return SaleType
+      case "Video":
+        return VideoType
       default:
         throw new Error(`Unknown context type: ${value.item_type}`)
     }
