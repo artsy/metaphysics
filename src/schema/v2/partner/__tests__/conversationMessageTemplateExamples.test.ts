@@ -42,7 +42,7 @@ describe("conversationMessageTemplateExamples", () => {
             body: [
               {
                 id: "template-1",
-                source_example_id: "general-inquiry",
+                source_example_id: "unavailable",
                 is_deleted: false,
               },
             ],
@@ -53,7 +53,7 @@ describe("conversationMessageTemplateExamples", () => {
           body: [
             {
               id: "template-2",
-              source_example_id: "work-not-available",
+              source_example_id: "re-engage-collector",
               is_deleted: true,
             },
           ],
@@ -79,8 +79,8 @@ describe("conversationMessageTemplateExamples", () => {
     const examples = data.partner.conversationMessageTemplateExamples
 
     const exampleIds = examples.map((ex) => ex.internalID)
-    expect(exampleIds).not.toContain("general-inquiry")
-    expect(exampleIds).not.toContain("work-not-available")
+    expect(exampleIds).not.toContain("unavailable")
+    expect(exampleIds).not.toContain("re-engage-collector")
   })
 
   it("returns all examples when loader is not available", async () => {
