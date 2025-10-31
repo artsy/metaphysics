@@ -39,6 +39,12 @@ export default (opts) => {
   }
 
   return {
+    aiPromptTemplateLoader: gravityUncachedLoader(
+      (id) => `a_i_prompt_template/${id}`
+    ),
+    aiPromptTemplatesLoader: gravityUncachedLoader("a_i_prompt_templates", {
+      headers: true,
+    }),
     featureLoader: (id: string) =>
       gravityLoader((id) => `feature/${id}`)(id).then(Gravity.Feature.check),
     createAccountRequestLoader: gravityLoader(

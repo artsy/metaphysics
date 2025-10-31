@@ -662,6 +662,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       exhibitionHistory: markdown(
         ({ exhibition_history }) => exhibition_history
       ),
+      externalID: {
+        type: GraphQLString,
+        description: "External provider identity.",
+        resolve: ({ external_id }) => external_id,
+      },
       fair: {
         type: Fair.type,
         resolve: ({ id }, _options, { relatedFairsLoader }) => {

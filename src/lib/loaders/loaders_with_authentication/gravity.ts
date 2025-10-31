@@ -1090,6 +1090,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    partnerArtworkTemplatesLoader: gravityLoader(
+      (id) => `partner/${id}/artwork_templates`,
+      {},
+      { headers: true }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
