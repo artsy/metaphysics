@@ -45,7 +45,7 @@ async function updateSchemaFile({
       }
 
       if (!repoConfig.skipInstall) {
-        execSync("yarn install", { cwd: repoDir })
+        execSync("yarn install --ignore-scripts", { cwd: repoDir })
       }
 
       destinations.forEach((dest) => {

@@ -16,9 +16,9 @@ COPY package.json yarn.lock ./
 COPY patches ./patches
 
 # Install packages
-RUN yarn install --production --frozen-lockfile --quiet && \
+RUN yarn install --production --frozen-lockfile --quiet --ignore-scripts && \
   mv node_modules /opt/node_modules.prod && \
-  yarn install --frozen-lockfile --quiet && \
+  yarn install --frozen-lockfile --quiet --ignore-scripts && \
   yarn cache clean --force
 
 # Copy application code

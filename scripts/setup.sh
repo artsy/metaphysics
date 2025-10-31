@@ -22,7 +22,7 @@ else
 fi
 
 echo "Installing dependencies..."
-yarn install || (npm install --global yarn@latest && yarn install)
+yarn install --ignore-scripts || (npm install --global yarn@latest && yarn install --ignore-scripts)
 
 if [ -e ".env" ]; then
   echo '.env file already exists, so skipping initialization...'
