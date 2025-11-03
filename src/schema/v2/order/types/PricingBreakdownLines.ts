@@ -1,5 +1,5 @@
-import type { GraphQLFieldConfig } from "graphql"
 import {
+  GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -11,7 +11,7 @@ import {
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import type { ResolverContext } from "types/graphql"
-import type { FulfillmentOptionJson, OrderJSON } from "./exchangeJson"
+import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 
 const COPY = {
   subtotal: {
