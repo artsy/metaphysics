@@ -11,37 +11,119 @@ describe("deleteArtworkTemplateMutation", () => {
   const artworkTemplateData = {
     id: "artwork-template-id",
     partner_id: "partner-id",
+    title: "Test Template",
   }
-
-  beforeEach(() => {
-    mockDeletePartnerArtworkTemplateLoader.mockResolvedValue(
-      Promise.resolve(artworkTemplateData)
-    )
-  })
 
   afterEach(() => {
     mockDeletePartnerArtworkTemplateLoader.mockReset()
   })
 
-  const mutation = gql`
-    mutation {
-      deleteArtworkTemplate(
-        input: {
-          partnerID: "partner-id"
-          artworkTemplateID: "artwork-template-id"
+  describe("on success", () => {
+    const mutation = gql`
+      mutation {
+        deleteArtworkTemplate(
+          input: {
+            partnerID: "partner-id"
+            artworkTemplateID: "artwork-template-id"
+          }
+        ) {
+          artworkTemplateOrError {
+            __typename
+            ... on DeleteArtworkTemplateSuccess {
+              artworkTemplate {
+                internalID
+                title
+              }
+            }
+            ... on DeleteArtworkTemplateFailure {
+              mutationError {
+                message
+              }
+            }
+          }
         }
-      ) {
-        __typename
       }
-    }
-  `
+    `
 
-  it("correctly calls the deletePartnerArtworkTemplateLoader", async () => {
-    await runAuthenticatedQuery(mutation, context)
+    beforeEach(() => {
+      mockDeletePartnerArtworkTemplateLoader.mockResolvedValue(
+        Promise.resolve(artworkTemplateData)
+      )
+    })
 
-    expect(mockDeletePartnerArtworkTemplateLoader).toHaveBeenCalledWith({
-      partnerId: "partner-id",
-      templateId: "artwork-template-id",
+    it("correctly calls the deletePartnerArtworkTemplateLoader", async () => {
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(mockDeletePartnerArtworkTemplateLoader).toHaveBeenCalledWith({
+        partnerId: "partner-id",
+        templateId: "artwork-template-id",
+      })
+    })
+
+    it("returns the deleted artwork template", async () => {
+      const result = await runAuthenticatedQuery(mutation, context)
+
+      expect(result).toEqual({
+        deleteArtworkTemplate: {
+          artworkTemplateOrError: {
+            __typename: "DeleteArtworkTemplateSuccess",
+            artworkTemplate: {
+              internalID: "artwork-template-id",
+              title: "Test Template",
+            },
+          },
+        },
+      })
+    })
+  })
+
+  describe("on failure", () => {
+    const mutation = gql`
+      mutation {
+        deleteArtworkTemplate(
+          input: { partnerID: "partner-id", artworkTemplateID: "invalid-id" }
+        ) {
+          artworkTemplateOrError {
+            __typename
+            ... on DeleteArtworkTemplateSuccess {
+              artworkTemplate {
+                internalID
+              }
+            }
+            ... on DeleteArtworkTemplateFailure {
+              mutationError {
+                message
+                statusCode
+              }
+            }
+          }
+        }
+      }
+    `
+
+    beforeEach(() => {
+      mockDeletePartnerArtworkTemplateLoader.mockRejectedValue({
+        statusCode: 404,
+        body: {
+          error: "Artwork template not found",
+        },
+      })
+    })
+
+    it("returns a mutation error", async () => {
+      const result = await runAuthenticatedQuery(mutation, context)
+
+      expect(result).toEqual({
+        deleteArtworkTemplate: {
+          artworkTemplateOrError: {
+            __typename: "DeleteArtworkTemplateFailure",
+            mutationError: {
+              message: "Artwork template not found",
+              statusCode: 404,
+            },
+          },
+        },
+      })
     })
   })
 })
