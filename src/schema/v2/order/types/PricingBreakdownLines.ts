@@ -42,7 +42,7 @@ const COPY = {
 } as const
 
 const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
-  if (!offers || offers.length === 0) return null
+  if (!offers?.length) return null
   const lastOffer = offers
     ?.filter((offer) => offer.from_participant === buyerOrSeller)
     ?.sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0]
