@@ -184,7 +184,7 @@ describe("AuctionsHub", () => {
       // Current and Upcoming Auctions card
       const auctionsCard = result.edges[1].node
       expect(auctionsCard.title).toBe("Current and Upcoming Auctions")
-      expect(auctionsCard.href).toBe("/auctions")
+      expect(auctionsCard.href).toBe("/live-auctions")
       expect(auctionsCard.entityType).toBe("auctions")
       expect(auctionsCard.entityID).toBe("card-browse-all-auctions")
       expect(auctionsCard.imageURLs).toEqual([
