@@ -1212,6 +1212,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    acceptPartnerAgreementLoader: gravityLoader(
+      "partner_agreement/accept",
+      {},
+      { method: "POST" }
+    ),
     userRolesLoader: gravityLoader("system/roles"),
     saleAgreementsLoader: gravityLoader(
       "sale_agreements",
