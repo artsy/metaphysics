@@ -5016,6 +5016,58 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#externalID", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          externalID
+        }
+      }
+    `
+
+    it("returns the external_id when present", () => {
+      artwork.external_id = "partner-system-123"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { externalID: "partner-system-123" },
+        })
+      })
+    })
+
+    it("returns null when external_id is not present", () => {
+      artwork.external_id = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { externalID: null } })
+      })
+    })
+  })
+
+  describe("#privateShortcutPath", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          privateShortcutPath
+        }
+      }
+    `
+
+    it("returns the private_shortcut_path when present", () => {
+      artwork.private_shortcut_path = "/partner/artworks/123"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { privateShortcutPath: "/partner/artworks/123" },
+        })
+      })
+    })
+
+    it("returns null when private_shortcut_path is not present", () => {
+      artwork.private_shortcut_path = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { privateShortcutPath: null } })
+      })
+    })
+  })
+
   describe("#offerableActivityCount", () => {
     const query = `
       {
@@ -5894,54 +5946,107 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#externalID", () => {
+  describe("#completenessChecklist", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          externalID
+          completenessChecklist {
+            key
+            completed
+          }
         }
       }
     `
 
-    it("returns the external_id when present", () => {
-      artwork.external_id = "partner-system-123"
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: { externalID: "partner-system-123" },
-        })
-      })
-    })
-
-    it("returns null when external_id is not present", () => {
-      artwork.external_id = null
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({ artwork: { externalID: null } })
-      })
-    })
-  })
-
-  describe("#privateShortcutPath", () => {
-    const query = `
-      {
-        artwork(id: "richard-prince-untitled-portrait") {
-          privateShortcutPath
-        }
+    it("returns an empty array when completeness_checklist is null", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: null,
       }
-    `
 
-    it("returns the private_shortcut_path when present", () => {
-      artwork.private_shortcut_path = "/partner/artworks/123"
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: { privateShortcutPath: "/partner/artworks/123" },
-        })
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessChecklist: [],
+        },
       })
     })
 
-    it("returns null when private_shortcut_path is not present", () => {
-      artwork.private_shortcut_path = null
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({ artwork: { privateShortcutPath: null } })
+    it("transforms the hash into an array of checklist items", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {
+          publishable: { completed: true },
+          multiple_images: { completed: true },
+          price_visibility: { completed: true },
+          high_res_image: { completed: false },
+          certificate: { completed: true },
+          signature: { completed: false },
+          description: { completed: true },
+        },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data.artwork.completenessChecklist).toEqual(
+        expect.arrayContaining([
+          {
+            key: "PUBLISHABLE",
+            completed: true,
+          },
+          {
+            key: "MULTIPLE_IMAGES",
+            completed: true,
+          },
+          {
+            key: "PRICE_VISIBILITY",
+            completed: true,
+          },
+          {
+            key: "HIGH_RES_IMAGE",
+            completed: false,
+          },
+          {
+            key: "CERTIFICATE",
+            completed: true,
+          },
+          {
+            key: "SIGNATURE",
+            completed: false,
+          },
+          {
+            key: "DESCRIPTION",
+            completed: true,
+          },
+        ])
+      )
+    })
+
+    it("handles empty object", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {},
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessChecklist: [],
+        },
       })
     })
   })
