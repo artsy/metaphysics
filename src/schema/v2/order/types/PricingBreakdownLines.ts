@@ -41,6 +41,17 @@ const COPY = {
   },
 } as const
 
+const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
+  if (!offers?.length) return null
+  const lastOffer = offers
+    ?.filter((offer) => offer.from_participant === buyerOrSeller)
+    ?.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )[0]
+  return lastOffer?.amount_cents
+}
+
 const PricingBreakdownLineUnion = new GraphQLUnionType({
   name: "PricingBreakdownLineUnion",
   description: "Pricing breakdown line",
@@ -85,6 +96,7 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       awaiting_response_from: awaitingResponseFrom,
       mode,
       source,
+      offers,
     } = order
 
     const resolveMoney = (amount: number) => {
@@ -102,24 +114,29 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     }
 
     let subtotalDisplayName: string
+    let subtotalAmount: number | undefined
     switch (true) {
       case mode === "buy" && source === "partner_offer":
         subtotalDisplayName = COPY.subtotal.displayName.partnerOffer
+        subtotalAmount = itemsTotalCents
         break
       case mode === "offer" && awaitingResponseFrom === "buyer":
         subtotalDisplayName = COPY.subtotal.displayName.counterOffer
+        subtotalAmount = extractLastOfferAmountFrom("seller", offers)
         break
       case mode === "offer":
         subtotalDisplayName = COPY.subtotal.displayName.makeOffer
+        subtotalAmount = extractLastOfferAmountFrom("buyer", offers)
         break
       default:
         subtotalDisplayName = COPY.subtotal.displayName.buyNow
+        subtotalAmount = itemsTotalCents
     }
 
     const subtotalLine = {
       __typename: "SubtotalLine",
       displayName: subtotalDisplayName,
-      amount: itemsTotalCents && resolveMoney(itemsTotalCents),
+      amount: subtotalAmount && resolveMoney(subtotalAmount),
     }
 
     const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
