@@ -516,7 +516,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return Object.entries(completeness_checklist).map(
             ([key, data]: [string, any]) => ({
               key,
-              completed: data.valid,
+              completed: data.completed,
             })
           )
         },
