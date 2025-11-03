@@ -16215,6 +16215,14 @@ type Money {
   minor: Long!
 }
 
+input MoneyInput {
+  # amount in dollars or major unit
+  amount: Float!
+
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  currencyCode: String!
+}
+
 type Mutation {
   acceptPartnerAgreement(
     # Parameters for AcceptPartnerAgreement
@@ -16236,6 +16244,11 @@ type Mutation {
     # Parameters for AddAssetsToConsignmentSubmission
     input: AddAssetsToConsignmentSubmissionInput!
   ): AddAssetsToConsignmentSubmissionPayload
+
+  # Add an initial offer to an order
+  addInitialOfferToOrder(
+    input: addInitialOfferToOrderInput!
+  ): addInitialOfferToOrderPayload
 
   # Adds an installation shot to a partner show.
   addInstallShotToPartnerShow(
@@ -27716,6 +27729,24 @@ type YearRange {
 
   # The first year of the year range
   startAt: Int
+}
+
+input addInitialOfferToOrderInput {
+  clientMutationId: String
+
+  # Optional note for the offer.
+  note: String
+
+  # Offer price.
+  offerPrice: MoneyInput!
+
+  # Order id.
+  orderId: ID!
+}
+
+type addInitialOfferToOrderPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
 }
 
 type addOrderedSetItemFailure {

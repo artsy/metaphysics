@@ -337,6 +337,7 @@ import {
   updateOrderMutation,
   setOrderFulfillmentOptionMutation,
   submitOrderMutation,
+  addInitialOfferToOrderMutation,
 } from "./order"
 import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
@@ -519,6 +520,7 @@ export default new GraphQLSchema({
         : {}),
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
+      addInitialOfferToOrder: addInitialOfferToOrderMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
