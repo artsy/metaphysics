@@ -46,6 +46,15 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
+  if (config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT) {
+    duplicatedTypes.push(
+      "AcceptPartnerAgreementInput",
+      "AcceptPartnerAgreementPayload",
+      "PartnerAgreementOrErrorsUnion",
+      "PartnerAgreement"
+    )
+  }
+
   const excludedMutations: string[] = []
 
   if (config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT) {

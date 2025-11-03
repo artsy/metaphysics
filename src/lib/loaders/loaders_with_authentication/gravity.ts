@@ -1213,7 +1213,7 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     acceptPartnerAgreementLoader: gravityLoader(
-      "partner_agreement/accept",
+      (id) => `partner_agreement/${id}/accept`,
       {},
       { method: "POST" }
     ),

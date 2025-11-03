@@ -8,22 +8,27 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { formatGravityError, ErrorsType } from "lib/gravityErrorHandler"
+import { AgreementType } from "schema/v2/agreement"
+import { date } from "schema/v2/fields/date"
 
 const PartnerAgreementType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerAgreement",
   fields: () => ({
-    // FIXME: Use the InternalIDFields
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: (partnerAgreement) => partnerAgreement.id,
+      description: "Unique ID for this partner agreement",
+      resolve: ({ id }) => id,
     },
-    acceptedAt: {
-      type: GraphQLString,
-      resolve: (partnerAgreement) => partnerAgreement.accepted_at,
-    },
+    acceptedAt: date(),
     acceptedBy: {
       type: GraphQLString,
-      resolve: (partnerAgreement) => partnerAgreement.accepted_by,
+      description: "ID of user who accepted this agreement",
+      resolve: ({ accepted_by }) => accepted_by,
+    },
+    agreement: {
+      type: new GraphQLNonNull(AgreementType),
+      description: "The associated agreement",
+      resolve: ({ agreement }) => agreement,
     },
   }),
 })
@@ -67,9 +72,7 @@ export const acceptPartnerAgreementMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await acceptPartnerAgreementLoader({
-        partner_agreement_id: partnerAgreementID,
-      })
+      return await acceptPartnerAgreementLoader(partnerAgreementID)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

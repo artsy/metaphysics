@@ -18,6 +18,15 @@ describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
       id: "partner-agreement-123",
       accepted_at: "2025-01-01T00:00:00Z",
       accepted_by: "user-456",
+      agreement: {
+        id: "agreement-789",
+        name: "Partner Agreement 2025",
+        content: "# Agreement Content",
+        description: "Test agreement",
+        created_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
+        deactivated_at: null,
+      },
     })
   })
 
@@ -35,6 +44,11 @@ describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
             ... on PartnerAgreement {
               acceptedAt
               acceptedBy
+              agreement {
+                id
+                name
+                description
+              }
             }
           }
         }
@@ -43,9 +57,9 @@ describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
 
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(mockAcceptPartnerAgreementLoader).toHaveBeenCalledWith({
-      partner_agreement_id: "partner-agreement-123",
-    })
+    expect(mockAcceptPartnerAgreementLoader).toHaveBeenCalledWith(
+      "partner-agreement-123"
+    )
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -53,6 +67,11 @@ describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
           "partnerAgreementOrErrors": {
             "acceptedAt": "2025-01-01T00:00:00Z",
             "acceptedBy": "user-456",
+            "agreement": {
+              "description": "Test agreement",
+              "id": "agreement-789",
+              "name": "Partner Agreement 2025",
+            },
           },
         },
       }
@@ -86,9 +105,7 @@ describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
 
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(mockAcceptPartnerAgreementLoader).toHaveBeenCalledWith({
-      partner_agreement_id: "invalid-id",
-    })
+    expect(mockAcceptPartnerAgreementLoader).toHaveBeenCalledWith("invalid-id")
 
     expect(
       result.acceptPartnerAgreement.partnerAgreementOrErrors
