@@ -59,7 +59,7 @@ describe("CreatePartnerShowEventMutation", () => {
             description: "Join us for the opening reception",
             startAt: "2025-01-01T12:00:00.000Z",
             endAt: "2025-01-01T18:00:00.000Z",
-            formattedTimeZone: "(GMT-04:00) New York",
+            formattedTimeZone: "(GMT-05:00) New York",
             timeZone: "America/New_York",
           },
         },

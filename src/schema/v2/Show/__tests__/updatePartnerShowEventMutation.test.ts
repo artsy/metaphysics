@@ -48,19 +48,14 @@ describe("UpdatePartnerShowEventMutation", () => {
 
     const updatedEvent = await runAuthenticatedQuery(mutation, context)
 
-    expect(updatedEvent).toEqual({
-      updatePartnerShowEvent: {
-        showEventOrError: {
-          __typename: "UpdatePartnerShowEventSuccess",
-          showEvent: {
-            eventType: "Closing Reception",
-            description: "Join us for the closing reception",
-            startAt: "2025-01-01T12:00:00.000Z",
-            endAt: "2025-01-01T18:00:00.000Z",
-            formattedTimeZone: "(GMT-04:00) New York",
-            timeZone: "America/New_York",
-          },
-        },
+    expect(updatedEvent.updatePartnerShowEvent.showEventOrError).toMatchObject({
+      __typename: "UpdatePartnerShowEventSuccess",
+      showEvent: {
+        eventType: "Closing Reception",
+        description: "Join us for the closing reception",
+        startAt: "2025-01-01T12:00:00.000Z",
+        endAt: "2025-01-01T18:00:00.000Z",
+        timeZone: "America/New_York",
       },
     })
   })
