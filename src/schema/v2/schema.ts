@@ -309,6 +309,7 @@ import { createUserSeenArtworkMutation } from "./infiniteDiscovery/createUserSee
 import { excludeArtistFromDiscoveryMutation } from "./infiniteDiscovery/excludeArtistFromDiscoveryMutation"
 import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
+import { deleteArtworkTemplateMutation } from "./artworkTemplate/mutations/deleteArtworkTemplateMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
@@ -570,6 +571,7 @@ export default new GraphQLSchema({
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
       deleteArtwork: deleteArtworkMutation,
+      deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
