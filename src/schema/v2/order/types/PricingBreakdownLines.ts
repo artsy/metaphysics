@@ -45,7 +45,7 @@ const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
   if (!offers?.length) return null
   const lastOffer = offers
     ?.filter((offer) => offer.from_participant === buyerOrSeller)
-    ?.sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0]
+    ?.sort((a, b) => new Date(b.created_at) > new Date(a.created_at))[0]
   return lastOffer?.amount_cents
 }
 
