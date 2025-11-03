@@ -129,7 +129,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     ...cardDetails,
     title: "Current and Upcoming Auctions",
     imageURL: undefined,
-    imageURLs: imageURLs,
+    imageURLs,
   }
 }
 
