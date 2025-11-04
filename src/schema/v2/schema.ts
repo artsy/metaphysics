@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
+import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -160,6 +161,7 @@ import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
 import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
+import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreementMutation"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
@@ -309,6 +311,7 @@ import { createUserSeenArtworkMutation } from "./infiniteDiscovery/createUserSee
 import { excludeArtistFromDiscoveryMutation } from "./infiniteDiscovery/excludeArtistFromDiscoveryMutation"
 import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
+import { deleteArtworkTemplateMutation } from "./artworkTemplate/mutations/deleteArtworkTemplateMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
@@ -316,6 +319,7 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
+import { CreateArtworkTemplateMutation } from "./artworkTemplate/mutations/createArtworkTemplateMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
@@ -507,6 +511,9 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      ...(config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
+        ? { acceptPartnerAgreement: acceptPartnerAgreementMutation }
+        : {}),
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
@@ -529,6 +536,7 @@ export default new GraphQLSchema({
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
       createArtworkImport: CreateArtworkImportMutation,
+      createArtworkTemplate: CreateArtworkTemplateMutation,
       createBackupSecondFactors: createBackupSecondFactorsMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
@@ -570,6 +578,7 @@ export default new GraphQLSchema({
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
       deleteArtwork: deleteArtworkMutation,
+      deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
