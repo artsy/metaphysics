@@ -1,6 +1,10 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
+jest.mock("lib/featureFlags", () => ({
+  getExperimentVariant: jest.fn(),
+}))
+
 describe("AuctionLotsForYou", () => {
   it("returns the section's metadata", async () => {
     const query = gql`
