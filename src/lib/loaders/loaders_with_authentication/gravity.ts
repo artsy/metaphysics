@@ -229,6 +229,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtworkTemplateLoader: gravityLoader<any, { partnerId: string }>(
+      ({ partnerId }) => `partner/${partnerId}/artwork_template`,
+      {},
+      { method: "POST" }
+    ),
     addImageToArtworkLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
       {},
@@ -1095,6 +1100,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    deletePartnerArtworkTemplateLoader: gravityLoader<
+      any,
+      { partnerId: string; templateId: string }
+    >(
+      ({ partnerId, templateId }) =>
+        `partner/${partnerId}/artwork_template/${templateId}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
@@ -1195,6 +1209,11 @@ export default (accessToken, userID, opts) => {
     ),
     requestConditionReportLoader: gravityLoader(
       "condition_report_request",
+      {},
+      { method: "POST" }
+    ),
+    acceptPartnerAgreementLoader: gravityLoader(
+      (id) => `partner_agreement/${id}/accept`,
       {},
       { method: "POST" }
     ),
