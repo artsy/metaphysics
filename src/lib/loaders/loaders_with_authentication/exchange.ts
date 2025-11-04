@@ -87,14 +87,6 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
-  const meOrderAddInitialOfferLoader = exchangeLoader(
-    (id) => `me/orders/${id}/initial_offer`,
-    {},
-    {
-      method: "POST",
-    }
-  )
-
   const meOfferCreateLoader = exchangeLoader(
     () => `me/offers`,
     {},
@@ -157,7 +149,6 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderUpdateShippingAddressLoader,
     meOrderSetFulfillmentOptionLoader,
     meOrderSubmitLoader,
-    meOrderAddInitialOfferLoader,
     meOrderUnsetFulfillmentOptionLoader,
     meOrderUnsetPaymentMethodLoader,
     meOfferCreateLoader,

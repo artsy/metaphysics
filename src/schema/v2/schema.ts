@@ -337,7 +337,6 @@ import {
   updateOrderMutation,
   setOrderFulfillmentOptionMutation,
   submitOrderMutation,
-  addInitialOfferToOrderMutation,
 } from "./order"
 import { createBuyerOfferMutation } from "./offer/createBuyerOfferMutation"
 import { updateBuyerOfferMutation } from "./offer/updateBuyerOfferMutation"
@@ -522,7 +521,6 @@ export default new GraphQLSchema({
         : {}),
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
-      addInitialOfferToOrder: addInitialOfferToOrderMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       createBuyerOffer: createBuyerOfferMutation,
       updateBuyerOffer: updateBuyerOfferMutation,

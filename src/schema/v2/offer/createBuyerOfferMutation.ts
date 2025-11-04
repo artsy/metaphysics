@@ -1,12 +1,12 @@
 import { GraphQLNonNull, GraphQLID, GraphQLString } from "graphql"
 import {
-  ORDER_MUTATION_FLAGS,
-  OrderMutationResponseType,
-} from "./types/sharedOrderTypes"
+  OFFER_MUTATION_FLAGS,
+  OfferMutationResponseType,
+} from "../order/types/sharedOfferTypes"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { handleExchangeError } from "./exchangeErrorHandling"
-import { MoneyInput } from "schema/v2/fields/money"
+import { handleOfferExchangeError } from "./offerErrorHandling"
+import { MoneyInput } from "../fields/money"
 
 interface Input {
   orderId: string
@@ -17,13 +17,13 @@ interface Input {
   note?: string
 }
 
-export const addInitialOfferToOrderMutation = mutationWithClientMutationId<
+export const createBuyerOfferMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "addInitialOfferToOrder",
-  description: "Add an initial offer to an order",
+  name: "createBuyerOffer",
+  description: "Create a buyer offer on an order",
   inputFields: {
     orderId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -39,14 +39,14 @@ export const addInitialOfferToOrderMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    orderOrError: {
-      type: OrderMutationResponseType,
+    offerOrError: {
+      type: OfferMutationResponseType,
       resolve: (response) => response,
     },
   },
   mutateAndGetPayload: async (input, context) => {
-    const { meOrderAddInitialOfferLoader } = context
-    if (!meOrderAddInitialOfferLoader) {
+    const { meOfferCreateLoader } = context
+    if (!meOfferCreateLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
     try {
@@ -55,6 +55,7 @@ export const addInitialOfferToOrderMutation = mutationWithClientMutationId<
       const amountCents = Math.round(input.offerPrice.amount * factor)
 
       const exchangeInputFields = {
+        order_id: input.orderId,
         amount_cents: amountCents,
         note: input.note,
       }
@@ -66,14 +67,11 @@ export const addInitialOfferToOrderMutation = mutationWithClientMutationId<
         )
       )
 
-      const updatedOrder = await meOrderAddInitialOfferLoader(
-        input.orderId,
-        payload
-      )
-      updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
-      return updatedOrder
+      const offer = await meOfferCreateLoader(null, payload)
+      offer._type = OFFER_MUTATION_FLAGS.SUCCESS // Set the type for the response
+      return offer
     } catch (error) {
-      return handleExchangeError(error)
+      return handleOfferExchangeError(error)
     }
   },
 })

@@ -16245,11 +16245,6 @@ type Mutation {
     input: AddAssetsToConsignmentSubmissionInput!
   ): AddAssetsToConsignmentSubmissionPayload
 
-  # Add an initial offer to an order
-  addInitialOfferToOrder(
-    input: addInitialOfferToOrderInput!
-  ): addInitialOfferToOrderPayload
-
   # Adds an installation shot to a partner show.
   addInstallShotToPartnerShow(
     input: AddInstallShotToPartnerShowMutationInput!
@@ -27753,24 +27748,6 @@ type YearRange {
 
   # The first year of the year range
   startAt: Int
-}
-
-input addInitialOfferToOrderInput {
-  clientMutationId: String
-
-  # Optional note for the offer.
-  note: String
-
-  # Offer price.
-  offerPrice: MoneyInput!
-
-  # Order id.
-  orderId: ID!
-}
-
-type addInitialOfferToOrderPayload {
-  clientMutationId: String
-  orderOrError: OrderMutationResponse
 }
 
 type addOrderedSetItemFailure {
