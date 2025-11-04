@@ -202,7 +202,7 @@ describe("NewWorksForYou", () => {
 
       const context = {
         accessToken: "424242",
-        userID: "vortex-user-id",
+        userID: "user-id",
       }
 
       const { homeView } = await runQuery(query, context)
@@ -211,7 +211,7 @@ describe("NewWorksForYou", () => {
       expect(mockGetExperimentVariant).toHaveBeenCalledWith(
         "onyx_nwfy-artworks-card-test",
         {
-          userId: "vortex-user-id",
+          userId: "user-id",
         }
       )
     })
