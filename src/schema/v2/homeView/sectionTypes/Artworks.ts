@@ -30,11 +30,7 @@ export const HomeViewArtworksSectionType = new GraphQLObjectType<
     },
     showArtworksCardView: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (parent) => {
-        return parent.showArtworksCardView
-          ? parent.showArtworksCardView()
-          : false
-      },
+      resolve: (parent) => !!parent.showArtworksCardView,
     },
     artworksConnection: {
       type: artworkConnection.connectionType,
