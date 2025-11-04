@@ -1,4 +1,3 @@
-import { getExperimentVariant } from "lib/featureFlags"
 import { AuctionsHub, shouldDisplayAuctionsHub } from "../AuctionsHub"
 
 // Mock the artworksForUser module
@@ -11,8 +10,6 @@ jest.mock("schema/v2/artworksForUser", () => ({
 jest.mock("lib/featureFlags", () => ({
   getExperimentVariant: jest.fn(),
 }))
-
-const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 
 // Mock the AuctionResultsByFollowedArtists module
 jest.mock("schema/v2/me/auctionResultsByFollowedArtists", () => ({
