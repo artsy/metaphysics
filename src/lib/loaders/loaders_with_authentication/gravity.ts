@@ -229,6 +229,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtworkTemplateLoader: gravityLoader<any, { partnerId: string }>(
+      ({ partnerId }) => `partner/${partnerId}/artwork_template`,
+      {},
+      { method: "POST" }
+    ),
     addImageToArtworkLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
       {},

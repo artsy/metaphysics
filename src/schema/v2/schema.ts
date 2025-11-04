@@ -316,6 +316,7 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
+import { CreateArtworkTemplateMutation } from "./artworkTemplate/mutations/createArtworkTemplateMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
@@ -529,6 +530,7 @@ export default new GraphQLSchema({
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
       createArtworkImport: CreateArtworkImportMutation,
+      createArtworkTemplate: CreateArtworkTemplateMutation,
       createBackupSecondFactors: createBackupSecondFactorsMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
