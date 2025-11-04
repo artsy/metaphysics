@@ -73,7 +73,7 @@ describe("NewWorksForYou", () => {
 
   describe("when the onyx_nwfy-price-reranking-test experiment is enabled", () => {
     it("serves Version C to the control group", async () => {
-      mockGetExperimentVariant(() => ({
+      mockGetExperimentVariant.mockImplementation(() => ({
         name: "control",
         enabled: true,
       }))
