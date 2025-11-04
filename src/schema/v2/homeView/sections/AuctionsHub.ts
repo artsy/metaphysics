@@ -26,7 +26,7 @@ const extractImageUrls = (
 
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 8, minor: 84, patch: 0 }
+  const minimumEigenVersion = { major: 8, minor: 87, patch: 0 }
 
   if (actualEigenVersion) {
     return (
