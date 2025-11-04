@@ -7,6 +7,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { OrderType } from "./OrderType"
 
 export const FromParticipantEnum = new GraphQLEnumType({
   name: "FromParticipantEnum",
@@ -145,7 +146,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       },
     },
     order: {
-      type: require("./OrderType").OrderType,
+      type: OrderType,
       description: "The order this offer belongs to",
       resolve: ({ order_id }, _args, { meOrderLoader }) => {
         if (!order_id || !meOrderLoader) {
