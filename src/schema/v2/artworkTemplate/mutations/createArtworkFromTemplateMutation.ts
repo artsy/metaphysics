@@ -1,5 +1,5 @@
 import {
-  GraphQLString,
+  GraphQLID,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
@@ -40,27 +40,25 @@ const ResponseOrErrorType = new GraphQLUnionType({
 })
 
 interface CreateArtworkFromTemplateInput {
-  partnerId: string
-  templateId: string
-}
-
-interface CreateArtworkFromTemplatePayload {
-  partnerId: string
-  templateId: string
+  partnerID: string
+  artworkTemplateID: string
 }
 
 export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
-  CreateArtworkFromTemplatePayload,
   CreateArtworkFromTemplateInput,
+  any,
   ResolverContext
 >({
   name: "CreateArtworkFromTemplate",
+  description: "Create an artwork from an artwork template.",
   inputFields: {
-    partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
+    partnerID: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: "The ID of the partner.",
     },
-    templateId: {
-      type: new GraphQLNonNull(GraphQLString),
+    artworkTemplateID: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: "The ID of the artwork template.",
     },
   },
   outputFields: {
@@ -79,8 +77,8 @@ export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
 
     try {
       const result = await createArtworkFromTemplateLoader({
-        partnerId: args.partnerId,
-        templateId: args.templateId,
+        partnerId: args.partnerID,
+        templateId: args.artworkTemplateID,
       })
       return result
     } catch (error) {

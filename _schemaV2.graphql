@@ -9384,9 +9384,12 @@ type CreateArtworkFromTemplateFailure {
 }
 
 input CreateArtworkFromTemplateInput {
+  # The ID of the artwork template.
+  artworkTemplateID: ID!
   clientMutationId: String
-  partnerId: String!
-  templateId: String!
+
+  # The ID of the partner.
+  partnerID: ID!
 }
 
 type CreateArtworkFromTemplatePayload {
@@ -16507,6 +16510,8 @@ type Mutation {
   createArtwork(
     input: CreateArtworkMutationInput!
   ): CreateArtworkMutationPayload
+
+  # Create an artwork from an artwork template.
   createArtworkFromTemplate(
     input: CreateArtworkFromTemplateInput!
   ): CreateArtworkFromTemplatePayload

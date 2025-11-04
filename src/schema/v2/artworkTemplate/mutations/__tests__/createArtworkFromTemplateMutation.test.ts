@@ -5,7 +5,7 @@ describe("CreateArtworkFromTemplateMutation", () => {
   const mutation = gql`
     mutation {
       createArtworkFromTemplate(
-        input: { partnerId: "partner123", templateId: "template123" }
+        input: { partnerID: "partner123", artworkTemplateID: "template123" }
       ) {
         artworkOrError {
           __typename
