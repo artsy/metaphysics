@@ -6,14 +6,11 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleOfferExchangeError } from "./offerErrorHandling"
-import { MoneyInput } from "../fields/money"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 
 interface Input {
   offerId: string
-  offerPrice?: {
-    amount: number
-    currencyCode: string
-  }
+  amountMinor?: number
   note?: string
 }
 
@@ -29,9 +26,9 @@ export const updateBuyerOfferMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLID),
       description: "Offer id.",
     },
-    offerPrice: {
-      type: MoneyInput,
-      description: "Offer price.",
+    amountMinor: {
+      type: GraphQLLong,
+      description: "Offer amount in minor units (cents).",
     },
     note: {
       type: GraphQLString,
@@ -55,12 +52,8 @@ export const updateBuyerOfferMutation = mutationWithClientMutationId<
         note?: string
       } = {}
 
-      // Convert MoneyInput to amount_cents for exchange API if provided
-      if (input.offerPrice) {
-        const factor = 100 // Default to cents, could look up from currency codes if needed
-        exchangeInputFields.amount_cents = Math.round(
-          input.offerPrice.amount * factor
-        )
+      if (input.amountMinor !== undefined) {
+        exchangeInputFields.amount_cents = input.amountMinor
       }
 
       if (input.note !== undefined) {

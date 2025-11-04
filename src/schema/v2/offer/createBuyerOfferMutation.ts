@@ -6,14 +6,11 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleOfferExchangeError } from "./offerErrorHandling"
-import { MoneyInput } from "../fields/money"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 
 interface Input {
   orderId: string
-  offerPrice: {
-    amount: number
-    currencyCode: string
-  }
+  amountMinor: number
   note?: string
 }
 
@@ -29,9 +26,9 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLID),
       description: "Order id.",
     },
-    offerPrice: {
-      type: new GraphQLNonNull(MoneyInput),
-      description: "Offer price.",
+    amountMinor: {
+      type: new GraphQLNonNull(GraphQLLong),
+      description: "Offer amount in minor units (cents).",
     },
     note: {
       type: GraphQLString,
@@ -50,17 +47,12 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
     try {
-      // Convert MoneyInput to amount_cents for exchange API
-      const factor = 100 // Default to cents, could look up from currency codes if needed
-      const amountCents = Math.round(input.offerPrice.amount * factor)
-
       const exchangeInputFields = {
         order_id: input.orderId,
-        amount_cents: amountCents,
+        amount_cents: input.amountMinor,
         note: input.note,
       }
 
-      // Filter out `undefined` values from the input fields
       const payload = Object.fromEntries(
         Object.entries(exchangeInputFields).filter(
           ([_, value]) => value !== undefined

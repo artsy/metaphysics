@@ -4,7 +4,7 @@ const mockMutation = `
   mutation {
     updateBuyerOffer(input: {
       offerId: "offer-id",
-      offerPrice: { amount: 900, currencyCode: "USD" },
+      amountMinor: 90000,
       note: "Updated note"
     }) {
       offerOrError {
@@ -85,7 +85,7 @@ describe("updateBuyerOfferMutation", () => {
       mutation {
         updateBuyerOffer(input: {
           offerId: "offer-id",
-          offerPrice: { amount: 950, currencyCode: "USD" }
+          amountMinor: 95000
         }) {
           offerOrError {
             ...on OfferMutationSuccess {

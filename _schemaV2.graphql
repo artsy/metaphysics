@@ -16215,14 +16215,6 @@ type Money {
   minor: Long!
 }
 
-input MoneyInput {
-  # amount in dollars or major unit
-  amount: Float!
-
-  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
-  currencyCode: String!
-}
-
 type Mutation {
   acceptPartnerAgreement(
     # Parameters for AcceptPartnerAgreement
@@ -27841,13 +27833,12 @@ type createAlertPayload {
 }
 
 input createBuyerOfferInput {
+  # Offer amount in minor units (cents).
+  amountMinor: Long!
   clientMutationId: String
 
   # Optional note for the offer.
   note: String
-
-  # Offer price.
-  offerPrice: MoneyInput!
 
   # Order id.
   orderId: ID!
@@ -28282,6 +28273,8 @@ type updateArtworkSuccess {
 }
 
 input updateBuyerOfferInput {
+  # Offer amount in minor units (cents).
+  amountMinor: Long
   clientMutationId: String
 
   # Optional note for the offer.
@@ -28289,9 +28282,6 @@ input updateBuyerOfferInput {
 
   # Offer id.
   offerId: ID!
-
-  # Offer price.
-  offerPrice: MoneyInput
 }
 
 type updateBuyerOfferPayload {
