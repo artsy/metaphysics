@@ -7,6 +7,10 @@ jest.mock("schema/v2/artworksForUser", () => ({
   },
 }))
 
+jest.mock("lib/featureFlags", () => ({
+  getExperimentVariant: jest.fn(),
+}))
+
 // Mock the AuctionResultsByFollowedArtists module
 jest.mock("schema/v2/me/auctionResultsByFollowedArtists", () => ({
   __esModule: true,

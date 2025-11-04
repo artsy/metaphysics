@@ -20,8 +20,10 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   ownerType: OwnerType.newWorksForYou,
   requiresAuthentication: true,
   trackItemImpressions: true,
-  showArtworksCardView: () => {
-    const variant = getExperimentVariant("onyx_nwfy-artworks-card-test")
+  showArtworksCardView: (context) => {
+    const variant = getExperimentVariant("onyx_nwfy-artworks-card-test", {
+      userId: context.userID,
+    })
 
     return variant && variant.enabled && variant.name === "variant-a"
   },

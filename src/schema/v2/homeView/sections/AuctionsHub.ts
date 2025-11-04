@@ -4,7 +4,7 @@ import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
 import type { HomeViewCard } from "../sectionTypes/Card"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { getExperimentVariant } from "lib/featureFlags"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { ResolverContext } from "types/graphql"
 import { artworksForUser } from "schema/v2/artworksForUser"
@@ -27,12 +27,16 @@ const extractImageUrls = (
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
   const minimumEigenVersion = { major: 8, minor: 87, patch: 0 }
+  const variant = getExperimentVariant("onyx_auctions_hub", {
+    userId: context.userID,
+  })
 
   if (actualEigenVersion) {
     return (
-      isFeatureFlagEnabled("onyx_auctions_hub", {
-        userId: context.userID,
-      }) && isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
+      variant &&
+      variant.enabled &&
+      variant.name === "experiment" &&
+      isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
     )
   } else {
     return false
