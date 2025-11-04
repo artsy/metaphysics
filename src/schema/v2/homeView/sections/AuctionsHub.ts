@@ -87,7 +87,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
 
   const cardDetails: HomeViewCard = {
     title: "No Current or Upcoming Auctions at this time",
-    href: "/live-auctions",
+    href: "/auctions/overview",
     entityType: OwnerType.auctions,
     entityID: "card-browse-all-auctions",
     contextModule: ContextModule.auctionsCard,
