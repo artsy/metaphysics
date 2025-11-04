@@ -26,7 +26,7 @@ const extractImageUrls = (
 
 export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 8, minor: 84, patch: 0 }
+  const minimumEigenVersion = { major: 8, minor: 87, patch: 0 }
 
   if (actualEigenVersion) {
     return (
@@ -87,7 +87,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
 
   const cardDetails: HomeViewCard = {
     title: "No Current or Upcoming Auctions at this time",
-    href: "/auctions",
+    href: "/auctions/overview",
     entityType: OwnerType.auctions,
     entityID: "card-browse-all-auctions",
     contextModule: ContextModule.auctionsCard,
@@ -128,6 +128,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
   return {
     ...cardDetails,
     title: "Current and Upcoming Auctions",
+    imageURL: undefined,
     imageURLs,
   }
 }
@@ -180,6 +181,7 @@ const latestAuctionResultsCard: CardFunction = async ({
   return {
     ...cardDetails,
     title: "Auction Results for Artist You Follow",
+    imageURL: undefined,
     imageURLs,
   }
 }
