@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
+import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -160,6 +161,7 @@ import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
 import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
+import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreementMutation"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
@@ -509,6 +511,9 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      ...(config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
+        ? { acceptPartnerAgreement: acceptPartnerAgreementMutation }
+        : {}),
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
