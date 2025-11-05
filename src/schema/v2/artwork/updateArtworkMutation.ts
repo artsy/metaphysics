@@ -77,6 +77,7 @@ interface UpdateArtworkMutationInputProps {
   priceMin?: number
   shippingWeight?: number
   shippingWeightMetric?: string
+  title?: string
 }
 
 const inputFields = {
@@ -162,6 +163,9 @@ const inputFields = {
   },
   shippingWeight: {
     type: GraphQLFloat,
+  },
+  title: {
+    type: GraphQLString,
   },
 }
 
@@ -250,6 +254,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         price_min: inputArgs.priceMin,
         shipping_weight_metric: inputArgs.shippingWeightMetric,
         shipping_weight: inputArgs.shippingWeight,
+        title: inputArgs.title,
       }
     }
 
