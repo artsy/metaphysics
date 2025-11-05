@@ -13,26 +13,32 @@ export const BankAccountBalanceType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "BankAccountBalance",
-  description: "",
+  description: "The current balance of a bank account",
   fields: () => ({
     balanceCents: {
       type: GraphQLInt,
+      description: "The balance in minor units (cents)",
       resolve: ({ balance_cents }) => balance_cents,
     },
     currencyCode: {
       type: GraphQLString,
+      description: "The currency code of the balance",
       resolve: ({ currency_code }) => currency_code,
     },
   }),
 })
 
 export const MeBankAccountBalance: GraphQLFieldConfig<void, ResolverContext> = {
+  description:
+    "The current balance of a user's bank account. Requires either a bank account ID or a confirmation token ID.",
   args: {
     bankAccountId: {
       type: GraphQLID,
+      description: "The ID of the bank account to query the balance for",
     },
     confirmationTokenId: {
       type: GraphQLID,
+      description: "The confirmation token ID to query the balance for",
     },
   },
   type: BankAccountBalanceType,

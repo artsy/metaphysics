@@ -4838,9 +4838,12 @@ type BankAccount {
   type: BankAccountTypes!
 }
 
-#
+# The current balance of a bank account
 type BankAccountBalance {
+  # The balance in minor units (cents)
   balanceCents: Int
+
+  # The currency code of the balance
   currencyCode: String
 }
 
@@ -15503,8 +15506,13 @@ type Me implements Node {
 
   # A list of authenticated external services
   authentications: [AuthenticationType!]!
+
+  # The current balance of a user's bank account. Requires either a bank account ID or a confirmation token ID.
   bankAccountBalance(
+    # The ID of the bank account to query the balance for
     bankAccountId: ID
+
+    # The confirmation token ID to query the balance for
     confirmationTokenId: ID
   ): BankAccountBalance
 
