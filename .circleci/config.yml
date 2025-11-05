@@ -4,7 +4,6 @@ orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
   node: circleci/node@6.3.0
-  yarn: artsy/yarn@6.5.0
 
 not_staging_or_release: &not_staging_or_release
   filters:
@@ -49,12 +48,6 @@ commands:
             pip install hokusai
       - hokusai/configure-hokusai
 
-  yarn_install:
-    steps:
-      - yarn/load_dependencies
-      - yarn/install
-      - yarn/save_dependencies
-
 jobs:
   test:
     executor:
@@ -63,7 +56,8 @@ jobs:
     parallelism: 6
     steps:
       - checkout
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn
       - run:
           name: Run Jest
           command: |
@@ -75,7 +69,8 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn
       - run: scripts/ensure-schema-update.sh
   push-schema-changes:
     executor:
@@ -86,7 +81,8 @@ jobs:
       - checkout
       - setup_hokusai
       - run: corepack enable
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn
       - run:
           name: Push schema changes
           command: |
