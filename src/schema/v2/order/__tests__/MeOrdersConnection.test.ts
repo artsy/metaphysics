@@ -121,7 +121,46 @@ describe("Me", () => {
       })
     })
 
-    it("filters by editionSetID", async () => {
+    it("filters by editionSetID with artworkID", async () => {
+      const query = gql`
+        query {
+          me {
+            ordersConnection(
+              editionSetID: "edition-set-1"
+              artworkID: "artwork-1"
+              first: 10
+            ) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const order1 = { ...baseOrderJson, id: "order-1" }
+
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrdersLoader: jest.fn().mockResolvedValue({
+          body: [order1],
+          headers: { "x-total-count": "1" },
+        }),
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(context.meOrdersLoader).toHaveBeenCalledWith({
+        page: 1,
+        size: 10,
+        edition_set_id: "edition-set-1",
+        artwork_id: "artwork-1",
+      })
+    })
+
+    it("does not filter by editionSetID without artworkID", async () => {
       const query = gql`
         query {
           me {
@@ -151,7 +190,6 @@ describe("Me", () => {
       expect(context.meOrdersLoader).toHaveBeenCalledWith({
         page: 1,
         size: 10,
-        edition_set_id: "edition-set-1",
       })
     })
 

@@ -39,7 +39,7 @@ export const exchangeLoaders = (accessToken, opts) => {
 
   const meOrderLoader = exchangeLoader((id) => `me/orders/${id}`)
 
-  const meOrdersLoader = exchangeLoader("me/orders")
+  const meOrdersLoader = exchangeLoader("me/orders", {}, { headers: true })
 
   const meOrderUpdateLoader = exchangeLoader(
     (id) => `me/orders/${id}`,

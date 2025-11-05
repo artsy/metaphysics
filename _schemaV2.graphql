@@ -15819,7 +15819,7 @@ type Me implements Node {
     # Filter by buyer states
     buyerState: [OrderBuyerStateEnum]
 
-    # Filter by edition set ID in line items
+    # Filter by edition set ID in line items (requires artworkID)
     editionSetID: String
     first: Int
     last: Int

@@ -14,7 +14,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const MeOrdersConnectionType = connectionWithCursorInfo({
+const MeOrdersConnectionType = connectionWithCursorInfo({
   name: "MeOrders",
   nodeType: OrderType,
 }).connectionType
@@ -30,7 +30,8 @@ export const MeOrdersConnection: GraphQLFieldConfig<any, ResolverContext> = {
     },
     editionSetID: {
       type: GraphQLString,
-      description: "Filter by edition set ID in line items",
+      description:
+        "Filter by edition set ID in line items (requires artworkID)",
     },
     buyerState: {
       type: new GraphQLList(OrderBuyerStateEnum),
@@ -47,20 +48,21 @@ export const MeOrdersConnection: GraphQLFieldConfig<any, ResolverContext> = {
       page,
       size,
     }
-
     if (args.artworkID) {
       params.artwork_id = args.artworkID
-    }
 
-    if (args.editionSetID) {
-      params.edition_set_id = args.editionSetID
+      if (args.editionSetID) {
+        params.edition_set_id = args.editionSetID
+      }
     }
 
     if (args.buyerState && args.buyerState.length > 0) {
       params.buyer_state = args.buyerState.join(",")
     }
 
-    const { body, headers } = await meOrdersLoader(params)
+    const response = await meOrdersLoader(params)
+
+    const { body, headers } = response
     const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
 
     return paginationResolver({
