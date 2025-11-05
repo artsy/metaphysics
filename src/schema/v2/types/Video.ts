@@ -3,11 +3,13 @@ import {
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLResolveInfo,
   GraphQLString,
 } from "graphql"
 import uuid from "uuid/v5"
 import { ResolverContext } from "types/graphql"
 import { markdown } from "../fields/markdown"
+import { toGlobalId } from "graphql-relay"
 
 interface VideoTypeProps {
   _id: string
@@ -25,9 +27,27 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
     description: "An object containing video metadata",
     fields: {
       id: {
+        description: "A globally unique ID",
         type: new GraphQLNonNull(GraphQLID),
-        resolve: ({ playerUrl }) => {
-          return uuid(playerUrl, uuid.URL)
+        resolve: (parent, _args, _context, info) => {
+          // if Artwork…
+          if (isArtworkContext(info)) {
+            // for the original use case of a video url associated directly
+            // with an artwork via a field on the artwork model,
+            // we derive the global id from that player url
+            return uuid(parent.playerUrl, uuid.URL)
+          }
+
+          // if Video… a conventional Relay global id,
+          return toGlobalId(info.parentType.name, parent._id)
+        },
+      },
+      internalID: {
+        description:
+          "A database ID for the Gravity Video instance (not available in Artwork context)",
+        type: new GraphQLNonNull(GraphQLID),
+        resolve: (parent, _args, _context, _info) => {
+          return parent._id
         },
       },
       title: {
@@ -61,3 +81,19 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
     },
   }
 )
+
+function getParentTypename(info: GraphQLResolveInfo): string | undefined {
+  let path = info.path?.prev
+  while (path) {
+    if (path.typename && path.typename !== "Video") {
+      return path.typename
+    }
+    path = path.prev
+  }
+  return undefined
+}
+
+function isArtworkContext(info: GraphQLResolveInfo) {
+  const parentType = getParentTypename(info)
+  return parentType === "Artwork"
+}
