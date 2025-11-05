@@ -10,7 +10,9 @@ import { ResolverContext } from "types/graphql"
 import { markdown } from "../fields/markdown"
 
 interface VideoTypeProps {
-  id: string
+  _id: string
+  title: string
+  description?: string
   playerUrl?: string // if Artwork
   player_embed_url?: string // if Video
   height: number
@@ -30,7 +32,10 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       },
       title: {
         description: "Title of the video",
-        type: GraphQLString,
+        type: GraphQLNonNull(GraphQLString),
+        resolve: (parent, _args, _context, _info) => {
+          return parent?.title || ""
+        },
       },
       description: markdown(),
       playerUrl: {
