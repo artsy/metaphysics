@@ -87,16 +87,19 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
-  const meOfferCreateLoader = exchangeLoader(
-    () => `me/offers`,
+  const meOfferCreateLoader = exchangeLoader<any, { orderID: string }>(
+    ({ orderID }) => `me/orders/${orderID}/offers`,
     {},
     {
       method: "POST",
     }
   )
 
-  const meOfferUpdateLoader = exchangeLoader(
-    (id) => `me/offers/${id}`,
+  const meOfferUpdateLoader = exchangeLoader<
+    any,
+    { orderID: string; offerID: string }
+  >(
+    ({ orderID, offerID }) => `me/orders/${orderID}/offers/${offerID}`,
     {},
     {
       method: "PUT",

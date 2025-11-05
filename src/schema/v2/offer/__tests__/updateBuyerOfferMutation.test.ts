@@ -3,7 +3,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mockMutation = `
   mutation {
     updateBuyerOffer(input: {
-      offerId: "offer-id",
+      orderID: "order-id",
+      offerID: "offer-id",
       amountMinor: 90000,
       note: "Updated note"
     }) {
@@ -74,17 +75,21 @@ describe("updateBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith("offer-id", {
-      amount_cents: 90000,
-      note: "Updated note",
-    })
+    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id", offerID: "offer-id" },
+      {
+        amount_cents: 90000,
+        note: "Updated note",
+      }
+    )
   })
 
   it("updates only the offer price", async () => {
     const query = `
       mutation {
         updateBuyerOffer(input: {
-          offerId: "offer-id",
+          orderID: "order-id",
+          offerID: "offer-id",
           amountMinor: 95000
         }) {
           offerOrError {
@@ -130,16 +135,20 @@ describe("updateBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith("offer-id", {
-      amount_cents: 95000,
-    })
+    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id", offerID: "offer-id" },
+      {
+        amount_cents: 95000,
+      }
+    )
   })
 
   it("updates only the note", async () => {
     const query = `
       mutation {
         updateBuyerOffer(input: {
-          offerId: "offer-id",
+          orderID: "order-id",
+          offerID: "offer-id",
           note: "Just updating the note"
         }) {
           offerOrError {
@@ -181,16 +190,20 @@ describe("updateBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith("offer-id", {
-      note: "Just updating the note",
-    })
+    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id", offerID: "offer-id" },
+      {
+        note: "Just updating the note",
+      }
+    )
   })
 
   it("can clear the note by passing null", async () => {
     const query = `
       mutation {
         updateBuyerOffer(input: {
-          offerId: "offer-id",
+          orderID: "order-id",
+          offerID: "offer-id",
           note: null
         }) {
           offerOrError {
@@ -232,9 +245,12 @@ describe("updateBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith("offer-id", {
-      note: null,
-    })
+    expect(context.meOfferUpdateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id", offerID: "offer-id" },
+      {
+        note: null,
+      }
+    )
   })
 
   it("returns an error when the loader fails", async () => {

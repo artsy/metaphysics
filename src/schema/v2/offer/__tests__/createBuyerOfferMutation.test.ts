@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mockMutation = `
   mutation {
     createBuyerOffer(input: {
-      orderId: "order-id",
+      orderID: "order-id",
       amountMinor: 85000,
       note: "My initial offer"
     }) {
@@ -74,18 +74,20 @@ describe("createBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferCreateLoader).toHaveBeenCalledWith(null, {
-      order_id: "order-id",
-      amount_cents: 85000,
-      note: "My initial offer",
-    })
+    expect(context.meOfferCreateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id" },
+      {
+        amount_cents: 85000,
+        note: "My initial offer",
+      }
+    )
   })
 
   it("creates an offer without a note", async () => {
     const query = `
       mutation {
         createBuyerOffer(input: {
-          orderId: "order-id",
+          orderID: "order-id",
           amountMinor: 85000
         }) {
           offerOrError {
@@ -127,10 +129,12 @@ describe("createBuyerOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferCreateLoader).toHaveBeenCalledWith(null, {
-      order_id: "order-id",
-      amount_cents: 85000,
-    })
+    expect(context.meOfferCreateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id" },
+      {
+        amount_cents: 85000,
+      }
+    )
   })
 
   it("returns an error when the loader fails", async () => {

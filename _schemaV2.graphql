@@ -27841,7 +27841,7 @@ input createBuyerOfferInput {
   note: String
 
   # Order id.
-  orderId: ID!
+  orderID: ID!
 }
 
 type createBuyerOfferPayload {
@@ -28281,7 +28281,10 @@ input updateBuyerOfferInput {
   note: String
 
   # Offer id.
-  offerId: ID!
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
 }
 
 type updateBuyerOfferPayload {

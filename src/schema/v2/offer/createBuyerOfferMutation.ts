@@ -9,7 +9,7 @@ import { handleOfferExchangeError } from "./offerErrorHandling"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 
 interface Input {
-  orderId: string
+  orderID: string
   amountMinor: number
   note?: string
 }
@@ -22,7 +22,7 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
   name: "createBuyerOffer",
   description: "Create a buyer offer on an order",
   inputFields: {
-    orderId: {
+    orderID: {
       type: new GraphQLNonNull(GraphQLID),
       description: "Order id.",
     },
@@ -47,8 +47,8 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
     try {
+      const { orderID } = input
       const exchangeInputFields = {
-        order_id: input.orderId,
         amount_cents: input.amountMinor,
         note: input.note,
       }
@@ -59,7 +59,7 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
         )
       )
 
-      const offer = await meOfferCreateLoader(null, payload)
+      const offer = await meOfferCreateLoader({ orderID }, payload)
       offer._type = OFFER_MUTATION_FLAGS.SUCCESS // Set the type for the response
       return offer
     } catch (error) {
