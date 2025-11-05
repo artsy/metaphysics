@@ -93,7 +93,7 @@ describe("CreateArtworkMutation", () => {
         expect(data).toEqual({
           artists: ["artist123", "artist456"],
           partner: "partner123",
-          sync_to_es: true,
+          sync_to_search: true,
         })
         return Promise.resolve(mockArtwork)
       },
@@ -134,7 +134,7 @@ describe("CreateArtworkMutation", () => {
         expect(data).toEqual({
           artists: ["artist123", "artist456"],
           partner: "partner123",
-          sync_to_es: true,
+          sync_to_search: true,
         })
         return Promise.resolve(mockArtwork)
       },
@@ -175,7 +175,7 @@ describe("CreateArtworkMutation", () => {
       expect(data).toEqual({
         artists: ["artist123", "artist456"],
         partner: "partner123",
-        sync_to_es: true,
+        sync_to_search: true,
       })
       return Promise.resolve(mockArtwork)
     })

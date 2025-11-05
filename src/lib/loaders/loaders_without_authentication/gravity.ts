@@ -39,6 +39,12 @@ export default (opts) => {
   }
 
   return {
+    aiPromptTemplateLoader: gravityUncachedLoader(
+      (id) => `a_i_prompt_template/${id}`
+    ),
+    aiPromptTemplatesLoader: gravityUncachedLoader("a_i_prompt_templates", {
+      headers: true,
+    }),
     featureLoader: (id: string) =>
       gravityLoader((id) => `feature/${id}`)(id).then(Gravity.Feature.check),
     createAccountRequestLoader: gravityLoader(
@@ -76,6 +82,12 @@ export default (opts) => {
       { headers: true }
     ),
     collectionLoader: gravityLoader((id) => `collection/${id}`),
+    collectorProfilesLoader: gravityLoader(
+      "collector_profiles",
+      {},
+      { headers: true }
+    ),
+    collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
     createInvoicePaymentLoader: gravityLoader(
       (id) => `invoice/${id}/payment`,
       {},
@@ -338,6 +350,7 @@ export default (opts) => {
       {},
       { method: "GET" }
     ),
+    videoLoader: gravityLoader((id) => `video/${id}`),
     viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`

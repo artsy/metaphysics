@@ -1,21 +1,21 @@
 import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLUnionType,
-  GraphQLList,
-  GraphQLInputObjectType,
   GraphQLBoolean,
   GraphQLFloat,
+  GraphQLInputObjectType,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
-import Artwork from "schema/v2/artwork"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import Artwork from "schema/v2/artwork"
+import { ResolverContext } from "types/graphql"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "updateArtworkSuccess",
@@ -52,6 +52,7 @@ interface S3LocationInput {
 interface UpdateArtworkMutationInputProps {
   artistProofs?: string
   availability?: string
+  defaultImageID?: string
   delete?: boolean
   displayPriceRange?: boolean
   ecommerce?: boolean
@@ -76,6 +77,7 @@ interface UpdateArtworkMutationInputProps {
   priceMin?: number
   shippingWeight?: number
   shippingWeightMetric?: string
+  title?: string
 }
 
 const inputFields = {
@@ -86,6 +88,10 @@ const inputFields = {
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
+  },
+  defaultImageID: {
+    type: GraphQLString,
+    description: "The ID of the image to set as the default for this artwork",
   },
   displayPriceRange: {
     type: GraphQLBoolean,
@@ -158,6 +164,9 @@ const inputFields = {
   shippingWeight: {
     type: GraphQLFloat,
   },
+  title: {
+    type: GraphQLString,
+  },
 }
 
 // TODO: Extract this and use it in other mutations that require S3 locations
@@ -207,11 +216,12 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, editionSets, imageS3Locations, ...args },
+    { id, editionSets, imageS3Locations, defaultImageID, ...args },
     {
       updateArtworkLoader,
       updateArtworkEditionSetLoader,
       addImageToArtworkLoader,
+      setDefaultArtworkImageLoader,
     }
   ) => {
     if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
@@ -244,6 +254,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         price_min: inputArgs.priceMin,
         shipping_weight_metric: inputArgs.shippingWeightMetric,
         shipping_weight: inputArgs.shippingWeight,
+        title: inputArgs.title,
       }
     }
 
@@ -254,15 +265,21 @@ export const updateArtworkMutation = mutationWithClientMutationId<
           return new Error("You need to be signed in to perform this action")
         }
 
-        // Attach all images
-        await Promise.all(
-          imageS3Locations.map((location) =>
-            addImageToArtworkLoader(id, {
-              source_bucket: location.bucket,
-              source_key: location.key,
-            })
-          )
-        )
+        // Attach all images sequentially to avoid race conditions
+        for (const location of imageS3Locations) {
+          await addImageToArtworkLoader(id, {
+            source_bucket: location.bucket,
+            source_key: location.key,
+          })
+        }
+      }
+
+      // Set default image if provided
+      if (defaultImageID && setDefaultArtworkImageLoader) {
+        await setDefaultArtworkImageLoader({
+          artworkId: id,
+          imageId: defaultImageID,
+        })
       }
 
       if (editionSets?.length > 0) {

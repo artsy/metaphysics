@@ -29,6 +29,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    repositionArtworkImagesLoader: gravityLoader<any, { artworkId: string }>(
+      ({ artworkId }) => `artwork/${artworkId}/images/reposition`,
+      {},
+      { method: "POST" }
+    ),
     repositionArtworksInPartnerShowLoader: gravityLoader<
       any,
       { showId: string; partnerId: string }
@@ -224,10 +229,33 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtworkTemplateLoader: gravityLoader<any, { partnerId: string }>(
+      ({ partnerId }) => `partner/${partnerId}/artwork_template`,
+      {},
+      { method: "POST" }
+    ),
+    createArtworkFromTemplateLoader: gravityLoader<
+      any,
+      { partnerId: string; templateId: string }
+    >(
+      ({ partnerId, templateId }) =>
+        `partner/${partnerId}/artwork_template/${templateId}/artwork`,
+      {},
+      { method: "POST" }
+    ),
     addImageToArtworkLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
       {},
       { method: "POST" }
+    ),
+    setDefaultArtworkImageLoader: gravityLoader<
+      any,
+      { artworkId: string; imageId: string }
+    >(
+      ({ artworkId, imageId }) =>
+        `artwork/${artworkId}/images/default/${imageId}`,
+      {},
+      { method: "PUT" }
     ),
     createCommerceOptInEligibleArtworksReportLoader: gravityLoader(
       (id) => `partner/${id}/commerce_opt_in_eligible_artworks_report`,
@@ -991,6 +1019,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworkGenomeLoader: gravityLoader<
+      any,
+      { partnerID: string; artworkID: string }
+    >(
+      ({ partnerID, artworkID }) =>
+        `partner/${partnerID}/artwork/${artworkID}/genome`,
+      {},
+      { headers: true }
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
@@ -1043,6 +1080,43 @@ export default (accessToken, userID, opts) => {
       (id) => `partner/${id}/contacts`,
       {},
       { headers: true }
+    ),
+    conversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`
+    ),
+    conversationMessageTemplatesLoader: gravityLoader(
+      "conversation_message_templates",
+      {},
+      { headers: true }
+    ),
+    createConversationMessageTemplateLoader: gravityLoader(
+      "conversation_message_template",
+      {},
+      { method: "POST" }
+    ),
+    updateConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteConversationMessageTemplateLoader: gravityLoader(
+      (id) => `conversation_message_template/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    partnerArtworkTemplatesLoader: gravityLoader(
+      (id) => `partner/${id}/artwork_templates`,
+      {},
+      { headers: true }
+    ),
+    deletePartnerArtworkTemplateLoader: gravityLoader<
+      any,
+      { partnerId: string; templateId: string }
+    >(
+      ({ partnerId, templateId }) =>
+        `partner/${partnerId}/artwork_template/${templateId}`,
+      {},
+      { method: "DELETE" }
     ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
@@ -1139,6 +1213,16 @@ export default (accessToken, userID, opts) => {
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/Recently_viewed_artworks",
+      {},
+      { method: "POST" }
+    ),
+    requestConditionReportLoader: gravityLoader(
+      "condition_report_request",
+      {},
+      { method: "POST" }
+    ),
+    acceptPartnerAgreementLoader: gravityLoader(
+      (id) => `partner_agreement/${id}/accept`,
       {},
       { method: "POST" }
     ),

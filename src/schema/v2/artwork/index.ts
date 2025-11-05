@@ -17,22 +17,26 @@ import { PageInfoType } from "graphql-relay"
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
+import currencyCodes from "lib/currency_codes.json"
 import { deprecate } from "lib/deprecation"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { formatLargeNumber } from "lib/formatLargeNumber"
 import { getDemandRankDisplayText } from "lib/getDemandRank"
-import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
+import {
+  capitalizeFirstCharacter,
+  convertConnectionArgsToGravityArgs,
+  enhance,
+  existyValue,
+} from "lib/helpers"
 import { isFieldRequested } from "lib/isFieldRequested"
+import { error } from "lib/loggers"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
 import AttributionClass from "schema/v2/artwork/attributionClass"
-import {
-  CollectionsConnectionType,
-  CollectionSorts,
-} from "schema/v2/me/collectionsConnection"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
@@ -54,6 +58,10 @@ import Image, {
 import { setVersion } from "schema/v2/image/normalize"
 import { COUNTRIES, LocationType } from "schema/v2/location"
 import {
+  CollectionsConnectionType,
+  CollectionSorts,
+} from "schema/v2/me/collectionsConnection"
+import {
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
@@ -67,39 +75,38 @@ import ShowSorts from "schema/v2/sorts/show_sorts"
 import { VideoType } from "schema/v2/types/Video"
 import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
+import { ArtistSeriesConnectionType } from "../artistSeries"
+import { date } from "../fields/date"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
+import { PartnerOfferType } from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
+import { ArtworkConditionType } from "./artworkCondition"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
+import { ArtworkVisibility } from "./artworkVisibility"
+import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
+import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
+import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
+import { listingOptions } from "./listingOptions"
 import Meta, { artistNames } from "./meta"
+import { PartnerGenomeType } from "./partnerGenome"
 import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
-  isEligibleToCreateAlert,
   isEligibleForOnPlatformTransaction,
+  isEligibleToCreateAlert,
   isEmbeddedVideo,
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { error } from "lib/loggers"
-import { PartnerOfferType } from "../partnerOffer"
-import currencyCodes from "lib/currency_codes.json"
-import { date } from "../fields/date"
-import { ArtworkVisibility } from "./artworkVisibility"
-import { ArtworkConditionType } from "./artworkCondition"
-import { CollectorSignals } from "./collectorSignals"
-import { ArtistSeriesConnectionType } from "../artistSeries"
-import { listingOptions } from "./listingOptions"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -112,6 +119,9 @@ const has_multiple_editions = (edition_sets) => {
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
+  ARTLOGIC: { value: "artlogic" },
+  ARTCLOUD: { value: "artcloud" },
+  BATCH_UPLOAD: { value: "BATCH_UPLOAD" },
 } as const
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
@@ -491,6 +501,32 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       collectorSignals: CollectorSignals,
       comparableAuctionResults: ComparableAuctionResults,
+      completenessScore: {
+        type: GraphQLInt,
+        description: "A score representing the listing quality of the artwork",
+        resolve: ({ completeness_score }) => completeness_score,
+      },
+      completenessChecklist: {
+        type: new GraphQLList(ArtworkCompletenessChecklistItemType),
+        description:
+          "A checklist of items indicating how to improve the completeness score (ranked by importance)",
+        resolve: ({ completeness_checklist }) => {
+          if (!completeness_checklist) return []
+
+          return Object.entries(completeness_checklist).map(
+            ([key, data]: [string, any]) => ({
+              key,
+              completed: data.completed,
+            })
+          )
+        },
+      },
+      completenessTier: {
+        type: ArtworkCompletenessTier,
+        description:
+          "The tier classification of the completeness score (Incomplete, Good, or Excellent)",
+        resolve: ({ completeness_tier }) => completeness_tier,
+      },
       confidentialNotes: {
         type: GraphQLString,
         resolve: ({ confidential_notes }) => confidential_notes,
@@ -654,6 +690,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       exhibitionHistory: markdown(
         ({ exhibition_history }) => exhibition_history
       ),
+      externalID: {
+        type: GraphQLString,
+        description: "External provider identity.",
+        resolve: ({ external_id }) => external_id,
+      },
       fair: {
         type: Fair.type,
         resolve: ({ id }, _options, { relatedFairsLoader }) => {
@@ -668,6 +709,35 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Featured slot (if set, will boost the work to the top of the artwork grid. Should be set between 1 and 20).",
         resolve: ({ featured_slot }) => featured_slot,
+      },
+      partnerGenome: {
+        type: PartnerGenomeType,
+        description:
+          "Artwork genome data from the partner, containing category scores",
+        resolve: async (
+          { id, partner },
+          _options,
+          { partnerArtworkGenomeLoader }
+        ) => {
+          if (!partnerArtworkGenomeLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+
+          if (!partner || !partner.id) {
+            return null
+          }
+
+          try {
+            const { body } = await partnerArtworkGenomeLoader({
+              partnerID: partner.id,
+              artworkID: id,
+            })
+            return { genes: body?.genes || {} }
+          } catch (error) {
+            console.error("Error fetching partner artwork genome:", error)
+            return null
+          }
+        },
       },
       formattedMetadata: {
         type: GraphQLString,
@@ -785,18 +855,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(InquiryQuestionType),
         description:
           "Structured questions a collector can inquire on about this work",
-        resolve: (
-          { id, inquireable },
-          _params,
-          { inquiryRequestQuestionsLoader }
-        ) => {
-          if (inquireable) {
-            return inquiryRequestQuestionsLoader({
-              inquireable_id: id,
-              inquireable_type: "Artwork",
-            })
-          }
-          return []
+        resolve: ({ id }, _params, { inquiryRequestQuestionsLoader }) => {
+          return inquiryRequestQuestionsLoader({
+            inquireable_id: id,
+            inquireable_type: "Artwork",
+          })
         },
       },
       inventoryId: {
@@ -1311,6 +1374,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       price: {
         type: GraphQLString,
       },
+      privateShortcutPath: {
+        type: GraphQLString,
+        description: "Private shortcut URL path for accessing the artwork",
+        resolve: ({ private_shortcut_path }) => private_shortcut_path,
+      },
       priceCurrency: {
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
@@ -1796,6 +1864,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
+        resolve: (artwork) => artwork,
       },
       savedSearch: {
         description: "Schema related to saved searches based on this artwork",

@@ -110,7 +110,7 @@ describe("updateViewingRoomSubsectionsMutation", () => {
               "body": "subsection body",
               "caption": "subsection caption",
               "image": {
-                "__typename": "ARImage",
+                "__typename": "GravityARImage",
                 "height": 100,
                 "imageURLs": {
                   "normalized": "https://example.com/image.jpg",

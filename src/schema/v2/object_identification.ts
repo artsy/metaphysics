@@ -60,13 +60,13 @@ const SupportedTypes: any = {
     "./homeView/index",
     "./ArtworkImport/artworkImport",
     "./discoveryCategoryConnection",
+    "./discoveryCategoriesConnection",
   ],
 }
 
 const typeNames = {
   "./filterArtworksConnection": "filterArtworksConnection",
   "./homeView/index": "HomeViewSection",
-  "./discoveryCategoryConnection": "DiscoveryCategory",
 }
 
 const exportNames = {
@@ -74,6 +74,8 @@ const exportNames = {
   HomeViewSection: "Section",
   ArtworkImport: "ArtworkImport",
   DiscoveryCategory: "default",
+  DiscoveryMarketingCollection: "DiscoveryCategoryNodeResolver",
+  DiscoveryArtworksWithFiltersCollection: "DiscoveryCategoryNodeResolver",
 }
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
@@ -81,6 +83,10 @@ SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
   typeMap[type] = file
   return typeMap
 }, {})
+
+// Manually add the second union type that comes from the same file
+SupportedTypes.typeMap.DiscoveryArtworksWithFiltersCollection =
+  "./discoveryCategoriesConnection"
 
 SupportedTypes.types = _.keys(SupportedTypes.typeMap)
 

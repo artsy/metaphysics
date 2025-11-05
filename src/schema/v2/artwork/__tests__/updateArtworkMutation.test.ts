@@ -294,4 +294,125 @@ describe("UpdateArtworkMutation", () => {
       expect(addImageToArtworkLoader).not.toHaveBeenCalled()
     })
   })
+
+  describe("default image handling", () => {
+    const defaultImageMutation = gql`
+      mutation {
+        updateArtwork(input: { id: "25", defaultImageID: "image-123" }) {
+          artworkOrError {
+            __typename
+            ... on updateArtworkSuccess {
+              artwork {
+                id
+              }
+            }
+            ... on updateArtworkFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("sets the default image when defaultImageID is provided", async () => {
+      const setDefaultArtworkImageLoader = jest.fn().mockResolvedValue({})
+      const context = {
+        updateArtworkLoader: () => Promise.resolve({ id: "25" }),
+        updateArtworkEditionSetLoader: jest.fn(),
+        setDefaultArtworkImageLoader,
+      }
+
+      await runAuthenticatedQuery(defaultImageMutation, context)
+
+      expect(setDefaultArtworkImageLoader).toHaveBeenCalledTimes(1)
+      expect(setDefaultArtworkImageLoader).toHaveBeenCalledWith({
+        artworkId: "25",
+        imageId: "image-123",
+      })
+    })
+
+    it("skips setting default image when defaultImageID is not provided", async () => {
+      const noDefaultImageMutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", availability: "sold" }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const setDefaultArtworkImageLoader = jest.fn()
+      const context = {
+        updateArtworkLoader: () => Promise.resolve({ id: "25" }),
+        updateArtworkEditionSetLoader: jest.fn(),
+        setDefaultArtworkImageLoader,
+      }
+
+      await runAuthenticatedQuery(noDefaultImageMutation, context)
+
+      expect(setDefaultArtworkImageLoader).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("title field", () => {
+    const titleUpdateMutation = gql`
+      mutation {
+        updateArtwork(input: { id: "25", title: "New Artwork Title" }) {
+          artworkOrError {
+            __typename
+            ... on updateArtworkSuccess {
+              artwork {
+                internalID
+                title
+              }
+            }
+            ... on updateArtworkFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("updates the artwork title", async () => {
+      const updateArtworkLoader = jest.fn((id, args) => {
+        expect(id).toBe("25")
+        expect(args.title).toBe("New Artwork Title")
+        return Promise.resolve({
+          id: "25",
+          _id: "25",
+          title: "New Artwork Title",
+        })
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(titleUpdateMutation, context)
+
+      expect(result).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkSuccess",
+            artwork: {
+              internalID: "25",
+              title: "New Artwork Title",
+            },
+          },
+        },
+      })
+    })
+  })
 })

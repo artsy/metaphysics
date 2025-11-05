@@ -67,7 +67,6 @@ import {
   fetchMarketingCollections,
 } from "../marketingCollections"
 import { ArtistSeriesConnectionType } from "../artistSeries"
-import { SEO_EXPERIMENT_ARTISTS } from "schema/v2/seoExperimentArtists"
 import config from "config"
 
 // Manually curated list of artist id's who has verified auction lots that can be
@@ -821,13 +820,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }, _args, { followedArtistLoader }) => {
           if (!followedArtistLoader) return false
           return followedArtistLoader(id).then(({ is_followed }) => is_followed)
-        },
-      },
-      isInSeoExperiment: {
-        type: GraphQLBoolean,
-        description: "Temporary field to test SEO experiment",
-        resolve: ({ id }) => {
-          return SEO_EXPERIMENT_ARTISTS.includes(id)
         },
       },
       isPersonalArtist: {

@@ -2,6 +2,18 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("SendConversationMessageMutation", () => {
+  const conversationLoader = () =>
+    Promise.resolve({
+      attachments: [
+        { name: "foo", type: "bar", url: "baz", id: "bam", size: "20" },
+      ],
+      from_email: "gallery@example.com",
+      id: "420",
+      initial_message: "10/10 would buy",
+      to_name: "Some Gallery",
+      to: ["1234567"],
+    })
+
   it("creates a message and returns its new data payload", () => {
     const mutation = `
       mutation {
@@ -37,17 +49,7 @@ describe("SendConversationMessageMutation", () => {
     `
 
     const context = {
-      conversationLoader: () =>
-        Promise.resolve({
-          attachments: [
-            { name: "foo", type: "bar", url: "baz", id: "bam", size: "20" },
-          ],
-          from_email: "gallery@example.com",
-          id: "420",
-          initial_message: "10/10 would buy",
-          to_name: "Some Gallery",
-          to: ["1234567"],
-        }),
+      conversationLoader,
       conversationCreateMessageLoader: () =>
         Promise.resolve({
           id: "222",
@@ -70,5 +72,46 @@ describe("SendConversationMessageMutation", () => {
         })
       }
     )
+  })
+
+  it("passes conversationMessageTemplateVersionId to the loader", () => {
+    const mutation = `
+      mutation {
+        sendConversationMessage(
+          input: {
+            bodyText: "Message with template"
+            from: "sender@example.com",
+            id: "623",
+            replyToMessageID: "221",
+            conversationMessageTemplateVersionId: "template-version-456"
+          }
+        ) {
+            conversation {
+              internalID
+            }
+          }
+      }
+    `
+
+    const conversationCreateMessageLoader = jest.fn(() =>
+      Promise.resolve({
+        id: "333",
+        radiation_message_id: "444",
+      })
+    )
+
+    const context = {
+      conversationLoader,
+      conversationCreateMessageLoader,
+    }
+
+    return runAuthenticatedQuery(mutation, context).then(() => {
+      expect(conversationCreateMessageLoader).toHaveBeenCalledWith(
+        "623",
+        expect.objectContaining({
+          conversation_message_template_version_id: "template-version-456",
+        })
+      )
+    })
   })
 })

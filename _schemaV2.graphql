@@ -4,6 +4,59 @@ directive @optionalField on FIELD
 
 directive @principalField on FIELD
 
+type AI {
+  prompt(
+    # The ID of the AI prompt template
+    id: String
+  ): AIPromptTemplate
+  promptConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    # Filter by model (e.g., claude, gpt)
+    model: String
+
+    # Filter by template name
+    name: String
+    page: Int
+    size: Int
+  ): AIPromptTemplateConnection
+}
+
+type AIPromptTemplate {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  model: String!
+  name: String!
+  systemPrompt: String
+  userPrompt: String
+}
+
+# A connection to a list of items.
+type AIPromptTemplateConnection {
+  # A list of edges.
+  edges: [AIPromptTemplateEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type AIPromptTemplateEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: AIPromptTemplate
+}
+
 type ARImage {
   height: Int
   imageURLs: ImageURLs
@@ -1884,9 +1937,6 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   isDisplayAuctionLink: Boolean
   isFollowed: Boolean
 
-  # Temporary field to test SEO experiment
-  isInSeoExperiment: Boolean
-
   # Whether the artist has been created by a user.
   isPersonalArtist: Boolean
   isPublic: Boolean!
@@ -2305,6 +2355,14 @@ type ArtistPartnerEdge {
   sortableID: String
 }
 
+enum ArtistRecommendationSource {
+  # Hybrid machine learning-based recommendations from Vortex.
+  HYBRID
+
+  # Based on UserSuggestedSimilarArtistsIndex in Gravity to find artists similar to the user's followed artists.
+  SIMILAR_TO_FOLLOWED
+}
+
 type ArtistRelatedData {
   artistsConnection(
     after: String
@@ -2663,6 +2721,15 @@ type Artwork implements Node & Searchable & Sellable {
     first: Int
     last: Int
   ): AuctionResultConnection
+
+  # A checklist of items indicating how to improve the completeness score (ranked by importance)
+  completenessChecklist: [ArtworkCompletenessChecklistItem]
+
+  # A score representing the listing quality of the artwork
+  completenessScore: Int
+
+  # The tier classification of the completeness score (Incomplete, Good, or Excellent)
+  completenessTier: ArtworkCompletenessTier
   condition: ArtworkCondition
   conditionDescription: ArtworkInfoRow
 
@@ -2719,6 +2786,9 @@ type Artwork implements Node & Searchable & Sellable {
   # Flags if artwork located in one of EU local shipping countries.
   euShippingOrigin: Boolean
   exhibitionHistory(format: Format): String
+
+  # External provider identity.
+  externalID: String
   fair: Fair
 
   # Featured slot (if set, will boost the work to the top of the artwork grid. Should be set between 1 and 20).
@@ -2929,6 +2999,9 @@ type Artwork implements Node & Searchable & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean = true
   ): Partner
+
+  # Artwork genome data from the partner, containing category scores
+  partnerGenome: PartnerGenome
   partnerOffersConnection(
     after: String
     before: String
@@ -2950,6 +3023,9 @@ type Artwork implements Node & Searchable & Sellable {
   # The price paid for the artwork in a user's 'my collection'
   pricePaid: Money
   pricingContext: AnalyticsPricingContext
+
+  # Private shortcut URL path for accessing the artwork
+  privateShortcutPath: String
 
   # Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping
   processWithArtsyShippingDomestic: Boolean
@@ -3065,6 +3141,30 @@ enum ArtworkAttributionClassType {
   OPEN_EDITION
   UNIQUE
   UNKNOWN_EDITION
+}
+
+type ArtworkCompletenessChecklistItem {
+  # Whether this checklist item is completed
+  completed: Boolean!
+
+  # The key/identifier of the validation
+  key: ArtworkCompletenessChecklistItemKey!
+}
+
+enum ArtworkCompletenessChecklistItemKey {
+  CERTIFICATE
+  DESCRIPTION
+  HIGH_RES_IMAGE
+  MULTIPLE_IMAGES
+  PRICE_VISIBILITY
+  PUBLISHABLE
+  SIGNATURE
+}
+
+enum ArtworkCompletenessTier {
+  EXCELLENT
+  GOOD
+  INCOMPLETE
 }
 
 type ArtworkCondition {
@@ -3282,6 +3382,9 @@ type ArtworkFilterNode {
   # The href for this filtered connection
   href: String!
 
+  # The slug for this filter, derived from the title
+  slug: String!
+
   # The display title for this filtered connection
   title: String!
 }
@@ -3449,6 +3552,9 @@ type ArtworkImportRowImage {
 }
 
 enum ArtworkImportSource {
+  ARTCLOUD
+  ARTLOGIC
+  BATCH_UPLOAD
   CONVECTION
   MY_COLLECTION
 }
@@ -3485,6 +3591,7 @@ type ArtworkImportTransformedData {
   height: String
   imageFileNames: String
   imageRights: String
+  importSource: String
   inventoryId: String
   materials: String
   medium: String
@@ -3711,6 +3818,138 @@ enum ArtworkSorts {
   RECENT_SAVES_COUNT_DESC
   TITLE_ASC
   TITLE_DESC
+}
+
+type ArtworkTemplate {
+  artistIDs: [String]
+  artists(
+    # Use whatever is in the original response instead of making a request
+    shallow: Boolean = false
+  ): [Artist]
+  artsyShippingDomestic: Boolean
+  artsyShippingInternational: Boolean
+  attributionClass: AttributionClass
+  availability: String
+  category: String
+  certificateOfAuthenticity: Boolean
+  coaByAuthenticatingBody: Boolean
+  coaByGallery: Boolean
+  conditionDescription: String
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  date: String
+  depth: Float
+  diameter: Float
+  displayPriceRange: Boolean
+  domesticShippingFeeCents: Int
+  duration: Float
+  ecommerce: Boolean
+  framedDepth: Float
+  framedDiameter: Float
+  framedHeight: Float
+  framedMetric: String
+  framedWidth: Float
+  height: Float
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  internationalShippingFeeCents: Int
+  isFramed: Boolean
+  isNotSigned: Boolean
+  isOfferable: Boolean
+  isPickupAvailable: Boolean
+  isPriceHidden: Boolean
+  isSignedByArtist: Boolean
+  isSignedInPlate: Boolean
+  isSignedOther: Boolean
+  isStampedByArtistEstate: Boolean
+  isStickerLabel: Boolean
+  isUnique: Boolean
+  manufacturer(format: Format): String
+  medium: String
+  metric: String
+  partnerID: String!
+  priceCurrency: String
+
+  # A formatted price with various currency formatting options.
+  priceListed(
+    decimal: String = "."
+    disambiguate: Boolean = false
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # A formatted price with various currency formatting options.
+  priceMax(
+    decimal: String = "."
+    disambiguate: Boolean = false
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # A formatted price with various currency formatting options.
+  priceMin(
+    decimal: String = "."
+    disambiguate: Boolean = false
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  publisher(format: Format): String
+  series(format: Format): String
+  shippingNotes: String
+  shippingWeight: Float
+  shippingWeightMetric: String
+  signature(format: Format): String
+  tags: [String]
+  title: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  visibilityLevel: Visibility
+  website: String
+  width: Float
+}
+
+# A connection to a list of items.
+type ArtworkTemplateConnection {
+  # A list of edges.
+  edges: [ArtworkTemplateEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtworkTemplateEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkTemplate
 }
 
 type ArtworkVersion implements Node {
@@ -4477,10 +4716,13 @@ type Author {
   initials(length: Int = 3): String
   instagramHandle: String @deprecated(reason: "Use `socials.instagram` instead")
 
-  # A type-specific ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   name: String!
   role: String
+
+  # A slug ID.
+  slug: ID
   socials: AuthorSocials
   twitterHandle: String @deprecated(reason: "Use `socials.x` instead")
 }
@@ -8963,6 +9205,51 @@ input ConversationMessageAttachmentInput {
   url: String!
 }
 
+type ConversationMessageTemplate {
+  body: String!
+  currentVersionId: String!
+  description: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  isDeleted: Boolean!
+  sourceExampleId: String
+  title: String!
+}
+
+# A connection to a list of items.
+type ConversationMessageTemplateConnection {
+  # A list of edges.
+  edges: [ConversationMessageTemplateEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ConversationMessageTemplateEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ConversationMessageTemplate
+}
+
+# A static example template to help users get started
+type ConversationMessageTemplateExample {
+  body: String!
+  description: String
+
+  # Internal identifier for the example, used for tracking purposes
+  internalID: ID
+  title: String!
+}
+
 # The participant responding to the conversation, currently always a Partner
 type ConversationResponder {
   # A globally unique ID.
@@ -9092,6 +9379,32 @@ type CreateArtworkFailure {
   mutationError: GravityMutationError
 }
 
+type CreateArtworkFromTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkFromTemplateInput {
+  # The ID of the artwork template.
+  artworkTemplateID: ID!
+  clientMutationId: String
+
+  # The ID of the partner.
+  partnerID: ID!
+}
+
+type CreateArtworkFromTemplatePayload {
+  artworkOrError: CreateArtworkFromTemplateResponseOrError
+  clientMutationId: String
+}
+
+union CreateArtworkFromTemplateResponseOrError =
+    CreateArtworkFromTemplateFailure
+  | CreateArtworkFromTemplateSuccess
+
+type CreateArtworkFromTemplateSuccess {
+  artwork: Artwork
+}
+
 type CreateArtworkImportArtistAssignmentFailure {
   mutationError: GravityMutationError
 }
@@ -9164,9 +9477,7 @@ union CreateArtworkImportArtworksResponseOrError =
   | CreateArtworkImportArtworksSuccess
 
 type CreateArtworkImportArtworksSuccess {
-  artworkImport: ArtworkImport
-  artworkImportID: String!
-  createdArtworksCount: Int!
+  queued: Boolean!
 }
 
 type CreateArtworkImportCellFlagFailure {
@@ -9308,6 +9619,30 @@ type CreateArtworkSuccess {
   artwork: Artwork
 }
 
+type CreateArtworkTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtworkTemplateInput {
+  artworkId: String!
+  clientMutationId: String
+  partnerId: String!
+  title: String!
+}
+
+type CreateArtworkTemplatePayload {
+  artworkTemplateOrError: CreateArtworkTemplateResponseOrError
+  clientMutationId: String
+}
+
+union CreateArtworkTemplateResponseOrError =
+    CreateArtworkTemplateFailure
+  | CreateArtworkTemplateSuccess
+
+type CreateArtworkTemplateSuccess {
+  artworkTemplate: ArtworkTemplate
+}
+
 input CreateBackupSecondFactorsInput {
   clientMutationId: String
   password: String!
@@ -9432,6 +9767,45 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
+type CreateConversationMessageTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateConversationMessageTemplateInput {
+  # The body of the template
+  body: String!
+  clientMutationId: String
+
+  # Optional description of the template
+  description: String
+
+  # Whether this is a soft-deleted/dismissed template
+  isDeleted: Boolean
+
+  # The ID of the partner
+  partnerId: String!
+
+  # ID of the example template this was created from
+  sourceExampleId: String
+
+  # The title of the template
+  title: String!
+}
+
+type CreateConversationMessageTemplatePayload {
+  clientMutationId: String
+  responseOrError: CreateConversationMessageTemplateResponseOrError
+}
+
+union CreateConversationMessageTemplateResponseOrError =
+    CreateConversationMessageTemplateFailure
+  | CreateConversationMessageTemplateSuccess
+
+type CreateConversationMessageTemplateSuccess {
+  conversationMessageTemplate: ConversationMessageTemplate
+  partner: Partner!
+}
+
 type CreateFeatureFailure {
   mutationError: GravityMutationError
 }
@@ -9447,6 +9821,7 @@ input CreateFeatureMutationInput {
   sourceBucket: String
   sourceKey: String
   subheadline: String
+  videoURL: String
 }
 
 type CreateFeatureMutationPayload {
@@ -10104,11 +10479,8 @@ type CreateSubmissionMutationPayload {
   consignmentSubmission: ConsignmentSubmission
 }
 
-# Autogenerated input type of CreateUserAddress
 input CreateUserAddressInput {
   attributes: UserAddressAttributes!
-
-  # A unique identifier for the client performing the mutation.
   clientMutationId: String
 }
 
@@ -10534,6 +10906,33 @@ type DeleteArtworkSuccess {
   artwork: Artwork
 }
 
+type DeleteArtworkTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteArtworkTemplateInput {
+  # The ID of the artwork template to delete.
+  artworkTemplateID: ID!
+  clientMutationId: String
+
+  # The ID of the partner.
+  partnerID: ID!
+}
+
+type DeleteArtworkTemplatePayload {
+  # On success: the deleted artwork template. On failure: MutationError.
+  artworkTemplateOrError: DeleteArtworkTemplateResponseOrError
+  clientMutationId: String
+}
+
+union DeleteArtworkTemplateResponseOrError =
+    DeleteArtworkTemplateFailure
+  | DeleteArtworkTemplateSuccess
+
+type DeleteArtworkTemplateSuccess {
+  artworkTemplate: ArtworkTemplate
+}
+
 input DeleteBankAccountInput {
   clientMutationId: String
   id: String!
@@ -10582,6 +10981,31 @@ type DeleteCollectionSuccess {
 
 type DeleteConversationFailure {
   mutationError: GravityMutationError
+}
+
+type DeleteConversationMessageTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteConversationMessageTemplateInput {
+  clientMutationId: String
+
+  # The ID of the template to delete
+  id: String!
+}
+
+type DeleteConversationMessageTemplatePayload {
+  clientMutationId: String
+  responseOrError: DeleteConversationMessageTemplateResponseOrError
+}
+
+union DeleteConversationMessageTemplateResponseOrError =
+    DeleteConversationMessageTemplateFailure
+  | DeleteConversationMessageTemplateSuccess
+
+type DeleteConversationMessageTemplateSuccess {
+  conversationMessageTemplate: ConversationMessageTemplate
+  partner: Partner!
 }
 
 input DeleteConversationMutationInput {
@@ -11127,6 +11551,38 @@ type DisableSecondFactorPayload {
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
 }
 
+# A discovery category that contains artwork filters
+type DiscoveryArtworksWithFiltersCollection implements Node {
+  # The ID of the category
+  category: String!
+
+  # A connection of artwork filters for this category
+  filtersForArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): FiltersForArtworksConnectionConnection
+
+  # The href of the category
+  href: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # The URL of the image representing this category
+  imageUrl: String
+
+  # A type-specific ID
+  internalID: String!
+
+  # The slug of the category
+  slug: String
+
+  # The display title of the category
+  title: String!
+}
+
 # A connection to a list of items.
 type DiscoveryCategoriesConnectionConnection {
   # A list of edges.
@@ -11179,6 +11635,43 @@ type DiscoveryCategory implements Node {
   title: String!
 }
 
+# A union of different discovery category types
+union DiscoveryCategoryUnion =
+    DiscoveryArtworksWithFiltersCollection
+  | DiscoveryMarketingCollection
+
+# A discovery category that contains marketing collections
+type DiscoveryMarketingCollection implements Node {
+  # The ID of the category
+  category: String!
+
+  # The href of the category
+  href: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # The URL of the image representing this category
+  imageUrl: String
+
+  # A type-specific ID
+  internalID: String!
+
+  # Marketing collections for this discovery category
+  marketingCollections(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [MarketingCollection!]!
+
+  # The slug of the category
+  slug: String
+
+  # The display title of the category
+  title: String!
+}
+
 input DislikeArtworkInput {
   artworkID: String!
   clientMutationId: String
@@ -11216,8 +11709,14 @@ type DismissTaskSuccess {
 
 # Display texts for the order based on its state and order shipping/payment states
 type DisplayTexts {
+  # Text prompt for the buyer to take action
+  actionPrompt: String
+
   # Granular order states specific type that should be directly interpreted by clients
   messageType: DisplayTextsMessageTypeEnum!
+
+  # Collector facing name for buyer state
+  stateName: String!
 
   # Text to display as a first message on the page (header)
   title: String!
@@ -11234,6 +11733,7 @@ enum DisplayTextsMessageTypeEnum {
   COMPLETED_SHIP
   DECLINED_BY_BUYER
   DECLINED_BY_SELLER
+  OFFER_RECEIVED
   PAYMENT_FAILED
   PROCESSING_PAYMENT_PICKUP
   PROCESSING_PAYMENT_SHIP
@@ -11991,6 +12491,7 @@ type Feature {
   # A slug ID.
   slug: ID!
   subheadline(format: Format): String
+  video: FeatureVideo
 }
 
 # A connection to a list of items.
@@ -12104,6 +12605,12 @@ enum FeatureSorts {
   CREATED_AT_DESC
   NAME_ASC
   NAME_DESC
+}
+
+type FeatureVideo {
+  # Only YouTube and Vimeo are supported
+  embed(autoPlay: Boolean = false): String
+  url: String!
 }
 
 # An illustrated link chosen to highlight a Gene from a given GeneFamily
@@ -12695,6 +13202,11 @@ type FormattedDaySchedules {
 
 # The `FormattedNumber` type represents a number that can optionally be returnedas a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
+
+enum FromParticipantEnum {
+  BUYER
+  SELLER
+}
 
 # Buyer fulfillment details for order
 type FulfillmentDetails {
@@ -13307,10 +13819,12 @@ type HomeView {
 type HomeViewCard {
   badgeText: String
   buttonText: String
+  contextModule: String
   entityID: String
   entityType: String
   href: String
   image: Image
+  images: [Image]
   subtitle: String
   title: String!
 }
@@ -13478,6 +13992,7 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
+  showArtworksCardView: Boolean!
   trackItemImpressions: Boolean!
 }
 
@@ -13981,6 +14496,9 @@ type Image {
   # An optional type-specific ID.
   internalID: ID
   isDefault: Boolean
+
+  # Indicates whether the image is currently being processed.
+  isProcessing: Boolean!
   isZoomable: Boolean
   maxTiledHeight: Int
   maxTiledWidth: Int
@@ -13993,6 +14511,9 @@ type Image {
 
   # Order position of the image, within the images array of the artwork. (1-indexed)
   position: Int
+
+  # Indicates whether image processing has failed.
+  processingFailed: Boolean!
   resized(
     height: Int
 
@@ -14910,6 +15431,9 @@ type Me implements Node {
     first: Int
     last: Int
     page: Int
+
+    # The source/algorithm to use for recommendations
+    source: ArtistRecommendationSource = HYBRID
   ): ArtistConnection
 
   # A list of the current user’s inquiry requests
@@ -14982,6 +15506,14 @@ type Me implements Node {
     last: Int
     type: BankAccountTypes
   ): BankAccountConnection
+
+  # A connection of artwork recommendations, based on user saves
+  basedOnUserSaves(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
@@ -15978,6 +16510,11 @@ type Mutation {
   createArtwork(
     input: CreateArtworkMutationInput!
   ): CreateArtworkMutationPayload
+
+  # Create an artwork from an artwork template.
+  createArtworkFromTemplate(
+    input: CreateArtworkFromTemplateInput!
+  ): CreateArtworkFromTemplatePayload
   createArtworkImport(
     input: CreateArtworkImportInput!
   ): CreateArtworkImportPayload
@@ -15996,6 +16533,9 @@ type Mutation {
   createArtworkImportImageMatch(
     input: CreateArtworkImportImageMatchInput!
   ): CreateArtworkImportImageMatchPayload
+  createArtworkTemplate(
+    input: CreateArtworkTemplateInput!
+  ): CreateArtworkTemplatePayload
   createBackupSecondFactors(
     input: CreateBackupSecondFactorsInput!
   ): CreateBackupSecondFactorsPayload
@@ -16039,6 +16579,11 @@ type Mutation {
     # Parameters for CreateSubmissionMutation
     input: CreateSubmissionMutationInput!
   ): CreateSubmissionMutationPayload
+
+  # Creates a new conversation message template
+  createConversationMessageTemplate(
+    input: CreateConversationMessageTemplateInput!
+  ): CreateConversationMessageTemplatePayload
 
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload
@@ -16193,6 +16738,11 @@ type Mutation {
   # Deletes an image from an artwork in my collection
   deleteArtworkImage(input: DeleteArtworkImageInput!): DeleteArtworkImagePayload
 
+  # Delete an artwork template.
+  deleteArtworkTemplate(
+    input: DeleteArtworkTemplateInput!
+  ): DeleteArtworkTemplatePayload
+
   # Remove a bank account
   deleteBankAccount(input: DeleteBankAccountInput!): DeleteBankAccountPayload
 
@@ -16208,6 +16758,11 @@ type Mutation {
   deleteConversation(
     input: DeleteConversationMutationInput!
   ): DeleteConversationMutationPayload
+
+  # Deletes a conversation message template
+  deleteConversationMessageTemplate(
+    input: DeleteConversationMessageTemplateInput!
+  ): DeleteConversationMessageTemplatePayload
 
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
@@ -16415,6 +16970,11 @@ type Mutation {
     input: RemoveInstallShotFromPartnerShowMutationInput!
   ): RemoveInstallShotFromPartnerShowMutationPayload
 
+  # Reposition artwork images, determining their display order.
+  repositionArtworkImages(
+    input: RepositionArtworkImagesMutationInput!
+  ): RepositionArtworkImagesMutationPayload
+
   # Reposition artworks in a partner show, determining their display order.
   repositionArtworksInPartnerShow(
     input: RepositionArtworksInPartnerShowMutationInput!
@@ -16435,7 +16995,6 @@ type Mutation {
     input: RepositionPartnerLocationsMutationInput!
   ): RepositionPartnerLocationsMutationPayload
   requestConditionReport(
-    # Parameters for RequestConditionReport
     input: RequestConditionReportInput!
   ): RequestConditionReportPayload
 
@@ -16572,6 +17131,11 @@ type Mutation {
   updateConversation(
     input: UpdateConversationMutationInput!
   ): UpdateConversationMutationPayload
+
+  # Updates an existing conversation message template
+  updateConversationMessageTemplate(
+    input: UpdateConversationMessageTemplateInput!
+  ): UpdateConversationMessageTemplatePayload
 
   # updates a feature.
   updateFeature(
@@ -17117,6 +17681,36 @@ enum NotificationTypesEnum {
   VIEWING_ROOM_PUBLISHED
 }
 
+# An offer on an order
+type Offer {
+  # The amount for this offer
+  amount: Money
+
+  # The buyer total for this offer, if a complete total is available
+  buyerTotal: Money
+
+  # Offer creation time
+  createdAt: String
+
+  # Who the offer is from
+  fromParticipant: FromParticipantEnum!
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
+  # Optional note for the offer
+  note: String
+
+  # The shipping total for this offer
+  shippingTotal: Money
+
+  # The tax total for this offer
+  taxTotal: Money
+}
+
 # Consignment Offer Response
 type OfferResponse {
   comments: String
@@ -17168,6 +17762,9 @@ type Order {
   # Order code
   code: String!
 
+  # Order creation time
+  createdAt: String
+
   # Express Checkout wallet type
   creditCardWalletType: OrderCreditCardWalletTypeEnum
 
@@ -17197,6 +17794,9 @@ type Order {
   itemsTotal: Money
   lineItems: [LineItem]!
   mode: OrderModeEnum!
+
+  # List of offers for this order
+  offers: [Offer!]
 
   # Payment method used for the order
   paymentMethod: OrderPaymentMethodEnum
@@ -17254,6 +17854,9 @@ enum OrderBuyerStateEnum {
 
   # Order is incomplete (pending or abandoned)
   INCOMPLETE
+
+  # Order is an offer awaiting response from the buyer
+  OFFER_RECEIVED
 
   # Payment has failed
   PAYMENT_FAILED
@@ -17389,6 +17992,7 @@ union OrderedSetItem =
   | Profile
   | Sale
   | Show
+  | Video
 
 # A connection to a list of items.
 type OrderedSetItemConnection {
@@ -17547,6 +18151,9 @@ type Partner implements Node {
   ): ArtistPartnerConnection
   analytics: AnalyticsPartnerStats
 
+  # Time frame selected for analytics page
+  analyticsPageTimeFrame: AnalyticsQueryPeriodEnum
+
   # A connection of articles related to a partner.
   articlesConnection(
     after: String
@@ -17604,6 +18211,15 @@ type Partner implements Node {
     first: Int
     last: Int
   ): ArtworkImportConnection
+
+  # A connection of artwork templates for this partner
+  artworkTemplatesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+  ): ArtworkTemplateConnection
 
   # A connection of artworks from a Partner.
   artworksConnection(
@@ -17671,6 +18287,21 @@ type Partner implements Node {
     first: Int
     last: Int
   ): ContactConnection
+
+  # Static example templates to help users get started, excluding those already claimed.
+  conversationMessageTemplateExamples: [ConversationMessageTemplateExample!]!
+
+  # A connection of conversation message templates for this partner
+  conversationMessageTemplatesConnection(
+    after: String
+    before: String
+    first: Int
+
+    # Filter by deleted status. Defaults to false (active templates only)
+    isDeleted: Boolean = false
+    last: Int
+    page: Int
+  ): ConversationMessageTemplateConnection
   counts: PartnerCounts
   defaultProfileID: String
   displayArtistsSection: Boolean
@@ -18575,6 +19206,48 @@ type PartnerEngagementCounts {
   savedArtworks: Int!
 }
 
+# Partner genome data for an artwork
+type PartnerGenome {
+  # A connection of genes with their values
+  genesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PartnerGenomeGenesConnectionConnection
+}
+
+# A gene from the partner genome with its associated value
+type PartnerGenomeGene {
+  # The value/score for this gene (typically 0-100)
+  geneValue: Int!
+
+  # The name of the gene category
+  name: String!
+}
+
+# A connection to a list of items.
+type PartnerGenomeGenesConnectionConnection {
+  # A list of edges.
+  edges: [PartnerGenomeGenesConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Total number of genes in the genome
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerGenomeGenesConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerGenomeGene
+}
+
 type PartnerInquiryRequest {
   collectorProfile: InquirerCollectorProfile
 
@@ -19303,6 +19976,7 @@ type Query {
 
   # Find an agreement by ID
   agreement(id: ID!): Agreement
+  ai: AI
 
   # Get the year sparklines for the current artist.
   analyticsArtistSparklines(
@@ -19624,7 +20298,7 @@ type Query {
 
   # An Editorial author
   author(
-    # The ID of the author
+    # The slug or ID of the author
     id: String!
   ): Author
   authorsConnection(
@@ -19888,11 +20562,102 @@ type Query {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
+  # Filter artworks by discovery category and specific filter
+  discoveryCategoryArtworksConnection(
+    acquireable: Boolean
+    additionalGeneIDs: [String]
+    after: String
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    artistNationalities: [String]
+    artistSeriesID: String
+    artistSeriesIDs: [String]
+
+    # When provided, will only return artworks with these IDs.
+    artworkIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    availability: String
+    before: String
+    categories: [String]
+
+    # The slug of the discovery category to filter artworks by
+    categorySlug: String!
+    color: String
+    colors: [String]
+    dimensionRange: String
+
+    # When true, will skip pushing sold works to the back of the list. Useful in a CMS context.
+    disableNotForSaleSorting: Boolean
+    excludeArtworkIDs: [String]
+    extraAggregationGeneIDs: [String]
+
+    # The slug of the specific filter within the category to apply
+    filterSlug: String!
+    first: Int
+    forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    importSources: [String]
+    includeAllJSON: Boolean
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    includeUnpublished: Boolean
+    input: FilterArtworksInput
+    inquireableOnly: Boolean
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    last: Int
+    locationCities: [String]
+    majorPeriods: [String]
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+    marketingCollectionID: String
+    materialsTerms: [String]
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    offerable: Boolean
+    page: Int
+    partnerCities: [String]
+    partnerID: ID
+    partnerIDs: [String]
+    period: String
+    periods: [String]
+    priceRange: String
+
+    # When false, will only return unpublished artworks for authorized users.
+    published: Boolean
+    saleID: ID
+    showID: String
+
+    # When true, will only return signed artworks.
+    signed: Boolean
+    size: Int
+
+    # Filter results by Artwork sizes
+    sizes: [ArtworkSizes]
+    sold: Boolean
+    sort: String
+    tagID: String
+    visibilityLevel: String
+    width: String
+  ): FilterArtworksConnection
+
   # A single discovery category for browsing art by slug
   discoveryCategoryConnection(
     # The slug of the discovery category to retrieve
     slug: String!
-  ): DiscoveryCategory
+  ): DiscoveryCategoryUnion
 
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
@@ -20571,9 +21336,6 @@ type Query {
     # Search query to perform. Required.
     query: String!
   ): SearchableConnection
-
-  # A list of artists that are part of the SEO experiment
-  seoExperimentArtists: [String]
   shortcut(id: ID!): Shortcut
 
   # A Show
@@ -20595,6 +21357,9 @@ type Query {
     hasLocation: Boolean
     ids: [String]
     last: Int
+
+    # Caps number of shows per partner (may result in uneven page sizes)
+    maxPerPartner: Int
     sort: ShowSorts
     status: EventStatus
 
@@ -20685,6 +21450,9 @@ type Query {
     # Recaptcha token.
     recaptchaToken: String!
   ): VerifyUser
+
+  # Find a video by ID
+  video(id: ID!): Video
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -20943,6 +21711,33 @@ type RemoveInstallShotFromPartnerShowSuccess {
   show: Show
 }
 
+type RepositionArtworkImagesFailure {
+  mutationError: GravityMutationError
+}
+
+input RepositionArtworkImagesMutationInput {
+  # The ID of the artwork.
+  artworkId: String!
+  clientMutationId: String
+
+  # An ordered array of image IDs representing the new display order.
+  imageIds: [String!]!
+}
+
+type RepositionArtworkImagesMutationPayload {
+  # On success: the artwork with repositioned images. On error: the error that occurred.
+  artworkOrError: RepositionArtworkImagesResponseOrError
+  clientMutationId: String
+}
+
+union RepositionArtworkImagesResponseOrError =
+    RepositionArtworkImagesFailure
+  | RepositionArtworkImagesSuccess
+
+type RepositionArtworkImagesSuccess {
+  artwork: Artwork
+}
+
 type RepositionArtworksInPartnerShowFailure {
   mutationError: GravityMutationError
 }
@@ -21064,18 +21859,14 @@ type Request {
   ipAddress: String!
 }
 
-# Autogenerated input type of RequestConditionReport
 input RequestConditionReportInput {
-  # A unique identifier for the client performing the mutation.
   clientMutationId: String
 
   # ID of the sale artwork.
   saleArtworkID: String!
 }
 
-# Autogenerated return type of RequestConditionReport
 type RequestConditionReportPayload {
-  # A unique identifier for the client performing the mutation.
   clientMutationId: String
   conditionReportRequest: ConditionReportRequest!
 }
@@ -22024,6 +22815,9 @@ input SendConversationMessageMutationInput {
   # Message body (text)
   bodyText: String!
   clientMutationId: String
+
+  # Optional ID of the template version used to send this message
+  conversationMessageTemplateVersionId: String
 
   # Sender email, optionally including display string (like 'Jane Doe <jane@doe.com>').
   from: String!
@@ -23186,6 +23980,9 @@ input UpdateArtworkEditionSetInput {
 
   # The availability of the artwork
   availability: String
+
+  # The ID of the image to set as the default for this artwork
+  defaultImageID: String
   delete: Boolean
 
   # Show/Hide the price range of an artwork
@@ -23220,6 +24017,7 @@ input UpdateArtworkEditionSetInput {
   published: Boolean
   shippingWeight: Float
   shippingWeightMetric: String
+  title: String
 }
 
 type UpdateArtworkImportFailure {
@@ -23327,6 +24125,9 @@ input UpdateArtworkMutationInput {
   # The availability of the artwork
   availability: String
   clientMutationId: String
+
+  # The ID of the image to set as the default for this artwork
+  defaultImageID: String
   delete: Boolean
 
   # Show/Hide the price range of an artwork
@@ -23367,6 +24168,7 @@ input UpdateArtworkMutationInput {
   published: Boolean
   shippingWeight: Float
   shippingWeightMetric: String
+  title: String
 }
 
 type UpdateArtworkMutationPayload {
@@ -23522,6 +24324,39 @@ type UpdateCollectorProfileWithIDSuccess {
   collectorProfile: CollectorProfileType
 }
 
+type UpdateConversationMessageTemplateFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateConversationMessageTemplateInput {
+  # The body of the template
+  body: String
+  clientMutationId: String
+
+  # Optional description of the template
+  description: String
+
+  # The ID of the template to update
+  id: String!
+
+  # The title of the template
+  title: String
+}
+
+type UpdateConversationMessageTemplatePayload {
+  clientMutationId: String
+  responseOrError: UpdateConversationMessageTemplateResponseOrError
+}
+
+union UpdateConversationMessageTemplateResponseOrError =
+    UpdateConversationMessageTemplateFailure
+  | UpdateConversationMessageTemplateSuccess
+
+type UpdateConversationMessageTemplateSuccess {
+  conversationMessageTemplate: ConversationMessageTemplate
+  partner: Partner!
+}
+
 input UpdateConversationMutationInput {
   clientMutationId: String
 
@@ -23565,6 +24400,7 @@ input UpdateFeatureMutationInput {
   sourceBucket: String
   sourceKey: String
   subheadline: String
+  videoURL: String
 }
 
 type UpdateFeatureMutationPayload {
@@ -24136,6 +24972,9 @@ input UpdatePartnerMutationInput {
   # Alternate names or synonyms for this partner.
   alternateNames: [String]
 
+  # Time frame for partner analytics page.
+  analyticsPageTimeFrame: AnalyticsQueryPeriodEnum
+
   # Whether to charge sales tax on ecommerce orders.
   artsyCollectsSalesTax: Boolean
   clientMutationId: String
@@ -24615,11 +25454,8 @@ type UpdateSubmissionMutationPayload {
   consignmentSubmission: ConsignmentSubmission
 }
 
-# Autogenerated input type of UpdateUserAddress
 input UpdateUserAddressInput {
   attributes: UserAddressAttributes!
-
-  # A unique identifier for the client performing the mutation.
   clientMutationId: String
   userAddressID: ID!
 }
@@ -24630,9 +25466,7 @@ type UpdateUserAddressPayload {
   userAddressOrErrors: UserAddressOrErrorsUnion!
 }
 
-# Autogenerated input type of UpdateUserDefaultAddress
 input UpdateUserDefaultAddressInput {
-  # A unique identifier for the client performing the mutation.
   clientMutationId: String
   userAddressID: ID!
 }
@@ -25424,12 +26258,17 @@ type VerifyUser {
 
 # An object containing video metadata
 type Video {
+  description(format: Format): String
+
   # The height of the video
   height: Int!
   id: ID!
 
   # Returns a full-qualified url that can be embedded in an iframe player
   playerUrl: String!
+
+  # Title of the video
+  title: String
 
   # The width of the video
   width: Int!
@@ -25446,6 +26285,7 @@ type Viewer {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
   admin: Admin
+  ai: AI
 
   # An Article
   article(
@@ -25697,7 +26537,7 @@ type Viewer {
 
   # An Editorial author
   author(
-    # The ID of the author
+    # The slug or ID of the author
     id: String!
   ): Author
   authorsConnection(
@@ -25850,11 +26690,102 @@ type Viewer {
     last: Int
   ): DiscoveryCategoriesConnectionConnection
 
+  # Filter artworks by discovery category and specific filter
+  discoveryCategoryArtworksConnection(
+    acquireable: Boolean
+    additionalGeneIDs: [String]
+    after: String
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    artistNationalities: [String]
+    artistSeriesID: String
+    artistSeriesIDs: [String]
+
+    # When provided, will only return artworks with these IDs.
+    artworkIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    availability: String
+    before: String
+    categories: [String]
+
+    # The slug of the discovery category to filter artworks by
+    categorySlug: String!
+    color: String
+    colors: [String]
+    dimensionRange: String
+
+    # When true, will skip pushing sold works to the back of the list. Useful in a CMS context.
+    disableNotForSaleSorting: Boolean
+    excludeArtworkIDs: [String]
+    extraAggregationGeneIDs: [String]
+
+    # The slug of the specific filter within the category to apply
+    filterSlug: String!
+    first: Int
+    forSale: Boolean
+
+    # When true, will only return framed artworks.
+    framed: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    importSources: [String]
+    includeAllJSON: Boolean
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    includeUnpublished: Boolean
+    input: FilterArtworksInput
+    inquireableOnly: Boolean
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    last: Int
+    locationCities: [String]
+    majorPeriods: [String]
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+    marketingCollectionID: String
+    materialsTerms: [String]
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    offerable: Boolean
+    page: Int
+    partnerCities: [String]
+    partnerID: ID
+    partnerIDs: [String]
+    period: String
+    periods: [String]
+    priceRange: String
+
+    # When false, will only return unpublished artworks for authorized users.
+    published: Boolean
+    saleID: ID
+    showID: String
+
+    # When true, will only return signed artworks.
+    signed: Boolean
+    size: Int
+
+    # Filter results by Artwork sizes
+    sizes: [ArtworkSizes]
+    sold: Boolean
+    sort: String
+    tagID: String
+    visibilityLevel: String
+    width: String
+  ): FilterArtworksConnection
+
   # A single discovery category for browsing art by slug
   discoveryCategoryConnection(
     # The slug of the discovery category to retrieve
     slug: String!
-  ): DiscoveryCategory
+  ): DiscoveryCategoryUnion
 
   # Discovery Marketing Collections for personalized recommendations
   discoveryMarketingCollections(
@@ -26480,9 +27411,6 @@ type Viewer {
     # Search query to perform. Required.
     query: String!
   ): SearchableConnection
-
-  # A list of artists that are part of the SEO experiment
-  seoExperimentArtists: [String]
   shortcut(id: ID!): Shortcut
 
   # A Show
@@ -26504,6 +27432,9 @@ type Viewer {
     hasLocation: Boolean
     ids: [String]
     last: Int
+
+    # Caps number of shows per partner (may result in uneven page sizes)
+    maxPerPartner: Int
     sort: ShowSorts
     status: EventStatus
 
@@ -26561,6 +27492,9 @@ type Viewer {
     # Recaptcha token.
     recaptchaToken: String!
   ): VerifyUser
+
+  # Find a video by ID
+  video(id: ID!): Video
 
   # Find a viewing room by ID
   viewingRoom(id: ID!): ViewingRoom
@@ -26648,14 +27582,14 @@ type ViewingRoom {
   viewingRoomArtworks: [ViewingRoomArtwork!]!
 }
 
-# Relationship between a Viewing Room and an Artwork
 type ViewingRoomArtwork {
   artworkID: ID!
+
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   published: Boolean!
 }
 
-# An input type for a Viewing Room artwork
 input ViewingRoomArtworkInput {
   artworkID: ID!
   delete: Boolean = false
@@ -26723,37 +27657,25 @@ enum ViewingRoomStatusEnum {
   scheduled
 }
 
-# Title, image, text, and caption for a viewing room section
 type ViewingRoomSubsection {
-  # Body copy
   body: String
-
-  # Image caption
   caption: String
-  image: ARImage
-
-  # Image URL
+  image: GravityARImage
   imageURL: String
 
-  # Unique ID for this subsection
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
-
-  # Section header
   title: String
 }
 
-# Attributes for creating or updating a viewing room subsection
 input ViewingRoomSubsectionAttributes {
   body: String
   caption: String
   title: String
 }
 
-# An input type for the creation of viewing room subsections
 input ViewingRoomSubsectionInput {
   attributes: ViewingRoomSubsectionAttributes
-
-  # If true, delete this subsection from the database
   delete: Boolean = false
   image: ARImageInput
   internalID: ID

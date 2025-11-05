@@ -34,6 +34,7 @@ export interface OrderJSON {
   buyer_state_expires_at?: string
   buyer_total_cents?: number
   buyer_type: string
+  created_at: string
   code: string
   credit_card_id?: string
   credit_card_wallet_type?: "apple_pay" | "google_pay"
@@ -80,4 +81,14 @@ export interface OrderJSON {
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
   tax_total_cents?: number
   total_list_price_cents?: number
+  offers?: Array<{
+    id: string
+    amount_cents: number
+    buyer_total_cents: number | null
+    currency_code: string
+    from_participant: string
+    note: string | null
+    shipping_total_cents: number | null
+    tax_total_cents: number | null
+  }>
 }

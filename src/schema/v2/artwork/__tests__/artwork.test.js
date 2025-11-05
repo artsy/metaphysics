@@ -3,9 +3,8 @@ import gql from "lib/gql"
 import { assign } from "lodash"
 import moment from "moment"
 import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSupply/utils/getMicrofunnelData"
-import { runQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
@@ -2005,18 +2004,36 @@ describe("Artwork type", () => {
         }
       `
 
-    it("returns available inquiry questions if an artwork is not inquirable", () => {
+    it("returns inquiry questions if an artwork is not inquirable", () => {
       const context = {
         artworkLoader: () => {
           return Promise.resolve({ id: "blah", inquireable: false })
         },
         inquiryRequestQuestionsLoader: () => {
-          return Promise.reject()
+          return Promise.resolve([
+            {
+              id: "shipping",
+              question: "Shipping",
+            },
+            {
+              id: "condition_and_provenance",
+              question: "Condition & Provenance",
+            },
+          ])
         },
       }
 
       return runQuery(query, context).then((data) => {
-        expect(data.artwork.inquiryQuestions).toEqual([])
+        expect(data.artwork.inquiryQuestions).toEqual([
+          {
+            internalID: "shipping",
+            question: "Shipping",
+          },
+          {
+            internalID: "condition_and_provenance",
+            question: "Condition & Provenance",
+          },
+        ])
       })
     })
 
@@ -3984,6 +4001,230 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#signatureMeta", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          signatureMeta {
+            hasSignature
+            hasStickerLabel
+            isSignedByArtist
+            isSignedOther
+            isStampedByArtistEstate
+            isSignedInPlate
+          }
+        }
+      }
+    `
+
+    it("returns all false when no signature fields are set", () => {
+      artwork.sticker_label = null
+      artwork.signed_by_artist = null
+      artwork.signed_other = null
+      artwork.stamped_by_artist_estate = null
+      artwork.signed_in_plate = null
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: false,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns all false when all signature fields are explicitly false", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: false,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when sticker_label is true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_by_artist is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = true
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: true,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_other is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = true
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: true,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when stamped_by_artist_estate is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns hasSignature true when signed_in_plate is true", () => {
+      artwork.sticker_label = false
+      artwork.signed_by_artist = false
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = false
+      artwork.signed_in_plate = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: false,
+              isSignedByArtist: false,
+              isSignedOther: false,
+              isStampedByArtistEstate: false,
+              isSignedInPlate: true,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct values when multiple signature fields are true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = true
+      artwork.signed_other = false
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = false
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: true,
+              isSignedOther: false,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct values when all signature fields are true", () => {
+      artwork.sticker_label = true
+      artwork.signed_by_artist = true
+      artwork.signed_other = true
+      artwork.stamped_by_artist_estate = true
+      artwork.signed_in_plate = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            signatureMeta: {
+              hasSignature: true,
+              hasStickerLabel: true,
+              isSignedByArtist: true,
+              isSignedOther: true,
+              isStampedByArtistEstate: true,
+              isSignedInPlate: true,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#conditionDescription", () => {
     const query = `
       {
@@ -4771,6 +5012,58 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: { lastOfferableActivityAt: "2020-01-01T00:00:00.000Z" },
         })
+      })
+    })
+  })
+
+  describe("#externalID", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          externalID
+        }
+      }
+    `
+
+    it("returns the external_id when present", () => {
+      artwork.external_id = "partner-system-123"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { externalID: "partner-system-123" },
+        })
+      })
+    })
+
+    it("returns null when external_id is not present", () => {
+      artwork.external_id = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { externalID: null } })
+      })
+    })
+  })
+
+  describe("#privateShortcutPath", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          privateShortcutPath
+        }
+      }
+    `
+
+    it("returns the private_shortcut_path when present", () => {
+      artwork.private_shortcut_path = "/partner/artworks/123"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { privateShortcutPath: "/partner/artworks/123" },
+        })
+      })
+    })
+
+    it("returns null when private_shortcut_path is not present", () => {
+      artwork.private_shortcut_path = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { privateShortcutPath: null } })
       })
     })
   })
@@ -5648,6 +5941,111 @@ describe("Artwork type", () => {
           widthCm: 20,
           depthCm: 30,
           diameterCm: 40,
+        },
+      })
+    })
+  })
+
+  describe("#completenessChecklist", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          completenessChecklist {
+            key
+            completed
+          }
+        }
+      }
+    `
+
+    it("returns an empty array when completeness_checklist is null", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: null,
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessChecklist: [],
+        },
+      })
+    })
+
+    it("transforms the hash into an array of checklist items", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {
+          publishable: { completed: true },
+          multiple_images: { completed: true },
+          price_visibility: { completed: true },
+          high_res_image: { completed: false },
+          certificate: { completed: true },
+          signature: { completed: false },
+          description: { completed: true },
+        },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data.artwork.completenessChecklist).toEqual(
+        expect.arrayContaining([
+          {
+            key: "PUBLISHABLE",
+            completed: true,
+          },
+          {
+            key: "MULTIPLE_IMAGES",
+            completed: true,
+          },
+          {
+            key: "PRICE_VISIBILITY",
+            completed: true,
+          },
+          {
+            key: "HIGH_RES_IMAGE",
+            completed: false,
+          },
+          {
+            key: "CERTIFICATE",
+            completed: true,
+          },
+          {
+            key: "SIGNATURE",
+            completed: false,
+          },
+          {
+            key: "DESCRIPTION",
+            completed: true,
+          },
+        ])
+      )
+    })
+
+    it("handles empty object", async () => {
+      artwork = {
+        ...artwork,
+        completeness_checklist: {},
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          completenessChecklist: [],
         },
       })
     })

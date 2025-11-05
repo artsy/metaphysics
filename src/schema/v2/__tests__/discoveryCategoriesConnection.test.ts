@@ -160,6 +160,7 @@ describe("discoveryCategoriesConnection", () => {
                     node {
                       href
                       title
+                      slug
                       artworksConnection(first: 3) {
                         edges {
                           node {
@@ -187,8 +188,9 @@ describe("discoveryCategoriesConnection", () => {
 
       const firstFilter =
         priceCategory.filtersForArtworksConnection.edges[0].node
-      expect(firstFilter.href).toBe("/collect?price_range=*-500")
+      expect(firstFilter.href).toBe("/collect?price_range=%2A-500")
       expect(firstFilter.title).toBe("Art under $500")
+      expect(firstFilter.slug).toBe("art-under-500")
       expect(firstFilter.artworksConnection.edges).toHaveLength(2) // Mock returns 2 artworks
 
       expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
@@ -239,7 +241,7 @@ describe("discoveryCategoriesConnection", () => {
 
       expect(connections).toEqual([
         {
-          href: "/collect?price_range=*-500",
+          href: "/collect?price_range=%2A-500",
           title: "Art under $500",
         },
         {
@@ -263,7 +265,7 @@ describe("discoveryCategoriesConnection", () => {
           title: "Art under $25000",
         },
         {
-          href: "/collect?price_range=25001-*",
+          href: "/collect?price_range=25001-%2A",
           title: "Art above $25000",
         },
       ])

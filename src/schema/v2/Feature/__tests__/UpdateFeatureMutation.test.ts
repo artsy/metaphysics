@@ -9,6 +9,7 @@ const mutation = gql`
         sourceKey: "catty-key"
         name: "Catty Feature"
         id: "xyz789"
+        videoURL: "https://somevideo.url"
         active: true
       }
     ) {
@@ -18,6 +19,9 @@ const mutation = gql`
           feature {
             name
             isActive
+            video {
+              url
+            }
           }
         }
         ... on UpdateFeatureFailure {
@@ -38,6 +42,7 @@ describe("UpdateFeatureMutation", () => {
       id: "xyz789",
       name: "Catty Feature",
       active: true,
+      video_url: "https://somevideo.url",
       source_bucket: "catty-bucket",
       source_key: "catty-key",
     }
@@ -64,6 +69,7 @@ describe("UpdateFeatureMutation", () => {
         active: true,
         source_bucket: "catty-bucket",
         source_key: "catty-key",
+        video_url: "https://somevideo.url",
       })
 
       expect(res).toEqual({
@@ -72,6 +78,9 @@ describe("UpdateFeatureMutation", () => {
             __typename: "UpdateFeatureSuccess",
             feature: {
               name: "Catty Feature",
+              video: {
+                url: "https://somevideo.url",
+              },
               isActive: true,
             },
           },

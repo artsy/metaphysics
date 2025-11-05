@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { emptyConnection } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
@@ -6,6 +11,7 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
+import { ContextModule } from "@artsy/cohesion"
 
 export type HomeViewCard = {
   badgeText?: string
@@ -13,9 +19,11 @@ export type HomeViewCard = {
   entityID?: string
   entityType?: string
   href?: string
-  image_url?: string
+  imageURL?: string
+  imageURLs?: string[]
   subtitle?: string
   title?: string
+  contextModule?: ContextModule
 }
 
 export const HomeViewCardType = new GraphQLObjectType<
@@ -29,13 +37,38 @@ export const HomeViewCardType = new GraphQLObjectType<
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
     entityID: { type: GraphQLString },
+    contextModule: { type: GraphQLString },
     image: {
       type: Image.type,
-      resolve: ({ image_url }) => {
-        if (image_url) {
+      resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
+        if (imageURL) {
           return {
-            image_url,
+            image_url: imageURL,
           }
+        }
+      },
+    },
+    images: {
+      type: new GraphQLList(Image.type),
+      resolve: ({ imageURL, imageURLs }) => {
+        if (imageURL && imageURLs) {
+          throw new Error(
+            "HomeViewCard cannot have both imageURL and imageURLs fields. Please provide only one."
+          )
+        }
+
+        if (imageURLs) {
+          return imageURLs.map((imageURL) => {
+            return {
+              image_url: imageURL,
+            }
+          })
         }
       },
     },

@@ -61,6 +61,12 @@ import {
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
 import { contactsConnection, ContactType } from "schema/v2/Contacts"
+import { ConversationMessageTemplatesConnection } from "schema/v2/conversationMessageTemplate/conversationMessageTemplatesConnection"
+import {
+  ConversationMessageTemplateExampleType,
+  EXAMPLE_TEMPLATES,
+} from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
+import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -146,6 +152,23 @@ const ArtistAlertsSort = {
       },
       SORTABLE_ID_DESC: {
         value: "-sortable_id",
+      },
+    },
+  }),
+}
+
+export const AnalyticsQueryPeriodEnum = {
+  type: new GraphQLEnumType({
+    name: "AnalyticsQueryPeriodEnum",
+    values: {
+      FOUR_WEEKS: {
+        value: "four_weeks",
+      },
+      SIXTEEN_WEEKS: {
+        value: "sixteen_weeks",
+      },
+      ONE_YEAR: {
+        value: "one_year",
       },
     },
   }),
@@ -793,6 +816,44 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      conversationMessageTemplatesConnection: ConversationMessageTemplatesConnection,
+      artworkTemplatesConnection: ArtworkTemplatesConnection,
+      conversationMessageTemplateExamples: {
+        type: new GraphQLNonNull(
+          new GraphQLList(
+            new GraphQLNonNull(ConversationMessageTemplateExampleType)
+          )
+        ),
+        description:
+          "Static example templates to help users get started, excluding those already claimed.",
+        async resolve({ id }, _args, { conversationMessageTemplatesLoader }) {
+          if (!conversationMessageTemplatesLoader) return EXAMPLE_TEMPLATES
+
+          try {
+            const loadTemplates = (is_deleted) =>
+              conversationMessageTemplatesLoader({
+                partner_id: id,
+                is_deleted,
+                size: 100,
+              })
+
+            const [active, deleted] = await Promise.all([
+              loadTemplates(false),
+              loadTemplates(true),
+            ])
+
+            const claimedIds = [...(active.body || []), ...(deleted.body || [])]
+              .map((t) => t.source_example_id)
+              .filter(Boolean)
+
+            return EXAMPLE_TEMPLATES.filter(
+              (ex) => !claimedIds.includes(ex.internalID)
+            )
+          } catch {
+            return EXAMPLE_TEMPLATES
+          }
+        },
+      },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerCounts",
@@ -1216,6 +1277,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
+      },
+      analyticsPageTimeFrame: {
+        description: "Time frame selected for analytics page",
+        type: AnalyticsQueryPeriodEnum.type,
+        resolve: ({ analytics_page_time_frame }) => analytics_page_time_frame,
       },
       showsConnection: {
         description: "A connection of shows from a Partner.",
