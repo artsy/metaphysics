@@ -361,4 +361,58 @@ describe("UpdateArtworkMutation", () => {
       expect(setDefaultArtworkImageLoader).not.toHaveBeenCalled()
     })
   })
+
+  describe("title field", () => {
+    const titleUpdateMutation = gql`
+      mutation {
+        updateArtwork(input: { id: "25", title: "New Artwork Title" }) {
+          artworkOrError {
+            __typename
+            ... on updateArtworkSuccess {
+              artwork {
+                internalID
+                title
+              }
+            }
+            ... on updateArtworkFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("updates the artwork title", async () => {
+      const updateArtworkLoader = jest.fn((id, args) => {
+        expect(id).toBe("25")
+        expect(args.title).toBe("New Artwork Title")
+        return Promise.resolve({
+          id: "25",
+          _id: "25",
+          title: "New Artwork Title",
+        })
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(titleUpdateMutation, context)
+
+      expect(result).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkSuccess",
+            artwork: {
+              internalID: "25",
+              title: "New Artwork Title",
+            },
+          },
+        },
+      })
+    })
+  })
 })

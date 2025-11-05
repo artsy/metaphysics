@@ -202,13 +202,17 @@ describe("NewWorksForYou", () => {
 
       const context = {
         accessToken: "424242",
+        userID: "user-id",
       }
 
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section.showArtworksCardView).toBe(true)
       expect(mockGetExperimentVariant).toHaveBeenCalledWith(
-        "onyx_nwfy-artworks-card-test"
+        "onyx_nwfy-artworks-card-test",
+        {
+          userId: "user-id",
+        }
       )
     })
 
@@ -232,6 +236,7 @@ describe("NewWorksForYou", () => {
 
       const context = {
         accessToken: "424242",
+        userId: "user-id",
       }
 
       const { homeView } = await runQuery(query, context)
@@ -259,6 +264,7 @@ describe("NewWorksForYou", () => {
 
       const context = {
         accessToken: "424242",
+        userId: "user-id",
       }
 
       const { homeView } = await runQuery(query, context)

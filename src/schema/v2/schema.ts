@@ -320,6 +320,7 @@ import { ViewingRoomConnection } from "./viewingRooms"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
 import { CreateArtworkTemplateMutation } from "./artworkTemplate/mutations/createArtworkTemplateMutation"
+import { CreateArtworkFromTemplateMutation } from "./artworkTemplate/mutations/createArtworkFromTemplateMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
@@ -357,6 +358,7 @@ import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
+import { Video } from "./video"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -487,6 +489,7 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  video: Video,
   viewingRoom: ViewingRoom,
   viewingRoomsConnection: ViewingRoomsConnection,
   viewingRooms: ViewingRoomConnection,
@@ -537,6 +540,7 @@ export default new GraphQLSchema({
       createArtist: createArtistMutation,
       createArtworkImport: CreateArtworkImportMutation,
       createArtworkTemplate: CreateArtworkTemplateMutation,
+      createArtworkFromTemplate: CreateArtworkFromTemplateMutation,
       createBackupSecondFactors: createBackupSecondFactorsMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,

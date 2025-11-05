@@ -1,6 +1,10 @@
 import { ResolverContext } from "types/graphql"
 import { getSections } from "../default"
 
+jest.mock("lib/featureFlags", () => ({
+  getExperimentVariant: jest.fn(),
+}))
+
 describe("getSections", () => {
   describe("with an authenticated user", () => {
     it("returns the correct sections", async () => {
