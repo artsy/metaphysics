@@ -338,6 +338,8 @@ import {
   setOrderFulfillmentOptionMutation,
   submitOrderMutation,
 } from "./order"
+import { createBuyerOfferMutation } from "./offer/createBuyerOfferMutation"
+import { updateBuyerOfferMutation } from "./offer/updateBuyerOfferMutation"
 import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
@@ -520,6 +522,8 @@ export default new GraphQLSchema({
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
+      createBuyerOffer: createBuyerOfferMutation,
+      updateBuyerOffer: updateBuyerOfferMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
