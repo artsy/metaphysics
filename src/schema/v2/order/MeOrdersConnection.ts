@@ -48,12 +48,16 @@ export const MeOrdersConnection: GraphQLFieldConfig<any, ResolverContext> = {
       page,
       size,
     }
+
+    if (args.editionSetID) {
+      if (!args.artworkID) {
+        throw new Error("editionSetID requires an arg for artworkID")
+      }
+      params.edition_set_id = args.editionSetID
+    }
+
     if (args.artworkID) {
       params.artwork_id = args.artworkID
-
-      if (args.editionSetID) {
-        params.edition_set_id = args.editionSetID
-      }
     }
 
     if (args.buyerState && args.buyerState.length > 0) {

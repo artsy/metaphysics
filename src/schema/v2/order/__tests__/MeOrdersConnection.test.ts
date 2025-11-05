@@ -160,7 +160,7 @@ describe("Me", () => {
       })
     })
 
-    it("does not filter by editionSetID without artworkID", async () => {
+    it("throws error when editionSetID provided without artworkID", async () => {
       const query = gql`
         query {
           me {
@@ -175,22 +175,16 @@ describe("Me", () => {
         }
       `
 
-      const order1 = { ...baseOrderJson, id: "order-1" }
-
       context = {
         meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-        meOrdersLoader: jest.fn().mockResolvedValue({
-          body: [order1],
-          headers: { "x-total-count": "1" },
-        }),
+        meOrdersLoader: jest.fn(),
       }
 
-      await runAuthenticatedQuery(query, context)
+      await expect(runAuthenticatedQuery(query, context)).rejects.toThrow(
+        "editionSetID requires an arg for artworkID"
+      )
 
-      expect(context.meOrdersLoader).toHaveBeenCalledWith({
-        page: 1,
-        size: 10,
-      })
+      expect(context.meOrdersLoader).not.toHaveBeenCalled()
     })
 
     it("filters by single buyerState", async () => {
