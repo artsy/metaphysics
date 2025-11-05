@@ -7,6 +7,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { OrderType } from "./OrderType"
 
 export const FromParticipantEnum = new GraphQLEnumType({
   name: "FromParticipantEnum",
@@ -22,6 +23,7 @@ export const FromParticipantEnum = new GraphQLEnumType({
 
 export type OfferJSON = {
   id: string
+  order_id: string
   amount_cents: number | null
   buyer_total_cents: number | null
   currency_code: string
@@ -35,7 +37,7 @@ export type OfferJSON = {
 export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
   name: "Offer",
   description: "An offer on an order",
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
 
     amount: {
@@ -143,5 +145,15 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
         )
       },
     },
-  },
+    order: {
+      type: OrderType,
+      description: "The order this offer belongs to",
+      resolve: ({ order_id }, _args, { meOrderLoader }) => {
+        if (!order_id || !meOrderLoader) {
+          return null
+        }
+        return meOrderLoader(order_id)
+      },
+    },
+  }),
 })

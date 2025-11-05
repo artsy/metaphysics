@@ -87,6 +87,25 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOfferCreateLoader = exchangeLoader<any, { orderID: string }>(
+    ({ orderID }) => `me/orders/${orderID}/offers`,
+    {},
+    {
+      method: "POST",
+    }
+  )
+
+  const meOfferUpdateLoader = exchangeLoader<
+    any,
+    { orderID: string; offerID: string }
+  >(
+    ({ orderID, offerID }) => `me/orders/${orderID}/offers/${offerID}`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const stripeConfirmationTokenLoader = exchangeLoader(
     (id) => `stripe_confirmation_tokens/${id}`
   )
@@ -135,6 +154,8 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderSubmitLoader,
     meOrderUnsetFulfillmentOptionLoader,
     meOrderUnsetPaymentMethodLoader,
+    meOfferCreateLoader,
+    meOfferUpdateLoader,
     stripeConfirmationTokenLoader,
   }
 }
