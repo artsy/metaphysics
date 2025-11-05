@@ -23,7 +23,7 @@
     "dump:staging": "node scripts/dump-staging-schema.js",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
-    "prepare": "patch-package",
+    "postinstall": "patch-package",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
