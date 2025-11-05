@@ -106,6 +106,8 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meBankAccountBalanceLoader = exchangeLoader("me/bank_account_balance")
+
   const stripeConfirmationTokenLoader = exchangeLoader(
     (id) => `stripe_confirmation_tokens/${id}`
   )
@@ -147,6 +149,7 @@ export const exchangeLoaders = (accessToken, opts) => {
   return {
     exchangeTokenLoader,
     exchangeGraphQLLoader,
+    meBankAccountBalanceLoader,
     meOrderLoader,
     meOrderUpdateLoader,
     meOrderUpdateShippingAddressLoader,
