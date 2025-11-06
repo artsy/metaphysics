@@ -57,7 +57,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
       - run:
           name: Run Jest
           command: |
@@ -70,7 +70,7 @@ jobs:
       - checkout
       - setup_hokusai
       - node/install-packages:
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
       - run: scripts/ensure-schema-update.sh
   push-schema-changes:
     executor:
@@ -82,7 +82,7 @@ jobs:
       - setup_hokusai
       - run: corepack enable
       - node/install-packages:
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
       - run:
           name: Push schema changes
           command: |
@@ -98,7 +98,7 @@ workflows:
       - node/run:
           <<: *not_staging_or_release
           name: type-check
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
           yarn-run: type-check
 
       - ensure-schema-update:
@@ -129,7 +129,7 @@ workflows:
           <<: *only_main
           name: deploy-cloudflare-workers-staging
           context: cloudflare
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
           yarn-run: deploy-cloudflare-workers:staging
           requires:
             - deploy-staging
@@ -149,7 +149,7 @@ workflows:
           <<: *only_release
           name: deploy-cloudflare-workers
           context: cloudflare
-          pkg-manager: yarn
+          pkg-manager: yarn-berry
           yarn-run: deploy-cloudflare-workers
           requires:
             - hokusai/deploy-production
