@@ -96,7 +96,6 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
-      - run: corepack enable
       - node/install-packages:
           pkg-manager: yarn-berry
       - run:
