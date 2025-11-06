@@ -162,6 +162,7 @@ import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
 import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
 import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreementMutation"
+import { Agreement } from "./agreement"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
@@ -377,6 +378,9 @@ const rootFields = {
     resolve: Image.resolve,
     description: "Do not use (only used internally for stitching)",
   },
+  ...(config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
+    ? { agreement: Agreement }
+    : {}),
   admin: AdminField,
   ai: AI,
   article: Article,
