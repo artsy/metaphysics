@@ -18,3 +18,11 @@ tmp
 coverage*
 .hokusai-tmp
 Brewfile.lock.json
+
+# Yarn 4
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions

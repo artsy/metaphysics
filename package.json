@@ -6,12 +6,12 @@
   "engines": {
     "node": ">=22.5.1",
     "npm": "5.6.0",
-    "yarn": "1.*"
+    "yarn": "^4.9.4"
   },
   "scripts": {
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:index": "babel index.js -s inline -d build",
-    "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
+    "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore 'src/test,src/integration,src/**/__tests__' -s inline -d build/src",
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
     "ci": "yarn test",
@@ -19,11 +19,11 @@
     "deploy-cloudflare-workers": "yarn wrangler deploy --keep-vars --config=workers/caching/metaphysics-cdn.toml --env production",
     "dev": "DEBUG=info,warn,error babel-node --extensions '.ts,.js' --inspect index.js",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
-    "dump:local": "USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT=false yarn dump-schema _schemaV2.graphql & wait",
+    "dump:local": "USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT=false yarn dump-schema _schemaV2.graphql",
     "dump:staging": "node scripts/dump-staging-schema.js",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
-    "prepare": "patch-package",
+    "postinstall": "patch-package",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
@@ -175,5 +175,5 @@
       "pre-push": "yarn run type-check"
     }
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@4.10.3"
 }
