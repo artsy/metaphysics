@@ -47,6 +47,12 @@ commands:
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
+  fix_corepack_permissions:
+    # Only needed for jobs that don't use setup_hokusai (which already fixes /usr/local/bin permissions)
+    steps:
+      - run:
+          name: Fix permissions for corepack
+          command: sudo chmod -R 777 /usr/local/bin
 
 jobs:
   test:
@@ -62,6 +68,16 @@ jobs:
           name: Run Jest
           command: |
             yarn jest --ci --forceExit --logHeapUsage --runInBand --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
+  type-check:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn type-check
   ensure-schema-update:
     executor:
       name: node/default
@@ -88,6 +104,26 @@ jobs:
           command: |
             # Run the Node.js script, passing total_nodes and node_index as arguments
             node scripts/push-schema-changes.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
+  deploy-cloudflare-workers-staging:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn deploy-cloudflare-workers:staging
+  deploy-cloudflare-workers:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn deploy-cloudflare-workers
 
 workflows:
   default:
@@ -95,11 +131,8 @@ workflows:
       - test:
           <<: *not_staging_or_release
 
-      - node/run:
+      - type-check:
           <<: *not_staging_or_release
-          name: type-check
-          pkg-manager: yarn-berry
-          yarn-run: type-check
 
       - ensure-schema-update:
           context: hokusai
@@ -125,12 +158,9 @@ workflows:
           requires:
             - deploy-staging
 
-      - node/run:
+      - deploy-cloudflare-workers-staging:
           <<: *only_main
-          name: deploy-cloudflare-workers-staging
           context: cloudflare
-          pkg-manager: yarn-berry
-          yarn-run: deploy-cloudflare-workers:staging
           requires:
             - deploy-staging
 
@@ -145,11 +175,8 @@ workflows:
           requires:
             - horizon/block
 
-      - node/run:
+      - deploy-cloudflare-workers:
           <<: *only_release
-          name: deploy-cloudflare-workers
           context: cloudflare
-          pkg-manager: yarn-berry
-          yarn-run: deploy-cloudflare-workers
           requires:
             - hokusai/deploy-production
