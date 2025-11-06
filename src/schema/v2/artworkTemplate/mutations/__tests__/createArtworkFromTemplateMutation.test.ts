@@ -5,7 +5,12 @@ describe("CreateArtworkFromTemplateMutation", () => {
   const mutation = gql`
     mutation {
       createArtworkFromTemplate(
-        input: { partnerID: "partner123", artworkTemplateID: "template123" }
+        input: {
+          partnerID: "partner123"
+          artworkTemplateID: "template123"
+          imageS3Bucket: "test-bucket"
+          imageS3Key: "test-image.jpg"
+        }
       ) {
         artworkOrError {
           __typename
@@ -43,7 +48,9 @@ describe("CreateArtworkFromTemplateMutation", () => {
         return Promise.resolve(mockArtwork)
       })
 
-    const context = { createArtworkFromTemplateLoader }
+    const addImageToArtworkLoader = jest.fn().mockResolvedValue({})
+
+    const context = { createArtworkFromTemplateLoader, addImageToArtworkLoader }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
@@ -72,7 +79,9 @@ describe("CreateArtworkFromTemplateMutation", () => {
       throw error
     })
 
-    const context = { createArtworkFromTemplateLoader }
+    const addImageToArtworkLoader = jest.fn().mockResolvedValue({})
+
+    const context = { createArtworkFromTemplateLoader, addImageToArtworkLoader }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
@@ -99,7 +108,9 @@ describe("CreateArtworkFromTemplateMutation", () => {
       throw error
     })
 
-    const context = { createArtworkFromTemplateLoader }
+    const addImageToArtworkLoader = jest.fn().mockResolvedValue({})
+
+    const context = { createArtworkFromTemplateLoader, addImageToArtworkLoader }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
@@ -112,6 +123,236 @@ describe("CreateArtworkFromTemplateMutation", () => {
           },
         },
       },
+    })
+  })
+
+  describe("image handling", () => {
+    const imageTemplateMutation = gql`
+      mutation {
+        createArtworkFromTemplate(
+          input: {
+            partnerID: "partner123"
+            artworkTemplateID: "template123"
+            imageS3Buckets: ["bucket1", "bucket2"]
+            imageS3Keys: ["key1.jpg", "key2.jpg"]
+          }
+        ) {
+          artworkOrError {
+            __typename
+            ... on CreateArtworkFromTemplateSuccess {
+              artwork {
+                internalID
+              }
+            }
+            ... on CreateArtworkFromTemplateFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("adds multiple images to artwork created from template", async () => {
+      const mockArtwork = {
+        _id: "artwork789",
+        title: "New Artwork",
+        artists: [{ name: "Andy Warhol" }],
+      }
+
+      const createArtworkFromTemplateLoader = jest
+        .fn()
+        .mockResolvedValue(mockArtwork)
+
+      const addImageToArtworkLoader = jest.fn().mockResolvedValue({})
+
+      const context = {
+        createArtworkFromTemplateLoader,
+        addImageToArtworkLoader,
+      }
+
+      await runAuthenticatedQuery(imageTemplateMutation, context)
+
+      expect(addImageToArtworkLoader).toHaveBeenCalledTimes(2)
+      expect(addImageToArtworkLoader).toHaveBeenCalledWith("artwork789", {
+        source_bucket: "bucket1",
+        source_key: "key1.jpg",
+      })
+      expect(addImageToArtworkLoader).toHaveBeenCalledWith("artwork789", {
+        source_bucket: "bucket2",
+        source_key: "key2.jpg",
+      })
+    })
+
+    it("supports singular image S3 bucket/key inputs", async () => {
+      const singleImageMutation = gql`
+        mutation {
+          createArtworkFromTemplate(
+            input: {
+              partnerID: "partner123"
+              artworkTemplateID: "template123"
+              imageS3Bucket: "my-bucket"
+              imageS3Key: "my-image.jpg"
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkFromTemplateSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const mockArtwork = {
+        _id: "artwork789",
+        title: "New Artwork",
+        artists: [{ name: "Andy Warhol" }],
+      }
+
+      const createArtworkFromTemplateLoader = jest
+        .fn()
+        .mockResolvedValue(mockArtwork)
+
+      const addImageToArtworkLoader = jest.fn().mockResolvedValue({})
+
+      const context = {
+        createArtworkFromTemplateLoader,
+        addImageToArtworkLoader,
+      }
+
+      await runAuthenticatedQuery(singleImageMutation, context)
+
+      expect(addImageToArtworkLoader).toHaveBeenCalledTimes(1)
+      expect(addImageToArtworkLoader).toHaveBeenCalledWith("artwork789", {
+        source_bucket: "my-bucket",
+        source_key: "my-image.jpg",
+      })
+    })
+
+    it("returns error when no images provided (images are required)", async () => {
+      const noImageMutation = gql`
+        mutation {
+          createArtworkFromTemplate(
+            input: { partnerID: "partner123", artworkTemplateID: "template123" }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkFromTemplateFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const createArtworkFromTemplateLoader = jest.fn()
+      const addImageToArtworkLoader = jest.fn()
+
+      const context = {
+        createArtworkFromTemplateLoader,
+        addImageToArtworkLoader,
+      }
+
+      const result = await runAuthenticatedQuery(noImageMutation, context)
+
+      expect(result.createArtworkFromTemplate.artworkOrError.__typename).toBe(
+        "CreateArtworkFromTemplateFailure"
+      )
+      expect(
+        result.createArtworkFromTemplate.artworkOrError.mutationError.message
+      ).toContain("must provide either imageS3Bucket")
+      expect(createArtworkFromTemplateLoader).not.toHaveBeenCalled()
+      expect(addImageToArtworkLoader).not.toHaveBeenCalled()
+    })
+
+    it("returns error when bucket provided but no key", async () => {
+      const noBucketMutation = gql`
+        mutation {
+          createArtworkFromTemplate(
+            input: {
+              partnerID: "partner123"
+              artworkTemplateID: "template123"
+              imageS3Bucket: "my-bucket"
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkFromTemplateFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const createArtworkFromTemplateLoader = jest.fn()
+      const addImageToArtworkLoader = jest.fn()
+
+      const context = {
+        createArtworkFromTemplateLoader,
+        addImageToArtworkLoader,
+      }
+
+      const result = await runAuthenticatedQuery(noBucketMutation, context)
+
+      expect(result.createArtworkFromTemplate.artworkOrError.__typename).toBe(
+        "CreateArtworkFromTemplateFailure"
+      )
+      expect(
+        result.createArtworkFromTemplate.artworkOrError.mutationError.message
+      ).toContain("must provide either imageS3Key")
+      expect(createArtworkFromTemplateLoader).not.toHaveBeenCalled()
+    })
+
+    it("returns error when bucket/key counts don't match", async () => {
+      const mismatchedMutation = gql`
+        mutation {
+          createArtworkFromTemplate(
+            input: {
+              partnerID: "partner123"
+              artworkTemplateID: "template123"
+              imageS3Buckets: ["bucket1", "bucket2"]
+              imageS3Keys: ["key1.jpg"]
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkFromTemplateFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const createArtworkFromTemplateLoader = jest.fn()
+      const addImageToArtworkLoader = jest.fn()
+
+      const context = {
+        createArtworkFromTemplateLoader,
+        addImageToArtworkLoader,
+      }
+
+      const result = await runAuthenticatedQuery(mismatchedMutation, context)
+
+      expect(result.createArtworkFromTemplate.artworkOrError.__typename).toBe(
+        "CreateArtworkFromTemplateFailure"
+      )
+      expect(
+        result.createArtworkFromTemplate.artworkOrError.mutationError.message
+      ).toContain("must have the same number of items")
+      expect(createArtworkFromTemplateLoader).not.toHaveBeenCalled()
     })
   })
 })

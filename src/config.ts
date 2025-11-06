@@ -104,14 +104,18 @@ const mustHave = {
   VORTEX_TOKEN,
 }
 
-Object.keys(mustHave).forEach((key) => {
-  if (!mustHave[key]) {
-    const file = chalk.whiteBright(".env.example")
-    throw new Error(
-      `You need to have the ENV var ${key} set up - check out ${file}.`
-    )
-  }
-})
+const SKIP_CONFIG_VALIDATION = process.env.SKIP_CONFIG_VALIDATION === "true"
+
+if (!SKIP_CONFIG_VALIDATION) {
+  Object.keys(mustHave).forEach((key) => {
+    if (!mustHave[key]) {
+      const file = chalk.whiteBright(".env.example")
+      throw new Error(
+        `You need to have the ENV var ${key} set up - check out ${file}.`
+      )
+    }
+  })
+}
 
 /**
  * Use this if "0" should be respected as 0 and only use the default value for
