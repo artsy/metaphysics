@@ -10,7 +10,9 @@ import {
 import { readFileSync } from "fs"
 import config from "config"
 
-const rootFieldsAllowList = ["agreement"]
+const rootFieldsAllowList: string[] = config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
+  ? []
+  : ["agreement"]
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")

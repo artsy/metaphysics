@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLID,
+  GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
@@ -36,3 +37,21 @@ export const AgreementType = new GraphQLObjectType<any, ResolverContext>({
     updatedAt: date(),
   }),
 })
+
+export const Agreement: GraphQLFieldConfig<void, ResolverContext> = {
+  type: AgreementType,
+  description: "Find an agreement by ID",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: "The ID of the agreement",
+    },
+  },
+  resolve: async (_source, { id }, { agreementLoader }) => {
+    if (!agreementLoader) {
+      return null
+    }
+
+    return agreementLoader(id)
+  },
+}

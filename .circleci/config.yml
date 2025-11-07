@@ -3,8 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
-  node: circleci/node@6.3.0
-  yarn: artsy/yarn@6.5.0
+  node: circleci/node@7.2.1
 
 not_staging_or_release: &not_staging_or_release
   filters:
@@ -48,12 +47,12 @@ commands:
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
-
-  yarn_install:
+  fix_corepack_permissions:
+    # Only needed for jobs that don't use setup_hokusai (which already fixes /usr/local/bin permissions)
     steps:
-      - yarn/load_dependencies
-      - yarn/install
-      - yarn/save_dependencies
+      - run:
+          name: Fix permissions for corepack
+          command: sudo chmod -R 777 /usr/local/bin
 
 jobs:
   test:
@@ -63,11 +62,22 @@ jobs:
     parallelism: 6
     steps:
       - checkout
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn-berry
       - run:
           name: Run Jest
           command: |
             yarn jest --ci --forceExit --logHeapUsage --runInBand --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
+  type-check:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn type-check
   ensure-schema-update:
     executor:
       name: node/default
@@ -75,7 +85,8 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn-berry
       - run: scripts/ensure-schema-update.sh
   push-schema-changes:
     executor:
@@ -85,13 +96,33 @@ jobs:
     steps:
       - checkout
       - setup_hokusai
-      - run: corepack enable
-      - yarn_install
+      - node/install-packages:
+          pkg-manager: yarn-berry
       - run:
           name: Push schema changes
           command: |
             # Run the Node.js script, passing total_nodes and node_index as arguments
             node scripts/push-schema-changes.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
+  deploy-cloudflare-workers-staging:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn deploy-cloudflare-workers:staging
+  deploy-cloudflare-workers:
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - fix_corepack_permissions
+      - node/install-packages:
+          pkg-manager: yarn-berry
+      - run: yarn deploy-cloudflare-workers
 
 workflows:
   default:
@@ -99,11 +130,8 @@ workflows:
       - test:
           <<: *not_staging_or_release
 
-      - node/run:
+      - type-check:
           <<: *not_staging_or_release
-          name: type-check
-          pkg-manager: yarn
-          yarn-run: type-check
 
       - ensure-schema-update:
           context: hokusai
@@ -129,12 +157,9 @@ workflows:
           requires:
             - deploy-staging
 
-      - node/run:
+      - deploy-cloudflare-workers-staging:
           <<: *only_main
-          name: deploy-cloudflare-workers-staging
           context: cloudflare
-          pkg-manager: yarn
-          yarn-run: deploy-cloudflare-workers:staging
           requires:
             - deploy-staging
 
@@ -149,11 +174,8 @@ workflows:
           requires:
             - horizon/block
 
-      - node/run:
+      - deploy-cloudflare-workers:
           <<: *only_release
-          name: deploy-cloudflare-workers
           context: cloudflare
-          pkg-manager: yarn
-          yarn-run: deploy-cloudflare-workers
           requires:
             - hokusai/deploy-production

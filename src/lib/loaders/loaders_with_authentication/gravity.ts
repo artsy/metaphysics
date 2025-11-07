@@ -91,6 +91,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    agreementLoader: gravityLoader((id) => `agreement/${id}`),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
