@@ -190,7 +190,11 @@ const latestAuctionResultsCard: CardFunction = async ({
   }
 }
 
-export const AuctionsHub: HomeViewSection = {
+export interface HomeViewCardsSection extends HomeViewSection {
+  trackItemImpressions?: boolean
+}
+
+export const AuctionsHub: HomeViewCardsSection = {
   id: "home-view-section-auctions-hub",
   contextModule: ContextModule.auctionsHubRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
@@ -205,6 +209,7 @@ export const AuctionsHub: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
+  trackItemImpressions: true,
   shouldBeDisplayed: (context) => {
     return shouldDisplayAuctionsHub(context)
   },
