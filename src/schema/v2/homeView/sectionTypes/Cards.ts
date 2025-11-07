@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import {
@@ -10,13 +10,14 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import { HomeViewCardType } from "./Card"
+import { HomeViewCardsSection } from "../sections/AuctionsHub"
 
 const HomeViewCardConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewCardType,
 }).connectionType
 
 export const HomeViewCardsSectionType = new GraphQLObjectType<
-  any,
+  HomeViewCardsSection,
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionCards,
@@ -24,6 +25,10 @@ export const HomeViewCardsSectionType = new GraphQLObjectType<
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+    trackItemImpressions: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (parent) => !!parent.trackItemImpressions,
+    },
     cardsConnection: {
       type: HomeViewCardConnectionType,
       args: pageable({}),
