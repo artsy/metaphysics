@@ -1543,6 +1543,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    videosLoader: gravityLoader("videos", {}, { headers: true }),
     viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`

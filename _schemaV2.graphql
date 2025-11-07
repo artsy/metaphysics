@@ -21527,6 +21527,14 @@ type Query {
 
   # Find a video by ID
   video(id: ID!): Video
+  videosConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: VideoSorts = UPDATED_AT_DESC
+    term: String
+  ): VideoConnection
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -26353,6 +26361,33 @@ type Video {
   width: Int!
 }
 
+# A connection to a list of items.
+type VideoConnection {
+  # A list of edges.
+  edges: [VideoEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type VideoEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Video
+}
+
+enum VideoSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+}
+
 # A wildcard used to support complex root queries in Relay
 type Viewer {
   # Do not use (only used internally for stitching)
@@ -27574,6 +27609,14 @@ type Viewer {
 
   # Find a video by ID
   video(id: ID!): Video
+  videosConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: VideoSorts = UPDATED_AT_DESC
+    term: String
+  ): VideoConnection
 
   # Find a viewing room by ID
   viewingRoom(id: ID!): ViewingRoom

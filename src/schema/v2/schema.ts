@@ -362,6 +362,7 @@ import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
 import { Video } from "./video"
+import { VideosConnection } from "./videosConnection"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -496,6 +497,7 @@ const rootFields = {
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
   video: Video,
+  videosConnection: VideosConnection,
   viewingRoom: ViewingRoom,
   viewingRoomsConnection: ViewingRoomsConnection,
   viewingRooms: ViewingRoomConnection,
