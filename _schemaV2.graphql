@@ -10634,6 +10634,36 @@ type CreateVerifiedRepresentativeSuccess {
   verifiedRepresentative: VerifiedRepresentative
 }
 
+type CreateVideoFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateVideoInput {
+  clientMutationId: String
+  description: String
+
+  # Video height in pixels
+  height: Int!
+
+  # URL suitable for embedding in an iframe
+  playerUrl: String!
+  title: String!
+
+  # Video width in pixels
+  width: Int!
+}
+
+type CreateVideoPayload {
+  clientMutationId: String
+  videoOrError: CreateVideoResponseOrError
+}
+
+union CreateVideoResponseOrError = CreateVideoFailure | CreateVideoSuccess
+
+type CreateVideoSuccess {
+  video: Video
+}
+
 input CreateViewingRoomInput {
   attributes: ViewingRoomAttributes
 
@@ -16775,6 +16805,9 @@ type Mutation {
   createVerifiedRepresentative(
     input: CreateVerifiedRepresentativeInput!
   ): CreateVerifiedRepresentativePayload
+
+  # Create a video
+  createVideo(input: CreateVideoInput!): CreateVideoPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   # Deletes an alert

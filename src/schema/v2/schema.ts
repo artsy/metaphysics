@@ -363,6 +363,7 @@ import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddAr
 import { AI } from "./ai"
 import { Video } from "./video"
 import { VideosConnection } from "./videosConnection"
+import { createVideoMutation } from "./video/createVideoMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -588,6 +589,7 @@ export default new GraphQLSchema({
       createUserSeenArtwork: createUserSeenArtworkMutation,
       excludeArtistFromDiscovery: excludeArtistFromDiscoveryMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
+      createVideo: createVideoMutation,
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
