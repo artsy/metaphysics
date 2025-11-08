@@ -365,6 +365,7 @@ import { Video } from "./video"
 import { VideosConnection } from "./videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
 import { updateVideoMutation } from "./video/updateVideoMutation"
+import { deleteVideoMutation } from "./video/deleteVideoMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -627,6 +628,7 @@ export default new GraphQLSchema({
       deleteUserInterests: deleteUserInterestsMutation,
       deleteUserRole: deleteUserRoleMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
+      deleteVideo: deleteVideoMutation,
       deleteViewingRoom: deleteViewingRoomMutation,
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,

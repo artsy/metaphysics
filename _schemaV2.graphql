@@ -11481,6 +11481,30 @@ type DeleteVerifiedRepresentativeSuccess {
   verifiedRepresentative: VerifiedRepresentative
 }
 
+type DeleteVideoFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteVideoMutationInput {
+  clientMutationId: String
+
+  # The ID of the video to delete
+  id: String!
+}
+
+type DeleteVideoMutationPayload {
+  clientMutationId: String
+
+  # Success or Error, on success the deleted Video is returned
+  videoOrError: DeleteVideoResponseOrErrorType
+}
+
+union DeleteVideoResponseOrErrorType = DeleteVideoFailure | DeleteVideoSuccess
+
+type DeleteVideoSuccess {
+  video: Video
+}
+
 input DeleteViewingRoomInput {
   clientMutationId: String
   viewingRoomID: ID!
@@ -16958,6 +16982,9 @@ type Mutation {
   deleteVerifiedRepresentative(
     input: DeleteVerifiedRepresentativeMutationInput!
   ): DeleteVerifiedRepresentativeMutationPayload
+
+  # Delete a video
+  deleteVideo(input: DeleteVideoMutationInput!): DeleteVideoMutationPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
   deliverSecondFactor(
     input: DeliverSecondFactorInput!

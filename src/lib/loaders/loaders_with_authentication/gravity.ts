@@ -1551,6 +1551,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deleteVideoLoader: gravityLoader(
+      (id) => `video/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`
