@@ -364,6 +364,7 @@ import { AI } from "./ai"
 import { Video } from "./video"
 import { VideosConnection } from "./videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
+import { updateVideoMutation } from "./video/updateVideoMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -724,6 +725,7 @@ export default new GraphQLSchema({
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
+      updateVideo: updateVideoMutation,
       updateViewingRoom: updateViewingRoomMutation,
       updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
       updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,

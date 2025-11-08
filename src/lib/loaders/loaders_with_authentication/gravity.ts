@@ -1546,6 +1546,11 @@ export default (accessToken, userID, opts) => {
     videosLoader: gravityLoader("videos", {}, { headers: true }),
     videoLoader: gravityLoader((id) => `video/${id}`),
     createVideoLoader: gravityLoader("videos", {}, { method: "POST" }),
+    updateVideoLoader: gravityLoader(
+      (id) => `video/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`

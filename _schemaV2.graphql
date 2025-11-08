@@ -17375,6 +17375,9 @@ type Mutation {
   updateUserSaleProfile(
     input: UpdateUserSaleProfileMutationInput!
   ): UpdateUserSaleProfileMutationPayload
+
+  # Update a video
+  updateVideo(input: UpdateVideoInput!): UpdateVideoPayload
   updateViewingRoom(input: UpdateViewingRoomInput!): UpdateViewingRoomPayload
   updateViewingRoomArtworks(
     input: UpdateViewingRoomArtworksInput!
@@ -25668,6 +25671,39 @@ input UpdateUserSaleProfileMutationInput {
 
 type UpdateUserSaleProfileMutationPayload {
   clientMutationId: String
+}
+
+type UpdateVideoFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateVideoInput {
+  clientMutationId: String
+  description: String
+
+  # Video height in pixels
+  height: Int
+
+  # The ID of the video to update
+  id: String!
+
+  # URL suitable for embedding in an iframe
+  playerUrl: String
+  title: String
+
+  # Video width in pixels
+  width: Int
+}
+
+type UpdateVideoPayload {
+  clientMutationId: String
+  videoOrError: UpdateVideoResponseOrError
+}
+
+union UpdateVideoResponseOrError = UpdateVideoFailure | UpdateVideoSuccess
+
+type UpdateVideoSuccess {
+  video: Video
 }
 
 input UpdateViewingRoomArtworksInput {
