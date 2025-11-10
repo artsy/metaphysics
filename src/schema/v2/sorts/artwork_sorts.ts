@@ -49,6 +49,12 @@ const ArtworkSorts = {
       TITLE_DESC: {
         value: "-title",
       },
+      COMPLETENESS_SCORE_ASC: {
+        value: "completeness_score",
+      },
+      COMPLETENESS_SCORE_DESC: {
+        value: "-completeness_score",
+      },
     },
   }),
 }
