@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLID, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { VideoType } from "./types/Video"
+import { VideoType } from "../types/Video"
 
 export const Video: GraphQLFieldConfig<void, ResolverContext> = {
   type: VideoType,

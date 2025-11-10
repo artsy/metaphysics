@@ -2,8 +2,8 @@ import { GraphQLFieldConfig, GraphQLEnumType, GraphQLString } from "graphql"
 import {
   connectionWithCursorInfo,
   paginationResolver,
-} from "./fields/pagination"
-import { VideoType } from "./types/Video"
+} from "../fields/pagination"
+import { VideoType } from "../types/Video"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
