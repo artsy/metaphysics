@@ -282,6 +282,10 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   visibilityLevel: {
     type: GraphQLString,
   },
+  completenessTier: {
+    type: GraphQLString,
+    description: "Filter by artwork completeness tier.",
+  },
 }
 
 const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
@@ -459,6 +463,7 @@ const convertFilterArgs = ({
   artworkIDs,
   atAuction,
   attributionClass,
+  completenessTier,
   dimensionRange,
   excludeArtworkIDs,
   extraAggregationGeneIDs,
@@ -497,6 +502,7 @@ const convertFilterArgs = ({
     artist_series_ids: artistSeriesIDs,
     at_auction: atAuction,
     attribution_class: attributionClass,
+    completeness_tier: completenessTier,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
     extra_aggregation_gene_ids: extraAggregationGeneIDs,
