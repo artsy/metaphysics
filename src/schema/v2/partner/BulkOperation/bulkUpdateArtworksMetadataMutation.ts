@@ -29,6 +29,8 @@ interface Input {
   metadata?: {
     editionSetsCount?: number
     artistIds?: string[]
+    artsyShippingDomestic?: boolean
+    artsyShippingInternational?: boolean
     attributionClass?: string
     availability?: string
     category?: string
@@ -48,6 +50,7 @@ interface Input {
     locationId?: string
     medium?: string
     offer: boolean
+    pickupAvailable?: boolean
     priceAdjustment?: number
     priceHidden?: boolean
     priceListed?: number
@@ -72,6 +75,15 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     artistIds: {
       type: GraphQLList(GraphQLString),
       description: "The artist IDs to be assigned",
+    },
+    artsyShippingDomestic: {
+      type: GraphQLBoolean,
+      description: "Whether Artsy Shipping is enabled for domestic shipments",
+    },
+    artsyShippingInternational: {
+      type: GraphQLBoolean,
+      description:
+        "Whether Artsy Shipping is enabled for international shipments",
     },
     attributionClass: {
       type: GraphQLString,
@@ -157,6 +169,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     offer: {
       type: GraphQLBoolean,
       description: "Whether the artworks must be listed as Make Offer",
+    },
+    pickupAvailable: {
+      type: GraphQLBoolean,
+      description: "Whether pickup is available for the artworks",
     },
     priceAdjustment: {
       type: GraphQLInt,
@@ -305,6 +321,8 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     if (metadata) {
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
+        artsy_shipping_domestic: metadata.artsyShippingDomestic,
+        artsy_shipping_international: metadata.artsyShippingInternational,
         attribution_class: metadata.attributionClass,
         availability: metadata.availability,
         category: metadata.category,
@@ -325,6 +343,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         location_id: metadata.locationId,
         medium: metadata.medium,
         offer: metadata.offer,
+        pickup_available: metadata.pickupAvailable,
         display_price_range: metadata.displayPriceRange,
         price_adjustment: metadata.priceAdjustment,
         price_hidden: metadata.priceHidden,

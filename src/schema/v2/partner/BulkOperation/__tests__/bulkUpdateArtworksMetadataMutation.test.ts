@@ -11,6 +11,8 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           source: ARTWORKS_LIST
           metadata: {
             artistIds: ["artist1", "artist2"]
+            artsyShippingDomestic: true
+            artsyShippingInternational: false
             attributionClass: "limited edition"
             availability: SOLD
             dates: [2020, 2021]
@@ -26,6 +28,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
             ecommerce: true
             medium: "Oil on Canvas"
             offer: false
+            pickupAvailable: true
             priceAdjustment: -5
             priceListed: 1000
             displayPriceRange: true
@@ -84,6 +87,8 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       {
         metadata: {
           artist_ids: ["artist1", "artist2"],
+          artsy_shipping_domestic: true,
+          artsy_shipping_international: false,
           attribution_class: "limited edition",
           condition_description: "Excellent",
           availability: "sold",
@@ -98,6 +103,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           category: "Painting",
           ecommerce: true,
           offer: false,
+          pickup_available: true,
           price_adjustment: -5,
           price_listed: 1000,
           display_price_range: true,
