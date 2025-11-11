@@ -16,8 +16,8 @@ import { ArtworkType } from "../artwork"
 interface CreateArtworkMutationInputProps {
   artistIds: string[]
   partnerId: string
-  imageS3Bucket: string
-  imageS3Key: string
+  imageS3Bucket?: string
+  imageS3Key?: string
   partnerShowId?: string
 }
 
@@ -55,7 +55,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateArtworkMutation",
-  description: "Creates a new artwork with an associated image.",
+  description: "Creates a new artwork, optionally with associated images.",
   inputFields: {
     artistIds: {
       type: new GraphQLNonNull(
@@ -139,19 +139,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
       keys.push(imageS3Key)
     }
 
-    // Validate image S3 bucket/key inputs
-    if (!buckets.length) {
-      return new Error(
-        "You must provide either imageS3Bucket or non-empty imageS3Buckets."
-      )
-    }
-
-    if (!keys.length) {
-      return new Error(
-        "You must provide either imageS3Key or non-empty imageS3Keys."
-      )
-    }
-
+    // Validate image S3 bucket/key inputs if provided
     if (buckets.length !== keys.length) {
       return new Error(
         "imageS3Buckets and imageS3Keys must have the same number of items."
@@ -166,15 +154,17 @@ export const createArtworkMutation = mutationWithClientMutationId<
         sync_to_search: true,
       })
 
-      // Attach all images
-      await Promise.all(
-        buckets.map((bucket, i) =>
-          addImageToArtworkLoader(artwork._id, {
-            source_bucket: bucket,
-            source_key: keys[i],
-          })
+      // Attach images if provided
+      if (buckets.length > 0) {
+        await Promise.all(
+          buckets.map((bucket, i) =>
+            addImageToArtworkLoader(artwork._id, {
+              source_bucket: bucket,
+              source_key: keys[i],
+            })
+          )
         )
-      )
+      }
 
       // Optionally add artwork to partner show
       if (partnerShowId) {
