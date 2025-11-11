@@ -337,6 +337,7 @@ import { FeaturedFairs } from "./FeaturedFairs/featuredFairs"
 import {
   updateOrderMutation,
   setOrderFulfillmentOptionMutation,
+  setOrderPaymentByStripeSetupIntentMutation,
   submitOrderMutation,
 } from "./order"
 import { createBuyerOfferMutation } from "./offer/createBuyerOfferMutation"
@@ -665,6 +666,7 @@ export default new GraphQLSchema({
       sendFeedback: sendFeedbackMutation,
       sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
       setOrderFulfillmentOption: setOrderFulfillmentOptionMutation,
+      setOrderPaymentByStripeSetupIntent: setOrderPaymentByStripeSetupIntentMutation,
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
       submitOrder: submitOrderMutation,

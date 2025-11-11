@@ -17179,6 +17179,11 @@ type Mutation {
     input: setOrderFulfillmentOptionInput!
   ): setOrderFulfillmentOptionPayload
 
+  # Sets payment method on an order using a Stripe setup intent (for ACH/bank payments)
+  setOrderPaymentByStripeSetupIntent(
+    input: setOrderPaymentByStripeSetupIntentInput!
+  ): setOrderPaymentByStripeSetupIntentPayload
+
   # Start an identity verification flow for a pending identity verification
   startIdentityVerification(
     input: startIdentityVerificationMutationInput!
@@ -28422,6 +28427,24 @@ input setOrderFulfillmentOptionInput {
 }
 
 type setOrderFulfillmentOptionPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
+}
+
+input setOrderPaymentByStripeSetupIntentInput {
+  clientMutationId: String
+
+  # Order ID.
+  id: ID!
+
+  # Whether the payment method should be one-time use. Defaults to false.
+  oneTimeUse: Boolean = false
+
+  # Stripe setup intent ID for ACH/bank payments.
+  setupIntentId: String!
+}
+
+type setOrderPaymentByStripeSetupIntentPayload {
   clientMutationId: String
   orderOrError: OrderMutationResponse
 }
