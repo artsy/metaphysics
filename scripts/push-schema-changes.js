@@ -103,7 +103,7 @@ const supportedRepos = {
   },
   prediction: {},
   force: { skipDeprecatedEngineCheck: true },
-  forque: {},
+  forque: { skipDeprecatedEngineCheck: true },
   volt: {
     skipDeprecatedEngineCheck: true,
     destinations: [

@@ -361,7 +361,11 @@ import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
-import { Video } from "./video"
+import { Video } from "./video/video"
+import { VideosConnection } from "./video/videosConnection"
+import { createVideoMutation } from "./video/createVideoMutation"
+import { updateVideoMutation } from "./video/updateVideoMutation"
+import { deleteVideoMutation } from "./video/deleteVideoMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -496,6 +500,7 @@ const rootFields = {
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
   video: Video,
+  videosConnection: VideosConnection,
   viewingRoom: ViewingRoom,
   viewingRoomsConnection: ViewingRoomsConnection,
   viewingRooms: ViewingRoomConnection,
@@ -586,6 +591,7 @@ export default new GraphQLSchema({
       createUserSeenArtwork: createUserSeenArtworkMutation,
       excludeArtistFromDiscovery: excludeArtistFromDiscoveryMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
+      createVideo: createVideoMutation,
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
@@ -622,6 +628,7 @@ export default new GraphQLSchema({
       deleteUserInterests: deleteUserInterestsMutation,
       deleteUserRole: deleteUserRoleMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
+      deleteVideo: deleteVideoMutation,
       deleteViewingRoom: deleteViewingRoomMutation,
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,
@@ -720,6 +727,7 @@ export default new GraphQLSchema({
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
+      updateVideo: updateVideoMutation,
       updateViewingRoom: updateViewingRoomMutation,
       updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
       updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,

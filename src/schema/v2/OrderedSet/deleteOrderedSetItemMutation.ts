@@ -17,7 +17,7 @@ interface Input {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteOrderedSetItemSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => data.id || data._id,
   fields: () => ({
     set: {
       type: OrderedSetType,

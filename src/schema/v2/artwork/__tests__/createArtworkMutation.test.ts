@@ -84,6 +84,31 @@ describe("CreateArtworkMutation", () => {
     }
   `
 
+  const mutationWithoutImage = gql`
+    mutation {
+      createArtwork(
+        input: {
+          partnerId: "partner123"
+          artistIds: ["artist123", "artist456"]
+        }
+      ) {
+        artworkOrError {
+          __typename
+          ... on CreateArtworkSuccess {
+            artwork {
+              internalID
+            }
+          }
+          ... on CreateArtworkFailure {
+            mutationError {
+              message
+            }
+          }
+        }
+      }
+    }
+  `
+
   it("creates an artwork with an image", async () => {
     const mockArtwork = { _id: "artwork123" }
 
@@ -215,6 +240,45 @@ describe("CreateArtworkMutation", () => {
       "artwork123",
       { source_bucket: "bucket2", source_key: "key2" }
     )
+
+    // Should not add to a show
+    expect(context.addArtworkToPartnerShowLoader).not.toHaveBeenCalled()
+  })
+
+  it("creates an artwork without images", async () => {
+    const mockArtwork = { _id: "artwork123" }
+    const createArtworkLoaderMock = jest.fn().mockImplementation((data) => {
+      expect(data).toEqual({
+        artists: ["artist123", "artist456"],
+        partner: "partner123",
+        sync_to_search: true,
+      })
+      return Promise.resolve(mockArtwork)
+    })
+    const addImageToArtworkLoaderMock = jest.fn().mockResolvedValue({})
+
+    const context = {
+      artworkLoader: () => Promise.resolve(mockArtwork),
+      createArtworkLoader: createArtworkLoaderMock,
+      addImageToArtworkLoader: addImageToArtworkLoaderMock,
+      addArtworkToPartnerShowLoader: jest.fn(),
+    }
+
+    const result = await runAuthenticatedQuery(mutationWithoutImage, context)
+
+    expect(result).toEqual({
+      createArtwork: {
+        artworkOrError: {
+          __typename: "CreateArtworkSuccess",
+          artwork: {
+            internalID: "artwork123",
+          },
+        },
+      },
+    })
+
+    // Should not call addImageToArtworkLoader when no images are provided
+    expect(addImageToArtworkLoaderMock).not.toHaveBeenCalled()
 
     // Should not add to a show
     expect(context.addArtworkToPartnerShowLoader).not.toHaveBeenCalled()

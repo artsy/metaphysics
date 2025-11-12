@@ -234,7 +234,7 @@ describe("CreateArtworkFromTemplateMutation", () => {
       })
     })
 
-    it("returns error when no images provided (images are required)", async () => {
+    it("creates artwork from template without images", async () => {
       const noImageMutation = gql`
         mutation {
           createArtworkFromTemplate(
@@ -242,6 +242,13 @@ describe("CreateArtworkFromTemplateMutation", () => {
           ) {
             artworkOrError {
               __typename
+              ... on CreateArtworkFromTemplateSuccess {
+                artwork {
+                  internalID
+                  title
+                  artistNames
+                }
+              }
               ... on CreateArtworkFromTemplateFailure {
                 mutationError {
                   message
@@ -252,7 +259,22 @@ describe("CreateArtworkFromTemplateMutation", () => {
         }
       `
 
-      const createArtworkFromTemplateLoader = jest.fn()
+      const mockArtwork = {
+        _id: "artwork789",
+        title: "New Artwork from Template",
+        artists: [{ name: "Andy Warhol" }],
+      }
+
+      const createArtworkFromTemplateLoader = jest
+        .fn()
+        .mockImplementation((pathParams) => {
+          expect(pathParams).toEqual({
+            partnerId: "partner123",
+            templateId: "template123",
+          })
+          return Promise.resolve(mockArtwork)
+        })
+
       const addImageToArtworkLoader = jest.fn()
 
       const context = {
@@ -262,13 +284,23 @@ describe("CreateArtworkFromTemplateMutation", () => {
 
       const result = await runAuthenticatedQuery(noImageMutation, context)
 
-      expect(result.createArtworkFromTemplate.artworkOrError.__typename).toBe(
-        "CreateArtworkFromTemplateFailure"
-      )
-      expect(
-        result.createArtworkFromTemplate.artworkOrError.mutationError.message
-      ).toContain("must provide either imageS3Bucket")
-      expect(createArtworkFromTemplateLoader).not.toHaveBeenCalled()
+      expect(result).toEqual({
+        createArtworkFromTemplate: {
+          artworkOrError: {
+            __typename: "CreateArtworkFromTemplateSuccess",
+            artwork: {
+              internalID: "artwork789",
+              title: "New Artwork from Template",
+              artistNames: "Andy Warhol",
+            },
+          },
+        },
+      })
+
+      expect(createArtworkFromTemplateLoader).toHaveBeenCalledWith({
+        partnerId: "partner123",
+        templateId: "template123",
+      })
       expect(addImageToArtworkLoader).not.toHaveBeenCalled()
     })
 
@@ -309,7 +341,7 @@ describe("CreateArtworkFromTemplateMutation", () => {
       )
       expect(
         result.createArtworkFromTemplate.artworkOrError.mutationError.message
-      ).toContain("must provide either imageS3Key")
+      ).toContain("must have the same number of items")
       expect(createArtworkFromTemplateLoader).not.toHaveBeenCalled()
     })
 
