@@ -18024,8 +18024,8 @@ type Order {
   lineItems: [LineItem]!
   mode: OrderModeEnum!
 
-  # List of offers for this order
-  offers: [Offer!]
+  # List of submitted offers for this order
+  offers: [Offer!]!
 
   # Payment method used for the order
   paymentMethod: OrderPaymentMethodEnum

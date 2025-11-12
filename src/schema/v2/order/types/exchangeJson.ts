@@ -22,6 +22,34 @@ type OrderPaymentMethodEnum =
   | "us_bank_account"
   | "sepa_debit"
 
+type OrderBuyerState =
+  | "incomplete" // before order is submitted.
+  | "submitted"
+  | "offer_received"
+  | "payment_failed"
+  | "processing_payment"
+  | "processing_offline_payment" // the action from buyer to complete the payment is required
+  | "approved"
+  | "shipped"
+  | "completed"
+  | "refunded"
+  | "declined_by_seller" // offers that are not approved because of seller
+  | "declined_by_buyer" // offers that are not approved because of buyer
+  | "canceled" // catch all canceled state if more detailed info is not available
+  | "unknown" // if we don't get to any known buyer_state. Possible on some old orders.
+
+interface OfferJSON {
+  id: string
+  amount_cents: number
+  buyer_total_cents: number | null
+  currency_code: string
+  from_participant: string
+  note: string | null
+  shipping_total_cents: number | null
+  tax_total_cents: number | null
+  created_at: string
+}
+
 export interface OrderJSON {
   available_payment_methods: OrderPaymentMethodEnum[]
   available_shipping_countries: string[]
@@ -30,7 +58,7 @@ export interface OrderJSON {
   buyer_id: string
   buyer_phone_number?: string
   buyer_phone_number_country_code?: string
-  buyer_state?: string
+  buyer_state?: OrderBuyerState
   buyer_state_expires_at?: string
   buyer_total_cents?: number
   buyer_type: string
@@ -81,14 +109,7 @@ export interface OrderJSON {
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
   tax_total_cents?: number
   total_list_price_cents?: number
-  offers?: Array<{
-    id: string
-    amount_cents: number
-    buyer_total_cents: number | null
-    currency_code: string
-    from_participant: string
-    note: string | null
-    shipping_total_cents: number | null
-    tax_total_cents: number | null
-  }>
+  offers?: Array<OfferJSON>
+  pending_offer?: OfferJSON | null
+  last_offer?: OfferJSON | null
 }

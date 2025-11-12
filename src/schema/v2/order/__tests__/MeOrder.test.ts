@@ -1124,6 +1124,17 @@ describe("Me", () => {
               from_type: "user",
             },
           ]
+          orderJson.last_offer = {
+            id: "offer-1",
+            amount_cents: 550000,
+            buyer_total_cents: null,
+            currency_code: "USD",
+            from_participant: "buyer",
+            note: null,
+            shipping_total_cents: null,
+            tax_total_cents: null,
+            created_at: "2025-10-15T00:00:00Z",
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1161,6 +1172,17 @@ describe("Me", () => {
               from_type: "user",
             },
           ]
+          orderJson.last_offer = {
+            id: "offer-1",
+            amount_cents: 500000,
+            buyer_total_cents: null,
+            currency_code: "USD",
+            from_participant: "buyer",
+            note: null,
+            shipping_total_cents: null,
+            tax_total_cents: null,
+            created_at: "2025-10-15T00:00:00Z",
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1265,6 +1287,17 @@ describe("Me", () => {
               from_type: "user",
             },
           ]
+          orderJson.last_offer = {
+            id: "offer-3",
+            amount_cents: 550000,
+            buyer_total_cents: null,
+            currency_code: "USD",
+            from_participant: "buyer",
+            note: null,
+            shipping_total_cents: null,
+            tax_total_cents: null,
+            created_at: "2025-10-15T00:00:00Z",
+          }
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),

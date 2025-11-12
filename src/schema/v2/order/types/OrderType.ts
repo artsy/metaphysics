@@ -422,8 +422,8 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       },
     },
     offers: {
-      type: new GraphQLList(new GraphQLNonNull(OfferType)),
-      description: "List of offers for this order",
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
+      description: "List of submitted offers for this order",
       resolve: ({ offers }) => offers || [],
     },
   },

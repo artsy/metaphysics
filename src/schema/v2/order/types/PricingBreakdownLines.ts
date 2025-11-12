@@ -41,10 +41,13 @@ const COPY = {
   },
 } as const
 
-const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
+const extractLastOfferAmountFrom = (
+  offers: OrderJSON["offers"],
+  from?: "buyer" | "seller"
+) => {
   if (!offers?.length) return null
   const lastOffer = offers
-    ?.filter((offer) => offer.from_participant === buyerOrSeller)
+    ?.filter((offer) => offer.from_participant === from || !from)
     ?.sort(
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -90,14 +93,25 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     const {
       currency_code: currencyCode,
       shipping_total_cents: shippingTotalCents,
-      tax_total_cents: taxTotalCents,
+      tax_total_cents: orderTaxTotalCents,
       items_total_cents: itemsTotalCents,
-      buyer_total_cents: buyerTotalCents,
+      buyer_total_cents: orderBuyerTotalCents,
       awaiting_response_from: awaitingResponseFrom,
       mode,
       source,
       offers,
+      buyer_state: buyerState,
     } = order
+
+    const preferPendingOfferFields =
+      buyerState === "incomplete" && mode === "offer"
+
+    const taxTotalMinor = preferPendingOfferFields
+      ? order.pending_offer?.tax_total_cents
+      : orderTaxTotalCents
+    const buyerTotalMinor = preferPendingOfferFields
+      ? order.pending_offer?.buyer_total_cents
+      : orderBuyerTotalCents
 
     const resolveMoney = (amount: number) => {
       return resolveMinorAndCurrencyFieldsToMoney(
@@ -114,19 +128,30 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
     }
 
     let subtotalDisplayName: string
-    let subtotalAmount: number | undefined
+    let subtotalAmount: number | undefined | null
     switch (true) {
       case mode === "buy" && source === "partner_offer":
         subtotalDisplayName = COPY.subtotal.displayName.partnerOffer
         subtotalAmount = itemsTotalCents
         break
-      case mode === "offer" && awaitingResponseFrom === "buyer":
-        subtotalDisplayName = COPY.subtotal.displayName.counterOffer
-        subtotalAmount = extractLastOfferAmountFrom("seller", offers)
-        break
+
       case mode === "offer":
         subtotalDisplayName = COPY.subtotal.displayName.makeOffer
-        subtotalAmount = extractLastOfferAmountFrom("buyer", offers)
+        if (buyerState === "incomplete") {
+          subtotalAmount = order.pending_offer?.amount_cents
+          break
+        }
+        if (awaitingResponseFrom === "seller") {
+          subtotalAmount = extractLastOfferAmountFrom(offers, "buyer")
+          break
+        }
+        if (awaitingResponseFrom === "buyer") {
+          subtotalDisplayName = COPY.subtotal.displayName.counterOffer
+          subtotalAmount = extractLastOfferAmountFrom(offers, "seller")
+          break
+        }
+        // Default case: use buyer's last offer
+        subtotalAmount = extractLastOfferAmountFrom(offers, "buyer")
         break
       default:
         subtotalDisplayName = COPY.subtotal.displayName.buyNow
@@ -183,20 +208,21 @@ export const PricingBreakdownLines: GraphQLFieldConfig<
       ...amounts,
     }
 
-    const hasTaxTotal = taxTotalCents != null
+    const hasTaxTotal = taxTotalMinor != null
+
     const taxLine = {
       __typename: "TaxLine",
       displayName: COPY.tax.displayName,
-      amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
+      amount: hasTaxTotal ? resolveMoney(taxTotalMinor) : null,
       amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
     }
 
-    const hasBuyerTotal = buyerTotalCents != null
+    const hasBuyerTotal = buyerTotalMinor != null
 
     const totalLine = {
       __typename: "TotalLine",
       displayName: COPY.total.displayName,
-      amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
+      amount: hasBuyerTotal ? resolveMoney(buyerTotalMinor) : null,
       amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
     }
 
