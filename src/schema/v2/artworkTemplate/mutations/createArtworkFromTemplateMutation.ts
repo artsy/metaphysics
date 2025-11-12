@@ -56,7 +56,8 @@ export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateArtworkFromTemplate",
-  description: "Create an artwork from an artwork template.",
+  description:
+    "Create an artwork from an artwork template, optionally with images.",
   inputFields: {
     partnerID: {
       type: new GraphQLNonNull(GraphQLID),
@@ -114,24 +115,9 @@ export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
       keys.push(args.imageS3Key)
     }
 
-    // Validate image S3 bucket/key inputs
-    if (!addImageToArtworkLoader) {
+    // Validate image S3 bucket/key inputs if images are provided
+    if (buckets.length > 0 && !addImageToArtworkLoader) {
       throw new Error("This operation requires an `X-Access-Token` header.")
-    }
-
-    if (!buckets.length) {
-      return {
-        message:
-          "You must provide either imageS3Bucket or non-empty imageS3Buckets.",
-        _type: "GravityMutationError",
-      }
-    }
-
-    if (!keys.length) {
-      return {
-        message: "You must provide either imageS3Key or non-empty imageS3Keys.",
-        _type: "GravityMutationError",
-      }
     }
 
     if (buckets.length !== keys.length) {
@@ -148,15 +134,17 @@ export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
         templateId: args.artworkTemplateID,
       })
 
-      // Attach all images
-      await Promise.all(
-        buckets.map((bucket, i) =>
-          addImageToArtworkLoader(result._id, {
-            source_bucket: bucket,
-            source_key: keys[i],
-          })
+      // Attach images if provided
+      if (buckets.length > 0) {
+        await Promise.all(
+          buckets.map((bucket, i) =>
+            addImageToArtworkLoader(result._id, {
+              source_bucket: bucket,
+              source_key: keys[i],
+            })
+          )
         )
-      )
+      }
 
       return result
     } catch (error) {
