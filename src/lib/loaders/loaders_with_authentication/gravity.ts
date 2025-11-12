@@ -1293,6 +1293,27 @@ export default (accessToken, userID, opts) => {
       any,
       { partner_id: string; show_id: string }
     >(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
+    shippingPresetLoader: gravityLoader((id) => `shipping_preset/${id}`),
+    shippingPresetsLoader: gravityLoader(
+      "shipping_presets",
+      {},
+      { headers: true }
+    ),
+    createShippingPresetLoader: gravityLoader(
+      "shipping_preset",
+      {},
+      { method: "POST" }
+    ),
+    updateShippingPresetLoader: gravityLoader(
+      (id) => `shipping_preset/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteShippingPresetLoader: gravityLoader(
+      (id) => `shipping_preset/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     submitArtworkInquiryRequestLoader: gravityLoader(
       "me/artwork_inquiry_request",
       {},
