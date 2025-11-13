@@ -12,7 +12,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import ShippingPreset from "../shippingPreset"
+import ShippingPreset from "schema/v2/shippingPreset"
 
 interface UpdateShippingPresetMutationInputProps {
   id: string

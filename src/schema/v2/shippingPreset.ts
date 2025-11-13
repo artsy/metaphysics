@@ -7,8 +7,12 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { NodeInterface, InternalIDFields } from "./object_identification"
-import date from "./fields/date"
+import {
+  NodeInterface,
+  InternalIDFields,
+} from "schema/v2/object_identification"
+import date from "schema/v2/fields/date"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShippingPreset",
@@ -75,3 +79,6 @@ const ShippingPreset: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default ShippingPreset
+export const ShippingPresetsConnection = connectionWithCursorInfo({
+  nodeType: ShippingPresetType,
+})

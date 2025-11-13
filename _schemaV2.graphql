@@ -18720,6 +18720,14 @@ type Partner implements Node {
   profile: Profile
   profileArtistsLayout: String
   profileBannerDisplay: String
+
+  # A connection of shipping presets for this partner.
+  shippingPresetsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ShippingPresetConnection
   showPromoted: Boolean
 
   # A connection of shows from a Partner.
@@ -23221,6 +23229,26 @@ type ShippingPreset implements Node {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+}
+
+# A connection to a list of items.
+type ShippingPresetConnection {
+  # A list of edges.
+  edges: [ShippingPresetEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ShippingPresetEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ShippingPreset
 }
 
 type Shortcut {

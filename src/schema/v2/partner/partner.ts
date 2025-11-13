@@ -60,6 +60,7 @@ import {
   ViewingRoomsConnection,
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
+import { ShippingPresetsConnection } from "schema/v2/shippingPreset"
 import { contactsConnection, ContactType } from "schema/v2/Contacts"
 import { ConversationMessageTemplatesConnection } from "schema/v2/conversationMessageTemplate/conversationMessageTemplatesConnection"
 import {
@@ -1441,6 +1442,40 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           const { body, headers } = await viewingRoomsLoader(gravityArgs)
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
+        },
+      },
+      shippingPresetsConnection: {
+        type: ShippingPresetsConnection.connectionType,
+        description: "A connection of shipping presets for this partner.",
+        args: pageable({}),
+        resolve: async ({ id }, args, { shippingPresetsLoader }) => {
+          if (!shippingPresetsLoader) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityArgs = {
+            partner_id: id,
+            page,
+            size,
+            total_count: true,
+          }
+
+          const { body, headers } = await shippingPresetsLoader(gravityArgs)
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
