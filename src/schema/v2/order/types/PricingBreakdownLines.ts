@@ -61,6 +61,11 @@ const PricingBreakdownLineUnion = new GraphQLUnionType({
   },
 })
 
+// Shared type for pricing breakdown lines
+export const PricingBreakdownLinesType = new GraphQLNonNull(
+  new GraphQLList(PricingBreakdownLineUnion)
+)
+
 type ResolvedPriceLineData = {
   __typename: "ShippingLine" | "TaxLine" | "SubtotalLine" | "TotalLine"
   displayName: string
@@ -68,7 +73,7 @@ type ResolvedPriceLineData = {
   amountFallbackText: string | null
 }
 
-const resolveOrderPricingBreakdownLines = (
+export const resolveOrderPricingBreakdownLines = (
   order: OrderJSON,
   args,
   context,
@@ -170,7 +175,7 @@ const resolveOrderPricingBreakdownLines = (
   return [subtotalLine, shippingLine, taxLine, totalLine]
 }
 
-const resolveOfferPricingBreakdownLines = (
+export const resolveOfferPricingBreakdownLines = (
   offer: OfferJSON,
   args,
   context,
@@ -242,13 +247,6 @@ const resolveOfferPricingBreakdownLines = (
 
   return [subtotalLine, shippingLine, taxLine, totalLine]
 }
-
-// Shared type for pricing breakdown lines
-export const PricingBreakdownLinesType = new GraphQLNonNull(
-  new GraphQLList(PricingBreakdownLineUnion)
-)
-
-export { resolveOrderPricingBreakdownLines, resolveOfferPricingBreakdownLines }
 
 const ShippingLine = new GraphQLObjectType({
   name: "ShippingLine",
