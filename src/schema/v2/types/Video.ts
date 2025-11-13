@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
   GraphQLNonNull,
@@ -10,6 +11,7 @@ import uuid from "uuid/v5"
 import { ResolverContext } from "types/graphql"
 import { markdown } from "../fields/markdown"
 import { toGlobalId } from "graphql-relay"
+import { extractEmbed } from "../article/lib/extractEmbed"
 
 interface VideoTypeProps {
   _id: string
@@ -68,6 +70,26 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
             player_embed_url, // if Video
           } = parent
           return playerUrl || player_embed_url
+        },
+      },
+      embed: {
+        description: "Only YouTube and Vimeo are supported",
+        args: {
+          autoPlay: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+        },
+        type: GraphQLString,
+        resolve: (parent, { autoPlay }, _context, _info) => {
+          const {
+            playerUrl, // if Artwork
+            player_embed_url, // if Video
+          } = parent
+          const url = playerUrl || player_embed_url
+          if (!url) return null
+          const options = { autoplay: autoPlay ? 1 : 0 }
+          return extractEmbed(url, options)
         },
       },
       height: {

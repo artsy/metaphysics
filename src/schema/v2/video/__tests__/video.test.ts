@@ -45,6 +45,113 @@ describe("Video type", () => {
         description: "This is an example video",
       })
     })
+
+    it("returns an embed iframe for YouTube videos", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            embed(autoPlay: false)
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            height: 720,
+            width: 1280,
+            title: "Example Video",
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video.embed).toContain('<iframe')
+      expect(video.embed).toContain('src="https://www.youtube.com/embed/dQw4w9WgXcQ')
+      expect(video.embed).toContain('autoplay=0')
+    })
+
+    it("returns an embed iframe with autoplay enabled", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            embed(autoPlay: true)
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            height: 720,
+            width: 1280,
+            title: "Example Video",
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video.embed).toContain('autoplay=1')
+    })
+
+    it("returns an embed iframe for Vimeo videos", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            embed
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://vimeo.com/123456789",
+            height: 720,
+            width: 1280,
+            title: "Vimeo Video",
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video.embed).toContain('<iframe')
+      expect(video.embed).toContain('src="https://player.vimeo.com/video/123456789')
+    })
+
+    it("returns null for non-supported video providers", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            embed
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://example.com/video.mp4",
+            height: 720,
+            width: 1280,
+            title: "Example Video",
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video.embed).toBeNull()
+    })
   })
 
   describe("as an Artwork field", () => {
