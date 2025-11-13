@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 import ShippingPreset from "../shippingPreset"
 
 interface UpdateShippingPresetMutationInputProps {
-  shippingPresetId: string
+  id: string
   name?: string
   domesticShippingFeeCents?: number
   internationalShippingFeeCents?: number
@@ -59,7 +59,7 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
   name: "UpdateShippingPresetMutation",
   description: "Updates a shipping preset for a partner.",
   inputFields: {
-    shippingPresetId: {
+    id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the shipping preset to update.",
     },
@@ -97,7 +97,7 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { shippingPresetId, ...args },
+    { id, ...args },
     { updateShippingPresetLoader }
   ) => {
     if (!updateShippingPresetLoader) {
@@ -123,10 +123,7 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await updateShippingPresetLoader(
-        shippingPresetId,
-        gravityArgs
-      )
+      const response = await updateShippingPresetLoader(id, gravityArgs)
 
       return response
     } catch (error) {

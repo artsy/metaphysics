@@ -6,7 +6,7 @@ describe("UpdateShippingPresetMutation", () => {
     mutation {
       updateShippingPreset(
         input: {
-          shippingPresetId: "preset123"
+          id: "preset123"
           name: "Updated Shipping"
           domesticShippingFeeCents: 1500
         }

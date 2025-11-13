@@ -13,7 +13,7 @@ import { ResolverContext } from "types/graphql"
 import ShippingPreset from "../shippingPreset"
 
 interface DeleteShippingPresetMutationInputProps {
-  shippingPresetId: string
+  id: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -51,7 +51,7 @@ export const deleteShippingPresetMutation = mutationWithClientMutationId<
   name: "DeleteShippingPresetMutation",
   description: "Deletes a shipping preset for a partner.",
   inputFields: {
-    shippingPresetId: {
+    id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the shipping preset to delete.",
     },
@@ -64,16 +64,13 @@ export const deleteShippingPresetMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    { shippingPresetId },
-    { deleteShippingPresetLoader }
-  ) => {
+  mutateAndGetPayload: async ({ id }, { deleteShippingPresetLoader }) => {
     if (!deleteShippingPresetLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await deleteShippingPresetLoader(shippingPresetId)
+      const response = await deleteShippingPresetLoader(id)
 
       return response
     } catch (error) {

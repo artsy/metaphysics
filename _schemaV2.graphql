@@ -11410,7 +11410,7 @@ input DeleteShippingPresetMutationInput {
   clientMutationId: String
 
   # The ID of the shipping preset to delete.
-  shippingPresetId: String!
+  id: String!
 }
 
 type DeleteShippingPresetMutationPayload {
@@ -25710,6 +25710,9 @@ input UpdateShippingPresetMutationInput {
   # Domestic shipping fee in cents.
   domesticShippingFeeCents: Int
 
+  # The ID of the shipping preset to update.
+  id: String!
+
   # International shipping fee in cents.
   internationalShippingFeeCents: Int
 
@@ -25718,9 +25721,6 @@ input UpdateShippingPresetMutationInput {
 
   # Whether pickup is available.
   pickupAvailable: Boolean
-
-  # The ID of the shipping preset to update.
-  shippingPresetId: String!
 }
 
 type UpdateShippingPresetMutationPayload {

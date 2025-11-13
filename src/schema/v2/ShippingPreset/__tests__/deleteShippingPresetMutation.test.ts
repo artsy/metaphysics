@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("DeleteShippingPresetMutation", () => {
   const mutation = gql`
     mutation {
-      deleteShippingPreset(input: { shippingPresetId: "preset123" }) {
+      deleteShippingPreset(input: { id: "preset123" }) {
         shippingPresetOrError {
           __typename
           ... on DeleteShippingPresetSuccess {
