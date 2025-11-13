@@ -32,9 +32,9 @@ export const VideosConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_parent, args, context, _info) => {
-    const { videosLoader } = context
+    const { videosLoader, matchVideosLoader } = context
 
-    if (!videosLoader) {
+    if (!videosLoader || !matchVideosLoader) {
       throw new Error("You need to be logged in to perform this action")
     }
 
@@ -48,7 +48,8 @@ export const VideosConnection: GraphQLFieldConfig<void, ResolverContext> = {
       total_count: true,
     }
 
-    const { body, headers } = await videosLoader(gravityArgs)
+    const loader = args.term ? matchVideosLoader : videosLoader
+    const { body, headers } = await loader(gravityArgs)
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

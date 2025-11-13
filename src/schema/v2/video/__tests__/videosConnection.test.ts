@@ -84,8 +84,9 @@ describe("videosConnection", () => {
     `)
   })
 
-  it("filters videos by search term", async () => {
-    const videosLoader = jest.fn().mockReturnValue(
+  it("filters videos by search term via the match loader", async () => {
+    const videosLoader = jest.fn()
+    const matchVideosLoader = jest.fn().mockReturnValue(
       Promise.resolve({
         body: [
           {
@@ -114,10 +115,11 @@ describe("videosConnection", () => {
         }
       }
     `
-    const context = { videosLoader }
+    const context = { videosLoader, matchVideosLoader }
     const { videosConnection } = await runAuthenticatedQuery(query, context)
 
-    expect(videosLoader).toHaveBeenCalledWith({
+    expect(videosLoader).not.toHaveBeenCalled()
+    expect(matchVideosLoader).toHaveBeenCalledWith({
       term: "interview",
       page: 1,
       size: 10,
