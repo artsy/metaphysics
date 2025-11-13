@@ -14,7 +14,10 @@ import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
 import { PartnerType } from "schema/v2/partner/partner"
 import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
-import { PricingBreakdownLines } from "./PricingBreakdownLines"
+import {
+  PricingBreakdownLinesType,
+  resolveOrderPricingBreakdownLines,
+} from "./PricingBreakdownLines"
 import { OrderJSON } from "./exchangeJson"
 import { PaymentMethodUnion } from "schema/v2/payment_method_union"
 import { DeliveryInfo } from "./DeliveryInfo"
@@ -324,7 +327,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "The payment method details that was used for the order",
       resolve: (order, _args, ctx) => resolvePaymentMethodDetails(order, ctx),
     },
-    pricingBreakdownLines: PricingBreakdownLines,
+    pricingBreakdownLines: {
+      type: PricingBreakdownLinesType,
+      description: "Pricing breakdown lines",
+      resolve: resolveOrderPricingBreakdownLines,
+    },
     selectedFulfillmentOption: {
       type: FulfillmentOptionType,
       description: "The selected fulfillment option for the order",

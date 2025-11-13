@@ -17918,6 +17918,9 @@ type Offer {
   # The order this offer belongs to
   order: Order
 
+  # Pricing breakdown lines
+  pricingBreakdownLines: [PricingBreakdownLineUnion]!
+
   # The shipping total for this offer
   shippingTotal: Money
 
@@ -18033,7 +18036,7 @@ type Order {
   # The payment method details that was used for the order
   paymentMethodDetails: PaymentMethodUnion
 
-  # Order pricing breakdown lines
+  # Pricing breakdown lines
   pricingBreakdownLines: [PricingBreakdownLineUnion]!
 
   # The selected fulfillment option for the order
