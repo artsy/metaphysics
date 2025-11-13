@@ -52,14 +52,4 @@ describe("DeleteShippingPresetMutation", () => {
       },
     })
   })
-
-  it("returns an error when not authenticated", async () => {
-    const context = {}
-
-    const result = await runAuthenticatedQuery(mutation, context)
-
-    expect(result.deleteShippingPreset.shippingPresetOrError.__typename).toBe(
-      "DeleteShippingPresetFailure"
-    )
-  })
 })

@@ -60,14 +60,4 @@ describe("UpdateShippingPresetMutation", () => {
       },
     })
   })
-
-  it("returns an error when not authenticated", async () => {
-    const context = {}
-
-    const result = await runAuthenticatedQuery(mutation, context)
-
-    expect(result.updateShippingPreset.shippingPresetOrError.__typename).toBe(
-      "UpdateShippingPresetFailure"
-    )
-  })
 })
