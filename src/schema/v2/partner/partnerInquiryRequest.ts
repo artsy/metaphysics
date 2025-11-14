@@ -24,10 +24,10 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ inquiry_shipping_location, inquiry_questions, message }) => {
         if (!inquiry_questions || !inquiry_questions.length) return message
         const shippingQuote = () => {
-          if (!inquiry_shipping_location) return "• Shipping Quote"
+          if (!inquiry_shipping_location) return "• Shipping quote"
           const { city, country, state } = inquiry_shipping_location
           const stateOrCountry = country === "United States" ? state : country
-          return `• Shipping Quote to ${[city, stateOrCountry].join(", ")}`
+          return `• Shipping quote to ${[city, stateOrCountry].join(", ")}`
         }
         const lines = ["I'm interested in information regarding:"]
 

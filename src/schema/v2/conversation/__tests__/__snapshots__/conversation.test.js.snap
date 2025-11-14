@@ -68,7 +68,7 @@ exports[`Me Conversation inquiry request returns the formatted first message, qu
 
 exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 3`] = `
 "I'm interested in information regarding:
-• Shipping Quote to New York City, US
+• Shipping quote to New York City, US
 • Condition & Provenance
 
 Hello world!"
