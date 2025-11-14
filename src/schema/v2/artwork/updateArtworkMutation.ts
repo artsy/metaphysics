@@ -50,6 +50,7 @@ interface S3LocationInput {
 }
 
 interface UpdateArtworkMutationInputProps {
+  additionalInformation?: string
   artistProofs?: string
   availability?: string
   defaultImageID?: string
@@ -84,6 +85,10 @@ const inputFields = {
   id: {
     type: new GraphQLNonNull(GraphQLString),
     description: "The id of the artwork to update.",
+  },
+  additionalInformation: {
+    type: GraphQLString,
+    description: "Additional information about the artwork",
   },
   availability: {
     type: GraphQLString,
@@ -230,6 +235,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
 
     const getGravityArgs = (inputArgs: UpdateArtworkMutationInputProps) => {
       return {
+        additional_information: inputArgs.additionalInformation,
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
         delete: inputArgs.delete,
