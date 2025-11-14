@@ -37,9 +37,9 @@ describe("ArtworkTemplateType", () => {
     pickup_available: true,
     price_currency: "USD",
     price_hidden: false,
-    price_listed: 1500000,
-    price_max: 2000000,
-    price_min: 1000000,
+    price_listed: 15000,
+    price_max: 20000,
+    price_min: 10000,
     publisher: "Fine Art Press",
     series: "Abstract Series 2023",
     shipping_notes: "Requires special handling",
@@ -133,9 +133,24 @@ describe("ArtworkTemplateType", () => {
                 isPickupAvailable
                 priceCurrency
                 isPriceHidden
-                priceListed
-                priceMax
-                priceMin
+                priceListed {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
+                priceMax {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
+                priceMin {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
                 publisher
                 series
                 shippingNotes
@@ -203,9 +218,24 @@ describe("ArtworkTemplateType", () => {
       isPickupAvailable: true,
       priceCurrency: "USD",
       isPriceHidden: false,
-      priceListed: "$15,000",
-      priceMax: "$20,000",
-      priceMin: "$10,000",
+      priceListed: {
+        minor: 1500000,
+        major: 15000,
+        currencyCode: "USD",
+        display: null,
+      },
+      priceMax: {
+        minor: 2000000,
+        major: 20000,
+        currencyCode: "USD",
+        display: null,
+      },
+      priceMin: {
+        minor: 1000000,
+        major: 10000,
+        currencyCode: "USD",
+        display: null,
+      },
       publisher: "Fine Art Press",
       series: "Abstract Series 2023",
       shippingNotes: "Requires special handling",

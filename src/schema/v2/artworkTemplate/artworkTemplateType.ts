@@ -173,6 +173,7 @@ export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
     priceListed: {
       type: Money,
       resolve: ({ price_listed, price_currency: currency }) => {
+        if (price_listed == null) return null
         const factor =
           currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
         const cents = price_listed * factor
@@ -182,6 +183,7 @@ export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
     priceMax: {
       type: Money,
       resolve: ({ price_max, price_currency: currency }) => {
+        if (price_max == null) return null
         const factor =
           currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
         const cents = price_max * factor
@@ -191,6 +193,7 @@ export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
     priceMin: {
       type: Money,
       resolve: ({ price_min, price_currency: currency }) => {
+        if (price_min == null) return null
         const factor =
           currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
         const cents = price_min * factor

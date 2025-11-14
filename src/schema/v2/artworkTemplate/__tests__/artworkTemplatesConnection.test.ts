@@ -14,7 +14,7 @@ describe("artworkTemplatesConnection", () => {
       width: 80,
       metric: "cm",
       availability: "for sale",
-      price_listed: 500000,
+      price_listed: 5000,
       price_currency: "USD",
       unique: true,
       certificate_of_authenticity: true,
@@ -38,8 +38,8 @@ describe("artworkTemplatesConnection", () => {
       framed_width: 45,
       framed_metric: "cm",
       availability: "for sale",
-      price_min: 200000,
-      price_max: 300000,
+      price_min: 2000,
+      price_max: 3000,
       price_currency: "USD",
       display_price_range: true,
       created_at: "2024-01-03T00:00:00Z",
@@ -57,6 +57,7 @@ describe("artworkTemplatesConnection", () => {
       depth: 50,
       metric: "cm",
       availability: "for sale",
+      price_currency: "USD",
       price_hidden: true,
       ecommerce: false,
       offer: true,
@@ -100,9 +101,24 @@ describe("artworkTemplatesConnection", () => {
                 depth
                 metric
                 availability
-                priceListed
-                priceMin
-                priceMax
+                priceListed {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
+                priceMin {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
+                priceMax {
+                  minor
+                  major
+                  currencyCode
+                  display
+                }
                 priceCurrency
                 isPriceHidden
                 displayPriceRange
@@ -141,7 +157,12 @@ describe("artworkTemplatesConnection", () => {
                 depth: null,
                 metric: "cm",
                 availability: "for sale",
-                priceListed: "$5,000",
+                priceListed: {
+                  minor: 500000,
+                  major: 5000,
+                  currencyCode: "USD",
+                  display: null,
+                },
                 priceMin: null,
                 priceMax: null,
                 priceCurrency: "USD",
@@ -171,8 +192,18 @@ describe("artworkTemplatesConnection", () => {
                 metric: "cm",
                 availability: "for sale",
                 priceListed: null,
-                priceMin: "$2,000",
-                priceMax: "$3,000",
+                priceMin: {
+                  minor: 200000,
+                  major: 2000,
+                  currencyCode: "USD",
+                  display: null,
+                },
+                priceMax: {
+                  minor: 300000,
+                  major: 3000,
+                  currencyCode: "USD",
+                  display: null,
+                },
                 priceCurrency: "USD",
                 isPriceHidden: null,
                 displayPriceRange: true,
@@ -202,7 +233,7 @@ describe("artworkTemplatesConnection", () => {
                 priceListed: null,
                 priceMin: null,
                 priceMax: null,
-                priceCurrency: null,
+                priceCurrency: "USD",
                 isPriceHidden: true,
                 displayPriceRange: null,
                 isFramed: null,
