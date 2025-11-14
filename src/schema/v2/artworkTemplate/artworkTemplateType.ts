@@ -11,7 +11,8 @@ import { ResolverContext } from "types/graphql"
 import { IDFields } from "../object_identification"
 import { markdown } from "../fields/markdown"
 import { date } from "../fields/date"
-import { amount } from "../fields/money"
+import { Money } from "../fields/money"
+import currencyCodes from "lib/currency_codes.json"
 import AttributionClass from "../artwork/attributionClass"
 import { ArtworkVisibility } from "../artwork/artworkVisibility"
 import attributionClasses from "lib/attributionClasses"
@@ -170,13 +171,34 @@ export const ArtworkTemplateType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ price_hidden }) => price_hidden,
     },
     priceListed: {
-      ...amount(({ price_listed }) => price_listed),
+      type: Money,
+      resolve: ({ price_listed, price_currency: currency }) => {
+        if (price_listed == null) return null
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_listed * factor
+        return { cents, currency }
+      },
     },
     priceMax: {
-      ...amount(({ price_max }) => price_max),
+      type: Money,
+      resolve: ({ price_max, price_currency: currency }) => {
+        if (price_max == null) return null
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_max * factor
+        return { cents, currency }
+      },
     },
     priceMin: {
-      ...amount(({ price_min }) => price_min),
+      type: Money,
+      resolve: ({ price_min, price_currency: currency }) => {
+        if (price_min == null) return null
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_min * factor
+        return { cents, currency }
+      },
     },
     publisher: markdown(),
     series: markdown(),
