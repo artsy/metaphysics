@@ -1,7 +1,7 @@
 import { GraphQLEnumType } from "graphql"
 
 export const ArtworkCompletenessChecklistItemKeyValues = {
-  // Ranked by importance for listing quality
+  // Ranked by importance
   PUBLISHABLE: "publishable",
   MULTIPLE_IMAGES: "multiple_images",
   PRICE_VISIBILITY: "price_visibility",

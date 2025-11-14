@@ -503,7 +503,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       comparableAuctionResults: ComparableAuctionResults,
       completenessScore: {
         type: GraphQLInt,
-        description: "A score representing the listing quality of the artwork",
+        description: "A number representing the listing score of the artwork",
         resolve: ({ completeness_score }) => completeness_score,
       },
       completenessChecklist: {
