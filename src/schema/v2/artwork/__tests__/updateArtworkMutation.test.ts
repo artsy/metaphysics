@@ -415,4 +415,72 @@ describe("UpdateArtworkMutation", () => {
       })
     })
   })
+
+  describe("additionalInformation field", () => {
+    const additionalInfoMutation = gql`
+      mutation {
+        updateArtwork(
+          input: {
+            id: "25"
+            additionalInformation: "This is additional information about the artwork"
+          }
+        ) {
+          artworkOrError {
+            __typename
+            ... on updateArtworkSuccess {
+              artwork {
+                internalID
+              }
+            }
+            ... on updateArtworkFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("updates the artwork with additionalInformation field", async () => {
+      const updateArtworkLoader = jest.fn((id, args) => {
+        expect(id).toBe("25")
+        expect(args.additional_information).toBe(
+          "This is additional information about the artwork"
+        )
+        return Promise.resolve({
+          id: "25",
+          _id: "25",
+        })
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(
+        additionalInfoMutation,
+        context
+      )
+
+      expect(result).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkSuccess",
+            artwork: {
+              internalID: "25",
+            },
+          },
+        },
+      })
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          additional_information:
+            "This is additional information about the artwork",
+        })
+      )
+    })
+  })
 })
