@@ -378,10 +378,7 @@ describe("Sale type", () => {
       }
 
       const data = await runAuthenticatedQuery(query, context)
-      expect(allViaLoader.mock.calls[0][1]).toEqual({
-        path: "foo-foo",
-        params: { size: 100 },
-      })
+      expect(allViaLoader.mock.calls[0][1]).toEqual({ path: "foo-foo" })
       expect(data).toMatchSnapshot()
     })
   })

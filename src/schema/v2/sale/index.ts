@@ -530,7 +530,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (options.all) {
             return allViaLoader(saleArtworksLoader, {
               path: sale.id,
-              params: { size: 100 },
             }).then((body) => connectionFromArray(body, {}))
           } else {
             const gravityArgs = {
