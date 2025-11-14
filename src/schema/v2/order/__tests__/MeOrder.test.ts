@@ -47,7 +47,7 @@ describe("Me", () => {
       shipping_address_line2: "Apt 4B",
       tax_total_cents: 4299,
       shipping_origin: "Marfa, TX, US",
-      offers: [],
+      submitted_offers: [],
     }
     artwork = artwork || {
       ...baseArtwork,
@@ -303,7 +303,7 @@ describe("Me", () => {
       `
 
       it("returns offers when present", async () => {
-        orderJson.offers = [
+        orderJson.submitted_offers = [
           {
             id: "offer-1",
             amount_cents: 450000,
@@ -384,7 +384,7 @@ describe("Me", () => {
       })
 
       it("returns empty array when no offers", async () => {
-        orderJson.offers = undefined
+        orderJson.submitted_offers = undefined
 
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
@@ -397,7 +397,7 @@ describe("Me", () => {
       })
 
       it("returns pricingBreakdownLines for an offer", async () => {
-        orderJson.offers = [
+        orderJson.submitted_offers = [
           {
             id: "offer-1",
             amount_cents: 450000,
