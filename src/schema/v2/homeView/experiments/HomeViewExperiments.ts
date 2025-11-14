@@ -8,6 +8,7 @@ import { ResolverContext } from "types/graphql"
 import { CURRENTLY_RUNNING_EXPERIMENTS } from "./experiments"
 import { ClientFeatureFlagType } from "schema/v2/featureFlags/client/featureFlags"
 import { compact } from "lodash"
+import { isEligibleForAuctionsHubExperiment } from "../sections/AuctionsHub"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   type: GraphQLNonNull(GraphQLList(ClientFeatureFlagType)),
@@ -15,6 +16,13 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: (_parent, _args, context, _info) => {
     const experiments = CURRENTLY_RUNNING_EXPERIMENTS.map(
       (name: FeatureFlag) => {
+        if (
+          name === "onyx_auctions_hub" &&
+          !isEligibleForAuctionsHubExperiment(context)
+        ) {
+          return null
+        }
+
         const flag = getFeatureFlag(name)
         const variant = getExperimentVariant(name, { userId: context.userID })
 
