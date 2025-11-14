@@ -13,6 +13,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import ShippingPreset from "schema/v2/shippingPreset"
+import { isUndefined, omitBy } from "lodash"
 
 interface UpdateShippingPresetMutationInputProps {
   id: string
@@ -104,23 +105,17 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
-    const addField = (key: string, value: any) =>
-      value !== undefined ? { [key]: value } : {}
-
-    const gravityArgs = {
-      ...addField("name", args.name),
-      ...addField("domestic_shipping_fee_cents", args.domesticShippingFeeCents),
-      ...addField(
-        "international_shipping_fee_cents",
-        args.internationalShippingFeeCents
-      ),
-      ...addField("pickup_available", args.pickupAvailable),
-      ...addField("artsy_shipping_domestic", args.artsyShippingDomestic),
-      ...addField(
-        "artsy_shipping_international",
-        args.artsyShippingInternational
-      ),
-    }
+    const gravityArgs = omitBy(
+      {
+        name: args.name,
+        domestic_shipping_fee_cents: args.domesticShippingFeeCents,
+        international_shipping_fee_cents: args.internationalShippingFeeCents,
+        pickup_available: args.pickupAvailable,
+        artsy_shipping_domestic: args.artsyShippingDomestic,
+        artsy_shipping_international: args.artsyShippingInternational,
+      },
+      isUndefined
+    )
 
     try {
       const response = await updateShippingPresetLoader(id, gravityArgs)
