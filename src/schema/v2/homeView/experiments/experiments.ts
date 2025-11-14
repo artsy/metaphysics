@@ -5,5 +5,5 @@ import { FeatureFlag } from "lib/featureFlags"
  * should be exposed as part of the current home view response
  */
 export const CURRENTLY_RUNNING_EXPERIMENTS: FeatureFlag[] = [
-  "onyx_nwfy-price-reranking-test",
+  "onyx_auctions_hub",
 ]

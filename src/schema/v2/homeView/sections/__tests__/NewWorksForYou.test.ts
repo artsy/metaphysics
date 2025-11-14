@@ -71,110 +71,51 @@ describe("NewWorksForYou", () => {
     // see artworksForUser.test.ts
   })
 
-  describe("when the onyx_nwfy-price-reranking-test experiment is enabled", () => {
-    it("serves Version C to the control group", async () => {
-      mockGetExperimentVariant.mockImplementation(() => ({
-        name: "control",
-        enabled: true,
-      }))
-
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              ... on HomeViewSectionArtworks {
-                artworksConnection(first: 20) {
-                  edges {
-                    node {
-                      slug
-                    }
+  it("serves Version A to the experiment group", async () => {
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-new-works-for-you") {
+            ... on HomeViewSectionArtworks {
+              artworksConnection(first: 20) {
+                edges {
+                  node {
+                    slug
                   }
                 }
               }
             }
           }
         }
-      `
+      }
+    `
 
-      type VortexGraphqlLoaderArgs = { query: string }
-      const mockVortexGraphqlLoader = jest.fn(
-        (_args: VortexGraphqlLoaderArgs) => () =>
-          Promise.resolve({ data: { newForYouRecommendations: [{}] } })
-      )
+    type VortexGraphqlLoaderArgs = { query: string }
+    const mockVortexGraphqlLoader = jest.fn(
+      (_args: VortexGraphqlLoaderArgs) => () =>
+        Promise.resolve({ data: { newForYouRecommendations: [{}] } })
+    )
 
-      const context = {
-        accessToken: "424242",
-        userID: "vortex-user-id",
-        artworksLoader: jest.fn(() => Promise.resolve([])),
-        setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
-        setItemsLoader: jest.fn(() => Promise.resolve({ body: [{}] })),
-        authenticatedLoaders: {
-          vortexGraphqlLoader: mockVortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: jest.fn(),
-        },
-      } as any
+    const context = {
+      accessToken: "424242",
+      userID: "vortex-user-id",
+      artworksLoader: jest.fn(() => Promise.resolve([])),
+      setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
+      setItemsLoader: jest.fn(() => Promise.resolve({ body: [{}] })),
+      authenticatedLoaders: {
+        vortexGraphqlLoader: mockVortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: jest.fn(),
+      },
+    } as any
 
-      await runQuery(query, context)
+    await runQuery(query, context)
 
-      const vortexGraphqlQuery =
-        mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
+    const vortexGraphqlQuery =
+      mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
 
-      expect(vortexGraphqlQuery).toMatch('version: "C"')
-    })
-
-    it("serves Version A to the experiment group", async () => {
-      mockGetExperimentVariant.mockImplementation(() => ({
-        name: "variant-a",
-        enabled: true,
-      }))
-
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              ... on HomeViewSectionArtworks {
-                artworksConnection(first: 20) {
-                  edges {
-                    node {
-                      slug
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-
-      type VortexGraphqlLoaderArgs = { query: string }
-      const mockVortexGraphqlLoader = jest.fn(
-        (_args: VortexGraphqlLoaderArgs) => () =>
-          Promise.resolve({ data: { newForYouRecommendations: [{}] } })
-      )
-
-      const context = {
-        accessToken: "424242",
-        userID: "vortex-user-id",
-        artworksLoader: jest.fn(() => Promise.resolve([])),
-        setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
-        setItemsLoader: jest.fn(() => Promise.resolve({ body: [{}] })),
-        authenticatedLoaders: {
-          vortexGraphqlLoader: mockVortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: jest.fn(),
-        },
-      } as any
-
-      await runQuery(query, context)
-
-      const vortexGraphqlQuery =
-        mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
-
-      expect(vortexGraphqlQuery).toMatch('version: "A"')
-    })
+    expect(vortexGraphqlQuery).toMatch('version: "A"')
   })
 
   describe("showArtworksCardView", () => {
