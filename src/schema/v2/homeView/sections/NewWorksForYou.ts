@@ -28,22 +28,12 @@ export const NewWorksForYou: HomeViewArtworksSection = {
     return variant && variant.enabled && variant.name === "variant-a"
   },
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    const variant = getExperimentVariant("onyx_nwfy-price-reranking-test", {
-      userId: context.userID,
-    })
-
-    let recommendationsVersion = "C"
-
-    if (variant && variant.enabled && variant.name === "variant-a") {
-      recommendationsVersion = "A"
-    }
-
     const finalArgs = {
       // formerly specified client-side
       maxWorksPerArtist: 3,
       includeBackfill: true,
       first: args.first,
-      version: recommendationsVersion,
+      version: "A",
       excludeDislikedArtworks: true,
       excludeArtworkIds: [],
 
