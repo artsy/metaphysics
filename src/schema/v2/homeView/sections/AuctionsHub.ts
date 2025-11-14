@@ -24,20 +24,26 @@ const extractImageUrls = (
   return items.map(pathExtractor).filter((url): url is string => Boolean(url))
 }
 
-export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
+export const isEligibleForAuctionsHubExperiment = (
+  context: ResolverContext
+): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
   const minimumEigenVersion = { major: 8, minor: 88, patch: 0 }
-  const variant = getExperimentVariant("onyx_auctions_hub", {
-    userId: context.userID,
-  })
 
   if (actualEigenVersion) {
-    return (
-      variant &&
-      variant.enabled &&
-      variant.name === "experiment" &&
-      isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
-    )
+    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
+  } else {
+    return false
+  }
+}
+
+export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
+  if (isEligibleForAuctionsHubExperiment(context)) {
+    const variant = getExperimentVariant("onyx_auctions_hub", {
+      userId: context.userID,
+    })
+
+    return variant && variant.enabled && variant.name === "experiment"
   } else {
     return false
   }
