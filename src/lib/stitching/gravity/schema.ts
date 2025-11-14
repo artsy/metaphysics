@@ -8,11 +8,8 @@ import {
   FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import config from "config"
 
-const rootFieldsAllowList: string[] = config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
-  ? []
-  : ["agreement"]
+const rootFieldsAllowList: string[] = []
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -48,20 +45,7 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  if (config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT) {
-    duplicatedTypes.push(
-      "AcceptPartnerAgreementInput",
-      "AcceptPartnerAgreementPayload",
-      "PartnerAgreementOrErrorsUnion",
-      "PartnerAgreement"
-    )
-  }
-
   const excludedMutations: string[] = []
-
-  if (config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT) {
-    excludedMutations.push("acceptPartnerAgreement")
-  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

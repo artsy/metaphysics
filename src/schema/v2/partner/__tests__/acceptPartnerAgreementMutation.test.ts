@@ -1,12 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const describeIfFeatureFlagEnabled = config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
-  ? describe
-  : describe.skip
-
-describeIfFeatureFlagEnabled("acceptPartnerAgreementMutation", () => {
+describe("acceptPartnerAgreementMutation", () => {
   const mockAcceptPartnerAgreementLoader = jest.fn()
 
   const context = {

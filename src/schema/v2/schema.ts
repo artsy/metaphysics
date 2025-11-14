@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -385,9 +384,7 @@ const rootFields = {
     resolve: Image.resolve,
     description: "Do not use (only used internally for stitching)",
   },
-  ...(config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
-    ? { agreement: Agreement }
-    : {}),
+  agreement: Agreement,
   admin: AdminField,
   ai: AI,
   article: Article,
@@ -525,9 +522,7 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
-      ...(config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
-        ? { acceptPartnerAgreement: acceptPartnerAgreementMutation }
-        : {}),
+      acceptPartnerAgreement: acceptPartnerAgreementMutation,
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
