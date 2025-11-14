@@ -109,7 +109,7 @@ export interface OrderJSON {
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
   tax_total_cents?: number
   total_list_price_cents?: number
-  offers?: Array<OfferJSON>
+  submitted_offers?: Array<OfferJSON>
   pending_offer?: OfferJSON | null
-  last_offer?: OfferJSON | null
+  last_submitted_offer?: OfferJSON | null
 }

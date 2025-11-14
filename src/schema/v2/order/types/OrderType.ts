@@ -428,10 +428,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
-    offers: {
+    submittedOffers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
       description: "List of submitted offers for this order",
-      resolve: ({ offers }) => offers || [],
+      resolve: ({ submitted_offers }) => submitted_offers || [],
+    },
+    offers: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
+      deprecationReason: "Use `submittedOffers` field instead",
+      description: "List of submitted offers for this order",
+      resolve: ({ submitted_offers }) => submitted_offers || [],
+    },
+    pendingOffer: {
+      type: OfferType,
+      description: "The pending offer for this order",
+      resolve: ({ pending_offer }) => pending_offer,
+    },
+    lastSubmittedOffer: {
+      type: OfferType,
+      description: "The last offer for this order",
+      resolve: ({ last_submitted_offer }) => last_submitted_offer,
     },
   },
 })
