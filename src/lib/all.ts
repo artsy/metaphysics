@@ -27,17 +27,16 @@ export const allViaLoader = (
     size: 0,
     total_count: true,
   }
-  return invokeLoader(countParams).then(async ({ headers }) => {
-    const count = parseInt(headers["x-total-count"] || "0", 10)
-    const pages = Math.ceil(count / params.size)
-    const results = await times(pages, (i) => {
-      const pageParams = { ...params, page: i + 1 }
-      return invokeLoader(pageParams).then(({ body }) => body)
-    }).reduce(
-      (acc, promise) =>
-        acc.then((results) => promise.then((result) => [...results, result])),
-      Promise.resolve([])
-    )
-    return flatten(results)
-  })
+  return invokeLoader(countParams)
+    .then(({ headers }) => {
+      const count = parseInt(headers["x-total-count"] || "0", 10)
+      const pages = Math.ceil(count / params.size)
+      return Promise.all(
+        times(pages, (i) => {
+          const pageParams = { ...params, page: i + 1 }
+          return invokeLoader(pageParams).then(({ body }) => body)
+        })
+      )
+    })
+    .then(flatten)
 }
