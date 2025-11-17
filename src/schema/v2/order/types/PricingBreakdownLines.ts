@@ -1,5 +1,4 @@
 import {
-  GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -10,16 +9,16 @@ import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
-import type { ResolverContext } from "types/graphql"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
+import { OfferJSON } from "./OfferType"
 
 const COPY = {
   subtotal: {
     displayName: {
-      buyNow: "Price",
+      price: "Price",
+      galleryOffer: "Gallery offer",
       counterOffer: "Seller's offer",
       makeOffer: "Your offer",
-      partnerOffer: "Gallery offer",
     },
   },
   shipping: {
@@ -40,17 +39,6 @@ const COPY = {
     amountFallbackText: "Waiting for final costs",
   },
 } as const
-
-const extractLastOfferAmountFrom = (buyerOrSeller, offers) => {
-  if (!offers?.length) return null
-  const lastOffer = offers
-    ?.filter((offer) => offer.from_participant === buyerOrSeller)
-    ?.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )[0]
-  return lastOffer?.amount_cents
-}
 
 const PricingBreakdownLineUnion = new GraphQLUnionType({
   name: "PricingBreakdownLineUnion",
@@ -73,6 +61,11 @@ const PricingBreakdownLineUnion = new GraphQLUnionType({
   },
 })
 
+// Shared type for pricing breakdown lines
+export const PricingBreakdownLinesType = new GraphQLNonNull(
+  new GraphQLList(PricingBreakdownLineUnion)
+)
+
 type ResolvedPriceLineData = {
   __typename: "ShippingLine" | "TaxLine" | "SubtotalLine" | "TotalLine"
   displayName: string
@@ -80,130 +73,179 @@ type ResolvedPriceLineData = {
   amountFallbackText: string | null
 }
 
-export const PricingBreakdownLines: GraphQLFieldConfig<
-  OrderJSON,
-  ResolverContext
-> = {
-  description: "Order pricing breakdown lines",
-  type: new GraphQLNonNull(new GraphQLList(PricingBreakdownLineUnion)),
-  resolve: (order, args, context, info): ResolvedPriceLineData[] => {
-    const {
-      currency_code: currencyCode,
-      shipping_total_cents: shippingTotalCents,
-      tax_total_cents: taxTotalCents,
-      items_total_cents: itemsTotalCents,
-      buyer_total_cents: buyerTotalCents,
-      awaiting_response_from: awaitingResponseFrom,
-      mode,
-      source,
-      offers,
-    } = order
+export const resolveOrderPricingBreakdownLines = (
+  order: OrderJSON,
+  args,
+  context,
+  info
+): ResolvedPriceLineData[] => {
+  const {
+    currency_code: currencyCode,
+    shipping_total_cents: shippingTotalCents,
+    tax_total_cents: taxTotalCents,
+    items_total_cents: itemsTotalCents,
+    buyer_total_cents: buyerTotalCents,
+    source,
+  } = order
 
-    const resolveMoney = (amount: number) => {
-      return resolveMinorAndCurrencyFieldsToMoney(
-        {
-          minor: amount,
-          currencyCode,
-          format: "0,0[.]00",
-          exact: true,
-        },
-        args,
-        context,
-        info
-      )
-    }
+  const resolveMoney = (amount: number) => {
+    return resolveMinorAndCurrencyFieldsToMoney(
+      {
+        minor: amount,
+        currencyCode,
+        format: "0,0[.]00",
+        exact: true,
+      },
+      args,
+      context,
+      info
+    )
+  }
 
-    let subtotalDisplayName: string
-    let subtotalAmount: number | undefined
-    switch (true) {
-      case mode === "buy" && source === "partner_offer":
-        subtotalDisplayName = COPY.subtotal.displayName.partnerOffer
-        subtotalAmount = itemsTotalCents
-        break
-      case mode === "offer" && awaitingResponseFrom === "buyer":
-        subtotalDisplayName = COPY.subtotal.displayName.counterOffer
-        subtotalAmount = extractLastOfferAmountFrom("seller", offers)
-        break
-      case mode === "offer":
-        subtotalDisplayName = COPY.subtotal.displayName.makeOffer
-        subtotalAmount = extractLastOfferAmountFrom("buyer", offers)
-        break
-      default:
-        subtotalDisplayName = COPY.subtotal.displayName.buyNow
-        subtotalAmount = itemsTotalCents
-    }
+  // Subtotal line uses order.items_total_cents
+  const subtotalLine: ResolvedPriceLineData = {
+    __typename: "SubtotalLine",
+    displayName:
+      source === "partner_offer"
+        ? COPY.subtotal.displayName.galleryOffer
+        : COPY.subtotal.displayName.price,
+    amount: itemsTotalCents != null ? resolveMoney(itemsTotalCents) : null,
+    amountFallbackText: null,
+  }
 
-    const subtotalLine = {
-      __typename: "SubtotalLine",
-      displayName: subtotalDisplayName,
-      amount: subtotalAmount && resolveMoney(subtotalAmount),
-    }
+  // Shipping line
+  const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
+    type: "shipping_tbd",
+  }
 
-    const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
-      type: "shipping_tbd",
-    }
+  const hasShippingTotal = shippingTotalCents != null
+  let shippingDisplayName: string = COPY.shipping.displayName.fallback
 
-    let shippingLine: ResolvedPriceLineData | null = null
-    const hasShippingTotal = shippingTotalCents != null
-    const amounts = {
-      amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-      amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
-    }
+  switch (selectedFulfillment?.type) {
+    case "pickup":
+      shippingDisplayName = COPY.shipping.displayName.pickup
+      break
+    case "artsy_standard":
+      shippingDisplayName = COPY.shipping.displayName.standard
+      break
+    case "artsy_express":
+      shippingDisplayName = COPY.shipping.displayName.express
+      break
+    case "artsy_white_glove":
+      shippingDisplayName = COPY.shipping.displayName.whiteGlove
+      break
+    case "domestic_flat":
+    case "international_flat":
+      if (shippingTotalCents === 0) {
+        shippingDisplayName = COPY.shipping.displayName.free
+      } else {
+        shippingDisplayName = COPY.shipping.displayName.flatFee
+      }
+      break
+    case "shipping_tbd":
+      shippingDisplayName = COPY.shipping.displayName.fallback
+      break
+  }
 
-    let shippingDisplayName: string = COPY.shipping.displayName.fallback
-    switch (selectedFulfillment?.type) {
-      case "pickup":
-        shippingDisplayName = COPY.shipping.displayName.pickup
-        break
-      case "artsy_standard":
-        shippingDisplayName = COPY.shipping.displayName.standard
-        break
-      case "artsy_express":
-        shippingDisplayName = COPY.shipping.displayName.express
-        break
-      case "artsy_white_glove":
-        shippingDisplayName = COPY.shipping.displayName.whiteGlove
-        break
-      case "domestic_flat":
-      case "international_flat":
-        if (shippingTotalCents === 0) {
-          shippingDisplayName = COPY.shipping.displayName.free
-        } else {
-          shippingDisplayName = COPY.shipping.displayName.flatFee
-        }
-        break
-      case "shipping_tbd":
-        shippingDisplayName = COPY.shipping.displayName.fallback
-        break
-    }
+  const shippingLine: ResolvedPriceLineData = {
+    __typename: "ShippingLine",
+    displayName: shippingDisplayName,
+    amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
+    amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+  }
 
-    shippingLine = {
-      __typename: "ShippingLine",
-      displayName: shippingDisplayName,
-      ...amounts,
-    }
+  // Tax line
+  const hasTaxTotal = taxTotalCents != null
+  const taxLine: ResolvedPriceLineData = {
+    __typename: "TaxLine",
+    displayName: COPY.tax.displayName,
+    amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
+    amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
+  }
 
-    const hasTaxTotal = taxTotalCents != null
-    const taxLine = {
-      __typename: "TaxLine",
-      displayName: COPY.tax.displayName,
-      amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
-      amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
-    }
+  // Total line uses order.buyer_total_cents
+  const hasBuyerTotal = buyerTotalCents != null
+  const totalLine: ResolvedPriceLineData = {
+    __typename: "TotalLine",
+    displayName: COPY.total.displayName,
+    amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
+    amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
+  }
 
-    const hasBuyerTotal = buyerTotalCents != null
+  return [subtotalLine, shippingLine, taxLine, totalLine]
+}
 
-    const totalLine = {
-      __typename: "TotalLine",
-      displayName: COPY.total.displayName,
-      amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
-      amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
-    }
+export const resolveOfferPricingBreakdownLines = (
+  offer: OfferJSON,
+  args,
+  context,
+  info
+): ResolvedPriceLineData[] => {
+  const {
+    currency_code: currencyCode,
+    shipping_total_cents: shippingTotalCents,
+    tax_total_cents: taxTotalCents,
+    amount_cents: amountCents,
+    buyer_total_cents: buyerTotalCents,
+    from_participant: fromParticipant,
+  } = offer
 
-    return [subtotalLine, shippingLine, taxLine, totalLine].filter(
-      Boolean
-    ) as ResolvedPriceLineData[]
-  },
+  const resolveMoney = (amount: number) => {
+    return resolveMinorAndCurrencyFieldsToMoney(
+      {
+        minor: amount,
+        currencyCode,
+        format: "0,0[.]00",
+        exact: true,
+      },
+      args,
+      context,
+      info
+    )
+  }
+
+  // Subtotal line uses offer.amount_cents
+  // Display name depends on who made the offer
+  const subtotalDisplayName =
+    fromParticipant === "buyer"
+      ? COPY.subtotal.displayName.makeOffer
+      : COPY.subtotal.displayName.counterOffer
+
+  const subtotalLine: ResolvedPriceLineData = {
+    __typename: "SubtotalLine",
+    displayName: subtotalDisplayName,
+    amount: amountCents != null ? resolveMoney(amountCents) : null,
+    amountFallbackText: null,
+  }
+
+  // Shipping line
+  const hasShippingTotal = shippingTotalCents != null
+  const shippingLine: ResolvedPriceLineData = {
+    __typename: "ShippingLine",
+    displayName: COPY.shipping.displayName.fallback,
+    amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
+    amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+  }
+
+  // Tax line
+  const hasTaxTotal = taxTotalCents != null
+  const taxLine: ResolvedPriceLineData = {
+    __typename: "TaxLine",
+    displayName: COPY.tax.displayName,
+    amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
+    amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
+  }
+
+  // Total line uses offer.buyer_total_cents
+  const hasBuyerTotal = buyerTotalCents != null
+  const totalLine: ResolvedPriceLineData = {
+    __typename: "TotalLine",
+    displayName: COPY.total.displayName,
+    amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
+    amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
+  }
+
+  return [subtotalLine, shippingLine, taxLine, totalLine]
 }
 
 const ShippingLine = new GraphQLObjectType({

@@ -47,7 +47,7 @@ describe("Me", () => {
       shipping_address_line2: "Apt 4B",
       tax_total_cents: 4299,
       shipping_origin: "Marfa, TX, US",
-      offers: [],
+      submitted_offers: [],
     }
     artwork = artwork || {
       ...baseArtwork,
@@ -303,7 +303,7 @@ describe("Me", () => {
       `
 
       it("returns offers when present", async () => {
-        orderJson.offers = [
+        orderJson.submitted_offers = [
           {
             id: "offer-1",
             amount_cents: 450000,
@@ -384,7 +384,7 @@ describe("Me", () => {
       })
 
       it("returns empty array when no offers", async () => {
-        orderJson.offers = undefined
+        orderJson.submitted_offers = undefined
 
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
@@ -394,6 +394,107 @@ describe("Me", () => {
         const result = await runAuthenticatedQuery(query, context)
 
         expect(result.me.order.offers).toEqual([])
+      })
+
+      it("returns pricingBreakdownLines for an offer", async () => {
+        orderJson.submitted_offers = [
+          {
+            id: "offer-1",
+            amount_cents: 450000,
+            buyer_total_cents: 475000,
+            currency_code: "USD",
+            from_participant: "buyer",
+            note: "This is my offer",
+            shipping_total_cents: 2000,
+            tax_total_cents: 2300,
+            created_at: "2023-01-02T00:00:00Z",
+          },
+        ]
+
+        const offerQuery = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                offers {
+                  internalID
+                  pricingBreakdownLines {
+                    __typename
+                    ... on SubtotalLine {
+                      displayName
+                      amount {
+                        display
+                        minor
+                      }
+                    }
+                    ... on ShippingLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
+                    ... on TaxLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
+                    ... on TotalLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(offerQuery, context)
+
+        expect(result.me.order.offers[0].pricingBreakdownLines).toEqual([
+          {
+            __typename: "SubtotalLine",
+            displayName: "Your offer",
+            amount: {
+              display: "US$4,500",
+              minor: 450000,
+            },
+          },
+          {
+            __typename: "ShippingLine",
+            displayName: "Shipping",
+            amount: {
+              display: "US$20",
+            },
+            amountFallbackText: null,
+          },
+          {
+            __typename: "TaxLine",
+            displayName: "Tax",
+            amount: {
+              display: "US$23",
+            },
+            amountFallbackText: null,
+          },
+          {
+            __typename: "TotalLine",
+            displayName: "Total",
+            amount: {
+              display: "US$4,750",
+            },
+            amountFallbackText: null,
+          },
+        ])
       })
     })
 
@@ -1007,7 +1108,7 @@ describe("Me", () => {
         ])
       })
 
-      describe("Price line display names", () => {
+      describe("Subtotal line", () => {
         const query = gql`
           query {
             me {
@@ -1026,307 +1127,8 @@ describe("Me", () => {
           }
         `
 
-        it("returns 'Price' display name for buy now orders", async () => {
-          orderJson.mode = "buy"
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Price",
-              amount: { amount: "5,000" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("returns 'Gallery offer' display name for partner offer orders", async () => {
-          orderJson.mode = "buy"
-          orderJson.source = "partner_offer"
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Gallery offer",
-              amount: { amount: "5,000" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("returns 'Seller's offer' display name for counter offers from seller", async () => {
-          orderJson.mode = "offer"
-          orderJson.awaiting_response_from = "buyer"
-          orderJson.items_total_cents = 500000
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 500000,
-              creator_id: "seller-id-1",
-              created_at: new Date("2025-10-15T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "seller-id-1",
-              from_participant: "seller",
-              from_type: "user",
-            },
-          ]
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Seller's offer",
-              amount: { amount: "5,000" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("returns 'Your offer' display name for make offer orders", async () => {
-          orderJson.mode = "offer"
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 550000,
-              creator_id: "buyer-id-1",
-              created_at: new Date("2025-10-15T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-          ]
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Your offer",
-              amount: { amount: "5,500" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("uses the last buyer offer amount when awaiting response from seller", async () => {
-          orderJson.mode = "offer"
-          orderJson.awaiting_response_from = "seller"
-          orderJson.items_total_cents = 500000
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 500000,
-              creator_id: "buyer-id-1",
-              created_at: new Date("2025-10-15T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-          ]
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Your offer",
-              amount: { amount: "5,000" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("uses the last seller offer amount when awaiting response from buyer", async () => {
-          orderJson.mode = "offer"
-          orderJson.awaiting_response_from = "buyer"
-          orderJson.items_total_cents = 500000
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 500000,
-              creator_id: "buyer-id-1",
-              created_at: "2025-10-14T00:00:00Z",
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-            {
-              id: "offer-2",
-              amount_cents: 600000,
-              creator_id: "seller-id-1",
-              created_at: "2025-10-15T00:00:00Z",
-              currency_code: "USD",
-              from_id: "seller-id-1",
-              from_participant: "seller",
-              from_type: "partner",
-            },
-          ]
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Seller's offer",
-              amount: { amount: "6,000" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("filters offers by participant correctly with multiple offers", async () => {
-          orderJson.mode = "offer"
-          orderJson.awaiting_response_from = "seller"
-          orderJson.items_total_cents = 500000
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 500000,
-              creator_id: "buyer-id-1",
-              created_at: new Date("2025-10-13T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-            {
-              id: "offer-2",
-              amount_cents: 600000,
-              creator_id: "seller-id-1",
-              created_at: new Date("2025-10-14T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "seller-id-1",
-              from_participant: "seller",
-              from_type: "partner",
-            },
-            {
-              id: "offer-3",
-              amount_cents: 550000,
-              creator_id: "buyer-id-1",
-              created_at: new Date("2025-10-15T00:00:00Z"),
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-          ]
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Your offer",
-              amount: { amount: "5,500" },
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("handles empty offers array gracefully", async () => {
-          orderJson.mode = "offer"
-          orderJson.awaiting_response_from = "seller"
-          orderJson.items_total_cents = 500000
-          orderJson.offers = []
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Your offer",
-              amount: null,
-            },
-            { __typename: "ShippingLine" },
-            { __typename: "TaxLine" },
-            { __typename: "TotalLine" },
-          ])
-        })
-
-        it("uses items_total_cents in buy mode regardless of offers", async () => {
-          orderJson.mode = "buy"
+        it("always uses items_total_cents for subtotal", async () => {
           orderJson.items_total_cents = 750000
-          orderJson.offers = [
-            {
-              id: "offer-1",
-              amount_cents: 500000,
-              creator_id: "buyer-id-1",
-              created_at: "2025-10-14T00:00:00Z",
-              currency_code: "USD",
-              from_id: "buyer-id-1",
-              from_participant: "buyer",
-              from_type: "user",
-            },
-          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
