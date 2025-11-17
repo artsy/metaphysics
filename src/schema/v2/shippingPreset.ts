@@ -11,7 +11,6 @@ import {
   NodeInterface,
   InternalIDFields,
 } from "schema/v2/object_identification"
-import date from "schema/v2/fields/date"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
@@ -56,8 +55,11 @@ export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ artsy_shipping_international }) =>
         artsy_shipping_international,
     },
-    createdAt: date,
-    updatedAt: date,
+    priceCurrency: {
+      type: GraphQLString,
+      description: "Currency of the shipping fee",
+      resolve: ({ price_currency }) => price_currency,
+    },
   }),
 })
 
