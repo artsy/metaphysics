@@ -483,4 +483,137 @@ describe("UpdateArtworkMutation", () => {
       )
     })
   })
+
+  describe("dimension fields", () => {
+    const dimensionMutation = gql`
+      mutation {
+        updateArtwork(
+          input: {
+            id: "25"
+            height: "100"
+            width: "80"
+            depth: "20"
+            diameter: "50"
+            metric: "cm"
+          }
+        ) {
+          artworkOrError {
+            __typename
+            ... on updateArtworkSuccess {
+              artwork {
+                internalID
+              }
+            }
+            ... on updateArtworkFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("updates the artwork with dimension fields", async () => {
+      const updateArtworkLoader = jest.fn((id, args) => {
+        expect(id).toBe("25")
+        expect(args.height).toBe("100")
+        expect(args.width).toBe("80")
+        expect(args.depth).toBe("20")
+        expect(args.diameter).toBe("50")
+        expect(args.metric).toBe("cm")
+        return Promise.resolve({
+          id: "25",
+          _id: "25",
+        })
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(dimensionMutation, context)
+
+      expect(result).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkSuccess",
+            artwork: {
+              internalID: "25",
+            },
+          },
+        },
+      })
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          height: "100",
+          width: "80",
+          depth: "20",
+          diameter: "50",
+          metric: "cm",
+        })
+      )
+    })
+
+    it("updates the artwork with partial dimension fields", async () => {
+      const partialDimensionMutation = gql`
+        mutation {
+          updateArtwork(
+            input: { id: "25", height: "120", width: "90", metric: "in" }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn((id, args) => {
+        expect(id).toBe("25")
+        expect(args.height).toBe("120")
+        expect(args.width).toBe("90")
+        expect(args.metric).toBe("in")
+        return Promise.resolve({
+          id: "25",
+          _id: "25",
+        })
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(
+        partialDimensionMutation,
+        context
+      )
+
+      expect(result).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkSuccess",
+            artwork: {
+              internalID: "25",
+            },
+          },
+        },
+      })
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          height: "120",
+          width: "90",
+          metric: "in",
+        })
+      )
+    })
+  })
 })
