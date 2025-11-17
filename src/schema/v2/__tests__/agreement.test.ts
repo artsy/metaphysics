@@ -1,12 +1,7 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const describeIfFeatureFlagEnabled = config.USE_UNSTITCHED_ACCEPT_PARTNER_AGREEMENT
-  ? describe
-  : describe.skip
-
-describeIfFeatureFlagEnabled("Agreement", () => {
+describe("Agreement", () => {
   const mockAgreementLoader = jest.fn()
 
   const context = {
