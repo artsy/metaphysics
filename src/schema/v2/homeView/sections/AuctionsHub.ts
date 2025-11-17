@@ -190,7 +190,7 @@ const latestAuctionResultsCard: CardFunction = async ({
 
   return {
     ...cardDetails,
-    title: "Auction Results for Artist You Follow",
+    title: "Auction Results for Artists You Follow",
     imageURL: undefined,
     imageURLs,
   }
