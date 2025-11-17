@@ -55,6 +55,8 @@ interface UpdateArtworkMutationInputProps {
   availability?: string
   defaultImageID?: string
   delete?: boolean
+  depth?: string
+  diameter?: string
   displayPriceRange?: boolean
   ecommerce?: boolean
   editionSets?: Omit<UpdateArtworkMutationInputProps, "editionSets">[]
@@ -65,8 +67,10 @@ interface UpdateArtworkMutationInputProps {
   framedHeight?: string
   framedMetric?: string
   framedWidth?: string
+  height?: string
   id?: string
   imageS3Locations?: S3LocationInput[]
+  metric?: string
   offer?: boolean
   partnerLocationId?: string
   published?: boolean
@@ -79,6 +83,7 @@ interface UpdateArtworkMutationInputProps {
   shippingWeight?: number
   shippingWeightMetric?: string
   title?: string
+  width?: string
 }
 
 const inputFields = {
@@ -126,6 +131,26 @@ const inputFields = {
   },
   editionSize: {
     type: GraphQLString,
+  },
+  depth: {
+    type: GraphQLString,
+    description: "The depth of the artwork",
+  },
+  diameter: {
+    type: GraphQLString,
+    description: "The diameter of the artwork",
+  },
+  height: {
+    type: GraphQLString,
+    description: "The height of the artwork",
+  },
+  metric: {
+    type: GraphQLString,
+    description: "The unit of measurement for artwork dimensions",
+  },
+  width: {
+    type: GraphQLString,
+    description: "The width of the artwork",
   },
   framedDepth: {
     type: GraphQLString,
@@ -239,6 +264,8 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
         delete: inputArgs.delete,
+        depth: inputArgs.depth,
+        diameter: inputArgs.diameter,
         display_price_range: inputArgs.displayPriceRange,
         ecommerce: inputArgs.ecommerce,
         edition_size: inputArgs.editionSize,
@@ -248,7 +275,9 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed_metric: inputArgs.framedMetric,
         framed_width: inputArgs.framedWidth,
         framed: inputArgs.framed,
+        height: inputArgs.height,
         id: inputArgs.id,
+        metric: inputArgs.metric,
         offer: inputArgs.offer,
         partner_location_id: inputArgs.partnerLocationId,
         published: inputArgs.published,
@@ -261,6 +290,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         shipping_weight_metric: inputArgs.shippingWeightMetric,
         shipping_weight: inputArgs.shippingWeight,
         title: inputArgs.title,
+        width: inputArgs.width,
       }
     }
 

@@ -197,9 +197,9 @@ describe("AuctionsHub", () => {
         "https://example.com/auction3-cover.jpg",
       ])
 
-      // Auction Results for Artist You Follow card
+      // Auction Results for Artists You Follow card
       const resultsCard = result.edges[2].node
-      expect(resultsCard.title).toBe("Auction Results for Artist You Follow")
+      expect(resultsCard.title).toBe("Auction Results for Artists You Follow")
       expect(resultsCard.href).toBe("/auction-results-for-artists-you-follow")
       expect(resultsCard.entityType).toBe("auctionResultsForArtistsYouFollow")
       expect(resultsCard.entityID).toBe(

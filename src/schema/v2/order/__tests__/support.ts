@@ -40,6 +40,9 @@ export const baseOrderJson = {
     amount_minor: 10000,
     selected: true,
   },
+  offers: [],
+  pending_offer: null,
+  last_offer: null,
 }
 
 export const baseArtwork = {

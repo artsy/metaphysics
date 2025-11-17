@@ -8,6 +8,10 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { OrderType } from "./OrderType"
+import {
+  PricingBreakdownLinesType,
+  resolveOfferPricingBreakdownLines,
+} from "./PricingBreakdownLines"
 
 export const FromParticipantEnum = new GraphQLEnumType({
   name: "FromParticipantEnum",
@@ -154,6 +158,11 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
         }
         return meOrderLoader(order_id)
       },
+    },
+    pricingBreakdownLines: {
+      type: PricingBreakdownLinesType,
+      description: "Pricing breakdown lines",
+      resolve: resolveOfferPricingBreakdownLines,
     },
   }),
 })
