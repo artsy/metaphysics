@@ -15,13 +15,14 @@ import { ResolverContext } from "types/graphql"
 import ShippingPreset from "schema/v2/shippingPreset"
 
 interface CreateShippingPresetMutationInputProps {
-  partnerId: string
-  name: string
-  domesticShippingFeeCents?: number
-  internationalShippingFeeCents?: number
-  pickupAvailable?: boolean
   artsyShippingDomestic?: boolean
   artsyShippingInternational?: boolean
+  domesticShippingFeeCents?: number
+  internationalShippingFeeCents?: number
+  name: string
+  partnerId: string
+  pickupAvailable?: boolean
+  priceCurrency?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -87,6 +88,10 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy handles international shipping.",
     },
+    priceCurrency: {
+      type: GraphQLString,
+      description: "Currency of the shipping fee",
+    },
   },
   outputFields: {
     shippingPresetOrError: {
@@ -105,21 +110,23 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs: {
-      partner_id: string
-      name: string
-      domestic_shipping_fee_cents?: number
-      international_shipping_fee_cents?: number
-      pickup_available?: boolean
       artsy_shipping_domestic?: boolean
       artsy_shipping_international?: boolean
+      domestic_shipping_fee_cents?: number
+      international_shipping_fee_cents?: number
+      name: string
+      partner_id: string
+      pickup_available?: boolean
+      price_currency?: string
     } = {
-      partner_id: partnerId,
-      name: args.name,
-      domestic_shipping_fee_cents: args.domesticShippingFeeCents,
-      international_shipping_fee_cents: args.internationalShippingFeeCents,
-      pickup_available: args.pickupAvailable,
       artsy_shipping_domestic: args.artsyShippingDomestic,
       artsy_shipping_international: args.artsyShippingInternational,
+      domestic_shipping_fee_cents: args.domesticShippingFeeCents,
+      international_shipping_fee_cents: args.internationalShippingFeeCents,
+      name: args.name,
+      partner_id: partnerId,
+      pickup_available: args.pickupAvailable,
+      price_currency: args.priceCurrency,
     }
 
     try {
