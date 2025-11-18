@@ -67,7 +67,8 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
-    // disable backfill for auction-only requests when Auctions Hub is displayed
+    // For auction-only requests: disable backfill when Auctions Hub is displayed
+    // For other requests: use the provided includeBackfill value or default to false
     const shouldIncludeBackfill = args.onlyAtAuction
       ? !shouldDisplayAuctionsHub(context)
       : args.includeBackfill || false
