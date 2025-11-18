@@ -6050,6 +6050,29 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("confidentialNotes", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          confidentialNotes
+        }
+      }
+    `
+
+    it("strips out any links and/or markdown characters to render as plain text", async () => {
+      artwork.confidential_notes =
+        '<a href="#" onClick="alert(\'Hi!\')">Click me!</a>'
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          confidentialNotes: "Click me!",
+        },
+      })
+    })
+  })
 })
 
 describe("Artwork caption field", () => {
