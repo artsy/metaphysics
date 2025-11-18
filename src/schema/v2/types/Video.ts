@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLFloat,
   GraphQLID,
   GraphQLInt,
   GraphQLNonNull,
@@ -21,6 +22,7 @@ interface VideoTypeProps {
   player_embed_url?: string // if Video
   height: number
   width: number
+  aspect_ratio?: number
 }
 
 export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
@@ -99,6 +101,11 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       width: {
         description: "The width of the video",
         type: GraphQLNonNull(GraphQLInt),
+      },
+      aspectRatio: {
+        description: "The aspect ratio of the video (width / height)",
+        type: GraphQLFloat,
+        resolve: ({ aspect_ratio }) => aspect_ratio,
       },
     },
   }

@@ -46,6 +46,66 @@ describe("Video type", () => {
       })
     })
 
+    it("returns aspect ratio from Gravity", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            width
+            height
+            aspectRatio
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            height: 720,
+            width: 1280,
+            title: "Example Video",
+            aspect_ratio: 1.7777777778,
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video).toEqual({
+        width: 1280,
+        height: 720,
+        aspectRatio: 1.7777777778, // 16:9
+      })
+    })
+
+    it("returns null aspect ratio when not provided by Gravity", async () => {
+      const query = gql`
+        {
+          video(id: "example-video-id") {
+            aspectRatio
+          }
+        }
+      `
+
+      const context = {
+        videoLoader: () => {
+          return Promise.resolve({
+            _id: "example-video-id",
+            player_embed_url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            height: 720,
+            width: 1280,
+            title: "Example Video",
+            aspect_ratio: null,
+          })
+        },
+      }
+
+      const { video } = await runQuery(query, context)
+
+      expect(video.aspectRatio).toBeNull()
+    })
+
     it("returns an embed iframe for YouTube videos", async () => {
       const query = gql`
         {
