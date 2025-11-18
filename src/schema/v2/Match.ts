@@ -27,6 +27,7 @@ import { SearchEntity } from "./search/SearchEntity"
 import { ShowType } from "./show"
 import { TagType } from "./tag"
 import { compact } from "lodash"
+import { VideoType } from "./types/Video"
 
 const MODELS = {
   Article: { loader: "articleLoader", type: ArticleType },
@@ -40,6 +41,7 @@ const MODELS = {
   Sale: { loader: "saleLoader", type: SaleType },
   PartnerShow: { loader: "showLoader", type: ShowType },
   Tag: { loader: "tagLoader", type: TagType },
+  Video: { loader: "videoLoader", type: VideoType },
 }
 
 export const MatchType = new GraphQLUnionType({

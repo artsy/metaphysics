@@ -7,6 +7,7 @@ export const Video = Record({
   player_embed_url: String.Or(Null),
   width: Number.Or(Null),
   height: Number.Or(Null),
+  aspect_ratio: Number.Or(Null),
 })
 
 export type Video = Static<typeof Video>
