@@ -27,6 +27,7 @@ import {
   convertConnectionArgsToGravityArgs,
   enhance,
   existyValue,
+  isExisty,
 } from "lib/helpers"
 import { isFieldRequested } from "lib/isFieldRequested"
 import { error } from "lib/loggers"
@@ -42,7 +43,7 @@ import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
 import cached from "schema/v2/fields/cached"
 import { listPrice } from "schema/v2/fields/listPrice"
-import { markdown } from "schema/v2/fields/markdown"
+import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
@@ -529,7 +530,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       confidentialNotes: {
         type: GraphQLString,
-        resolve: ({ confidential_notes }) => confidential_notes,
+        resolve: ({ confidential_notes: value }) => {
+          if (!isExisty(value) || typeof value !== "string") return null
+
+          return formatMarkdownValue(value, "plain")
+        },
         description:
           "Notes by a partner or MyCollection user on the artwork, can only be accessed by partner or the user that owns the artwork",
       },
