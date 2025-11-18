@@ -3,7 +3,6 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
-  GraphQLNonNull,
   GraphQLString,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -18,12 +17,13 @@ import {
   getNewForYouArtworkIDs,
   getNewForYouArtworks,
 } from "./helpers"
+import { shouldDisplayAuctionsHub } from "../homeView/sections/AuctionsHub"
 
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
   args: pageable({
-    includeBackfill: { type: new GraphQLNonNull(GraphQLBoolean) },
+    includeBackfill: { type: GraphQLBoolean },
     page: { type: GraphQLInt },
     userId: { type: GraphQLString },
     version: { type: GraphQLString },
@@ -67,12 +67,17 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
+    // disable backfill for auction-only requests when Auctions Hub is displayed
+    const shouldIncludeBackfill = args.onlyAtAuction
+      ? !shouldDisplayAuctionsHub(context)
+      : args.includeBackfill || true
+
     const {
       artworks: backfillArtworks,
       totalCount: backfillArtworksTotalCount,
     } = await getBackfillArtworks(
       size || 0,
-      args.includeBackfill,
+      shouldIncludeBackfill,
       context,
       args.onlyAtAuction,
       args.excludeDislikedArtworks

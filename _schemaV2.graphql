@@ -20524,7 +20524,7 @@ type Query {
     excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false
     first: Int
-    includeBackfill: Boolean!
+    includeBackfill: Boolean
     last: Int
     marketable: Boolean
     maxWorksPerArtist: Int
@@ -27015,7 +27015,7 @@ type Viewer {
     excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false
     first: Int
-    includeBackfill: Boolean!
+    includeBackfill: Boolean
     last: Int
     marketable: Boolean
     maxWorksPerArtist: Int
