@@ -1458,7 +1458,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       shippingPresetsConnection: {
         type: ShippingPresetsConnection.connectionType,
         description: "A connection of shipping presets for this partner.",
-        args: pageable({}),
+        args: pageable({
+          priceCurrency: {
+            type: GraphQLString,
+            description:
+              "Filter by price currency. Returns presets with matching currency AND presets with no currency (which apply to all currencies).",
+          },
+        }),
         resolve: async ({ id }, args, { shippingPresetsLoader }) => {
           if (!shippingPresetsLoader) {
             return null
@@ -1473,6 +1479,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             total_count: true,
+            price_currency: args.priceCurrency,
           }
 
           const { body, headers } = await shippingPresetsLoader(gravityArgs)
