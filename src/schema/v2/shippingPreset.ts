@@ -12,6 +12,7 @@ import {
   InternalIDFields,
 } from "schema/v2/object_identification"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { date } from "./fields/date"
 
 export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShippingPreset",
@@ -60,6 +61,7 @@ export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
       description: "Currency of the shipping fee",
       resolve: ({ price_currency }) => price_currency,
     },
+    createdAt: date(({ created_at }) => created_at),
   }),
 })
 
