@@ -471,4 +471,83 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
       }
     )
   })
+
+  it("updates artworks with priceCurrency field", async () => {
+    const priceCurrencyMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: { id: "partner123", metadata: { priceCurrency: "USD" } }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 3,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(priceCurrencyMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          price_currency: "USD",
+        },
+      }
+    )
+  })
+
+  it("updates artworks with flat shipping fees and priceCurrency", async () => {
+    const flatFeesWithCurrencyMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: {
+              domesticShippingFeeCents: 5000
+              internationalShippingFeeCents: 10000
+              priceCurrency: "EUR"
+            }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 5,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(flatFeesWithCurrencyMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          domestic_shipping_fee_cents: 5000,
+          international_shipping_fee_cents: 10000,
+          price_currency: "EUR",
+        },
+      }
+    )
+  })
 })
