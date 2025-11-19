@@ -232,4 +232,302 @@ describe("partner.shippingPresetsConnection", () => {
       },
     })
   })
+
+  describe("filtering by priceCurrency", () => {
+    beforeEach(() => {
+      response = [
+        {
+          id: "preset-usd",
+          name: "USD Shipping",
+          partner_id: "partner-id",
+          price_currency: "USD",
+          domestic_shipping_fee_cents: 1000,
+          international_shipping_fee_cents: 5000,
+        },
+        {
+          id: "preset-eur",
+          name: "EUR Shipping",
+          partner_id: "partner-id",
+          price_currency: "EUR",
+          domestic_shipping_fee_cents: 1200,
+          international_shipping_fee_cents: 6000,
+        },
+        {
+          id: "preset-gbp",
+          name: "GBP Shipping",
+          partner_id: "partner-id",
+          price_currency: "GBP",
+          domestic_shipping_fee_cents: 1100,
+          international_shipping_fee_cents: 5500,
+        },
+        {
+          id: "preset-nil",
+          name: "No Currency Shipping",
+          partner_id: "partner-id",
+          price_currency: null,
+          domestic_shipping_fee_cents: 1000,
+          international_shipping_fee_cents: 5000,
+        },
+      ]
+    })
+
+    it("filters by USD and includes presets with nil currency", async () => {
+      const shippingPresetsLoader = jest.fn(() => {
+        const filteredResponse = response.filter(
+          (preset) =>
+            preset.price_currency === "USD" || preset.price_currency === null
+        )
+        return Promise.resolve({
+          body: filteredResponse,
+          headers: {
+            "x-total-count": filteredResponse.length,
+          },
+        })
+      })
+
+      const testContext = {
+        partnerLoader: () => {
+          return Promise.resolve({
+            _id: "partner-id",
+          })
+        },
+        shippingPresetsLoader,
+      }
+
+      const query = gql`
+        {
+          partner(id: "partner-id") {
+            shippingPresetsConnection(first: 10, priceCurrency: "USD") {
+              edges {
+                node {
+                  internalID
+                  name
+                  priceCurrency
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, testContext)
+
+      expect(shippingPresetsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          price_currency: "USD",
+        })
+      )
+
+      expect(data).toEqual({
+        partner: {
+          shippingPresetsConnection: {
+            edges: [
+              {
+                node: {
+                  internalID: "preset-usd",
+                  name: "USD Shipping",
+                  priceCurrency: "USD",
+                },
+              },
+              {
+                node: {
+                  internalID: "preset-nil",
+                  name: "No Currency Shipping",
+                  priceCurrency: null,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("filters by EUR and includes presets with nil currency", async () => {
+      const shippingPresetsLoader = jest.fn(() => {
+        const filteredResponse = response.filter(
+          (preset) =>
+            preset.price_currency === "EUR" || preset.price_currency === null
+        )
+        return Promise.resolve({
+          body: filteredResponse,
+          headers: {
+            "x-total-count": filteredResponse.length,
+          },
+        })
+      })
+
+      const testContext = {
+        partnerLoader: () => {
+          return Promise.resolve({
+            _id: "partner-id",
+          })
+        },
+        shippingPresetsLoader,
+      }
+
+      const query = gql`
+        {
+          partner(id: "partner-id") {
+            shippingPresetsConnection(first: 10, priceCurrency: "EUR") {
+              edges {
+                node {
+                  internalID
+                  name
+                  priceCurrency
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, testContext)
+
+      expect(shippingPresetsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          price_currency: "EUR",
+        })
+      )
+
+      expect(data).toEqual({
+        partner: {
+          shippingPresetsConnection: {
+            edges: [
+              {
+                node: {
+                  internalID: "preset-eur",
+                  name: "EUR Shipping",
+                  priceCurrency: "EUR",
+                },
+              },
+              {
+                node: {
+                  internalID: "preset-nil",
+                  name: "No Currency Shipping",
+                  priceCurrency: null,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("filters by GBP and includes presets with nil currency", async () => {
+      const shippingPresetsLoader = jest.fn(() => {
+        const filteredResponse = response.filter(
+          (preset) =>
+            preset.price_currency === "GBP" || preset.price_currency === null
+        )
+        return Promise.resolve({
+          body: filteredResponse,
+          headers: {
+            "x-total-count": filteredResponse.length,
+          },
+        })
+      })
+
+      const testContext = {
+        partnerLoader: () => {
+          return Promise.resolve({
+            _id: "partner-id",
+          })
+        },
+        shippingPresetsLoader,
+      }
+
+      const query = gql`
+        {
+          partner(id: "partner-id") {
+            shippingPresetsConnection(first: 10, priceCurrency: "GBP") {
+              edges {
+                node {
+                  internalID
+                  name
+                  priceCurrency
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, testContext)
+
+      expect(shippingPresetsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          price_currency: "GBP",
+        })
+      )
+
+      expect(data).toEqual({
+        partner: {
+          shippingPresetsConnection: {
+            edges: [
+              {
+                node: {
+                  internalID: "preset-gbp",
+                  name: "GBP Shipping",
+                  priceCurrency: "GBP",
+                },
+              },
+              {
+                node: {
+                  internalID: "preset-nil",
+                  name: "No Currency Shipping",
+                  priceCurrency: null,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns all presets when priceCurrency is not provided", async () => {
+      const shippingPresetsLoader = jest.fn(() => {
+        return Promise.resolve({
+          body: response,
+          headers: {
+            "x-total-count": response.length,
+          },
+        })
+      })
+
+      const testContext = {
+        partnerLoader: () => {
+          return Promise.resolve({
+            _id: "partner-id",
+          })
+        },
+        shippingPresetsLoader,
+      }
+
+      const query = gql`
+        {
+          partner(id: "partner-id") {
+            shippingPresetsConnection(first: 10) {
+              totalCount
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, testContext)
+
+      expect(shippingPresetsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          price_currency: undefined,
+        })
+      )
+
+      expect(data.partner.shippingPresetsConnection.totalCount).toBe(4)
+      expect(data.partner.shippingPresetsConnection.edges).toHaveLength(4)
+    })
+  })
 })
