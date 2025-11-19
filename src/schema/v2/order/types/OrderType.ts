@@ -32,6 +32,10 @@ import {
   OrderPaymentMethodEnum,
   OrderSourceEnum,
 } from "./sharedOrderTypes"
+import {
+  BankAccountBalanceCheckType,
+  resolveBankAccountBalanceCheck,
+} from "./BankAccountBalanceCheck"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -448,6 +452,12 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       type: OfferType,
       description: "The last offer for this order",
       resolve: ({ last_submitted_offer }) => last_submitted_offer,
+    },
+    bankAccountBalanceCheck: {
+      type: BankAccountBalanceCheckType,
+      description:
+        "Check if the bank account has sufficient balance for this order",
+      resolve: resolveBankAccountBalanceCheck,
     },
   },
 })
