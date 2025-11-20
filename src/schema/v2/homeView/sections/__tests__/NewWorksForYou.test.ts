@@ -71,7 +71,7 @@ describe("NewWorksForYou", () => {
     // see artworksForUser.test.ts
   })
 
-  it("serves Version A to the experiment group", async () => {
+  it("serves Version C", async () => {
     const query = gql`
       {
         homeView {
@@ -115,7 +115,7 @@ describe("NewWorksForYou", () => {
     const vortexGraphqlQuery =
       mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
 
-    expect(vortexGraphqlQuery).toMatch('version: "A"')
+    expect(vortexGraphqlQuery).toMatch('version: "C"')
   })
 
   describe("showArtworksCardView", () => {
