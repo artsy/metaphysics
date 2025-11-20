@@ -52,6 +52,7 @@ interface Input {
     offer: boolean
     pickupAvailable?: boolean
     priceAdjustment?: number
+    priceCurrency?: string
     priceHidden?: boolean
     priceListed?: number
     provenance?: string
@@ -178,6 +179,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLInt,
       description:
         "Adjusts the artworks' prices according to the value passed (percentage).",
+    },
+    priceCurrency: {
+      type: GraphQLString,
+      description:
+        "The currency for the artworks. Required when setting flat shipping fees.",
     },
     priceHidden: {
       type: GraphQLBoolean,
@@ -346,6 +352,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         pickup_available: metadata.pickupAvailable,
         display_price_range: metadata.displayPriceRange,
         price_adjustment: metadata.priceAdjustment,
+        price_currency: metadata.priceCurrency,
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
         provenance: metadata.provenance,
