@@ -33,7 +33,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
       maxWorksPerArtist: 3,
       includeBackfill: true,
       first: args.first,
-      version: "A",
+      version: "C",
       excludeDislikedArtworks: true,
       excludeArtworkIds: [],
 
