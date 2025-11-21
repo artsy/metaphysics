@@ -159,6 +159,16 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     description: "Collector's position with relevant institutions",
     resolve: ({ other_relevant_positions }) => other_relevant_positions,
   },
+  linkedIn: {
+    type: GraphQLString,
+    description: "Collector's LinkedIn handle",
+    resolve: ({ linked_in }) => linked_in,
+  },
+  instagram: {
+    type: GraphQLString,
+    description: "Collector's Instagram handle",
+    resolve: ({ instagram }) => instagram,
+  },
   emailConfirmed: {
     type: GraphQLBoolean,
     deprecationReason:
