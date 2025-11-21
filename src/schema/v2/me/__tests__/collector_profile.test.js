@@ -170,6 +170,45 @@ describe("Me", () => {
       })
     })
 
+    it("returns linkedIn and instagram fields", () => {
+      const query = `
+        {
+          me {
+            collectorProfile {
+              internalID
+              name
+              linkedIn
+              instagram
+            }
+          }
+        }
+      `
+
+      const collectorProfile = {
+        id: "3",
+        name: "Percy",
+        linked_in: "percy-cat",
+        instagram: "@percy_the_cat",
+      }
+
+      const expectedProfileData = {
+        internalID: "3",
+        name: "Percy",
+        linkedIn: "percy-cat",
+        instagram: "@percy_the_cat",
+      }
+
+      const context = {
+        meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+      }
+
+      return runAuthenticatedQuery(query, context).then(
+        ({ me: { collectorProfile } }) => {
+          expect(collectorProfile).toEqual(expectedProfileData)
+        }
+      )
+    })
+
     describe("summaryAttributes", () => {
       it("returns up to 3 attributes when many attributes are true", () => {
         const query = `
