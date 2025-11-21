@@ -27,6 +27,8 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "../fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { PartnerEngagementType } from "./partnerEngagement"
+import { CollectorSummaryAttributeType } from "./types/CollectorSummaryAttribute"
+import { selectCollectorAttributes } from "./helpers/selectCollectorAttributes"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -341,6 +343,67 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       }
 
       return results
+    },
+  },
+  collectorAttributes: {
+    type: new GraphQLNonNull(
+      new GraphQLList(new GraphQLNonNull(CollectorSummaryAttributeType))
+    ),
+    description:
+      "Structured attributes describing the collector in relation to the artwork/partner.",
+    resolve: async (
+      {
+        id: collector_profile_id,
+        artworkID,
+        partnerId,
+        owner,
+        confirmed_buyer_at,
+      },
+      _args,
+      { collectorProfileSummaryLoader, similarGalleriesInteractionsLoader }
+    ) => {
+      if (!collectorProfileSummaryLoader) {
+        throw new Error("You must be signed in to perform this action.")
+      }
+
+      const { raw_attributes = {} } = await collectorProfileSummaryLoader({
+        artwork_id: artworkID,
+        collector_profile_id,
+      })
+
+      // Fetch similar galleries data from Vortex
+      const defaultSimilarGalleriesData = {
+        has_purchased_from_similar_galleries: false,
+        has_inquired_with_similar_galleries: false,
+      }
+
+      const fetchSimilarGalleriesData = async () => {
+        if (!similarGalleriesInteractionsLoader || !partnerId || !owner?.id) {
+          return defaultSimilarGalleriesData
+        }
+
+        try {
+          const response = await similarGalleriesInteractionsLoader({
+            user_id: owner.id,
+            partner_id: partnerId,
+          })
+          return response?.data || defaultSimilarGalleriesData
+        } catch (error) {
+          console.error(
+            "[schema/v2/CollectorProfile/collectorAttributes] Error fetching similar galleries data:",
+            error
+          )
+          return defaultSimilarGalleriesData
+        }
+      }
+
+      const similarGalleriesData = await fetchSimilarGalleriesData()
+
+      return selectCollectorAttributes({
+        raw_attributes,
+        confirmed_buyer_at,
+        similarGalleriesData,
+      })
     },
   },
 }
