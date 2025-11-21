@@ -61,6 +61,14 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     institutionalAffiliations: { type: GraphQLString },
     companyName: { type: GraphQLString },
     companyWebsite: { type: GraphQLString },
+    linkedIn: {
+      description: "Collector's LinkedIn handle",
+      type: GraphQLString,
+    },
+    instagram: {
+      description: "Collector's Instagram handle",
+      type: GraphQLString,
+    },
     intents: { type: new GraphQLList(IntentsType) },
     loyaltyApplicant: { type: GraphQLBoolean },
     professionalBuyer: { type: GraphQLBoolean },

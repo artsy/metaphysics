@@ -17,6 +17,8 @@ describe("UpdateCollectorProfileWithID", () => {
             selfReportedPurchases: "trust me i buy art"
             intents: [BUY_ART_AND_DESIGN]
             institutionalAffiliations: "example"
+            linkedIn: "artsy"
+            instagram: "@artsy"
           }
         ) {
           collectorProfileOrError {
@@ -31,6 +33,8 @@ describe("UpdateCollectorProfileWithID", () => {
                 email
                 selfReportedPurchases
                 intents
+                linkedIn
+                instagram
               }
             }
             ... on UpdateCollectorProfileWithIDFailure {
@@ -52,6 +56,8 @@ describe("UpdateCollectorProfileWithID", () => {
       email: "percy@cat.com",
       self_reported_purchases: "treats",
       intents: ["buy art & design"],
+      linked_in: "artsy",
+      instagram: "@artsy",
     }
 
     const context = {
@@ -76,6 +82,8 @@ describe("UpdateCollectorProfileWithID", () => {
             email: "percy@cat.com",
             selfReportedPurchases: "treats",
             intents: ["buy art & design"],
+            linkedIn: "artsy",
+            instagram: "@artsy",
           },
         },
       },

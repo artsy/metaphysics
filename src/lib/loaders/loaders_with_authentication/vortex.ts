@@ -105,6 +105,9 @@ export default (accessToken, opts) => {
       {},
       { requestThrottleMs: 86400000 } // 1 day throttle
     ),
+    similarGalleriesInteractionsLoader: vortexLoader(
+      "similar_galleries_interactions"
+    ),
   }
 }
 

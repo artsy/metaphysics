@@ -61,6 +61,14 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
     companyName: { type: GraphQLString },
     companyWebsite: { type: GraphQLString },
+    linkedIn: {
+      description: "Collector's LinkedIn handle",
+      type: GraphQLString,
+    },
+    instagram: {
+      description: "Collector's Instagram handle",
+      type: GraphQLString,
+    },
     confirmedBuyer: { type: GraphQLBoolean },
     id: {
       description: "The internal ID of the collector profile to update",
