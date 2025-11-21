@@ -80,6 +80,8 @@ describe("submitOrderMutation", () => {
     expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
       confirmation_token: "ctoken_123",
       one_time_use: false,
+      offer_id: undefined,
+      confirmed_setup_intent_id: undefined,
     })
   })
 
@@ -118,6 +120,9 @@ describe("submitOrderMutation", () => {
 
     expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
       confirmation_token: "ctoken_123",
+      one_time_use: undefined,
+      offer_id: undefined,
+      confirmed_setup_intent_id: undefined,
     })
   })
 
@@ -185,6 +190,103 @@ describe("submitOrderMutation", () => {
           },
         },
       },
+    })
+  })
+
+  it("submits an order with offerID", async () => {
+    const mockMutationWithOfferID = `
+      mutation {
+        submitOrder(input: {
+          id: "order-id",
+          confirmationToken: "ctoken_123",
+          oneTimeUse: false,
+          offerID: "offer-id"
+        }) {
+          orderOrError {
+            ...on OrderMutationError {
+              mutationError {
+                message
+                code
+              }
+            }
+            ...on OrderMutationSuccess {
+              order {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(mockMutationWithOfferID, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      submitOrder: {
+        orderOrError: {
+          order: {
+            internalID: "order-id",
+          },
+        },
+      },
+    })
+
+    expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
+      confirmation_token: "ctoken_123",
+      one_time_use: false,
+      offer_id: "offer-id",
+      confirmed_setup_intent_id: undefined,
+    })
+  })
+
+  it("submits an order with offerID and confirmedSetupIntentId", async () => {
+    const mockMutationWithOfferIDAndSetupIntent = `
+      mutation {
+        submitOrder(input: {
+          id: "order-id",
+          offerID: "offer-id",
+          confirmedSetupIntentId: "seti_123",
+          oneTimeUse: false
+        }) {
+          orderOrError {
+            ...on OrderMutationError {
+              mutationError {
+                message
+                code
+              }
+            }
+            ...on OrderMutationSuccess {
+              order {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(
+      mockMutationWithOfferIDAndSetupIntent,
+      context
+    )
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      submitOrder: {
+        orderOrError: {
+          order: {
+            internalID: "order-id",
+          },
+        },
+      },
+    })
+
+    expect(context.meOrderSubmitLoader).toHaveBeenCalledWith("order-id", {
+      confirmation_token: undefined,
+      one_time_use: false,
+      offer_id: "offer-id",
+      confirmed_setup_intent_id: "seti_123",
     })
   })
 })
