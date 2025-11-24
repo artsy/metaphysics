@@ -99,12 +99,13 @@ describe("UpdateMeMutation", () => {
         receive_partner_offer_notification: true,
         currency_preference: "EUR",
         length_unit_preference: "cm",
-        linked_in: "baba-yaha",
-        instagram: "@babayaha",
       })
     )
 
     const mockUpdateCollectorProfileIconLoader = jest.fn()
+    const mockMeUpdateCollectorProfileLoader = jest
+      .fn()
+      .mockReturnValue(Promise.resolve({ id: "collector-123" }))
 
     const context = {
       meLoader: () =>
@@ -130,6 +131,7 @@ describe("UpdateMeMutation", () => {
         }),
       updateMeLoader: mockUpdateMeLoader,
       updateCollectorProfileIconLoader: mockUpdateCollectorProfileIconLoader,
+      meUpdateCollectorProfileLoader: mockMeUpdateCollectorProfileLoader,
     }
 
     await runAuthenticatedQuery(mutation, context).then((data) => {
@@ -160,8 +162,6 @@ describe("UpdateMeMutation", () => {
       share_follows: false,
       currency_preference: "EUR",
       length_unit_preference: "cm",
-      linked_in: "baba-yaha",
-      instagram: "@babayaha",
     })
 
     expect(mockUpdateCollectorProfileIconLoader).toBeCalledWith({
@@ -169,7 +169,12 @@ describe("UpdateMeMutation", () => {
       source_key: "thekey",
     })
 
-    expect.assertions(3)
+    expect(mockMeUpdateCollectorProfileLoader).toBeCalledWith({
+      linked_in: "baba-yaha",
+      instagram: "@babayaha",
+    })
+
+    expect.assertions(4)
   })
 
   it("does not update the icon when source url is not from s3", async () => {
