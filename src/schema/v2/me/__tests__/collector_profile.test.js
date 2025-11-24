@@ -209,6 +209,42 @@ describe("Me", () => {
       )
     })
 
+    it("returns linkedIn and instagram fields directly from me", () => {
+      const query = `
+        {
+          me {
+            name
+            profession
+            linkedIn
+            instagram
+          }
+        }
+      `
+
+      const meData = {
+        id: "user-123",
+        name: "Percy Cat",
+        profession: "Professional Cat",
+        linked_in: "percy-the-cat",
+        instagram: "@percy_cat",
+      }
+
+      const expectedData = {
+        name: "Percy Cat",
+        profession: "Professional Cat",
+        linkedIn: "percy-the-cat",
+        instagram: "@percy_cat",
+      }
+
+      const context = {
+        meLoader: () => Promise.resolve(meData),
+      }
+
+      return runAuthenticatedQuery(query, context).then(({ me }) => {
+        expect(me).toEqual(expectedData)
+      })
+    })
+
     describe("summaryAttributes", () => {
       it("returns up to 3 attributes when many attributes are true", () => {
         const query = `
