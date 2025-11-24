@@ -56,7 +56,9 @@ describe("updateProfileMutation", () => {
     // ID is returned as a base64-encoded value
     expect(typeof data.updateProfile.profileOrError.profile.id).toBe("string")
     expect(data.updateProfile.profileOrError.profile.bio).toBe("New bio")
-    expect(data.updateProfile.profileOrError.profile.fullBio).toBe("Full biography text here")
+    expect(data.updateProfile.profileOrError.profile.fullBio).toBe(
+      "Full biography text here"
+    )
   })
 
   it("returns an error if the mutation fails", async () => {
@@ -74,12 +76,7 @@ describe("updateProfileMutation", () => {
 
     const mutation = gql`
       mutation {
-        updateProfile(
-          input: {
-            id: "profile123"
-            handle: "existing-handle"
-          }
-        ) {
+        updateProfile(input: { id: "profile123", handle: "existing-handle" }) {
           profileOrError {
             ... on UpdateProfileSuccess {
               profile {
@@ -98,7 +95,11 @@ describe("updateProfileMutation", () => {
     `
 
     const data = await runAuthenticatedQuery(mutation, context)
-    expect(data.updateProfile.profileOrError.mutationError.type).toBe("param_error")
-    expect(data.updateProfile.profileOrError.mutationError.message).toBe("Handle already taken")
+    expect(data.updateProfile.profileOrError.mutationError.type).toBe(
+      "param_error"
+    )
+    expect(data.updateProfile.profileOrError.mutationError.message).toBe(
+      "Handle already taken"
+    )
   })
 })

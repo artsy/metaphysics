@@ -18,6 +18,8 @@ describe("UpdateMeMutation", () => {
             priceRangeMin: -1
             privacy: "public"
             profession: "Juggler"
+            linkedIn: "baba-yaha"
+            instagram: "@babayaha"
             receiveLotOpeningSoonNotification: false
             receiveNewSalesNotification: false
             receiveNewWorksNotification: true
@@ -97,6 +99,8 @@ describe("UpdateMeMutation", () => {
         receive_partner_offer_notification: true,
         currency_preference: "EUR",
         length_unit_preference: "cm",
+        linked_in: "baba-yaha",
+        instagram: "@babayaha",
       })
     )
 
@@ -156,6 +160,8 @@ describe("UpdateMeMutation", () => {
       share_follows: false,
       currency_preference: "EUR",
       length_unit_preference: "cm",
+      linked_in: "baba-yaha",
+      instagram: "@babayaha",
     })
 
     expect(mockUpdateCollectorProfileIconLoader).toBeCalledWith({
