@@ -99,7 +99,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
     title: "No Current or Upcoming Auctions at this time",
     href: "/auctions/overview",
     entityType: OwnerType.auctions,
-    entityID: "card-browse-all-auctions",
+    entityID: "card-browse-all-auctions-empty-state",
     contextModule: ContextModule.auctionsCard,
     imageURL:
       "https://files.artsy.net/images/artsy-artwork-rails-backfill-05.png",
@@ -137,6 +137,7 @@ const browseAllAuctionsCard: CardFunction = async ({ context }) => {
 
   return {
     ...cardDetails,
+    entityID: "card-browse-all-auctions",
     title: "Current and Upcoming Auctions",
     imageURL: undefined,
     imageURLs,
@@ -162,7 +163,7 @@ const latestAuctionResultsCard: CardFunction = async ({
     title: "Follow and engage with artists to see auction results",
     href: "/auction-results-for-artists-you-follow",
     entityType: OwnerType.auctionResultsForArtistsYouFollow,
-    entityID: "card-auction-results-for-artist-you-follow",
+    entityID: "card-auction-results-for-artist-you-follow-empty-state",
     contextModule: ContextModule.auctionResultsForArtistsYouFollowCard,
     imageURL:
       "https://files.artsy.net/images/artsy-artwork-rails-backfill-01.png",
@@ -191,6 +192,7 @@ const latestAuctionResultsCard: CardFunction = async ({
   return {
     ...cardDetails,
     title: "Auction Results for Artists You Follow",
+    entityID: "card-auction-results-for-artist-you-follow",
     imageURL: undefined,
     imageURLs,
   }

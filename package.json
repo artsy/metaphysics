@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@artsy/cohesion": "^4.310.0",
-    "@artsy/img": "1.0.3",
+    "@artsy/img": "1.1.0",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
     "@artsy/to-title-case": "^1.1.0",
@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "@artsy/express-reloadable": "1.8.0",
-    "@artsy/update-repo": "0.6.0",
+    "@artsy/update-repo": "0.7.0",
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.25.9",
     "@babel/node": "^7.25.9",
@@ -175,5 +175,5 @@
       "pre-push": "yarn run type-check"
     }
   },
-  "packageManager": "yarn@4.11.0"
+  "packageManager": "yarn@4.12.0"
 }
