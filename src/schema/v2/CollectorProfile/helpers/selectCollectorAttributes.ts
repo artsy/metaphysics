@@ -58,7 +58,7 @@ export function selectCollectorAttributes(
   const budgetAttributes: AttributeType[] = [
     {
       key: "has_demonstrated_budget",
-      label: "Demonstrated budget in line with this artwork's price",
+      label: "Demonstrated budget in line with this artwork",
       value: raw_attributes.has_demonstrated_budget ?? false,
     },
   ]
