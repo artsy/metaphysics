@@ -129,9 +129,11 @@ describe("Video type", () => {
 
       const { video } = await runQuery(query, context)
 
-      expect(video.embed).toContain('<iframe')
-      expect(video.embed).toContain('src="https://www.youtube.com/embed/dQw4w9WgXcQ')
-      expect(video.embed).toContain('autoplay=0')
+      expect(video.embed).toContain("<iframe")
+      expect(video.embed).toContain(
+        'src="https://www.youtube.com/embed/dQw4w9WgXcQ'
+      )
+      expect(video.embed).toContain("autoplay=0")
     })
 
     it("returns an embed iframe with autoplay enabled", async () => {
@@ -157,7 +159,7 @@ describe("Video type", () => {
 
       const { video } = await runQuery(query, context)
 
-      expect(video.embed).toContain('autoplay=1')
+      expect(video.embed).toContain("autoplay=1")
     })
 
     it("returns an embed iframe for Vimeo videos", async () => {
@@ -183,8 +185,10 @@ describe("Video type", () => {
 
       const { video } = await runQuery(query, context)
 
-      expect(video.embed).toContain('<iframe')
-      expect(video.embed).toContain('src="https://player.vimeo.com/video/123456789')
+      expect(video.embed).toContain("<iframe")
+      expect(video.embed).toContain(
+        'src="https://player.vimeo.com/video/123456789'
+      )
     })
 
     it("returns null for non-supported video providers", async () => {

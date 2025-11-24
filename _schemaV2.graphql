@@ -15881,6 +15881,9 @@ type Me implements Node {
   initials(length: Int = 3): String
   inquiryIntroduction: String
 
+  # Collector's Instagram handle
+  instagram: String
+
   # A type-specific ID.
   internalID: ID!
   isCollector: Boolean!
@@ -15894,6 +15897,9 @@ type Me implements Node {
 
   # Length unit preference of the user
   lengthUnitPreference: LengthUnitPreference!
+
+  # Collector's LinkedIn handle
+  linkedIn: String
   location: MyLocation
 
   # The current user's status relating to bids on artworks
@@ -25080,11 +25086,17 @@ input UpdateMyProfileInput {
   # Works in the art industry?
   industry: String
 
+  # Collector's Instagram handle
+  instagram: String
+
   # Is a collector?
   isCollector: Boolean
 
   # Length unit preference of the user
   lengthUnitPreference: LengthUnitPreference
+
+  # Collector's LinkedIn handle
+  linkedIn: String
 
   # The given location of the user as structured data
   location: EditableLocation

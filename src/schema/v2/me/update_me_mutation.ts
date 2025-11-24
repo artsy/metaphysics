@@ -177,6 +177,14 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
     },
     profession: { type: GraphQLString, description: "Profession." },
+    linkedIn: {
+      type: GraphQLString,
+      description: "Collector's LinkedIn handle",
+    },
+    instagram: {
+      type: GraphQLString,
+      description: "Collector's Instagram handle",
+    },
     promptedForUpdate: {
       type: GraphQLBoolean,
       description:

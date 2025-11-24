@@ -96,15 +96,7 @@ export const updateProfileMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    {
-      id,
-      handle,
-      bio,
-      fullBio,
-      website,
-      location,
-      isPrivate,
-    },
+    { id, handle, bio, fullBio, website, location, isPrivate },
     { updateProfileLoader }
   ) => {
     if (!updateProfileLoader) {
