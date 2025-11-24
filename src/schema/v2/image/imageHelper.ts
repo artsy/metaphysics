@@ -3,10 +3,8 @@ export const EXPECTED_IMAGE_VERSIONS = [
   "square",
   "small",
   "medium",
-  "medium_rectangle",
   "larger",
   "large",
-  "large_rectangle",
   "tall",
   "normalized",
 ]
