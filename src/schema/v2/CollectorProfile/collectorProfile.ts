@@ -351,6 +351,13 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     ),
     description:
       "Structured attributes describing the collector in relation to the artwork/partner.",
+    args: {
+      artworkID: {
+        type: GraphQLString,
+        description:
+          "This can be specified, and is injected in a conversation context for convenience.",
+      },
+    },
     resolve: async (
       {
         id: collector_profile_id,
@@ -359,7 +366,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
         owner,
         confirmed_buyer_at,
       },
-      _args,
+      { artworkID: artworkIDFromArgs },
       { collectorProfileSummaryLoader, similarGalleriesInteractionsLoader }
     ) => {
       if (!collectorProfileSummaryLoader) {
@@ -367,7 +374,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       }
 
       const { raw_attributes = {} } = await collectorProfileSummaryLoader({
-        artwork_id: artworkID,
+        artwork_id: artworkIDFromArgs || artworkID,
         collector_profile_id,
       })
 

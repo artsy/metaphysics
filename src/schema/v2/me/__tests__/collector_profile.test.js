@@ -209,14 +209,16 @@ describe("Me", () => {
       )
     })
 
-    it("returns linkedIn and instagram fields directly from me", () => {
+    it("returns linkedIn and instagram fields from collectorProfile", () => {
       const query = `
         {
           me {
             name
             profession
-            linkedIn
-            instagram
+            collectorProfile {
+              linkedIn
+              instagram
+            }
           }
         }
       `
@@ -225,6 +227,10 @@ describe("Me", () => {
         id: "user-123",
         name: "Percy Cat",
         profession: "Professional Cat",
+      }
+
+      const collectorProfileData = {
+        id: "collector-123",
         linked_in: "percy-the-cat",
         instagram: "@percy_cat",
       }
@@ -232,12 +238,15 @@ describe("Me", () => {
       const expectedData = {
         name: "Percy Cat",
         profession: "Professional Cat",
-        linkedIn: "percy-the-cat",
-        instagram: "@percy_cat",
+        collectorProfile: {
+          linkedIn: "percy-the-cat",
+          instagram: "@percy_cat",
+        },
       }
 
       const context = {
         meLoader: () => Promise.resolve(meData),
+        meCollectorProfileLoader: () => Promise.resolve(collectorProfileData),
       }
 
       return runAuthenticatedQuery(query, context).then(({ me }) => {
