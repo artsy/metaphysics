@@ -25086,11 +25086,17 @@ input UpdateMyProfileInput {
   # Works in the art industry?
   industry: String
 
+  # Collector's Instagram handle
+  instagram: String
+
   # Is a collector?
   isCollector: Boolean
 
   # Length unit preference of the user
   lengthUnitPreference: LengthUnitPreference
+
+  # Collector's LinkedIn handle
+  linkedIn: String
 
   # The given location of the user as structured data
   location: EditableLocation
