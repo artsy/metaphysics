@@ -55,8 +55,6 @@ describe("Image type", () => {
       image_versions: ["icon", "large"],
       image_urls: {
         square: undefined,
-        large_rectangle: undefined,
-        medium_rectangle: undefined,
         small: undefined,
         large: "https://xxx.cloudfront.net/xxx/large.jpg",
         tall: undefined,

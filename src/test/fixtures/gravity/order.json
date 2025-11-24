@@ -66,8 +66,6 @@
             "image_url": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/:version.jpg",
             "image_versions": [
               "small",
-              "medium_rectangle",
-              "large_rectangle",
               "large",
               "tall",
               "square",
@@ -77,8 +75,6 @@
             ],
             "image_urls": {
               "small": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/small.jpg",
-              "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/medium_rectangle.jpg",
-              "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/large_rectangle.jpg",
               "large": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/large.jpg",
               "tall": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/tall.jpg",
               "square": "https://d32dm0rphc51dk.cloudfront.net/oE5l04RpitMsvOaVVhSeoQ/square.jpg",

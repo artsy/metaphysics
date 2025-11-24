@@ -82,8 +82,6 @@
           "small",
           "large",
           "tall",
-          "large_rectangle",
-          "medium_rectangle",
           "medium",
           "larger",
           "normalized"
@@ -93,8 +91,6 @@
           "small": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/small.jpg",
           "large": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/large.jpg",
           "tall": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/tall.jpg",
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/large_rectangle.jpg",
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/medium_rectangle.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/medium.jpg",
           "larger": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/larger.jpg",
           "normalized": "https://d32dm0rphc51dk.cloudfront.net/VhwZ2Sw5Mbcjx67agi6Y0w/normalized.jpg"
@@ -257,22 +253,18 @@
         "is_default": true,
         "image_url": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/:version.jpg",
         "image_versions": [
-          "large_rectangle",
           "large",
           "small",
           "square",
-          "medium_rectangle",
           "medium",
           "tall",
           "larger",
           "normalized"
         ],
         "image_urls": {
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/large_rectangle.jpg",
           "large": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/large.jpg",
           "small": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/small.jpg",
           "square": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/square.jpg",
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/medium_rectangle.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/medium.jpg",
           "tall": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/tall.jpg",
           "larger": "https://d32dm0rphc51dk.cloudfront.net/INjXNeNTnGY-tZiLIqBYpg/larger.jpg",
@@ -430,10 +422,8 @@
         "image_url": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/:version.jpg",
         "image_versions": [
           "large",
-          "large_rectangle",
           "larger",
           "medium",
-          "medium_rectangle",
           "normalized",
           "small",
           "square",
@@ -441,10 +431,8 @@
         ],
         "image_urls": {
           "large": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/large.jpg",
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/large_rectangle.jpg",
           "larger": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/larger.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/medium.jpg",
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/medium_rectangle.jpg",
           "normalized": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/normalized.jpg",
           "small": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/small.jpg",
           "square": "https://d32dm0rphc51dk.cloudfront.net/Ru1Bi1XNUpfLgDxkxsR_cg/square.jpg",
@@ -469,10 +457,8 @@
         "is_default": false,
         "image_url": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/:version.jpg",
         "image_versions": [
-          "medium_rectangle",
           "square",
           "small",
-          "large_rectangle",
           "tall",
           "large",
           "medium",
@@ -480,10 +466,8 @@
           "normalized"
         ],
         "image_urls": {
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/medium_rectangle.jpg",
           "square": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/square.jpg",
           "small": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/small.jpg",
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/large_rectangle.jpg",
           "tall": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/tall.jpg",
           "large": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/large.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/tSlW6bkTSD7dtl0WyN5_4w/medium.jpg",
@@ -642,9 +626,7 @@
         "image_url": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/:version.jpg",
         "image_versions": [
           "square",
-          "medium_rectangle",
           "small",
-          "large_rectangle",
           "tall",
           "medium",
           "large",
@@ -653,9 +635,7 @@
         ],
         "image_urls": {
           "square": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/square.jpg",
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/medium_rectangle.jpg",
           "small": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/small.jpg",
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/large_rectangle.jpg",
           "tall": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/tall.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/medium.jpg",
           "large": "https://d32dm0rphc51dk.cloudfront.net/Qgmc_DLS8qZV9a7XAQICcA/large.jpg",
@@ -681,10 +661,8 @@
         "is_default": false,
         "image_url": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/:version.jpg",
         "image_versions": [
-          "large_rectangle",
           "small",
           "square",
-          "medium_rectangle",
           "medium",
           "tall",
           "large",
@@ -692,10 +670,8 @@
           "normalized"
         ],
         "image_urls": {
-          "large_rectangle": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/large_rectangle.jpg",
           "small": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/small.jpg",
           "square": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/square.jpg",
-          "medium_rectangle": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/medium_rectangle.jpg",
           "medium": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/medium.jpg",
           "tall": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/tall.jpg",
           "large": "https://d32dm0rphc51dk.cloudfront.net/nOZxjgkgPKU2LTOUa2ulEA/large.jpg",
