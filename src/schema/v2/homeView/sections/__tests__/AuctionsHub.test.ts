@@ -246,8 +246,14 @@ describe("AuctionsHub", () => {
       expect(result.edges[0].node.title).toBe(
         "No Current or Upcoming Auctions at this time"
       )
+      expect(result.edges[0].node.entityID).toBe(
+        "card-browse-all-auctions-empty-state"
+      )
       expect(result.edges[1].node.title).toBe(
         "Follow and engage with artists to see auction results"
+      )
+      expect(result.edges[1].node.entityID).toBe(
+        "card-auction-results-for-artist-you-follow-empty-state"
       )
     })
 
@@ -277,8 +283,14 @@ describe("AuctionsHub", () => {
       expect(result.edges[1].node.title).toBe(
         "No Current or Upcoming Auctions at this time"
       )
+      expect(result.edges[1].node.entityID).toBe(
+        "card-browse-all-auctions-empty-state"
+      )
       expect(result.edges[2].node.title).toBe(
         "Follow and engage with artists to see auction results"
+      )
+      expect(result.edges[2].node.entityID).toBe(
+        "card-auction-results-for-artist-you-follow-empty-state"
       )
     })
 
@@ -313,8 +325,14 @@ describe("AuctionsHub", () => {
       expect(result.edges[0].node.title).toBe(
         "No Current or Upcoming Auctions at this time"
       )
+      expect(result.edges[0].node.entityID).toBe(
+        "card-browse-all-auctions-empty-state"
+      )
       expect(result.edges[1].node.title).toBe(
         "Follow and engage with artists to see auction results"
+      )
+      expect(result.edges[1].node.entityID).toBe(
+        "card-auction-results-for-artist-you-follow-empty-state"
       )
     })
   })
