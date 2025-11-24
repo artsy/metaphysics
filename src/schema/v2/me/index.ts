@@ -586,16 +586,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     profession: {
       type: GraphQLString,
     },
-    linkedIn: {
-      type: GraphQLString,
-      description: "Collector's LinkedIn handle",
-      resolve: ({ linked_in }) => linked_in,
-    },
-    instagram: {
-      type: GraphQLString,
-      description: "Collector's Instagram handle",
-      resolve: ({ instagram }) => instagram,
-    },
     otherRelevantPosition: {
       type: GraphQLString,
       description: "Collector's position with relevant institutions",

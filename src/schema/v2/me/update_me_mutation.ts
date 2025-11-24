@@ -257,8 +257,12 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     me: Me,
   },
   mutateAndGetPayload: async (
-    { iconUrl, ...args },
-    { updateMeLoader, updateCollectorProfileIconLoader }
+    { iconUrl, linkedIn, instagram, ...args },
+    {
+      updateMeLoader,
+      updateCollectorProfileIconLoader,
+      meUpdateCollectorProfileLoader,
+    }
   ) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const user = Object.keys(args).reduce(
@@ -271,12 +275,29 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     }
 
     try {
+      // Handle icon update (CollectorProfile)
       if (iconUrl) {
         const imageSource = computeImageSources([iconUrl])
         for (const payload of imageSource) {
           await updateCollectorProfileIconLoader(payload)
         }
       }
+
+      // Handle social fields (CollectorProfile)
+      if (
+        meUpdateCollectorProfileLoader &&
+        (linkedIn !== undefined || instagram !== undefined)
+      ) {
+        const collectorProfileUpdates = {}
+        if (linkedIn !== undefined)
+          collectorProfileUpdates["linked_in"] = linkedIn
+        if (instagram !== undefined)
+          collectorProfileUpdates["instagram"] = instagram
+
+        await meUpdateCollectorProfileLoader(collectorProfileUpdates)
+      }
+
+      // Handle user fields
       return await updateMeLoader(user)
     } catch (error) {
       const formattedErr = formatGravityError(error)
