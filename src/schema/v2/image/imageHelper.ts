@@ -1,4 +1,9 @@
-// Expected image versions for processing validation
+/**
+ * Expected artwork image versions for processing validation.
+ *
+ * Generate from Gemini console with:
+ * Account.find_by(name: "Gravity").templates.find_by(key: "additional-image").versions.map(&:key)
+ */
 export const EXPECTED_ARTWORK_IMAGE_VERSIONS = [
   "square",
   "small",
@@ -7,6 +12,7 @@ export const EXPECTED_ARTWORK_IMAGE_VERSIONS = [
   "large",
   "tall",
   "normalized",
+  "main",
 ]
 
 // Grace period for image processing (30 minutes in milliseconds)

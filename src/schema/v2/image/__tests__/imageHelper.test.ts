@@ -44,6 +44,7 @@ describe("imageHelper", () => {
           "large",
           "tall",
           "normalized",
+          "main",
         ],
       }
       expect(hasMissingImageVersion(image)).toBe(false)
@@ -99,6 +100,7 @@ describe("imageHelper", () => {
           "large",
           "tall",
           "normalized",
+          "main",
         ],
         gemini_token_updated_at: new Date().toISOString(),
       }
@@ -259,6 +261,7 @@ describe("imageHelper", () => {
           "large",
           "tall",
           "normalized",
+          "main",
         ],
         gemini_token_updated_at: new Date().toISOString(),
       }
