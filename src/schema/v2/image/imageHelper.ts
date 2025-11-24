@@ -1,5 +1,5 @@
 // Expected image versions for processing validation
-export const EXPECTED_IMAGE_VERSIONS = [
+export const EXPECTED_ARTWORK_IMAGE_VERSIONS = [
   "square",
   "small",
   "medium",
@@ -20,7 +20,7 @@ export const hasImageVersion = (image, version: string) => {
 // Helper function to check if any expected image version is missing
 export const hasMissingImageVersion = (image) => {
   if (!image.image_versions) return true
-  return EXPECTED_IMAGE_VERSIONS.some(
+  return EXPECTED_ARTWORK_IMAGE_VERSIONS.some(
     (version) => !image.image_versions.includes(version)
   )
 }
