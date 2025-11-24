@@ -231,6 +231,9 @@ export const AuctionsHub: HomeViewCardsSection = {
 
     const validCards = results
       .filter((r): r is PromiseFulfilledResult<HomeViewCard | null> => {
+        if (r.status === "rejected") {
+          console.error("[AuctionsHub] Card failed to load:", r.reason)
+        }
         return r.status === "fulfilled"
       })
       .map((r) => r.value)
