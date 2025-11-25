@@ -5,6 +5,7 @@ import { GraphQLSchemaWithTransforms, WrapQuery } from "graphql-tools"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
+import { getOfferMessage } from "../utils"
 
 const orderTotals = [
   "itemsTotal",
@@ -874,6 +875,20 @@ export const exchangeStitchingEnvironment = ({
                                       value: "note",
                                     },
                                   },
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "amountCents",
+                                    },
+                                  },
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "currencyCode",
+                                    },
+                                  },
                                 ],
                               },
                             },
@@ -949,10 +964,13 @@ export const exchangeStitchingEnvironment = ({
 
             try {
               const { order } = orderOrError
+              const { note, amountCents, currencyCode } = order.myLastOffer
+
+              const message = getOfferMessage(note, amountCents, currencyCode)
 
               await submitArtworkInquiryRequestLoader({
                 artwork: order.lineItems.edges[0].node.artworkId,
-                message: order.myLastOffer.note,
+                message,
                 order_id: order.internalID,
               })
             } catch (e) {

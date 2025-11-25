@@ -454,6 +454,8 @@ describe("submitOfferOrderWithConversation", () => {
         internalID: "order-id",
         myLastOffer: {
           note: "test note",
+          amountCents: 100000,
+          currencyCode: "USD",
         },
         lineItems: {
           edges: [
@@ -626,6 +628,129 @@ describe("submitOfferOrderWithConversation", () => {
     await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
       "Gravity: request to create inquiry failed"
     )
+  })
+
+  it("uses default message when note is null", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const orderResult = {
+      orderOrError: {
+        order: {
+          source: "artwork_page",
+          internalID: "order-id",
+          myLastOffer: {
+            note: null,
+            amountCents: 100000,
+            currencyCode: "USD",
+          },
+          lineItems: {
+            edges: [
+              {
+                node: {
+                  artworkId: "artwork-id",
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+
+    await resolver({}, args, context, { mergeInfo })
+
+    expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+      artwork: "artwork-id",
+      message: "I sent an offer for US$1,000",
+      order_id: "order-id",
+    })
+  })
+
+  it("uses default message when note is empty string", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const orderResult = {
+      orderOrError: {
+        order: {
+          source: "artwork_page",
+          internalID: "order-id",
+          myLastOffer: {
+            note: "",
+            amountCents: 100000,
+            currencyCode: "USD",
+          },
+          lineItems: {
+            edges: [
+              {
+                node: {
+                  artworkId: "artwork-id",
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+
+    await resolver({}, args, context, { mergeInfo })
+
+    expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+      artwork: "artwork-id",
+      message: "I sent an offer for US$1,000",
+      order_id: "order-id",
+    })
+  })
+
+  it("uses default message when note is whitespace only", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const orderResult = {
+      orderOrError: {
+        order: {
+          source: "artwork_page",
+          internalID: "order-id",
+          myLastOffer: {
+            note: "   ",
+            amountCents: 100000,
+            currencyCode: "USD",
+          },
+          lineItems: {
+            edges: [
+              {
+                node: {
+                  artworkId: "artwork-id",
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+
+    await resolver({}, args, context, { mergeInfo })
+
+    expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+      artwork: "artwork-id",
+      message: "I sent an offer for US$1,000",
+      order_id: "order-id",
+    })
   })
 })
 
