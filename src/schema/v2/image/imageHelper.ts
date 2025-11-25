@@ -1,14 +1,18 @@
-// Expected image versions for processing validation
-export const EXPECTED_IMAGE_VERSIONS = [
-  "square",
-  "small",
-  "medium",
-  "medium_rectangle",
-  "larger",
+/**
+ * Expected artwork image versions for processing validation.
+ *
+ * Generate from Gemini console with:
+ * Account.find_by(name: "Gravity").templates.find_by(key: "additional-image").versions.map(&:key).sort
+ */
+export const EXPECTED_ARTWORK_IMAGE_VERSIONS = [
   "large",
-  "large_rectangle",
-  "tall",
+  "larger",
+  "main",
+  "medium",
   "normalized",
+  "small",
+  "square",
+  "tall",
 ]
 
 // Grace period for image processing (30 minutes in milliseconds)
@@ -22,7 +26,7 @@ export const hasImageVersion = (image, version: string) => {
 // Helper function to check if any expected image version is missing
 export const hasMissingImageVersion = (image) => {
   if (!image.image_versions) return true
-  return EXPECTED_IMAGE_VERSIONS.some(
+  return EXPECTED_ARTWORK_IMAGE_VERSIONS.some(
     (version) => !image.image_versions.includes(version)
   )
 }
