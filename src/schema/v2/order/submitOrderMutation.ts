@@ -16,6 +16,8 @@ interface Input {
   id: string
   confirmationToken?: string
   oneTimeUse?: boolean
+  offerID?: string
+  confirmedSetupIntentId?: string
 }
 
 export const submitOrderMutation = mutationWithClientMutationId<
@@ -35,6 +37,14 @@ export const submitOrderMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether the credit card should be one-time use.",
     },
+    offerID: {
+      type: GraphQLID,
+      description: "Offer ID for submitting an offer-order.",
+    },
+    confirmedSetupIntentId: {
+      type: GraphQLString,
+      description: "Confirmed setup intent ID for offer orders.",
+    },
   },
   outputFields: {
     orderOrError: {
@@ -51,6 +61,8 @@ export const submitOrderMutation = mutationWithClientMutationId<
       const payload = {
         confirmation_token: input.confirmationToken,
         one_time_use: input.oneTimeUse,
+        offer_id: input.offerID,
+        confirmed_setup_intent_id: input.confirmedSetupIntentId,
       }
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
