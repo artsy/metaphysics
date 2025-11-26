@@ -18142,6 +18142,9 @@ type Order {
   # Order code
   code: String!
 
+  # The commission fee for the order
+  commissionFee: Money
+
   # Order creation time
   createdAt: String
 
@@ -18199,6 +18202,9 @@ type Order {
   # The seller of the order
   seller: SellerType
 
+  # The total amount the seller will receive
+  sellerTotal: Money
+
   # Display short version of order's artwork location
   shippingOrigin: String
 
@@ -18219,6 +18225,9 @@ type Order {
 
   # The total list price of items (accounting for limited partner offer if applicable)
   totalListPrice: Money
+
+  # The transaction fee for the order
+  transactionFee: Money
 }
 
 type OrderActionData {
