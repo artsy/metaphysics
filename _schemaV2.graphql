@@ -18866,6 +18866,28 @@ type Partner implements Node {
   meta: PartnerMeta
   name: String
 
+  # A single order for this partner.
+  order(
+    # The ID of the order
+    id: String!
+  ): Order
+
+  # A connection of orders from a Partner.
+  ordersConnection(
+    after: String
+
+    # Filter by artwork ID in line items
+    artworkID: String
+    before: String
+
+    # Filter by conversation ID
+    conversationID: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerOrdersConnection
+
   # A connection of search criteria hits from a Partner.
   partnerAlertHitsConnection(
     after: String
@@ -19827,6 +19849,26 @@ enum PartnerOfferToCollectorSorts {
   CREATED_AT_DESC
   END_AT_ASC
   END_AT_DESC
+}
+
+# A connection to a list of items.
+type PartnerOrdersConnection {
+  # A list of edges.
+  edges: [PartnerOrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerOrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
 }
 
 # A connection to a list of items.
