@@ -200,6 +200,10 @@ export default (opts) => {
     ),
     partnerCategoriesLoader: gravityLoader("partner_categories"),
     partnerCategoryLoader: gravityLoader((id) => `partner_category/${id}`),
+    partnerCollectorProfileLoader: gravityLoader<any, { partnerId; userId }>(
+      ({ partnerId, userId }) =>
+        `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
+    ),
     partnerLoader: gravityLoader((id) => `partner/${id}`),
     partnerLocationsLoader: gravityLoader((id) => `partner/${id}/locations`),
     partnerLocationsConnectionLoader: gravityLoader(

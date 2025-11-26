@@ -4,12 +4,13 @@ import config from "config"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import fetch from "node-fetch"
 import urljoin from "url-join"
+import gravity from "lib/apis/gravity"
 
 import { middlewareLink } from "../lib/middlewareLink"
 import { responseLoggerLink } from "../logLinkMiddleware"
 import { ResolverContext } from "types/graphql"
 
-const { EXCHANGE_API_BASE } = config
+const { EXCHANGE_API_BASE, EXCHANGE_APP_ID } = config
 
 export const createExchangeLink = () => {
   const httpLink = createHttpLink({
@@ -18,7 +19,10 @@ export const createExchangeLink = () => {
   })
 
   const authMiddleware = setContext(
-    (_request, { graphqlContext }: { graphqlContext: ResolverContext }) => {
+    async (
+      _request,
+      { graphqlContext }: { graphqlContext: ResolverContext }
+    ) => {
       const tokenLoader = graphqlContext && graphqlContext.exchangeTokenLoader
       const headers = {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
@@ -37,10 +41,21 @@ export const createExchangeLink = () => {
       }
 
       // Use the app token when an application is trying to reach Exchange eg. Impulse calling Metaphysics
+      // Swap the app token for an Exchange-scoped token via Gravity
       if (graphqlContext.appToken) {
+        const response = await gravity(
+          `token/exchange?client_application_id=${EXCHANGE_APP_ID}`,
+          null,
+          {
+            method: "POST",
+            appToken: graphqlContext.appToken,
+            requestIDs: graphqlContext.requestIDs,
+          }
+        )
+        const { token } = response.body
         return {
           headers: Object.assign(headers, {
-            Authorization: `Bearer ${graphqlContext.appToken}`,
+            Authorization: `Bearer ${token}`,
           }),
         }
       }
