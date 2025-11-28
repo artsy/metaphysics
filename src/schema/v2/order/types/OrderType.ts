@@ -238,6 +238,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Order code",
       resolve: ({ code }) => code,
     },
+    commissionFee: {
+      type: Money,
+      description: "The commission fee for the order",
+      resolve: (
+        { commission_fee_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     createdAt: {
       type: GraphQLString,
       description: "Order creation time",
@@ -361,6 +381,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         return partnerLoader(seller_id).catch(() => null)
       },
     },
+    sellerTotal: {
+      type: Money,
+      description: "The total amount the seller will receive",
+      resolve: (
+        { seller_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     shippingOrigin: {
       type: GraphQLString,
       description: "Display short version of order's artwork location",
@@ -417,6 +457,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "The total list price of items (accounting for limited partner offer if applicable)",
       resolve: (
         { total_list_price_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
+    transactionFee: {
+      type: Money,
+      description: "The transaction fee for the order",
+      resolve: (
+        { transaction_fee_cents: minor, currency_code: currencyCode },
         _args,
         ctx,
         _info

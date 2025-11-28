@@ -62,6 +62,7 @@ export interface OrderJSON {
   buyer_state_expires_at?: string
   buyer_total_cents?: number
   buyer_type: string
+  commission_fee_cents?: number
   created_at: string
   code: string
   credit_card_id?: string
@@ -97,6 +98,7 @@ export interface OrderJSON {
   selected_fulfillment_option?: FulfillmentOptionJson
   seller_id: string
   seller_type: string
+  seller_total_cents?: number
   shipping_address_line1?: string
   shipping_address_line2?: string
   shipping_city?: string
@@ -109,6 +111,7 @@ export interface OrderJSON {
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
   tax_total_cents?: number
   total_list_price_cents?: number
+  transaction_fee_cents?: number
   submitted_offers?: Array<OfferJSON>
   pending_offer?: OfferJSON | null
   last_submitted_offer?: OfferJSON | null

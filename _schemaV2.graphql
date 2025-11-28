@@ -18084,6 +18084,9 @@ type Order {
   # Order code
   code: String!
 
+  # The commission fee for the order
+  commissionFee: Money
+
   # Order creation time
   createdAt: String
 
@@ -18141,6 +18144,9 @@ type Order {
   # The seller of the order
   seller: SellerType
 
+  # The total amount the seller will receive
+  sellerTotal: Money
+
   # Display short version of order's artwork location
   shippingOrigin: String
 
@@ -18161,6 +18167,9 @@ type Order {
 
   # The total list price of items (accounting for limited partner offer if applicable)
   totalListPrice: Money
+
+  # The transaction fee for the order
+  transactionFee: Money
 }
 
 type OrderActionData {
@@ -18807,6 +18816,28 @@ type Partner implements Node {
   merchantAccount: PartnerMerchantAccount
   meta: PartnerMeta
   name: String
+
+  # A single order for this partner.
+  order(
+    # The ID of the order
+    id: String!
+  ): Order
+
+  # A connection of orders from a Partner.
+  ordersConnection(
+    after: String
+
+    # Filter by artwork ID in line items
+    artworkID: String
+    before: String
+
+    # Filter by conversation ID
+    conversationID: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerOrdersConnection
 
   # A connection of search criteria hits from a Partner.
   partnerAlertHitsConnection(
@@ -19769,6 +19800,26 @@ enum PartnerOfferToCollectorSorts {
   CREATED_AT_DESC
   END_AT_ASC
   END_AT_DESC
+}
+
+# A connection to a list of items.
+type PartnerOrdersConnection {
+  # A list of edges.
+  edges: [PartnerOrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerOrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
 }
 
 # A connection to a list of items.
