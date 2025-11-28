@@ -8,6 +8,7 @@ import { getExperimentVariant } from "lib/featureFlags"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { ResolverContext } from "types/graphql"
 import { artworksForUser } from "schema/v2/artworksForUser"
+import * as Sentry from "@sentry/node"
 
 interface CardFunctionContext {
   parent?: any
@@ -232,7 +233,9 @@ export const AuctionsHub: HomeViewCardsSection = {
     const validCards = results
       .filter((r): r is PromiseFulfilledResult<HomeViewCard | null> => {
         if (r.status === "rejected") {
-          console.error("[AuctionsHub] Card failed to load:", r.reason)
+          Sentry.captureException(r.reason, {
+            tags: { component: "AuctionsHub" },
+          })
         }
         return r.status === "fulfilled"
       })
