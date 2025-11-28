@@ -212,15 +212,26 @@ describe("AuctionsHub", () => {
       ])
     })
 
-    it("throws error when loaders fail", async () => {
-      mockContext.salesLoader.mockRejectedValue(
-        new Error("Sales loader failed")
+    it("handles loader errors gracefully and shows available cards", async () => {
+      // Make artworksForUser fail
+      const { artworksForUser } = require("schema/v2/artworksForUser")
+      artworksForUser.resolve.mockRejectedValue(
+        new Error("Artworks loader failed")
       )
 
-      // Should throw the error instead of handling gracefully
-      await expect(
-        AuctionsHub.resolver!({}, {}, mockContext as any, {} as any)
-      ).rejects.toThrow("Sales loader failed")
+      const result = await AuctionsHub.resolver!(
+        {},
+        {},
+        mockContext as any,
+        {} as any
+      )
+
+      // Should return only the cards that succeeded (auctions and results)
+      expect(result.edges).toHaveLength(2)
+      expect(result.edges[0].node.entityID).toBe("card-browse-all-auctions")
+      expect(result.edges[1].node.entityID).toBe(
+        "card-auction-results-for-artist-you-follow"
+      )
     })
 
     it("shows empty states when AuctionResultsByFollowedArtists is empty", async () => {
