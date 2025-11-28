@@ -463,6 +463,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    updateArtworkImageLoader: gravityLoader<
+      any,
+      { artworkID: string; imageID: string }
+    >(
+      ({ artworkID, imageID }) => `artwork/${artworkID}/image/${imageID}`,
+      {},
+      { method: "PUT" }
+    ),
     deleteArtworkLoader: gravityLoader(
       (id) => `artwork/${id}`,
       {},
