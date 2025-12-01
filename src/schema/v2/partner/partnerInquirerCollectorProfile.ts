@@ -3,20 +3,28 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLObjectType,
+  Thunk,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { CollectorProfileFields } from "schema/v2/CollectorProfile/collectorProfile"
 
-const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
+const InquirerCollectorProfileFields: Thunk<GraphQLFieldConfigMap<
   any,
   ResolverContext
-> = {
-  ...CollectorProfileFields,
-  hasPartnerFollow: {
-    type: GraphQLBoolean,
-    description: "The Collector follows the Gallery profile",
-    resolve: ({ follows_profile }) => follows_profile,
-  },
+>> = () => {
+  const baseFields =
+    typeof CollectorProfileFields === "function"
+      ? CollectorProfileFields()
+      : CollectorProfileFields
+
+  return {
+    ...baseFields,
+    hasPartnerFollow: {
+      type: GraphQLBoolean,
+      description: "The Collector follows the Gallery profile",
+      resolve: ({ follows_profile }) => follows_profile,
+    },
+  }
 }
 
 export const InquirerCollectorProfileType = new GraphQLObjectType<
