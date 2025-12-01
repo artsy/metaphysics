@@ -43,6 +43,7 @@ import {
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
+import { ReprocessArtworkImageMutation } from "./reprocessArtworkImageMutation"
 import { OrderPartyUnionType } from "./ecommerce/types/order_party_union"
 import Fair from "./fair"
 import Fairs, { fairsConnection } from "./fairs"
@@ -600,6 +601,7 @@ export default new GraphQLSchema({
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
+      reprocessArtworkImage: ReprocessArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
       deleteCollection: deleteCollectionMutation,
