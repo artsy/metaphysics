@@ -9,6 +9,7 @@ import { CURRENTLY_RUNNING_EXPERIMENTS } from "./experiments"
 import { ClientFeatureFlagType } from "schema/v2/featureFlags/client/featureFlags"
 import { compact } from "lodash"
 import { isEligibleForAuctionsHubExperiment } from "../sections/AuctionsHub"
+import { isEligibleForNWFYExperiment } from "../sections/NewWorksForYou"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   type: GraphQLNonNull(GraphQLList(ClientFeatureFlagType)),
@@ -17,8 +18,10 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
     const experiments = CURRENTLY_RUNNING_EXPERIMENTS.map(
       (name: FeatureFlag) => {
         if (
-          name === "onyx_auctions_hub" &&
-          !isEligibleForAuctionsHubExperiment(context)
+          (name === "onyx_auctions_hub" &&
+            !isEligibleForAuctionsHubExperiment(context)) ||
+          (name === "onyx_nwfy-artworks-card-test" &&
+            !isEligibleForNWFYExperiment(context))
         ) {
           return null
         }

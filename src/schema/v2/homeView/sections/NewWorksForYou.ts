@@ -4,6 +4,21 @@ import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewArtworksSection } from "../sectionTypes/Artworks"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { ResolverContext } from "types/graphql"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
+
+export const isEligibleForNWFYExperiment = (
+  context: ResolverContext
+): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+  const minimumEigenVersion = { major: 8, minor: 90, patch: 0 }
+
+  if (actualEigenVersion) {
+    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
+  } else {
+    return false
+  }
+}
 
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
@@ -25,7 +40,12 @@ export const NewWorksForYou: HomeViewArtworksSection = {
       userId: context.userID,
     })
 
-    return variant && variant.enabled && variant.name === "variant-a"
+    return (
+      isEligibleForNWFYExperiment(context) &&
+      variant &&
+      variant.enabled &&
+      variant.name === "variant-a"
+    )
   },
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {
