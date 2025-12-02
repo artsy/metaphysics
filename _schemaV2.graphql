@@ -18202,6 +18202,12 @@ type Order {
   # The seller of the order
   seller: SellerType
 
+  # Calculated state of the order that defines seller facing state/actions
+  sellerState: OrderSellerStateEnum
+
+  # Expiration for the current seller state of the order
+  sellerStateExpiresAt: String
+
   # The total amount the seller will receive
   sellerTotal: Money
 
@@ -18312,6 +18318,53 @@ enum OrderPaymentMethodEnum {
   SEPA_DEBIT
   US_BANK_ACCOUNT
   WIRE_TRANSFER
+}
+
+enum OrderSellerStateEnum {
+  # Approved - action is for seller to print Artsy label, pack and ship
+  APPROVED_ARTSY_SELF_SHIP
+
+  # Approved - action is for seller to wait for Artsy pickup
+  APPROVED_ARTSY_SHIP
+
+  # Approved - action is to coordinate pickup
+  APPROVED_PICKUP
+
+  # Approved - action is for seller to pack and ship
+  APPROVED_SELLER_SHIP
+
+  # Order has been canceled
+  CANCELED
+
+  # Order is completed
+  COMPLETED
+
+  # Order is incomplete (not actionable by seller)
+  INCOMPLETE
+
+  # Order is in transit
+  IN_TRANSIT
+
+  # Offer has been received from buyer
+  OFFER_RECEIVED
+
+  # Offer has been sent to buyer
+  OFFER_SENT
+
+  # Order has been received
+  ORDER_RECEIVED
+
+  # Payment has failed
+  PAYMENT_FAILED
+
+  # Processing payment
+  PROCESSING_PAYMENT
+
+  # Order has been refunded
+  REFUNDED
+
+  # Order status is unknown
+  UNKNOWN
 }
 
 enum OrderSourceEnum {

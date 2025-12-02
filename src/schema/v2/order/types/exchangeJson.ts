@@ -98,6 +98,8 @@ export interface OrderJSON {
   selected_fulfillment_option?: FulfillmentOptionJson
   seller_id: string
   seller_type: string
+  seller_state?: string
+  seller_state_expires_at?: string
   seller_total_cents?: number
   shipping_address_line1?: string
   shipping_address_line2?: string

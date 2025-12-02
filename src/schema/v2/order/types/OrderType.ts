@@ -27,6 +27,7 @@ import {
   FulfillmentOptionJSONWithCurrencyCode,
   FulfillmentOptionType,
   OrderBuyerStateEnum,
+  OrderSellerStateEnum,
   OrderCreditCardWalletTypeEnum,
   OrderModeEnum,
   OrderPaymentMethodEnum,
@@ -381,6 +382,17 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         return partnerLoader(seller_id).catch(() => null)
       },
     },
+    sellerState: {
+      type: OrderSellerStateEnum,
+      description:
+        "Calculated state of the order that defines seller facing state/actions",
+      resolve: (order) => resolveSellerState(order),
+    },
+    sellerStateExpiresAt: {
+      type: GraphQLString,
+      description: "Expiration for the current seller state of the order",
+      resolve: ({ seller_state_expires_at }) => seller_state_expires_at,
+    },
     sellerTotal: {
       type: Money,
       description: "The total amount the seller will receive",
@@ -611,6 +623,47 @@ const resolveBuyerState = (order) => {
       return "DECLINED_BY_SELLER"
     case "declined_by_buyer":
       return "DECLINED_BY_BUYER"
+    case "canceled":
+      return "CANCELED"
+    default:
+      return "UNKNOWN"
+  }
+}
+
+const resolveSellerState = (order) => {
+  const { seller_state } = order
+
+  if (!seller_state) {
+    return null
+  }
+
+  switch (seller_state) {
+    case "incomplete":
+      return "INCOMPLETE"
+    case "order_received":
+      return "ORDER_RECEIVED"
+    case "offer_received":
+      return "OFFER_RECEIVED"
+    case "offer_sent":
+      return "OFFER_SENT"
+    case "payment_failed":
+      return "PAYMENT_FAILED"
+    case "processing_payment":
+      return "PROCESSING_PAYMENT"
+    case "approved_pickup":
+      return "APPROVED_PICKUP"
+    case "approved_seller_ship":
+      return "APPROVED_SELLER_SHIP"
+    case "approved_artsy_self_ship":
+      return "APPROVED_ARTSY_SELF_SHIP"
+    case "approved_artsy_ship":
+      return "APPROVED_ARTSY_SHIP"
+    case "in_transit":
+      return "IN_TRANSIT"
+    case "completed":
+      return "COMPLETED"
+    case "refunded":
+      return "REFUNDED"
     case "canceled":
       return "CANCELED"
     default:
