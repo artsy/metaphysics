@@ -3015,6 +3015,19 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Is this work only available for shipping domestically?
   onlyShipsDomestically: Boolean
+
+  # A connection of orders for this artwork.
+  ordersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # Filter by partner ID. If provided, uses partner context instead of user context
+    partnerID: String
+    size: Int
+  ): ArtworkOrdersConnection
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean = true
@@ -3723,6 +3736,26 @@ union ArtworkMutationType =
   | ArtworkMutationFailure
 
 union ArtworkOrEditionSetType = Artwork | EditionSet
+
+# A connection to a list of items.
+type ArtworkOrdersConnection {
+  # A list of edges.
+  edges: [ArtworkOrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtworkOrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
+}
 
 # Insights may not be available for all Artwork Connections due to potential performance issues
 type ArtworkPriceInsights {
@@ -9226,6 +9259,19 @@ type Conversation implements Node {
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
 
+  # A connection of orders for artworks in this conversation.
+  ordersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # Filter by partner ID. If provided, uses partner context instead of user context
+    partnerID: String
+    size: Int
+  ): ConversationOrdersConnection
+
   # The participant(s) responding to the conversation
   to: ConversationResponder!
   toLastViewedMessageAt(
@@ -9360,6 +9406,26 @@ type ConversationMessageTemplateExample {
   # Internal identifier for the example, used for tracking purposes
   internalID: ID
   title: String!
+}
+
+# A connection to a list of items.
+type ConversationOrdersConnection {
+  # A list of edges.
+  edges: [ConversationOrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ConversationOrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
 }
 
 # The participant responding to the conversation, currently always a Partner
@@ -18934,16 +19000,13 @@ type Partner implements Node {
     id: String!
   ): Order
 
-  # A connection of orders from a Partner.
+  # A connection of orders for the Partner.
   ordersConnection(
     after: String
 
     # Filter by artwork ID in line items
     artworkID: String
     before: String
-
-    # Filter by conversation ID
-    conversationID: String
     first: Int
     last: Int
     page: Int

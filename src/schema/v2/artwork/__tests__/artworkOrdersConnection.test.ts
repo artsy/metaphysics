@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("partner.ordersConnection", () => {
+describe("artwork.ordersConnection", () => {
   let ordersResponse
   let context
 
@@ -18,11 +18,6 @@ describe("partner.ordersConnection", () => {
         seller_id: "partner-id",
         seller_type: "Partner",
         items_total_cents: 100000,
-        shipping_total_cents: 2000,
-        tax_total_cents: 8000,
-        seller_total_cents: 110000,
-        commission_fee_cents: 5000,
-        transaction_fee_cents: 300,
         line_items: [
           {
             id: "line-item-1",
@@ -45,16 +40,11 @@ describe("partner.ordersConnection", () => {
         seller_id: "partner-id",
         seller_type: "Partner",
         items_total_cents: 50000,
-        shipping_total_cents: 1000,
-        tax_total_cents: 4000,
-        seller_total_cents: 55000,
-        commission_fee_cents: 2500,
-        transaction_fee_cents: 150,
         impulse_conversation_id: "conversation-1",
         line_items: [
           {
             id: "line-item-2",
-            artwork_id: "artwork-2",
+            artwork_id: "artwork-1",
             list_price_cents: 50000,
             quantity: 1,
             currency_code: "USD",
@@ -63,6 +53,23 @@ describe("partner.ordersConnection", () => {
         submitted_offers: [],
       },
     ]
+
+    const meOrdersLoader = jest.fn((params) => {
+      let filteredOrders = [...ordersResponse]
+
+      if (params.artwork_id) {
+        filteredOrders = filteredOrders.filter((order) =>
+          order.line_items.some((li) => li.artwork_id === params.artwork_id)
+        )
+      }
+
+      return Promise.resolve({
+        body: filteredOrders,
+        headers: {
+          "x-total-count": filteredOrders.length.toString(),
+        },
+      })
+    })
 
     const partnerOrdersLoader = jest.fn((_partnerId, params) => {
       let filteredOrders = [...ordersResponse]
@@ -82,20 +89,22 @@ describe("partner.ordersConnection", () => {
     })
 
     context = {
-      partnerLoader: () => {
+      artworkLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "artwork-1",
+          _id: "artwork-1",
+          title: "Test Artwork",
         })
       },
+      meOrdersLoader,
       partnerOrdersLoader,
     }
   })
 
-  it("returns orders for a partner", async () => {
+  it("returns orders for an artwork using meOrdersLoader", async () => {
     const query = gql`
       {
-        partner(id: "partner-id") {
+        artwork(id: "artwork-1") {
           ordersConnection(first: 5) {
             edges {
               node {
@@ -111,7 +120,7 @@ describe("partner.ordersConnection", () => {
 
     const data = await runQuery(query, context)
     expect(data).toEqual({
-      partner: {
+      artwork: {
         ordersConnection: {
           edges: [
             {
@@ -132,13 +141,19 @@ describe("partner.ordersConnection", () => {
         },
       },
     })
+
+    expect(context.meOrdersLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artwork_id: "artwork-1",
+      })
+    )
   })
 
-  it("filters orders by artworkID", async () => {
+  it("returns orders for an artwork using partnerOrdersLoader when partnerID is provided", async () => {
     const query = gql`
       {
-        partner(id: "partner-id") {
-          ordersConnection(first: 5, artworkID: "artwork-1") {
+        artwork(id: "artwork-1") {
+          ordersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 internalID
@@ -152,13 +167,19 @@ describe("partner.ordersConnection", () => {
 
     const data = await runQuery(query, context)
     expect(data).toEqual({
-      partner: {
+      artwork: {
         ordersConnection: {
           edges: [
             {
               node: {
                 internalID: "order-1",
                 code: "ORD001",
+              },
+            },
+            {
+              node: {
+                internalID: "order-2",
+                code: "ORD002",
               },
             },
           ],
@@ -177,7 +198,7 @@ describe("partner.ordersConnection", () => {
   it("returns hasNextPage=true when first is below total", async () => {
     const query = gql`
       {
-        partner(id: "partner-id") {
+        artwork(id: "artwork-1") {
           ordersConnection(first: 1) {
             pageInfo {
               hasNextPage
@@ -190,7 +211,7 @@ describe("partner.ordersConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      partner: {
+      artwork: {
         ordersConnection: {
           pageInfo: {
             hasNextPage: true,
@@ -200,36 +221,10 @@ describe("partner.ordersConnection", () => {
     })
   })
 
-  it("returns hasNextPage=false when first is above total", async () => {
+  it("returns totalCount", async () => {
     const query = gql`
       {
-        partner(id: "partner-id") {
-          ordersConnection(first: 5) {
-            pageInfo {
-              hasNextPage
-            }
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(query, context)
-
-    expect(data).toEqual({
-      partner: {
-        ordersConnection: {
-          pageInfo: {
-            hasNextPage: false,
-          },
-        },
-      },
-    })
-  })
-
-  it("loads the total count", async () => {
-    const query = gql`
-      {
-        partner(id: "partner-id") {
+        artwork(id: "artwork-1") {
           ordersConnection(first: 5) {
             totalCount
           }
@@ -240,7 +235,7 @@ describe("partner.ordersConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      partner: {
+      artwork: {
         ordersConnection: {
           totalCount: 2,
         },
@@ -248,19 +243,19 @@ describe("partner.ordersConnection", () => {
     })
   })
 
-  it("returns null when partnerOrdersLoader is not available", async () => {
+  it("returns null when meOrdersLoader is not available and no partnerID provided", async () => {
     const contextWithoutLoader = {
-      partnerLoader: () => {
+      artworkLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "artwork-1",
+          _id: "artwork-1",
         })
       },
     }
 
     const query = gql`
       {
-        partner(id: "partner-id") {
+        artwork(id: "artwork-1") {
           ordersConnection(first: 5) {
             edges {
               node {
@@ -275,7 +270,41 @@ describe("partner.ordersConnection", () => {
     const data = await runQuery(query, contextWithoutLoader)
 
     expect(data).toEqual({
-      partner: {
+      artwork: {
+        ordersConnection: null,
+      },
+    })
+  })
+
+  it("returns null when partnerOrdersLoader is not available but partnerID is provided", async () => {
+    const contextWithoutPartnerLoader = {
+      artworkLoader: () => {
+        return Promise.resolve({
+          id: "artwork-1",
+          _id: "artwork-1",
+        })
+      },
+      meOrdersLoader: context.meOrdersLoader,
+    }
+
+    const query = gql`
+      {
+        artwork(id: "artwork-1") {
+          ordersConnection(first: 5, partnerID: "partner-id") {
+            edges {
+              node {
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithoutPartnerLoader)
+
+    expect(data).toEqual({
+      artwork: {
         ordersConnection: null,
       },
     })

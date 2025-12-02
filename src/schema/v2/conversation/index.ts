@@ -643,6 +643,78 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         return conversation.is_unread_by_partner
       },
     },
+    ordersConnection: {
+      get type() {
+        const { OrderType } = require("../order/types/OrderType")
+        return connectionWithCursorInfo({
+          name: "ConversationOrders",
+          nodeType: OrderType,
+        }).connectionType
+      },
+      description: "A connection of orders for artworks in this conversation.",
+      args: pageable({
+        page: { type: GraphQLInt },
+        size: { type: GraphQLInt },
+        partnerID: {
+          type: GraphQLString,
+          description:
+            "Filter by partner ID. If provided, uses partner context instead of user context",
+        },
+      }),
+      resolve: async (conversation, args, context, _info) => {
+        const { partnerID } = args
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        // Get artwork IDs from conversation items
+        const artworkIds: string[] = []
+        for (const item of conversation.items) {
+          if (item.item_type === "Artwork") {
+            artworkIds.push(item.properties.id)
+          }
+        }
+
+        // If no artworks in conversation, return empty connection
+        if (artworkIds.length === 0) {
+          return paginationResolver({
+            totalCount: 0,
+            offset,
+            page,
+            size,
+            body: [],
+            args,
+          })
+        }
+
+        const params: Record<string, any> = {
+          page,
+          size,
+          artwork_id: artworkIds[0], // Use first artwork ID for filtering
+        }
+
+        let response
+        if (partnerID) {
+          const { partnerOrdersLoader } = context
+          if (!partnerOrdersLoader) return null
+          response = await partnerOrdersLoader(partnerID, params)
+        } else {
+          const { meOrdersLoader } = context
+          if (!meOrdersLoader) return null
+          response = await meOrdersLoader(params)
+        }
+
+        const { body, headers } = response
+        const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
+    },
   },
 })
 

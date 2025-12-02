@@ -1505,17 +1505,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       ordersConnection: {
         type: PartnerOrdersConnectionType,
-        description: "A connection of orders from a Partner.",
+        description: "A connection of orders for the Partner.",
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
           artworkID: {
             type: GraphQLString,
             description: "Filter by artwork ID in line items",
-          },
-          conversationID: {
-            type: GraphQLString,
-            description: "Filter by conversation ID",
           },
         }),
         resolve: async (partner, args, context, _info) => {
@@ -1533,10 +1529,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           if (args.artworkID) {
             params.artwork_id = args.artworkID
-          }
-
-          if (args.conversationID) {
-            params.conversation_id = args.conversationID
           }
 
           const response = await partnerOrdersLoader(partner.id, params)
