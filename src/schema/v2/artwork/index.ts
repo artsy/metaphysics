@@ -83,14 +83,14 @@ import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
 import { PartnerOfferType } from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
+import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
+import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import { ArtworkConditionType } from "./artworkCondition"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
-import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
-import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
@@ -1201,6 +1201,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       isShareable: {
+        type: GraphQLBoolean,
+        resolve: ({ can_share_image }) => can_share_image,
+      },
+      canShareImage: {
         type: GraphQLBoolean,
         resolve: ({ can_share_image }) => can_share_image,
       },

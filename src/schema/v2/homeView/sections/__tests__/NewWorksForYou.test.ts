@@ -119,34 +119,35 @@ describe("NewWorksForYou", () => {
   })
 
   describe("showArtworksCardView", () => {
+    const showArtworksCardViewQuery = gql`
+      {
+        homeView {
+          section(id: "home-view-section-new-works-for-you") {
+            ... on HomeViewSectionArtworks {
+              showArtworksCardView
+            }
+          }
+        }
+      }
+    `
+
     afterEach(() => {
       mockGetExperimentVariant.mockReset()
     })
 
-    it("returns true when variant-a is enabled", async () => {
+    it("returns true when variant-a is enabled and user has Eigen 8.90.0+", async () => {
       mockGetExperimentVariant.mockImplementation(() => ({
         name: "variant-a",
         enabled: true,
       }))
 
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              ... on HomeViewSectionArtworks {
-                showArtworksCardView
-              }
-            }
-          }
-        }
-      `
-
       const context = {
         accessToken: "424242",
         userID: "user-id",
+        userAgent: "Artsy-Mobile/8.90.0",
       }
 
-      const { homeView } = await runQuery(query, context)
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
 
       expect(homeView.section.showArtworksCardView).toBe(true)
       expect(mockGetExperimentVariant).toHaveBeenCalledWith(
@@ -163,24 +164,14 @@ describe("NewWorksForYou", () => {
         enabled: true,
       }))
 
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              ... on HomeViewSectionArtworks {
-                showArtworksCardView
-              }
-            }
-          }
-        }
-      `
-
       const context = {
         accessToken: "424242",
-        userId: "user-id",
+        userID: "user-id",
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.90.0 Eigen/2024.12.10.06/8.90.0",
       }
 
-      const { homeView } = await runQuery(query, context)
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
 
       expect(homeView.section.showArtworksCardView).toBe(false)
     })
@@ -191,24 +182,63 @@ describe("NewWorksForYou", () => {
         enabled: false,
       }))
 
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              ... on HomeViewSectionArtworks {
-                showArtworksCardView
-              }
-            }
-          }
-        }
-      `
+      const context = {
+        accessToken: "424242",
+        userID: "user-id",
+        userAgent: "Artsy-Mobile/8.90.0",
+      }
+
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(false)
+    })
+
+    it("returns false when user has old Eigen version (below 8.90.0)", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "variant-a",
+        enabled: true,
+      }))
 
       const context = {
         accessToken: "424242",
-        userId: "user-id",
+        userID: "user-id",
+        userAgent: "Artsy-Mobile/8.89.0",
       }
 
-      const { homeView } = await runQuery(query, context)
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(false)
+    })
+
+    it("returns false when user agent is missing", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "variant-a",
+        enabled: true,
+      }))
+
+      const context = {
+        accessToken: "424242",
+        userID: "user-id",
+      }
+
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
+
+      expect(homeView.section.showArtworksCardView).toBe(false)
+    })
+
+    it("returns false when user agent is not Eigen", async () => {
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "variant-a",
+        enabled: true,
+      }))
+
+      const context = {
+        accessToken: "424242",
+        userID: "user-id",
+        userAgent: "Mozilla/5.0",
+      }
+
+      const { homeView } = await runQuery(showArtworksCardViewQuery, context)
 
       expect(homeView.section.showArtworksCardView).toBe(false)
     })

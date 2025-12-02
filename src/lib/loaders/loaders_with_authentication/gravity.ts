@@ -1080,6 +1080,12 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerCollectorProfileCollectedArtistsLoader: gravityLoader(
+      (collectorProfileId) =>
+        `partner_collector_profile/${collectorProfileId}/collected_artists`,
+      {},
+      { headers: true }
+    ),
     partnerContactLoader: gravityLoader<
       any,
       { partnerId: string; contactId: string }
