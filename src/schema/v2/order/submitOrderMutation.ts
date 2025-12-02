@@ -75,16 +75,14 @@ export const submitOrderMutation = mutationWithClientMutationId<
         submitArtworkInquiryRequestLoader
       ) {
         try {
-          const artworkId =
-            submittedOrder.line_items?.[0]?.artwork_id ||
-            submittedOrder.items?.[0]?.artwork_id
+          const artworkId = submittedOrder.line_items?.[0]?.artwork_id
 
-          if (artworkId && submittedOrder.my_last_offer) {
+          if (artworkId && submittedOrder.last_submitted_offer) {
             const {
               note,
               amount_cents,
               currency_code,
-            } = submittedOrder.my_last_offer
+            } = submittedOrder.last_submitted_offer
 
             const message = getOfferMessage(note, amount_cents, currency_code)
 
