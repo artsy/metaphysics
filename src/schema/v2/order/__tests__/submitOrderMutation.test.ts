@@ -303,7 +303,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "artwork_page",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: "I love this piece!",
           amount_cents: 100000,
           currency_code: "USD",
@@ -327,7 +327,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "artwork_page",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: null,
           amount_cents: 100000,
           currency_code: "USD",
@@ -351,7 +351,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "artwork_page",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: "",
           amount_cents: 50000,
           currency_code: "EUR",
@@ -375,7 +375,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "artwork_page",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: "   ",
           amount_cents: 75000,
           currency_code: "GBP",
@@ -414,7 +414,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "inquiry",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: null,
           amount_cents: 100000,
           currency_code: "USD",
@@ -436,7 +436,7 @@ describe("submitOrderMutation", () => {
         id: "order-id",
         source: "artwork_page",
         mode: "OFFER",
-        my_last_offer: {
+        last_submitted_offer: {
           note: null,
           amount_cents: 100000,
           currency_code: "USD",
