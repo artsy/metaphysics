@@ -37,6 +37,7 @@ import {
 } from "../fields/pagination"
 import { CollectorResume } from "./collectorResume"
 import { UserInterestConnection } from "../userInterests"
+import { OrdersConnectionType } from "../order/types/OrderType"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -505,15 +506,12 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(ArtworkType),
       description: "Only the artworks discussed in the conversation.",
       resolve: (conversation) => {
-        const results = []
-        for (const item of conversation.items) {
-          if (item.item_type === "Artwork") {
-            // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
-            // @ts-ignore
-            results.push(item.properties)
-          }
-        }
-        return results
+        const items: any[] = conversation.items || []
+        return items
+          .filter(
+            (item) => item && item.item_type === "Artwork" && item.properties
+          )
+          .map((item) => item.properties)
       },
     },
     inquiryRequest: {
@@ -644,13 +642,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     ordersConnection: {
-      get type() {
-        const { OrderType } = require("../order/types/OrderType")
-        return connectionWithCursorInfo({
-          name: "ConversationOrders",
-          nodeType: OrderType,
-        }).connectionType
-      },
+      type: OrdersConnectionType,
       description: "A connection of orders for artworks in this conversation.",
       args: pageable({
         page: { type: GraphQLInt },

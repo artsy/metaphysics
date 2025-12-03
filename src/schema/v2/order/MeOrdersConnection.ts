@@ -1,9 +1,6 @@
-import {
-  connectionWithCursorInfo,
-  paginationResolver,
-} from "schema/v2/fields/pagination"
+import { paginationResolver } from "schema/v2/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { OrderType } from "./types/OrderType"
+import { OrdersConnectionType } from "./types/OrderType"
 import { OrderBuyerStateEnum } from "./types/sharedOrderTypes"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -13,14 +10,10 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-
-const MeOrdersConnectionType = connectionWithCursorInfo({
-  name: "MeOrders",
-  nodeType: OrderType,
-}).connectionType
+export { OrdersConnectionType } from "./types/OrderType"
 
 export const MeOrdersConnection: GraphQLFieldConfig<any, ResolverContext> = {
-  type: MeOrdersConnectionType,
+  type: OrdersConnectionType,
   args: pageable({
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },

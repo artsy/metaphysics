@@ -9,6 +9,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { connectionWithCursorInfo } from "../../fields/pagination"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
@@ -670,3 +671,8 @@ const resolveSellerState = (order) => {
       return "UNKNOWN"
   }
 }
+
+export const OrdersConnectionType = connectionWithCursorInfo({
+  name: "Orders",
+  nodeType: OrderType,
+}).connectionType

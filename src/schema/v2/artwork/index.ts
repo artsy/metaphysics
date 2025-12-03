@@ -82,6 +82,7 @@ import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
 import { PartnerOfferType } from "../partnerOffer"
+import { OrdersConnectionType } from "../order/types/OrderType"
 import FormattedNumber from "../types/formatted_number"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
@@ -1278,13 +1279,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       ordersConnection: {
-        get type() {
-          const { OrderType } = require("../order/types/OrderType")
-          return connectionWithCursorInfo({
-            name: "ArtworkOrders",
-            nodeType: OrderType,
-          }).connectionType
-        },
+        type: OrdersConnectionType,
         description: "A connection of orders for this artwork.",
         args: pageable({
           page: { type: GraphQLInt },

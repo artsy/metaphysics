@@ -68,6 +68,10 @@ import {
   EXAMPLE_TEMPLATES,
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
+import {
+  OrderType,
+  OrdersConnectionType,
+} from "schema/v2/order/types/OrderType"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -238,13 +242,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     const {
       ArtworkImportsConnectionType,
     } = require("schema/v2/ArtworkImport/artworkImport")
-
-    const { OrderType } = require("../order/types/OrderType")
-
-    const PartnerOrdersConnectionType = connectionWithCursorInfo({
-      name: "PartnerOrders",
-      nodeType: OrderType,
-    }).connectionType
 
     return {
       ...SlugAndInternalIDFields,
@@ -1504,7 +1501,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       ordersConnection: {
-        type: PartnerOrdersConnectionType,
+        type: OrdersConnectionType,
         description: "A connection of orders for the Partner.",
         args: pageable({
           page: { type: GraphQLInt },

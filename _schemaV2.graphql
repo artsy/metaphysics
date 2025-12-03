@@ -3027,7 +3027,7 @@ type Artwork implements Node & Searchable & Sellable {
     # Filter by partner ID. If provided, uses partner context instead of user context
     partnerID: String
     size: Int
-  ): ArtworkOrdersConnection
+  ): OrdersConnection
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean = true
@@ -3736,26 +3736,6 @@ union ArtworkMutationType =
   | ArtworkMutationFailure
 
 union ArtworkOrEditionSetType = Artwork | EditionSet
-
-# A connection to a list of items.
-type ArtworkOrdersConnection {
-  # A list of edges.
-  edges: [ArtworkOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ArtworkOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
-}
 
 # Insights may not be available for all Artwork Connections due to potential performance issues
 type ArtworkPriceInsights {
@@ -4888,15 +4868,6 @@ enum BankAccountBalanceCheckResult {
 
   # The bank account has sufficient funds for the order
   SUFFICIENT
-}
-
-# A connection to a list of items.
-type BankAccountConnection {
-  # A list of edges.
-  edges: [BankAccountEdge]
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
 }
 
 # An edge in a connection.
@@ -9270,7 +9241,7 @@ type Conversation implements Node {
     # Filter by partner ID. If provided, uses partner context instead of user context
     partnerID: String
     size: Int
-  ): ConversationOrdersConnection
+  ): OrdersConnection
 
   # The participant(s) responding to the conversation
   to: ConversationResponder!
@@ -9406,26 +9377,6 @@ type ConversationMessageTemplateExample {
   # Internal identifier for the example, used for tracking purposes
   internalID: ID
   title: String!
-}
-
-# A connection to a list of items.
-type ConversationOrdersConnection {
-  # A list of edges.
-  edges: [ConversationOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ConversationOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
 }
 
 # The participant responding to the conversation, currently always a Partner
@@ -15222,8 +15173,6 @@ enum LengthUnitPreference {
 
 # A line item in an order
 type LineItem {
-  artwork: Artwork
-  artworkOrEditionSet: ArtworkOrEditionSetType
   artworkVersion: ArtworkVersion
   currencyCode: String!
 
@@ -15848,15 +15797,6 @@ type Me implements Node {
   # A list of authenticated external services
   authentications: [AuthenticationType!]!
 
-  # A list of the current user's bank accounts
-  bankAccounts(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    type: BankAccountTypes
-  ): BankAccountConnection
-
   # A connection of artwork recommendations, based on user saves
   basedOnUserSaves(
     after: String
@@ -16175,7 +16115,7 @@ type Me implements Node {
     last: Int
     page: Int
     size: Int
-  ): MeOrdersConnection
+  ): OrdersConnection
 
   # Collector's position with relevant institutions
   otherRelevantPosition: String
@@ -16400,26 +16340,6 @@ type MeCounts {
   followedProfiles: Int!
   savedArtworks: Int!
   savedSearches: Int!
-}
-
-# A connection to a list of items.
-type MeOrdersConnection {
-  # A list of edges.
-  edges: [MeOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type MeOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
 }
 
 type MergeArtistsFailure {
@@ -18265,9 +18185,6 @@ type Order {
   # The selected fulfillment option for the order
   selectedFulfillmentOption: FulfillmentOption
 
-  # The seller of the order
-  seller: SellerType
-
   # Calculated state of the order that defines seller facing state/actions
   sellerState: OrderSellerStateEnum
 
@@ -18553,6 +18470,26 @@ enum OrderedSetSorts {
   OWNER_ID_DESC
   OWNER_TYPE_ASC
   OWNER_TYPE_DESC
+}
+
+# A connection to a list of items.
+type OrdersConnection {
+  # A list of edges.
+  edges: [OrdersEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type OrdersEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Order
 }
 
 type Page {
@@ -19011,7 +18948,7 @@ type Partner implements Node {
     last: Int
     page: Int
     size: Int
-  ): PartnerOrdersConnection
+  ): OrdersConnection
 
   # A connection of search criteria hits from a Partner.
   partnerAlertHitsConnection(
@@ -19974,26 +19911,6 @@ enum PartnerOfferToCollectorSorts {
   CREATED_AT_DESC
   END_AT_ASC
   END_AT_DESC
-}
-
-# A connection to a list of items.
-type PartnerOrdersConnection {
-  # A list of edges.
-  edges: [PartnerOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type PartnerOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
 }
 
 # A connection to a list of items.
@@ -23406,8 +23323,6 @@ interface Sellable {
   published: Boolean
   saleMessage: String
 }
-
-union SellerType = Partner
 
 type SendConfirmationEmailMutationFailure {
   mutationError: GravityMutationError
