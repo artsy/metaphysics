@@ -289,4 +289,185 @@ describe("submitOrderMutation", () => {
       confirmed_setup_intent_id: "seti_123",
     })
   })
+
+  describe("offer order inquiry creation", () => {
+    beforeEach(() => {
+      context.submitArtworkInquiryRequestLoader = jest
+        .fn()
+        .mockResolvedValue({})
+    })
+
+    it("creates an inquiry when submitting an offer order with a note", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: "I love this piece!",
+          amount_cents: 100000,
+          currency_code: "USD",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        message: "I love this piece!",
+        order_id: "order-id",
+      })
+    })
+
+    it("creates an inquiry with default message when note is null", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: null,
+          amount_cents: 100000,
+          currency_code: "USD",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        message: "I sent an offer for US$1,000",
+        order_id: "order-id",
+      })
+    })
+
+    it("creates an inquiry with default message when note is empty string", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: "",
+          amount_cents: 50000,
+          currency_code: "EUR",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        message: "I sent an offer for €500",
+        order_id: "order-id",
+      })
+    })
+
+    it("creates an inquiry with default message when note is whitespace only", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: "   ",
+          amount_cents: 75000,
+          currency_code: "GBP",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        message: "I sent an offer for £750",
+        order_id: "order-id",
+      })
+    })
+
+    it("does not create inquiry for buy orders", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "BUY",
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
+    })
+
+    it("does not create inquiry for offer orders from inquiry source", async () => {
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "inquiry",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: null,
+          amount_cents: 100000,
+          currency_code: "USD",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
+    })
+
+    it("handles inquiry creation failure gracefully", async () => {
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation()
+
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "OFFER",
+        last_submitted_offer: {
+          note: null,
+          amount_cents: 100000,
+          currency_code: "USD",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+      context.submitArtworkInquiryRequestLoader = jest
+        .fn()
+        .mockRejectedValue(new Error("Gravity API error"))
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      // Order should still succeed even if inquiry creation fails
+      expect(result.errors).toBeUndefined()
+      expect(result).toEqual({
+        submitOrder: {
+          orderOrError: {
+            order: {
+              internalID: "order-id",
+            },
+          },
+        },
+      })
+
+      // Error should be logged but not thrown
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[submitOrderMutation] Failed to create inquiry for offer order:",
+        expect.any(Error)
+      )
+
+      consoleErrorSpy.mockRestore()
+    })
+  })
 })
