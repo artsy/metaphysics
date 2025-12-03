@@ -4870,6 +4870,15 @@ enum BankAccountBalanceCheckResult {
   SUFFICIENT
 }
 
+# A connection to a list of items.
+type BankAccountConnection {
+  # A list of edges.
+  edges: [BankAccountEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
 # An edge in a connection.
 type BankAccountEdge {
   # A cursor for use in pagination
@@ -15173,6 +15182,8 @@ enum LengthUnitPreference {
 
 # A line item in an order
 type LineItem {
+  artwork: Artwork
+  artworkOrEditionSet: ArtworkOrEditionSetType
   artworkVersion: ArtworkVersion
   currencyCode: String!
 
@@ -15796,6 +15807,15 @@ type Me implements Node {
 
   # A list of authenticated external services
   authentications: [AuthenticationType!]!
+
+  # A list of the current user's bank accounts
+  bankAccounts(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    type: BankAccountTypes
+  ): BankAccountConnection
 
   # A connection of artwork recommendations, based on user saves
   basedOnUserSaves(
@@ -18184,6 +18204,9 @@ type Order {
 
   # The selected fulfillment option for the order
   selectedFulfillmentOption: FulfillmentOption
+
+  # The seller of the order
+  seller: SellerType
 
   # Calculated state of the order that defines seller facing state/actions
   sellerState: OrderSellerStateEnum
@@ -23323,6 +23346,8 @@ interface Sellable {
   published: Boolean
   saleMessage: String
 }
+
+union SellerType = Partner
 
 type SendConfirmationEmailMutationFailure {
   mutationError: GravityMutationError

@@ -37,7 +37,6 @@ import {
 } from "../fields/pagination"
 import { CollectorResume } from "./collectorResume"
 import { UserInterestConnection } from "../userInterests"
-import { OrdersConnectionType } from "../order/types/OrderType"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -642,7 +641,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     ordersConnection: {
-      type: OrdersConnectionType,
+      get type() {
+        const { OrdersConnectionType } = require("../order/MeOrdersConnection")
+        return OrdersConnectionType
+      },
       description: "A connection of orders for artworks in this conversation.",
       args: pageable({
         page: { type: GraphQLInt },
@@ -655,6 +657,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: async (conversation, args, context, _info) => {
         const { partnerID } = args
+        const buyerID = conversation.from_id
+
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
         // Get artwork IDs from conversation items
@@ -684,7 +688,13 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         let response
+
         if (partnerID) {
+          if (!buyerID) {
+            // Conversation has no buyer ID, cannot proceed for a partner-authed query
+            return null
+          }
+          params.buyer_id = buyerID
           const { partnerOrdersLoader } = context
           if (!partnerOrdersLoader) return null
           response = await partnerOrdersLoader(partnerID, params)

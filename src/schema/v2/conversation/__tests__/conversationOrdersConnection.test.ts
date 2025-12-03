@@ -94,7 +94,7 @@ describe("conversation.ordersConnection", () => {
         return Promise.resolve({
           id: "conversation-1",
           inquiry_id: "inquiry-1",
-          from_id: "user-1",
+          from_id: "buyer-1",
           from_type: "User",
           from_name: "Test User",
           from_email: "test@example.com",
@@ -376,5 +376,32 @@ describe("conversation.ordersConnection", () => {
         },
       },
     })
+  })
+
+  it("automatically filters orders by buyer_id from conversation.from_id", async () => {
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          ordersConnection(first: 5, partnerID: "partner-id") {
+            edges {
+              node {
+                internalID
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-id",
+      expect.objectContaining({
+        artwork_id: "artwork-1",
+        buyer_id: "buyer-1",
+      })
+    )
   })
 })
