@@ -9,6 +9,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
@@ -229,11 +230,9 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "Calculated state of the order that defines buyer facing state/actions",
       resolve: (order) => resolveBuyerState(order),
     },
-    buyerStateExpiresAt: {
-      type: GraphQLString,
-      description: "Expiration for the current state of the order",
-      resolve: ({ buyer_state_expires_at }) => buyer_state_expires_at,
-    },
+    buyerStateExpiresAt: date(
+      ({ buyer_state_expires_at }) => buyer_state_expires_at
+    ),
     code: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Order code",
@@ -259,11 +258,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
-    createdAt: {
-      type: GraphQLString,
-      description: "Order creation time",
-      resolve: ({ created_at }) => created_at,
-    },
+    createdAt: date(({ created_at }) => created_at),
     creditCardWalletType: {
       type: OrderCreditCardWalletTypeEnum,
       description: "Express Checkout wallet type",
@@ -388,11 +383,9 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "Calculated state of the order that defines seller facing state/actions",
       resolve: (order) => resolveSellerState(order),
     },
-    sellerStateExpiresAt: {
-      type: GraphQLString,
-      description: "Expiration for the current seller state of the order",
-      resolve: ({ seller_state_expires_at }) => seller_state_expires_at,
-    },
+    sellerStateExpiresAt: date(
+      ({ seller_state_expires_at }) => seller_state_expires_at
+    ),
     sellerTotal: {
       type: Money,
       description: "The total amount the seller will receive",

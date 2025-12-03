@@ -18050,9 +18050,12 @@ type Offer {
 
   # The buyer total for this offer, if a complete total is available
   buyerTotal: Money
+  createdAt(
+    format: String
 
-  # Offer creation time
-  createdAt: String
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # Who the offer is from
   fromParticipant: FromParticipantEnum!
@@ -18138,9 +18141,12 @@ type Order {
 
   # Calculated state of the order that defines buyer facing state/actions
   buyerState: OrderBuyerStateEnum
+  buyerStateExpiresAt(
+    format: String
 
-  # Expiration for the current state of the order
-  buyerStateExpiresAt: String
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # The total amount the buyer is expected to pay
   buyerTotal: Money
@@ -18150,9 +18156,12 @@ type Order {
 
   # The commission fee for the order
   commissionFee: Money
+  createdAt(
+    format: String
 
-  # Order creation time
-  createdAt: String
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # Express Checkout wallet type
   creditCardWalletType: OrderCreditCardWalletTypeEnum
@@ -18210,9 +18219,12 @@ type Order {
 
   # Calculated state of the order that defines seller facing state/actions
   sellerState: OrderSellerStateEnum
+  sellerStateExpiresAt(
+    format: String
 
-  # Expiration for the current seller state of the order
-  sellerStateExpiresAt: String
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # The total amount the seller will receive
   sellerTotal: Money
