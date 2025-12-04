@@ -467,12 +467,14 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ from_last_viewed_message_id }) =>
           from_last_viewed_message_id,
       },
+      fromLastViewedMessageAt: dateField(),
       toLastViewedMessageID: {
         type: GraphQLString,
         resolve: ({ to_last_viewed_message_id }) => {
           return to_last_viewed_message_id
         },
       },
+      toLastViewedMessageAt: dateField(),
       initialMessage: {
         deprecationReason:
           "This field is no longer required. Prefer the first message from the MessageConnection.",
