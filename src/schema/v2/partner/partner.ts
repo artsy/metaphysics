@@ -240,7 +240,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     } = require("schema/v2/ArtworkImport/artworkImport")
 
     const { OrderType } = require("../order/types/OrderType")
-    const { OrdersConnectionType } = require("../order/MeOrdersConnection")
+    const PartnerOrdersConnectionType = connectionWithCursorInfo({
+      name: "PartnerOrders",
+      nodeType: OrderType,
+    }).connectionType
 
     return {
       ...SlugAndInternalIDFields,
@@ -1500,7 +1503,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       ordersConnection: {
-        type: OrdersConnectionType,
+        type: PartnerOrdersConnectionType,
         description: "A connection of orders for the Partner.",
         args: pageable({
           page: { type: GraphQLInt },

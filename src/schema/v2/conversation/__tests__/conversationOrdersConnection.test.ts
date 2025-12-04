@@ -394,7 +394,7 @@ describe("conversation.ordersConnection", () => {
       }
     `
 
-    const data = await runQuery(query, context)
+    await runQuery(query, context)
 
     expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
       "partner-id",

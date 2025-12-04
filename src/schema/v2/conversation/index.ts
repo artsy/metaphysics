@@ -272,451 +272,476 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   name: "Conversation",
   description: "A conversation.",
   interfaces: [NodeInterface],
-  fields: {
-    id: GlobalIDField,
-    ...NullableIDField,
-    inquiryID: {
-      description: "Gravity inquiry id.",
-      type: GraphQLString,
-      resolve: ({ inquiry_id }) => {
-        return inquiry_id
-      },
-    },
-    from: {
-      description: "The participant who initiated the conversation",
-      type: new GraphQLNonNull(ConversationInitiatorType),
-      resolve: (conversation) => {
-        return {
-          id: conversation.from_id,
-          type: conversation.from_type,
-          name: conversation.from_name,
-          email: conversation.from_email,
-        }
-      },
-    },
-    collectorResume: {
-      description:
-        "The collector profile of the user who initiated the conversation. Do not use this field for Partners",
-      type: CollectorResume,
-      resolve: async (
-        { from_id, to_id, items },
-        _args,
-        { partnerCollectorProfileLoader }
-      ) => {
-        if (!partnerCollectorProfileLoader) return
+  fields: () => {
+    // Dynamically require to avoid circular dependency
+    const { OrderType } = require("../order/types/OrderType")
+    const ConversationOrdersConnectionType = connectionWithCursorInfo({
+      name: "ConversationOrders",
+      nodeType: OrderType,
+    }).connectionType
 
-        try {
-          const data = await partnerCollectorProfileLoader({
-            partnerId: to_id,
-            userId: from_id,
+    return {
+      id: GlobalIDField,
+      ...NullableIDField,
+      inquiryID: {
+        description: "Gravity inquiry id.",
+        type: GraphQLString,
+        resolve: ({ inquiry_id }) => {
+          return inquiry_id
+        },
+      },
+      from: {
+        description: "The participant who initiated the conversation",
+        type: new GraphQLNonNull(ConversationInitiatorType),
+        resolve: (conversation) => {
+          return {
+            id: conversation.from_id,
+            type: conversation.from_type,
+            name: conversation.from_name,
+            email: conversation.from_email,
+          }
+        },
+      },
+      collectorResume: {
+        description:
+          "The collector profile of the user who initiated the conversation. Do not use this field for Partners",
+        type: CollectorResume,
+        resolve: async (
+          { from_id, to_id, items },
+          _args,
+          { partnerCollectorProfileLoader }
+        ) => {
+          if (!partnerCollectorProfileLoader) return
+
+          try {
+            const data = await partnerCollectorProfileLoader({
+              partnerId: to_id,
+              userId: from_id,
+            })
+
+            // Assume a conversation only has one item
+            const artwork = items.find((item) => item.item_type === "Artwork")
+            const artworkID = artwork ? artwork.properties.id : null
+
+            return {
+              collectorProfile: {
+                ...data.collector_profile,
+                // inject data that can be optionally used by
+                // collectorProfile fields to resolve
+                partnerId: to_id,
+                artworkID,
+              },
+              isCollectorFollowingPartner: data.follows_profile,
+              userId: from_id,
+              purchases: data.purchases,
+            }
+          } catch (error) {
+            console.error(
+              "[schema/v2/conversation/collectorResume] Error:",
+              error
+            )
+            return null
+          }
+        },
+      },
+      collectorInterestsConnection: {
+        type: UserInterestConnection,
+        args: pageable({}),
+        resolve: async (
+          { from_id, to_id },
+          args,
+          {
+            partnerCollectorProfileUserInterestsLoader,
+            partnerCollectorProfileLoader,
+          }
+        ) => {
+          if (
+            !partnerCollectorProfileUserInterestsLoader ||
+            !partnerCollectorProfileLoader ||
+            !from_id ||
+            !to_id
+          ) {
+            return null
+          }
+
+          try {
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+            const data = await partnerCollectorProfileLoader({
+              partnerId: to_id,
+              userId: from_id,
+            })
+            const {
+              body,
+              headers,
+            } = await partnerCollectorProfileUserInterestsLoader(
+              {
+                collectorProfileId: data.collector_profile.id,
+                partnerId: to_id,
+              },
+              {
+                page,
+                size,
+                total_count: true,
+              }
+            )
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return {
+              totalCount,
+              pageCursors: createPageCursors({ page, size }, totalCount),
+              ...connectionFromArraySlice(body, args, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+                resolveNode: (node) => node.interest,
+              }),
+            }
+          } catch (error) {
+            console.error(
+              "[schema/v2/conversation#collectorInterestsConnection] Error:",
+              error
+            )
+            return null
+          }
+        },
+      },
+      fromProfile: {
+        description:
+          "The collector profile of the user who initiated the conversation",
+        type: CollectorProfileType,
+        deprecationReason: "Use `collectorResume` instead",
+        resolve: async ({ from_id }, _options, { collectorProfilesLoader }) => {
+          if (!collectorProfilesLoader)
+            throw new Error(
+              "A X-Access-Token header is required to perform this action."
+            )
+
+          const { body: profiles } = await collectorProfilesLoader({
+            user_id: from_id,
           })
 
-          // Assume a conversation only has one item
-          const artwork = items.find((item) => item.item_type === "Artwork")
-          const artworkID = artwork ? artwork.properties.id : null
-
-          return {
-            collectorProfile: {
-              ...data.collector_profile,
-              // inject data that can be optionally used by
-              // collectorProfile fields to resolve
-              partnerId: to_id,
-              artworkID,
-            },
-            isCollectorFollowingPartner: data.follows_profile,
-            userId: from_id,
-            purchases: data.purchases,
-          }
-        } catch (error) {
-          console.error(
-            "[schema/v2/conversation/collectorResume] Error:",
-            error
-          )
-          return null
-        }
+          return profiles[0]
+        },
       },
-    },
-    collectorInterestsConnection: {
-      type: UserInterestConnection,
-      args: pageable({}),
-      resolve: async (
-        { from_id, to_id },
-        args,
-        {
-          partnerCollectorProfileUserInterestsLoader,
-          partnerCollectorProfileLoader,
-        }
-      ) => {
-        if (
-          !partnerCollectorProfileUserInterestsLoader ||
-          !partnerCollectorProfileLoader ||
-          !from_id ||
-          !to_id
-        ) {
-          return null
-        }
+      fromUser: {
+        description: "The user who initiated the conversation",
+        type: UserType,
+        deprecationReason:
+          "Will be inaccessible to partners in future versions. Prefer fromProfile.",
+        resolve: async ({ from_id }, _options, { userByIDLoader }) => {
+          if (!userByIDLoader) {
+            return null
+          }
+          try {
+            const user = await userByIDLoader(from_id)
+            return user
+          } catch (error) {
+            console.error("[schema/v2/conversation/fromUser] Error:", error)
+            return null
+          }
+        },
+      },
+      to: {
+        description: "The participant(s) responding to the conversation",
+        type: new GraphQLNonNull(ConversationResponderType),
+        resolve: (conversation) => {
+          return {
+            id: conversation.to_id,
+            type: conversation.to_type,
+            name: conversation.to_name,
+            reply_to_impulse_ids: conversation.to,
+          }
+        },
+      },
+      buyerOutcome: {
+        type: GraphQLString,
+        resolve: ({ buyer_outcome }) => buyer_outcome,
+      },
+      buyerOutcomeAt: date,
+      createdAt: date,
+      deletedAt: date,
+      dismissedAt: date,
+      fromLastViewedMessageID: {
+        type: GraphQLString,
+        resolve: ({ from_last_viewed_message_id }) =>
+          from_last_viewed_message_id,
+      },
+      toLastViewedMessageID: {
+        type: GraphQLString,
+        resolve: ({ to_last_viewed_message_id }) => {
+          return to_last_viewed_message_id
+        },
+      },
+      initialMessage: {
+        deprecationReason:
+          "This field is no longer required. Prefer the first message from the MessageConnection.",
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: ({ initial_message }) => {
+          if (!initial_message) return ""
+          return initial_message
+        },
+      },
+      lastMessage: {
+        type: GraphQLString,
+        description: "This is a snippet of text from the last message.",
+        resolve: ({ initial_message, _embedded = {} }) => {
+          const lastMessage = _embedded.last_message || {}
+          if (lastMessage.order == 1) {
+            return initial_message
+          }
+          return lastMessage.snippet
+        },
+      },
+      lastMessageAt: date,
 
-        try {
+      lastMessageID: {
+        type: GraphQLString,
+        deprecationReason:
+          "Prefer querying `messagesConnection(last:1) { edges { node { internalID } } }`",
+        description: "Impulse id of the last message.",
+        resolve: (conversation) => lastMessageId(conversation),
+      },
+
+      // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
+      // That may not be the case, so we should evolve this check to be more accurate.
+      isLastMessageToUser: {
+        type: GraphQLBoolean,
+        description: "True if user/conversation initiator is a recipient.",
+        resolve: (conversation) => isLastMessageToUser(conversation),
+      },
+
+      artworks: {
+        type: new GraphQLList(ArtworkType),
+        description: "Only the artworks discussed in the conversation.",
+        resolve: (conversation) => {
+          const items: any[] = conversation.items || []
+          return items
+            .filter(
+              (item) => item && item.item_type === "Artwork" && item.properties
+            )
+            .map((item) => item.properties)
+        },
+      },
+      inquiryRequest: {
+        type: InquiryRequestType,
+        description: "The inquiry request associated with the conversation.",
+        resolve: async (
+          conversation,
+          _args,
+          { partnerInquiryRequestLoader }
+        ) => {
+          if (!partnerInquiryRequestLoader) {
+            return null
+          }
+          try {
+            const data = await partnerInquiryRequestLoader({
+              inquiryId: conversation.inquiry_id,
+              partnerId: conversation.to_id,
+            })
+            return data
+          } catch (error) {
+            console.error(
+              "[schema/v2/conversation/inquiryRequest] Error:",
+              error
+            )
+            return null
+          }
+        },
+      },
+      items: {
+        type: new GraphQLList(ConversationItem),
+        description:
+          "The artworks and/or partner shows discussed in the conversation.",
+        resolve: (conversation) => {
+          const results = []
+
+          for (const item of conversation.items) {
+            if (
+              isExisty(item.properties) &&
+              (item.item_type === "Artwork" || item.item_type === "PartnerShow")
+            ) {
+              // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
+              // @ts-ignore
+              results.push(item)
+            }
+          }
+          return results
+        },
+      },
+
+      messages: {
+        ...messagesConnection,
+        deprecationReason: "Prefer messagesConnection",
+      },
+
+      messagesConnection,
+
+      messagesAndConversationEventsConnection: {
+        type: connectionWithCursorInfo({
+          nodeType: MessageOrConversationEventType,
+        }).connectionType,
+        description:
+          "A connection for all messages and events in a single conversation",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+        }),
+        resolve: async (
+          { id, from_email, initial_message, from_name, embedded },
+          args,
+          { conversationWithEventsLoader }
+        ) => {
+          if (!conversationWithEventsLoader) return null
+
+          const argKeys = Object.keys(args)
+          if (argKeys.includes("last") && !argKeys.includes("before")) {
+            args.before = `${lastMessageId({ embedded })}`
+          }
+
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
-          const data = await partnerCollectorProfileLoader({
-            partnerId: to_id,
-            userId: from_id,
+
+          const { body } = await conversationWithEventsLoader(id, {
+            page,
+            size,
           })
-          const {
-            body,
-            headers,
-          } = await partnerCollectorProfileUserInterestsLoader(
-            { collectorProfileId: data.collector_profile.id, partnerId: to_id },
-            {
-              page,
-              size,
-              total_count: true,
+
+          // Inject the convesation initiator's email into each message payload
+          // so we can tell if the user sent a particular message.
+          // Also inject the conversation id, since we need it in some message
+          // resolvers.
+          const messagesAndEvents = body.messages_and_conversation_events.map(
+            (messageOrEvent) => {
+              if (messageOrEvent.type === "message_detail") {
+                return merge(messageOrEvent, {
+                  conversation_initial_message: initial_message,
+                  conversation_from_name: from_name,
+                  conversation_from_address: from_email,
+                  conversation_id: id,
+                })
+              } else {
+                return messageOrEvent
+              }
             }
           )
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-          return {
-            totalCount,
-            pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(body, args, {
-              arrayLength: totalCount,
-              sliceStart: offset,
-              resolveNode: (node) => node.interest,
-            }),
-          }
-        } catch (error) {
-          console.error(
-            "[schema/v2/conversation#collectorInterestsConnection] Error:",
-            error
-          )
-          return null
-        }
-      },
-    },
-    fromProfile: {
-      description:
-        "The collector profile of the user who initiated the conversation",
-      type: CollectorProfileType,
-      deprecationReason: "Use `collectorResume` instead",
-      resolve: async ({ from_id }, _options, { collectorProfilesLoader }) => {
-        if (!collectorProfilesLoader)
-          throw new Error(
-            "A X-Access-Token header is required to perform this action."
-          )
-
-        const { body: profiles } = await collectorProfilesLoader({
-          user_id: from_id,
-        })
-
-        return profiles[0]
-      },
-    },
-    fromUser: {
-      description: "The user who initiated the conversation",
-      type: UserType,
-      deprecationReason:
-        "Will be inaccessible to partners in future versions. Prefer fromProfile.",
-      resolve: async ({ from_id }, _options, { userByIDLoader }) => {
-        if (!userByIDLoader) {
-          return null
-        }
-        try {
-          const user = await userByIDLoader(from_id)
-          return user
-        } catch (error) {
-          console.error("[schema/v2/conversation/fromUser] Error:", error)
-          return null
-        }
-      },
-    },
-    to: {
-      description: "The participant(s) responding to the conversation",
-      type: new GraphQLNonNull(ConversationResponderType),
-      resolve: (conversation) => {
-        return {
-          id: conversation.to_id,
-          type: conversation.to_type,
-          name: conversation.to_name,
-          reply_to_impulse_ids: conversation.to,
-        }
-      },
-    },
-    buyerOutcome: {
-      type: GraphQLString,
-      resolve: ({ buyer_outcome }) => buyer_outcome,
-    },
-    buyerOutcomeAt: date,
-    createdAt: date,
-    deletedAt: date,
-    dismissedAt: date,
-    fromLastViewedMessageID: {
-      type: GraphQLString,
-      resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
-    },
-    fromLastViewedMessageAt: dateField(),
-    toLastViewedMessageID: {
-      type: GraphQLString,
-      resolve: ({ to_last_viewed_message_id }) => {
-        return to_last_viewed_message_id
-      },
-    },
-    toLastViewedMessageAt: dateField(),
-    initialMessage: {
-      deprecationReason:
-        "This field is no longer required. Prefer the first message from the MessageConnection.",
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ initial_message }) => {
-        if (!initial_message) return ""
-        return initial_message
-      },
-    },
-    lastMessage: {
-      type: GraphQLString,
-      description: "This is a snippet of text from the last message.",
-      resolve: ({ initial_message, _embedded = {} }) => {
-        const lastMessage = _embedded.last_message || {}
-        if (lastMessage.order == 1) {
-          return initial_message
-        }
-        return lastMessage.snippet
-      },
-    },
-    lastMessageAt: date,
-
-    lastMessageID: {
-      type: GraphQLString,
-      deprecationReason:
-        "Prefer querying `messagesConnection(last:1) { edges { node { internalID } } }`",
-      description: "Impulse id of the last message.",
-      resolve: (conversation) => lastMessageId(conversation),
-    },
-
-    // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
-    // That may not be the case, so we should evolve this check to be more accurate.
-    isLastMessageToUser: {
-      type: GraphQLBoolean,
-      description: "True if user/conversation initiator is a recipient.",
-      resolve: (conversation) => isLastMessageToUser(conversation),
-    },
-
-    artworks: {
-      type: new GraphQLList(ArtworkType),
-      description: "Only the artworks discussed in the conversation.",
-      resolve: (conversation) => {
-        const items: any[] = conversation.items || []
-        return items
-          .filter(
-            (item) => item && item.item_type === "Artwork" && item.properties
-          )
-          .map((item) => item.properties)
-      },
-    },
-    inquiryRequest: {
-      type: InquiryRequestType,
-      description: "The inquiry request associated with the conversation.",
-      resolve: async (conversation, _args, { partnerInquiryRequestLoader }) => {
-        if (!partnerInquiryRequestLoader) {
-          return null
-        }
-        try {
-          const data = await partnerInquiryRequestLoader({
-            inquiryId: conversation.inquiry_id,
-            partnerId: conversation.to_id,
-          })
-          return data
-        } catch (error) {
-          console.error("[schema/v2/conversation/inquiryRequest] Error:", error)
-          return null
-        }
-      },
-    },
-    items: {
-      type: new GraphQLList(ConversationItem),
-      description:
-        "The artworks and/or partner shows discussed in the conversation.",
-      resolve: (conversation) => {
-        const results = []
-
-        for (const item of conversation.items) {
-          if (
-            isExisty(item.properties) &&
-            (item.item_type === "Artwork" || item.item_type === "PartnerShow")
-          ) {
-            // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
-            // @ts-ignore
-            results.push(item)
-          }
-        }
-        return results
-      },
-    },
-
-    messages: {
-      ...messagesConnection,
-      deprecationReason: "Prefer messagesConnection",
-    },
-
-    messagesConnection,
-
-    messagesAndConversationEventsConnection: {
-      type: connectionWithCursorInfo({
-        nodeType: MessageOrConversationEventType,
-      }).connectionType,
-      description:
-        "A connection for all messages and events in a single conversation",
-      args: pageable({
-        page: { type: GraphQLInt },
-        size: { type: GraphQLInt },
-      }),
-      resolve: async (
-        { id, from_email, initial_message, from_name, embedded },
-        args,
-        { conversationWithEventsLoader }
-      ) => {
-        if (!conversationWithEventsLoader) return null
-
-        const argKeys = Object.keys(args)
-        if (argKeys.includes("last") && !argKeys.includes("before")) {
-          args.before = `${lastMessageId({ embedded })}`
-        }
-
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-        const { body } = await conversationWithEventsLoader(id, {
-          page,
-          size,
-        })
-
-        // Inject the convesation initiator's email into each message payload
-        // so we can tell if the user sent a particular message.
-        // Also inject the conversation id, since we need it in some message
-        // resolvers.
-        const messagesAndEvents = body.messages_and_conversation_events.map(
-          (messageOrEvent) => {
-            if (messageOrEvent.type === "message_detail") {
-              return merge(messageOrEvent, {
-                conversation_initial_message: initial_message,
-                conversation_from_name: from_name,
-                conversation_from_address: from_email,
-                conversation_id: id,
-              })
-            } else {
-              return messageOrEvent
-            }
-          }
-        )
-
-        return paginationResolver({
-          args,
-          body: messagesAndEvents,
-          offset,
-          page,
-          size,
-          totalCount: body.total_count,
-        })
-      },
-    },
-    unread: {
-      type: GraphQLBoolean,
-      description: "True if there is an unread message by the Collector(from).",
-      deprecationReason: "Use `unreadByCollector` instead",
-      resolve: (conversation) => {
-        return conversation.is_unread_by_collector
-      },
-    },
-    unreadByCollector: {
-      type: GraphQLBoolean,
-      description: "True if there is an unread message by the Collector(from).",
-      resolve: (conversation) => {
-        return conversation.is_unread_by_collector
-      },
-    },
-    unreadByPartner: {
-      type: GraphQLBoolean,
-      description: "True if there is an unread message by the Partner(to).",
-      resolve: (conversation) => {
-        return conversation.is_unread_by_partner
-      },
-    },
-    ordersConnection: {
-      get type() {
-        const { OrdersConnectionType } = require("../order/MeOrdersConnection")
-        return OrdersConnectionType
-      },
-      description: "A connection of orders for artworks in this conversation.",
-      args: pageable({
-        page: { type: GraphQLInt },
-        size: { type: GraphQLInt },
-        partnerID: {
-          type: GraphQLString,
-          description:
-            "Filter by partner ID. If provided, uses partner context instead of user context",
-        },
-      }),
-      resolve: async (conversation, args, context, _info) => {
-        const { partnerID } = args
-        const buyerID = conversation.from_id
-
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-        // Get artwork IDs from conversation items
-        const artworkIds: string[] = []
-        for (const item of conversation.items) {
-          if (item.item_type === "Artwork") {
-            artworkIds.push(item.properties.id)
-          }
-        }
-
-        // If no artworks in conversation, return empty connection
-        if (artworkIds.length === 0) {
           return paginationResolver({
-            totalCount: 0,
+            args,
+            body: messagesAndEvents,
             offset,
             page,
             size,
-            body: [],
+            totalCount: body.total_count,
+          })
+        },
+      },
+      unread: {
+        type: GraphQLBoolean,
+        description:
+          "True if there is an unread message by the Collector(from).",
+        deprecationReason: "Use `unreadByCollector` instead",
+        resolve: (conversation) => {
+          return conversation.is_unread_by_collector
+        },
+      },
+      unreadByCollector: {
+        type: GraphQLBoolean,
+        description:
+          "True if there is an unread message by the Collector(from).",
+        resolve: (conversation) => {
+          return conversation.is_unread_by_collector
+        },
+      },
+      unreadByPartner: {
+        type: GraphQLBoolean,
+        description: "True if there is an unread message by the Partner(to).",
+        resolve: (conversation) => {
+          return conversation.is_unread_by_partner
+        },
+      },
+      ordersConnection: {
+        type: ConversationOrdersConnectionType,
+        description:
+          "A connection of orders for artworks in this conversation.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          partnerID: {
+            type: GraphQLString,
+            description:
+              "Filter by partner ID. If provided, uses partner context instead of user context",
+          },
+        }),
+        resolve: async (conversation, args, context, _info) => {
+          const { partnerID } = args
+          const buyerID = conversation.from_id
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          // Get artwork IDs from conversation items
+          const artworkIds: string[] = []
+          for (const item of conversation.items) {
+            if (item.item_type === "Artwork") {
+              artworkIds.push(item.properties.id)
+            }
+          }
+
+          // If no artworks in conversation, return empty connection
+          if (artworkIds.length === 0) {
+            return paginationResolver({
+              totalCount: 0,
+              offset,
+              page,
+              size,
+              body: [],
+              args,
+            })
+          }
+
+          const params: Record<string, any> = {
+            page,
+            size,
+            artwork_id: artworkIds[0], // Use first artwork ID for filtering
+          }
+
+          let response
+
+          if (partnerID) {
+            if (!buyerID) {
+              // Conversation has no buyer ID, cannot proceed for a partner-authed query
+              return null
+            }
+            params.buyer_id = buyerID
+            const { partnerOrdersLoader } = context
+            if (!partnerOrdersLoader) return null
+            response = await partnerOrdersLoader(partnerID, params)
+          } else {
+            const { meOrdersLoader } = context
+            if (!meOrdersLoader) return null
+            response = await meOrdersLoader(params)
+          }
+
+          const { body, headers } = response
+          const totalCount = parseInt(
+            (headers ?? {})["x-total-count"] || "0",
+            10
+          )
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
             args,
           })
-        }
-
-        const params: Record<string, any> = {
-          page,
-          size,
-          artwork_id: artworkIds[0], // Use first artwork ID for filtering
-        }
-
-        let response
-
-        if (partnerID) {
-          if (!buyerID) {
-            // Conversation has no buyer ID, cannot proceed for a partner-authed query
-            return null
-          }
-          params.buyer_id = buyerID
-          const { partnerOrdersLoader } = context
-          if (!partnerOrdersLoader) return null
-          response = await partnerOrdersLoader(partnerID, params)
-        } else {
-          const { meOrdersLoader } = context
-          if (!meOrdersLoader) return null
-          response = await meOrdersLoader(params)
-        }
-
-        const { body, headers } = response
-        const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
-
-        return paginationResolver({
-          totalCount,
-          offset,
-          page,
-          size,
-          body,
-          args,
-        })
+        },
       },
-    },
+    }
   },
 })
 

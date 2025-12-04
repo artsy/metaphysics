@@ -92,7 +92,7 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
 
 const SellerType = new GraphQLUnionType({
   name: "SellerType",
-  types: [PartnerType],
+  types: () => [PartnerType],
   resolveType: () => {
     return PartnerType
   },
@@ -101,7 +101,7 @@ const SellerType = new GraphQLUnionType({
 const LineItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "LineItem",
   description: "A line item in an order",
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
     artwork: {
       type: ArtworkType,
@@ -174,13 +174,13 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
     },
-  },
+  }),
 })
 
 export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
     availablePaymentMethods: {
       type: new GraphQLNonNull(
@@ -524,7 +524,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "Check if the bank account has sufficient balance for this order",
       resolve: resolveBankAccountBalanceCheck,
     },
-  },
+  }),
 })
 
 const resolveSource = ({ source }) => {

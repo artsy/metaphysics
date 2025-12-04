@@ -258,6 +258,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
+    // Dynamically require to avoid circular dependency
+    const { OrderType } = require("../order/types/OrderType")
+    const ArtworkOrdersConnectionType = connectionWithCursorInfo({
+      name: "ArtworkOrders",
+      nodeType: OrderType,
+    }).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -1278,12 +1285,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       ordersConnection: {
-        get type() {
-          const {
-            OrdersConnectionType,
-          } = require("../order/MeOrdersConnection")
-          return OrdersConnectionType
-        },
+        type: ArtworkOrdersConnectionType,
         description: "A connection of orders for this artwork.",
         args: pageable({
           page: { type: GraphQLInt },
