@@ -18213,8 +18213,6 @@ type Order {
 
   # Order code
   code: String!
-
-  # The commission fee for the order
   commissionFee: Money
   createdAt(
     format: String
@@ -18276,8 +18274,6 @@ type Order {
 
   # The seller of the order
   seller: SellerType
-
-  # Calculated state of the order that defines seller facing state/actions
   sellerState: OrderSellerStateEnum
   sellerStateExpiresAt(
     format: String
@@ -18285,8 +18281,6 @@ type Order {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-
-  # The total amount the seller will receive
   sellerTotal: Money
 
   # Display short version of order's artwork location

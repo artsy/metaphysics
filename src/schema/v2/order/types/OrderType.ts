@@ -240,7 +240,6 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     commissionFee: {
       type: Money,
-      description: "The commission fee for the order",
       resolve: (
         { commission_fee_cents: minor, currency_code: currencyCode },
         _args,
@@ -379,8 +378,6 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     sellerState: {
       type: OrderSellerStateEnum,
-      description:
-        "Calculated state of the order that defines seller facing state/actions",
       resolve: (order) => resolveSellerState(order),
     },
     sellerStateExpiresAt: date(
@@ -388,7 +385,6 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     ),
     sellerTotal: {
       type: Money,
-      description: "The total amount the seller will receive",
       resolve: (
         { seller_total_cents: minor, currency_code: currencyCode },
         _args,
