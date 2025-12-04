@@ -19,7 +19,6 @@ interface SelectCollectorAttributesParams {
     has_saved_works_from_partner?: boolean
     has_saved_works_from_artist?: boolean
   }
-  confirmed_buyer_at?: string | null
   similarGalleriesData: {
     has_purchased_from_similar_galleries: boolean
     has_inquired_with_similar_galleries: boolean
@@ -29,7 +28,7 @@ interface SelectCollectorAttributesParams {
 export function selectCollectorAttributes(
   params: SelectCollectorAttributesParams
 ): AttributeType[] {
-  const { raw_attributes, confirmed_buyer_at, similarGalleriesData } = params
+  const { raw_attributes, similarGalleriesData } = params
 
   // User Activity (pick top 1 that's true)
   const userActivityAttributes: AttributeType[] = [
@@ -37,11 +36,6 @@ export function selectCollectorAttributes(
       key: "is_repeat_buyer",
       label: "Repeat Artsy buyer",
       value: raw_attributes.is_repeat_buyer ?? false,
-    },
-    {
-      key: "is_confirmed_buyer",
-      label: "Confirmed Artsy buyer",
-      value: !!confirmed_buyer_at,
     },
     {
       key: "is_active_user",

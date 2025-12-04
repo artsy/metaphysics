@@ -13,9 +13,6 @@ export const CollectorAttributeKeyEnum = new GraphQLEnumType({
     IS_REPEAT_BUYER: {
       value: "is_repeat_buyer",
     },
-    IS_CONFIRMED_BUYER: {
-      value: "is_confirmed_buyer",
-    },
     IS_RECENT_SIGN_UP: {
       value: "is_recent_sign_up",
     },
