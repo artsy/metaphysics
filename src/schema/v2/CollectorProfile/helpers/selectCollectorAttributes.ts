@@ -17,6 +17,7 @@ interface SelectCollectorAttributesParams {
     has_followed_partner?: boolean
     has_followed_a_represented_artist?: boolean
     has_saved_works_from_partner?: boolean
+    has_saved_works_from_artist?: boolean
   }
   confirmed_buyer_at?: string | null
   similarGalleriesData: {
@@ -90,19 +91,24 @@ export function selectCollectorAttributes(
   // Artsy Activity (in order of precedence)
   const artsyActivityAttributes: AttributeType[] = [
     {
-      key: "has_enabled_alerts_on_a_represented_artist",
-      label: "Enabled alerts on artists your gallery represents",
-      value: raw_attributes.has_enabled_alerts_on_a_represented_artist ?? false,
-    },
-    {
       key: "has_enabled_alerts_on_artist",
       label: "Enabled alerts on this artist",
       value: raw_attributes.has_enabled_alerts_on_artist ?? false,
     },
     {
-      key: "has_followed_partner",
-      label: "Follows your gallery",
-      value: raw_attributes.has_followed_partner ?? false,
+      key: "has_enabled_alerts_on_a_represented_artist",
+      label: "Enabled alerts on artists your gallery represents",
+      value: raw_attributes.has_enabled_alerts_on_a_represented_artist ?? false,
+    },
+    {
+      key: "has_saved_works_from_artist",
+      label: "Saved works by this artist",
+      value: raw_attributes.has_saved_works_from_artist ?? false,
+    },
+    {
+      key: "has_saved_works_from_partner",
+      label: "Saved works from your gallery",
+      value: raw_attributes.has_saved_works_from_partner ?? false,
     },
     {
       key: "has_followed_a_represented_artist",
@@ -110,9 +116,9 @@ export function selectCollectorAttributes(
       value: raw_attributes.has_followed_a_represented_artist ?? false,
     },
     {
-      key: "has_saved_works_from_partner",
-      label: "Saved works from your gallery before",
-      value: raw_attributes.has_saved_works_from_partner ?? false,
+      key: "has_followed_partner",
+      label: "Follows your gallery",
+      value: raw_attributes.has_followed_partner ?? false,
     },
   ]
 

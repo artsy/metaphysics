@@ -43,6 +43,9 @@ export const CollectorAttributeKeyEnum = new GraphQLEnumType({
     HAS_SAVED_WORKS_FROM_PARTNER: {
       value: "has_saved_works_from_partner",
     },
+    HAS_SAVED_WORKS_FROM_ARTIST: {
+      value: "has_saved_works_from_artist",
+    },
     HAS_INQUIRED_ABOUT_WORKS_FROM_ARTIST: {
       value: "has_inquired_about_works_from_artist",
     },

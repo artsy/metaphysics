@@ -288,6 +288,7 @@ describe("Me", () => {
                 has_enabled_alerts_on_a_represented_artist: false,
                 has_followed_a_represented_artist: false,
                 has_saved_works_from_partner: false,
+                has_saved_works_from_artist: true,
                 is_recent_sign_up: false,
               },
             }),
@@ -308,6 +309,7 @@ describe("Me", () => {
             expect(keys).toContain("IS_ACTIVE_USER")
             expect(keys).toContain("HAS_DEMONSTRATED_BUDGET")
             expect(keys).toContain("HAS_FOLLOWED_PARTNER")
+            expect(keys).toContain("HAS_SAVED_WORKS_FROM_ARTIST")
             expect(keys).not.toContain("HAS_BOUGHT_WORKS_FROM_PARTNER") // false, shouldn't be there
           }
         )
