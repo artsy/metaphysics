@@ -2739,7 +2739,7 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
     page: Int
     size: Int
-  ): ArtworkOrdersConnection
+  ): MeOrdersConnection
 
   # Collector signals on artwork
   collectorSignals: CollectorSignals
@@ -3053,7 +3053,7 @@ type Artwork implements Node & Searchable & Sellable {
     # Partner ID to fetch orders for
     partnerID: String!
     size: Int
-  ): ArtworkOrdersConnection
+  ): PartnerOrdersConnection
   pickupAvailable: Boolean
   price: String
   priceCurrency: String
@@ -3746,26 +3746,6 @@ union ArtworkMutationType =
   | ArtworkMutationFailure
 
 union ArtworkOrEditionSetType = Artwork | EditionSet
-
-# A connection to a list of items.
-type ArtworkOrdersConnection {
-  # A list of edges.
-  edges: [ArtworkOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ArtworkOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
-}
 
 # Insights may not be available for all Artwork Connections due to potential performance issues
 type ArtworkPriceInsights {
@@ -9161,7 +9141,7 @@ type Conversation implements Node {
     last: Int
     page: Int
     size: Int
-  ): ConversationOrdersConnection
+  ): MeOrdersConnection
 
   # The collector profile of the user who initiated the conversation. Do not use this field for Partners
   collectorResume: CollectorResume
@@ -9290,7 +9270,7 @@ type Conversation implements Node {
     # Partner ID to fetch orders for
     partnerID: String!
     size: Int
-  ): ConversationOrdersConnection
+  ): PartnerOrdersConnection
 
   # The participant(s) responding to the conversation
   to: ConversationResponder!
@@ -9426,26 +9406,6 @@ type ConversationMessageTemplateExample {
   # Internal identifier for the example, used for tracking purposes
   internalID: ID
   title: String!
-}
-
-# A connection to a list of items.
-type ConversationOrdersConnection {
-  # A list of edges.
-  edges: [ConversationOrdersEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ConversationOrdersEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Order
 }
 
 # The participant responding to the conversation, currently always a Partner

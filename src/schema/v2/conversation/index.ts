@@ -275,7 +275,9 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => {
     // Dynamically require to avoid circular dependency
     const {
-      ConversationOrdersConnectionType,
+      PartnerOrdersConnectionType,
+      MeOrdersConnectionType,
+      fetchOrdersConnection,
     } = require("../order/types/OrderType")
 
     return {
@@ -662,7 +664,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       collectorOrdersConnection: {
-        type: ConversationOrdersConnectionType,
+        type: MeOrdersConnectionType,
         description:
           "A connection of orders for artworks in this conversation from the collector's perspective.",
         args: pageable({
@@ -673,11 +675,16 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           const { meOrdersLoader } = context
           if (!meOrdersLoader) return null
 
-          return fetchConversationOrders(meOrdersLoader, conversation, args)
+          return fetchConversationOrders(
+            fetchOrdersConnection,
+            meOrdersLoader,
+            conversation,
+            args
+          )
         },
       },
       partnerOrdersConnection: {
-        type: ConversationOrdersConnectionType,
+        type: PartnerOrdersConnectionType,
         description:
           "A connection of orders for artworks in this conversation from the partner's perspective.",
         args: pageable({
@@ -703,6 +710,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             partnerOrdersLoader(partnerID, { ...params, buyer_id: buyerID })
 
           return fetchConversationOrders(
+            fetchOrdersConnection,
             partnerOrdersLoaderForPartner,
             conversation,
             args
@@ -729,9 +737,12 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
 
 export default Conversation
 
-const fetchConversationOrders = async (loader, conversation, args) => {
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
+const fetchConversationOrders = async (
+  fetchOrdersConnection,
+  loader,
+  conversation,
+  args
+) => {
   // Get artwork IDs from conversation items
   const artworkIds: string[] = []
   for (const item of conversation.items) {
@@ -742,6 +753,7 @@ const fetchConversationOrders = async (loader, conversation, args) => {
 
   // If no artworks in conversation, return empty connection
   if (artworkIds.length === 0) {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
     return paginationResolver({
       totalCount: 0,
       offset,
@@ -752,23 +764,7 @@ const fetchConversationOrders = async (loader, conversation, args) => {
     })
   }
 
-  const params: Record<string, any> = {
-    page,
-    size,
+  return fetchOrdersConnection(loader, args, {
     artwork_id: artworkIds[0], // Use first artwork ID for filtering
-  }
-
-  const response = await loader(params)
-
-  const { body, headers } = response
-  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
-
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body,
-    args,
   })
 }

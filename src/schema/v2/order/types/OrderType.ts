@@ -8,7 +8,12 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
-import { connectionWithCursorInfo } from "../../fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../../fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { ConnectionArguments } from "graphql-relay"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
@@ -662,13 +667,9 @@ const resolveSellerState = (order) => {
 }
 
 // Connection types for orders
-export const ArtworkOrdersConnectionType = connectionWithCursorInfo({
-  name: "ArtworkOrders",
-  nodeType: OrderType,
-}).connectionType
 
-export const ConversationOrdersConnectionType = connectionWithCursorInfo({
-  name: "ConversationOrders",
+export const MeOrdersConnectionType = connectionWithCursorInfo({
+  name: "MeOrders",
   nodeType: OrderType,
 }).connectionType
 
@@ -676,3 +677,35 @@ export const PartnerOrdersConnectionType = connectionWithCursorInfo({
   name: "PartnerOrders",
   nodeType: OrderType,
 }).connectionType
+
+/**
+ * Helper for fetching orders connections with pagination.
+ * Handles common logic for building params, fetching from loader, and resolving pagination.
+ */
+export const fetchOrdersConnection = async (
+  loader: (params: any) => Promise<{ body: any[]; headers: any }>,
+  args: ConnectionArguments,
+  additionalParams: Record<string, any>
+) => {
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(args as any)
+
+  const params = {
+    page,
+    size,
+    ...additionalParams,
+  }
+
+  const response = await loader(params)
+
+  const { body, headers } = response
+  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
+
+  return paginationResolver({
+    totalCount,
+    offset,
+    page,
+    size,
+    body,
+    args,
+  })
+}

@@ -259,7 +259,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
     // Dynamically require to avoid circular dependency
-    const { ArtworkOrdersConnectionType } = require("../order/types/OrderType")
+    const {
+      PartnerOrdersConnectionType,
+      MeOrdersConnectionType,
+      fetchOrdersConnection,
+    } = require("../order/types/OrderType")
 
     return {
       ...SlugAndInternalIDFields,
@@ -1281,7 +1285,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       collectorOrdersConnection: {
-        type: ArtworkOrdersConnectionType,
+        type: MeOrdersConnectionType,
         description:
           "A connection of orders for this artwork from the collector's perspective.",
         args: pageable({
@@ -1289,14 +1293,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           size: { type: GraphQLInt },
         }),
         resolve: async (artwork, args, context, _info) => {
+          const { id } = artwork
           const { meOrdersLoader } = context
           if (!meOrdersLoader) return null
 
-          return fetchArtworkOrders(meOrdersLoader, artwork, args)
+          return fetchOrdersConnection(meOrdersLoader, args, { artwork_id: id })
         },
       },
       partnerOrdersConnection: {
-        type: ArtworkOrdersConnectionType,
+        type: PartnerOrdersConnectionType,
         description:
           "A connection of orders for this artwork from the partner's perspective.",
         args: pageable({
@@ -1308,6 +1313,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: async (artwork, args, context, _info) => {
+          const { id } = artwork
           const { partnerID } = args
           const { partnerOrdersLoader } = context
           if (!partnerOrdersLoader) return null
@@ -1315,11 +1321,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           const partnerOrdersLoaderForPartner = (params) =>
             partnerOrdersLoader(partnerID, params)
 
-          return fetchArtworkOrders(
-            partnerOrdersLoaderForPartner,
-            artwork,
-            args
-          )
+          return fetchOrdersConnection(partnerOrdersLoaderForPartner, args, {
+            artwork_id: id,
+          })
         },
       },
       partner: {
@@ -2355,30 +2359,5 @@ const offerableActivityType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
-
-const fetchArtworkOrders = async (loader, artwork, args) => {
-  const { id } = artwork
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-  const params: Record<string, any> = {
-    page,
-    size,
-    artwork_id: id,
-  }
-
-  const response = await loader(params)
-
-  const { body, headers } = response
-  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
-
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body,
-    args,
-  })
-}
 
 export default Artwork
