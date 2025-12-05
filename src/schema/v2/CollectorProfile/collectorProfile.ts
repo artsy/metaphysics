@@ -335,13 +335,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         },
       },
       resolve: async (
-        {
-          id: collector_profile_id,
-          artworkID,
-          partnerId,
-          owner,
-          confirmed_buyer_at,
-        },
+        { id: collector_profile_id, artworkID, partnerId, owner },
         { artworkID: artworkIDFromArgs },
         { collectorProfileSummaryLoader, similarGalleriesInteractionsLoader }
       ) => {
@@ -384,7 +378,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
 
         return selectCollectorAttributes({
           raw_attributes,
-          confirmed_buyer_at,
           similarGalleriesData,
         })
       },
