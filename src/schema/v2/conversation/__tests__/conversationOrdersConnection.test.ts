@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("conversation.ordersConnection", () => {
+describe("conversation orders connections", () => {
   let ordersResponse
   let context
 
@@ -117,11 +117,11 @@ describe("conversation.ordersConnection", () => {
     }
   })
 
-  it("returns orders for a conversation using meOrdersLoader", async () => {
+  it("returns orders for a conversation using collectorOrdersConnection", async () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             edges {
               node {
                 internalID
@@ -137,7 +137,7 @@ describe("conversation.ordersConnection", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       conversation: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           edges: [
             {
               node: {
@@ -165,11 +165,11 @@ describe("conversation.ordersConnection", () => {
     )
   })
 
-  it("returns orders for a conversation using partnerOrdersLoader when partnerID is provided", async () => {
+  it("returns orders for a conversation using partnerOrdersConnection", async () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 internalID
@@ -184,7 +184,7 @@ describe("conversation.ordersConnection", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       conversation: {
-        ordersConnection: {
+        partnerOrdersConnection: {
           edges: [
             {
               node: {
@@ -207,15 +207,16 @@ describe("conversation.ordersConnection", () => {
       "partner-id",
       expect.objectContaining({
         artwork_id: "artwork-1",
+        buyer_id: "buyer-1",
       })
     )
   })
 
-  it("returns hasNextPage=true when first is below total", async () => {
+  it("returns hasNextPage=true when first is below total for collectorOrdersConnection", async () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 1) {
+          collectorOrdersConnection(first: 1) {
             pageInfo {
               hasNextPage
             }
@@ -228,7 +229,7 @@ describe("conversation.ordersConnection", () => {
 
     expect(data).toEqual({
       conversation: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           pageInfo: {
             hasNextPage: true,
           },
@@ -237,11 +238,11 @@ describe("conversation.ordersConnection", () => {
     })
   })
 
-  it("returns totalCount", async () => {
+  it("returns totalCount for collectorOrdersConnection", async () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             totalCount
           }
         }
@@ -252,14 +253,14 @@ describe("conversation.ordersConnection", () => {
 
     expect(data).toEqual({
       conversation: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           totalCount: 2,
         },
       },
     })
   })
 
-  it("returns null when meOrdersLoader is not available and no partnerID provided", async () => {
+  it("returns null when meOrdersLoader is not available for collectorOrdersConnection", async () => {
     const contextWithoutLoader = {
       conversationLoader: () => {
         return Promise.resolve({
@@ -279,7 +280,7 @@ describe("conversation.ordersConnection", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             edges {
               node {
                 code
@@ -294,12 +295,12 @@ describe("conversation.ordersConnection", () => {
 
     expect(data).toEqual({
       conversation: {
-        ordersConnection: null,
+        collectorOrdersConnection: null,
       },
     })
   })
 
-  it("returns null when partnerOrdersLoader is not available but partnerID is provided", async () => {
+  it("returns null when partnerOrdersLoader is not available for partnerOrdersConnection", async () => {
     const contextWithoutPartnerLoader = {
       conversationLoader: () => {
         return Promise.resolve({
@@ -320,7 +321,7 @@ describe("conversation.ordersConnection", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 code
@@ -335,12 +336,12 @@ describe("conversation.ordersConnection", () => {
 
     expect(data).toEqual({
       conversation: {
-        ordersConnection: null,
+        partnerOrdersConnection: null,
       },
     })
   })
 
-  it("returns empty connection when conversation has no artworks", async () => {
+  it("returns empty connection when conversation has no artworks for collectorOrdersConnection", async () => {
     const contextWithNoArtworks = {
       conversationLoader: () => {
         return Promise.resolve({
@@ -354,7 +355,7 @@ describe("conversation.ordersConnection", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             edges {
               node {
                 code
@@ -370,7 +371,7 @@ describe("conversation.ordersConnection", () => {
 
     expect(data).toEqual({
       conversation: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           edges: [],
           totalCount: 0,
         },
@@ -378,11 +379,11 @@ describe("conversation.ordersConnection", () => {
     })
   })
 
-  it("automatically filters orders by buyer_id from conversation.from_id", async () => {
+  it("automatically filters orders by buyer_id from conversation.from_id for partnerOrdersConnection", async () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          ordersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 internalID

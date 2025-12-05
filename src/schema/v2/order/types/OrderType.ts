@@ -8,6 +8,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
+import { connectionWithCursorInfo } from "../../fields/pagination"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
@@ -659,3 +660,19 @@ const resolveSellerState = (order) => {
       return "UNKNOWN"
   }
 }
+
+// Connection types for orders
+export const ArtworkOrdersConnectionType = connectionWithCursorInfo({
+  name: "ArtworkOrders",
+  nodeType: OrderType,
+}).connectionType
+
+export const ConversationOrdersConnectionType = connectionWithCursorInfo({
+  name: "ConversationOrders",
+  nodeType: OrderType,
+}).connectionType
+
+export const PartnerOrdersConnectionType = connectionWithCursorInfo({
+  name: "PartnerOrders",
+  nodeType: OrderType,
+}).connectionType

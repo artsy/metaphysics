@@ -2731,6 +2731,16 @@ type Artwork implements Node & Searchable & Sellable {
   # The location of the artwork in My Collection
   collectorLocation: MyLocation
 
+  # A connection of orders for this artwork from the collector's perspective.
+  collectorOrdersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): ArtworkOrdersConnection
+
   # Collector signals on artwork
   collectorSignals: CollectorSignals
 
@@ -3015,19 +3025,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Is this work only available for shipping domestically?
   onlyShipsDomestically: Boolean
-
-  # A connection of orders for this artwork.
-  ordersConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-
-    # Filter by partner ID. If provided, uses partner context instead of user context
-    partnerID: String
-    size: Int
-  ): ArtworkOrdersConnection
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean = true
@@ -3044,6 +3041,19 @@ type Artwork implements Node & Searchable & Sellable {
     size: Int
     sort: PartnerOfferSorts
   ): PartnerOfferConnection
+
+  # A connection of orders for this artwork from the partner's perspective.
+  partnerOrdersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # Partner ID to fetch orders for
+    partnerID: String!
+    size: Int
+  ): ArtworkOrdersConnection
   pickupAvailable: Boolean
   price: String
   priceCurrency: String
@@ -9143,6 +9153,16 @@ type Conversation implements Node {
     last: Int
   ): UserInterestConnection
 
+  # A connection of orders for artworks in this conversation from the collector's perspective.
+  collectorOrdersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): ConversationOrdersConnection
+
   # The collector profile of the user who initiated the conversation. Do not use this field for Partners
   collectorResume: CollectorResume
   createdAt(
@@ -9259,16 +9279,16 @@ type Conversation implements Node {
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
 
-  # A connection of orders for artworks in this conversation.
-  ordersConnection(
+  # A connection of orders for artworks in this conversation from the partner's perspective.
+  partnerOrdersConnection(
     after: String
     before: String
     first: Int
     last: Int
     page: Int
 
-    # Filter by partner ID. If provided, uses partner context instead of user context
-    partnerID: String
+    # Partner ID to fetch orders for
+    partnerID: String!
     size: Int
   ): ConversationOrdersConnection
 

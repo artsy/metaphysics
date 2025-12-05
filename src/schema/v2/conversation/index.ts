@@ -274,11 +274,9 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     // Dynamically require to avoid circular dependency
-    const { OrderType } = require("../order/types/OrderType")
-    const ConversationOrdersConnectionType = connectionWithCursorInfo({
-      name: "ConversationOrders",
-      nodeType: OrderType,
-    }).connectionType
+    const {
+      ConversationOrdersConnectionType,
+    } = require("../order/types/OrderType")
 
     return {
       id: GlobalIDField,
@@ -663,84 +661,52 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           return conversation.is_unread_by_partner
         },
       },
-      ordersConnection: {
+      collectorOrdersConnection: {
         type: ConversationOrdersConnectionType,
         description:
-          "A connection of orders for artworks in this conversation.",
+          "A connection of orders for artworks in this conversation from the collector's perspective.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+        }),
+        resolve: async (conversation, args, context, _info) => {
+          const { meOrdersLoader } = context
+          if (!meOrdersLoader) return null
+
+          return fetchConversationOrders(meOrdersLoader, conversation, args)
+        },
+      },
+      partnerOrdersConnection: {
+        type: ConversationOrdersConnectionType,
+        description:
+          "A connection of orders for artworks in this conversation from the partner's perspective.",
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
           partnerID: {
-            type: GraphQLString,
-            description:
-              "Filter by partner ID. If provided, uses partner context instead of user context",
+            type: new GraphQLNonNull(GraphQLString),
+            description: "Partner ID to fetch orders for",
           },
         }),
         resolve: async (conversation, args, context, _info) => {
           const { partnerID } = args
           const buyerID = conversation.from_id
+          const { partnerOrdersLoader } = context
+          if (!partnerOrdersLoader) return null
 
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          if (!buyerID) {
+            // Conversation has no buyer ID, cannot proceed for a partner-authed query
+            return null
+          }
+
+          const partnerOrdersLoaderForPartner = (params) =>
+            partnerOrdersLoader(partnerID, { ...params, buyer_id: buyerID })
+
+          return fetchConversationOrders(
+            partnerOrdersLoaderForPartner,
+            conversation,
             args
           )
-
-          // Get artwork IDs from conversation items
-          const artworkIds: string[] = []
-          for (const item of conversation.items) {
-            if (item.item_type === "Artwork") {
-              artworkIds.push(item.properties.id)
-            }
-          }
-
-          // If no artworks in conversation, return empty connection
-          if (artworkIds.length === 0) {
-            return paginationResolver({
-              totalCount: 0,
-              offset,
-              page,
-              size,
-              body: [],
-              args,
-            })
-          }
-
-          const params: Record<string, any> = {
-            page,
-            size,
-            artwork_id: artworkIds[0], // Use first artwork ID for filtering
-          }
-
-          let response
-
-          if (partnerID) {
-            if (!buyerID) {
-              // Conversation has no buyer ID, cannot proceed for a partner-authed query
-              return null
-            }
-            params.buyer_id = buyerID
-            const { partnerOrdersLoader } = context
-            if (!partnerOrdersLoader) return null
-            response = await partnerOrdersLoader(partnerID, params)
-          } else {
-            const { meOrdersLoader } = context
-            if (!meOrdersLoader) return null
-            response = await meOrdersLoader(params)
-          }
-
-          const { body, headers } = response
-          const totalCount = parseInt(
-            (headers ?? {})["x-total-count"] || "0",
-            10
-          )
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
         },
       },
     }
@@ -762,3 +728,47 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Conversation
+
+const fetchConversationOrders = async (loader, conversation, args) => {
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+  // Get artwork IDs from conversation items
+  const artworkIds: string[] = []
+  for (const item of conversation.items) {
+    if (item.item_type === "Artwork") {
+      artworkIds.push(item.properties.id)
+    }
+  }
+
+  // If no artworks in conversation, return empty connection
+  if (artworkIds.length === 0) {
+    return paginationResolver({
+      totalCount: 0,
+      offset,
+      page,
+      size,
+      body: [],
+      args,
+    })
+  }
+
+  const params: Record<string, any> = {
+    page,
+    size,
+    artwork_id: artworkIds[0], // Use first artwork ID for filtering
+  }
+
+  const response = await loader(params)
+
+  const { body, headers } = response
+  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
+
+  return paginationResolver({
+    totalCount,
+    offset,
+    page,
+    size,
+    body,
+    args,
+  })
+}

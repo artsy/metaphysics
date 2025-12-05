@@ -259,11 +259,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
     // Dynamically require to avoid circular dependency
-    const { OrderType } = require("../order/types/OrderType")
-    const ArtworkOrdersConnectionType = connectionWithCursorInfo({
-      name: "ArtworkOrders",
-      nodeType: OrderType,
-    }).connectionType
+    const { ArtworkOrdersConnectionType } = require("../order/types/OrderType")
 
     return {
       ...SlugAndInternalIDFields,
@@ -1284,21 +1280,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return lotStandingLoader({ artwork_id: id, live })
         },
       },
-      ordersConnection: {
+      collectorOrdersConnection: {
         type: ArtworkOrdersConnectionType,
-        description: "A connection of orders for this artwork.",
+        description:
+          "A connection of orders for this artwork from the collector's perspective.",
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
-          partnerID: {
-            type: GraphQLString,
-            description:
-              "Filter by partner ID. If provided, uses partner context instead of user context",
-          },
         }),
         resolve: async (artwork, args, context, _info) => {
           const { id } = artwork
-          const { partnerID } = args
+          const { meOrdersLoader } = context
+          if (!meOrdersLoader) return null
+
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -1309,16 +1303,53 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork_id: id,
           }
 
-          let response
-          if (partnerID) {
-            const { partnerOrdersLoader } = context
-            if (!partnerOrdersLoader) return null
-            response = await partnerOrdersLoader(partnerID, params)
-          } else {
-            const { meOrdersLoader } = context
-            if (!meOrdersLoader) return null
-            response = await meOrdersLoader(params)
+          const response = await meOrdersLoader(params)
+
+          const { body, headers } = response
+          const totalCount = parseInt(
+            (headers ?? {})["x-total-count"] || "0",
+            10
+          )
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
+      },
+      partnerOrdersConnection: {
+        type: ArtworkOrdersConnectionType,
+        description:
+          "A connection of orders for this artwork from the partner's perspective.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          partnerID: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "Partner ID to fetch orders for",
+          },
+        }),
+        resolve: async (artwork, args, context, _info) => {
+          const { id } = artwork
+          const { partnerID } = args
+          const { partnerOrdersLoader } = context
+          if (!partnerOrdersLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const params: Record<string, any> = {
+            page,
+            size,
+            artwork_id: id,
           }
+
+          const response = await partnerOrdersLoader(partnerID, params)
 
           const { body, headers } = response
           const totalCount = parseInt(

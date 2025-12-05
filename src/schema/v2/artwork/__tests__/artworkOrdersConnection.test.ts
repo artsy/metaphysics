@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("artwork.ordersConnection", () => {
+describe("artwork orders connections", () => {
   let ordersResponse
   let context
 
@@ -101,11 +101,11 @@ describe("artwork.ordersConnection", () => {
     }
   })
 
-  it("returns orders for an artwork using meOrdersLoader", async () => {
+  it("returns orders for an artwork using collectorOrdersConnection", async () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             edges {
               node {
                 internalID
@@ -121,7 +121,7 @@ describe("artwork.ordersConnection", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       artwork: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           edges: [
             {
               node: {
@@ -149,11 +149,11 @@ describe("artwork.ordersConnection", () => {
     )
   })
 
-  it("returns orders for an artwork using partnerOrdersLoader when partnerID is provided", async () => {
+  it("returns orders for an artwork using partnerOrdersConnection", async () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 internalID
@@ -168,7 +168,7 @@ describe("artwork.ordersConnection", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       artwork: {
-        ordersConnection: {
+        partnerOrdersConnection: {
           edges: [
             {
               node: {
@@ -195,11 +195,11 @@ describe("artwork.ordersConnection", () => {
     )
   })
 
-  it("returns hasNextPage=true when first is below total", async () => {
+  it("returns hasNextPage=true when first is below total for collectorOrdersConnection", async () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 1) {
+          collectorOrdersConnection(first: 1) {
             pageInfo {
               hasNextPage
             }
@@ -212,7 +212,7 @@ describe("artwork.ordersConnection", () => {
 
     expect(data).toEqual({
       artwork: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           pageInfo: {
             hasNextPage: true,
           },
@@ -221,11 +221,11 @@ describe("artwork.ordersConnection", () => {
     })
   })
 
-  it("returns totalCount", async () => {
+  it("returns totalCount for collectorOrdersConnection", async () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             totalCount
           }
         }
@@ -236,14 +236,14 @@ describe("artwork.ordersConnection", () => {
 
     expect(data).toEqual({
       artwork: {
-        ordersConnection: {
+        collectorOrdersConnection: {
           totalCount: 2,
         },
       },
     })
   })
 
-  it("returns null when meOrdersLoader is not available and no partnerID provided", async () => {
+  it("returns null when meOrdersLoader is not available for collectorOrdersConnection", async () => {
     const contextWithoutLoader = {
       artworkLoader: () => {
         return Promise.resolve({
@@ -256,7 +256,7 @@ describe("artwork.ordersConnection", () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 5) {
+          collectorOrdersConnection(first: 5) {
             edges {
               node {
                 code
@@ -271,12 +271,12 @@ describe("artwork.ordersConnection", () => {
 
     expect(data).toEqual({
       artwork: {
-        ordersConnection: null,
+        collectorOrdersConnection: null,
       },
     })
   })
 
-  it("returns null when partnerOrdersLoader is not available but partnerID is provided", async () => {
+  it("returns null when partnerOrdersLoader is not available for partnerOrdersConnection", async () => {
     const contextWithoutPartnerLoader = {
       artworkLoader: () => {
         return Promise.resolve({
@@ -290,7 +290,7 @@ describe("artwork.ordersConnection", () => {
     const query = gql`
       {
         artwork(id: "artwork-1") {
-          ordersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
             edges {
               node {
                 code
@@ -305,7 +305,7 @@ describe("artwork.ordersConnection", () => {
 
     expect(data).toEqual({
       artwork: {
-        ordersConnection: null,
+        partnerOrdersConnection: null,
       },
     })
   })
