@@ -13,9 +13,6 @@ export const CollectorAttributeKeyEnum = new GraphQLEnumType({
     IS_REPEAT_BUYER: {
       value: "is_repeat_buyer",
     },
-    IS_CONFIRMED_BUYER: {
-      value: "is_confirmed_buyer",
-    },
     IS_RECENT_SIGN_UP: {
       value: "is_recent_sign_up",
     },
@@ -42,6 +39,9 @@ export const CollectorAttributeKeyEnum = new GraphQLEnumType({
     },
     HAS_SAVED_WORKS_FROM_PARTNER: {
       value: "has_saved_works_from_partner",
+    },
+    HAS_SAVED_WORKS_FROM_ARTIST: {
+      value: "has_saved_works_from_artist",
     },
     HAS_INQUIRED_ABOUT_WORKS_FROM_ARTIST: {
       value: "has_inquired_about_works_from_artist",
