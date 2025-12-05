@@ -1289,36 +1289,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           size: { type: GraphQLInt },
         }),
         resolve: async (artwork, args, context, _info) => {
-          const { id } = artwork
           const { meOrdersLoader } = context
           if (!meOrdersLoader) return null
 
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          const params: Record<string, any> = {
-            page,
-            size,
-            artwork_id: id,
-          }
-
-          const response = await meOrdersLoader(params)
-
-          const { body, headers } = response
-          const totalCount = parseInt(
-            (headers ?? {})["x-total-count"] || "0",
-            10
-          )
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
+          return fetchArtworkOrders(meOrdersLoader, artwork, args)
         },
       },
       partnerOrdersConnection: {
@@ -1334,37 +1308,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: async (artwork, args, context, _info) => {
-          const { id } = artwork
           const { partnerID } = args
           const { partnerOrdersLoader } = context
           if (!partnerOrdersLoader) return null
 
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          const partnerOrdersLoaderForPartner = (params) =>
+            partnerOrdersLoader(partnerID, params)
+
+          return fetchArtworkOrders(
+            partnerOrdersLoaderForPartner,
+            artwork,
             args
           )
-
-          const params: Record<string, any> = {
-            page,
-            size,
-            artwork_id: id,
-          }
-
-          const response = await partnerOrdersLoader(partnerID, params)
-
-          const { body, headers } = response
-          const totalCount = parseInt(
-            (headers ?? {})["x-total-count"] || "0",
-            10
-          )
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
         },
       },
       partner: {
@@ -2400,5 +2355,30 @@ const offerableActivityType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
+
+const fetchArtworkOrders = async (loader, artwork, args) => {
+  const { id } = artwork
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+  const params: Record<string, any> = {
+    page,
+    size,
+    artwork_id: id,
+  }
+
+  const response = await loader(params)
+
+  const { body, headers } = response
+  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
+
+  return paginationResolver({
+    totalCount,
+    offset,
+    page,
+    size,
+    body,
+    args,
+  })
+}
 
 export default Artwork
