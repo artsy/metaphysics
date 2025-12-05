@@ -8,7 +8,14 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../../fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { ConnectionArguments } from "graphql-relay"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
@@ -27,6 +34,7 @@ import {
   FulfillmentOptionJSONWithCurrencyCode,
   FulfillmentOptionType,
   OrderBuyerStateEnum,
+  OrderSellerStateEnum,
   OrderCreditCardWalletTypeEnum,
   OrderModeEnum,
   OrderPaymentMethodEnum,
@@ -90,7 +98,7 @@ const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
 
 const SellerType = new GraphQLUnionType({
   name: "SellerType",
-  types: [PartnerType],
+  types: () => [PartnerType],
   resolveType: () => {
     return PartnerType
   },
@@ -99,7 +107,7 @@ const SellerType = new GraphQLUnionType({
 const LineItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "LineItem",
   description: "A line item in an order",
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
     artwork: {
       type: ArtworkType,
@@ -172,13 +180,13 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
     },
-  },
+  }),
 })
 
 export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
   name: "Order",
   description: "Buyer's representation of an order",
-  fields: {
+  fields: () => ({
     ...InternalIDFields,
     availablePaymentMethods: {
       type: new GraphQLNonNull(
@@ -228,21 +236,34 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "Calculated state of the order that defines buyer facing state/actions",
       resolve: (order) => resolveBuyerState(order),
     },
-    buyerStateExpiresAt: {
-      type: GraphQLString,
-      description: "Expiration for the current state of the order",
-      resolve: ({ buyer_state_expires_at }) => buyer_state_expires_at,
-    },
+    buyerStateExpiresAt: date(
+      ({ buyer_state_expires_at }) => buyer_state_expires_at
+    ),
     code: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Order code",
       resolve: ({ code }) => code,
     },
-    createdAt: {
-      type: GraphQLString,
-      description: "Order creation time",
-      resolve: ({ created_at }) => created_at,
+    commissionFee: {
+      type: Money,
+      resolve: (
+        { commission_fee_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
     },
+    createdAt: date(({ created_at }) => created_at),
     creditCardWalletType: {
       type: OrderCreditCardWalletTypeEnum,
       description: "Express Checkout wallet type",
@@ -361,6 +382,32 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         return partnerLoader(seller_id).catch(() => null)
       },
     },
+    sellerState: {
+      type: OrderSellerStateEnum,
+      resolve: (order) => resolveSellerState(order),
+    },
+    sellerStateExpiresAt: date(
+      ({ seller_state_expires_at }) => seller_state_expires_at
+    ),
+    sellerTotal: {
+      type: Money,
+      resolve: (
+        { seller_total_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     shippingOrigin: {
       type: GraphQLString,
       description: "Display short version of order's artwork location",
@@ -432,6 +479,26 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         )
       },
     },
+    transactionFee: {
+      type: Money,
+      description: "The transaction fee for the order",
+      resolve: (
+        { transaction_fee_cents: minor, currency_code: currencyCode },
+        _args,
+        ctx,
+        _info
+      ) => {
+        if (minor == null || currencyCode == null) {
+          return null
+        }
+        return resolveMinorAndCurrencyFieldsToMoney(
+          { minor, currencyCode },
+          _args,
+          ctx,
+          _info
+        )
+      },
+    },
     submittedOffers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
       description: "List of submitted offers for this order",
@@ -459,7 +526,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         "Check if the bank account has sufficient balance for this order",
       resolve: resolveBankAccountBalanceCheck,
     },
-  },
+  }),
 })
 
 const resolveSource = ({ source }) => {
@@ -556,4 +623,89 @@ const resolveBuyerState = (order) => {
     default:
       return "UNKNOWN"
   }
+}
+
+const resolveSellerState = (order) => {
+  const { seller_state } = order
+
+  if (!seller_state) {
+    return null
+  }
+
+  switch (seller_state) {
+    case "incomplete":
+      return "INCOMPLETE"
+    case "order_received":
+      return "ORDER_RECEIVED"
+    case "offer_received":
+      return "OFFER_RECEIVED"
+    case "offer_sent":
+      return "OFFER_SENT"
+    case "payment_failed":
+      return "PAYMENT_FAILED"
+    case "processing_payment":
+      return "PROCESSING_PAYMENT"
+    case "approved_pickup":
+      return "APPROVED_PICKUP"
+    case "approved_seller_ship":
+      return "APPROVED_SELLER_SHIP"
+    case "approved_artsy_self_ship":
+      return "APPROVED_ARTSY_SELF_SHIP"
+    case "approved_artsy_ship":
+      return "APPROVED_ARTSY_SHIP"
+    case "in_transit":
+      return "IN_TRANSIT"
+    case "completed":
+      return "COMPLETED"
+    case "refunded":
+      return "REFUNDED"
+    case "canceled":
+      return "CANCELED"
+    default:
+      return "UNKNOWN"
+  }
+}
+
+// Connection types for orders
+
+export const MeOrdersConnectionType = connectionWithCursorInfo({
+  name: "MeOrders",
+  nodeType: OrderType,
+}).connectionType
+
+export const PartnerOrdersConnectionType = connectionWithCursorInfo({
+  name: "PartnerOrders",
+  nodeType: OrderType,
+}).connectionType
+
+/**
+ * Helper for fetching orders connections with pagination.
+ * Handles common logic for building params, fetching from loader, and resolving pagination.
+ */
+export const fetchOrdersConnection = async (
+  loader: (params: any) => Promise<{ body: any[]; headers: any }>,
+  args: ConnectionArguments,
+  additionalParams: Record<string, any>
+) => {
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(args as any)
+
+  const params = {
+    page,
+    size,
+    ...additionalParams,
+  }
+
+  const response = await loader(params)
+
+  const { body, headers } = response
+  const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
+
+  return paginationResolver({
+    totalCount,
+    offset,
+    page,
+    size,
+    body,
+    args,
+  })
 }

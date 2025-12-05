@@ -239,6 +239,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       ArtworkImportsConnectionType,
     } = require("schema/v2/ArtworkImport/artworkImport")
 
+    const {
+      OrderType,
+      PartnerOrdersConnectionType,
+    } = require("../order/types/OrderType")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -1493,6 +1498,70 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             totalCount,
+          })
+        },
+      },
+      ordersConnection: {
+        type: PartnerOrdersConnectionType,
+        description: "A connection of orders for the Partner.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          artworkID: {
+            type: GraphQLString,
+            description: "Filter by artwork ID in line items",
+          },
+        }),
+        resolve: async (partner, args, context, _info) => {
+          const { partnerOrdersLoader } = context
+          if (!partnerOrdersLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const params: Record<string, any> = {
+            page,
+            size,
+          }
+
+          if (args.artworkID) {
+            params.artwork_id = args.artworkID
+          }
+
+          const response = await partnerOrdersLoader(partner.id, params)
+
+          const { body, headers } = response
+          const totalCount = parseInt(
+            (headers ?? {})["x-total-count"] || "0",
+            10
+          )
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
+      },
+      order: {
+        type: OrderType,
+        description: "A single order for this partner.",
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The ID of the order",
+          },
+        },
+        resolve: async (partner, args, { partnerOrderLoader }) => {
+          if (!partnerOrderLoader) return null
+
+          return partnerOrderLoader({
+            partnerId: partner.id,
+            orderId: args.id,
           })
         },
       },

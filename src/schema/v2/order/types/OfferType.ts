@@ -7,6 +7,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../../object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import { date } from "../../fields/date"
 import { OrderType } from "./OrderType"
 import {
   PricingBreakdownLinesType,
@@ -64,11 +65,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
         )
       },
     },
-    createdAt: {
-      type: GraphQLString,
-      description: "Offer creation time",
-      resolve: ({ created_at }) => created_at,
-    },
+    createdAt: date(({ created_at }) => created_at),
     fromParticipant: {
       type: new GraphQLNonNull(FromParticipantEnum),
       description: "Who the offer is from",

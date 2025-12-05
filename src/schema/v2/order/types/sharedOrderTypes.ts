@@ -112,6 +112,73 @@ export const OrderBuyerStateEnum = new GraphQLEnumType({
   },
 })
 
+export const OrderSellerStateEnum = new GraphQLEnumType({
+  name: "OrderSellerStateEnum",
+  values: {
+    INCOMPLETE: {
+      value: "INCOMPLETE",
+      description: "Order is incomplete (not actionable by seller)",
+    },
+    ORDER_RECEIVED: {
+      value: "ORDER_RECEIVED",
+      description: "Order has been received",
+    },
+    OFFER_RECEIVED: {
+      value: "OFFER_RECEIVED",
+      description: "Offer has been received from buyer",
+    },
+    OFFER_SENT: {
+      value: "OFFER_SENT",
+      description: "Offer has been sent to buyer",
+    },
+    PAYMENT_FAILED: {
+      value: "PAYMENT_FAILED",
+      description: "Payment has failed",
+    },
+    PROCESSING_PAYMENT: {
+      value: "PROCESSING_PAYMENT",
+      description: "Processing payment",
+    },
+    APPROVED_PICKUP: {
+      value: "APPROVED_PICKUP",
+      description: "Approved - action is to coordinate pickup",
+    },
+    APPROVED_SELLER_SHIP: {
+      value: "APPROVED_SELLER_SHIP",
+      description: "Approved - action is for seller to pack and ship",
+    },
+    APPROVED_ARTSY_SELF_SHIP: {
+      value: "APPROVED_ARTSY_SELF_SHIP",
+      description:
+        "Approved - action is for seller to print Artsy label, pack and ship",
+    },
+    APPROVED_ARTSY_SHIP: {
+      value: "APPROVED_ARTSY_SHIP",
+      description: "Approved - action is for seller to wait for Artsy pickup",
+    },
+    IN_TRANSIT: {
+      value: "IN_TRANSIT",
+      description: "Order is in transit",
+    },
+    COMPLETED: {
+      value: "COMPLETED",
+      description: "Order is completed",
+    },
+    REFUNDED: {
+      value: "REFUNDED",
+      description: "Order has been refunded",
+    },
+    CANCELED: {
+      value: "CANCELED",
+      description: "Order has been canceled",
+    },
+    UNKNOWN: {
+      value: "UNKNOWN",
+      description: "Order status is unknown",
+    },
+  },
+})
+
 // Enum for fulfillment_option.type field
 const FulfillmentOptionTypeEnum = new GraphQLEnumType({
   name: "FulfillmentOptionTypeEnum",
