@@ -258,6 +258,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
+    // Dynamically require to avoid circular dependency
+    const {
+      PartnerOrdersConnectionType,
+      MeOrdersConnectionType,
+      fetchOrdersConnection,
+    } = require("../order/types/OrderType")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -1275,6 +1282,48 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (!lotStandingLoader) return null
           if (!sale_ids || sale_ids.length === 0) return null
           return lotStandingLoader({ artwork_id: id, live })
+        },
+      },
+      collectorOrdersConnection: {
+        type: MeOrdersConnectionType,
+        description:
+          "A connection of orders for this artwork from the collector's perspective.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+        }),
+        resolve: async (artwork, args, context, _info) => {
+          const { id } = artwork
+          const { meOrdersLoader } = context
+          if (!meOrdersLoader) return null
+
+          return fetchOrdersConnection(meOrdersLoader, args, { artwork_id: id })
+        },
+      },
+      partnerOrdersConnection: {
+        type: PartnerOrdersConnectionType,
+        description:
+          "A connection of orders for this artwork from the partner's perspective.",
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          partnerID: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "Partner ID to fetch orders for",
+          },
+        }),
+        resolve: async (artwork, args, context, _info) => {
+          const { id } = artwork
+          const { partnerID } = args
+          const { partnerOrdersLoader } = context
+          if (!partnerOrdersLoader) return null
+
+          const partnerOrdersLoaderForPartner = (params) =>
+            partnerOrdersLoader(partnerID, params)
+
+          return fetchOrdersConnection(partnerOrdersLoaderForPartner, args, {
+            artwork_id: id,
+          })
         },
       },
       partner: {
