@@ -283,8 +283,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   completenessTier: {
-    type: GraphQLString,
-    description: "Filter by artwork completeness tier.",
+    type: new GraphQLList(GraphQLString),
+    description:
+      "Filter by artwork completeness tiers. Accepts multiple values.",
   },
 }
 

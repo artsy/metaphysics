@@ -1086,4 +1086,180 @@ describe("artworksConnection", () => {
       })
     })
   })
+
+  describe(`completenessTier filter`, () => {
+    let context
+
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              completeness_tier: ["Good", "Excellent"],
+              aggregations: ["total"],
+            })
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "artwork-1",
+                    title: "Good Artwork",
+                  },
+                  {
+                    id: "artwork-2",
+                    title: "Excellent Artwork",
+                  },
+                ],
+                aggregations: {
+                  total: {
+                    value: 2,
+                  },
+                },
+              })
+            ),
+        },
+      }
+    })
+
+    it("accepts multiple completeness tiers", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            completenessTier: ["Good", "Excellent"]
+            aggregations: [TOTAL]
+            first: 10
+          ) {
+            edges {
+              node {
+                title
+              }
+            }
+            counts {
+              total
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { title: "Good Artwork" } },
+        { node: { title: "Excellent Artwork" } },
+      ])
+      expect(artworksConnection.counts.total).toEqual(2)
+    })
+
+    it("accepts a single completeness tier in array format", async () => {
+      context.unauthenticatedLoaders.filterArtworksLoader = sinon
+        .stub()
+        .withArgs("filter/artworks", {
+          completeness_tier: ["Incomplete"],
+          aggregations: ["total"],
+        })
+        .returns(
+          Promise.resolve({
+            hits: [
+              {
+                id: "artwork-3",
+                title: "Incomplete Artwork",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 1,
+              },
+            },
+          })
+        )
+
+      const query = gql`
+        {
+          artworksConnection(
+            completenessTier: ["Incomplete"]
+            aggregations: [TOTAL]
+            first: 10
+          ) {
+            edges {
+              node {
+                title
+              }
+            }
+            counts {
+              total
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { title: "Incomplete Artwork" } },
+      ])
+      expect(artworksConnection.counts.total).toEqual(1)
+    })
+
+    it("accepts all three completeness tiers", async () => {
+      context.unauthenticatedLoaders.filterArtworksLoader = sinon
+        .stub()
+        .withArgs("filter/artworks", {
+          completeness_tier: ["Incomplete", "Good", "Excellent"],
+          aggregations: ["total"],
+        })
+        .returns(
+          Promise.resolve({
+            hits: [
+              {
+                id: "artwork-4",
+                title: "Incomplete Artwork",
+              },
+              {
+                id: "artwork-5",
+                title: "Good Artwork",
+              },
+              {
+                id: "artwork-6",
+                title: "Excellent Artwork",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 3,
+              },
+            },
+          })
+        )
+
+      const query = gql`
+        {
+          artworksConnection(
+            completenessTier: ["Incomplete", "Good", "Excellent"]
+            aggregations: [TOTAL]
+            first: 10
+          ) {
+            edges {
+              node {
+                title
+              }
+            }
+            counts {
+              total
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { title: "Incomplete Artwork" } },
+        { node: { title: "Good Artwork" } },
+        { node: { title: "Excellent Artwork" } },
+      ])
+      expect(artworksConnection.counts.total).toEqual(3)
+    })
+  })
 })
