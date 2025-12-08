@@ -11,38 +11,38 @@ import { handleExchangeError } from "./exchangeErrorHandling"
 
 interface Input {
   id: string
-  paymentMethod?: string
+  paymentMethod: string
+  paymentMethodId?: string
   creditCardWalletType?: string
   stripeConfirmationToken?: string
 }
 
-export const updateOrderMutation = mutationWithClientMutationId<
+export const setOrderPaymentMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "updateOrder",
+  name: "setOrderPayment",
   description:
-    "Update an order. NOTE: For payment-related updates, use setOrderPayment mutation instead.",
+    "Set payment method for an order. This mutation uses the new /payment endpoint.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLID), description: "Order id." },
     paymentMethod: {
-      type: OrderPaymentMethodEnum,
+      type: new GraphQLNonNull(OrderPaymentMethodEnum),
       description: "Payment method.",
-      deprecationReason:
-        "Use setOrderPayment mutation instead for setting payment methods.",
+    },
+    paymentMethodId: {
+      type: GraphQLString,
+      description:
+        "Saved payment method id (credit card or bank account). Required for bank accounts.",
     },
     creditCardWalletType: {
       type: OrderCreditCardWalletTypeEnum,
-      description: "Credit card wallet type",
-      deprecationReason:
-        "Use setOrderPayment mutation instead for setting payment methods.",
+      description: "Credit card wallet type (e.g., Apple Pay, Google Pay).",
     },
     stripeConfirmationToken: {
       type: GraphQLString,
-      description: "Stripe confirmation token",
-      deprecationReason:
-        "Use setOrderPayment mutation instead for setting payment methods.",
+      description: "Stripe confirmation token.",
     },
   },
   outputFields: {
@@ -52,24 +52,25 @@ export const updateOrderMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (input, context) => {
-    const { meOrderUpdateLoader } = context
-    if (!meOrderUpdateLoader) {
+    const { meOrderSetPaymentLoader } = context
+    if (!meOrderSetPaymentLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
     try {
       const exchangeInputFields = {
         payment_method: input.paymentMethod,
+        payment_method_id: input.paymentMethodId,
         credit_card_wallet_type: input.creditCardWalletType,
         stripe_confirmation_token: input.stripeConfirmationToken,
       }
-      // filter out `undefined` values from the input fields
+
       const payload = Object.fromEntries(
         Object.entries(exchangeInputFields).filter(
           ([_, value]) => value !== undefined
         )
       )
-      const updatedOrder = await meOrderUpdateLoader(input.id, payload)
-      updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
+      const updatedOrder = await meOrderSetPaymentLoader(input.id, payload)
+      updatedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS
       return updatedOrder
     } catch (error) {
       return handleExchangeError(error)
