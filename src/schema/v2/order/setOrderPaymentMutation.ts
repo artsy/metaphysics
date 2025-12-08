@@ -23,8 +23,7 @@ export const setOrderPaymentMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "setOrderPayment",
-  description:
-    "Set payment method for an order. This mutation uses the new /payment endpoint.",
+  description: "Set payment method for an order.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLID), description: "Order id." },
     paymentMethod: {

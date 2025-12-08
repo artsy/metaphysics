@@ -17434,7 +17434,7 @@ type Mutation {
     input: setOrderFulfillmentOptionInput!
   ): setOrderFulfillmentOptionPayload
 
-  # Set payment method for an order. This mutation uses the new /payment endpoint.
+  # Set payment method for an order.
   setOrderPayment(input: setOrderPaymentInput!): setOrderPaymentPayload
 
   # Start an identity verification flow for a pending identity verification
