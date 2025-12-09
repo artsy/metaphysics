@@ -32,8 +32,7 @@ export const setOrderPaymentMutation = mutationWithClientMutationId<
     },
     paymentMethodId: {
       type: GraphQLString,
-      description:
-        "Saved payment method id (credit card or bank account). Required for bank accounts.",
+      description: "Saved payment method id (credit card or bank account).",
     },
     creditCardWalletType: {
       type: OrderCreditCardWalletTypeEnum,

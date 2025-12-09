@@ -29048,7 +29048,7 @@ input setOrderPaymentInput {
   # Payment method.
   paymentMethod: OrderPaymentMethodEnum!
 
-  # Saved payment method id (credit card or bank account). Required for bank accounts.
+  # Saved payment method id (credit card or bank account).
   paymentMethodId: String
 
   # Stripe confirmation token.
