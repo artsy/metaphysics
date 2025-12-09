@@ -117,6 +117,7 @@ export class SearchResolver {
       size,
       entities: this.args.entities,
       total_count: true,
+      ...(this.args.variant && { variant: this.args.variant }),
     }
 
     const isSearchExperimentEnabled = isFeatureFlagEnabled(
