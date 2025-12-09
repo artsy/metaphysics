@@ -430,4 +430,24 @@ describe("Search", () => {
       }
     )
   })
+
+  it("passes variant parameter to searchLoader", async () => {
+    const query = `
+      {
+        searchConnection(query: "David Bowie", first: 10, variant: "experiment") {
+          edges {
+            node {
+              __typename
+            }
+          }
+        }
+      }
+    `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+    await runQuery(query, context)
+
+    // Verify that searchLoader was called with the variant parameter
+    expect(context.searchLoader.mock.calls[0][0].variant).toBe("experiment")
+  })
 })

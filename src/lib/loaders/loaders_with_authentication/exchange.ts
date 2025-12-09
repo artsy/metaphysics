@@ -116,6 +116,17 @@ export const exchangeLoaders = (accessToken, opts) => {
     (id) => `stripe_confirmation_tokens/${id}`
   )
 
+  const partnerOrdersLoader = exchangeLoader(
+    (partnerId) => `partners/${partnerId}/orders`,
+    {},
+    { headers: true }
+  )
+
+  const partnerOrderLoader = exchangeLoader<
+    any,
+    { partnerId: string; orderId: string }
+  >(({ partnerId, orderId }) => `partners/${partnerId}/orders/${orderId}`)
+
   const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
@@ -165,5 +176,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOfferCreateLoader,
     meOfferUpdateLoader,
     stripeConfirmationTokenLoader,
+    partnerOrdersLoader,
+    partnerOrderLoader,
   }
 }

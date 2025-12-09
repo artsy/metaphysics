@@ -55,6 +55,10 @@ export const searchArgs: GraphQLFieldConfigArgumentMap = pageable({
     type: GraphQLInt,
     description: "If present, will be used for pagination instead of cursors.",
   },
+  variant: {
+    type: GraphQLString,
+    description: "Search variant for A/B testing (e.g. 'experiment').",
+  },
 })
 
 export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
