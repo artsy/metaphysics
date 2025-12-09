@@ -4,7 +4,9 @@ import gql from "lib/gql"
 describe("ReprocessArtworkImageMutation", () => {
   const mutation = gql`
     mutation {
-      reprocessArtworkImage(input: { artworkID: "artwork-id", imageID: "image-id" }) {
+      reprocessArtworkImage(
+        input: { artworkID: "artwork-id", imageID: "image-id" }
+      ) {
         artworkOrError {
           ... on ReprocessArtworkImageSuccess {
             success
@@ -60,4 +62,3 @@ describe("ReprocessArtworkImageMutation", () => {
     })
   })
 })
-
