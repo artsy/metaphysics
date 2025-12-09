@@ -73,6 +73,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOrderSetPaymentLoader = exchangeLoader(
+    (id) => `me/orders/${id}/payment`,
+    {},
+    {
+      method: "PUT",
+    }
+  )
+
   const meOrderUnsetPaymentMethodLoader = exchangeLoader(
     (id) => `me/orders/${id}/unset_payment_method`,
     {},
@@ -170,6 +178,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderUpdateLoader,
     meOrderUpdateShippingAddressLoader,
     meOrderSetFulfillmentOptionLoader,
+    meOrderSetPaymentLoader,
     meOrderSubmitLoader,
     meOrderUnsetFulfillmentOptionLoader,
     meOrderUnsetPaymentMethodLoader,
