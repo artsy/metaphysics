@@ -690,19 +690,20 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
-          partnerID: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: "Partner ID to fetch orders for",
-          },
         }),
         resolve: async (conversation, args, context, _info) => {
-          const { partnerID } = args
-          const buyerID = conversation.from_id
           const { partnerOrdersLoader } = context
           if (!partnerOrdersLoader) return null
 
-          if (!buyerID) {
-            // Conversation has no buyer ID, cannot proceed for a partner-authed query
+          const {
+            from_id: buyerID,
+            to_id: toID,
+            to_type: toType,
+          } = conversation
+          const partnerID = toType === "Partner" ? toID : null
+
+          if (!(buyerID && partnerID)) {
+            // Can only proceed if partner ID is from a Partner
             return null
           }
 
@@ -737,6 +738,9 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
 
 export default Conversation
 
+/**
+ * Given a loader for fetching orders, fetch orders for the first artwork in the conversation
+ */
 const fetchConversationOrders = async (
   fetchOrdersConnection,
   loader,
