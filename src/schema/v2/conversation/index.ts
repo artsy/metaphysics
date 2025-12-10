@@ -703,7 +703,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           const partnerID = toType === "Partner" ? toID : null
 
           if (!(buyerID && partnerID)) {
-            // Can only proceed if partner ID is from a Partner
+            // Can only proceed if we have a valid buyerID and partnerID
             return null
           }
 
