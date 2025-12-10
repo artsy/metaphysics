@@ -1,6 +1,5 @@
 import { GraphQLResolveInfo, visit } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { trim } from "lodash"
 import compact from "lodash/compact"
@@ -120,15 +119,7 @@ export class SearchResolver {
       ...(this.args.variant && { variant: this.args.variant }),
     }
 
-    const isSearchExperimentEnabled = isFeatureFlagEnabled(
-      "search-autosuggest-experiment",
-      { userId: this.context.userID }
-    )
-    const loader = isSearchExperimentEnabled
-      ? this.context.internalSearchLoader
-      : this.context.searchLoader
-
-    return loader(gravityArgs).then(({ body, headers }) => {
+    return this.context.searchLoader(gravityArgs).then(({ body, headers }) => {
       const totalCount = parseInt(headers["x-total-count"])
       const pageCursors = createPageCursors(pageOptions, totalCount)
       const totalPages = Math.ceil(totalCount / size)

@@ -105,8 +105,10 @@ describe("conversation orders connections", () => {
           items: [
             {
               item_type: "Artwork",
+              item_id: "artwork-1",
               properties: {
-                id: "artwork-1",
+                id: "artwork-bson_id",
+                _id: "artwork-1",
               },
             },
           ],
@@ -268,8 +270,10 @@ describe("conversation orders connections", () => {
           items: [
             {
               item_type: "Artwork",
+              item_id: "artwork-1",
               properties: {
-                id: "artwork-1",
+                id: "artwork-bson_id",
+                _id: "artwork-1",
               },
             },
           ],
@@ -308,8 +312,10 @@ describe("conversation orders connections", () => {
           items: [
             {
               item_type: "Artwork",
+              item_id: "artwork-1",
               properties: {
-                id: "artwork-1",
+                id: "artwork-bson_id",
+                _id: "artwork-1",
               },
             },
           ],

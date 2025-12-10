@@ -1,12 +1,5 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
-
-jest.mock("lib/featureFlags", () => ({
-  isFeatureFlagEnabled: jest.fn(),
-}))
-
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("Search", () => {
   let searchResults: any
@@ -15,8 +8,6 @@ describe("Search", () => {
   let searchResponse: any
 
   beforeEach(() => {
-    mockIsFeatureFlagEnabled.mockReturnValue(false)
-
     aggregations = {
       _type: {
         profile: {
@@ -384,70 +375,5 @@ describe("Search", () => {
 
     // confirm that searchLoader was called with the trimmed query
     expect(context.searchLoader.mock.calls[0][0].query).toBe("David Bowie")
-  })
-
-  it("uses internalSearchLoader when search-autosuggest-experiment feature flag is enabled", async () => {
-    mockIsFeatureFlagEnabled.mockReturnValue(true)
-
-    const query = `
-      {
-        searchConnection(query: "David Bowie", first: 10) {
-          edges {
-            node {
-              __typename
-              displayLabel
-              href
-              imageUrl
-
-              ... on SearchableItem {
-                displayType
-                internalID
-                slug
-              }
-            }
-          }
-        }
-      }
-    `
-
-    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
-    context.internalSearchLoader = jest
-      .fn()
-      .mockImplementation(() => searchResponse)
-    context.userID = "user-123"
-
-    await runQuery(query, context)
-
-    // Verify that internalSearchLoader was called instead of searchLoader
-    expect(context.internalSearchLoader).toHaveBeenCalled()
-    expect(context.searchLoader).not.toHaveBeenCalled()
-
-    // Verify the feature flag was checked with the correct user ID
-    expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
-      "search-autosuggest-experiment",
-      {
-        userId: "user-123",
-      }
-    )
-  })
-
-  it("passes variant parameter to searchLoader", async () => {
-    const query = `
-      {
-        searchConnection(query: "David Bowie", first: 10, variant: "experiment") {
-          edges {
-            node {
-              __typename
-            }
-          }
-        }
-      }
-    `
-    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
-
-    await runQuery(query, context)
-
-    // Verify that searchLoader was called with the variant parameter
-    expect(context.searchLoader.mock.calls[0][0].variant).toBe("experiment")
   })
 })

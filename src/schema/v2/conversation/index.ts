@@ -747,7 +747,8 @@ const fetchConversationOrders = async (
   const artworkIds: string[] = []
   for (const item of conversation.items) {
     if (item.item_type === "Artwork") {
-      artworkIds.push(item.properties.id)
+      // Item_id stores proper _id
+      artworkIds.push(item.item_id)
     }
   }
 
