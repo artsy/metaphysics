@@ -171,7 +171,7 @@ describe("conversation orders connections", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5) {
             edges {
               node {
                 internalID
@@ -309,6 +309,10 @@ describe("conversation orders connections", () => {
       conversationLoader: () => {
         return Promise.resolve({
           id: "conversation-1",
+          from_id: "buyer-1",
+          from_type: "User",
+          to_id: "partner-id",
+          to_type: "Partner",
           items: [
             {
               item_type: "Artwork",
@@ -327,7 +331,7 @@ describe("conversation orders connections", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5) {
             edges {
               node {
                 code
@@ -389,7 +393,7 @@ describe("conversation orders connections", () => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          partnerOrdersConnection(first: 5, partnerID: "partner-id") {
+          partnerOrdersConnection(first: 5) {
             edges {
               node {
                 internalID
@@ -410,5 +414,177 @@ describe("conversation orders connections", () => {
         buyer_id: "buyer-1",
       })
     )
+  })
+
+  it("works when from_type is Partner for partnerOrdersConnection", async () => {
+    const contextWithPartnerAsBuyer = {
+      conversationLoader: () => {
+        return Promise.resolve({
+          id: "conversation-1",
+          from_id: "partner-2",
+          from_type: "Partner",
+          to_id: "partner-id",
+          to_type: "Partner",
+          items: [
+            {
+              item_type: "Artwork",
+              item_id: "artwork-1",
+              properties: {
+                id: "artwork-bson_id",
+                _id: "artwork-1",
+              },
+            },
+          ],
+        })
+      },
+      partnerOrdersLoader: jest.fn((_partnerId, _params) => {
+        return Promise.resolve({
+          body: ordersResponse,
+          headers: {
+            "x-total-count": ordersResponse.length.toString(),
+          },
+        })
+      }),
+    }
+
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          partnerOrdersConnection(first: 5) {
+            edges {
+              node {
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithPartnerAsBuyer)
+
+    expect(data).toEqual({
+      conversation: {
+        partnerOrdersConnection: {
+          edges: [
+            {
+              node: {
+                code: "ORD001",
+              },
+            },
+            {
+              node: {
+                code: "ORD002",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    expect(contextWithPartnerAsBuyer.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-id",
+      expect.objectContaining({
+        buyer_id: "partner-2",
+      })
+    )
+  })
+
+  it("returns null when to_type is not Partner for partnerOrdersConnection", async () => {
+    const contextWithUserAsSeller = {
+      conversationLoader: () => {
+        return Promise.resolve({
+          id: "conversation-1",
+          from_id: "buyer-1",
+          from_type: "User",
+          to_id: "user-2",
+          to_type: "User",
+          items: [
+            {
+              item_type: "Artwork",
+              item_id: "artwork-1",
+              properties: {
+                id: "artwork-bson_id",
+                _id: "artwork-1",
+              },
+            },
+          ],
+        })
+      },
+      partnerOrdersLoader: context.partnerOrdersLoader,
+    }
+
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          partnerOrdersConnection(first: 5) {
+            edges {
+              node {
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithUserAsSeller)
+
+    expect(data).toEqual({
+      conversation: {
+        partnerOrdersConnection: null,
+      },
+    })
+
+    expect(contextWithUserAsSeller.partnerOrdersLoader).not.toHaveBeenCalled()
+  })
+
+  it("returns null when from_id is missing", async () => {
+    const contextWithNoFromId = {
+      conversationLoader: () => {
+        return Promise.resolve({
+          id: "conversation-1",
+          from_id: null,
+          from_type: "User",
+          to_id: "partner-id",
+          to_type: "Partner",
+          items: [
+            {
+              item_type: "Artwork",
+              item_id: "artwork-1",
+              properties: {
+                id: "artwork-bson_id",
+                _id: "artwork-1",
+              },
+            },
+          ],
+        })
+      },
+      partnerOrdersLoader: context.partnerOrdersLoader,
+    }
+
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          partnerOrdersConnection(first: 5) {
+            edges {
+              node {
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, contextWithNoFromId)
+
+    expect(data).toEqual({
+      conversation: {
+        partnerOrdersConnection: null,
+      },
+    })
+
+    expect(contextWithNoFromId.partnerOrdersLoader).not.toHaveBeenCalled()
   })
 })
