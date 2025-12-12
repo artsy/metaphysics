@@ -60,4 +60,66 @@ describe("UpdateShippingPresetMutation", () => {
       },
     })
   })
+
+  it("updates a shipping preset with priceCurrency", async () => {
+    const mutation = gql`
+      mutation {
+        updateShippingPreset(
+          input: {
+            id: "preset123"
+            priceCurrency: "EUR"
+            domesticShippingFeeCents: 2000
+          }
+        ) {
+          shippingPresetOrError {
+            __typename
+            ... on UpdateShippingPresetSuccess {
+              shippingPreset {
+                internalID
+                priceCurrency
+                domesticShippingFeeCents
+              }
+            }
+            ... on UpdateShippingPresetFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      updateShippingPresetLoader: jest.fn((_id, args) => {
+        expect(args.price_currency).toBe("EUR")
+        return Promise.resolve({
+          id: "preset123",
+          partner_id: "partner123",
+          name: "Updated Shipping",
+          domestic_shipping_fee_cents: 2000,
+          international_shipping_fee_cents: 5000,
+          pickup_available: true,
+          artsy_shipping_domestic: false,
+          artsy_shipping_international: false,
+          price_currency: "EUR",
+        })
+      }),
+    }
+
+    const updatedPreset = await runAuthenticatedQuery(mutation, context)
+
+    expect(updatedPreset).toEqual({
+      updateShippingPreset: {
+        shippingPresetOrError: {
+          __typename: "UpdateShippingPresetSuccess",
+          shippingPreset: {
+            internalID: "preset123",
+            priceCurrency: "EUR",
+            domesticShippingFeeCents: 2000,
+          },
+        },
+      },
+    })
+  })
 })
