@@ -17958,6 +17958,21 @@ type MyLocation {
   timezone: String
 }
 
+type NavigationItem {
+  children: [NavigationItem]
+
+  # A relative URL that starts with /
+  href: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  position: Int!
+  title: String!
+}
+
 type NavigationPill {
   # Link URL
   href: String!
@@ -17970,6 +17985,22 @@ type NavigationPill {
 
   # Link title
   title: String!
+}
+
+type NavigationVersion {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
+  # An ordered list of navigation items (e.g., By Price, By Seller, etc.)
+  items: [NavigationItem]
+}
+
+enum NavigationVersionState {
+  DRAFT
+  LIVE
 }
 
 input Near {
@@ -21533,6 +21564,12 @@ type Query {
     query: String!
   ): [Partner]
   me: Me
+
+  # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
+  navigationVersion(
+    groupID: String!
+    state: NavigationVersionState = LIVE
+  ): NavigationVersion
 
   # Fetches an object given its globally unique ID.
   node(
@@ -27941,6 +27978,12 @@ type Viewer {
     query: String!
   ): [Partner]
   me: Me
+
+  # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
+  navigationVersion(
+    groupID: String!
+    state: NavigationVersionState = LIVE
+  ): NavigationVersion
 
   # Fetches an object given its globally unique ID.
   node(
