@@ -957,6 +957,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    navigationGroupDraftLoader: gravityLoader(
+      (id) => `navigation_group/${id}/draft`,
+      {},
+      { headers: true }
+    ),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     pageLoader: gravityLoader((id) => `page/${id}`),

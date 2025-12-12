@@ -154,6 +154,9 @@ export default (opts) => {
     ),
     matchArtistsLoader: gravityLoader("match/artists", {}, { headers: true }),
     matchGenesLoader: gravityLoader("match/genes"),
+    navigationGroupLiveLoader: gravityLoader(
+      (id) => `navigation_group/${id}/live`
+    ),
     anonNotificationPreferencesLoader: gravityLoader(
       (authenticationToken) =>
         `notification_preferences/?authentication_token=${authenticationToken}`

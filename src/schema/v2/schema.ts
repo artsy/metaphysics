@@ -371,6 +371,7 @@ import { VideosConnection } from "./video/videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
 import { updateVideoMutation } from "./video/updateVideoMutation"
 import { deleteVideoMutation } from "./video/deleteVideoMutation"
+import { NavigationVersion } from "./Navigation/NavigationVersion"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -460,6 +461,7 @@ const rootFields = {
   matchConnection: MatchConnection,
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,
+  navigationVersion: NavigationVersion,
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
