@@ -23,6 +23,7 @@ interface UpdateShippingPresetMutationInputProps {
   pickupAvailable?: boolean
   artsyShippingDomestic?: boolean
   artsyShippingInternational?: boolean
+  priceCurrency?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -88,6 +89,10 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether Artsy handles international shipping.",
     },
+    priceCurrency: {
+      type: GraphQLString,
+      description: "Currency of the shipping fee",
+    },
   },
   outputFields: {
     shippingPresetOrError: {
@@ -113,6 +118,7 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
         pickup_available: args.pickupAvailable,
         artsy_shipping_domestic: args.artsyShippingDomestic,
         artsy_shipping_international: args.artsyShippingInternational,
+        price_currency: args.priceCurrency,
       },
       isUndefined
     )
