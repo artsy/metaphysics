@@ -12,7 +12,9 @@ describe("partner.shippingPresetsConnection", () => {
         name: "Standard Shipping",
         partner_id: "partner-id",
         domestic_shipping_fee_cents: 1000,
+        domestic_type: "flat_fee",
         international_shipping_fee_cents: 5000,
+        international_type: "flat_fee",
         pickup_available: true,
         artsy_shipping_domestic: false,
         artsy_shipping_international: false,
@@ -22,7 +24,9 @@ describe("partner.shippingPresetsConnection", () => {
         name: "Express Shipping",
         partner_id: "partner-id",
         domestic_shipping_fee_cents: 2500,
+        domestic_type: "artsy_shipping",
         international_shipping_fee_cents: 7500,
+        international_type: "artsy_shipping",
         pickup_available: false,
         artsy_shipping_domestic: true,
         artsy_shipping_international: true,
@@ -32,7 +36,9 @@ describe("partner.shippingPresetsConnection", () => {
         name: "Local Pickup Only",
         partner_id: "partner-id",
         domestic_shipping_fee_cents: null,
+        domestic_type: null,
         international_shipping_fee_cents: null,
+        international_type: "not_supported",
         pickup_available: true,
         artsy_shipping_domestic: false,
         artsy_shipping_international: false,
@@ -69,7 +75,9 @@ describe("partner.shippingPresetsConnection", () => {
                 name
                 partnerID
                 domesticShippingFeeCents
+                domesticType
                 internationalShippingFeeCents
+                internationalType
                 pickupAvailable
                 artsyShippingDomestic
                 artsyShippingInternational
@@ -91,7 +99,9 @@ describe("partner.shippingPresetsConnection", () => {
                 name: "Standard Shipping",
                 partnerID: "partner-id",
                 domesticShippingFeeCents: 1000,
+                domesticType: "FLAT_FEE",
                 internationalShippingFeeCents: 5000,
+                internationalType: "FLAT_FEE",
                 pickupAvailable: true,
                 artsyShippingDomestic: false,
                 artsyShippingInternational: false,
@@ -103,7 +113,9 @@ describe("partner.shippingPresetsConnection", () => {
                 name: "Express Shipping",
                 partnerID: "partner-id",
                 domesticShippingFeeCents: 2500,
+                domesticType: "ARTSY_SHIPPING",
                 internationalShippingFeeCents: 7500,
+                internationalType: "ARTSY_SHIPPING",
                 pickupAvailable: false,
                 artsyShippingDomestic: true,
                 artsyShippingInternational: true,
@@ -115,7 +127,9 @@ describe("partner.shippingPresetsConnection", () => {
                 name: "Local Pickup Only",
                 partnerID: "partner-id",
                 domesticShippingFeeCents: null,
+                domesticType: null,
                 internationalShippingFeeCents: null,
+                internationalType: "NOT_SUPPORTED",
                 pickupAvailable: true,
                 artsyShippingDomestic: false,
                 artsyShippingInternational: false,
