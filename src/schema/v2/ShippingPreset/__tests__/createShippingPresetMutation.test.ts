@@ -9,7 +9,9 @@ describe("CreateShippingPresetMutation", () => {
           partnerId: "partner123"
           name: "Standard Shipping"
           domesticShippingFeeCents: 1000
+          domesticType: FLAT_FEE
           internationalShippingFeeCents: 5000
+          internationalType: FLAT_FEE
           pickupAvailable: true
           artsyShippingDomestic: false
           artsyShippingInternational: false
@@ -22,7 +24,9 @@ describe("CreateShippingPresetMutation", () => {
               internalID
               name
               domesticShippingFeeCents
+              domesticType
               internationalShippingFeeCents
+              internationalType
               pickupAvailable
               artsyShippingDomestic
               artsyShippingInternational
@@ -46,7 +50,9 @@ describe("CreateShippingPresetMutation", () => {
           partner_id: "partner123",
           name: "Standard Shipping",
           domestic_shipping_fee_cents: 1000,
+          domestic_type: "flat_fee",
           international_shipping_fee_cents: 5000,
+          international_type: "flat_fee",
           pickup_available: true,
           artsy_shipping_domestic: false,
           artsy_shipping_international: false,
@@ -63,7 +69,9 @@ describe("CreateShippingPresetMutation", () => {
             internalID: "preset123",
             name: "Standard Shipping",
             domesticShippingFeeCents: 1000,
+            domesticType: "FLAT_FEE",
             internationalShippingFeeCents: 5000,
+            internationalType: "FLAT_FEE",
             pickupAvailable: true,
             artsyShippingDomestic: false,
             artsyShippingInternational: false,
