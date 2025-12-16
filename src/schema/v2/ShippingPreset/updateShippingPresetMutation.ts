@@ -12,14 +12,19 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import ShippingPreset from "schema/v2/shippingPreset"
+import ShippingPreset, {
+  DomesticTypeEnum,
+  InternationalTypeEnum,
+} from "schema/v2/shippingPreset"
 import { isUndefined, omitBy } from "lodash"
 
 interface UpdateShippingPresetMutationInputProps {
   id: string
   name?: string
   domesticShippingFeeCents?: number
+  domesticType?: string
   internationalShippingFeeCents?: number
+  internationalType?: string
   pickupAvailable?: boolean
   artsyShippingDomestic?: boolean
   artsyShippingInternational?: boolean
@@ -73,9 +78,17 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLInt,
       description: "Domestic shipping fee in cents.",
     },
+    domesticType: {
+      type: DomesticTypeEnum,
+      description: "The type of domestic shipping option.",
+    },
     internationalShippingFeeCents: {
       type: GraphQLInt,
       description: "International shipping fee in cents.",
+    },
+    internationalType: {
+      type: InternationalTypeEnum,
+      description: "The type of international shipping option.",
     },
     pickupAvailable: {
       type: GraphQLBoolean,
@@ -114,7 +127,9 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
       {
         name: args.name,
         domestic_shipping_fee_cents: args.domesticShippingFeeCents,
+        domestic_type: args.domesticType,
         international_shipping_fee_cents: args.internationalShippingFeeCents,
+        international_type: args.internationalType,
         pickup_available: args.pickupAvailable,
         artsy_shipping_domestic: args.artsyShippingDomestic,
         artsy_shipping_international: args.artsyShippingInternational,

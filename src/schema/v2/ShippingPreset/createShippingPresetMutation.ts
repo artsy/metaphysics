@@ -12,13 +12,18 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import ShippingPreset from "schema/v2/shippingPreset"
+import ShippingPreset, {
+  DomesticTypeEnum,
+  InternationalTypeEnum,
+} from "schema/v2/shippingPreset"
 
 interface CreateShippingPresetMutationInputProps {
   artsyShippingDomestic?: boolean
   artsyShippingInternational?: boolean
   domesticShippingFeeCents?: number
+  domesticType?: string
   internationalShippingFeeCents?: number
+  internationalType?: string
   name: string
   partnerId: string
   pickupAvailable?: boolean
@@ -72,9 +77,17 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLInt,
       description: "Domestic shipping fee in cents.",
     },
+    domesticType: {
+      type: DomesticTypeEnum,
+      description: "The type of domestic shipping option.",
+    },
     internationalShippingFeeCents: {
       type: GraphQLInt,
       description: "International shipping fee in cents.",
+    },
+    internationalType: {
+      type: InternationalTypeEnum,
+      description: "The type of international shipping option.",
     },
     pickupAvailable: {
       type: GraphQLBoolean,
@@ -113,7 +126,9 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       artsy_shipping_domestic?: boolean
       artsy_shipping_international?: boolean
       domestic_shipping_fee_cents?: number
+      domestic_type?: string
       international_shipping_fee_cents?: number
+      international_type?: string
       name: string
       partner_id: string
       pickup_available?: boolean
@@ -122,7 +137,9 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       artsy_shipping_domestic: args.artsyShippingDomestic,
       artsy_shipping_international: args.artsyShippingInternational,
       domestic_shipping_fee_cents: args.domesticShippingFeeCents,
+      domestic_type: args.domesticType,
       international_shipping_fee_cents: args.internationalShippingFeeCents,
+      international_type: args.internationalType,
       name: args.name,
       partner_id: partnerId,
       pickup_available: args.pickupAvailable,

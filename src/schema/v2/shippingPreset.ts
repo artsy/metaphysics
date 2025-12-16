@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -13,6 +14,48 @@ import {
 } from "schema/v2/object_identification"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { date } from "./fields/date"
+
+export const DomesticTypeEnum = new GraphQLEnumType({
+  name: "DomesticType",
+  description: "The type of domestic shipping option",
+  values: {
+    ARTSY_SHIPPING: {
+      value: "artsy_shipping",
+      description: "Artsy handles domestic shipping",
+    },
+    FLAT_FEE: {
+      value: "flat_fee",
+      description: "Flat fee for domestic shipping",
+    },
+    FREE_SHIPPING: {
+      value: "free_shipping",
+      description: "Free domestic shipping",
+    },
+  },
+})
+
+export const InternationalTypeEnum = new GraphQLEnumType({
+  name: "InternationalType",
+  description: "The type of international shipping option",
+  values: {
+    ARTSY_SHIPPING: {
+      value: "artsy_shipping",
+      description: "Artsy handles international shipping",
+    },
+    FLAT_FEE: {
+      value: "flat_fee",
+      description: "Flat fee for international shipping",
+    },
+    FREE_SHIPPING: {
+      value: "free_shipping",
+      description: "Free international shipping",
+    },
+    NOT_SUPPORTED: {
+      value: "not_supported",
+      description: "International shipping is not supported",
+    },
+  },
+})
 
 export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShippingPreset",
@@ -60,6 +103,16 @@ export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "Currency of the shipping fee",
       resolve: ({ price_currency }) => price_currency,
+    },
+    domesticType: {
+      type: DomesticTypeEnum,
+      description: "The type of domestic shipping option",
+      resolve: ({ domestic_type }) => domestic_type,
+    },
+    internationalType: {
+      type: InternationalTypeEnum,
+      description: "The type of international shipping option",
+      resolve: ({ international_type }) => international_type,
     },
     createdAt: date(({ created_at }) => created_at),
   }),

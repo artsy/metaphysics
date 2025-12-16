@@ -9,6 +9,8 @@ describe("UpdateShippingPresetMutation", () => {
           id: "preset123"
           name: "Updated Shipping"
           domesticShippingFeeCents: 1500
+          domesticType: ARTSY_SHIPPING
+          internationalType: NOT_SUPPORTED
         }
       ) {
         shippingPresetOrError {
@@ -18,6 +20,8 @@ describe("UpdateShippingPresetMutation", () => {
               internalID
               name
               domesticShippingFeeCents
+              domesticType
+              internationalType
             }
           }
           ... on UpdateShippingPresetFailure {
@@ -38,7 +42,9 @@ describe("UpdateShippingPresetMutation", () => {
           partner_id: "partner123",
           name: "Updated Shipping",
           domestic_shipping_fee_cents: 1500,
+          domestic_type: "artsy_shipping",
           international_shipping_fee_cents: 5000,
+          international_type: "not_supported",
           pickup_available: true,
           artsy_shipping_domestic: false,
           artsy_shipping_international: false,
@@ -55,6 +61,8 @@ describe("UpdateShippingPresetMutation", () => {
             internalID: "preset123",
             name: "Updated Shipping",
             domesticShippingFeeCents: 1500,
+            domesticType: "ARTSY_SHIPPING",
+            internationalType: "NOT_SUPPORTED",
           },
         },
       },
@@ -69,6 +77,7 @@ describe("UpdateShippingPresetMutation", () => {
             id: "preset123"
             priceCurrency: "EUR"
             domesticShippingFeeCents: 2000
+            domesticType: FREE_SHIPPING
           }
         ) {
           shippingPresetOrError {
@@ -78,6 +87,7 @@ describe("UpdateShippingPresetMutation", () => {
                 internalID
                 priceCurrency
                 domesticShippingFeeCents
+                domesticType
               }
             }
             ... on UpdateShippingPresetFailure {
@@ -93,11 +103,13 @@ describe("UpdateShippingPresetMutation", () => {
     const context = {
       updateShippingPresetLoader: jest.fn((_id, args) => {
         expect(args.price_currency).toBe("EUR")
+        expect(args.domestic_type).toBe("free_shipping")
         return Promise.resolve({
           id: "preset123",
           partner_id: "partner123",
           name: "Updated Shipping",
           domestic_shipping_fee_cents: 2000,
+          domestic_type: "free_shipping",
           international_shipping_fee_cents: 5000,
           pickup_available: true,
           artsy_shipping_domestic: false,
@@ -117,6 +129,7 @@ describe("UpdateShippingPresetMutation", () => {
             internalID: "preset123",
             priceCurrency: "EUR",
             domesticShippingFeeCents: 2000,
+            domesticType: "FREE_SHIPPING",
           },
         },
       },
