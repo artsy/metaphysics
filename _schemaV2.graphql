@@ -17958,6 +17958,30 @@ type MyLocation {
   timezone: String
 }
 
+type NavigationGroup {
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  draftVersion: NavigationVersion
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  liveVersion: NavigationVersion
+  name: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+}
+
 type NavigationItem {
   children: [NavigationItem]
 
@@ -21564,6 +21588,11 @@ type Query {
     query: String!
   ): [Partner]
   me: Me
+  navigationGroup(
+    # The ID of the navigation group
+    id: String!
+  ): NavigationGroup
+  navigationGroups: [NavigationGroup]
 
   # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
   navigationVersion(
@@ -27978,6 +28007,11 @@ type Viewer {
     query: String!
   ): [Partner]
   me: Me
+  navigationGroup(
+    # The ID of the navigation group
+    id: String!
+  ): NavigationGroup
+  navigationGroups: [NavigationGroup]
 
   # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
   navigationVersion(

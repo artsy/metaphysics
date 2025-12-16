@@ -10,7 +10,7 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { NavigationItemType } from "./NavigationItem"
 
-const NavigationVersionType = new GraphQLObjectType({
+export const NavigationVersionType = new GraphQLObjectType({
   name: "NavigationVersion",
   fields: {
     ...InternalIDFields,
