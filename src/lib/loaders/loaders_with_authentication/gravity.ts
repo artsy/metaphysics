@@ -372,6 +372,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    updateNavigationItemLoader: gravityLoader(
+      (id) => `navigation_item/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }

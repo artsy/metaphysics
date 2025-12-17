@@ -17646,6 +17646,9 @@ type Mutation {
 
   # Update the current logged in user.
   updateMyUserProfile(input: UpdateMyProfileInput!): UpdateMyProfilePayload
+  updateNavigationItem(
+    input: UpdateNavigationItemInput!
+  ): UpdateNavigationItemPayload
 
   # Update notification preferences.
   updateNotificationPreferences(
@@ -25586,6 +25589,42 @@ type UpdateMyProfilePayload {
   me: Me
   user: User
   userOrError: UpdateMyProfileMutation
+}
+
+type UpdateNavigationItemFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateNavigationItemInput {
+  clientMutationId: String
+
+  # A relative URL that starts with /
+  href: String
+
+  # The ID of the navigation item
+  id: String!
+
+  # The ID of the parent navigation item
+  parent_id: String
+
+  # The position of the navigation item
+  position: Int
+
+  # The title of the navigation item
+  title: String
+}
+
+type UpdateNavigationItemPayload {
+  clientMutationId: String
+  navigationItemOrError: UpdateNavigationItemResponseOrError
+}
+
+union UpdateNavigationItemResponseOrError =
+    UpdateNavigationItemFailure
+  | UpdateNavigationItemSuccess
+
+type UpdateNavigationItemSuccess {
+  navigationItem: NavigationItem
 }
 
 type UpdateOrderedSetFailure {
