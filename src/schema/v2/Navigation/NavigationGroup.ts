@@ -63,8 +63,7 @@ export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
       return null
     }
 
-    const { body } = await navigationGroupLoader(id)
-    return body
+    return await navigationGroupLoader(id)
   },
 }
 
@@ -75,7 +74,6 @@ export const navigationGroups: GraphQLFieldConfig<void, ResolverContext> = {
       return []
     }
 
-    const { body } = await navigationGroupsLoader()
-    return body
+    return await navigationGroupsLoader()
   },
 }

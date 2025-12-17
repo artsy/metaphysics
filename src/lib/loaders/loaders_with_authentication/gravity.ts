@@ -357,6 +357,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createNavigationDraftLoader: gravityLoader(
+      (groupID) => `navigation_group/${groupID}/draft`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }
@@ -957,20 +962,10 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    navigationGroupLoader: gravityLoader(
-      (id) => `navigation_group/${id}`,
-      {},
-      { headers: true }
-    ),
-    navigationGroupsLoader: gravityLoader(
-      "/navigation_groups",
-      {},
-      { headers: true }
-    ),
+    navigationGroupLoader: gravityLoader((id) => `navigation_group/${id}`),
+    navigationGroupsLoader: gravityLoader("/navigation_groups"),
     navigationGroupDraftLoader: gravityLoader(
-      (id) => `navigation_group/${id}/draft`,
-      {},
-      { headers: true }
+      (id) => `navigation_group/${id}/draft`
     ),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),

@@ -22,14 +22,12 @@ describe("navigationGroup", () => {
 
     const context = {
       navigationGroupLoader: jest.fn().mockResolvedValue({
-        body: {
-          id: "artists",
-          name: "Artists",
-          live_version_id: "live-version-id",
-          draft_version_id: "draft-version-id",
-          created_at: "2025-01-01T00:00:00Z",
-          updated_at: "2025-01-01T00:00:00Z",
-        },
+        id: "artists",
+        name: "Artists",
+        live_version_id: "live-version-id",
+        draft_version_id: "draft-version-id",
+        created_at: "2025-01-01T00:00:00Z",
+        updated_at: "2025-01-01T00:00:00Z",
       }),
       navigationGroupLiveLoader: jest.fn().mockResolvedValue({
         id: "live-version-id",
@@ -71,19 +69,17 @@ describe("navigationGroups", () => {
     `
 
     const context = {
-      navigationGroupsLoader: jest.fn().mockResolvedValue({
-        body: [
-          {
-            id: "whats-new",
-          },
-          {
-            id: "artists",
-          },
-          {
-            id: "artworks",
-          },
-        ],
-      }),
+      navigationGroupsLoader: jest.fn().mockResolvedValue([
+        {
+          id: "whats-new",
+        },
+        {
+          id: "artists",
+        },
+        {
+          id: "artworks",
+        },
+      ]),
     } as any
 
     const response = await runQuery(query, context)

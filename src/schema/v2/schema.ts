@@ -373,6 +373,7 @@ import { updateVideoMutation } from "./video/updateVideoMutation"
 import { deleteVideoMutation } from "./video/deleteVideoMutation"
 import { NavigationVersion } from "./Navigation/NavigationVersion"
 import { navigationGroup, navigationGroups } from "./Navigation/NavigationGroup"
+import { createNavigationDraftMutation } from "./Navigation/mutations/createNavigationDraftMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -576,6 +577,7 @@ export default new GraphQLSchema({
       createHeroUnit: createHeroUnitMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
+      createNavigationDraft: createNavigationDraftMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,

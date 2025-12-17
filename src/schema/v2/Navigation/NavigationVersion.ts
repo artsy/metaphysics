@@ -51,6 +51,6 @@ export const NavigationVersion: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (!loader) return null
 
-    return loader(groupID)
+    return await loader(groupID)
   },
 }
