@@ -362,6 +362,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    publishNavigationDraftLoader: gravityLoader(
+      (groupID) => `navigation_group/${groupID}/publish`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }

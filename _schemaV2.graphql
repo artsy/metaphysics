@@ -17366,6 +17366,9 @@ type Mutation {
   myCollectionUpdateArtwork(
     input: MyCollectionUpdateArtworkInput!
   ): MyCollectionUpdateArtworkPayload
+  publishNavigationDraft(
+    input: PublishNavigationDraftInput!
+  ): PublishNavigationDraftPayload
   publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
   recordArtworkView(
     # Parameters for RecordArtworkView
@@ -20518,6 +20521,30 @@ type ProfileEdge {
 }
 
 union ProfileOwnerType = Fair | FairOrganizer | Partner
+
+type PublishNavigationDraftFailure {
+  mutationError: GravityMutationError
+}
+
+input PublishNavigationDraftInput {
+  clientMutationId: String
+
+  # The ID of the navigation group
+  groupID: String!
+}
+
+type PublishNavigationDraftPayload {
+  clientMutationId: String
+  navigationVersionOrError: PublishNavigationDraftResponseOrError
+}
+
+union PublishNavigationDraftResponseOrError =
+    PublishNavigationDraftFailure
+  | PublishNavigationDraftSuccess
+
+type PublishNavigationDraftSuccess {
+  navigationVersion: NavigationVersion
+}
 
 input PublishViewingRoomInput {
   clientMutationId: String

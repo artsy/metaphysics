@@ -374,6 +374,7 @@ import { deleteVideoMutation } from "./video/deleteVideoMutation"
 import { NavigationVersion } from "./Navigation/NavigationVersion"
 import { navigationGroup, navigationGroups } from "./Navigation/NavigationGroup"
 import { createNavigationDraftMutation } from "./Navigation/mutations/createNavigationDraftMutation"
+import { publishNavigationDraftMutation } from "./Navigation/mutations/publishNavigationDraftMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -660,6 +661,7 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
