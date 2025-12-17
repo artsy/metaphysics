@@ -13,6 +13,7 @@ describe("Author", () => {
     image_url: "https://example.com/author.jpg",
     twitter_handle: "@janedoe",
     instagram_handle: "@janedoe_art",
+    website: "https://janedoe.com",
     role: "Editor",
   }
 
@@ -171,6 +172,20 @@ describe("Author", () => {
     })
   })
 
+  it("returns website", () => {
+    const query = gql`
+      {
+        author(id: "jane-doe") {
+          website
+        }
+      }
+    `
+
+    return runQuery(query, context).then((data) => {
+      expect(data.author.website).toBe("https://janedoe.com")
+    })
+  })
+
   it("returns role", () => {
     const query = gql`
       {
@@ -257,6 +272,26 @@ describe("Author", () => {
 
     return runQuery(query, context).then((data) => {
       expect(data.author.image).toBeNull()
+    })
+  })
+
+  it("handles author without website", () => {
+    const authorWithoutWebsite = {
+      ...authorData,
+      website: null,
+    }
+    context.authorLoader.mockResolvedValue(authorWithoutWebsite)
+
+    const query = gql`
+      {
+        author(id: "jane-doe") {
+          website
+        }
+      }
+    `
+
+    return runQuery(query, context).then((data) => {
+      expect(data.author.website).toBeNull()
     })
   })
 })
