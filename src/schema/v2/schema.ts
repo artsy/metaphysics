@@ -375,6 +375,7 @@ import { NavigationVersion } from "./Navigation/NavigationVersion"
 import { navigationGroup, navigationGroups } from "./Navigation/NavigationGroup"
 import { createNavigationDraftMutation } from "./Navigation/mutations/createNavigationDraftMutation"
 import { publishNavigationDraftMutation } from "./Navigation/mutations/publishNavigationDraftMutation"
+import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -579,6 +580,7 @@ export default new GraphQLSchema({
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
       createNavigationDraft: createNavigationDraftMutation,
+      createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
