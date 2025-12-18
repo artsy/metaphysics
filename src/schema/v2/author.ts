@@ -57,6 +57,10 @@ export const AuthorType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ instagram_handle }) => instagram_handle,
       },
+      website: {
+        type: GraphQLString,
+        resolve: ({ website }) => website,
+      },
       socials: {
         type: new GraphQLObjectType({
           name: "AuthorSocials",
