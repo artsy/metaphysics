@@ -377,6 +377,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deleteNavigationItemLoader: gravityLoader(
+      (id) => `navigation_item/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }

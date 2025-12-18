@@ -377,6 +377,7 @@ import { createNavigationDraftMutation } from "./Navigation/mutations/createNavi
 import { publishNavigationDraftMutation } from "./Navigation/mutations/publishNavigationDraftMutation"
 import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
 import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
+import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -609,6 +610,7 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,

@@ -11395,6 +11395,30 @@ type DeleteFeaturedLinkSuccess {
   featuredLink: FeaturedLink
 }
 
+type DeleteNavigationItemFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteNavigationItemInput {
+  clientMutationId: String
+
+  # The ID of the navigation item
+  id: String!
+}
+
+type DeleteNavigationItemPayload {
+  clientMutationId: String
+  navigationItemOrError: DeleteNavigationItemResponseOrError
+}
+
+union DeleteNavigationItemResponseOrError =
+    DeleteNavigationItemFailure
+  | DeleteNavigationItemSuccess
+
+type DeleteNavigationItemSuccess {
+  navigationItem: NavigationItem
+}
+
 type DeletePageFailure {
   mutationError: GravityMutationError
 }
@@ -17237,6 +17261,9 @@ type Mutation {
 
   # Remove the user icon
   deleteMyUserProfileIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
+  deleteNavigationItem(
+    input: DeleteNavigationItemInput!
+  ): DeleteNavigationItemPayload
 
   # deletes an ordered set.
   deleteOrderedSet(
