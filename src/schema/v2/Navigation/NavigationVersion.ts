@@ -9,16 +9,20 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { NavigationItemType } from "./NavigationItem"
+import { date } from "../fields/date"
 
 export const NavigationVersionType = new GraphQLObjectType({
   name: "NavigationVersion",
   fields: {
     ...InternalIDFields,
+    createdAt: date(),
     items: {
       type: new GraphQLList(NavigationItemType),
       description:
         "An ordered list of navigation items (e.g., By Price, By Seller, etc.)",
     },
+    publishedAt: date(),
+    updatedAt: date(),
   },
 })
 

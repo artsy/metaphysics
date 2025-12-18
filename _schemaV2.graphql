@@ -18111,6 +18111,13 @@ type NavigationPill {
 }
 
 type NavigationVersion {
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
   # A globally unique ID.
   id: ID!
 
@@ -18119,6 +18126,18 @@ type NavigationVersion {
 
   # An ordered list of navigation items (e.g., By Price, By Seller, etc.)
   items: [NavigationItem]
+  publishedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 }
 
 enum NavigationVersionState {
