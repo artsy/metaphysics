@@ -16,8 +16,6 @@ describe("partner.shippingPresetsConnection", () => {
         international_shipping_fee_cents: 5000,
         international_type: "flat_fee",
         pickup_available: true,
-        artsy_shipping_domestic: false,
-        artsy_shipping_international: false,
       },
       {
         id: "shipping-preset-2",
@@ -28,8 +26,6 @@ describe("partner.shippingPresetsConnection", () => {
         international_shipping_fee_cents: 7500,
         international_type: "artsy_shipping",
         pickup_available: false,
-        artsy_shipping_domestic: true,
-        artsy_shipping_international: true,
       },
       {
         id: "shipping-preset-3",
@@ -40,8 +36,6 @@ describe("partner.shippingPresetsConnection", () => {
         international_shipping_fee_cents: null,
         international_type: "not_supported",
         pickup_available: true,
-        artsy_shipping_domestic: false,
-        artsy_shipping_international: false,
       },
     ]
 
@@ -79,8 +73,6 @@ describe("partner.shippingPresetsConnection", () => {
                 internationalShippingFeeCents
                 internationalType
                 pickupAvailable
-                artsyShippingDomestic
-                artsyShippingInternational
               }
             }
           }
@@ -103,8 +95,6 @@ describe("partner.shippingPresetsConnection", () => {
                 internationalShippingFeeCents: 5000,
                 internationalType: "FLAT_FEE",
                 pickupAvailable: true,
-                artsyShippingDomestic: false,
-                artsyShippingInternational: false,
               },
             },
             {
@@ -117,8 +107,6 @@ describe("partner.shippingPresetsConnection", () => {
                 internationalShippingFeeCents: 7500,
                 internationalType: "ARTSY_SHIPPING",
                 pickupAvailable: false,
-                artsyShippingDomestic: true,
-                artsyShippingInternational: true,
               },
             },
             {
@@ -131,8 +119,6 @@ describe("partner.shippingPresetsConnection", () => {
                 internationalShippingFeeCents: null,
                 internationalType: "NOT_SUPPORTED",
                 pickupAvailable: true,
-                artsyShippingDomestic: false,
-                artsyShippingInternational: false,
               },
             },
           ],

@@ -18,8 +18,6 @@ import ShippingPreset, {
 } from "schema/v2/shippingPreset"
 
 interface CreateShippingPresetMutationInputProps {
-  artsyShippingDomestic?: boolean
-  artsyShippingInternational?: boolean
   domesticShippingFeeCents?: number
   domesticType?: string
   internationalShippingFeeCents?: number
@@ -93,14 +91,6 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether pickup is available.",
     },
-    artsyShippingDomestic: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles domestic shipping.",
-    },
-    artsyShippingInternational: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles international shipping.",
-    },
     priceCurrency: {
       type: GraphQLString,
       description: "Currency of the shipping fee",
@@ -123,8 +113,6 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
     }
 
     const gravityArgs: {
-      artsy_shipping_domestic?: boolean
-      artsy_shipping_international?: boolean
       domestic_shipping_fee_cents?: number
       domestic_type?: string
       international_shipping_fee_cents?: number
@@ -134,8 +122,6 @@ export const createShippingPresetMutation = mutationWithClientMutationId<
       pickup_available?: boolean
       price_currency?: string
     } = {
-      artsy_shipping_domestic: args.artsyShippingDomestic,
-      artsy_shipping_international: args.artsyShippingInternational,
       domestic_shipping_fee_cents: args.domesticShippingFeeCents,
       domestic_type: args.domesticType,
       international_shipping_fee_cents: args.internationalShippingFeeCents,

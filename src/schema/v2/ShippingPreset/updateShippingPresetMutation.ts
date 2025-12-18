@@ -26,8 +26,6 @@ interface UpdateShippingPresetMutationInputProps {
   internationalShippingFeeCents?: number
   internationalType?: string
   pickupAvailable?: boolean
-  artsyShippingDomestic?: boolean
-  artsyShippingInternational?: boolean
   priceCurrency?: string
 }
 
@@ -94,14 +92,6 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Whether pickup is available.",
     },
-    artsyShippingDomestic: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles domestic shipping.",
-    },
-    artsyShippingInternational: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles international shipping.",
-    },
     priceCurrency: {
       type: GraphQLString,
       description: "Currency of the shipping fee",
@@ -131,8 +121,6 @@ export const updateShippingPresetMutation = mutationWithClientMutationId<
         international_shipping_fee_cents: args.internationalShippingFeeCents,
         international_type: args.internationalType,
         pickup_available: args.pickupAvailable,
-        artsy_shipping_domestic: args.artsyShippingDomestic,
-        artsy_shipping_international: args.artsyShippingInternational,
         price_currency: args.priceCurrency,
       },
       isUndefined

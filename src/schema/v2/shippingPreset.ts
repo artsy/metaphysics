@@ -88,17 +88,6 @@ export const ShippingPresetType = new GraphQLObjectType<any, ResolverContext>({
       description: "Whether pickup is available",
       resolve: ({ pickup_available }) => pickup_available,
     },
-    artsyShippingDomestic: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles domestic shipping",
-      resolve: ({ artsy_shipping_domestic }) => artsy_shipping_domestic,
-    },
-    artsyShippingInternational: {
-      type: GraphQLBoolean,
-      description: "Whether Artsy handles international shipping",
-      resolve: ({ artsy_shipping_international }) =>
-        artsy_shipping_international,
-    },
     priceCurrency: {
       type: GraphQLString,
       description: "Currency of the shipping fee",

@@ -13,8 +13,6 @@ describe("CreateShippingPresetMutation", () => {
           internationalShippingFeeCents: 5000
           internationalType: FLAT_FEE
           pickupAvailable: true
-          artsyShippingDomestic: false
-          artsyShippingInternational: false
         }
       ) {
         shippingPresetOrError {
@@ -28,8 +26,6 @@ describe("CreateShippingPresetMutation", () => {
               internationalShippingFeeCents
               internationalType
               pickupAvailable
-              artsyShippingDomestic
-              artsyShippingInternational
             }
           }
           ... on CreateShippingPresetFailure {
@@ -54,8 +50,6 @@ describe("CreateShippingPresetMutation", () => {
           international_shipping_fee_cents: 5000,
           international_type: "flat_fee",
           pickup_available: true,
-          artsy_shipping_domestic: false,
-          artsy_shipping_international: false,
         }),
     }
 
@@ -73,8 +67,6 @@ describe("CreateShippingPresetMutation", () => {
             internationalShippingFeeCents: 5000,
             internationalType: "FLAT_FEE",
             pickupAvailable: true,
-            artsyShippingDomestic: false,
-            artsyShippingInternational: false,
           },
         },
       },
