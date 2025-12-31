@@ -19,6 +19,7 @@ import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
+import { DisplaySellerTexts } from "./DisplaySellerTexts"
 import { PartnerType } from "schema/v2/partner/partner"
 import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import {
@@ -281,6 +282,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     },
     deliveryInfo: DeliveryInfo,
     displayTexts: DisplayTexts,
+    displaySellerTexts: DisplaySellerTexts,
     fulfillmentDetails: {
       type: FulfillmentDetailsType,
       description: "Buyer fulfillment details for order",
