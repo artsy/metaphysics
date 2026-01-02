@@ -11,7 +11,6 @@ import {
 } from "schema/v2/fields/money"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 import { OfferJSON } from "./OfferType"
-import currencyCodes from "lib/currency_codes.json"
 
 const COPY = {
   subtotal: {
@@ -74,35 +73,6 @@ type ResolvedPriceLineData = {
   amountFallbackText: string | null
 }
 
-/**
- * Helper function to resolve money with currency-appropriate formatting.
- * Zero-decimal currencies (JPY, KRW, etc.) use whole numbers.
- * Standard currencies (USD, EUR, GBP, etc.) always show 2 decimal places.
- */
-const resolveMoney = (
-  amount: number,
-  currencyCode: string,
-  args,
-  context,
-  info
-) => {
-  const subunitToUnit =
-    currencyCodes[currencyCode?.toLowerCase()]?.subunit_to_unit ?? 100
-  const format = subunitToUnit === 1 ? "0,0" : "0,0.00"
-
-  return resolveMinorAndCurrencyFieldsToMoney(
-    {
-      minor: amount,
-      currencyCode,
-      format,
-      exact: true,
-    },
-    args,
-    context,
-    info
-  )
-}
-
 export const resolveOrderPricingBreakdownLines = (
   order: OrderJSON,
   args,
@@ -118,6 +88,20 @@ export const resolveOrderPricingBreakdownLines = (
     source,
   } = order
 
+  const resolveMoney = (amount: number) => {
+    return resolveMinorAndCurrencyFieldsToMoney(
+      {
+        minor: amount,
+        currencyCode,
+        format: "0,0[.]00",
+        exact: true,
+      },
+      args,
+      context,
+      info
+    )
+  }
+
   // Subtotal line uses order.items_total_cents
   const subtotalLine: ResolvedPriceLineData = {
     __typename: "SubtotalLine",
@@ -125,10 +109,7 @@ export const resolveOrderPricingBreakdownLines = (
       source === "partner_offer"
         ? COPY.subtotal.displayName.galleryOffer
         : COPY.subtotal.displayName.price,
-    amount:
-      itemsTotalCents != null
-        ? resolveMoney(itemsTotalCents, currencyCode, args, context, info)
-        : null,
+    amount: itemsTotalCents != null ? resolveMoney(itemsTotalCents) : null,
     amountFallbackText: null,
   }
 
@@ -169,9 +150,7 @@ export const resolveOrderPricingBreakdownLines = (
   const shippingLine: ResolvedPriceLineData = {
     __typename: "ShippingLine",
     displayName: shippingDisplayName,
-    amount: hasShippingTotal
-      ? resolveMoney(shippingTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
     amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
   }
 
@@ -180,9 +159,7 @@ export const resolveOrderPricingBreakdownLines = (
   const taxLine: ResolvedPriceLineData = {
     __typename: "TaxLine",
     displayName: COPY.tax.displayName,
-    amount: hasTaxTotal
-      ? resolveMoney(taxTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
     amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
   }
 
@@ -191,9 +168,7 @@ export const resolveOrderPricingBreakdownLines = (
   const totalLine: ResolvedPriceLineData = {
     __typename: "TotalLine",
     displayName: COPY.total.displayName,
-    amount: hasBuyerTotal
-      ? resolveMoney(buyerTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
     amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
   }
 
@@ -215,6 +190,20 @@ export const resolveOfferPricingBreakdownLines = (
     from_participant: fromParticipant,
   } = offer
 
+  const resolveMoney = (amount: number) => {
+    return resolveMinorAndCurrencyFieldsToMoney(
+      {
+        minor: amount,
+        currencyCode,
+        format: "0,0[.]00",
+        exact: true,
+      },
+      args,
+      context,
+      info
+    )
+  }
+
   // Subtotal line uses offer.amount_cents
   // Display name depends on who made the offer
   const subtotalDisplayName =
@@ -225,10 +214,7 @@ export const resolveOfferPricingBreakdownLines = (
   const subtotalLine: ResolvedPriceLineData = {
     __typename: "SubtotalLine",
     displayName: subtotalDisplayName,
-    amount:
-      amountCents != null
-        ? resolveMoney(amountCents, currencyCode, args, context, info)
-        : null,
+    amount: amountCents != null ? resolveMoney(amountCents) : null,
     amountFallbackText: null,
   }
 
@@ -237,9 +223,7 @@ export const resolveOfferPricingBreakdownLines = (
   const shippingLine: ResolvedPriceLineData = {
     __typename: "ShippingLine",
     displayName: COPY.shipping.displayName.fallback,
-    amount: hasShippingTotal
-      ? resolveMoney(shippingTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
     amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
   }
 
@@ -248,9 +232,7 @@ export const resolveOfferPricingBreakdownLines = (
   const taxLine: ResolvedPriceLineData = {
     __typename: "TaxLine",
     displayName: COPY.tax.displayName,
-    amount: hasTaxTotal
-      ? resolveMoney(taxTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
     amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
   }
 
@@ -259,9 +241,7 @@ export const resolveOfferPricingBreakdownLines = (
   const totalLine: ResolvedPriceLineData = {
     __typename: "TotalLine",
     displayName: COPY.total.displayName,
-    amount: hasBuyerTotal
-      ? resolveMoney(buyerTotalCents, currencyCode, args, context, info)
-      : null,
+    amount: hasBuyerTotal ? resolveMoney(buyerTotalCents) : null,
     amountFallbackText: hasBuyerTotal ? null : COPY.total.amountFallbackText,
   }
 
