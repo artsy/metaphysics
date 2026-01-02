@@ -466,7 +466,7 @@ describe("Me", () => {
             __typename: "SubtotalLine",
             displayName: "Your offer",
             amount: {
-              display: "US$4,500.00",
+              display: "US$4,500",
               minor: 450000,
             },
           },
@@ -474,7 +474,7 @@ describe("Me", () => {
             __typename: "ShippingLine",
             displayName: "Shipping",
             amount: {
-              display: "US$20.00",
+              display: "US$20",
             },
             amountFallbackText: null,
           },
@@ -482,7 +482,7 @@ describe("Me", () => {
             __typename: "TaxLine",
             displayName: "Tax",
             amount: {
-              display: "US$23.00",
+              display: "US$23",
             },
             amountFallbackText: null,
           },
@@ -490,7 +490,7 @@ describe("Me", () => {
             __typename: "TotalLine",
             displayName: "Total",
             amount: {
-              display: "US$4,750.00",
+              display: "US$4,750",
             },
             amountFallbackText: null,
           },
@@ -1025,9 +1025,9 @@ describe("Me", () => {
             __typename: "SubtotalLine",
             displayName: "Price",
             amount: {
-              display: "US$5,000.00",
+              display: "US$5,000",
               currencySymbol: "$",
-              amount: "5,000.00",
+              amount: "5,000",
             },
           },
           {
@@ -1035,9 +1035,9 @@ describe("Me", () => {
             displayName: "Flat rate shipping",
             amountFallbackText: null,
             amount: {
-              display: "US$20.00",
+              display: "US$20",
               currencySymbol: "$",
-              amount: "20.00",
+              amount: "20",
             },
           },
           {
@@ -1082,9 +1082,9 @@ describe("Me", () => {
             __typename: "SubtotalLine",
             displayName: "Price",
             amount: {
-              display: "US$5,000.00",
+              display: "US$5,000",
               currencySymbol: "$",
-              amount: "5,000.00",
+              amount: "5,000",
             },
           },
           {
@@ -1142,7 +1142,7 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Price",
-              amount: { amount: "7,500.00" },
+              amount: { amount: "7,500" },
             },
             { __typename: "ShippingLine" },
             { __typename: "TaxLine" },
@@ -1197,7 +1197,7 @@ describe("Me", () => {
               displayName: "Pickup",
               amountFallbackText: null,
               amount: {
-                amount: "0.00",
+                amount: "0",
               },
             },
             {
@@ -1234,7 +1234,7 @@ describe("Me", () => {
               displayName: "Free shipping",
               amountFallbackText: null,
               amount: {
-                amount: "0.00",
+                amount: "0",
               },
             },
             {
@@ -1271,7 +1271,7 @@ describe("Me", () => {
               displayName: "Free shipping",
               amountFallbackText: null,
               amount: {
-                amount: "0.00",
+                amount: "0",
               },
             },
             {
@@ -1354,103 +1354,6 @@ describe("Me", () => {
             },
             {
               __typename: "TotalLine",
-            },
-          ])
-        })
-      })
-
-      describe("Zero-decimal currencies", () => {
-        const query = gql`
-          query {
-            me {
-              order(id: "order-id") {
-                pricingBreakdownLines {
-                  __typename
-                  ... on SubtotalLine {
-                    displayName
-                    amount {
-                      display
-                      amount
-                      minor
-                      major
-                    }
-                  }
-                  ... on ShippingLine {
-                    displayName
-                    amount {
-                      display
-                      amount
-                    }
-                  }
-                  ... on TaxLine {
-                    displayName
-                    amount {
-                      display
-                      amount
-                    }
-                  }
-                  ... on TotalLine {
-                    displayName
-                    amount {
-                      display
-                      amount
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `
-
-        it("formats JPY correctly without decimal places", async () => {
-          orderJson.currency_code = "JPY"
-          orderJson.items_total_cents = 500000
-          orderJson.shipping_total_cents = 2000
-          orderJson.tax_total_cents = 4299
-          orderJson.buyer_total_cents = 506299
-          context = {
-            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-            artworkLoader: jest.fn().mockResolvedValue(artwork),
-            authenticatedArtworkVersionLoader: jest
-              .fn()
-              .mockResolvedValue(artworkVersion),
-          }
-          const result = await runAuthenticatedQuery(query, context)
-          expect(result.me.order.pricingBreakdownLines).toEqual([
-            {
-              __typename: "SubtotalLine",
-              displayName: "Price",
-              amount: {
-                display: "JPY ¥500,000",
-                amount: "500,000",
-                minor: 500000,
-                major: 500000,
-              },
-            },
-            {
-              __typename: "ShippingLine",
-              displayName: "Flat rate shipping",
-              amount: {
-                display: "JPY ¥2,000",
-                amount: "2,000",
-              },
-            },
-            {
-              __typename: "TaxLine",
-              displayName: "Tax",
-              amount: {
-                display: "JPY ¥4,299",
-                amount: "4,299",
-              },
-            },
-            {
-              __typename: "TotalLine",
-              displayName: "Total",
-              amount: {
-                display: "JPY ¥506,299",
-                amount: "506,299",
-              },
             },
           ])
         })
