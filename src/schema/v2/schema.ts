@@ -371,6 +371,13 @@ import { VideosConnection } from "./video/videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
 import { updateVideoMutation } from "./video/updateVideoMutation"
 import { deleteVideoMutation } from "./video/deleteVideoMutation"
+import { NavigationVersion } from "./Navigation/NavigationVersion"
+import { navigationGroup, navigationGroups } from "./Navigation/NavigationGroup"
+import { createNavigationDraftMutation } from "./Navigation/mutations/createNavigationDraftMutation"
+import { publishNavigationDraftMutation } from "./Navigation/mutations/publishNavigationDraftMutation"
+import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
+import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
+import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -460,6 +467,9 @@ const rootFields = {
   matchConnection: MatchConnection,
   marketingCollection: MarketingCollection,
   marketingCollections: MarketingCollections,
+  navigationGroup: navigationGroup,
+  navigationGroups: navigationGroups,
+  navigationVersion: NavigationVersion,
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
@@ -571,6 +581,8 @@ export default new GraphQLSchema({
       createHeroUnit: createHeroUnitMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
+      createNavigationDraft: createNavigationDraftMutation,
+      createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
@@ -598,6 +610,7 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
@@ -653,6 +666,7 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
@@ -707,6 +721,7 @@ export default new GraphQLSchema({
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      updateNavigationItem: updateNavigationItemMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrder: updateOrderMutation,
       updateOrderShippingAddress: updateOrderShippingAddressMutation,
