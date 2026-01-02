@@ -166,10 +166,7 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
         _info
       ) => {
         return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor: minor,
-            currencyCode,
-          },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           context,
           _info
@@ -223,7 +220,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -256,7 +253,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -327,7 +324,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -401,7 +398,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -426,7 +423,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -451,7 +448,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -472,7 +469,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
@@ -492,7 +489,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0[.]00", exact: true },
           _args,
           ctx,
           _info
