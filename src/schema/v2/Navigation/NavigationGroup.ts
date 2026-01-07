@@ -5,15 +5,15 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { NavigationVersion, NavigationVersionType } from "./NavigationVersion"
 import { date } from "schema/v2/fields/date"
+import { SlugAndInternalIDFields } from "../object_identification"
 
 const NavigationGroupType = new GraphQLObjectType<any, ResolverContext>({
   name: "NavigationGroup",
   fields: () => ({
-    ...InternalIDFields,
+    ...SlugAndInternalIDFields,
     createdAt: date(),
     draftVersion: {
       type: NavigationVersionType,

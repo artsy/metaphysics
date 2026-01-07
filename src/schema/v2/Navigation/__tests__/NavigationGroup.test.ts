@@ -8,6 +8,7 @@ describe("navigationGroup", () => {
         navigationGroup(id: "artists") {
           internalID
           name
+          slug
           liveVersion {
             internalID
           }
@@ -22,6 +23,7 @@ describe("navigationGroup", () => {
 
     const context = {
       navigationGroupLoader: jest.fn().mockResolvedValue({
+        _id: "<internal-id>",
         id: "artists",
         name: "Artists",
         live_version_id: "live-version-id",
@@ -46,11 +48,12 @@ describe("navigationGroup", () => {
           "draftVersion": {
             "internalID": "draft-version-id",
           },
-          "internalID": "artists",
+          "internalID": "<internal-id>",
           "liveVersion": {
             "internalID": "live-version-id",
           },
           "name": "Artists",
+          "slug": "artists",
           "updatedAt": "2025-01-01T00:00:00Z",
         },
       }
@@ -63,7 +66,7 @@ describe("navigationGroups", () => {
     const query = gql`
       {
         navigationGroups {
-          internalID
+          slug
         }
       }
     `
@@ -88,13 +91,13 @@ describe("navigationGroups", () => {
       {
         "navigationGroups": [
           {
-            "internalID": "whats-new",
+            "slug": "whats-new",
           },
           {
-            "internalID": "artists",
+            "slug": "artists",
           },
           {
-            "internalID": "artworks",
+            "slug": "artworks",
           },
         ],
       }

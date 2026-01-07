@@ -18073,6 +18073,9 @@ type NavigationGroup {
   internalID: ID!
   liveVersion: NavigationVersion
   name: String!
+
+  # A slug ID.
+  slug: ID!
   updatedAt(
     format: String
 
