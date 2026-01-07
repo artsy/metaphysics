@@ -62,7 +62,7 @@ export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { navigationGroupLoader }) => {
     if (!navigationGroupLoader) return null
 
-    return await navigationGroupLoader(id)
+    return navigationGroupLoader(id)
   },
 }
 
