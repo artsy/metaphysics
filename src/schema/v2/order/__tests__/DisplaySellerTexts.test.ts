@@ -67,7 +67,7 @@ describe("DisplaySellerTexts", () => {
         conversationStateTitle: "Order received",
         stateName: "Order received",
         actionPrompt: "Confirm Order",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: true,
       })
     })
@@ -86,7 +86,7 @@ describe("DisplaySellerTexts", () => {
         conversationStateTitle: "Order received",
         stateName: "Order received",
         actionPrompt: "Confirm Order",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: true,
       })
     })
@@ -106,7 +106,7 @@ describe("DisplaySellerTexts", () => {
         conversationStateTitle: "Offer received",
         stateName: "Offer received",
         actionPrompt: "Respond to Offer",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: true,
       })
     })
@@ -126,7 +126,7 @@ describe("DisplaySellerTexts", () => {
         conversationStateTitle: "Counteroffer sent",
         stateName: "Offer sent",
         actionPrompt: "View Offer Details",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: false,
       })
     })
@@ -166,7 +166,7 @@ describe("DisplaySellerTexts", () => {
         conversationStateTitle: "Processing payment",
         stateName: "Processing payment",
         actionPrompt: "View Order Details",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: false,
       })
     })

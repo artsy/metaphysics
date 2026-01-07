@@ -60,7 +60,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
     case "order_received":
       return {
         actionPrompt: "Confirm Order",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: true,
         stateName: "Order received",
         conversationStateTitle: "Order received",
@@ -68,7 +68,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
     case "offer_received":
       return {
         actionPrompt: "Respond to Offer",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: true,
         stateName: "Offer received",
         conversationStateTitle: "Offer received",
@@ -76,7 +76,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
     case "offer_sent":
       return {
         actionPrompt: "View Offer Details",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: false,
         stateName: "Offer sent",
         conversationStateTitle: "Counteroffer sent",
@@ -92,7 +92,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
     case "processing_payment":
       return {
         actionPrompt: "View Order Details",
-        icon: "ClockFillIcon",
+        icon: "PendingStrokeIcon",
         isPrimaryAction: false,
         stateName: "Processing payment",
         conversationStateTitle: "Processing payment",
