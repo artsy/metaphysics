@@ -62,7 +62,7 @@ export const updateNavigationItemMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "A relative URL that starts with /",
     },
-    parent_id: {
+    parentID: {
       type: GraphQLString,
       description: "The ID of the parent navigation item",
     },
@@ -86,7 +86,7 @@ export const updateNavigationItemMutation = mutationWithClientMutationId<
       {
         title: args.title,
         href: args.href,
-        parent_id: args.parent_id,
+        parent_id: args.parentID,
         position: args.position,
       },
       isUndefined

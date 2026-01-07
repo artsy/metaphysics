@@ -60,7 +60,7 @@ describe("updateNavigationItemMutation", () => {
             id: "item-123"
             title: "Updated Title"
             href: "/updated-path"
-            parent_id: "parent-456"
+            parentID: "parent-456"
             position: 5
           }
         ) {
