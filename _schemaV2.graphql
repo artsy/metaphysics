@@ -10191,6 +10191,9 @@ input CreateNavigationItemInput {
   # The ID of the parent navigation item
   parentID: String
 
+  # The position of the navigation item
+  position: Int
+
   # The title of the navigation item
   title: String!
 
@@ -25656,7 +25659,7 @@ input UpdateNavigationItemInput {
   id: String!
 
   # The ID of the parent navigation item
-  parent_id: String
+  parentID: String
 
   # The position of the navigation item
   position: Int

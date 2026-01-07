@@ -1,4 +1,5 @@
 import {
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -65,6 +66,10 @@ export const createNavigationItemMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The ID of the parent navigation item",
     },
+    position: {
+      type: GraphQLInt,
+      description: "The position of the navigation item",
+    },
   },
   outputFields: {
     navigationItemOrError: {
@@ -83,6 +88,7 @@ export const createNavigationItemMutation = mutationWithClientMutationId<
         title: args.title,
         href: args.href,
         parent_id: args.parentID,
+        position: args.position,
       },
       isUndefined
     )
