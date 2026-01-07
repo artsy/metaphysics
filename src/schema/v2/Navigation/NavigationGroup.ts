@@ -6,7 +6,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { NavigationVersion, NavigationVersionType } from "./NavigationVersion"
+import { NavigationVersionType } from "./NavigationVersion"
 import { date } from "schema/v2/fields/date"
 import { SlugAndInternalIDFields } from "../object_identification"
 
@@ -14,44 +14,32 @@ const NavigationGroupType = new GraphQLObjectType<any, ResolverContext>({
   name: "NavigationGroup",
   fields: () => ({
     ...SlugAndInternalIDFields,
-    createdAt: date(),
+    createdAt: date(({ created_at }) => created_at, true),
     draftVersion: {
       type: NavigationVersionType,
-      resolve: (parent, _args, context, info) => {
-        if (!parent.draft_version_id) return null
-        if (!NavigationVersion.resolve) return null
+      resolve: (parent, _args, { navigationGroupDraftLoader }) => {
+        if (!navigationGroupDraftLoader) return null
 
-        return NavigationVersion.resolve(
-          parent,
-          { groupID: parent.id, state: "DRAFT" },
-          context,
-          info
-        )
+        return navigationGroupDraftLoader(parent.id)
       },
     },
     liveVersion: {
       type: NavigationVersionType,
-      resolve: (parent, _args, context, info) => {
-        if (!parent.live_version_id) return null
-        if (!NavigationVersion.resolve) return null
+      resolve: (parent, _args, { navigationGroupLiveLoader }) => {
+        if (!navigationGroupLiveLoader) return null
 
-        return NavigationVersion.resolve(
-          parent,
-          { groupID: parent.id, state: "LIVE" },
-          context,
-          info
-        )
+        return navigationGroupLiveLoader(parent.id)
       },
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    updatedAt: date(),
+    updatedAt: date(({ updated_at }) => updated_at, true),
   }),
 })
 
 export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
-  type: NavigationGroupType,
+  type: new GraphQLNonNull(NavigationGroupType),
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -59,16 +47,16 @@ export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: async (_root, { id }, { navigationGroupLoader }) => {
-    if (!navigationGroupLoader) {
-      return null
-    }
+    if (!navigationGroupLoader) return null
 
     return await navigationGroupLoader(id)
   },
 }
 
 export const navigationGroups: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(NavigationGroupType),
+  type: new GraphQLNonNull(
+    new GraphQLList(new GraphQLNonNull(NavigationGroupType))
+  ),
   resolve: async (_root, _args, { navigationGroupsLoader }) => {
     if (!navigationGroupsLoader) {
       return []

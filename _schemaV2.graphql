@@ -18063,7 +18063,7 @@ type NavigationGroup {
 
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
-  ): String
+  ): String!
   draftVersion: NavigationVersion
 
   # A globally unique ID.
@@ -18081,11 +18081,11 @@ type NavigationGroup {
 
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
-  ): String
+  ): String!
 }
 
 type NavigationItem {
-  children: [NavigationItem]
+  children: [NavigationItem!]!
 
   # A relative URL that starts with /
   href: String
@@ -18119,7 +18119,7 @@ type NavigationVersion {
 
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
-  ): String
+  ): String!
 
   # A globally unique ID.
   id: ID!
@@ -18127,8 +18127,8 @@ type NavigationVersion {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
-  # An ordered list of navigation items (e.g., By Price, By Seller, etc.)
-  items: [NavigationItem]
+  # An ordered list of nested navigation items (e.g., By Price, By Seller, etc.)
+  items: [NavigationItem!]!
   publishedAt(
     format: String
 
@@ -18140,7 +18140,7 @@ type NavigationVersion {
 
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
-  ): String
+  ): String!
 }
 
 enum NavigationVersionState {
@@ -21736,8 +21736,8 @@ type Query {
   navigationGroup(
     # The ID of the navigation group
     id: String!
-  ): NavigationGroup
-  navigationGroups: [NavigationGroup]
+  ): NavigationGroup!
+  navigationGroups: [NavigationGroup!]!
 
   # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
   navigationVersion(
@@ -28191,8 +28191,8 @@ type Viewer {
   navigationGroup(
     # The ID of the navigation group
     id: String!
-  ): NavigationGroup
-  navigationGroups: [NavigationGroup]
+  ): NavigationGroup!
+  navigationGroups: [NavigationGroup!]!
 
   # A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)
   navigationVersion(
