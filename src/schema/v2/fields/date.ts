@@ -1,5 +1,5 @@
 import moment from "moment-timezone"
-import { GraphQLString, GraphQLFieldConfig } from "graphql"
+import { GraphQLString, GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
 
@@ -28,10 +28,11 @@ export const formatDate = (
 type Value = string | null | undefined
 
 export const date = <T>(
-  fn?: (response: T) => Value
+  fn?: (response: T) => Value,
+  nonNull?: boolean
 ): GraphQLFieldConfig<T, ResolverContext> => {
   return {
-    type: GraphQLString,
+    type: nonNull ? new GraphQLNonNull(GraphQLString) : GraphQLString,
     args: {
       format: { type: GraphQLString },
       timezone: {

@@ -59,10 +59,10 @@ export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the navigation group",
     },
   },
-  resolve: async (_root, { id }, { navigationGroupLoader }) => {
+  resolve: (_root, { id }, { navigationGroupLoader }) => {
     if (!navigationGroupLoader) return null
 
-    return navigationGroupLoader(id)
+    return await navigationGroupLoader(id)
   },
 }
 
@@ -70,11 +70,11 @@ export const navigationGroups: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLNonNull(
     new GraphQLList(new GraphQLNonNull(NavigationGroupType))
   ),
-  resolve: async (_root, _args, { navigationGroupsLoader }) => {
+  resolve: (_root, _args, { navigationGroupsLoader }) => {
     if (!navigationGroupsLoader) {
       return []
     }
 
-    return await navigationGroupsLoader()
+    return navigationGroupsLoader()
   },
 }
