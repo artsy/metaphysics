@@ -18065,6 +18065,8 @@ type NavigationGroup {
     timezone: String
   ): String!
   draftVersion: NavigationVersion
+  hasDraftVersion: Boolean!
+  hasLiveVersion: Boolean!
 
   # A globally unique ID.
   id: ID!

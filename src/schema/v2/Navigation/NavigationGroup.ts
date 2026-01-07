@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
@@ -21,6 +22,18 @@ const NavigationGroupType = new GraphQLObjectType<any, ResolverContext>({
         if (!navigationGroupDraftLoader) return null
 
         return navigationGroupDraftLoader(parent.id)
+      },
+    },
+    hasDraftVersion: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ draft_version_id }) => {
+        return !!draft_version_id
+      },
+    },
+    hasLiveVersion: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ live_version_id }) => {
+        return !!live_version_id
       },
     },
     liveVersion: {
@@ -49,7 +62,7 @@ export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, { id }, { navigationGroupLoader }) => {
     if (!navigationGroupLoader) return null
 
-    return await navigationGroupLoader(id)
+    return navigationGroupLoader(id)
   },
 }
 
