@@ -1,17 +1,17 @@
 import {
-  Boolean,
-  Number,
-  String,
   Array,
+  Boolean,
+  Null,
+  Number,
   Record,
   Static,
+  String,
   Undefined,
-  Null,
 } from "runtypes"
 import { EmbeddedArtist } from "./Artist"
+import { CulturalMaker } from "./CulturalMaker"
 import { EditionSet } from "./EditionSet"
 import { Image } from "./Image"
-import { CulturalMaker } from "./CulturalMaker"
 import { Partner } from "./Partner"
 
 export const Artwork = Record({
@@ -77,6 +77,8 @@ export const Artwork = Record({
   price_hidden: Boolean,
   price_includes_tax: Boolean,
   price: String,
+  price_min: Number.Or(Null),
+  price_max: Number.Or(Null),
   private_shortcut_path: String.Or(Null),
   provenance: String,
   published_at: String,

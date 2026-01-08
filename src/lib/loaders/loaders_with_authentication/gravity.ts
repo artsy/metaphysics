@@ -357,6 +357,31 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createNavigationDraftLoader: gravityLoader(
+      (groupID) => `navigation_group/${groupID}/draft`,
+      {},
+      { method: "POST" }
+    ),
+    publishNavigationDraftLoader: gravityLoader(
+      (groupID) => `navigation_group/${groupID}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    createNavigationItemLoader: gravityLoader(
+      "/navigation_item",
+      {},
+      { method: "POST" }
+    ),
+    updateNavigationItemLoader: gravityLoader(
+      (id) => `navigation_item/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteNavigationItemLoader: gravityLoader(
+      (id) => `navigation_item/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }
@@ -956,6 +981,11 @@ export default (accessToken, userID, opts) => {
       "collection/my-collection/artworks",
       {},
       { headers: true }
+    ),
+    navigationGroupLoader: gravityLoader((id) => `navigation_group/${id}`),
+    navigationGroupsLoader: gravityLoader("/navigation_groups"),
+    navigationGroupDraftLoader: gravityLoader(
+      (id) => `navigation_group/${id}/draft`
     ),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),

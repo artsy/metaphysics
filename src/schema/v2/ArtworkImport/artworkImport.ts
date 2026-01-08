@@ -30,6 +30,8 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     MISSING_ARTIST: { value: "missing_artist" },
     MISSING_PRICE: { value: "missing_price" },
     MISSING_DATE: { value: "missing_date" },
+    MISSING_SALE_SLUG: { value: "missing_sale_slug" },
+    MISSING_POSITION: { value: "missing_position" },
 
     // INVALID
     INVALID_TITLE: { value: "invalid_title" },
@@ -49,13 +51,26 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_SIGNATURE: { value: "invalid_signature" },
     INVALID_CLASSIFICATION: { value: "invalid_classification" },
     INVALID_WEIGHT: { value: "invalid_weight" },
+    INVALID_OPENING_BID: { value: "invalid_opening_bid" },
+    INVALID_ESTIMATE: { value: "invalid_estimate" },
+    INVALID_LOW_ESTIMATE: { value: "invalid_low_estimate" },
+    INVALID_HIGH_ESTIMATE: { value: "invalid_high_estimate" },
+    INVALID_RESERVE: { value: "invalid_reserve" },
+    INVALID_EXCLUDE_FROM_MARKETING: { value: "invalid_exclude_from_marketing" },
+    INVALID_DIMENSION_METRIC: { value: "invalid_dimension_metric" },
+    INVALID_CURRENCY: { value: "invalid_currency" },
+    INVALID_LOT_NUMBER: { value: "invalid_lot_number" },
+    INVALID_ARTIST_PROOF: { value: "invalid_artist_proof" },
+    INVALID_POSITION: { value: "invalid_position" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
     UNMATCHED_ARTIST: { value: "unmatched_artist" },
+    UNMATCHED_SALE_SLUG: { value: "unmatched_sale_slug" },
     UNSUPPORTED_IMAGE_SEPERATOR: { value: "unsupported_image_separator" },
     DUPLICATE_IMAGE_FILENAMES: { value: "duplicate_image_filenames" },
     ARTWORK_CREATION_FAILED: { value: "artwork_creation_failed" },
+    SALE_ARTWORK_CREATION_FAILED: { value: "sale_artwork_creation_failed" },
   },
 })
 
@@ -308,9 +323,75 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ Bibliography }) => Bibliography,
             },
+            dimensionMetric: {
+              type: GraphQLString,
+              resolve: ({ DimensionMetric }) => DimensionMetric,
+            },
+            currency: {
+              type: GraphQLString,
+              resolve: ({ Currency }) => Currency,
+            },
+            publisher: {
+              type: GraphQLString,
+              resolve: ({ Publisher }) => Publisher,
+            },
+            confidentialNotes: {
+              type: GraphQLString,
+              resolve: ({ ConfidentialNotes }) => ConfidentialNotes,
+            },
+            availableEditions: {
+              type: GraphQLString,
+              resolve: ({ AvailableEditions }) => AvailableEditions,
+            },
+            editionSize: {
+              type: GraphQLString,
+              resolve: ({ EditionSize }) => EditionSize,
+            },
+            artistProofs: {
+              type: GraphQLString,
+              resolve: ({ ArtistProofs }) => ArtistProofs,
+            },
             importSource: {
               type: GraphQLString,
               resolve: ({ ImportSource }) => ImportSource,
+            },
+
+            // Auction Only Fields
+            lotNumber: {
+              type: GraphQLString,
+              resolve: ({ LotNumber }) => LotNumber,
+            },
+            openingBid: {
+              type: GraphQLString,
+              resolve: ({ OpeningBid }) => OpeningBid,
+            },
+            estimate: {
+              type: GraphQLString,
+              resolve: ({ Estimate }) => Estimate,
+            },
+            lowEstimate: {
+              type: GraphQLString,
+              resolve: ({ LowEstimate }) => LowEstimate,
+            },
+            highEstimate: {
+              type: GraphQLString,
+              resolve: ({ HighEstimate }) => HighEstimate,
+            },
+            reserve: {
+              type: GraphQLString,
+              resolve: ({ Reserve }) => Reserve,
+            },
+            position: {
+              type: GraphQLString,
+              resolve: ({ Position }) => Position,
+            },
+            excludeFromMarketing: {
+              type: GraphQLString,
+              resolve: ({ ExcludeFromMarketing }) => ExcludeFromMarketing,
+            },
+            saleSlug: {
+              type: GraphQLString,
+              resolve: ({ SaleSlug }) => SaleSlug,
             },
           },
         })

@@ -5235,6 +5235,106 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#priceMin", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          priceMin{
+            major
+            minor
+            currencyCode
+          }
+        }
+      }
+    `
+
+    it("returns artwork price_min", () => {
+      artwork.price_min = 100
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMin: { major: 100, minor: 10000, currencyCode: "USD" },
+          },
+        })
+      })
+    })
+
+    it("converts price_min to the expected minor value", () => {
+      artwork.price_min = 100
+      artwork.price_currency = "KRW"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMin: { major: 100, minor: 100, currencyCode: "KRW" },
+          },
+        })
+      })
+    })
+
+    it("returns null when price_min is null", () => {
+      artwork.price_min = null
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMin: null,
+          },
+        })
+      })
+    })
+  })
+
+  describe("#priceMax", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          priceMax{
+            major
+            minor
+            currencyCode
+          }
+        }
+      }
+    `
+
+    it("returns artwork price_max", () => {
+      artwork.price_max = 200
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMax: { major: 200, minor: 20000, currencyCode: "USD" },
+          },
+        })
+      })
+    })
+
+    it("converts price_max to the expected minor value", () => {
+      artwork.price_max = 200
+      artwork.price_currency = "KRW"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMax: { major: 200, minor: 200, currencyCode: "KRW" },
+          },
+        })
+      })
+    })
+
+    it("returns null when price_max is null", () => {
+      artwork.price_max = null
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceMax: null,
+          },
+        })
+      })
+    })
+  })
+
   describe("loading collectorSignals", () => {
     const query = `
       {
