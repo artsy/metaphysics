@@ -1,79 +1,80 @@
 import {
+  GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-import { NavigationVersion, NavigationVersionType } from "./NavigationVersion"
+import { NavigationVersionType } from "./NavigationVersion"
 import { date } from "schema/v2/fields/date"
+import { SlugAndInternalIDFields } from "../object_identification"
 
 const NavigationGroupType = new GraphQLObjectType<any, ResolverContext>({
   name: "NavigationGroup",
   fields: () => ({
-    ...InternalIDFields,
-    createdAt: date(),
+    ...SlugAndInternalIDFields,
+    createdAt: date(({ created_at }) => created_at, true),
     draftVersion: {
       type: NavigationVersionType,
-      resolve: (parent, _args, context, info) => {
-        if (!parent.draft_version_id) return null
-        if (!NavigationVersion.resolve) return null
+      resolve: (parent, _args, { navigationGroupDraftLoader }) => {
+        if (!navigationGroupDraftLoader) return null
 
-        return NavigationVersion.resolve(
-          parent,
-          { groupID: parent.id, state: "DRAFT" },
-          context,
-          info
-        )
+        return navigationGroupDraftLoader(parent.id)
+      },
+    },
+    hasDraftVersion: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ draft_version_id }) => {
+        return !!draft_version_id
+      },
+    },
+    hasLiveVersion: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ live_version_id }) => {
+        return !!live_version_id
       },
     },
     liveVersion: {
       type: NavigationVersionType,
-      resolve: (parent, _args, context, info) => {
-        if (!parent.live_version_id) return null
-        if (!NavigationVersion.resolve) return null
+      resolve: (parent, _args, { navigationGroupLiveLoader }) => {
+        if (!navigationGroupLiveLoader) return null
 
-        return NavigationVersion.resolve(
-          parent,
-          { groupID: parent.id, state: "LIVE" },
-          context,
-          info
-        )
+        return navigationGroupLiveLoader(parent.id)
       },
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    updatedAt: date(),
+    updatedAt: date(({ updated_at }) => updated_at, true),
   }),
 })
 
 export const navigationGroup: GraphQLFieldConfig<void, ResolverContext> = {
-  type: NavigationGroupType,
+  type: new GraphQLNonNull(NavigationGroupType),
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the navigation group",
     },
   },
-  resolve: async (_root, { id }, { navigationGroupLoader }) => {
-    if (!navigationGroupLoader) {
-      return null
-    }
+  resolve: (_root, { id }, { navigationGroupLoader }) => {
+    if (!navigationGroupLoader) return null
 
-    return await navigationGroupLoader(id)
+    return navigationGroupLoader(id)
   },
 }
 
 export const navigationGroups: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(NavigationGroupType),
-  resolve: async (_root, _args, { navigationGroupsLoader }) => {
+  type: new GraphQLNonNull(
+    new GraphQLList(new GraphQLNonNull(NavigationGroupType))
+  ),
+  resolve: (_root, _args, { navigationGroupsLoader }) => {
     if (!navigationGroupsLoader) {
       return []
     }
 
-    return await navigationGroupsLoader()
+    return navigationGroupsLoader()
   },
 }

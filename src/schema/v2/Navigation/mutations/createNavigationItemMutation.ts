@@ -1,4 +1,5 @@
 import {
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -18,7 +19,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   isTypeOf: (data) => data.id,
   fields: () => ({
     navigationItem: {
-      type: NavigationItemType,
+      type: new GraphQLNonNull(NavigationItemType),
       resolve: (result) => result,
     },
   }),
@@ -31,7 +32,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
   fields: () => ({
     mutationError: {
-      type: GravityMutationErrorType,
+      type: new GraphQLNonNull(GravityMutationErrorType),
       resolve: (err) => err,
     },
   }),
@@ -65,10 +66,14 @@ export const createNavigationItemMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The ID of the parent navigation item",
     },
+    position: {
+      type: GraphQLInt,
+      description: "The position of the navigation item",
+    },
   },
   outputFields: {
     navigationItemOrError: {
-      type: NavigationItemOrErrorType,
+      type: new GraphQLNonNull(NavigationItemOrErrorType),
       resolve: (result) => result,
     },
   },
@@ -83,6 +88,7 @@ export const createNavigationItemMutation = mutationWithClientMutationId<
         title: args.title,
         href: args.href,
         parent_id: args.parentID,
+        position: args.position,
       },
       isUndefined
     )

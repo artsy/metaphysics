@@ -11,18 +11,23 @@ import { InternalIDFields } from "../object_identification"
 import { NavigationItemType } from "./NavigationItem"
 import { date } from "../fields/date"
 
-export const NavigationVersionType = new GraphQLObjectType({
+export const NavigationVersionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "NavigationVersion",
   fields: {
     ...InternalIDFields,
-    createdAt: date(),
+    createdAt: date(({ created_at }) => created_at, true),
     items: {
-      type: new GraphQLList(NavigationItemType),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(NavigationItemType))
+      ),
       description:
-        "An ordered list of navigation items (e.g., By Price, By Seller, etc.)",
+        "An ordered list of nested navigation items (e.g., By Price, By Seller, etc.)",
     },
     publishedAt: date(),
-    updatedAt: date(),
+    updatedAt: date(({ updated_at }) => updated_at, true),
   },
 })
 
@@ -45,7 +50,7 @@ export const NavigationVersion: GraphQLFieldConfig<void, ResolverContext> = {
       defaultValue: "LIVE",
     },
   },
-  resolve: async (
+  resolve: (
     _root,
     { groupID, state },
     { navigationGroupLiveLoader, navigationGroupDraftLoader }
@@ -55,6 +60,6 @@ export const NavigationVersion: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (!loader) return null
 
-    return await loader(groupID)
+    return loader(groupID)
   },
 }

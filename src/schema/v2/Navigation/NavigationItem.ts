@@ -22,7 +22,9 @@ export const NavigationItemType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
     },
     children: {
-      type: new GraphQLList(NavigationItemType),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(NavigationItemType))
+      ),
     },
   }),
 })

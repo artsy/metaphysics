@@ -14,7 +14,7 @@ describe("NavigationVersion", () => {
 
       const navigationGroupLiveLoader = jest.fn(async () => {
         return {
-          id: "artists",
+          id: "<internal-id>",
         }
       })
 
@@ -29,7 +29,7 @@ describe("NavigationVersion", () => {
       expect(response).toMatchInlineSnapshot(`
         {
           "navigationVersion": {
-            "internalID": "artists",
+            "internalID": "<internal-id>",
           },
         }
       `)
@@ -48,7 +48,7 @@ describe("NavigationVersion", () => {
 
       const navigationGroupDraftLoader = jest.fn(async () => {
         return {
-          id: "artists",
+          id: "<internal-id>",
         }
       })
 
@@ -63,7 +63,7 @@ describe("NavigationVersion", () => {
       expect(response).toMatchInlineSnapshot(`
         {
           "navigationVersion": {
-            "internalID": "artists",
+            "internalID": "<internal-id>",
           },
         }
       `)
@@ -91,7 +91,7 @@ describe("NavigationVersion", () => {
 
     const navigationGroupLiveLoader = jest.fn(async () => {
       return {
-        id: "artists",
+        id: "<internal-id>",
         items: [
           {
             id: "item-1",
@@ -104,12 +104,14 @@ describe("NavigationVersion", () => {
                 title: "Banksy",
                 href: "/artist/banksy",
                 position: 0,
+                children: [],
               },
               {
                 id: "item-1-2",
                 title: "Cecily Brown",
                 href: "/artist/cecily-brown",
                 position: 1,
+                children: [],
               },
             ],
           },
@@ -118,7 +120,7 @@ describe("NavigationVersion", () => {
             title: "Menu Item without Children",
             href: "/some-href",
             position: 1,
-            children: null,
+            children: [],
           },
         ],
       }
@@ -135,7 +137,7 @@ describe("NavigationVersion", () => {
     expect(response).toMatchInlineSnapshot(`
       {
         "navigationVersion": {
-          "internalID": "artists",
+          "internalID": "<internal-id>",
           "items": [
             {
               "children": [
@@ -155,7 +157,7 @@ describe("NavigationVersion", () => {
               "title": "Blue-Chip Artists",
             },
             {
-              "children": null,
+              "children": [],
               "href": "/some-href",
               "internalID": "item-2",
               "title": "Menu Item without Children",

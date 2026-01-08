@@ -19,7 +19,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   isTypeOf: (data) => data.id,
   fields: () => ({
     navigationItem: {
-      type: NavigationItemType,
+      type: new GraphQLNonNull(NavigationItemType),
       resolve: (result) => result,
     },
   }),
@@ -32,7 +32,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
   fields: () => ({
     mutationError: {
-      type: GravityMutationErrorType,
+      type: new GraphQLNonNull(GravityMutationErrorType),
       resolve: (err) => err,
     },
   }),
@@ -62,7 +62,7 @@ export const updateNavigationItemMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "A relative URL that starts with /",
     },
-    parent_id: {
+    parentID: {
       type: GraphQLString,
       description: "The ID of the parent navigation item",
     },
@@ -73,7 +73,7 @@ export const updateNavigationItemMutation = mutationWithClientMutationId<
   },
   outputFields: {
     navigationItemOrError: {
-      type: NavigationItemOrErrorType,
+      type: new GraphQLNonNull(NavigationItemOrErrorType),
       resolve: (result) => result,
     },
   },
@@ -86,7 +86,7 @@ export const updateNavigationItemMutation = mutationWithClientMutationId<
       {
         title: args.title,
         href: args.href,
-        parent_id: args.parent_id,
+        parent_id: args.parentID,
         position: args.position,
       },
       isUndefined

@@ -17,7 +17,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   isTypeOf: (data) => data.id,
   fields: () => ({
     navigationVersion: {
-      type: NavigationVersionType,
+      type: new GraphQLNonNull(NavigationVersionType),
       resolve: (result) => result,
     },
   }),
@@ -30,7 +30,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
   fields: () => ({
     mutationError: {
-      type: GravityMutationErrorType,
+      type: new GraphQLNonNull(GravityMutationErrorType),
       resolve: (err) => err,
     },
   }),
@@ -55,7 +55,7 @@ export const publishNavigationDraftMutation = mutationWithClientMutationId<
   },
   outputFields: {
     navigationVersionOrError: {
-      type: NavigationVersionOrErrorType,
+      type: new GraphQLNonNull(NavigationVersionOrErrorType),
       resolve: (result) => result,
     },
   },
