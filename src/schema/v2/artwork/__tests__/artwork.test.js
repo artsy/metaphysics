@@ -1051,6 +1051,153 @@ describe("Artwork type", () => {
         })
       })
     })
+
+    describe("priceMin and priceMax", () => {
+      it("returns priceMin and priceMax for edition sets", () => {
+        artwork.edition_sets = [
+          {
+            id: "edition-1",
+            price_min: 100,
+            price_max: 200,
+            price_currency: "USD",
+          },
+        ]
+
+        const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            editionSets {
+              priceMin {
+                major
+                minor
+                currencyCode
+              }
+              priceMax {
+                major
+                minor
+                currencyCode
+              }
+            }
+          }
+        }
+      `
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              editionSets: [
+                {
+                  priceMin: {
+                    major: 100,
+                    minor: 10000,
+                    currencyCode: "USD",
+                  },
+                  priceMax: {
+                    major: 200,
+                    minor: 20000,
+                    currencyCode: "USD",
+                  },
+                },
+              ],
+            },
+          })
+        })
+      })
+
+      it("converts priceMin and priceMax to the expected minor value for KRW", () => {
+        artwork.edition_sets = [
+          {
+            id: "edition-1",
+            price_min: 100,
+            price_max: 200,
+            price_currency: "KRW",
+          },
+        ]
+
+        const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            editionSets {
+              priceMin {
+                major
+                minor
+                currencyCode
+              }
+              priceMax {
+                major
+                minor
+                currencyCode
+              }
+            }
+          }
+        }
+      `
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              editionSets: [
+                {
+                  priceMin: {
+                    major: 100,
+                    minor: 100,
+                    currencyCode: "KRW",
+                  },
+                  priceMax: {
+                    major: 200,
+                    minor: 200,
+                    currencyCode: "KRW",
+                  },
+                },
+              ],
+            },
+          })
+        })
+      })
+
+      it("returns null when priceMin or priceMax is null", () => {
+        artwork.edition_sets = [
+          {
+            id: "edition-1",
+            price_min: null,
+            price_max: null,
+            price_currency: "USD",
+          },
+        ]
+
+        const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            editionSets {
+              priceMin {
+                major
+                minor
+                currencyCode
+              }
+              priceMax {
+                major
+                minor
+                currencyCode
+              }
+            }
+          }
+        }
+      `
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              editionSets: [
+                {
+                  priceMin: null,
+                  priceMax: null,
+                },
+              ],
+            },
+          })
+        })
+      })
+    })
   })
 
   describe("#isInAuction", () => {

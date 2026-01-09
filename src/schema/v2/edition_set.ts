@@ -198,6 +198,26 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
         return { cents, currency }
       },
     },
+    priceMin: {
+      type: Money,
+      resolve: ({ price_min, price_currency: currency }) => {
+        if (price_min == null) return null
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_min * factor
+        return { cents, currency }
+      },
+    },
+    priceMax: {
+      type: Money,
+      resolve: ({ price_max, price_currency: currency }) => {
+        if (price_max == null) return null
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_max * factor
+        return { cents, currency }
+      },
+    },
     prototypes: {
       type: GraphQLString,
       resolve: ({ prototypes }) => prototypes,
