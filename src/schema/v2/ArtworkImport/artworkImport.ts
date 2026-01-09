@@ -201,6 +201,121 @@ const ArtworkImportRowType = new GraphQLObjectType({
         )
       },
     },
+    openingBid: {
+      type: Money,
+      resolve: (
+        { opening_bid_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    estimate: {
+      type: Money,
+      resolve: (
+        { estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    lowEstimate: {
+      type: Money,
+      resolve: (
+        { low_estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    highEstimate: {
+      type: Money,
+      resolve: (
+        { high_estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    reserve: {
+      type: Money,
+      resolve: (
+        { reserve_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
     rawData: {
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
