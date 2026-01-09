@@ -463,7 +463,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
               resolve: ({ ConfidentialNotes }) => ConfidentialNotes,
             },
             availableEditions: {
-              type: GraphQLString,
+              type: new GraphQLList(GraphQLString),
               resolve: ({ AvailableEditions }) => AvailableEditions,
             },
             editionSize: {
