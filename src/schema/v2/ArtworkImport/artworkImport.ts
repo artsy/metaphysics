@@ -79,7 +79,15 @@ export const ArtworkImportStateType = new GraphQLEnumType({
   values: {
     PENDING: { value: "pending" },
     ARTIST_MATCHING_COMPLETE: { value: "artist_matching_complete" },
+    SALE_SLUG_MATCHING_COMPLETE: { value: "sale_slug_matching_complete" },
+    POSITION_VALIDATION_COMPLETE: { value: "position_validation_complete" },
     ARTWORKS_CREATION_COMPLETE: { value: "artworks_creation_complete" },
+    SALE_ARTWORKS_CREATION_COMPLETE: {
+      value: "sale_artworks_creation_complete",
+    },
+    ARTWORK_IMPORT_PROCESSING_COMPLETE: {
+      value: "artwork_import_processing_complete",
+    },
     CANCELED: { value: "canceled" },
   },
 })
@@ -182,6 +190,121 @@ const ArtworkImportRowType = new GraphQLObjectType({
       type: Money,
       resolve: (
         { price_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    openingBid: {
+      type: Money,
+      resolve: (
+        { opening_bid_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    estimate: {
+      type: Money,
+      resolve: (
+        { estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    lowEstimate: {
+      type: Money,
+      resolve: (
+        { low_estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    highEstimate: {
+      type: Money,
+      resolve: (
+        { high_estimate_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (!minor || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    reserve: {
+      type: Money,
+      resolve: (
+        { reserve_minor: minor, currency: currencyCode },
         args,
         context,
         info
@@ -340,7 +463,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
               resolve: ({ ConfidentialNotes }) => ConfidentialNotes,
             },
             availableEditions: {
-              type: GraphQLString,
+              type: new GraphQLList(GraphQLString),
               resolve: ({ AvailableEditions }) => AvailableEditions,
             },
             editionSize: {
