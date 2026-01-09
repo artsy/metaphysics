@@ -79,7 +79,15 @@ export const ArtworkImportStateType = new GraphQLEnumType({
   values: {
     PENDING: { value: "pending" },
     ARTIST_MATCHING_COMPLETE: { value: "artist_matching_complete" },
+    SALE_SLUG_MATCHING_COMPLETE: { value: "sale_slug_matching_complete" },
+    POSITION_VALIDATION_COMPLETE: { value: "position_validation_complete" },
     ARTWORKS_CREATION_COMPLETE: { value: "artworks_creation_complete" },
+    SALE_ARTWORKS_CREATION_COMPLETE: {
+      value: "sale_artworks_creation_complete",
+    },
+    ARTWORK_IMPORT_PROCESSING_COMPLETE: {
+      value: "artwork_import_processing_complete",
+    },
     CANCELED: { value: "canceled" },
   },
 })
