@@ -1538,5 +1538,162 @@ describe("Me", () => {
         expect(result.me.order.buyerState).toEqual("UNKNOWN")
       })
     })
+
+    describe("Money field decimal formatting", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              buyerTotal {
+                display
+                amount
+              }
+              itemsTotal {
+                display
+                amount
+              }
+              shippingTotal {
+                display
+                amount
+              }
+              taxTotal {
+                display
+                amount
+              }
+              lineItems {
+                listPrice {
+                  display
+                  amount
+                }
+              }
+            }
+          }
+        }
+      `
+
+      it("formats money fields with .00 decimal places for whole dollar amounts", async () => {
+        orderJson.buyer_total_cents = 500000
+        orderJson.items_total_cents = 500000
+        orderJson.shipping_total_cents = 2000
+        orderJson.tax_total_cents = 5000
+        orderJson.line_items[0].list_price_cents = 10000
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerTotal.display).toEqual("US$5,000")
+        expect(result.me.order.buyerTotal.amount).toEqual("5,000")
+        expect(result.me.order.itemsTotal.display).toEqual("US$5,000")
+        expect(result.me.order.itemsTotal.amount).toEqual("5,000")
+        expect(result.me.order.shippingTotal.display).toEqual("US$20")
+        expect(result.me.order.shippingTotal.amount).toEqual("20")
+        expect(result.me.order.taxTotal.display).toEqual("US$50")
+        expect(result.me.order.taxTotal.amount).toEqual("50")
+        expect(result.me.order.lineItems[0].listPrice.display).toEqual("US$100")
+        expect(result.me.order.lineItems[0].listPrice.amount).toEqual("100")
+      })
+
+      it("formats money fields with exact decimal places for fractional amounts", async () => {
+        orderJson.buyer_total_cents = 506299
+        orderJson.items_total_cents = 500099
+        orderJson.shipping_total_cents = 2099
+        orderJson.tax_total_cents = 4299
+        orderJson.line_items[0].list_price_cents = 10050
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          artworkLoader: jest.fn().mockResolvedValue(artwork),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerTotal.display).toEqual("US$5,062.99")
+        expect(result.me.order.buyerTotal.amount).toEqual("5,062.99")
+        expect(result.me.order.itemsTotal.display).toEqual("US$5,000.99")
+        expect(result.me.order.itemsTotal.amount).toEqual("5,000.99")
+        expect(result.me.order.shippingTotal.display).toEqual("US$20.99")
+        expect(result.me.order.shippingTotal.amount).toEqual("20.99")
+        expect(result.me.order.taxTotal.display).toEqual("US$42.99")
+        expect(result.me.order.taxTotal.amount).toEqual("42.99")
+        expect(result.me.order.lineItems[0].listPrice.display).toEqual(
+          "US$100.50"
+        )
+        expect(result.me.order.lineItems[0].listPrice.amount).toEqual("100.50")
+      })
+
+      it("formats commission fee, seller total, and transaction fee with .00 decimals", async () => {
+        orderJson.commission_fee_cents = 50000
+        orderJson.seller_total_cents = 450000
+        orderJson.transaction_fee_cents = 15000
+
+        const commissionQuery = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                commissionFee {
+                  display
+                  amount
+                }
+                sellerTotal {
+                  display
+                  amount
+                }
+                transactionFee {
+                  display
+                  amount
+                }
+              }
+            }
+          }
+        `
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(commissionQuery, context)
+
+        expect(result.me.order.commissionFee.display).toEqual("US$500")
+        expect(result.me.order.commissionFee.amount).toEqual("500")
+        expect(result.me.order.sellerTotal.display).toEqual("US$4,500")
+        expect(result.me.order.sellerTotal.amount).toEqual("4,500")
+        expect(result.me.order.transactionFee.display).toEqual("US$150")
+        expect(result.me.order.transactionFee.amount).toEqual("150")
+      })
+
+      it("formats total list price with .00 decimals", async () => {
+        orderJson.total_list_price_cents = 700000
+
+        const totalListPriceQuery = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                totalListPrice {
+                  display
+                  amount
+                }
+              }
+            }
+          }
+        `
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(totalListPriceQuery, context)
+
+        expect(result.me.order.totalListPrice.display).toEqual("US$7,000")
+        expect(result.me.order.totalListPrice.amount).toEqual("7,000")
+      })
+    })
   })
 })
