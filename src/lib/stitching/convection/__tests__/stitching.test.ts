@@ -110,32 +110,3 @@ it("returns null for the myCollectionArtwork field regardless of myCollectionArt
 
   expect(response).toEqual(null)
 })
-
-describe("createConsignmentSubmission mutation", () => {
-  it("throws error since Convection is disabled", async () => {
-    const { resolvers } = await getConvectionStitchedSchema()
-    const { createConsignmentSubmission } = resolvers.Mutation
-
-    expect(() => {
-      createConsignmentSubmission.resolve()
-    }).toThrow("Artwork submissions are not accepted at this time.")
-  })
-
-  it("throws error even when myCollectionArtworkID is specified", async () => {
-    const { resolvers } = await getConvectionStitchedSchema()
-    const resolver = resolvers.Mutation.createConsignmentSubmission.resolve
-    const context = {
-      artworkLoader: jest.fn(),
-    }
-
-    context.artworkLoader.mockResolvedValue({
-      date: "2003",
-      category: "Drawing, Collage or other Work on Paper",
-      edition_sets: [{ available_editions: ["1"], edition_size: "2" }],
-    })
-
-    expect(() => {
-      resolver()
-    }).toThrow("Artwork submissions are not accepted at this time.")
-  })
-})

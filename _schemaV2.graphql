@@ -17149,10 +17149,6 @@ type Mutation {
     # Parameters for CreateOfferResponseMutation
     input: CreateOfferResponseMutationInput!
   ): CreateOfferResponseMutationPayload
-  createConsignmentSubmission(
-    # Parameters for CreateSubmissionMutation
-    input: CreateSubmissionMutationInput!
-  ): CreateSubmissionMutationPayload
 
   # Creates a new conversation message template
   createConversationMessageTemplate(

@@ -2,7 +2,6 @@ import { GraphQLSchema } from "graphql"
 import { amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
-import { GraphQLError } from "graphql"
 
 export const consignmentStitchingEnvironment = (
   _localSchema: GraphQLSchema,
@@ -19,15 +18,6 @@ export const consignmentStitchingEnvironment = (
     extend type ConsignmentOffer {
       ${amountSDL("lowEstimateAmount")}
       ${amountSDL("highEstimateAmount")}
-    }
-
-    extend type Mutation {
-      createConsignmentSubmission(
-       """
-       Parameters for CreateSubmissionMutation
-       """
-       input: CreateSubmissionMutationInput!
-      ): CreateSubmissionMutationPayload
     }
   `,
 
@@ -70,15 +60,6 @@ export const consignmentStitchingEnvironment = (
           }
         `,
         resolve: () => null,
-      },
-    },
-    Mutation: {
-      createConsignmentSubmission: {
-        resolve: () => {
-          throw new GraphQLError(
-            "Artwork submissions are not accepted at this time."
-          )
-        },
       },
     },
   },
