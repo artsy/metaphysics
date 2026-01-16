@@ -1,5 +1,4 @@
 import { GraphQLSchema } from "graphql"
-import { amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
 
@@ -13,11 +12,6 @@ export const consignmentStitchingEnvironment = (
       artist: Artist
       myCollectionArtwork: Artwork
       userPhoneNumber: PhoneNumberType
-    }
-
-    extend type ConsignmentOffer {
-      ${amountSDL("lowEstimateAmount")}
-      ${amountSDL("highEstimateAmount")}
     }
   `,
 
@@ -36,27 +30,6 @@ export const consignmentStitchingEnvironment = (
         fragment: gql`
           fragment ConsignmentSubmissionUserPhoneNumber on ConsignmentSubmission {
             userPhone
-          }
-        `,
-        resolve: () => null,
-      },
-    },
-
-    ConsignmentOffer: {
-      lowEstimateAmount: {
-        fragment: gql`
-          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
-            currency
-            lowEstimateCents
-          }
-        `,
-        resolve: () => null,
-      },
-      highEstimateAmount: {
-        fragment: gql`
-          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
-            currency
-            highEstimateCents
           }
         `,
         resolve: () => null,

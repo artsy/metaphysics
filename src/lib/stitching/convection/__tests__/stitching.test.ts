@@ -19,44 +19,6 @@ describe("convection/stitching", () => {
       expect(types).toContain("ConsignmentOffer")
     })
   })
-
-  describe("fields", () => {
-    describe("#lowEstimateAmount", () => {
-      it("extends ConsignmentOffer type with lowEstimateAmount field", async () => {
-        const { getFields } = await useConvectionStitching()
-        expect(await getFields("ConsignmentOffer")).toContain(
-          "lowEstimateAmount"
-        )
-      })
-
-      it("returns null since Convection is disabled", async () => {
-        const resolve = (await useConvectionStitching()).resolvers
-          .ConsignmentOffer.lowEstimateAmount.resolve
-        expect(resolve()).toEqual(null)
-      })
-
-      it("returns null for other currency types since Convection is disabled", async () => {
-        const resolve = (await useConvectionStitching()).resolvers
-          .ConsignmentOffer.lowEstimateAmount.resolve
-        expect(resolve()).toEqual(null)
-      })
-    })
-
-    describe("#highEstimateAmount", () => {
-      it("extends ConsignmentOffer type with highEstimateAmount field", async () => {
-        const { getFields } = await useConvectionStitching()
-        expect(await getFields("ConsignmentOffer")).toContain(
-          "highEstimateAmount"
-        )
-      })
-
-      it("returns null since Convection is disabled", async () => {
-        const resolve = (await useConvectionStitching()).resolvers
-          .ConsignmentOffer.highEstimateAmount.resolve
-        expect(resolve()).toEqual(null)
-      })
-    })
-  })
 })
 
 it("returns null for submission query since Convection is disabled", async () => {
