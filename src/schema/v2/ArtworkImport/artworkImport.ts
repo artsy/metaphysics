@@ -62,6 +62,10 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_LOT_NUMBER: { value: "invalid_lot_number" },
     INVALID_ARTIST_PROOF: { value: "invalid_artist_proof" },
     INVALID_POSITION: { value: "invalid_position" },
+    INVALID_DATE_APPROXIMATE: { value: "invalid_date_approximate" },
+    INVALID_DATE_EARLIEST_YEAR: { value: "invalid_date_earliest_year" },
+    INVALID_DATE_LATEST_YEAR: { value: "invalid_date_latest_year" },
+    INVALID_DATE_MODE: { value: "invalid_date_mode" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
@@ -89,6 +93,15 @@ export const ArtworkImportStateType = new GraphQLEnumType({
       value: "artwork_import_processing_complete",
     },
     CANCELED: { value: "canceled" },
+  },
+})
+
+export const DateModeType = new GraphQLEnumType({
+  name: "DateMode",
+  values: {
+    YEAR: { value: "year" },
+    YEAR_RANGE: { value: "year_range" },
+    CUSTOM: { value: "custom" },
   },
 })
 
@@ -177,6 +190,26 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     currency: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+    dateApproximate: {
+      type: GraphQLBoolean,
+      resolve: ({ date_approximate }) => date_approximate,
+    },
+    dateCustom: {
+      type: GraphQLString,
+      resolve: ({ date_custom }) => date_custom,
+    },
+    dateEarliestYear: {
+      type: GraphQLInt,
+      resolve: ({ date_earliest_year }) => date_earliest_year,
+    },
+    dateLatestYear: {
+      type: GraphQLInt,
+      resolve: ({ date_latest_year }) => date_latest_year,
+    },
+    dateMode: {
+      type: DateModeType,
+      resolve: ({ date_mode }) => date_mode,
     },
     dimensionMetric: {
       type: new GraphQLNonNull(GraphQLString),
@@ -344,6 +377,26 @@ const ArtworkImportRowType = new GraphQLObjectType({
             date: {
               type: GraphQLString,
               resolve: ({ Date }) => Date,
+            },
+            dateApproximate: {
+              type: GraphQLString,
+              resolve: ({ DateApproximate }) => DateApproximate,
+            },
+            dateCustom: {
+              type: GraphQLString,
+              resolve: ({ DateCustom }) => DateCustom,
+            },
+            dateEarliestYear: {
+              type: GraphQLString,
+              resolve: ({ DateEarliestYear }) => DateEarliestYear,
+            },
+            dateLatestYear: {
+              type: GraphQLString,
+              resolve: ({ DateLatestYear }) => DateLatestYear,
+            },
+            dateMode: {
+              type: GraphQLString,
+              resolve: ({ DateMode }) => DateMode,
             },
             depth: {
               type: GraphQLString,
