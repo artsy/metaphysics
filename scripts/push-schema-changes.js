@@ -36,7 +36,7 @@ async function updateSchemaFile({
     commitMessage: "chore: update metaphysics graphql schema",
     body,
     assignees: ["artsyit"],
-    labels: ["Squash On Green"],
+    autoMergeMethod: "SQUASH",
     update: (repoDir) => {
       const repoConfig = supportedRepos[repo] || {}
 
