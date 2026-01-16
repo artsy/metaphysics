@@ -6,7 +6,6 @@ import {
   addResolveFunctionsToSchema,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import { GraphQLError } from "graphql"
 import { createHttpLink } from "apollo-link-http"
 
 export const executableConvectionSchema = () => {
@@ -66,13 +65,6 @@ export const executableConvectionSchema = () => {
           pageInfo: { hasNextPage: false, hasPreviousPage: false },
           totalCount: 0,
         }),
-      },
-      Mutation: {
-        updateConsignmentSubmission: () => {
-          throw new GraphQLError(
-            "Artwork submissions are not accepted at this time."
-          )
-        },
       },
     },
   })
