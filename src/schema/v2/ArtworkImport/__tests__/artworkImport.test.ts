@@ -136,4 +136,77 @@ describe("ArtworkImport", () => {
       fileName: "import2.csv",
     })
   })
+
+  it("fetches date fields from artwork import rows", async () => {
+    const artworkImportLoader = jest.fn().mockReturnValue({
+      id: "artwork-import-1",
+      file_name: "import.csv",
+    })
+
+    const artworkImportRowsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          id: "row1",
+          date_approximate: true,
+          date_custom: "Early Renaissance",
+          date_earliest_year: 2020,
+          date_latest_year: 2023,
+          date_mode: "year_range",
+          transformed_data: {
+            DateApproximate: "true",
+            DateCustom: "Early Renaissance",
+            DateEarliestYear: "2020",
+            DateLatestYear: "2023",
+            DateMode: "year_range",
+          },
+        },
+      ],
+      headers: { "x-total-count": "1" },
+    })
+
+    const query = gql`
+      query {
+        artworkImport(id: "artwork-import-1") {
+          rowsConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                dateApproximate
+                dateCustom
+                dateEarliestYear
+                dateLatestYear
+                dateMode
+                transformedData {
+                  dateApproximate
+                  dateCustom
+                  dateEarliestYear
+                  dateLatestYear
+                  dateMode
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = { artworkImportLoader, artworkImportRowsLoader }
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result.artworkImport.rowsConnection.edges[0].node).toEqual({
+      internalID: "row1",
+      dateApproximate: true,
+      dateCustom: "Early Renaissance",
+      dateEarliestYear: 2020,
+      dateLatestYear: 2023,
+      dateMode: "YEAR_RANGE",
+      transformedData: {
+        dateApproximate: "true",
+        dateCustom: "Early Renaissance",
+        dateEarliestYear: "2020",
+        dateLatestYear: "2023",
+        dateMode: "year_range",
+      },
+    })
+  })
 })
