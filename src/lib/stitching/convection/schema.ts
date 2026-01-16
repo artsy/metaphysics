@@ -68,16 +68,6 @@ export const executableConvectionSchema = () => {
         }),
       },
       Mutation: {
-        createConsignmentOffer: () => {
-          throw new GraphQLError(
-            "Artwork submissions are not accepted at this time."
-          )
-        },
-        createConsignmentOfferResponse: () => {
-          throw new GraphQLError(
-            "Artwork submissions are not accepted at this time."
-          )
-        },
         removeAssetFromConsignmentSubmission: () => {
           throw new GraphQLError(
             "Artwork submissions are not accepted at this time."
