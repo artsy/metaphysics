@@ -29,6 +29,11 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
     marketable: { type: GraphQLBoolean },
+    marketingCollectionId: {
+      type: GraphQLString,
+      description:
+        "The ID of the marketing collection to be used for backfill (only used together with includeBackfill: true)",
+    },
     onlyAtAuction: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -70,13 +75,14 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     const {
       artworks: backfillArtworks,
       totalCount: backfillArtworksTotalCount,
-    } = await getBackfillArtworks(
-      size || 0,
-      args.includeBackfill,
+    } = await getBackfillArtworks({
+      size: size || 0,
+      includeBackfill: args.includeBackfill,
       context,
-      args.onlyAtAuction,
-      args.excludeDislikedArtworks
-    )
+      marketingCollectionId: args.marketingCollectionId,
+      onlyAtAuction: args.onlyAtAuction,
+      excludeDislikedArtworks: args.excludeDislikedArtworks,
+    })
 
     const artworks = uniqBy(
       newForYouArtworks.concat(backfillArtworks),

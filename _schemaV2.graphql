@@ -21164,6 +21164,9 @@ type Query {
     includeBackfill: Boolean!
     last: Int
     marketable: Boolean
+
+    # The ID of the marketing collection to be used for backfill (only used together with includeBackfill: true)
+    marketingCollectionId: String
     maxWorksPerArtist: Int
     onlyAtAuction: Boolean = false
     page: Int
@@ -27753,6 +27756,9 @@ type Viewer {
     includeBackfill: Boolean!
     last: Int
     marketable: Boolean
+
+    # The ID of the marketing collection to be used for backfill (only used together with includeBackfill: true)
+    marketingCollectionId: String
     maxWorksPerArtist: Int
     onlyAtAuction: Boolean = false
     page: Int

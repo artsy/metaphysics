@@ -118,14 +118,28 @@ export const getNewForYouArtworks = async (
   return body
 }
 
-export const getBackfillArtworks = async (
-  size: number,
-  includeBackfill: boolean,
-  context: ResolverContext,
+export const getBackfillArtworks = async ({
+  size,
+  includeBackfill,
+  context,
+  marketingCollectionId,
   onlyAtAuction = false,
-  excludeDislikedArtworks = false
-): Promise<{ artworks: any[]; totalCount: number | null }> => {
+  excludeDislikedArtworks = false,
+}: {
+  size: number
+  includeBackfill: boolean
+  context: ResolverContext
+  marketingCollectionId?: string
+  onlyAtAuction?: boolean
+  excludeDislikedArtworks?: boolean
+}): Promise<{ artworks: any[]; totalCount: number | null }> => {
   if (!includeBackfill || size < 1) return { artworks: [], totalCount: 0 }
+
+  if (marketingCollectionId && onlyAtAuction) {
+    throw new Error(
+      "marketingCollectionId and onlyAtAuction cannot be used together"
+    )
+  }
 
   const {
     setItemsLoader,
@@ -143,12 +157,12 @@ export const getBackfillArtworks = async (
       ? filterArtworksAuthenticatedLoader
       : filterArtworksUnauthenticatedLoader
 
-  if (filterArtworksLoader && onlyAtAuction) {
+  if (filterArtworksLoader && (onlyAtAuction || marketingCollectionId)) {
     const { hits } = await filterArtworksLoader({
       exclude_disliked_artworks: excludeDislikedArtworks,
       size: size,
       sort: "-decayed_merch",
-      marketing_collection_id: "top-auction-lots",
+      marketing_collection_id: marketingCollectionId || "top-auction-lots",
     })
 
     return { artworks: hits, totalCount: hits.length }
