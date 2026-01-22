@@ -23,7 +23,7 @@ export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...InternalIDFields,
     bankName: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "Bank name",
       resolve: ({ bank_name }) => bank_name,
     },
