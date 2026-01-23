@@ -29,10 +29,9 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
     marketable: { type: GraphQLBoolean },
-    marketingCollectionId: {
+    backfillMarketingCollectionID: {
       type: GraphQLString,
-      description:
-        "The ID of the marketing collection to be used for backfill (only used together with includeBackfill: true)",
+      description: "The ID of the marketing collection to be used for backfill",
     },
     onlyAtAuction: {
       type: GraphQLBoolean,
@@ -48,6 +47,12 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
+    if (args.backfillMarketingCollectionID && !args.includeBackfill) {
+      throw new Error(
+        "includeBackfill is required when backfillMarketingCollectionID is true"
+      )
+    }
+
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
@@ -79,7 +84,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       size: size || 0,
       includeBackfill: args.includeBackfill,
       context,
-      marketingCollectionId: args.marketingCollectionId,
+      marketingCollectionId: args.backfillMarketingCollectionID,
       onlyAtAuction: args.onlyAtAuction,
       excludeDislikedArtworks: args.excludeDislikedArtworks,
     })
