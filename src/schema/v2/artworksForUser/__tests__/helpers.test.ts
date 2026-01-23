@@ -100,11 +100,11 @@ describe("getBackfillArtworks", () => {
     const includeBackfill = false
     const context = {} as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
-      context
-    )
+      context,
+    })
 
     expect(artworks).toEqual([])
     expect(totalCount).toEqual(0)
@@ -115,11 +115,11 @@ describe("getBackfillArtworks", () => {
     const includeBackfill = true
     const context = {} as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
-      context
-    )
+      context,
+    })
 
     expect(artworks).toEqual([])
     expect(totalCount).toEqual(0)
@@ -133,11 +133,11 @@ describe("getBackfillArtworks", () => {
       setsLoader: mockSetsLoader,
     } as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
-      context
-    )
+      context,
+    })
 
     expect(artworks).toEqual([])
     expect(totalCount).toEqual(0)
@@ -155,11 +155,11 @@ describe("getBackfillArtworks", () => {
       unauthenticatedLoaders: {},
     } as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
-      context
-    )
+      context,
+    })
 
     expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
       exclude_disliked_artworks: false,
@@ -180,13 +180,13 @@ describe("getBackfillArtworks", () => {
       unauthenticatedLoaders: {},
     } as any
 
-    await getBackfillArtworks(
-      remainingSize,
+    await getBackfillArtworks({
+      size: remainingSize,
       includeBackfill,
       context,
-      false,
-      true
-    )
+      onlyAtAuction: false,
+      excludeDislikedArtworks: true,
+    })
 
     expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
       exclude_disliked_artworks: true,
@@ -208,12 +208,12 @@ describe("getBackfillArtworks", () => {
       },
     } as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
       context,
-      true
-    )
+      onlyAtAuction: true,
+    })
 
     expect(mockFilterArtworksLoader).toBeCalledWith({
       exclude_disliked_artworks: false,
@@ -242,13 +242,13 @@ describe("getBackfillArtworks", () => {
       },
     } as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
-      remainingSize,
+    const { artworks, totalCount } = await getBackfillArtworks({
+      size: remainingSize,
       includeBackfill,
       context,
-      true,
-      true
-    )
+      onlyAtAuction: true,
+      excludeDislikedArtworks: true,
+    })
 
     expect(mockFilterArtworksLoader).toBeCalledWith({
       exclude_disliked_artworks: true,
@@ -274,13 +274,63 @@ describe("getBackfillArtworks", () => {
       unauthenticatedLoaders: {},
     } as any
 
-    const { artworks, totalCount } = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks({
       size,
       includeBackfill,
-      context
-    )
+      context,
+    })
 
     expect(artworks.length).toEqual(1)
     expect(totalCount).toEqual(2)
+  })
+
+  describe("when a marketing collection ID is provided", () => {
+    it("calls the filterArtworksLoader with the marketing collection ID and returns the artworks", async () => {
+      const mockFilterArtworksLoader = jest.fn(() => ({
+        hits: [{ id: "collection-artwork-id" }],
+      }))
+      const size = 1
+      const includeBackfill = true
+      const context = {
+        authenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      } as any
+
+      const { artworks, totalCount } = await getBackfillArtworks({
+        size,
+        includeBackfill,
+        context,
+        marketingCollectionId: "new-this-week",
+      })
+
+      expect(mockFilterArtworksLoader).toBeCalledWith({
+        exclude_disliked_artworks: false,
+        size: 1,
+        sort: "-decayed_merch",
+        marketing_collection_id: "new-this-week",
+      })
+      expect(artworks.map((artwork) => artwork.id)).toEqual([
+        "collection-artwork-id",
+      ])
+      expect(totalCount).toEqual(1)
+    })
+
+    it("returns an error when specified together with onlyAtAuction being true", async () => {
+      await expect(
+        getBackfillArtworks({
+          size: 1,
+          includeBackfill: true,
+          context: {} as any,
+          marketingCollectionId: "new-this-week",
+          onlyAtAuction: true,
+        })
+      ).rejects.toThrow(
+        "marketingCollectionId and onlyAtAuction cannot be used together"
+      )
+    })
   })
 })

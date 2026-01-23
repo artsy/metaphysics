@@ -29,6 +29,10 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
     marketable: { type: GraphQLBoolean },
+    backfillMarketingCollectionID: {
+      type: GraphQLString,
+      description: "The ID of the marketing collection to be used for backfill",
+    },
     onlyAtAuction: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -43,6 +47,12 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
+    if (args.backfillMarketingCollectionID && !args.includeBackfill) {
+      throw new Error(
+        "includeBackfill is required when backfillMarketingCollectionID is true"
+      )
+    }
+
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
@@ -70,13 +80,14 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     const {
       artworks: backfillArtworks,
       totalCount: backfillArtworksTotalCount,
-    } = await getBackfillArtworks(
-      size || 0,
-      args.includeBackfill,
+    } = await getBackfillArtworks({
+      size: size || 0,
+      includeBackfill: args.includeBackfill,
       context,
-      args.onlyAtAuction,
-      args.excludeDislikedArtworks
-    )
+      marketingCollectionId: args.backfillMarketingCollectionID,
+      onlyAtAuction: args.onlyAtAuction,
+      excludeDislikedArtworks: args.excludeDislikedArtworks,
+    })
 
     const artworks = uniqBy(
       newForYouArtworks.concat(backfillArtworks),
