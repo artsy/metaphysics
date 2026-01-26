@@ -2705,10 +2705,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Notes by a partner or MyCollection user on the artwork, can only be accessed by partner or the user that owns the artwork
   confidentialNotes: String
-  consignmentSubmission: ArtworkConsignmentSubmission
-    @deprecated(
-      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
-    )
   contactLabel: String
 
   # Pre-filled inquiry text
@@ -2874,10 +2870,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Do we want to encourage inquiries on this work?
   isInquireable: Boolean
-  isListed: Boolean!
-    @deprecated(
-      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
-    )
   isNotForSale: String
 
   # Whether a user can make an offer on a work
@@ -2890,10 +2882,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Whether a work is available for pickup
   isPickupAvailable: Boolean
-  isPriceEstimateRequestable: Boolean
-    @deprecated(
-      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
-    )
   isPriceHidden: Boolean
   isPriceRange: Boolean
 
@@ -2930,15 +2918,6 @@ type Artwork implements Node & Searchable & Sellable {
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   listPrice: ListPrice
-  listedArtworksConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): ArtworkConnection!
-    @deprecated(
-      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
-    )
 
   # In CMS, has the artwork been marked as BNMO?
   listingOptions: ArtworkListingOptions
@@ -3071,10 +3050,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # A slug ID.
   slug: ID!
-  submissionId: String
-    @deprecated(
-      reason: "This field is deprecated as collector artwork submissions are no longer accepted."
-    )
   taxInfo: TaxInfo
   title: String
 
@@ -3180,63 +3155,6 @@ interface ArtworkConnectionInterface {
   edges: [ArtworkEdgeInterface]
   pageCursors: PageCursors!
   pageInfo: PageInfo!
-}
-
-type ArtworkConsignmentSubmission {
-  # Action label asks the user to poseed with the submission.
-  actionLabel: String
-
-  # Button label visible to the user.
-  buttonLabel: String
-  displayText: String @deprecated(reason: "Prefer `stateLabel` field.")
-  externalID: String
-  inProgress: Boolean
-  internalID: String
-
-  # Whether the user is allowed to edit the associated My Collection artwork.
-  isEditable: Boolean
-  isSold: Boolean
-
-  # Submission state.
-  state: ArtworkConsignmentSubmissionState!
-
-  # More information about the submission state.
-  stateHelpMessage: String
-
-  # Submission state label visible to the user.
-  stateLabel: String
-  stateLabelColor: String
-}
-
-# A connection to a list of items.
-type ArtworkConsignmentSubmissionConnection {
-  # A list of edges.
-  edges: [ArtworkConsignmentSubmissionEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ArtworkConsignmentSubmissionEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: ArtworkConsignmentSubmission
-}
-
-enum ArtworkConsignmentSubmissionState {
-  APPROVED
-  CLOSED
-  DRAFT
-  HOLD
-  PUBLISHED
-  REJECTED
-  RESUBMITTED
-  SUBMITTED
 }
 
 union ArtworkContext = Fair | Sale | Show
@@ -7959,44 +7877,6 @@ type ConfirmationToken {
   paymentMethodPreview: PaymentMethodPreview!
 }
 
-type ConsignmentInquiry {
-  # Email of inquirer
-  email: String!
-
-  # id of the ConsignmentInquiry
-  internalID: Int!
-
-  # Message of the inquirer
-  message: String!
-
-  # Name of the inquirer
-  name: String!
-
-  # Phone number of the inquirer
-  phoneNumber: String
-
-  # An optional email from a member of the Collector Services team to whom the request was sent
-  recipientEmail: String
-
-  # gravity user id if user is logged in
-  userId: String
-}
-
-type ConsignmentInquiryMutationError {
-  error: String
-  message: String!
-  statusCode: Int
-  type: String
-}
-
-type ConsignmentInquiryMutationFailure {
-  mutationError: ConsignmentInquiryMutationError
-}
-
-type ConsignmentInquiryMutationSuccess {
-  consignmentInquiry: ConsignmentInquiry
-}
-
 type Contact {
   canContact: Boolean
   email: String
@@ -8838,25 +8718,6 @@ union CreateCollectionResponseOrError =
 type CreateCollectionSuccess {
   collection: Collection
 }
-
-input CreateConsignmentInquiryMutationInput {
-  clientMutationId: String
-  email: String!
-  message: String!
-  name: String!
-  phoneNumber: String
-  recipientEmail: String
-  userId: String
-}
-
-type CreateConsignmentInquiryMutationPayload {
-  clientMutationId: String
-  consignmentInquiryOrError: CreateConsignmentInquiryMutationType
-}
-
-union CreateConsignmentInquiryMutationType =
-    ConsignmentInquiryMutationFailure
-  | ConsignmentInquiryMutationSuccess
 
 type CreateConversationMessageTemplateFailure {
   mutationError: GravityMutationError
@@ -15263,15 +15124,6 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkConnection
-
-  # A list of the current user’s submissions
-  submissionsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    states: [ArtworkConsignmentSubmissionState]
-  ): ArtworkConsignmentSubmissionConnection
   tasks(limit: Int): [Task]
   type: String
 
@@ -15860,11 +15712,6 @@ type Mutation {
   # Create a collection
   createCollection(input: createCollectionInput!): createCollectionPayload
 
-  # Make inquiry about consignments
-  createConsignmentInquiry(
-    input: CreateConsignmentInquiryMutationInput!
-  ): CreateConsignmentInquiryMutationPayload
-
   # Creates a new conversation message template
   createConversationMessageTemplate(
     input: CreateConversationMessageTemplateInput!
@@ -16317,11 +16164,6 @@ type Mutation {
     input: RequestCredentialsForAssetUploadInput!
   ): RequestCredentialsForAssetUploadPayload
 
-  # Request price estimate of an artwork
-  requestPriceEstimate(
-    input: RequestPriceEstimateInput!
-  ): RequestPriceEstimatePayload
-
   # Save (or remove) an artwork to (from) a users default collection.
   saveArtwork(input: SaveArtworkInput!): SaveArtworkPayload
 
@@ -16744,7 +16586,6 @@ input MyCollectionCreateArtworkInput {
   provenance: String
   signatureDetails: String
   signatureTypes: [ArtworkSignatureTypeEnum]
-  submissionId: String
   title: String!
   width: String
 }
@@ -16843,7 +16684,6 @@ input MyCollectionUpdateArtworkInput {
   provenance: String
   signatureDetails: String
   signatureTypes: [ArtworkSignatureTypeEnum]
-  submissionId: String
   title: String
   width: String
 }
@@ -21441,31 +21281,6 @@ type RequestLocation {
   id: ID!
 }
 
-input RequestPriceEstimateInput {
-  artworkId: String!
-  clientMutationId: String
-  requesterEmail: String
-  requesterName: String
-  requesterPhoneNumber: String
-}
-
-union RequestPriceEstimateMutationType =
-    RequestPriceEstimatedMutationFailure
-  | RequestPriceEstimatedMutationSuccess
-
-type RequestPriceEstimatePayload {
-  clientMutationId: String
-  priceEstimateParamsOrError: RequestPriceEstimateMutationType
-}
-
-type RequestPriceEstimatedMutationFailure {
-  mutationError: GravityMutationError
-}
-
-type RequestPriceEstimatedMutationSuccess {
-  submittedPriceEstimateParams: SubmittedPriceEstimateParams
-}
-
 type ResizedImageUrl {
   factor: Float!
   height: Int
@@ -23106,20 +22921,6 @@ type SubmitInquiryRequestMutationPayload {
 
   # Artwork Inquiry request
   inquiryRequest: InquiryRequest
-}
-
-type SubmittedPriceEstimateParams {
-  # Artwork ID submitted for estimate
-  artworkId: String!
-
-  # Email of the requester
-  requesterEmail: String
-
-  # Name of the requester
-  requesterName: String
-
-  # Phone number of the requester
-  requesterPhoneNumber: String
 }
 
 # Subtotal line

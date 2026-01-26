@@ -54,7 +54,6 @@ interface MyCollectionArtworkUpdateMutationInput {
   pricePaidCurrency?: string
   signatureDetails?: string
   signatureTypes?: [string]
-  submissionId?: string
 }
 
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
@@ -170,9 +169,6 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     signatureTypes: {
       type: new GraphQLList(ArtworkSignatureTypeEnum),
-    },
-    submissionId: {
-      type: GraphQLString,
     },
     title: {
       type: GraphQLString,

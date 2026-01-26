@@ -166,7 +166,6 @@ import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreement
 import { Agreement } from "./agreement"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
-import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 import Conversations from "./conversation/conversations"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import updateMessageMutation from "./conversation/updateMessageMutation"
@@ -197,7 +196,6 @@ import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
 import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
-import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
@@ -572,7 +570,6 @@ export default new GraphQLSchema({
       createCanonicalArtist: createCanonicalArtistMutation,
       createCareerHighlight: createCareerHighlightMutation,
       createCollection: createCollectionMutation,
-      createConsignmentInquiry: createConsignmentInquiryMutation,
       createConversationMessageTemplate: createConversationMessageTemplateMutation,
       createCreditCard: createCreditCardMutation,
       createFeature: CreateFeatureMutation,
@@ -677,7 +674,6 @@ export default new GraphQLSchema({
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
-      requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
