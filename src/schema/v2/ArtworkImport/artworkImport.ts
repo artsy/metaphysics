@@ -56,6 +56,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_LOW_ESTIMATE: { value: "invalid_low_estimate" },
     INVALID_HIGH_ESTIMATE: { value: "invalid_high_estimate" },
     INVALID_RESERVE: { value: "invalid_reserve" },
+    INVALID_RESERVE_UNKNOWN: { value: "invalid_reserve_unknown" },
     INVALID_EXCLUDE_FROM_MARKETING: { value: "invalid_exclude_from_marketing" },
     INVALID_DIMENSION_METRIC: { value: "invalid_dimension_metric" },
     INVALID_CURRENCY: { value: "invalid_currency" },
@@ -556,6 +557,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
             reserve: {
               type: GraphQLString,
               resolve: ({ Reserve }) => Reserve,
+            },
+            reserveUnknown: {
+              type: GraphQLString,
+              resolve: ({ ReserveUnknown }) => ReserveUnknown,
             },
             position: {
               type: GraphQLString,

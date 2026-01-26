@@ -3535,6 +3535,7 @@ enum ArtworkImportError {
   INVALID_POSITION
   INVALID_PRICE
   INVALID_RESERVE
+  INVALID_RESERVE_UNKNOWN
   INVALID_SIGNATURE
   INVALID_TITLE
   INVALID_WEIGHT
@@ -3698,6 +3699,7 @@ type ArtworkImportTransformedData {
   provenance: String
   publisher: String
   reserve: String
+  reserveUnknown: String
   saleSlug: String
   series: String
   signature: [String]
