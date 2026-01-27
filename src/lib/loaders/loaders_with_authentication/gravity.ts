@@ -230,6 +230,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    deleteArtworkImportLoader: gravityLoader(
+      (id) => `artwork_import/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createArtworkTemplateLoader: gravityLoader<any, { partnerId: string }>(
       ({ partnerId }) => `partner/${partnerId}/artwork_template`,
       {},
