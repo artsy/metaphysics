@@ -105,9 +105,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     framedWidth: {
       type: GraphQLString,
     },
-    submissionId: {
-      type: GraphQLString,
-    },
     medium: {
       type: GraphQLString,
     },
