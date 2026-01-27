@@ -3393,6 +3393,7 @@ enum ArtworkImportError {
   INVALID_POSITION
   INVALID_PRICE
   INVALID_RESERVE
+  INVALID_RESERVE_UNKNOWN
   INVALID_SIGNATURE
   INVALID_TITLE
   INVALID_WEIGHT
@@ -3556,6 +3557,7 @@ type ArtworkImportTransformedData {
   provenance: String
   publisher: String
   reserve: String
+  reserveUnknown: String
   saleSlug: String
   series: String
   signature: [String]
@@ -4748,7 +4750,7 @@ type BankAccount {
   accountHolderName: String
 
   # Bank name
-  bankName: String!
+  bankName: String
 
   # A globally unique ID.
   id: ID!
@@ -9870,6 +9872,34 @@ input DeleteArtworkImageInput {
 type DeleteArtworkImagePayload {
   artworkOrError: ArtworkMutationType
   clientMutationId: String
+}
+
+type DeleteArtworkImportFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteArtworkImportInput {
+  artworkImportID: String!
+  clientMutationId: String
+}
+
+type DeleteArtworkImportPayload {
+  artworkImportOrError: DeleteArtworkImportResponseOrError
+  clientMutationId: String
+}
+
+union DeleteArtworkImportResponseOrError =
+    DeleteArtworkImportFailure
+  | DeleteArtworkImportSuccess
+
+type DeleteArtworkImportSuccess {
+  deletedArtworkIds: [String]
+  deletedArtworksCount: Int
+  deletedSaleArtworkIds: [Int]
+  deletedSaleArtworksCount: Int
+  errors: [String]
+  importCanceled: Boolean
+  success: Boolean
 }
 
 input DeleteArtworkMutationInput {
@@ -15884,6 +15914,11 @@ type Mutation {
   # Deletes an image from an artwork in my collection
   deleteArtworkImage(input: DeleteArtworkImageInput!): DeleteArtworkImagePayload
 
+  # Delete an artwork import and all associated artworks and sale artworks
+  deleteArtworkImport(
+    input: DeleteArtworkImportInput!
+  ): DeleteArtworkImportPayload
+
   # Delete an artwork template.
   deleteArtworkTemplate(
     input: DeleteArtworkTemplateInput!
@@ -19688,6 +19723,9 @@ type Query {
   # A connection of artworks for a user.
   artworksForUser(
     after: String
+
+    # The ID of the marketing collection to be used for backfill
+    backfillMarketingCollectionID: String
     before: String
     excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false
@@ -26064,6 +26102,9 @@ type Viewer {
   # A connection of artworks for a user.
   artworksForUser(
     after: String
+
+    # The ID of the marketing collection to be used for backfill
+    backfillMarketingCollectionID: String
     before: String
     excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false

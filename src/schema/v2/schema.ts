@@ -322,6 +322,7 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
+import { DeleteArtworkImportMutation } from "./ArtworkImport/mutations/deleteArtworkImportMutation"
 import { CreateArtworkTemplateMutation } from "./artworkTemplate/mutations/createArtworkTemplateMutation"
 import { CreateArtworkFromTemplateMutation } from "./artworkTemplate/mutations/createArtworkFromTemplateMutation"
 import { ArtworkImport } from "./ArtworkImport/artworkImport"
@@ -609,6 +610,7 @@ export default new GraphQLSchema({
       deleteArtist: deleteArtistMutation,
       deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
+      deleteArtworkImport: DeleteArtworkImportMutation,
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,

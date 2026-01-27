@@ -81,7 +81,7 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    collectionLoader: gravityLoader((id) => `collection/${id}`),
+    collectionLoader: gravityUncachedLoader((id) => `collection/${id}`),
     collectorProfilesLoader: gravityLoader(
       "collector_profiles",
       {},
