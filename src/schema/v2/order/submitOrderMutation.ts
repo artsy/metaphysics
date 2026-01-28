@@ -66,7 +66,6 @@ export const submitOrderMutation = mutationWithClientMutationId<
         offer_id: input.offerID,
         confirmed_setup_intent_id: input.confirmedSetupIntentId,
       }
-
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
       // If this is an offer order from artwork_page, create an inquiry
