@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
 } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
+import { mutationWithClientMutationId, fromGlobalId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
@@ -76,9 +76,12 @@ export const DismissArtworkDuplicateMutation = mutationWithClientMutationId<
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
+    // Decode Relay global ID to raw UUID for Gravity
+    const { id: pairId } = fromGlobalId(duplicatePairID)
+
     try {
-      const result = await dismissDuplicateLoader(duplicatePairID)
-      return result.body
+      const result = await dismissDuplicateLoader(pairId)
+      return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

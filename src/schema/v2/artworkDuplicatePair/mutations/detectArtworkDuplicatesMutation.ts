@@ -74,8 +74,9 @@ export const DetectArtworkDuplicatesMutation = mutationWithClientMutationId<
     }
 
     try {
-      const result = await detectDuplicatesLoader({ partnerId: partnerID })
-      return result.body
+      // Pass params with snake_case keys for Gravity
+      const result = await detectDuplicatesLoader({ partner_id: partnerID })
+      return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

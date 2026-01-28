@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
 } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
+import { mutationWithClientMutationId, fromGlobalId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
@@ -88,14 +88,18 @@ export const MergeArtworksMutation = mutationWithClientMutationId<
       throw new Error("This operation requires an `X-Access-Token` header.")
     }
 
+    // Decode Relay global ID to raw UUID for Gravity (only the pair ID is a global ID)
+    // Artwork IDs are already raw MongoDB IDs (internalID from GraphQL)
+    const { id: pairId } = fromGlobalId(duplicatePairID)
+
     try {
-      const result = await mergeDuplicateArtworksLoader({
-        id: duplicatePairID,
-        primaryArtworkId: primaryArtworkID,
-        secondaryArtworkId: secondaryArtworkID,
-        mergedData: mergedData,
+      // Loader takes (id, bodyParams) - body params are snake_cased for Gravity
+      const result = await mergeDuplicateArtworksLoader(pairId, {
+        primary_artwork_id: primaryArtworkID,
+        secondary_artwork_id: secondaryArtworkID,
+        merged_data: mergedData,
       })
-      return result.body
+      return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

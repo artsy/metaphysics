@@ -195,9 +195,9 @@ export default (accessToken, userID, opts) => {
     artworkDuplicatePairLoader: gravityLoader<any, string>(
       (id) => `artwork_duplicate_pairs/${id}`
     ),
-    detectDuplicatesLoader: gravityLoader<any, { partnerId: string }>(
-      () => `artwork_duplicate_pairs/detect`,
-      ({ partnerId }) => ({ partner_id: partnerId }),
+    detectDuplicatesLoader: gravityLoader(
+      "artwork_duplicate_pairs/detect",
+      {},
       { method: "POST" }
     ),
     dismissDuplicateLoader: gravityLoader<any, string>(
@@ -205,21 +205,9 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    mergeDuplicateArtworksLoader: gravityLoader<
-      any,
-      {
-        id: string
-        primaryArtworkId: string
-        secondaryArtworkId: string
-        mergedData: any
-      }
-    >(
-      ({ id }) => `artwork_duplicate_pairs/${id}/merge`,
-      ({ primaryArtworkId, secondaryArtworkId, mergedData }) => ({
-        primary_artwork_id: primaryArtworkId,
-        secondary_artwork_id: secondaryArtworkId,
-        merged_data: mergedData,
-      }),
+    mergeDuplicateArtworksLoader: gravityLoader<any, string>(
+      (id) => `artwork_duplicate_pairs/${id}/merge`,
+      {},
       { method: "PUT" }
     ),
     // End RESTful Artwork Import Loaders
