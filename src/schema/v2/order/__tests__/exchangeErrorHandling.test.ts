@@ -1,21 +1,14 @@
-import { handleExchangeError } from "../exchangeErrorHandling"
+import { ExchangeError, handleExchangeError } from "../exchangeErrorHandling"
 import { ORDER_MUTATION_FLAGS } from "../types/sharedOrderTypes"
 
 describe("handleExchangeError", () => {
   const createError = (
     statusCode: number,
-    body?: {
-      message?: string
-      code: string
-      action_data?: { client_secret: string }
-    }
-  ) => {
-    const error = new Error("Test error") as Error & {
-      statusCode: number
-      body?: typeof body
-    }
+    body?: ExchangeError["body"] | string
+  ): ExchangeError => {
+    const error = new Error("Test error") as ExchangeError
     error.statusCode = statusCode
-    error.body = body
+    error.body = body as ExchangeError["body"]
     return error
   }
 
@@ -111,6 +104,64 @@ describe("handleExchangeError", () => {
         _type: ORDER_MUTATION_FLAGS.ERROR,
         __typename: "OrderMutationError",
       })
+    })
+  })
+
+  describe("when error body is a JSON string", () => {
+    it("parses JSON string body and returns error with message and code", () => {
+      const error = createError(
+        422,
+        JSON.stringify({
+          message: "Card declined",
+          code: "card_declined",
+        })
+      )
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "Card declined",
+        code: "card_declined",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+
+    it("parses JSON string body for payment_requires_action", () => {
+      const error = createError(
+        422,
+        JSON.stringify({
+          code: "payment_requires_action",
+          action_data: { client_secret: "secret_456" },
+        })
+      )
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        clientSecret: "secret_456",
+        _type: ORDER_MUTATION_FLAGS.ACTION_REQUIRED,
+        __typename: "OrderMutationActionRequired",
+      })
+    })
+
+    it("falls back to original body when JSON parsing fails", () => {
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {})
+
+      const error = createError(422, "invalid json string")
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "An error occurred",
+        code: "internal_error",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+
+      consoleSpy.mockRestore()
     })
   })
 })

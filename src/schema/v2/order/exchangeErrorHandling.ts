@@ -1,7 +1,7 @@
 import { safeJsonParse } from "lib/jsonParse"
 import { ORDER_MUTATION_FLAGS } from "./types/sharedOrderTypes"
 
-type ExchangeError = Error & {
+export type ExchangeError = Error & {
   statusCode: number
   body?: {
     message?: string
