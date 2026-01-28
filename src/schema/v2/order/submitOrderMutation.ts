@@ -66,7 +66,12 @@ export const submitOrderMutation = mutationWithClientMutationId<
         offer_id: input.offerID,
         confirmed_setup_intent_id: input.confirmedSetupIntentId,
       }
+
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
+      console.log(
+        "await meOrderSubmitLoader returned submittedOrder",
+        submittedOrder
+      )
 
       // If this is an offer order from artwork_page, create an inquiry
       if (
@@ -102,9 +107,16 @@ export const submitOrderMutation = mutationWithClientMutationId<
 
       submittedOrder._type = ORDER_MUTATION_FLAGS.SUCCESS // Set the type for the response
       submittedOrder.__typename = "OrderMutationSuccess"
+      console.log(
+        "submitOrderMutation returning submittedOrder",
+        submittedOrder
+      )
       return submittedOrder
     } catch (error) {
-      return handleExchangeError(error)
+      console.log("caught exchange error", error)
+      const exchangeError = handleExchangeError(error)
+      console.log("returning exchange error", exchangeError)
+      return exchangeError
     }
   },
 })
