@@ -59,6 +59,21 @@ export const OrderPaymentMethodEnum = new GraphQLEnumType({
   },
 })
 
+export const OrderStripePaymentMethodTypeEnum = new GraphQLEnumType({
+  name: "OrderStripePaymentMethodTypeEnum",
+  values: {
+    card: {
+      value: "card",
+    },
+    us_bank_account: {
+      value: "us_bank_account",
+    },
+    sepa_debit: {
+      value: "sepa_debit",
+    },
+  },
+})
+
 export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
   name: "OrderCreditCardWalletTypeEnum",
   values: {
