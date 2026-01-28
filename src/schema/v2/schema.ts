@@ -9,6 +9,7 @@ import Artist from "./artist"
 import Artists, { artistsConnection } from "./artists"
 import { CuratedTrendingArtists } from "./artists/curatedTrending"
 import { mergeArtistsMutation } from "./artists/mergeArtistsMutation"
+import { MergeArtworksMutation } from "./artworkDuplicatePair/mutations/mergeArtworksMutation"
 import Artwork from "./artwork"
 import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
 import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArtworkGrid"
@@ -77,6 +78,8 @@ import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
+import { DetectArtworkDuplicatesMutation } from "./artworkDuplicatePair/mutations/detectArtworkDuplicatesMutation"
+import { DismissArtworkDuplicateMutation } from "./artworkDuplicatePair/mutations/dismissArtworkDuplicateMutation"
 import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
 import { dismissTaskMutation } from "./me/dismiss_task_mutation"
 import FollowArtist from "./me/follow_artist"
@@ -650,8 +653,10 @@ export default new GraphQLSchema({
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       deleteVideo: deleteVideoMutation,
       deleteViewingRoom: deleteViewingRoomMutation,
+      detectArtworkDuplicates: DetectArtworkDuplicatesMutation,
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,
+      dismissArtworkDuplicate: DismissArtworkDuplicateMutation,
       dislikeArtwork: dislikeArtworkMutation,
       dismissTask: dismissTaskMutation,
       enableSecondFactor: enableSecondFactorMutation,
@@ -665,6 +670,7 @@ export default new GraphQLSchema({
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
       mergeArtists: mergeArtistsMutation,
+      mergeArtworks: MergeArtworksMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,

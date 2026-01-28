@@ -3314,6 +3314,61 @@ interface ArtworkContextGrid {
   title: String
 }
 
+type ArtworkDuplicatePair implements Node {
+  # Primary artwork in the duplicate pair
+  artworkOne: Artwork!
+
+  # Secondary artwork in the duplicate pair
+  artworkTwo: Artwork!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
+  # Additional metadata about the match
+  matchMetadata: JSON
+
+  # Similarity score between the artworks
+  similarityScore: Float
+
+  # Status of the duplicate pair (open, dismissed, merged)
+  status: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+}
+
+# A connection to a list of items.
+type ArtworkDuplicatePairConnection {
+  # A list of edges.
+  edges: [ArtworkDuplicatePairEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtworkDuplicatePairEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkDuplicatePair
+}
+
 # An edge in a connection.
 type ArtworkEdge implements ArtworkEdgeInterface {
   # A cursor for use in pagination
@@ -12003,6 +12058,36 @@ type Department {
   name: String!
 }
 
+type DetectArtworkDuplicatesFailure {
+  # List of errors that occurred executing the mutation
+  errors: [String]
+  mutationError: GravityMutationError
+}
+
+input DetectArtworkDuplicatesInput {
+  clientMutationId: String
+
+  # Partner ID to detect duplicates for
+  partnerID: String!
+}
+
+type DetectArtworkDuplicatesPayload {
+  clientMutationId: String
+  detectArtworkDuplicatesOrError: DetectArtworkDuplicatesResponseOrError
+}
+
+union DetectArtworkDuplicatesResponseOrError =
+    DetectArtworkDuplicatesFailure
+  | DetectArtworkDuplicatesSuccess
+
+type DetectArtworkDuplicatesSuccess {
+  # Number of duplicate pairs found
+  duplicatesCount: Int
+
+  # Success message
+  message: String
+}
+
 type Device {
   # E.g., net.artsy.artsy
   appId: String!
@@ -12165,6 +12250,36 @@ type DislikeArtworkPayload {
   artwork: Artwork
   clientMutationId: String
   me: Me!
+}
+
+type DismissArtworkDuplicateFailure {
+  # List of errors that occurred executing the mutation
+  errors: [String]
+  mutationError: GravityMutationError
+}
+
+input DismissArtworkDuplicateInput {
+  clientMutationId: String
+
+  # Duplicate pair ID to dismiss
+  duplicatePairID: String!
+}
+
+type DismissArtworkDuplicatePayload {
+  clientMutationId: String
+  dismissArtworkDuplicateOrError: DismissArtworkDuplicateResponseOrError
+}
+
+union DismissArtworkDuplicateResponseOrError =
+    DismissArtworkDuplicateFailure
+  | DismissArtworkDuplicateSuccess
+
+type DismissArtworkDuplicateSuccess {
+  # The dismissed duplicate pair
+  duplicatePair: ArtworkDuplicatePair
+
+  # Success message
+  message: String
 }
 
 type DismissTaskFailure {
@@ -16688,6 +16803,43 @@ type MergeArtistsSuccess {
   artist: Artist
 }
 
+type MergeArtworksFailure {
+  # List of errors that occurred executing the mutation
+  errors: [String]
+  mutationError: GravityMutationError
+}
+
+input MergeArtworksInput {
+  clientMutationId: String
+
+  # Duplicate pair ID
+  duplicatePairID: String!
+
+  # JSON object containing the merged artwork data
+  mergedData: JSON!
+
+  # Primary artwork ID to keep
+  primaryArtworkID: String!
+
+  # Secondary artwork ID to merge
+  secondaryArtworkID: String!
+}
+
+type MergeArtworksPayload {
+  clientMutationId: String
+  mergeArtworksOrError: MergeArtworksResponseOrError
+}
+
+union MergeArtworksResponseOrError = MergeArtworksFailure | MergeArtworksSuccess
+
+type MergeArtworksSuccess {
+  # The merged artwork
+  artwork: Artwork
+
+  # Success message
+  message: String
+}
+
 # A message in a conversation.
 type Message implements Node {
   attachments: [Attachment]
@@ -17510,12 +17662,22 @@ type Mutation {
   deliverSecondFactor(
     input: DeliverSecondFactorInput!
   ): DeliverSecondFactorPayload
+
+  # Detect duplicate artworks for a partner
+  detectArtworkDuplicates(
+    input: DetectArtworkDuplicatesInput!
+  ): DetectArtworkDuplicatesPayload
   disableSecondFactor(
     input: DisableSecondFactorInput!
   ): DisableSecondFactorPayload
 
   # Add (or remove) an artwork to (from) a users dislikes.
   dislikeArtwork(input: DislikeArtworkInput!): DislikeArtworkPayload
+
+  # Dismiss an artwork duplicate pair
+  dismissArtworkDuplicate(
+    input: DismissArtworkDuplicateInput!
+  ): DismissArtworkDuplicatePayload
 
   # Updates a Task on the logged in User
   dismissTask(input: DismissTaskMutationInput!): DismissTaskMutationPayload
@@ -17563,6 +17725,9 @@ type Mutation {
 
   # Merge multiple artist records in order to deduplicate artists
   mergeArtists(input: MergeArtistsMutationInput!): MergeArtistsMutationPayload
+
+  # Merge two duplicate artworks into one
+  mergeArtworks(input: MergeArtworksInput!): MergeArtworksPayload
 
   # Create an artwork in my collection
   myCollectionCreateArtwork(
@@ -19163,6 +19328,17 @@ type Partner implements Node {
     last: Int
     showID: String
   ): PartnerDocumentConnection
+
+  # A connection of artwork duplicate pairs for this partner.
+  duplicatePairsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    # Filter by status (e.g., "open", "dismissed", "merged")
+    status: String
+  ): ArtworkDuplicatePairConnection
 
   # Suggested filters for associated artworks
   featuredKeywords: [String!]!

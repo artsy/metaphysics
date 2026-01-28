@@ -177,6 +177,51 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    // Artwork duplicate pairs loaders
+    artworkDuplicatePairsLoader: gravityLoader<
+      any,
+      { partnerId: string; status?: string; page?: number; size?: number }
+    >(
+      ({ partnerId, status, page, size }) => {
+        const params = new URLSearchParams({ partner_id: partnerId })
+        if (status) params.append("status", status)
+        if (page) params.append("page", page.toString())
+        if (size) params.append("size", size.toString())
+        return `artwork_duplicate_pairs?${params}`
+      },
+      {},
+      { headers: true }
+    ),
+    artworkDuplicatePairLoader: gravityLoader<any, string>(
+      (id) => `artwork_duplicate_pairs/${id}`
+    ),
+    detectDuplicatesLoader: gravityLoader<any, { partnerId: string }>(
+      () => `artwork_duplicate_pairs/detect`,
+      ({ partnerId }) => ({ partner_id: partnerId }),
+      { method: "POST" }
+    ),
+    dismissDuplicateLoader: gravityLoader<any, string>(
+      (id) => `artwork_duplicate_pairs/${id}/dismiss`,
+      {},
+      { method: "PUT" }
+    ),
+    mergeDuplicateArtworksLoader: gravityLoader<
+      any,
+      {
+        id: string
+        primaryArtworkId: string
+        secondaryArtworkId: string
+        mergedData: any
+      }
+    >(
+      ({ id }) => `artwork_duplicate_pairs/${id}/merge`,
+      ({ primaryArtworkId, secondaryArtworkId, mergedData }) => ({
+        primary_artwork_id: primaryArtworkId,
+        secondary_artwork_id: secondaryArtworkId,
+        merged_data: mergedData,
+      }),
+      { method: "PUT" }
+    ),
     // End RESTful Artwork Import Loaders
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",

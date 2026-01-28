@@ -68,6 +68,7 @@ import {
   EXAMPLE_TEMPLATES,
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
+import { ArtworkDuplicatePairsConnectionType } from "schema/v2/artworkDuplicatePair/artworkDuplicatePair"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -759,6 +760,52 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
+          })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
+      },
+      duplicatePairsConnection: {
+        description:
+          "A connection of artwork duplicate pairs for this partner.",
+        type: ArtworkDuplicatePairsConnectionType,
+        args: pageable({
+          status: {
+            type: GraphQLString,
+            description:
+              'Filter by status (e.g., "open", "dismissed", "merged")',
+          },
+        }),
+        resolve: async ({ id }, args, { artworkDuplicatePairsLoader }) => {
+          if (!artworkDuplicatePairsLoader) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { partnerId, status, page: pPage, size: pSize } = {
+            partnerId: id,
+            status: args.status,
+            page: page,
+            size: size,
+          }
+
+          const { body, headers } = await artworkDuplicatePairsLoader({
+            partnerId,
+            status,
+            page: pPage,
+            size: pSize,
           })
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
