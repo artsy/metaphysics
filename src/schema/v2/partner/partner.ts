@@ -947,6 +947,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       documentsConnection: PartnerDocumentsConnection,
+      email: {
+        type: GraphQLString,
+        resolve: ({ email }) => email,
+      },
       merchantAccount: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerMerchantAccount",
