@@ -146,10 +146,6 @@ describe("handleExchangeError", () => {
     })
 
     it("falls back to original body when JSON parsing fails", () => {
-      const consoleSpy = jest
-        .spyOn(console, "error")
-        .mockImplementation(() => {})
-
       const error = createError(422, "invalid json string")
 
       const result = handleExchangeError(error)
@@ -160,8 +156,6 @@ describe("handleExchangeError", () => {
         _type: ORDER_MUTATION_FLAGS.ERROR,
         __typename: "OrderMutationError",
       })
-
-      consoleSpy.mockRestore()
     })
   })
 })
