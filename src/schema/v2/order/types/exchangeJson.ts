@@ -22,6 +22,11 @@ type OrderPaymentMethodEnum =
   | "us_bank_account"
   | "sepa_debit"
 
+type OrderStripePaymentMethodTypeEnum =
+  | "card"
+  | "us_bank_account"
+  | "sepa_debit"
+
 type OrderBuyerState =
   | "incomplete" // before order is submitted.
   | "submitted"
@@ -52,6 +57,7 @@ interface OfferJSON {
 
 export interface OrderJSON {
   available_payment_methods: OrderPaymentMethodEnum[]
+  available_stripe_payment_method_types: OrderStripePaymentMethodTypeEnum[]
   available_shipping_countries: string[]
   awaiting_response_from: "buyer" | "seller" | null
   bank_account_id?: string

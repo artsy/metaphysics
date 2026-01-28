@@ -13,6 +13,7 @@ describe("Me", () => {
     orderJson = {
       ...baseOrderJson,
       available_payment_methods: ["credit card", "wire_transfer"],
+      available_stripe_payment_method_types: ["card", "us_bank_account"],
       id: "order-id",
       source: "artwork_page",
       code: "order-code",
@@ -66,6 +67,7 @@ describe("Me", () => {
           me {
             order(id: "order-id") {
               availablePaymentMethods
+              availableStripePaymentMethodTypes
               availableShippingCountries
               buyerTotal {
                 display
@@ -177,6 +179,7 @@ describe("Me", () => {
 
       expect(result.me.order).toEqual({
         availablePaymentMethods: ["CREDIT_CARD", "WIRE_TRANSFER"],
+        availableStripePaymentMethodTypes: ["card", "us_bank_account"],
         availableShippingCountries: ["US", "JP"],
         buyerTotal: {
           display: "US$5,000",
@@ -267,6 +270,52 @@ describe("Me", () => {
           minor: 4299,
         },
         offers: [],
+      })
+    })
+
+    describe("availableStripePaymentMethodTypes", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              availableStripePaymentMethodTypes
+            }
+          }
+        }
+      `
+
+      it("returns available Stripe payment method types", async () => {
+        orderJson.available_stripe_payment_method_types = [
+          "card",
+          "us_bank_account",
+          "sepa_debit",
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.availableStripePaymentMethodTypes).toEqual([
+          "card",
+          "us_bank_account",
+          "sepa_debit",
+        ])
+      })
+
+      it("returns an empty array when no payment methods are available", async () => {
+        orderJson.available_stripe_payment_method_types = []
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.availableStripePaymentMethodTypes).toEqual([])
       })
     })
 
