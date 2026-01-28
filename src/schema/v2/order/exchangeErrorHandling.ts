@@ -31,7 +31,7 @@ export const handleExchangeError = (error: ExchangeError) => {
   if (error.statusCode === 422) {
     return {
       message: errorBody?.message || "An error occurred",
-      code: errorBody?.code,
+      code: errorBody?.code || "internal_error",
       _type: ORDER_MUTATION_FLAGS.ERROR,
       __typename: "OrderMutationError",
     }
