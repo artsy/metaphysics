@@ -39,6 +39,7 @@ import {
   OrderCreditCardWalletTypeEnum,
   OrderModeEnum,
   OrderPaymentMethodEnum,
+  OrderStripePaymentMethodTypeEnum,
   OrderSourceEnum,
 } from "./sharedOrderTypes"
 import {
@@ -192,6 +193,15 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       ),
       description: "List of available payment methods for the order",
       resolve: ({ available_payment_methods }) => available_payment_methods,
+    },
+    availableStripePaymentMethodTypes: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(OrderStripePaymentMethodTypeEnum))
+      ),
+      description:
+        "List of available Stripe payment method types for the order",
+      resolve: ({ available_stripe_payment_method_types }) =>
+        available_stripe_payment_method_types,
     },
     availableShippingCountries: {
       description:

@@ -30,6 +30,7 @@ export const baseOrderJson = {
     },
   ],
   available_shipping_countries: ["US", "JP"],
+  available_stripe_payment_method_types: ["card", "us_bank_account"],
   pickup_available: true,
   fulfillment_options: [
     { type: "pickup", amount_minor: 0 },
