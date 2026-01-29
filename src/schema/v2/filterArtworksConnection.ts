@@ -259,6 +259,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   sold: {
     type: GraphQLBoolean,
   },
+  viewingRoomID: {
+    type: GraphQLID,
+  },
   signed: {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
@@ -490,6 +493,7 @@ const convertFilterArgs = ({
   showID,
   sizes,
   tagID,
+  viewingRoomID,
   visibilityLevel,
   ..._options
 }) => {
@@ -530,6 +534,7 @@ const convertFilterArgs = ({
     sale_id: saleID,
     sizes: sizes,
     tag_id: tagID,
+    viewing_room_id: viewingRoomID,
     visibility_level: visibilityLevel,
     ..._options,
   }
