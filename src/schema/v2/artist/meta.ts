@@ -80,6 +80,8 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLNonNull(ArtistMetaType),
+  deprecationReason:
+    "Use `name` and `biographyBlurb` fields to build meta tags client-side",
   args: {
     page: { type: ArtistPageEnumType, defaultValue: "ABOUT" },
   },
