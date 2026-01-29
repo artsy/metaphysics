@@ -1,0 +1,161 @@
+import { ExchangeError, handleExchangeError } from "../exchangeErrorHandling"
+import { ORDER_MUTATION_FLAGS } from "../types/sharedOrderTypes"
+
+describe("handleExchangeError", () => {
+  const createError = (
+    statusCode: number,
+    body?: ExchangeError["body"] | string
+  ): ExchangeError => {
+    const error = new Error("Test error") as ExchangeError
+    error.statusCode = statusCode
+    error.body = body as ExchangeError["body"]
+    return error
+  }
+
+  describe("when error requires payment action", () => {
+    it("returns ACTION_REQUIRED with clientSecret when payment_requires_action", () => {
+      const error = createError(422, {
+        code: "payment_requires_action",
+        action_data: { client_secret: "secret_123" },
+      })
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        clientSecret: "secret_123",
+        _type: ORDER_MUTATION_FLAGS.ACTION_REQUIRED,
+        __typename: "OrderMutationActionRequired",
+      })
+    })
+
+    it("returns ACTION_REQUIRED with undefined clientSecret when action_data is missing", () => {
+      const error = createError(422, {
+        code: "payment_requires_action",
+      })
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        clientSecret: undefined,
+        _type: ORDER_MUTATION_FLAGS.ACTION_REQUIRED,
+        __typename: "OrderMutationActionRequired",
+      })
+    })
+  })
+
+  describe("when error is 422 with object body", () => {
+    it("returns error with message and code from body", () => {
+      const error = createError(422, {
+        message: "Insufficient funds",
+        code: "insufficient_funds",
+      })
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "Insufficient funds",
+        code: "insufficient_funds",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+
+    it("returns default message when body message is missing", () => {
+      const error = createError(422, {
+        code: "some_error",
+      })
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "An error occurred",
+        code: "some_error",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+  })
+
+  describe("when error is not 422 or body is not an object", () => {
+    it("returns internal error for non-422 status code", () => {
+      const error = createError(500, {
+        message: "Server error",
+        code: "server_error",
+      })
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "An error occurred",
+        code: "internal_error",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+
+    it("returns internal error when body is undefined", () => {
+      const error = createError(422)
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "An error occurred",
+        code: "internal_error",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+  })
+
+  describe("when error body is a JSON string", () => {
+    it("parses JSON string body and returns error with message and code", () => {
+      const error = createError(
+        422,
+        JSON.stringify({
+          message: "Card declined",
+          code: "card_declined",
+        })
+      )
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "Card declined",
+        code: "card_declined",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+
+    it("parses JSON string body for payment_requires_action", () => {
+      const error = createError(
+        422,
+        JSON.stringify({
+          code: "payment_requires_action",
+          action_data: { client_secret: "secret_456" },
+        })
+      )
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        clientSecret: "secret_456",
+        _type: ORDER_MUTATION_FLAGS.ACTION_REQUIRED,
+        __typename: "OrderMutationActionRequired",
+      })
+    })
+
+    it("falls back to original body when JSON parsing fails", () => {
+      const error = createError(422, "invalid json string")
+
+      const result = handleExchangeError(error)
+
+      expect(result).toEqual({
+        message: "An error occurred",
+        code: "internal_error",
+        _type: ORDER_MUTATION_FLAGS.ERROR,
+        __typename: "OrderMutationError",
+      })
+    })
+  })
+})
