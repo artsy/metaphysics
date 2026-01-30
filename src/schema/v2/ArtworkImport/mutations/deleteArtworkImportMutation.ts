@@ -4,8 +4,6 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLInt,
-  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -16,35 +14,13 @@ import {
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteArtworkImportSuccess",
-  isTypeOf: (data) => data.success !== undefined,
+  isTypeOf: (data) => data.queued !== undefined,
   fields: () => ({
-    success: {
+    queued: {
       type: GraphQLBoolean,
-      resolve: ({ success }) => success,
-    },
-    deletedArtworksCount: {
-      type: GraphQLInt,
-      resolve: ({ deleted_artworks_count }) => deleted_artworks_count,
-    },
-    deletedSaleArtworksCount: {
-      type: GraphQLInt,
-      resolve: ({ deleted_sale_artworks_count }) => deleted_sale_artworks_count,
-    },
-    deletedArtworkIds: {
-      type: new GraphQLList(GraphQLString),
-      resolve: ({ deleted_artwork_ids }) => deleted_artwork_ids,
-    },
-    deletedSaleArtworkIds: {
-      type: new GraphQLList(GraphQLInt),
-      resolve: ({ deleted_sale_artwork_ids }) => deleted_sale_artwork_ids,
-    },
-    importCanceled: {
-      type: GraphQLBoolean,
-      resolve: ({ import_canceled }) => import_canceled,
-    },
-    errors: {
-      type: new GraphQLList(GraphQLString),
-      resolve: ({ errors }) => errors,
+      resolve: ({ queued }) => queued,
+      description:
+        "Whether the deletion job has been queued. Deletion happens asynchronously in the background.",
     },
   }),
 })
@@ -72,7 +48,7 @@ export const DeleteArtworkImportMutation = mutationWithClientMutationId<
 >({
   name: "DeleteArtworkImport",
   description:
-    "Delete an artwork import and all associated artworks and sale artworks",
+    "Queues an asynchronous job to delete an artwork import and associated unpublished artworks. Published artworks are preserved. Deletion happens in the background and results are sent via WebSocket.",
   inputFields: {
     artworkImportID: {
       type: new GraphQLNonNull(GraphQLString),
