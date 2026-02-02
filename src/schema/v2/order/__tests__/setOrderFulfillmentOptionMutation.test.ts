@@ -162,7 +162,7 @@ describe("setOrderFulfillmentOption", () => {
           type: "shipping_tbd",
           amount_minor: null,
           currency_code: "USD",
-          selected: true,
+          selected: null,
         },
       ],
     })
@@ -182,7 +182,7 @@ describe("setOrderFulfillmentOption", () => {
               {
                 type: "SHIPPING_TBD",
                 amount: null,
-                selected: true,
+                selected: null,
               },
             ],
           },
