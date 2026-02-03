@@ -29,6 +29,7 @@ const FulfillmentOptionTypeInputEnum = new GraphQLEnumType({
     ARTSY_STANDARD: { value: "ARTSY_STANDARD" },
     ARTSY_EXPRESS: { value: "ARTSY_EXPRESS" },
     ARTSY_WHITE_GLOVE: { value: "ARTSY_WHITE_GLOVE" },
+    SHIPPING_TBD: { value: "SHIPPING_TBD" },
   },
 })
 
