@@ -1,12 +1,12 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { baseArtwork, baseOrderJson } from "./support"
 
-const mockMutation = `
+const mockMutation = (type: string) => `
   mutation {
     setOrderFulfillmentOption(input: {
       id: "order-id",
       fulfillmentOption: {
-        type: DOMESTIC_FLAT
+        type: ${type}
       }
     }) {
       orderOrError {
@@ -65,7 +65,10 @@ describe("setOrderFulfillmentOption", () => {
   })
 
   it("should update fulfillment option", async () => {
-    const result = await runAuthenticatedQuery(mockMutation, context)
+    const result = await runAuthenticatedQuery(
+      mockMutation("DOMESTIC_FLAT"),
+      context
+    )
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
@@ -106,7 +109,10 @@ describe("setOrderFulfillmentOption", () => {
       message: "An error occurred",
       statusCode: 500,
     })
-    const result = await runAuthenticatedQuery(mockMutation, context)
+    const result = await runAuthenticatedQuery(
+      mockMutation("DOMESTIC_FLAT"),
+      context
+    )
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
@@ -129,7 +135,10 @@ describe("setOrderFulfillmentOption", () => {
         code: "invalid_fulfillment_option",
       },
     })
-    const result = await runAuthenticatedQuery(mockMutation, context)
+    const result = await runAuthenticatedQuery(
+      mockMutation("DOMESTIC_FLAT"),
+      context
+    )
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
@@ -142,5 +151,50 @@ describe("setOrderFulfillmentOption", () => {
         },
       },
     })
+  })
+
+  it("should update fulfillment option with SHIPPING_TBD type", async () => {
+    context.meOrderSetFulfillmentOptionLoader = jest.fn().mockResolvedValue({
+      ...baseOrderJson,
+      id: "order-id",
+      fulfillment_options: [
+        {
+          type: "shipping_tbd",
+          amount_minor: null,
+          currency_code: "USD",
+          selected: null,
+        },
+      ],
+    })
+
+    const result = await runAuthenticatedQuery(
+      mockMutation("SHIPPING_TBD"),
+      context
+    )
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      setOrderFulfillmentOption: {
+        orderOrError: {
+          order: {
+            internalID: "order-id",
+            fulfillmentOptions: [
+              {
+                type: "SHIPPING_TBD",
+                amount: null,
+                selected: null,
+              },
+            ],
+          },
+        },
+      },
+    })
+
+    expect(context.meOrderSetFulfillmentOptionLoader).toHaveBeenCalledWith(
+      "order-id",
+      {
+        type: "shipping_tbd",
+      }
+    )
   })
 })
