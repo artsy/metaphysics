@@ -198,7 +198,11 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       isActive: {
         type: GraphQLBoolean,
         description: "Are we currently in the fair's active period?",
-        resolve: ({ active_start_at }) => {
+        resolve: ({ active_start_at, evergreen }) => {
+          if (evergreen) {
+            return true
+          }
+
           const activeStart = moment.utc(active_start_at)
           const now = moment.utc()
           return now.isAfter(activeStart)
@@ -550,6 +554,12 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             totalCount: count,
           })
         },
+      },
+      isEvergreen: {
+        description:
+          "When true, the fair is considered evergreen and not bound to specific dates.",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ evergreen }) => evergreen ?? false,
       },
     }
   },
