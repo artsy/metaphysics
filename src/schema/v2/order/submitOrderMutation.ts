@@ -70,7 +70,7 @@ export const submitOrderMutation = mutationWithClientMutationId<
 
       // If this is an offer order from artwork_page, create an inquiry
       if (
-        submittedOrder.mode === "OFFER" &&
+        submittedOrder.mode === "offer" &&
         submittedOrder.source === "artwork_page" &&
         submitArtworkInquiryRequestLoader
       ) {

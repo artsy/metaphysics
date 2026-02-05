@@ -302,7 +302,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "OFFER",
+        mode: "offer",
         last_submitted_offer: {
           note: "I love this piece!",
           amount_cents: 100000,
@@ -326,7 +326,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "OFFER",
+        mode: "offer",
         last_submitted_offer: {
           note: null,
           amount_cents: 100000,
@@ -350,7 +350,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "OFFER",
+        mode: "offer",
         last_submitted_offer: {
           note: "",
           amount_cents: 50000,
@@ -374,7 +374,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "OFFER",
+        mode: "offer",
         last_submitted_offer: {
           note: "   ",
           amount_cents: 75000,
@@ -398,7 +398,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "BUY",
+        mode: "buy",
         line_items: [{ artwork_id: "artwork-id" }],
       })
 
@@ -435,7 +435,7 @@ describe("submitOrderMutation", () => {
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
-        mode: "OFFER",
+        mode: "offer",
         last_submitted_offer: {
           note: null,
           amount_cents: 100000,
