@@ -11141,6 +11141,7 @@ type CreditCardPayload {
 }
 
 type CroppedImageUrl {
+  cachePolicy: String
   height: Int!
   src: String!
   srcSet: String!
@@ -15016,6 +15017,8 @@ type Image {
   blurhash: String
   caption: String
   cropped(
+    # Whether to use a short cache policy for the image
+    cachePolicy: String
     height: Int!
 
     # Value from 0-100; [1x, 2x]
