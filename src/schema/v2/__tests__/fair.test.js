@@ -696,6 +696,34 @@ describe("Fair", () => {
     })
   })
 
+  it("returns tagline for exhibitionPeriod when fair is evergreen", async () => {
+    const fairData = {
+      id: "evergreen-fair",
+      evergreen: true,
+      tagline: "Year-Round Art Fair",
+    }
+
+    const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+    context = {
+      fairLoader: mockFairLoader,
+    }
+
+    const query = gql`
+      {
+        fair(id: "evergreen-fair") {
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        exhibitionPeriod: "Year-Round Art Fair",
+      },
+    })
+  })
+
   it("includes artists associated with the fair", async () => {
     const query = gql`
       {
@@ -823,6 +851,36 @@ describe("Fair", () => {
         })
       })
     })
+
+    describe("when fair is evergreen", () => {
+      it("is always true regardless of dates", async () => {
+        const mockFair = {
+          id: "evergreen-fair",
+          evergreen: true,
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "evergreen-fair") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: true,
+          },
+        })
+      })
+    })
   })
 
   describe("formattedOpeningHours", () => {
@@ -927,6 +985,27 @@ describe("Fair", () => {
         })
       })
     })
+
+    describe("when fair is evergreen", () => {
+      it("returns null", async () => {
+        const fairData = {
+          evergreen: true,
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedOpeningHours: null,
+          },
+        })
+      })
+    })
   })
 
   describe("fair counts", () => {
@@ -972,6 +1051,73 @@ describe("Fair", () => {
       expect(counts).toMatchObject({
         partnerShows: 4,
       })
+    })
+  })
+
+  describe("startAt and endAt dates", () => {
+    it("returns actual dates for non-evergreen fairs", async () => {
+      const fairData = {
+        id: "test-fair",
+        start_at: "2019-02-15T23:00:00+00:00",
+        end_at: "2019-02-17T11:00:00+00:00",
+        evergreen: false,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "test-fair") {
+            startAt
+            endAt
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        fair: {
+          startAt: "2019-02-15T23:00:00+00:00",
+          endAt: "2019-02-17T11:00:00+00:00",
+        },
+      })
+    })
+
+    it("returns computed dates for evergreen fairs", async () => {
+      const fairData = {
+        id: "evergreen-fair",
+        evergreen: true,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "evergreen-fair") {
+            startAt
+            endAt
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      // startAt should be start of current month
+      const startAtDate = moment(data.fair.startAt)
+      expect(startAtDate.date()).toBe(1) // Should be the 1st of the month
+      expect(startAtDate.hours()).toBe(0)
+      expect(startAtDate.minutes()).toBe(0)
+
+      // endAt should be start of month + 1 year
+      const endAtDate = moment(data.fair.endAt)
+      expect(endAtDate.date()).toBe(1) // Should be the 1st of the month
+      expect(endAtDate.diff(startAtDate, "years")).toBe(1) // Should be 1 year later
     })
   })
 
