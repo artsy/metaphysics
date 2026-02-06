@@ -975,6 +975,92 @@ describe("Fair", () => {
     })
   })
 
+  describe("isEvergreen", () => {
+    it("returns false when evergreen is not set", async () => {
+      const mockFair = {
+        id: "test-fair",
+        evergreen: null,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "test-fair") {
+            isEvergreen
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          isEvergreen: false,
+        },
+      })
+    })
+
+    it("returns false when evergreen is explicitly false", async () => {
+      const mockFair = {
+        id: "test-fair",
+        evergreen: false,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "test-fair") {
+            isEvergreen
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          isEvergreen: false,
+        },
+      })
+    })
+
+    it("returns true when evergreen is true", async () => {
+      const mockFair = {
+        id: "test-fair",
+        evergreen: true,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "test-fair") {
+            isEvergreen
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          isEvergreen: true,
+        },
+      })
+    })
+  })
+
   describe("marketingCollections", () => {
     it("should return empty marketing collections", async () => {
       const mockFair = {
