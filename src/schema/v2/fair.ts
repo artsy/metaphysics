@@ -6,7 +6,7 @@ import { dateRange, formattedOpeningHours } from "lib/date"
 import { artistConnection } from "./artist"
 import moment from "moment"
 import cached from "./fields/cached"
-import date from "./fields/date"
+import { date } from "./fields/date"
 import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
@@ -152,7 +152,11 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
-        resolve: ({ start_at, end_at }, args) => {
+        resolve: ({ start_at, end_at, evergreen, tagline }, args) => {
+          if (evergreen) {
+            return tagline
+          }
+
           const { format } = args
           return dateRange(start_at, end_at, "UTC", format)
         },
@@ -168,8 +172,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the fair starts or closes or if it is closed",
-        resolve: ({ start_at, end_at }) =>
-          formattedOpeningHours(start_at, end_at, "UTC"),
+        resolve: ({ start_at, end_at, evergreen }) => {
+          if (evergreen) {
+            return null
+          }
+
+          return formattedOpeningHours(start_at, end_at, "UTC")
+        },
       },
       hasFullFeature: {
         type: GraphQLBoolean,
@@ -342,12 +351,24 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      startAt: date,
+      startAt: date(({ start_at, evergreen }) => {
+        if (evergreen) {
+          return moment().startOf("month").utc().toISOString()
+        } else {
+          return start_at
+        }
+      }),
       summary: markdown(),
       tickets: markdown(),
       contact: markdown(),
-      endAt: date,
-      activeStartAt: date,
+      endAt: date(({ end_at, evergreen }) => {
+        if (evergreen) {
+          return moment().startOf("month").add(1, "year").utc().toISOString()
+        } else {
+          return end_at
+        }
+      }),
+      activeStartAt: date(),
       organizer: {
         type: FairOrganizerType,
       },
