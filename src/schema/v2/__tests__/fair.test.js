@@ -699,8 +699,6 @@ describe("Fair", () => {
   it("returns tagline for exhibitionPeriod when fair is evergreen", async () => {
     const fairData = {
       id: "evergreen-fair",
-      start_at: "2019-02-15T23:00:00+00:00",
-      end_at: "2019-02-17T11:00:00+00:00",
       evergreen: true,
       tagline: "Year-Round Art Fair",
     }
@@ -858,8 +856,6 @@ describe("Fair", () => {
       it("is always true regardless of dates", async () => {
         const mockFair = {
           id: "evergreen-fair",
-          active_start_at: moment().add(7, "days").toISOString(),
-          end_at: moment().add(14, "days").toISOString(),
           evergreen: true,
         }
 
@@ -993,8 +989,6 @@ describe("Fair", () => {
     describe("when fair is evergreen", () => {
       it("returns null", async () => {
         const fairData = {
-          start_at: "2019-02-06T12:00:56+00:00",
-          end_at: "2019-02-30T12:34:56+00:00",
           evergreen: true,
         }
 
@@ -1095,8 +1089,6 @@ describe("Fair", () => {
     it("returns computed dates for evergreen fairs", async () => {
       const fairData = {
         id: "evergreen-fair",
-        start_at: "2019-02-15T23:00:00+00:00",
-        end_at: "2019-02-17T11:00:00+00:00",
         evergreen: true,
       }
 
