@@ -20,6 +20,7 @@ interface UpdatePartnerFlagsMutationInputProps {
   artworksDefaultCurrency?: string | null
   artworksDefaultPartnerLocationId?: string | null
   artworksDefaultWeightMetric?: string | null
+  gdprDpaAccepted?: string | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -86,6 +87,11 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       description:
         "The default weight metric system to use for artworks. If null, the flag will be unset.",
     },
+    gdprDpaAccepted: {
+      type: GraphQLString,
+      description:
+        "Timestamp of partners acknowledgement of GDPR compliance page.",
+    },
   },
   outputFields: {
     partnerOrError: {
@@ -103,6 +109,7 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       artworksDefaultCurrency,
       artworksDefaultPartnerLocationId,
       artworksDefaultWeightMetric,
+      gdprDpaAccepted,
     },
     { updatePartnerFlagsLoader }
   ) => {
@@ -137,6 +144,10 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
 
       if (artworksDefaultWeightMetric !== undefined) {
         flags["artworks_default_weight_metric"] = artworksDefaultWeightMetric
+      }
+
+      if (gdprDpaAccepted !== undefined) {
+        flags["gdpr_dpa_accepted"] = gdprDpaAccepted
       }
 
       const response = await updatePartnerFlagsLoader(id, { flags })
