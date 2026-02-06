@@ -369,5 +369,172 @@ describe("Me", () => {
 
       expect(result.me.ordersConnection).toBeNull()
     })
+
+    it("returns orders with null artwork when artwork does not exist", async () => {
+      const query = gql`
+        query {
+          me {
+            ordersConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  code
+                  lineItems {
+                    artwork {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const order1 = {
+        ...baseOrderJson,
+        id: "order-1",
+        code: "order-code-1",
+        line_items: [{ artwork_id: "deleted-artwork" }],
+      }
+
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrdersLoader: jest.fn().mockResolvedValue({
+          body: [order1],
+          headers: { "x-total-count": "1" },
+        }),
+        artworkLoader: jest
+          .fn()
+          .mockRejectedValue(new Error("Artwork not found")),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.ordersConnection.edges).toHaveLength(1)
+      expect(
+        result.me.ordersConnection.edges[0].node.lineItems[0].artwork
+      ).toBeNull()
+    })
+
+    it("handles pagination with mixed existing and missing artworks", async () => {
+      const query = gql`
+        query {
+          me {
+            ordersConnection(page: 2, size: 2) {
+              edges {
+                node {
+                  internalID
+                  code
+                  lineItems {
+                    artwork {
+                      internalID
+                      title
+                    }
+                  }
+                }
+              }
+              totalCount
+            }
+          }
+        }
+      `
+
+      const order1 = {
+        ...baseOrderJson,
+        id: "order-3",
+        code: "order-code-3",
+        line_items: [{ artwork_id: "valid-artwork-1" }],
+      }
+      const order2 = {
+        ...baseOrderJson,
+        id: "order-4",
+        code: "order-code-4",
+        line_items: [{ artwork_id: "deleted-artwork" }],
+      }
+
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrdersLoader: jest.fn().mockResolvedValue({
+          body: [order1, order2],
+          headers: { "x-total-count": "10" },
+        }),
+        artworkLoader: jest.fn((id) => {
+          if (id === "valid-artwork-1") {
+            return Promise.resolve({
+              id: "valid-artwork-1",
+              _id: "internal-id-1",
+              title: "Valid Art",
+            })
+          }
+          return Promise.reject(new Error("Artwork not found"))
+        }),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.ordersConnection.edges).toHaveLength(2)
+      expect(result.me.ordersConnection.totalCount).toEqual(10)
+      expect(
+        result.me.ordersConnection.edges[0].node.lineItems[0].artwork
+      ).toEqual({
+        internalID: "internal-id-1",
+        title: "Valid Art",
+      })
+      expect(
+        result.me.ordersConnection.edges[1].node.lineItems[0].artwork
+      ).toBeNull()
+    })
+
+    it("returns null for artworkOrEditionSet when artwork does not exist", async () => {
+      const query = gql`
+        query {
+          me {
+            ordersConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  code
+                  lineItems {
+                    artworkOrEditionSet {
+                      __typename
+                      ... on Artwork {
+                        internalID
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const order1 = {
+        ...baseOrderJson,
+        id: "order-1",
+        code: "order-code-1",
+        line_items: [{ artwork_id: "deleted-artwork" }],
+      }
+
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrdersLoader: jest.fn().mockResolvedValue({
+          body: [order1],
+          headers: { "x-total-count": "1" },
+        }),
+        artworkLoader: jest
+          .fn()
+          .mockRejectedValue(new Error("Artwork not found")),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.ordersConnection.edges).toHaveLength(1)
+      expect(
+        result.me.ordersConnection.edges[0].node.lineItems[0]
+          .artworkOrEditionSet
+      ).toBeNull()
+    })
   })
 })

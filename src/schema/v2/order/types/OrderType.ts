@@ -114,7 +114,7 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
     artwork: {
       type: ArtworkType,
       resolve: ({ artwork_id }, _args, { artworkLoader }) => {
-        return artworkLoader(artwork_id)
+        return artworkLoader(artwork_id).catch(() => null)
       },
     },
     artworkOrEditionSet: {
@@ -124,23 +124,27 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
         _args,
         { artworkLoader }
       ) => {
-        if (artwork_id && edition_set_id) {
-          const artwork = await artworkLoader(artwork_id)
-          if (artwork && artwork.edition_sets) {
-            const editionSet = artwork.edition_sets.find(
-              (es) => es.id === edition_set_id
-            )
-            if (editionSet) {
-              return { ...editionSet, __typename: "EditionSet" }
+        try {
+          if (artwork_id && edition_set_id) {
+            const artwork = await artworkLoader(artwork_id)
+            if (artwork && artwork.edition_sets) {
+              const editionSet = artwork.edition_sets.find(
+                (es) => es.id === edition_set_id
+              )
+              if (editionSet) {
+                return { ...editionSet, __typename: "EditionSet" }
+              }
+            }
+          } else if (artwork_id) {
+            const artwork = await artworkLoader(artwork_id)
+            if (artwork) {
+              return { ...artwork, __typename: "Artwork" }
             }
           }
-        } else if (artwork_id) {
-          const artwork = await artworkLoader(artwork_id)
-          if (artwork) {
-            return { ...artwork, __typename: "Artwork" }
-          }
+          return null
+        } catch (error) {
+          return null
         }
-        return null
       },
     },
     artworkVersion: {
