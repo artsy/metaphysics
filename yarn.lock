@@ -35,12 +35,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@artsy/img@npm:1.1.2--canary.26.151.0":
-  version: 1.1.2--canary.26.151.0
-  resolution: "@artsy/img@npm:1.1.2--canary.26.151.0"
+"@artsy/img@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@artsy/img@npm:1.1.2"
   dependencies:
     md5: "npm:^2.3.0"
-  checksum: 10c0/8e345409a2bb12c809110c23c6b2ce5db7f4ffd0c28fedc2a0906ed631f171abeb218303d7635bdd124e0fcb8f0e23bdb51c8632ea6dc79040dc56cb9f3c8637
+  checksum: 10c0/973642cec7fbff286f71860285114f17f0560fa64784a0bf8a49ef5a21b8fe90f69875a52b913bc32ffd048137017e56f85e09090d1d544b3b779171fc5c4eee
   languageName: node
   linkType: hard
 
@@ -10073,7 +10073,7 @@ __metadata:
   dependencies:
     "@artsy/cohesion": "npm:^4.310.0"
     "@artsy/express-reloadable": "npm:1.8.0"
-    "@artsy/img": "npm:1.1.2--canary.26.151.0"
+    "@artsy/img": "npm:1.1.2"
     "@artsy/morgan": "npm:^1.0.2"
     "@artsy/multienv": "npm:^1.2.0"
     "@artsy/to-title-case": "npm:^1.1.0"
