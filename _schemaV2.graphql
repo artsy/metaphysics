@@ -26111,8 +26111,8 @@ input UpdatePartnerFlagsMutationInput {
   artworksDefaultWeightMetric: String
   clientMutationId: String
 
-  # Timestamp of partners acknowledgement of GDPR compliance page.
-  gdprDpaAccepted: String
+  # Whether the partner has accepted the GDPR DPA. The server will record the acceptance timestamp.
+  gdprDpaAccepted: Boolean
 
   # The id of the partner to update.
   id: String!

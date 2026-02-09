@@ -13,6 +13,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworksDefaultCurrency: "USD"
             artworksDefaultPartnerLocationId: "location-1"
             artworksDefaultWeightMetric: "kg"
+            gdprDpaAccepted: true
           }
         ) {
           partnerOrError {
@@ -42,6 +43,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworks_default_currency: "USD",
             artworks_default_partner_location_id: "location-1",
             artworks_default_weight_metric: "kg",
+            gdpr_dpa_accepted: true,
           })
           return Promise.resolve({
             _id: "partner-id",

@@ -20,7 +20,7 @@ interface UpdatePartnerFlagsMutationInputProps {
   artworksDefaultCurrency?: string | null
   artworksDefaultPartnerLocationId?: string | null
   artworksDefaultWeightMetric?: string | null
-  gdprDpaAccepted?: string | null
+  gdprDpaAccepted?: boolean | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -88,9 +88,9 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
         "The default weight metric system to use for artworks. If null, the flag will be unset.",
     },
     gdprDpaAccepted: {
-      type: GraphQLString,
+      type: GraphQLBoolean,
       description:
-        "Timestamp of partners acknowledgement of GDPR compliance page.",
+        "Whether the partner has accepted the GDPR DPA. The server will record the acceptance timestamp.",
     },
   },
   outputFields: {
