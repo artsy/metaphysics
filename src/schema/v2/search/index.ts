@@ -6,6 +6,7 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLFieldConfigArgumentMap,
+  GraphQLBoolean,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 
@@ -58,6 +59,11 @@ export const searchArgs: GraphQLFieldConfigArgumentMap = pageable({
   variant: {
     type: GraphQLString,
     description: "Search variant for A/B testing (e.g. 'experiment').",
+  },
+  visibleToPublic: {
+    type: GraphQLBoolean,
+    description:
+      "Filter by visible_to_public. Only available for authenticated users. Defaults to true if not provided.",
   },
 })
 
