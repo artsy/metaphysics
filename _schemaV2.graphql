@@ -22335,6 +22335,9 @@ type Query {
 
     # Search variant for A/B testing (e.g. 'experiment').
     variant: String
+
+    # Filter by visible_to_public. Only available for authenticated users. Defaults to true if not provided.
+    visibleToPublic: Boolean
   ): SearchableConnection
 
   # A ShippingPreset
@@ -28770,6 +28773,9 @@ type Viewer {
 
     # Search variant for A/B testing (e.g. 'experiment').
     variant: String
+
+    # Filter by visible_to_public. Only available for authenticated users. Defaults to true if not provided.
+    visibleToPublic: Boolean
   ): SearchableConnection
 
   # A ShippingPreset
