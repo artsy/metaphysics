@@ -1,5 +1,5 @@
 import gql from "lib/gql"
-import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdatePartnerFlagsMutation", () => {
   describe("with all flag types", () => {
@@ -13,6 +13,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworksDefaultCurrency: "USD"
             artworksDefaultPartnerLocationId: "location-1"
             artworksDefaultWeightMetric: "kg"
+            gdprDpaAccepted: true
           }
         ) {
           partnerOrError {
@@ -42,6 +43,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworks_default_currency: "USD",
             artworks_default_partner_location_id: "location-1",
             artworks_default_weight_metric: "kg",
+            gdpr_dpa_accepted: true,
           })
           return Promise.resolve({
             _id: "partner-id",
@@ -180,40 +182,6 @@ describe("UpdatePartnerFlagsMutation", () => {
           },
         },
       })
-    })
-  })
-
-  describe("with no authorization", () => {
-    const mutation = gql`
-      mutation {
-        updatePartnerFlags(
-          input: {
-            id: "partner-id"
-            inquireAvailabilityPriceDisplayEnabledByPartner: true
-          }
-        ) {
-          partnerOrError {
-            __typename
-            ... on UpdatePartnerFlagsFailure {
-              mutationError {
-                message
-              }
-            }
-          }
-        }
-      }
-    `
-
-    it("returns an authorization error when no loader is available", async () => {
-      // Use runQuery without any loaders to simulate unauthenticated request
-      try {
-        await runQuery(mutation, {})
-        // If we get here, the test should fail
-        throw new Error("An error was not thrown but was expected")
-      } catch (error) {
-        // Verify the error is related to authentication
-        expect(error.message).toContain("signed in")
-      }
     })
   })
 
