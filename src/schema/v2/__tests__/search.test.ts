@@ -376,4 +376,93 @@ describe("Search", () => {
     // confirm that searchLoader was called with the trimmed query
     expect(context.searchLoader.mock.calls[0][0].query).toBe("David Bowie")
   })
+
+  describe("visibleToPublic parameter", () => {
+    it("passes visibleToPublic parameter to searchLoader when authenticated", async () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10, visibleToPublic: false) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+      context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+      context.internalSearchLoader = jest
+        .fn()
+        .mockImplementation(() => searchResponse)
+
+      await runQuery(query, context)
+
+      expect(context.searchLoader.mock.calls[0][0].visible_to_public).toBe(
+        false
+      )
+    })
+
+    it("passes visibleToPublic parameter when true", async () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10, visibleToPublic: true) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+      context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+      context.internalSearchLoader = jest
+        .fn()
+        .mockImplementation(() => searchResponse)
+
+      await runQuery(query, context)
+
+      expect(context.searchLoader.mock.calls[0][0].visible_to_public).toBe(true)
+    })
+
+    it("throws error when visibleToPublic is provided without authentication", async () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10, visibleToPublic: false) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+      context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+      delete context.internalSearchLoader
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    })
+
+    it("does not pass visible_to_public when visibleToPublic is not provided", async () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+      context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+      await runQuery(query, context)
+
+      expect(
+        context.searchLoader.mock.calls[0][0].visible_to_public
+      ).toBeUndefined()
+    })
+  })
 })

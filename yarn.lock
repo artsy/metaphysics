@@ -24,14 +24,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@artsy/express-reloadable@npm:1.8.0":
-  version: 1.8.0
-  resolution: "@artsy/express-reloadable@npm:1.8.0"
+"@artsy/express-reloadable@npm:1.8.1":
+  version: 1.8.1
+  resolution: "@artsy/express-reloadable@npm:1.8.1"
   dependencies:
     chalk: "npm:^2.3.1"
     chokidar: "npm:^3.0.0"
     decache: "npm:^4.4.0"
-  checksum: 10c0/25e8a539d10a7de75e38bfefc8b8670856d0e435ee5980dd05b51a914a1d9f602854f3eb9ef30a50a4d47a1816320550fde9f6b2e3e7c5b1f09ad551deae5d67
+  checksum: 10c0/41c603ede68a9ee9983856f801fb76e49097a6407d4682c00095ac5fd0a31d9c6ee728ef23b4aa838509d01cd5482734b9c8840c0f2c5c1974a06df44c246bf3
   languageName: node
   linkType: hard
 
@@ -10072,7 +10072,7 @@ __metadata:
   resolution: "metaphysics@workspace:."
   dependencies:
     "@artsy/cohesion": "npm:^4.310.0"
-    "@artsy/express-reloadable": "npm:1.8.0"
+    "@artsy/express-reloadable": "npm:1.8.1"
     "@artsy/img": "npm:1.1.0"
     "@artsy/morgan": "npm:^1.0.2"
     "@artsy/multienv": "npm:^1.2.0"
