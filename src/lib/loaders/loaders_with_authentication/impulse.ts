@@ -63,5 +63,8 @@ export default (accessToken, _userID, opts) => {
       {},
       { method: "PUT" }
     ),
+
+    // Partner inquiry stats from /stats endpoint
+    partnerInquiryStatsLoader: impulseLoader("stats"),
   }
 }
