@@ -114,7 +114,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@babel/preset-env": "^7.25.9",
     "@babel/preset-typescript": "^7.25.9",
-    "@cloudflare/workers-types": "^4.20240909.0",
+    "@cloudflare/workers-types": "^4.20260205.0",
     "@graphql-inspector/core": "1.27.0",
     "@types/express-rate-limit": "2.9.3",
     "@types/google-libphonenumber": "^7.4.22",
@@ -150,7 +150,7 @@
     "superagent": "3.8.3",
     "supertest": "3.1.0",
     "typescript": "4.6.4",
-    "wrangler": "^3.78.2"
+    "wrangler": "^4.0.0"
   },
   "prettier": {
     "semi": false,
