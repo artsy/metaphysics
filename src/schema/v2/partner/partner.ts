@@ -9,6 +9,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLFloat,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
@@ -1117,6 +1118,56 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "If the partner supports inquiries",
         resolve: ({ inquireable }) => inquireable,
+      },
+      inquiryResponseRate: {
+        type: GraphQLFloat,
+        description:
+          "The partner's inquiry response rate percentage (0-100) over the last 90 days",
+        resolve: async ({ _id }, _args, { partnerInquiryStatsLoader }) => {
+          if (!partnerInquiryStatsLoader) {
+            return null
+          }
+
+          try {
+            const stats = await partnerInquiryStatsLoader({
+              to_id: _id,
+              to_type: "Partner",
+              days_in_past: 90,
+            })
+            return stats?.response_rate ?? null
+          } catch (error) {
+            console.error(
+              "[partner/inquiryResponseRate] Error fetching stats:",
+              error
+            )
+            return null
+          }
+        },
+      },
+      inquiryResponseTime: {
+        type: GraphQLInt,
+        description:
+          "The partner's average inquiry response time in minutes over the last 90 days",
+        resolve: async ({ _id }, _args, { partnerInquiryStatsLoader }) => {
+          if (!partnerInquiryStatsLoader) {
+            return null
+          }
+
+          try {
+            const stats = await partnerInquiryStatsLoader({
+              to_id: _id,
+              to_type: "Partner",
+              days_in_past: 90,
+            })
+            return stats?.response_time_in_minutes ?? null
+          } catch (error) {
+            console.error(
+              "[partner/inquiryResponseTime] Error fetching stats:",
+              error
+            )
+            return null
+          }
+        },
       },
       isLinkable: {
         type: GraphQLBoolean,
