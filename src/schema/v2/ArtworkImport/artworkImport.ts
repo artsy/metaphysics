@@ -191,12 +191,6 @@ const ErrorIdentifiersType = new GraphQLObjectType({
 const ArtworkImportStatisticsType = new GraphQLObjectType({
   name: "ArtworkImportStatistics",
   fields: {
-    rowsWithErrorsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description:
-        "Total number of rows with any errors (excluding UNMATCHED_ARTIST)",
-      resolve: ({ rows_with_errors_count }) => rows_with_errors_count,
-    },
     rowsWithArtworksCreated: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "Total number of rows that successfully created artworks",

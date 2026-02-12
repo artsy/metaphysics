@@ -3670,9 +3670,6 @@ type ArtworkImportStatistics {
   # Total number of rows that failed to create artworks
   rowsWithArtworksFailed: Int!
 
-  # Total number of rows with any errors (excluding UNMATCHED_ARTIST)
-  rowsWithErrorsCount: Int!
-
   # Total number of rows with fatal errors (ARTWORK_CREATION_FAILED, excluding UNMATCHED_IMAGE)
   rowsWithFatalErrors: Int!
 
