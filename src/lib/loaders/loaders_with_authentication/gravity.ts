@@ -989,6 +989,9 @@ export default (accessToken, userID, opts) => {
     ),
     navigationGroupLoader: gravityLoader((id) => `navigation_group/${id}`),
     navigationGroupsLoader: gravityLoader("/navigation_groups"),
+    navigationGroupLiveLoader: gravityLoader(
+      (id) => `navigation_group/${id}/live`
+    ),
     navigationGroupDraftLoader: gravityLoader(
       (id) => `navigation_group/${id}/draft`
     ),
