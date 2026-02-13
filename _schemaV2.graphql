@@ -15022,6 +15022,8 @@ type Image {
   # Indicates whether image processing has failed.
   processingFailed: Boolean!
   resized(
+    # Whether to use a short cache policy for the image
+    cachePolicy: String
     height: Int
 
     # Value from 0-100; [1x, 2x]
@@ -22935,6 +22937,7 @@ type RequestPriceEstimatedMutationSuccess {
 }
 
 type ResizedImageUrl {
+  cachePolicy: String
   factor: Float!
   height: Int
   src: String!
