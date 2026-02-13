@@ -7,6 +7,7 @@ interface Gemini {
   width?: number
   height?: number
   quality?: number
+  cachePolicy?: string
 }
 
 export const gemini = ({
@@ -15,6 +16,12 @@ export const gemini = ({
   width,
   height,
   quality = DEFAULT_1X_QUALITY,
+  cachePolicy,
 }: Gemini): string => {
-  return services.gemini.exec(mode, src, { width, height, quality })
+  return services.gemini.exec(mode, src, {
+    width,
+    height,
+    quality,
+    cachePolicy,
+  })
 }

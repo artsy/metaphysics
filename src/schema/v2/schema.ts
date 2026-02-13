@@ -333,7 +333,6 @@ import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/update
 import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/mutations/createArtworkImportArtworksMutation"
 import { CreateArtworkImportArtistMatchMutation } from "./ArtworkImport/mutations/createArtworkImportArtistMatchMutation"
 import { CreateArtworkImportArtistAssignmentMutation } from "./ArtworkImport/mutations/createArtworkImportArtistAssignmentMutation"
-import { CreateArtworkImportImageMatchMutation } from "./ArtworkImport/mutations/createArtworkImportImageMatchMutation"
 import { CreateArtworkImportCellFlagMutation } from "./ArtworkImport/mutations/createArtworkImportCellFlagMutation"
 import { BatchArtworkImportImagesMutation } from "./ArtworkImport/mutations/batchArtworkImportImagesMutation"
 import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/mutations/updateArtworkImportRowImagesMutation"
@@ -705,7 +704,6 @@ export default new GraphQLSchema({
       createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
       createArtworkImportArtistMatch: CreateArtworkImportArtistMatchMutation,
       createArtworkImportArtistAssignment: CreateArtworkImportArtistAssignmentMutation,
-      createArtworkImportImageMatch: CreateArtworkImportImageMatchMutation,
       createArtworkImportCellFlag: CreateArtworkImportCellFlagMutation,
       batchArtworkImportImages: BatchArtworkImportImagesMutation,
       updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,

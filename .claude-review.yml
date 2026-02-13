@@ -1,3 +1,7 @@
+exclude:
+  title_patterns:
+    - "eigen query map"
+
 focus_areas:
   - |
     ID field conventions: Use `internalID` for database IDs in query responses, not `id`.

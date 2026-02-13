@@ -167,11 +167,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    artworkImportCreateImageMatchLoader: gravityLoader(
-      (id) => `artwork_import/${id}/image_matches`,
-      {},
-      { method: "POST" }
-    ),
     artworkImportCreateCellFlagLoader: gravityLoader(
       (id) => `artwork_import/${id}/cell_flags`,
       {},

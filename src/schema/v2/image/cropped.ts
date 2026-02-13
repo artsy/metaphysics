@@ -17,6 +17,7 @@ type CroppedImageArguments = {
   width: number
   height: number
   quality?: number[]
+  cachePolicy?: string
 }
 
 type CroppedImageUrl = {
@@ -25,6 +26,7 @@ type CroppedImageUrl = {
   url: string
   src: string
   srcSet: string
+  cachePolicy?: string
 }
 
 export const croppedImageUrl = (
@@ -34,6 +36,7 @@ export const croppedImageUrl = (
     width,
     height,
     quality = DEFAULT_SRCSET_QUALITY,
+    cachePolicy,
   }: CroppedImageArguments
 ): CroppedImageUrl => {
   const src = setVersion(image as any, version)
@@ -46,6 +49,7 @@ export const croppedImageUrl = (
     width,
     height,
     quality: quality1x,
+    cachePolicy,
   })
 
   const url2x = gemini({
@@ -54,15 +58,19 @@ export const croppedImageUrl = (
     width: width * 2,
     height: height * 2,
     quality: quality2x,
+    cachePolicy,
   })
 
-  return {
+  const result = {
     width,
     height,
     url: url1x,
     src: url1x,
     srcSet: `${url1x} 1x, ${url2x} 2x`,
+    cachePolicy,
   }
+
+  return result
 }
 
 const CroppedImageUrlType = new GraphQLObjectType<
@@ -86,6 +94,9 @@ const CroppedImageUrlType = new GraphQLObjectType<
     srcSet: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    cachePolicy: {
+      type: GraphQLString,
+    },
   },
 })
 
@@ -108,6 +119,10 @@ const Cropped: GraphQLFieldConfig<
     quality: {
       description: "Value from 0-100; [1x, 2x]",
       type: new GraphQLList(new GraphQLNonNull(GraphQLInt)),
+    },
+    cachePolicy: {
+      description: "Whether to use a short cache policy for the image",
+      type: GraphQLString,
     },
   },
   type: CroppedImageUrlType,
