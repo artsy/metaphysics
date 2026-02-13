@@ -23,12 +23,6 @@ export const executableGravitySchema = () => {
   // Types which come from Gravity which MP already has copies of.
   // In the future, these could get merged into the MP types.
   const duplicatedTypes = [
-    "Artist",
-    "ArtistConnection",
-    "ArtistEdge",
-    "Artwork",
-    "ArtworkConnection",
-    "ArtworkEdge",
     "Device",
     "Lot",
     "Money",
