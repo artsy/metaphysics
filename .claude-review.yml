@@ -1,0 +1,33 @@
+exclude:
+  title_patterns:
+    - "eigen query map"
+
+focus_areas:
+  - |
+    ID field conventions: Use `internalID` for database IDs in query responses, not `id`.
+    The `id` field is specifically for Relay global IDs and bears no relationship to database IDs.
+    Field arguments can use `id` (e.g., `artist(id: "andy-warhol")`), accepting slug or internalID.
+  - |
+    Error handling: Ensure backend service errors are properly transformed into GraphQL
+    error unions (Success/Failure pattern).
+  - |
+    Null/undefined handling: Check that resolvers handle cases where related resources
+    fail to load gracefully, rather than blowing up the entire response.
+
+ignore_paths:
+  - "**/*.generated.ts"
+  - "**/schema.graphql"
+  - "**/__generated__/**"
+  - "**/data/**/*.json"
+
+context: |
+  Metaphysics is Artsy's GraphQL API gateway that aggregates data from multiple
+  backend services (Gravity, Exchange, Convection, etc.) into a unified API.
+  It is a passthrough layer - authorization is handled by backend services, not here.
+
+  Key patterns:
+  - DataLoader for request-level batching and deduplication
+  - Memcached for response caching with configurable TTL
+  - Error unions (Success/Failure) for mutation responses
+
+  See CLAUDE.md for additional coding conventions.

@@ -167,11 +167,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    artworkImportCreateImageMatchLoader: gravityLoader(
-      (id) => `artwork_import/${id}/image_matches`,
-      {},
-      { method: "POST" }
-    ),
     artworkImportCreateCellFlagLoader: gravityLoader(
       (id) => `artwork_import/${id}/cell_flags`,
       {},
@@ -989,6 +984,9 @@ export default (accessToken, userID, opts) => {
     ),
     navigationGroupLoader: gravityLoader((id) => `navigation_group/${id}`),
     navigationGroupsLoader: gravityLoader("/navigation_groups"),
+    navigationGroupLiveLoader: gravityLoader(
+      (id) => `navigation_group/${id}/live`
+    ),
     navigationGroupDraftLoader: gravityLoader(
       (id) => `navigation_group/${id}/draft`
     ),

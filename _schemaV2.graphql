@@ -9765,41 +9765,6 @@ type CreateArtworkImportFailure {
   mutationError: GravityMutationError
 }
 
-type CreateArtworkImportImageMatchFailure {
-  mutationError: GravityMutationError
-}
-
-input CreateArtworkImportImageMatchInput {
-  artworkImportID: String!
-  clientMutationId: String
-
-  # The image filename
-  fileName: String!
-
-  # ID of the row to associate the image with
-  rowID: String!
-
-  # S3 bucket of the uploaded image asset
-  s3Bucket: String!
-
-  # S3 key of the uploaded image asset
-  s3Key: String!
-}
-
-type CreateArtworkImportImageMatchPayload {
-  clientMutationId: String
-  createArtworkImportImageMatchOrError: CreateArtworkImportImageMatchResponseOrError
-}
-
-union CreateArtworkImportImageMatchResponseOrError =
-    CreateArtworkImportImageMatchFailure
-  | CreateArtworkImportImageMatchSuccess
-
-type CreateArtworkImportImageMatchSuccess {
-  artworkImport: ArtworkImport
-  success: Boolean!
-}
-
 input CreateArtworkImportInput {
   async: Boolean
   clientMutationId: String
@@ -17146,9 +17111,6 @@ type Mutation {
   createArtworkImportCellFlag(
     input: CreateArtworkImportCellFlagInput!
   ): CreateArtworkImportCellFlagPayload
-  createArtworkImportImageMatch(
-    input: CreateArtworkImportImageMatchInput!
-  ): CreateArtworkImportImageMatchPayload
   createArtworkTemplate(
     input: CreateArtworkTemplateInput!
   ): CreateArtworkTemplatePayload
@@ -19300,6 +19262,12 @@ type Partner implements Node {
     # The inquiry id
     inquiryId: String!
   ): PartnerInquiryRequest
+
+  # The partner's inquiry response rate percentage (0-100) over the last 90 days
+  inquiryResponseRate: Float
+
+  # The partner's average inquiry response time in minutes over the last 90 days
+  inquiryResponseTime: Int
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -22338,6 +22306,9 @@ type Query {
 
     # Search variant for A/B testing (e.g. 'experiment').
     variant: String
+
+    # Filter by visible_to_public. Only available for authenticated users. Defaults to true if not provided.
+    visibleToPublic: Boolean
   ): SearchableConnection
 
   # A ShippingPreset
@@ -26114,6 +26085,9 @@ input UpdatePartnerFlagsMutationInput {
   artworksDefaultWeightMetric: String
   clientMutationId: String
 
+  # Whether the partner has accepted the GDPR DPA. The server will record the acceptance timestamp.
+  gdprDpaAccepted: Boolean
+
   # The id of the partner to update.
   id: String!
 
@@ -28773,6 +28747,9 @@ type Viewer {
 
     # Search variant for A/B testing (e.g. 'experiment').
     variant: String
+
+    # Filter by visible_to_public. Only available for authenticated users. Defaults to true if not provided.
+    visibleToPublic: Boolean
   ): SearchableConnection
 
   # A ShippingPreset

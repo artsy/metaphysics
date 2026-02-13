@@ -106,6 +106,16 @@ export class SearchResolver {
       delete this.args.page
     }
 
+    // Check authentication if visibleToPublic is provided
+    if (
+      this.args.visibleToPublic !== undefined &&
+      !this.context.internalSearchLoader
+    ) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
     const pageOptions = convertConnectionArgsToGravityArgs(this.args)
     if (this.args.page) pageOptions.page = this.args.page
     const { page, size, offset, ...rest } = pageOptions
@@ -117,6 +127,9 @@ export class SearchResolver {
       entities: this.args.entities,
       total_count: true,
       ...(this.args.variant && { variant: this.args.variant }),
+      ...(this.args.visibleToPublic !== undefined && {
+        visible_to_public: this.args.visibleToPublic,
+      }),
     }
 
     return this.context.searchLoader(gravityArgs).then(({ body, headers }) => {
