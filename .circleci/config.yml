@@ -124,6 +124,43 @@ jobs:
           pkg-manager: yarn-berry
       - run: yarn deploy-cloudflare-workers
 
+  create_or_update_review_app:
+    executor: hokusai/beta
+    steps:
+      - hokusai/setup
+      - add_ssh_keys
+      - checkout
+      - setup_remote_docker
+      - hokusai/install-aws-iam-authenticator
+      - hokusai/configure-hokusai
+      - run:
+          name: Install jq
+          command: curl -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 > /usr/local/bin/jq
+      - run:
+          name: Make jq executable
+          command: chmod u+x /usr/local/bin/jq
+      - run:
+          name: "Create or update review app"
+          command: |
+            set -x
+            review_app_name=$(echo $CIRCLE_BRANCH | sed 's/review-app-//')
+            kubectl config use-context staging
+            namespaces=$(kubectl get namespace)
+            echo
+            if echo "$namespaces" | grep -qi "$review_app_name"; then
+              ./scripts/update_review_app.sh $review_app_name
+            else
+              ./scripts/build_review_app.sh $review_app_name
+            fi
+
+  create_review_app_subdomain:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Create Cloudflare DNS namespace
+          command: node scripts/create-review-app-subdomain.js
+
 workflows:
   default:
     jobs:
@@ -179,3 +216,23 @@ workflows:
           context: cloudflare
           requires:
             - hokusai/deploy-production
+
+      # Review Apps
+      - create_or_update_review_app:
+          context:
+            - hokusai
+          filters:
+            branches:
+              only: /^review-app-.*/
+          pre-steps:
+            - run:
+                command: echo 'export DOCKER_BUILDKIT=1; export BUILDKIT_PROGRESS=plain; export COMPOSE_DOCKER_CLI_BUILD=1;' >> $BASH_ENV
+
+      - create_review_app_subdomain:
+          context:
+            - cloudflare
+          filters:
+            branches:
+              only: /^review-app-.*/
+          requires:
+            - create_or_update_review_app
