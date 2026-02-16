@@ -604,6 +604,24 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    addArtworkToViewingRoomLoader: gravityLoader<
+      any,
+      { viewingRoomID: string; artworkId: string }
+    >(
+      ({ viewingRoomID, artworkId }) =>
+        `viewing_room/${viewingRoomID}/artwork/${artworkId}`,
+      {},
+      { method: "POST" }
+    ),
+    removeArtworkFromViewingRoomLoader: gravityLoader<
+      any,
+      { viewingRoomID: string; artworkId: string }
+    >(
+      ({ viewingRoomID, artworkId }) =>
+        `viewing_room/${viewingRoomID}/artwork/${artworkId}`,
+      {},
+      { method: "DELETE" }
+    ),
     updateViewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`,
       {},

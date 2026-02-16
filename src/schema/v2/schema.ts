@@ -319,6 +319,8 @@ import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewin
 import { deleteArtworkTemplateMutation } from "./artworkTemplate/mutations/deleteArtworkTemplateMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
+import { addArtworkToViewingRoomMutation } from "./viewingRooms/mutations/addArtworkToViewingRoomMutation"
+import { removeArtworkFromViewingRoomMutation } from "./viewingRooms/mutations/removeArtworkFromViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
@@ -542,6 +544,7 @@ export default new GraphQLSchema({
       acceptPartnerAgreement: acceptPartnerAgreementMutation,
       ackTask: ackTaskMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
+      addArtworkToViewingRoom: addArtworkToViewingRoomMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       createBuyerOffer: createBuyerOfferMutation,
       updateBuyerOffer: updateBuyerOfferMutation,
@@ -670,6 +673,7 @@ export default new GraphQLSchema({
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
+      removeArtworkFromViewingRoom: removeArtworkFromViewingRoomMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
