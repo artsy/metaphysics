@@ -84,5 +84,27 @@ describe("Image", () => {
         srcSet: `${url1x} 1x, ${url2x} 2x`,
       })
     })
+
+    it("accepts and returns a cachePolicy argument", () => {
+      const url1x =
+        "https://gemini.cloudfront.test?cache_policy=short&height=500&quality=80&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500"
+      const url2x =
+        "https://gemini.cloudfront.test?cache_policy=short&height=1000&quality=50&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=1000"
+
+      expect(
+        croppedImageUrl(image, {
+          width: 500,
+          height: 500,
+          cachePolicy: "short",
+        })
+      ).toEqual({
+        width: 500,
+        height: 500,
+        url: url1x,
+        src: url1x,
+        srcSet: `${url1x} 1x, ${url2x} 2x`,
+        cachePolicy: "short",
+      })
+    })
   })
 })

@@ -19,6 +19,7 @@ type ResizedImageArguments = {
   width?: number
   height?: number
   quality?: number[]
+  cachePolicy?: string
 }
 
 type ResizedImageUrl = {
@@ -28,6 +29,7 @@ type ResizedImageUrl = {
   url: string
   src: string
   srcSet: string
+  cachePolicy?: string
 }
 
 export const resizedImageUrl = (
@@ -37,6 +39,7 @@ export const resizedImageUrl = (
     width: targetWidth,
     height: targetHeight,
     quality = DEFAULT_SRCSET_QUALITY,
+    cachePolicy,
   }: ResizedImageArguments = {}
 ): ResizedImageUrl => {
   const src = setVersion(image as any, version)
@@ -55,6 +58,7 @@ export const resizedImageUrl = (
       url: src,
       src,
       srcSet: `${src} 1x`,
+      cachePolicy,
     }
   }
 
@@ -88,6 +92,7 @@ export const resizedImageUrl = (
     width: proxiedWidth,
     height: proxiedHeight,
     quality: quality1x,
+    cachePolicy,
   })
 
   const url2x = gemini({
@@ -96,6 +101,7 @@ export const resizedImageUrl = (
     width: (proxiedWidth || 0) * 2 || undefined,
     height: (proxiedHeight || 0) * 2 || undefined,
     quality: quality2x,
+    cachePolicy,
   })
 
   return {
@@ -105,6 +111,7 @@ export const resizedImageUrl = (
     url: url1x,
     src: url1x,
     srcSet: `${url1x} 1x, ${url2x} 2x`,
+    cachePolicy,
   }
 }
 
@@ -132,6 +139,9 @@ const ResizedImageUrlType = new GraphQLObjectType<
     srcSet: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    cachePolicy: {
+      type: GraphQLString,
+    },
   },
 })
 
@@ -154,6 +164,10 @@ const Resized: GraphQLFieldConfig<
     quality: {
       description: "Value from 0-100; [1x, 2x]",
       type: new GraphQLList(new GraphQLNonNull(GraphQLInt)),
+    },
+    cachePolicy: {
+      description: "Whether to use a short cache policy for the image",
+      type: GraphQLString,
     },
   },
   type: ResizedImageUrlType,
