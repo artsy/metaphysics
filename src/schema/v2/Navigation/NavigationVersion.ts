@@ -31,30 +31,56 @@ export const NavigationVersionType = new GraphQLObjectType<
   },
 })
 
+export const NavigationVersionStateEnum = new GraphQLEnumType({
+  name: "NavigationVersionState",
+  values: {
+    LIVE: { value: "LIVE" },
+    DRAFT: { value: "DRAFT" },
+  },
+})
+
 export const NavigationVersion: GraphQLFieldConfig<void, ResolverContext> = {
   type: NavigationVersionType,
   description:
-    "A snapshot of the server-driven navigation structure (e.g., What’s New -> By Price -> Art under $500, etc.)",
+    "A snapshot of the server-driven navigation structure (e.g., What's New -> By Price -> Art under $500, etc.). Fetch by groupID + state for public/cached access, or by id for admin-specific lookups.",
   args: {
     groupID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
+      description:
+        "The ID of the navigation group (e.g., 'whats-new'). Used with state for public UI lookups with heavy caching (LIVE) or admin preview (DRAFT).",
     },
     state: {
-      type: new GraphQLEnumType({
-        name: "NavigationVersionState",
-        values: {
-          LIVE: { value: "LIVE" },
-          DRAFT: { value: "DRAFT" },
-        },
-      }),
+      type: NavigationVersionStateEnum,
       defaultValue: "LIVE",
+      description:
+        "The state of the version (LIVE or DRAFT). LIVE uses unauthenticated/cached loader, DRAFT uses authenticated/uncached loader for admin preview.",
+    },
+    id: {
+      type: GraphQLString,
+      description:
+        "The internal ID of a specific navigation version. For admin UI use only, always uses authenticated loader.",
     },
   },
   resolve: (
     _root,
-    { groupID, state },
-    { navigationGroupLiveLoader, navigationGroupDraftLoader }
+    { groupID, state, id },
+    {
+      navigationGroupLiveLoader,
+      navigationGroupDraftLoader,
+      navigationVersionLoader,
+    }
   ) => {
+    // Prefer direct version ID lookup if provided
+    if (id) {
+      if (!navigationVersionLoader) return null
+      return navigationVersionLoader(id)
+    }
+
+    // Fall back to group-based lookup
+    if (!groupID) {
+      throw new Error("Either id or groupID must be provided")
+    }
+
     const loader =
       state === "LIVE" ? navigationGroupLiveLoader : navigationGroupDraftLoader
 

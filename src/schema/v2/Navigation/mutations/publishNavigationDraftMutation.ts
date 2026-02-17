@@ -47,10 +47,18 @@ export const publishNavigationDraftMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "PublishNavigationDraft",
+  description:
+    "Publish a draft navigation version. Accepts either a groupID (for backward compatibility) or versionID (preferred for admin workflows).",
   inputFields: {
     groupID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the navigation group",
+      type: GraphQLString,
+      description:
+        "The ID of the navigation group. Supported for backward compatibility, but versionID is preferred for admin UI workflows.",
+    },
+    versionID: {
+      type: GraphQLString,
+      description:
+        "The ID of the specific navigation version to publish. Preferred approach for admin UIs.",
     },
   },
   outputFields: {
@@ -59,12 +67,27 @@ export const publishNavigationDraftMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { publishNavigationDraftLoader }) => {
-    if (!publishNavigationDraftLoader) {
+  mutateAndGetPayload: async (
+    args,
+    { publishNavigationDraftLoader, publishNavigationVersionLoader }
+  ) => {
+    if (!publishNavigationDraftLoader || !publishNavigationVersionLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    // XOR: exactly one of groupID or versionID must be provided
+    if (!!args.groupID === !!args.versionID) {
+      throw new Error("Exactly one of groupID or versionID must be provided")
+    }
+
     try {
+      // Prefer version-based endpoint if versionID is provided (admin workflows)
+      if (args.versionID) {
+        const response = await publishNavigationVersionLoader(args.versionID)
+        return response
+      }
+
+      // Fall back to group-based endpoint (backward compatibility)
       const response = await publishNavigationDraftLoader(args.groupID)
       return response
     } catch (error) {
