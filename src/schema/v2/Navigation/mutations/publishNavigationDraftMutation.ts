@@ -77,7 +77,7 @@ export const publishNavigationDraftMutation = mutationWithClientMutationId<
 
     // XOR: exactly one of groupID or versionID must be provided
     if (!!args.groupID === !!args.versionID) {
-      throw new Error("Exactly one of groupID or versionID must be provided")
+      throw new Error("Provide either groupID or versionID, but not both")
     }
 
     try {
