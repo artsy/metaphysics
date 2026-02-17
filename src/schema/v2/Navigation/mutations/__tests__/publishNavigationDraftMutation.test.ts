@@ -104,4 +104,96 @@ describe("publishNavigationDraftMutation", () => {
       `)
     })
   })
+
+  describe("validation", () => {
+    it("throws error when both groupID and versionID are provided", async () => {
+      const mutationWithBoth = gql`
+        mutation {
+          publishNavigationDraft(
+            input: { groupID: "artists", versionID: "version-123" }
+          ) {
+            navigationVersionOrError {
+              ... on PublishNavigationDraftFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await expect(
+        runAuthenticatedQuery(mutationWithBoth, context)
+      ).rejects.toThrow("Provide either groupID or versionID, but not both")
+    })
+
+    it("throws error when neither groupID nor versionID is provided", async () => {
+      const mutationWithNeither = gql`
+        mutation {
+          publishNavigationDraft(input: {}) {
+            navigationVersionOrError {
+              ... on PublishNavigationDraftFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await expect(
+        runAuthenticatedQuery(mutationWithNeither, context)
+      ).rejects.toThrow("Provide either groupID or versionID, but not both")
+    })
+  })
+
+  describe("error handling", () => {
+    it("returns error when publishing with groupID fails", async () => {
+      const mockLoaderWithError = jest.fn().mockRejectedValue({
+        statusCode: 400,
+        body: {
+          message: "Cannot publish draft version",
+        },
+      })
+
+      const contextWithError = {
+        ...context,
+        publishNavigationDraftLoader: mockLoaderWithError,
+      }
+
+      const res = await runAuthenticatedQuery(
+        mutationWithGroupID,
+        contextWithError
+      )
+
+      expect(
+        res.publishNavigationDraft.navigationVersionOrError
+      ).toHaveProperty("mutationError")
+    })
+
+    it("returns error when publishing with versionID fails", async () => {
+      const mockLoaderWithError = jest.fn().mockRejectedValue({
+        statusCode: 400,
+        body: {
+          message: "Navigation version not found",
+        },
+      })
+
+      const contextWithError = {
+        ...context,
+        publishNavigationVersionLoader: mockLoaderWithError,
+      }
+
+      const res = await runAuthenticatedQuery(
+        mutationWithVersionID,
+        contextWithError
+      )
+
+      expect(
+        res.publishNavigationDraft.navigationVersionOrError
+      ).toHaveProperty("mutationError")
+    })
+  })
 })
