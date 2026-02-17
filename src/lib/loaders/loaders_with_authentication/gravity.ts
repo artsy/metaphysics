@@ -385,6 +385,17 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    navigationVersionLoader: gravityLoader((id) => `navigation_version/${id}`),
+    publishNavigationVersionLoader: gravityLoader(
+      (id) => `navigation_version/${id}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    discardNavigationDraftVersionLoader: gravityLoader(
+      (id) => `navigation_version/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createPartnerArtistLoader: gravityLoader<
       any,
       { partnerID: string; artistID: string }
