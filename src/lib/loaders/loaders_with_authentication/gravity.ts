@@ -135,6 +135,9 @@ export default (accessToken, userID, opts) => {
     artworkImportSummaryLoader: gravityLoader(
       (id) => `artwork_import/${id}/summary`
     ),
+    artworkImportStatisticsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/statistics`
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),
