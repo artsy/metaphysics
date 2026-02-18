@@ -92,6 +92,11 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             type: GraphQLBoolean,
             description: "Whether to include local discovery stubs",
           },
+          maxPerPartner: {
+            description:
+              "Caps number of shows per partner (may result in uneven page sizes)",
+            type: GraphQLInt,
+          },
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
         }),
@@ -116,6 +121,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             include_local_discovery:
               args.includeStubShows || args.discoverable === true,
             include_discovery_blocked: false,
+            max_per_partner: args.maxPerPartner,
           })
         },
       },
