@@ -895,6 +895,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             partnerShowDocuments: numeral(
               ({ partner_show_documents_count }) => partner_show_documents_count
             ),
+            locations: numeral(
+              ({ partner_locations_count }) => partner_locations_count
+            ),
+            contacts: numeral(
+              ({ partner_contacts_count }) => partner_contacts_count
+            ),
           },
         }),
         resolve: (artist) => artist,
