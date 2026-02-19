@@ -157,10 +157,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
 
-          if (!start_at) {
-            return null
-          }
-
           const { format } = args
           return dateRange(start_at, end_at ?? start_at, "UTC", format)
         },
@@ -211,11 +207,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       isActive: {
         type: GraphQLBoolean,
         description: "Are we currently in the fair's active period?",
-        resolve: ({ active_start_at, evergreen }) => {
-          if (evergreen) {
-            return true
-          }
-
+        resolve: ({ active_start_at })=> {
           const activeStart = moment.utc(active_start_at)
           const now = moment.utc()
           return now.isAfter(activeStart)
@@ -355,23 +347,11 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      startAt: date(({ start_at, evergreen }) => {
-        if (evergreen) {
-          return moment().startOf("month").utc().toISOString()
-        } else {
-          return start_at
-        }
-      }),
+      startAt: date(),
       summary: markdown(),
       tickets: markdown(),
       contact: markdown(),
-      endAt: date(({ end_at, evergreen }) => {
-        if (evergreen) {
-          return moment().startOf("month").add(1, "year").utc().toISOString()
-        } else {
-          return end_at
-        }
-      }),
+      endAt: date(),
       activeStartAt: date(),
       organizer: {
         type: FairOrganizerType,
