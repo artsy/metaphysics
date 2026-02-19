@@ -152,13 +152,17 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
-        resolve: ({ start_at, end_at, evergreen, tagline }, args) => {
+        resolve: ({ start_at, end_at, evergreen }, args) => {
           if (evergreen) {
-            return tagline
+            return null
+          }
+
+          if (!start_at) {
+            return null
           }
 
           const { format } = args
-          return dateRange(start_at, end_at, "UTC", format)
+          return dateRange(start_at, end_at ?? start_at, "UTC", format)
         },
       },
       featuredKeywords: {

@@ -696,7 +696,7 @@ describe("Fair", () => {
     })
   })
 
-  it("returns tagline for exhibitionPeriod when fair is evergreen", async () => {
+  it("returns null for exhibitionPeriod when fair is evergreen", async () => {
     const fairData = {
       id: "evergreen-fair",
       evergreen: true,
@@ -719,7 +719,36 @@ describe("Fair", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
-        exhibitionPeriod: "Year-Round Art Fair",
+        exhibitionPeriod: null,
+      },
+    })
+  })
+
+  it("formats exhibitionPeriod when end_at is null", async () => {
+    const fairData = {
+      id: "fair-without-end-date",
+      evergreen: false,
+      start_at: "2019-02-15T23:00:00+00:00",
+      end_at: null,
+    }
+
+    const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+    context = {
+      fairLoader: mockFairLoader,
+    }
+
+    const query = gql`
+      {
+        fair(id: "fair-without-end-date") {
+          exhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        exhibitionPeriod: "February 15, 2019",
       },
     })
   })
