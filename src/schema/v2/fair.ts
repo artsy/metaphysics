@@ -158,7 +158,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           const { format } = args
-          return dateRange(start_at, end_at ?? start_at, "UTC", format)
+          return dateRange(start_at, end_at, "UTC", format)
         },
       },
       featuredKeywords: {
