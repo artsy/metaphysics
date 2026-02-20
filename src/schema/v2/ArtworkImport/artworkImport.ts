@@ -789,23 +789,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     rowsConnection: {
       type: ArtworkImportRowConnectionType,
-      args: pageable({
-        hasErrors: {
-          type: GraphQLBoolean,
-        },
-        errorTypes: {
-          type: new GraphQLList(ArtworkImportErrorType),
-        },
-        excludeErrorTypes: {
-          type: new GraphQLList(ArtworkImportErrorType),
-        },
-        blockersOnly: {
-          type: GraphQLBoolean,
-        },
-        createdOnly: {
-          type: GraphQLBoolean,
-        },
-      }),
+      args: pageable({}),
       resolve: async ({ id }, args, { artworkImportRowsLoader }) => {
         if (!artworkImportRowsLoader) {
           throw new Error(
@@ -817,11 +801,6 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         const { body, headers } = await artworkImportRowsLoader(id, {
           size,
           offset,
-          has_errors: args.hasErrors,
-          error_types: args.errorTypes,
-          exclude_error_types: args.excludeErrorTypes,
-          blockers_only: args.blockersOnly,
-          created_only: args.createdOnly,
           total_count: true,
         })
 
