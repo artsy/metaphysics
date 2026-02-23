@@ -46,6 +46,7 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
+import { currencyPrefix } from "lib/moneyHelpers"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -161,6 +162,13 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ currency_code }) => currency_code,
+    },
+    currencySymbol: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ currency_code }) => {
+        if (!currency_code) return ""
+        return currencyPrefix(currency_code)
+      },
     },
     listPrice: {
       type: Money,

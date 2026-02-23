@@ -1588,6 +1588,56 @@ describe("Me", () => {
       })
     })
 
+    describe("currencySymbol on lineItems", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              lineItems {
+                currencySymbol
+              }
+            }
+          }
+        }
+      `
+
+      it("returns the correct symbol for USD", async () => {
+        orderJson.line_items[0].currency_code = "USD"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("US$")
+      })
+
+      it("returns the correct symbol for EUR", async () => {
+        orderJson.line_items[0].currency_code = "EUR"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("€")
+      })
+
+      it("returns empty string when currency_code is absent", async () => {
+        delete orderJson.line_items[0].currency_code
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("")
+      })
+    })
+
     describe("Money field decimal formatting", () => {
       const query = gql`
         query {
