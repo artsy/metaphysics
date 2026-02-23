@@ -34,7 +34,8 @@ export const ModelChangeType = new GraphQLObjectType<
     fieldChanges: {
       description:
         "A map of changed field names to [previous_value, next_value] pairs.",
-      resolve: ({ field_changes }) => JSON.stringify(field_changes),
+      resolve: ({ field_changes }) => field_changes,
+      type: new GraphQLNonNull(GraphQLJSON), // or custom scalar
       type: new GraphQLNonNull(GraphQLString),
     },
     fieldsChanged: {
