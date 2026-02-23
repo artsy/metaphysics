@@ -268,6 +268,26 @@ describe("City", () => {
       })
     })
 
+    it("can cap shows per partner", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            showsConnection(first: 1, maxPerPartner: 2) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ max_per_partner: 2 })
+    })
+
     it("works with null status and dayThreshold", async () => {
       query = gql`
         {

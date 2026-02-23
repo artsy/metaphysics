@@ -135,6 +135,118 @@ const ArtworkImportSummaryType = new GraphQLObjectType({
   },
 })
 
+const ErrorTypeCountType = new GraphQLObjectType({
+  name: "ErrorTypeCount",
+  fields: {
+    errorType: {
+      type: new GraphQLNonNull(ArtworkImportErrorType),
+      description: "The type of error (e.g. MISSING_ARTIST, INVALID_PRICE)",
+      resolve: ({ error_type }) => error_type,
+    },
+    count: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "The number of times that this error appears",
+    },
+    blocking: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Whether this error stops artwork creation",
+    },
+  },
+})
+
+const ErrorIdentifierType = new GraphQLObjectType({
+  name: "ErrorIdentifier",
+  fields: {
+    errorType: {
+      type: new GraphQLNonNull(ArtworkImportErrorType),
+      description: "The type of error (e.g. MISSING_ARTIST, INVALID_PRICE)",
+      resolve: ({ error_type }) => error_type,
+    },
+    rowId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the row with this error",
+      resolve: ({ row_id }) => row_id,
+    },
+    lineNumber: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "The line number (position) of the row in the original CSV",
+      resolve: ({ line_number }) => line_number,
+    },
+  },
+})
+
+const ErrorIdentifiersType = new GraphQLObjectType({
+  name: "ErrorIdentifiers",
+  fields: {
+    blocking: {
+      type: new GraphQLNonNull(
+        GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
+      ),
+      description:
+        "Array of blocking errors with errorType and rowId. Frontend constructs error IDs for UI cycling.",
+    },
+    nonBlocking: {
+      type: new GraphQLNonNull(
+        GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
+      ),
+      description:
+        "Array of non-blocking errors with errorType and rowId. Frontend constructs error IDs for UI cycling.",
+      resolve: ({ non_blocking }) => non_blocking,
+    },
+  },
+})
+
+const ArtworkImportStatisticsType = new GraphQLObjectType({
+  name: "ArtworkImportStatistics",
+  fields: {
+    rowsWithArtworksCreated: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Total number of rows that successfully created artworks",
+      resolve: ({ rows_with_artworks_created }) => rows_with_artworks_created,
+    },
+    rowsWithArtworksFailed: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Total number of rows that failed to create artworks",
+      resolve: ({ rows_with_artworks_failed }) => rows_with_artworks_failed,
+    },
+    rowsWithFatalErrors: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        "Total number of rows with fatal errors (ARTWORK_CREATION_FAILED, excluding UNMATCHED_IMAGE)",
+      resolve: ({ rows_with_fatal_errors }) => rows_with_fatal_errors,
+    },
+    totalBlockingErrors: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Total number of blocking errors across all rows",
+      resolve: ({ total_blocking_errors }) => total_blocking_errors,
+    },
+    totalNonBlockingErrors: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Total number of non-blocking errors across all rows",
+      resolve: ({ total_non_blocking_errors }) => total_non_blocking_errors,
+    },
+    uniqueRowsWithErrors: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        'Total number of unique rows with errors (for "X artworks require attention")',
+      resolve: ({ unique_rows_with_errors }) => unique_rows_with_errors,
+    },
+    errorTypeCounts: {
+      type: new GraphQLNonNull(
+        GraphQLList(new GraphQLNonNull(ErrorTypeCountType))
+      ),
+      description: "Breakdown of error types and their counts",
+      resolve: ({ error_type_counts }) => error_type_counts,
+    },
+    errorIdentifiers: {
+      type: new GraphQLNonNull(ErrorIdentifiersType),
+      description:
+        "Lightweight error IDs for UI cycling functionality. Returns arrays of error IDs without loading full row data for better performance.",
+      resolve: ({ error_identifiers }) => error_identifiers,
+    },
+  },
+})
+
 const ArtworkImportRowErrorType = new GraphQLObjectType({
   name: "ArtworkImportRowError",
   fields: {
@@ -647,6 +759,14 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         return await artworkImportSummaryLoader(id)
       },
     },
+    statistics: {
+      type: ArtworkImportStatisticsType,
+      resolve: async ({ id }, _args, { artworkImportStatisticsLoader }) => {
+        if (!artworkImportStatisticsLoader) return null
+
+        return await artworkImportStatisticsLoader(id)
+      },
+    },
     unmatchedArtistNames: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: async (
@@ -669,23 +789,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     rowsConnection: {
       type: ArtworkImportRowConnectionType,
-      args: pageable({
-        hasErrors: {
-          type: GraphQLBoolean,
-        },
-        errorTypes: {
-          type: new GraphQLList(ArtworkImportErrorType),
-        },
-        excludeErrorTypes: {
-          type: new GraphQLList(ArtworkImportErrorType),
-        },
-        blockersOnly: {
-          type: GraphQLBoolean,
-        },
-        createdOnly: {
-          type: GraphQLBoolean,
-        },
-      }),
+      args: pageable({}),
       resolve: async ({ id }, args, { artworkImportRowsLoader }) => {
         if (!artworkImportRowsLoader) {
           throw new Error(
@@ -697,11 +801,6 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
         const { body, headers } = await artworkImportRowsLoader(id, {
           size,
           offset,
-          has_errors: args.hasErrors,
-          error_types: args.errorTypes,
-          exclude_error_types: args.excludeErrorTypes,
-          blockers_only: args.blockersOnly,
-          created_only: args.createdOnly,
           total_count: true,
         })
 

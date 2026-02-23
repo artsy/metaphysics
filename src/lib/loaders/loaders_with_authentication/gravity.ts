@@ -135,6 +135,9 @@ export default (accessToken, userID, opts) => {
     artworkImportSummaryLoader: gravityLoader(
       (id) => `artwork_import/${id}/summary`
     ),
+    artworkImportStatisticsLoader: gravityLoader(
+      (id) => `artwork_import/${id}/statistics`
+    ),
     artworkImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artwork_import/${id}/unmatched_artist_names`
     ),
@@ -379,6 +382,17 @@ export default (accessToken, userID, opts) => {
     ),
     deleteNavigationItemLoader: gravityLoader(
       (id) => `navigation_item/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    navigationVersionLoader: gravityLoader((id) => `navigation_version/${id}`),
+    publishNavigationVersionLoader: gravityLoader(
+      (id) => `navigation_version/${id}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    discardNavigationDraftVersionLoader: gravityLoader(
+      (id) => `navigation_version/${id}`,
       {},
       { method: "DELETE" }
     ),
