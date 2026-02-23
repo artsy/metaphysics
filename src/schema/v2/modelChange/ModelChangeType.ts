@@ -7,6 +7,7 @@ import {
 import { InternalIDFields } from "../object_identification"
 import { ResolverContext } from "types/graphql"
 import date from "schema/v2/fields/date"
+import GraphQLJSON from "graphql-type-json"
 
 interface ModelChangeGravityResponse {
   id: string
@@ -35,8 +36,7 @@ export const ModelChangeType = new GraphQLObjectType<
       description:
         "A map of changed field names to [previous_value, next_value] pairs.",
       resolve: ({ field_changes }) => field_changes,
-      type: new GraphQLNonNull(GraphQLJSON), // or custom scalar
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLJSON),
     },
     fieldsChanged: {
       description: "List of field names that were changed.",

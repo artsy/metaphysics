@@ -63,7 +63,16 @@ describe("modelChangesConnection", () => {
             "node": {
               "createdAt": "2024-01-01T00:00:00Z",
               "event": "update",
-              "fieldChanges": "{"title":["Old Title","New Title"],"price":[1000,2000]}",
+              "fieldChanges": {
+                "price": [
+                  1000,
+                  2000,
+                ],
+                "title": [
+                  "Old Title",
+                  "New Title",
+                ],
+              },
               "fieldsChanged": [
                 "title",
                 "price",

@@ -16864,7 +16864,7 @@ type ModelChange {
   event: String!
 
   # A map of changed field names to [previous_value, next_value] pairs.
-  fieldChanges: String!
+  fieldChanges: JSON!
 
   # List of field names that were changed.
   fieldsChanged: [String!]!
