@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -14,7 +15,11 @@ import {
 } from "../../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ConnectionArguments } from "graphql-relay"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import {
+  Money,
+  resolveMinorAndCurrencyFieldsToMoney,
+  symbolFromCurrencyCode,
+} from "../../fields/money"
 import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
@@ -46,7 +51,6 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
-import { currencyPrefix } from "lib/moneyHelpers"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -165,9 +169,14 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
     },
     currencySymbol: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ currency_code }) => {
-        if (!currency_code) return ""
-        return currencyPrefix(currency_code)
+      args: {
+        disambiguate: {
+          type: GraphQLBoolean,
+          defaultValue: true,
+        },
+      },
+      resolve: ({ currency_code }, { disambiguate }) => {
+        return symbolFromCurrencyCode(currency_code, disambiguate) ?? ""
       },
     },
     listPrice: {

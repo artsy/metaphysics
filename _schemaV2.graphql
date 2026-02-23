@@ -15500,7 +15500,7 @@ type LineItem {
   artworkOrEditionSet: ArtworkOrEditionSetType
   artworkVersion: ArtworkVersion
   currencyCode: String!
-  currencySymbol: String!
+  currencySymbol(disambiguate: Boolean = true): String!
 
   # A globally unique ID.
   id: ID!
