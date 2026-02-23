@@ -194,6 +194,25 @@ describe("Image", () => {
           srcSet: `${url1x} 1x, ${url2x} 2x`,
         })
       })
+
+      it("accepts and returns a cachePolicy argument", () => {
+        const url1x =
+          "https://gemini.cloudfront.test?cache_policy=short&height=750&quality=80&resize_to=fit&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=499"
+        const url2x =
+          "https://gemini.cloudfront.test?cache_policy=short&height=1500&quality=50&resize_to=fit&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=998"
+
+        expect(
+          resizedImageUrl(PORTRAIT_IMAGE, { width: 500, cachePolicy: "short" })
+        ).toEqual({
+          factor: 0.2143163309044149,
+          height: 750,
+          width: 499,
+          url: url1x,
+          src: url1x,
+          srcSet: `${url1x} 1x, ${url2x} 2x`,
+          cachePolicy: "short",
+        })
+      })
     })
 
     it("returns a resized image URL when existing image dimensions are lacking", () => {

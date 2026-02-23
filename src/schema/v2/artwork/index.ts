@@ -608,7 +608,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       description: markdown(({ blurb }) => blurb),
       diameter: {
-        type: GraphQLFloat,
+        type: GraphQLString,
         resolve: ({ diameter }) => diameter,
       },
       diameterCm: {

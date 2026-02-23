@@ -333,7 +333,6 @@ import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/update
 import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/mutations/createArtworkImportArtworksMutation"
 import { CreateArtworkImportArtistMatchMutation } from "./ArtworkImport/mutations/createArtworkImportArtistMatchMutation"
 import { CreateArtworkImportArtistAssignmentMutation } from "./ArtworkImport/mutations/createArtworkImportArtistAssignmentMutation"
-import { CreateArtworkImportImageMatchMutation } from "./ArtworkImport/mutations/createArtworkImportImageMatchMutation"
 import { CreateArtworkImportCellFlagMutation } from "./ArtworkImport/mutations/createArtworkImportCellFlagMutation"
 import { BatchArtworkImportImagesMutation } from "./ArtworkImport/mutations/batchArtworkImportImagesMutation"
 import { UpdateArtworkImportRowImagesMutation } from "./ArtworkImport/mutations/updateArtworkImportRowImagesMutation"
@@ -376,6 +375,7 @@ import { NavigationVersion } from "./Navigation/NavigationVersion"
 import { navigationGroup, navigationGroups } from "./Navigation/NavigationGroup"
 import { createNavigationDraftMutation } from "./Navigation/mutations/createNavigationDraftMutation"
 import { publishNavigationDraftMutation } from "./Navigation/mutations/publishNavigationDraftMutation"
+import { discardNavigationDraftMutation } from "./Navigation/mutations/discardNavigationDraftMutation"
 import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
 import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
 import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
@@ -613,6 +613,7 @@ export default new GraphQLSchema({
       deleteArtist: deleteArtistMutation,
       deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
+      discardNavigationDraft: discardNavigationDraftMutation,
       deleteArtworkImport: DeleteArtworkImportMutation,
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
@@ -705,7 +706,6 @@ export default new GraphQLSchema({
       createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
       createArtworkImportArtistMatch: CreateArtworkImportArtistMatchMutation,
       createArtworkImportArtistAssignment: CreateArtworkImportArtistAssignmentMutation,
-      createArtworkImportImageMatch: CreateArtworkImportImageMatchMutation,
       createArtworkImportCellFlag: CreateArtworkImportCellFlagMutation,
       batchArtworkImportImages: BatchArtworkImportImagesMutation,
       updateArtworkImportRowImages: UpdateArtworkImportRowImagesMutation,
