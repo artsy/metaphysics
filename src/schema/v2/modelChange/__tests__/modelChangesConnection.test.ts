@@ -6,6 +6,7 @@ describe("modelChangesConnection", () => {
     id: "change-1",
     trackable_type: "Artwork",
     trackable_id: "artwork-abc",
+    user_id: "user-123",
     event: "update",
     fields_changed: ["title", "price"],
     field_changes: {
@@ -33,6 +34,10 @@ describe("modelChangesConnection", () => {
             node {
               internalID
               event
+              userID
+              user {
+                name
+              }
               fieldsChanged
               fieldChanges
               trackableType
@@ -44,8 +49,11 @@ describe("modelChangesConnection", () => {
       }
     `
 
+    const userByIDLoader = jest.fn().mockResolvedValue({ name: "Percy Z" })
+
     const { modelChangesConnection } = await runAuthenticatedQuery(query, {
       modelChangesLoader,
+      userByIDLoader,
     })
 
     expect(modelChangesLoader).toHaveBeenCalledWith({
@@ -80,6 +88,10 @@ describe("modelChangesConnection", () => {
               "internalID": "change-1",
               "trackableId": "artwork-abc",
               "trackableType": "Artwork",
+              "user": {
+                "name": "Percy Z",
+              },
+              "userID": "user-123",
             },
           },
         ],
@@ -120,6 +132,45 @@ describe("modelChangesConnection", () => {
         total_count: true,
       })
     )
+  })
+
+  it("returns null for user and userID when user_id is null", async () => {
+    const modelChangesLoader = jest.fn().mockResolvedValue({
+      body: [{ ...mockModelChange, user_id: null }],
+      headers: { "x-total-count": "1" },
+    })
+
+    const query = gql`
+      {
+        modelChangesConnection(
+          trackableType: ARTWORK
+          trackableId: "artwork-abc"
+          first: 10
+        ) {
+          edges {
+            node {
+              userID
+              user {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const userByIDLoader = jest.fn()
+
+    const { modelChangesConnection } = await runAuthenticatedQuery(query, {
+      modelChangesLoader,
+      userByIDLoader,
+    })
+
+    expect(userByIDLoader).not.toHaveBeenCalled()
+    expect(modelChangesConnection.edges[0].node).toEqual({
+      userID: null,
+      user: null,
+    })
   })
 
   it("throws an error when not authenticated", async () => {
