@@ -27,7 +27,6 @@ export const executableGravitySchema = () => {
     "Money",
     "MoneyInput",
     "Sale",
-    "SaleArtwork",
     "User",
     "UsersConnection",
     "UsersConnectionEdge",
