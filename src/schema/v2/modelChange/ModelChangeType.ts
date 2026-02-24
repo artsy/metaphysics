@@ -8,11 +8,13 @@ import { InternalIDFields } from "../object_identification"
 import { ResolverContext } from "types/graphql"
 import date from "schema/v2/fields/date"
 import GraphQLJSON from "graphql-type-json"
+import { UserType } from "../user"
 
 interface ModelChangeGravityResponse {
   id: string
   trackable_type: string
   trackable_id: string
+  user_id: string | null
   event: string
   fields_changed: string[]
   field_changes: Record<string, [unknown, unknown]>
@@ -44,6 +46,19 @@ export const ModelChangeType = new GraphQLObjectType<
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
       ),
+    },
+    userID: {
+      description: "The ID of the user who made the change.",
+      resolve: ({ user_id }) => user_id,
+      type: GraphQLString,
+    },
+    user: {
+      description: "The user who made the change.",
+      type: UserType,
+      resolve: ({ user_id }, _args, { userByIDLoader }) => {
+        if (!user_id || !userByIDLoader) return null
+        return userByIDLoader(user_id)
+      },
     },
     trackableId: {
       description: "The ID of the changed record.",

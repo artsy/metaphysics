@@ -6,6 +6,7 @@ describe("modelChangesConnection", () => {
     id: "change-1",
     trackable_type: "Artwork",
     trackable_id: "artwork-abc",
+    user_id: "user-123",
     event: "update",
     fields_changed: ["title", "price"],
     field_changes: {
@@ -33,6 +34,10 @@ describe("modelChangesConnection", () => {
             node {
               internalID
               event
+              userID
+              user {
+                name
+              }
               fieldsChanged
               fieldChanges
               trackableType
@@ -44,8 +49,11 @@ describe("modelChangesConnection", () => {
       }
     `
 
+    const userByIDLoader = jest.fn().mockResolvedValue({ name: "Percy Z" })
+
     const { modelChangesConnection } = await runAuthenticatedQuery(query, {
       modelChangesLoader,
+      userByIDLoader,
     })
 
     expect(modelChangesLoader).toHaveBeenCalledWith({
@@ -80,6 +88,10 @@ describe("modelChangesConnection", () => {
               "internalID": "change-1",
               "trackableId": "artwork-abc",
               "trackableType": "Artwork",
+              "user": {
+                "name": "Percy Z",
+              },
+              "userID": "user-123",
             },
           },
         ],
