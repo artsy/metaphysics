@@ -1602,7 +1602,9 @@ describe("Me", () => {
       `
 
       it("returns the correct symbol for USD", async () => {
-        orderJson.line_items[0].currency_code = "USD"
+        orderJson.line_items = [
+          { ...orderJson.line_items[0], currency_code: "USD" },
+        ]
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
           meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1614,7 +1616,9 @@ describe("Me", () => {
       })
 
       it("returns the correct symbol for EUR", async () => {
-        orderJson.line_items[0].currency_code = "EUR"
+        orderJson.line_items = [
+          { ...orderJson.line_items[0], currency_code: "EUR" },
+        ]
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
           meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1651,7 +1655,9 @@ describe("Me", () => {
         `
 
         it("strips the country prefix for USD when disambiguate is false", async () => {
-          orderJson.line_items[0].currency_code = "USD"
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "USD" },
+          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1663,7 +1669,9 @@ describe("Me", () => {
         })
 
         it("returns the symbol unchanged for EUR when disambiguate is false", async () => {
-          orderJson.line_items[0].currency_code = "EUR"
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "EUR" },
+          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1675,7 +1683,9 @@ describe("Me", () => {
         })
 
         it("strips the country prefix for FKP (Falkland Islands pound) when disambiguate is false", async () => {
-          orderJson.line_items[0].currency_code = "FKP"
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "FKP" },
+          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1687,7 +1697,9 @@ describe("Me", () => {
         })
 
         it("strips the country prefix for PLN (Polish złoty) when disambiguate is false", async () => {
-          orderJson.line_items[0].currency_code = "PLN"
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "PLN" },
+          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1699,7 +1711,9 @@ describe("Me", () => {
         })
 
         it("strips the country prefix for CNY (Chinese yuan) when disambiguate is false", async () => {
-          orderJson.line_items[0].currency_code = "CNY"
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "CNY" },
+          ]
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
