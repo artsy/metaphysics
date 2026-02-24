@@ -347,16 +347,6 @@ type Query {
   Find a sale by ID
   """
   sale(id: ID!): Sale
-
-  """
-  Find a sale artwork by ID
-  """
-  saleArtwork(id: ID!): SaleArtwork
-
-  """
-  Find sale artworks by IDs
-  """
-  saleArtworks(ids: [ID!]!): [SaleArtwork!]!
 }
 
 """
@@ -480,31 +470,6 @@ type SaleAdministrationFields {
   User(s): Artsy employee(s) who are the sale manager
   """
   trustAndSafetyAdmins: [User!]!
-}
-
-type SaleArtwork {
-  highestBidAmountCents: Int
-
-  """
-  Unique ID for this sale artwork
-  """
-  id: ID!
-
-  """
-  Bidding Engine Lot ID
-  """
-  lotId: String
-
-  """
-  Lot number/identifier
-  """
-  lotLabel: String
-  sale: Sale!
-
-  """
-  Whether the lot sold at auction
-  """
-  sold: Boolean
 }
 
 """

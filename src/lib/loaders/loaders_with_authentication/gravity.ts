@@ -991,6 +991,7 @@ export default (accessToken, userID, opts) => {
 
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
+    modelChangesLoader: gravityLoader("model_changes", {}, { headers: true }),
     myCollectionArtworksLoader: gravityLoader(
       "collection/my-collection/artworks",
       {},
