@@ -1,7 +1,9 @@
 version: "2"
 services:
   metaphysics:
-{% include 'templates/docker-compose-service-dev.yml.j2' %}
+    build:
+      context: ../
+      target: builder-base
     command: ["yarn", "start"]
     env_file:
       - ../.env.shared
