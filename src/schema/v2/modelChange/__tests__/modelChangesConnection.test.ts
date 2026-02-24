@@ -134,6 +134,45 @@ describe("modelChangesConnection", () => {
     )
   })
 
+  it("returns null for user and userID when user_id is null", async () => {
+    const modelChangesLoader = jest.fn().mockResolvedValue({
+      body: [{ ...mockModelChange, user_id: null }],
+      headers: { "x-total-count": "1" },
+    })
+
+    const query = gql`
+      {
+        modelChangesConnection(
+          trackableType: ARTWORK
+          trackableId: "artwork-abc"
+          first: 10
+        ) {
+          edges {
+            node {
+              userID
+              user {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const userByIDLoader = jest.fn()
+
+    const { modelChangesConnection } = await runAuthenticatedQuery(query, {
+      modelChangesLoader,
+      userByIDLoader,
+    })
+
+    expect(userByIDLoader).not.toHaveBeenCalled()
+    expect(modelChangesConnection.edges[0].node).toEqual({
+      userID: null,
+      user: null,
+    })
+  })
+
   it("throws an error when not authenticated", async () => {
     const query = gql`
       {
