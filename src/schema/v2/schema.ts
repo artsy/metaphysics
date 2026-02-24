@@ -32,6 +32,7 @@ import { createHeroUnitMutation } from "./HeroUnit/createHeroUnitMutation"
 import { deleteHeroUnitMutation } from "./HeroUnit/deleteHeroUnitMutation"
 import { heroUnit } from "./HeroUnit/heroUnit"
 import { heroUnitsConnection } from "./HeroUnit/heroUnitsConnection"
+import { modelChangesConnection } from "./modelChange/modelChangesConnection"
 import { updateHeroUnitMutation } from "./HeroUnit/updateHeroUnitMutation"
 import { artworksCollectionsBatchUpdateMutation } from "./me/artworksCollectionsBatchUpdateMutation"
 import { createCollectionMutation } from "./me/createCollectionMutation"
@@ -475,6 +476,7 @@ const rootFields = {
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
   me: Me,
+  modelChangesConnection,
   node: ObjectIdentification.NodeField,
   notificationPreferences,
   notificationsConnection: NotificationsConnection,
