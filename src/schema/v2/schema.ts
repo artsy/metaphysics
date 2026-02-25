@@ -320,6 +320,7 @@ import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewin
 import { deleteArtworkTemplateMutation } from "./artworkTemplate/mutations/deleteArtworkTemplateMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
+import { repositionViewingRoomArtworksMutation } from "./viewingRooms/mutations/repositionViewingRoomArtworks"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
@@ -676,6 +677,7 @@ export default new GraphQLSchema({
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
+      repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
