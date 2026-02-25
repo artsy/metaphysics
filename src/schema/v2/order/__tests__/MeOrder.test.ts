@@ -1588,6 +1588,144 @@ describe("Me", () => {
       })
     })
 
+    describe("currencySymbol on lineItems", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              lineItems {
+                currencySymbol
+              }
+            }
+          }
+        }
+      `
+
+      it("returns the correct symbol for USD", async () => {
+        orderJson.line_items = [
+          { ...orderJson.line_items[0], currency_code: "USD" },
+        ]
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("US$")
+      })
+
+      it("returns the correct symbol for EUR", async () => {
+        orderJson.line_items = [
+          { ...orderJson.line_items[0], currency_code: "EUR" },
+        ]
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("€")
+      })
+
+      it("returns empty string when currency_code is absent", async () => {
+        delete orderJson.line_items[0].currency_code
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lineItems[0].currencySymbol).toEqual("")
+      })
+
+      describe("disambiguate argument", () => {
+        const disambiguateQuery = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                lineItems {
+                  currencySymbol(disambiguate: false)
+                }
+              }
+            }
+          }
+        `
+
+        it("strips the country prefix for USD when disambiguate is false", async () => {
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "USD" },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          }
+
+          const result = await runAuthenticatedQuery(disambiguateQuery, context)
+
+          expect(result.me.order.lineItems[0].currencySymbol).toEqual("$")
+        })
+
+        it("returns the symbol unchanged for EUR when disambiguate is false", async () => {
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "EUR" },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          }
+
+          const result = await runAuthenticatedQuery(disambiguateQuery, context)
+
+          expect(result.me.order.lineItems[0].currencySymbol).toEqual("€")
+        })
+
+        it("strips the country prefix for FKP (Falkland Islands pound) when disambiguate is false", async () => {
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "FKP" },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          }
+
+          const result = await runAuthenticatedQuery(disambiguateQuery, context)
+
+          expect(result.me.order.lineItems[0].currencySymbol).toEqual("£")
+        })
+
+        it("strips the country prefix for PLN (Polish złoty) when disambiguate is false", async () => {
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "PLN" },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          }
+
+          const result = await runAuthenticatedQuery(disambiguateQuery, context)
+
+          expect(result.me.order.lineItems[0].currencySymbol).toEqual("zł")
+        })
+
+        it("strips the country prefix for CNY (Chinese yuan) when disambiguate is false", async () => {
+          orderJson.line_items = [
+            { ...orderJson.line_items[0], currency_code: "CNY" },
+          ]
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          }
+
+          const result = await runAuthenticatedQuery(disambiguateQuery, context)
+
+          expect(result.me.order.lineItems[0].currencySymbol).toEqual("¥")
+        })
+      })
+    })
+
     describe("Money field decimal formatting", () => {
       const query = gql`
         query {
