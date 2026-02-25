@@ -43,6 +43,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    repositionViewingRoomArtworksLoader: gravityLoader<any, string>(
+      (id) => `viewing_room/${id}/viewing_room_artworks/reposition`,
+      {},
+      { method: "POST" }
+    ),
     repositionInstallShotsInPartnerShowLoader: gravityLoader<
       any,
       { showId: string }
