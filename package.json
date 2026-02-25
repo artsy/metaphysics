@@ -21,6 +21,7 @@
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
     "dump:local": "yarn dump-schema _schemaV2.graphql",
     "dump:staging": "node scripts/dump-staging-schema.js",
+    "hokusai": "hokusai dev start --no-build",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
     "postinstall": "patch-package",

@@ -40,7 +40,6 @@ interface UpdatePartnerMutationInputProps {
   hasLimitedFolioAccess?: boolean | null
   implicitOfferEnabled?: boolean | null
   inquiryOrderEnabled?: boolean | null
-  managedByErp?: boolean | null
   outreachAdminId?: string | null
   partnerCategories?: string[] | null
   preQualify?: boolean | null
@@ -194,10 +193,6 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       description:
         "Partner could list artworks for purchasing from inquiry conversations.",
     },
-    managedByErp: {
-      type: GraphQLBoolean,
-      description: "Whether the partner is managed by ERP for subscriptions.",
-    },
     outreachAdminId: {
       type: GraphQLString,
       description: "Admin that signed up this partner.",
@@ -307,7 +302,6 @@ export const updatePartnerMutation = mutationWithClientMutationId<
       hasLimitedFolioAccess,
       implicitOfferEnabled,
       inquiryOrderEnabled,
-      managedByErp,
       outreachAdminId,
       partnerCategories,
       preQualify,
@@ -357,7 +351,6 @@ export const updatePartnerMutation = mutationWithClientMutationId<
         has_limited_folio_access: hasLimitedFolioAccess,
         implicit_offer_enabled: implicitOfferEnabled,
         inquiry_order_enabled: inquiryOrderEnabled,
-        managed_by_erp: managedByErp,
         outreach_admin_id: outreachAdminId,
         partner_categories: partnerCategories,
         pre_qualify: preQualify,

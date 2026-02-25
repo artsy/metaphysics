@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -14,7 +15,11 @@ import {
 } from "../../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ConnectionArguments } from "graphql-relay"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
+import {
+  Money,
+  resolveMinorAndCurrencyFieldsToMoney,
+  symbolFromCurrencyCode,
+} from "../../fields/money"
 import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
 import { ArtworkType } from "../../artwork"
@@ -161,6 +166,18 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ currency_code }) => currency_code,
+    },
+    currencySymbol: {
+      type: new GraphQLNonNull(GraphQLString),
+      args: {
+        disambiguate: {
+          type: GraphQLBoolean,
+          defaultValue: true,
+        },
+      },
+      resolve: ({ currency_code }, { disambiguate }) => {
+        return symbolFromCurrencyCode(currency_code, disambiguate) ?? ""
+      },
     },
     listPrice: {
       type: Money,
