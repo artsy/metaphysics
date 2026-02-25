@@ -85,7 +85,9 @@ export const resolveOrderPricingBreakdownLines = (
     tax_total_cents: taxTotalCents,
     items_total_cents: itemsTotalCents,
     buyer_total_cents: buyerTotalCents,
+    selected_fulfillment_option: selectedFulfillmentOption,
     source,
+    mode,
   } = order
 
   const resolveMoney = (amount: number) => {
@@ -106,7 +108,7 @@ export const resolveOrderPricingBreakdownLines = (
   const subtotalLine: ResolvedPriceLineData = {
     __typename: "SubtotalLine",
     displayName:
-      source === "partner_offer"
+      source === "partner_offer" && mode === "buy"
         ? COPY.subtotal.displayName.galleryOffer
         : COPY.subtotal.displayName.price,
     amount: itemsTotalCents != null ? resolveMoney(itemsTotalCents) : null,
@@ -114,7 +116,7 @@ export const resolveOrderPricingBreakdownLines = (
   }
 
   // Shipping line
-  const selectedFulfillment: FulfillmentOptionJson = order.selected_fulfillment_option || {
+  const selectedFulfillment: FulfillmentOptionJson = selectedFulfillmentOption || {
     type: "shipping_tbd",
   }
 
