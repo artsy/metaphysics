@@ -68,7 +68,7 @@ export const submitOrderMutation = mutationWithClientMutationId<
       }
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
-      // If this is an offer order is not from inquiry page, create an inquiry
+      // If this offer order is not from inquiry page, create an inquiry
       if (
         submittedOrder.mode === "offer" &&
         submittedOrder.source != "inquiry" &&
