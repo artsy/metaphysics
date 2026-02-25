@@ -71,7 +71,7 @@ export const submitOrderMutation = mutationWithClientMutationId<
       // If this offer order is not from inquiry page, create an inquiry
       if (
         submittedOrder.mode === "offer" &&
-        submittedOrder.source != "inquiry" &&
+        submittedOrder.source !== "inquiry" &&
         submitArtworkInquiryRequestLoader
       ) {
         try {
