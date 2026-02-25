@@ -541,6 +541,46 @@ describe("submitOfferOrderWithConversation", () => {
     expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
   })
 
+  it("calls submitArtworkInquiryRequestLoader when source is not inquiry", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const orderFromArtworkPage = {
+      orderOrError: {
+        order: {
+          source: "artwork_page",
+          internalID: "order-id-2",
+          myLastOffer: {
+            note: "I would like to make an offer",
+          },
+          lineItems: {
+            edges: [
+              {
+                node: {
+                  artworkId: "artwork-id-2",
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(orderFromArtworkPage)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(result).toEqual(orderFromArtworkPage)
+    expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+      artwork: "artwork-id-2",
+      message: "I would like to make an offer",
+      order_id: "order-id-2",
+    })
+  })
+
   it("does not call submitArtworkInquiryRequestLoader if order is in_review", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
