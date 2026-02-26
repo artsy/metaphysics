@@ -308,6 +308,18 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Currency code",
       resolve: ({ currency_code }) => currency_code,
     },
+    currencySymbol: {
+      type: new GraphQLNonNull(GraphQLString),
+      args: {
+        disambiguate: {
+          type: GraphQLBoolean,
+          defaultValue: true,
+        },
+      },
+      resolve: ({ currency_code }, { disambiguate }) => {
+        return symbolFromCurrencyCode(currency_code, disambiguate) ?? ""
+      },
+    },
     deliveryInfo: DeliveryInfo,
     displayTexts: DisplayTexts,
     displaySellerTexts: DisplaySellerTexts,
