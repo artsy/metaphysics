@@ -68,10 +68,12 @@ export const submitOrderMutation = mutationWithClientMutationId<
       }
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
-      // If this offer order is not from inquiry page, create an inquiry
+      // If this offer is not from inquiry page and is not held for review,
+      // create an inquiry. Reviewed offers processed after review passed event.
       if (
         submittedOrder.mode === "offer" &&
         submittedOrder.source !== "inquiry" &&
+        submittedOrder.state !== "IN_REVIEW" &&
         submitArtworkInquiryRequestLoader
       ) {
         try {
