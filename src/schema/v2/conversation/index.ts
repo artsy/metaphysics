@@ -531,24 +531,46 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           conversation,
           _args,
-          { partnerInquiryRequestLoader }
+          { partnerInquiryRequestLoader, meInquiryRequestLoader, userID }
         ) => {
-          if (!partnerInquiryRequestLoader) {
-            return null
+          const isConversationInitiator =
+            userID && conversation.from_id === userID
+
+          // Conversation initiators use the `me` loader
+          // when accessing their own inquiry requests.
+          if (
+            isConversationInitiator &&
+            meInquiryRequestLoader &&
+            conversation.inquiry_id
+          ) {
+            try {
+              return await meInquiryRequestLoader(conversation.inquiry_id)
+            } catch (error) {
+              console.error(
+                "[schema/v2/conversation/inquiryRequest] Error:",
+                error
+              )
+              return null
+            }
           }
-          try {
-            const data = await partnerInquiryRequestLoader({
-              inquiryId: conversation.inquiry_id,
-              partnerId: conversation.to_id,
-            })
-            return data
-          } catch (error) {
-            console.error(
-              "[schema/v2/conversation/inquiryRequest] Error:",
-              error
-            )
-            return null
+
+          // Everyone else (partners, admins, etc.)
+          if (partnerInquiryRequestLoader) {
+            try {
+              return await partnerInquiryRequestLoader({
+                inquiryId: conversation.inquiry_id,
+                partnerId: conversation.to_id,
+              })
+            } catch (error) {
+              console.error(
+                "[schema/v2/conversation/inquiryRequest] Error:",
+                error
+              )
+              return null
+            }
           }
+
+          return null
         },
       },
       items: {
