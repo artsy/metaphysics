@@ -1640,6 +1640,71 @@ describe("Me", () => {
       })
     })
 
+    describe("currencySymbol on order", () => {
+      it("returns the disambiguated symbol by default", async () => {
+        orderJson.currency_code = "USD"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+        const result = await runAuthenticatedQuery(
+          gql`
+            query {
+              me {
+                order(id: "order-id") {
+                  currencySymbol
+                }
+              }
+            }
+          `,
+          context
+        )
+        expect(result.me.order.currencySymbol).toEqual("US$")
+      })
+
+      it("returns bare symbol when disambiguate is false", async () => {
+        orderJson.currency_code = "USD"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+        const result = await runAuthenticatedQuery(
+          gql`
+            query {
+              me {
+                order(id: "order-id") {
+                  currencySymbol(disambiguate: false)
+                }
+              }
+            }
+          `,
+          context
+        )
+        expect(result.me.order.currencySymbol).toEqual("$")
+      })
+
+      it("returns empty string when currency_code is absent", async () => {
+        delete orderJson.currency_code
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+        const result = await runAuthenticatedQuery(
+          gql`
+            query {
+              me {
+                order(id: "order-id") {
+                  currencySymbol
+                }
+              }
+            }
+          `,
+          context
+        )
+        expect(result.me.order.currencySymbol).toEqual("")
+      })
+    })
+
     describe("currencySymbol on lineItems", () => {
       const query = gql`
         query {
