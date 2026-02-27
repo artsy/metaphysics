@@ -17,6 +17,7 @@ describe("Me", () => {
           from_email: "collector@example.com",
           from_name: "Percy",
           to_id: "partner-id",
+          inquiry_id: "inquiry-123",
           _embedded: {
             last_message: {
               snippet:
@@ -721,6 +722,84 @@ describe("Me", () => {
             expect(inquiryRequest.questions).toHaveLength(1)
             expect(inquiryRequest.shippingLocation).toBeNull()
             expect(inquiryRequest.formattedFirstMessage).toMatchSnapshot()
+          }
+        )
+      })
+      it("uses meInquiryRequestLoader when viewer is the collector", () => {
+        const newContext = {
+          ...context,
+          userID: "collector-id",
+          meInquiryRequestLoader: () =>
+            Promise.resolve({
+              message: "Hello from collector!",
+              inquiry_questions: [
+                { id: "shipping_quote", question: "Shipping" },
+              ],
+              inquiry_shipping_location: null,
+            }),
+          partnerInquiryRequestLoader: jest.fn(),
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.questions).toHaveLength(1)
+            expect(inquiryRequest.formattedFirstMessage).toContain("Shipping")
+            expect(
+              newContext.partnerInquiryRequestLoader
+            ).not.toHaveBeenCalled()
+          }
+        )
+      })
+      it("uses partnerInquiryRequestLoader when viewer is not the collector", () => {
+        const partnerLoader = jest.fn().mockResolvedValue({
+          message: "Hello from partner view!",
+          inquiry_questions: [],
+          inquiry_shipping_location: null,
+        })
+        const newContext = {
+          ...context,
+          userID: "some-other-user",
+          meInquiryRequestLoader: jest.fn(),
+          partnerInquiryRequestLoader: partnerLoader,
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.formattedFirstMessage).toBe(
+              "Hello from partner view!"
+            )
+            expect(newContext.meInquiryRequestLoader).not.toHaveBeenCalled()
+            expect(partnerLoader).toHaveBeenCalled()
+          }
+        )
+      })
+      it("returns null when neither loader is available", () => {
+        const newContext = {
+          ...context,
+          userID: "collector-id",
+          meInquiryRequestLoader: undefined,
+          partnerInquiryRequestLoader: undefined,
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest).toBeNull()
+          }
+        )
+      })
+      it("falls back to partnerInquiryRequestLoader when meInquiryRequestLoader fails", () => {
+        const partnerLoader = jest.fn().mockResolvedValue({
+          message: "Fallback to partner!",
+          inquiry_questions: [],
+          inquiry_shipping_location: null,
+        })
+        const newContext = {
+          ...context,
+          userID: "collector-id",
+          meInquiryRequestLoader: () => Promise.reject(new Error("403")),
+          partnerInquiryRequestLoader: partnerLoader,
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            // When meInquiryRequestLoader fails, it returns null (doesn't fall back)
+            expect(inquiryRequest).toBeNull()
           }
         )
       })

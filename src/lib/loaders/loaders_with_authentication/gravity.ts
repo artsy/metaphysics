@@ -875,6 +875,7 @@ export default (accessToken, userID, opts) => {
     matchVideosLoader: gravityLoader("match/videos", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meAlertLoader: gravityLoader((id) => `me/alert/${id}`),
+    meInquiryRequestLoader: gravityLoader((id) => `me/inquiry_request/${id}`),
     meAlertsLoader: gravityLoader("me/alerts", {}, { headers: true }),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",
