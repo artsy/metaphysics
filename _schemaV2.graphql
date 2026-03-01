@@ -26983,6 +26983,8 @@ input UpdateUserMutationInput {
   id: String!
   name: String
   phone: String
+  phoneCountryCode: String
+  phoneNumber: String
 }
 
 type UpdateUserMutationPayload {
