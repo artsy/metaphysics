@@ -1,11 +1,7 @@
-import {
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GravityARImageType } from "./GravityARImageType"
+import { InternalIDField } from "./object_identification"
 
 export const ViewingRoomSubsectionType = new GraphQLObjectType<
   any,
@@ -14,11 +10,7 @@ export const ViewingRoomSubsectionType = new GraphQLObjectType<
   name: "ViewingRoomSubsection",
   fields: () => {
     return {
-      internalID: {
-        description: "A type-specific ID likely used as a database ID.",
-        type: new GraphQLNonNull(GraphQLID),
-        resolve: ({ id }) => id,
-      },
+      ...InternalIDField,
       body: {
         type: GraphQLString,
       },

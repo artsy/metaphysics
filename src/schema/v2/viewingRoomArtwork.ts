@@ -5,6 +5,7 @@ import {
   GraphQLObjectType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDField } from "./object_identification"
 
 export const ViewingRoomArtworkType = new GraphQLObjectType<
   any,
@@ -13,11 +14,7 @@ export const ViewingRoomArtworkType = new GraphQLObjectType<
   name: "ViewingRoomArtwork",
   fields: () => {
     return {
-      internalID: {
-        description: "A type-specific ID likely used as a database ID.",
-        type: new GraphQLNonNull(GraphQLID),
-        resolve: ({ id }) => id,
-      },
+      ...InternalIDField,
       artworkID: {
         type: new GraphQLNonNull(GraphQLID),
         resolve: ({ artwork_id }) => artwork_id,
