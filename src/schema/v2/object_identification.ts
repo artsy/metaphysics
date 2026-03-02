@@ -112,7 +112,13 @@ const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 function argumentsForChild(type, id) {
   const isFilterType =
     type === "FilterArtworks" || type === "filterArtworksConnection"
-  return isFilterType || type.startsWith("HomePage") ? JSON.parse(id) : { id }
+  if (isFilterType || type.startsWith("HomePage")) {
+    return JSON.parse(id)
+  }
+  if (type === "Show") {
+    return { id, includeAllShows: true }
+  }
+  return { id }
 }
 
 function rootValueForChild(rootValue) {
