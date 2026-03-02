@@ -67,6 +67,22 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_DATE_EARLIEST_YEAR: { value: "invalid_date_earliest_year" },
     INVALID_DATE_LATEST_YEAR: { value: "invalid_date_latest_year" },
     INVALID_DATE_MODE: { value: "invalid_date_mode" },
+    INVALID_PRICE_MIN: { value: "invalid_price_min" },
+    INVALID_PRICE_MAX: { value: "invalid_price_max" },
+    INVALID_BUY_NOW: { value: "invalid_buy_now" },
+    INVALID_MAKE_OFFER: { value: "invalid_make_offer" },
+    INVALID_DISPLAY_PRICE_RANGE: { value: "invalid_display_price_range" },
+    INVALID_ARTSY_DOMESTIC_SHIPPING: {
+      value: "invalid_artsy_domestic_shipping",
+    },
+    INVALID_ARTSY_INTERNATIONAL_SHIPPING: {
+      value: "invalid_artsy_international_shipping",
+    },
+    INVALID_PICKUP_AVAILABLE: { value: "invalid_pickup_available" },
+    INVALID_DOMESTIC_SHIPPING: { value: "invalid_domestic_shipping" },
+    INVALID_INTERNATIONAL_SHIPPING: { value: "invalid_international_shipping" },
+    INVALID_LOCATION: { value: "invalid_location" },
+    INVALID_INVENTORY_QUANTITY: { value: "invalid_inventory_quantity" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
@@ -643,6 +659,57 @@ const ArtworkImportRowType = new GraphQLObjectType({
             importSource: {
               type: GraphQLString,
               resolve: ({ ImportSource }) => ImportSource,
+            },
+
+            // Partner Support Fields
+            priceMin: {
+              type: GraphQLString,
+              resolve: ({ PriceMin }) => PriceMin,
+            },
+            priceMax: {
+              type: GraphQLString,
+              resolve: ({ PriceMax }) => PriceMax,
+            },
+            displayPriceRange: {
+              type: GraphQLBoolean,
+              resolve: ({ DisplayPriceRange }) => DisplayPriceRange,
+            },
+            buyNow: {
+              type: GraphQLBoolean,
+              resolve: ({ BuyNow }) => BuyNow,
+            },
+            makeOffer: {
+              type: GraphQLBoolean,
+              resolve: ({ MakeOffer }) => MakeOffer,
+            },
+            artsyDomesticShipping: {
+              type: GraphQLBoolean,
+              resolve: ({ ArtsyDomesticShipping }) => ArtsyDomesticShipping,
+            },
+            artsyInternationalShipping: {
+              type: GraphQLBoolean,
+              resolve: ({ ArtsyInternationalShipping }) =>
+                ArtsyInternationalShipping,
+            },
+            pickupAvailable: {
+              type: GraphQLBoolean,
+              resolve: ({ PickupAvailable }) => PickupAvailable,
+            },
+            domesticShipping: {
+              type: GraphQLString,
+              resolve: ({ DomesticShipping }) => DomesticShipping,
+            },
+            internationalShipping: {
+              type: GraphQLString,
+              resolve: ({ InternationalShipping }) => InternationalShipping,
+            },
+            location: {
+              type: GraphQLString,
+              resolve: ({ Location }) => Location,
+            },
+            inventoryQuantity: {
+              type: GraphQLString,
+              resolve: ({ InventoryQuantity }) => InventoryQuantity,
             },
 
             // Auction Only Fields
