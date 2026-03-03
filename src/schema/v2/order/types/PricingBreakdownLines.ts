@@ -32,6 +32,7 @@ const COPY = {
       whiteGlove: "White glove shipping",
     },
     fallbackText: "Calculated in next steps",
+    deferredShippingText: "To be confirmed by seller",
   },
   tax: { displayName: "Tax", amountFallbackText: "Calculated in next steps" },
   total: {
@@ -149,11 +150,19 @@ export const resolveOrderPricingBreakdownLines = (
       break
   }
 
+  let shippingFallbackText: string | null = null
+  if (!hasShippingTotal) {
+    shippingFallbackText =
+      selectedFulfillment?.type === "shipping_tbd"
+        ? COPY.shipping.deferredShippingText
+        : COPY.shipping.fallbackText
+  }
+
   const shippingLine: ResolvedPriceLineData = {
     __typename: "ShippingLine",
     displayName: shippingDisplayName,
     amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-    amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+    amountFallbackText: shippingFallbackText,
   }
 
   // Tax line

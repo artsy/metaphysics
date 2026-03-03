@@ -1458,6 +1458,42 @@ describe("Me", () => {
             },
           ])
         })
+
+        it("returns 'To be confirmed by seller' for shipping_tbd when amount is not present", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = null
+          orderJson.selected_fulfillment_option = {
+            type: "shipping_tbd",
+            selected: true,
+          }
+
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Shipping",
+              amountFallbackText: "To be confirmed by seller",
+              amount: null,
+            },
+            {
+              __typename: "TaxLine",
+            },
+            {
+              __typename: "TotalLine",
+            },
+          ])
+        })
       })
     })
 
