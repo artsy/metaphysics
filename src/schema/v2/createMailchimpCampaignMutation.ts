@@ -112,6 +112,12 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    if (artworkIds && partnerShowId) {
+      throw new Error(
+        'The "artworkIds" and "partnerShowId" arguments are mutually exclusive.'
+      )
+    }
+
     try {
       return await createMailchimpCampaignLoader({
         mailchimp_account_id: mailchimpAccountId,
