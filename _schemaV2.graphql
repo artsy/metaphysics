@@ -3579,6 +3579,7 @@ type ArtworkImportRow {
   dateLatestYear: Int
   dateMode: DateMode
   dimensionMetric: String!
+  domesticShipping: Money
   errors: [ArtworkImportRowError!]!
   estimate: Money
   excludedFromImport: Boolean!
@@ -3590,9 +3591,12 @@ type ArtworkImportRow {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  internationalShipping: Money
   lowEstimate: Money
   openingBid: Money
   priceListed: Money
+  priceMax: Money
+  priceMin: Money
   rawData: JSON!
   reserve: Money
   transformedData: ArtworkImportTransformedData!

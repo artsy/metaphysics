@@ -486,6 +486,98 @@ const ArtworkImportRowType = new GraphQLObjectType({
         )
       },
     },
+    priceMin: {
+      type: Money,
+      resolve: (
+        { price_min_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (minor == null || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    priceMax: {
+      type: Money,
+      resolve: (
+        { price_max_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (minor == null || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    domesticShipping: {
+      type: Money,
+      resolve: (
+        { domestic_shipping_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (minor == null || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
+    internationalShipping: {
+      type: Money,
+      resolve: (
+        { international_shipping_minor: minor, currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        if (minor == null || !currencyCode) {
+          return null
+        }
+
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
     rawData: {
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
