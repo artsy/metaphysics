@@ -763,28 +763,28 @@ const ArtworkImportRowType = new GraphQLObjectType({
               resolve: ({ PriceMax }) => PriceMax,
             },
             displayPriceRange: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ DisplayPriceRange }) => DisplayPriceRange,
             },
             buyNow: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ BuyNow }) => BuyNow,
             },
             makeOffer: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ MakeOffer }) => MakeOffer,
             },
             artsyDomesticShipping: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ ArtsyDomesticShipping }) => ArtsyDomesticShipping,
             },
             artsyInternationalShipping: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ ArtsyInternationalShipping }) =>
                 ArtsyInternationalShipping,
             },
             pickupAvailable: {
-              type: GraphQLBoolean,
+              type: GraphQLString,
               resolve: ({ PickupAvailable }) => PickupAvailable,
             },
             domesticShipping: {

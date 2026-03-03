@@ -3703,14 +3703,14 @@ type ArtworkImportSummary {
 type ArtworkImportTransformedData {
   artistNames: String
   artistProofs: String
-  artsyDomesticShipping: Boolean
-  artsyInternationalShipping: Boolean
+  artsyDomesticShipping: String
+  artsyInternationalShipping: String
   artworkCondition: String
   artworkDescription: String
   artworkTitle: String
   availableEditions: [String]
   bibliography: String
-  buyNow: Boolean
+  buyNow: String
   certificateOfAuthenticity: String
   classification: String
   confidentialNotes: String
@@ -3724,7 +3724,7 @@ type ArtworkImportTransformedData {
   depth: String
   diameter: String
   dimensionMetric: String
-  displayPriceRange: Boolean
+  displayPriceRange: String
   domesticShipping: String
   editionSize: String
   estimate: String
@@ -3745,11 +3745,11 @@ type ArtworkImportTransformedData {
   location: String
   lotNumber: String
   lowEstimate: String
-  makeOffer: Boolean
+  makeOffer: String
   materials: String
   medium: String
   openingBid: String
-  pickupAvailable: Boolean
+  pickupAvailable: String
   position: String
   price: String
   priceMax: String
