@@ -7,4 +7,5 @@ import { FeatureFlag } from "lib/featureFlags"
 export const CURRENTLY_RUNNING_EXPERIMENTS: FeatureFlag[] = [
   "onyx_auctions_hub",
   "onyx_nwfy-artworks-card-test",
+  "onyx_NWFY-grid-ABC-test",
 ]

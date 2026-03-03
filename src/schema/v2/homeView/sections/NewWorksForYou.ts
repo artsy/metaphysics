@@ -20,6 +20,19 @@ export const isEligibleForNWFYExperiment = (
   }
 }
 
+export const isEligibleForNWFYEGridxperiment = (
+  context: ResolverContext
+): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+  const minimumEigenVersion = { major: 9, minor: 0, patch: 1 }
+
+  if (actualEigenVersion) {
+    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
+  } else {
+    return false
+  }
+}
+
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
