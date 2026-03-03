@@ -87,7 +87,6 @@ import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { ShowsConnection } from "./showsConnection"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
-import { submissionsConnection } from "./submissionsConnection"
 import { TaskType } from "./task"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
@@ -687,7 +686,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return !!share_follows
       },
     },
-    submissionsConnection: submissionsConnection,
     recommendedArtworks: {
       deprecationReason:
         "These genomic recs are deprecated. Use artworkRecommendations instead.",

@@ -47,7 +47,6 @@ import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
-  emptyConnection,
   PageCursorsType,
   paginationResolver,
 } from "schema/v2/fields/pagination"
@@ -86,7 +85,6 @@ import FormattedNumber from "../types/formatted_number"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import { ArtworkConditionType } from "./artworkCondition"
-import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { CollectorSignals } from "./collectorSignals"
@@ -544,12 +542,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
         description:
           "Notes by a partner or MyCollection user on the artwork, can only be accessed by partner or the user that owns the artwork",
-      },
-      consignmentSubmission: {
-        type: ArtworkConsignmentSubmissionType,
-        deprecationReason:
-          "This field is deprecated as collector artwork submissions are no longer accepted.",
-        resolve: () => null,
       },
       contactLabel: {
         type: GraphQLString,
@@ -1112,12 +1104,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ price, edition_sets }) =>
           has_price_range(price) && !has_multiple_editions(edition_sets),
       },
-      isPriceEstimateRequestable: {
-        type: GraphQLBoolean,
-        deprecationReason:
-          "This field is deprecated as collector artwork submissions are no longer accepted.",
-        resolve: () => false,
-      },
       isSaved: {
         type: GraphQLBoolean,
         resolve: ({ _id }, {}, { savedArtworkLoader }) => {
@@ -1230,19 +1216,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkLayers.type,
         resolve: ({ id }, _options, { relatedLayersLoader }) =>
           artworkLayers(id, relatedLayersLoader),
-      },
-      listedArtworksConnection: {
-        type: GraphQLNonNull(artworkConnection.connectionType),
-        args: pageable(),
-        deprecationReason:
-          "This field is deprecated as collector artwork submissions are no longer accepted.",
-        resolve: () => emptyConnection,
-      },
-      isListed: {
-        type: GraphQLNonNull(GraphQLBoolean),
-        deprecationReason:
-          "This field is deprecated as collector artwork submissions are no longer accepted.",
-        resolve: () => false,
       },
       literature: markdown(({ literature }) =>
         literature?.replace(/^literature:\s+/i, "")
@@ -1652,12 +1625,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artwork) => {
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
-      },
-      submissionId: {
-        type: GraphQLString,
-        deprecationReason:
-          "This field is deprecated as collector artwork submissions are no longer accepted.",
-        resolve: () => null,
       },
       euShippingOrigin: {
         type: GraphQLBoolean,
