@@ -10,7 +10,7 @@ import { ClientFeatureFlagType } from "schema/v2/featureFlags/client/featureFlag
 import { compact } from "lodash"
 import { isEligibleForAuctionsHubExperiment } from "../sections/AuctionsHub"
 import {
-  isEligibleForNWFYEGridxperiment,
+  isEligibleForNWFYGridExperiment,
   isEligibleForNWFYExperiment,
 } from "../sections/NewWorksForYou"
 
@@ -26,7 +26,7 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
           (name === "onyx_nwfy-artworks-card-test" &&
             !isEligibleForNWFYExperiment(context)) ||
           (name === "onyx_NWFY-grid-ABC-test" &&
-            !isEligibleForNWFYEGridxperiment(context))
+            !isEligibleForNWFYGridExperiment(context))
         ) {
           return null
         }

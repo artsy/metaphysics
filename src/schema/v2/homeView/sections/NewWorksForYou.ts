@@ -20,7 +20,7 @@ export const isEligibleForNWFYExperiment = (
   }
 }
 
-export const isEligibleForNWFYEGridxperiment = (
+export const isEligibleForNWFYGridExperiment = (
   context: ResolverContext
 ): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
