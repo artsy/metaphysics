@@ -24,7 +24,7 @@ export const isEligibleForNWFYGridExperiment = (
   context: ResolverContext
 ): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 9, minor: 0, patch: 1 }
+  const minimumEigenVersion = { major: 9, minor: 1, patch: 1 }
 
   if (actualEigenVersion) {
     return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
