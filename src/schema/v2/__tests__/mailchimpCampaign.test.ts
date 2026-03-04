@@ -54,13 +54,18 @@ describe("mailchimpCampaign", () => {
     })
   })
 
-  describe("campaigns list query", () => {
+  describe("campaigns connection query", () => {
     const query = `
       {
-        mailchimpCampaigns(partnerId: "partner-1") {
-          internalID
-          subjectLine
-          status
+        mailchimpCampaignsConnection(partnerId: "partner-1", first: 1) {
+          totalCount
+          edges {
+            node {
+              internalID
+              subjectLine
+              status
+            }
+          }
         }
       }
     `
@@ -96,23 +101,28 @@ describe("mailchimpCampaign", () => {
       ).toHaveBeenCalledWith({
         partner_id: "partner-1",
         status: undefined,
-        size: undefined,
-        offset: undefined,
+        size: 1,
+        offset: 0,
       })
     })
 
-    it("returns list of campaigns", async () => {
+    it("returns connection of campaigns", async () => {
       const result = await runAuthenticatedQuery(query, context)
 
       expect(result).toMatchInlineSnapshot(`
         {
-          "mailchimpCampaigns": [
-            {
-              "internalID": "c-1",
-              "status": "SENT",
-              "subjectLine": "Hello World",
-            },
-          ],
+          "mailchimpCampaignsConnection": {
+            "edges": [
+              {
+                "node": {
+                  "internalID": "c-1",
+                  "status": "SENT",
+                  "subjectLine": "Hello World",
+                },
+              },
+            ],
+            "totalCount": 1,
+          },
         }
       `)
     })

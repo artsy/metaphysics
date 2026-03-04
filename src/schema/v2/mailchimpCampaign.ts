@@ -6,6 +6,12 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { pageable } from "relay-cursor-paging"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
@@ -80,6 +86,11 @@ export const MailchimpCampaignType = new GraphQLObjectType<
   }),
 })
 
+export const MailchimpCampaignConnectionType = connectionWithCursorInfo({
+  name: "MailchimpCampaign",
+  nodeType: MailchimpCampaignType,
+}).connectionType
+
 export const mailchimpCampaign: GraphQLFieldConfig<any, ResolverContext> = {
   type: MailchimpCampaignType,
   description: "A Mailchimp campaign by ID",
@@ -95,10 +106,13 @@ export const mailchimpCampaign: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-export const mailchimpCampaigns: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLList(new GraphQLNonNull(MailchimpCampaignType)),
-  description: "A list of Mailchimp campaigns for a partner",
-  args: {
+export const mailchimpCampaignsConnection: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  type: MailchimpCampaignConnectionType,
+  description: "A connection of Mailchimp campaigns for a partner",
+  args: pageable({
     partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The partner ID to filter campaigns by",
@@ -107,28 +121,21 @@ export const mailchimpCampaigns: GraphQLFieldConfig<any, ResolverContext> = {
       type: MailchimpCampaignStatusEnum,
       description: "Filter campaigns by status",
     },
-    size: {
-      type: GraphQLString,
-      description: "Number of results to return",
-    },
-    offset: {
-      type: GraphQLString,
-      description: "Offset for pagination",
-    },
-  },
-  resolve: async (
-    _root,
-    { partnerId, status, size, offset },
-    { mailchimpCampaignsLoader }
-  ) => {
-    if (!mailchimpCampaignsLoader) return []
-    const params: Record<string, string | undefined> = {
-      partner_id: partnerId,
-      status,
+  }),
+  resolve: async (_root, args, { mailchimpCampaignsLoader }) => {
+    if (!mailchimpCampaignsLoader) return null
+
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const { body, headers } = await mailchimpCampaignsLoader({
+      partner_id: args.partnerId,
+      status: args.status,
       size,
       offset,
-    }
-    const { body } = await mailchimpCampaignsLoader(params)
-    return body
+    })
+
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return paginationResolver({ totalCount, offset, page, size, body, args })
   },
 }

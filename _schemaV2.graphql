@@ -16038,6 +16038,26 @@ type MailchimpCampaign {
   webId: String
 }
 
+# A connection to a list of items.
+type MailchimpCampaignConnection {
+  # A list of edges.
+  edges: [MailchimpCampaignEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type MailchimpCampaignEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: MailchimpCampaign
+}
+
 enum MailchimpCampaignStatus {
   DRAFT
   SCHEDULED
@@ -22441,20 +22461,19 @@ type Query {
     id: String!
   ): MailchimpCampaign
 
-  # A list of Mailchimp campaigns for a partner
-  mailchimpCampaigns(
-    # Offset for pagination
-    offset: String
+  # A connection of Mailchimp campaigns for a partner
+  mailchimpCampaignsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
 
     # The partner ID to filter campaigns by
     partnerId: String!
 
-    # Number of results to return
-    size: String
-
     # Filter campaigns by status
     status: MailchimpCampaignStatus
-  ): [MailchimpCampaign!]
+  ): MailchimpCampaignConnection
   markdown(content: String!): MarkdownContent
 
   # Get price insights for a market.
@@ -29028,20 +29047,19 @@ type Viewer {
     id: String!
   ): MailchimpCampaign
 
-  # A list of Mailchimp campaigns for a partner
-  mailchimpCampaigns(
-    # Offset for pagination
-    offset: String
+  # A connection of Mailchimp campaigns for a partner
+  mailchimpCampaignsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
 
     # The partner ID to filter campaigns by
     partnerId: String!
 
-    # Number of results to return
-    size: String
-
     # Filter campaigns by status
     status: MailchimpCampaignStatus
-  ): [MailchimpCampaign!]
+  ): MailchimpCampaignConnection
   markdown(content: String!): MarkdownContent
 
   # Marketing Categories

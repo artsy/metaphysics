@@ -240,7 +240,10 @@ import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccoun
 import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
-import { mailchimpCampaign, mailchimpCampaigns } from "./mailchimpCampaign"
+import {
+  mailchimpCampaign,
+  mailchimpCampaignsConnection,
+} from "./mailchimpCampaign"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
@@ -486,7 +489,7 @@ const rootFields = {
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
   mailchimpCampaign: mailchimpCampaign,
-  mailchimpCampaigns: mailchimpCampaigns,
+  mailchimpCampaignsConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
