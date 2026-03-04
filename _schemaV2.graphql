@@ -16670,7 +16670,7 @@ type Me implements Node {
   instagramAccounts(
     # The partner ID to filter accounts by
     partnerId: String!
-  ): [InstagramAccount!]!
+  ): [InstagramAccount!]
 
   # A type-specific ID.
   internalID: ID!
@@ -16744,7 +16744,7 @@ type Me implements Node {
   mailchimpAccounts(
     # The partner ID to filter accounts by
     partnerId: String!
-  ): [MailchimpAccount!]!
+  ): [MailchimpAccount!]
   myBids: MyBids
 
   # A list of auction results from artists in My Collection
@@ -22454,7 +22454,7 @@ type Query {
 
     # Filter campaigns by status
     status: MailchimpCampaignStatus
-  ): [MailchimpCampaign!]!
+  ): [MailchimpCampaign!]
   markdown(content: String!): MarkdownContent
 
   # Get price insights for a market.
@@ -29041,7 +29041,7 @@ type Viewer {
 
     # Filter campaigns by status
     status: MailchimpCampaignStatus
-  ): [MailchimpCampaign!]!
+  ): [MailchimpCampaign!]
   markdown(content: String!): MarkdownContent
 
   # Marketing Categories

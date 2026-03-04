@@ -96,9 +96,7 @@ export const mailchimpCampaign: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export const mailchimpCampaigns: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MailchimpCampaignType))
-  ),
+  type: new GraphQLList(new GraphQLNonNull(MailchimpCampaignType)),
   description: "A list of Mailchimp campaigns for a partner",
   args: {
     partnerId: {

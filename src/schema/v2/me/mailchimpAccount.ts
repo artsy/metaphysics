@@ -88,9 +88,7 @@ export const MailchimpAccountType = new GraphQLObjectType<any, ResolverContext>(
 )
 
 export const mailchimpAccounts: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MailchimpAccountType))
-  ),
+  type: new GraphQLList(new GraphQLNonNull(MailchimpAccountType)),
   description: "A list of Mailchimp accounts connected by the current user",
   args: {
     partnerId: {

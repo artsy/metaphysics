@@ -57,9 +57,7 @@ export const InstagramAccountType = new GraphQLObjectType<any, ResolverContext>(
 )
 
 export const instagramAccounts: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(InstagramAccountType))
-  ),
+  type: new GraphQLList(new GraphQLNonNull(InstagramAccountType)),
   description: "A list of Instagram accounts connected by the current user",
   args: {
     partnerId: {
