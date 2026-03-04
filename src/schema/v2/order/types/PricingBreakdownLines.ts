@@ -199,6 +199,7 @@ export const resolveOfferPricingBreakdownLines = (
     amount_cents: amountCents,
     buyer_total_cents: buyerTotalCents,
     from_participant: fromParticipant,
+    _selectedFulfillmentOptionType,
   } = offer
 
   const resolveMoney = (amount: number) => {
@@ -231,11 +232,19 @@ export const resolveOfferPricingBreakdownLines = (
 
   // Shipping line
   const hasShippingTotal = shippingTotalCents != null
+  let shippingFallbackText: string | null = null
+  if (!hasShippingTotal) {
+    shippingFallbackText =
+      _selectedFulfillmentOptionType === "shipping_tbd"
+        ? COPY.shipping.deferredShippingText
+        : COPY.shipping.fallbackText
+  }
+
   const shippingLine: ResolvedPriceLineData = {
     __typename: "ShippingLine",
     displayName: COPY.shipping.displayName.fallback,
     amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-    amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+    amountFallbackText: shippingFallbackText,
   }
 
   // Tax line

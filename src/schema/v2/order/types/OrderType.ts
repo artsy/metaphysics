@@ -544,23 +544,47 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     submittedOffers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
       description: "List of submitted offers for this order",
-      resolve: ({ submitted_offers }) => submitted_offers || [],
+      resolve: ({ submitted_offers, selected_fulfillment_option }) => {
+        if (!submitted_offers) return []
+        return submitted_offers.map((offer) => ({
+          ...offer,
+          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
+        }))
+      },
     },
     offers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
       deprecationReason: "Use `submittedOffers` field instead",
       description: "List of submitted offers for this order",
-      resolve: ({ submitted_offers }) => submitted_offers || [],
+      resolve: ({ submitted_offers, selected_fulfillment_option }) => {
+        if (!submitted_offers) return []
+        return submitted_offers.map((offer) => ({
+          ...offer,
+          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
+        }))
+      },
     },
     pendingOffer: {
       type: OfferType,
       description: "The pending offer for this order",
-      resolve: ({ pending_offer }) => pending_offer,
+      resolve: ({ pending_offer, selected_fulfillment_option }) => {
+        if (!pending_offer) return null
+        return {
+          ...pending_offer,
+          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
+        }
+      },
     },
     lastSubmittedOffer: {
       type: OfferType,
       description: "The last offer for this order",
-      resolve: ({ last_submitted_offer }) => last_submitted_offer,
+      resolve: ({ last_submitted_offer, selected_fulfillment_option }) => {
+        if (!last_submitted_offer) return null
+        return {
+          ...last_submitted_offer,
+          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
+        }
+      },
     },
     bankAccountBalanceCheck: {
       type: BankAccountBalanceCheckType,
