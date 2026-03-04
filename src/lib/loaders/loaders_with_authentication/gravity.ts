@@ -1654,5 +1654,74 @@ export default (accessToken, userID, opts) => {
       (id) => `viewing_room/${id}/viewing_room_artworks`
     ),
     viewingRoomsLoader: gravityLoader("viewing_rooms", {}, { headers: true }),
+
+    // Instagram Account Loaders
+    instagramAccountsLoader: gravityLoader(
+      "instagram_accounts",
+      {},
+      { headers: true }
+    ),
+    // Returns { authorization_url } — OAuth initiation step
+    initiateInstagramOAuthLoader: gravityLoader(
+      "instagram_account/authorize",
+      {},
+      { method: "POST" }
+    ),
+    // Exchanges code+state for an account — OAuth completion step
+    completeInstagramOAuthLoader: gravityLoader(
+      "instagram_account",
+      {},
+      { method: "POST" }
+    ),
+    refreshInstagramAccountLoader: gravityLoader(
+      (id) => `instagram_account/${id}/refresh`,
+      {},
+      { method: "POST" }
+    ),
+    deleteInstagramAccountLoader: gravityLoader(
+      (id) => `instagram_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+
+    // Mailchimp Account Loaders
+    mailchimpAccountsLoader: gravityLoader(
+      "mailchimp_accounts",
+      {},
+      { headers: true }
+    ),
+    mailchimpAccountListsLoader: gravityLoader(
+      (id) => `mailchimp_account/${id}/lists`
+    ),
+    // Returns { authorization_url } — OAuth initiation step
+    initiateMailchimpOAuthLoader: gravityLoader(
+      "mailchimp_account/authorize",
+      {},
+      { method: "POST" }
+    ),
+    // Exchanges code+state for an account — OAuth completion step
+    completeMailchimpOAuthLoader: gravityLoader(
+      "mailchimp_account",
+      {},
+      { method: "POST" }
+    ),
+    deleteMailchimpAccountLoader: gravityLoader(
+      (id) => `mailchimp_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+
+    // Mailchimp Campaign Loaders
+    mailchimpCampaignsLoader: gravityLoader(
+      "mailchimp_campaigns",
+      {},
+      { headers: true }
+    ),
+    mailchimpCampaignLoader: gravityLoader((id) => `mailchimp_campaign/${id}`),
+    createMailchimpCampaignLoader: gravityLoader(
+      "mailchimp_campaign",
+      {},
+      { method: "POST" }
+    ),
   }
 }
