@@ -232,6 +232,18 @@ import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
+import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
+import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
+import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
+import { refreshInstagramAccountMutation } from "./me/refreshInstagramAccountMutation"
+import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccountMutation"
+import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
+import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
+import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import {
+  mailchimpCampaign,
+  mailchimpCampaignsConnection,
+} from "./mailchimpCampaign"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
@@ -476,6 +488,8 @@ const rootFields = {
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
+  mailchimpCampaign: mailchimpCampaign,
+  mailchimpCampaignsConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -597,6 +611,14 @@ export default new GraphQLSchema({
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      authorizeInstagramAccount: authorizeInstagramAccountMutation,
+      completeInstagramOAuth: completeInstagramOAuthMutation,
+      deleteInstagramAccount: deleteInstagramAccountMutation,
+      refreshInstagramAccount: refreshInstagramAccountMutation,
+      authorizeMailchimpAccount: authorizeMailchimpAccountMutation,
+      completeMailchimpOAuth: completeMailchimpOAuthMutation,
+      deleteMailchimpAccount: deleteMailchimpAccountMutation,
+      createMailchimpCampaign: createMailchimpCampaignMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
