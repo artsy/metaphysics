@@ -37,6 +37,7 @@ export type OfferJSON = {
   shipping_total_cents: number | null
   tax_total_cents: number | null
   created_at: string
+  _selectedFulfillmentOptionType?: string
 }
 
 export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
