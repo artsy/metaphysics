@@ -117,14 +117,14 @@ export const resolveOrderPricingBreakdownLines = (
   }
 
   // Shipping line
-  const selectedFulfillment: FulfillmentOptionJson = selectedFulfillmentOption || {
+  const selectedFulfillmentOrDefault: FulfillmentOptionJson = selectedFulfillmentOption || {
     type: "shipping_tbd",
   }
 
   const hasShippingTotal = shippingTotalCents != null
   let shippingDisplayName: string = COPY.shipping.displayName.fallback
 
-  switch (selectedFulfillment?.type) {
+  switch (selectedFulfillmentOrDefault.type) {
     case "pickup":
       shippingDisplayName = COPY.shipping.displayName.pickup
       break
@@ -153,7 +153,7 @@ export const resolveOrderPricingBreakdownLines = (
   let shippingFallbackText: string | null = null
   if (!hasShippingTotal) {
     shippingFallbackText =
-      selectedFulfillment?.type === "shipping_tbd"
+      selectedFulfillmentOption?.type === "shipping_tbd"
         ? COPY.shipping.deferredShippingText
         : COPY.shipping.fallbackText
   }
