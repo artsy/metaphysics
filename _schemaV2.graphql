@@ -15563,7 +15563,7 @@ type InstagramAccount {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  partnerId: String
+  partnerId: String!
   providerAccountId: String
   status: InstagramAccountStatus
   tokenExpiresAt(
@@ -15578,7 +15578,7 @@ type InstagramAccount {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  userId: String
+  userId: String!
   username: String
 }
 
@@ -15960,7 +15960,7 @@ type MailchimpAccount {
 
   # Mailchimp audience lists for this account
   lists: [MailchimpList!]
-  partnerId: String
+  partnerId: String!
   providerAccountId: String
   serverPrefix: String
   status: MailchimpAccountStatus
@@ -15970,7 +15970,7 @@ type MailchimpAccount {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  userId: String
+  userId: String!
 }
 
 enum MailchimpAccountStatus {

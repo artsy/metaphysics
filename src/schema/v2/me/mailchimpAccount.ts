@@ -41,11 +41,11 @@ export const MailchimpAccountType = new GraphQLObjectType<any, ResolverContext>(
     fields: () => ({
       ...InternalIDFields,
       partnerId: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
         resolve: ({ partner_id }) => partner_id,
       },
       userId: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
         resolve: ({ user_id }) => user_id,
       },
       providerAccountId: {
