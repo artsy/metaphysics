@@ -158,6 +158,21 @@ export default (opts) => ({
   // Authenticated loaders
 
   /**
+   * The Positron loaders produced by this factory _will_ cache responses for the duration of query execution but do
+   * **not** cache to memcache.
+   *
+   * Use this for authenticated requests (e.g. fetching draft articles for editorial users).
+   */
+  positronLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    positron,
+    "positron",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
    * The Gravity loaders produced by this factory _will_ cache responses for the duration of query execution but do
    * **not** cache to memcache.
    *
