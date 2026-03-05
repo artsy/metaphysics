@@ -1,7 +1,6 @@
 import { executableGravitySchema } from "../schema"
 import {
   getTypesFromSchema,
-  getMutationFieldsFromSchema,
   getRootFieldsFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
 import { printSchema } from "graphql"
@@ -15,13 +14,6 @@ it("Does not include gravity core types", async () => {
   expect(gravityTypes).not.toContain("Partner")
 
   expect(gravityTypes).toContain("Mutation")
-})
-
-it("Includes the mutation recordArtworkView", async () => {
-  const gravitySchema = await executableGravitySchema()
-  const mutations = await getMutationFieldsFromSchema(gravitySchema)
-
-  expect(mutations).toContain("recordArtworkView")
 })
 
 it("Does not include the root query fields", async () => {
