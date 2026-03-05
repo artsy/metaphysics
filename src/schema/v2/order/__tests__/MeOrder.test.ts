@@ -583,6 +583,13 @@ describe("Me", () => {
                       }
                       amountFallbackText
                     }
+                    ... on TaxLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
                   }
                 }
               }
@@ -604,6 +611,15 @@ describe("Me", () => {
           displayName: "Shipping",
           amount: null,
           amountFallbackText: "To be confirmed by seller",
+        })
+
+        expect(
+          result.me.order.pendingOffer.pricingBreakdownLines
+        ).toContainEqual({
+          __typename: "TaxLine",
+          displayName: "Tax",
+          amount: null,
+          amountFallbackText: "Calculated after shipping",
         })
       })
     })
@@ -1325,6 +1341,13 @@ describe("Me", () => {
                       amount
                     }
                   }
+                  ... on TaxLine {
+                    displayName
+                    amountFallbackText
+                    amount {
+                      amount
+                    }
+                  }
                 }
               }
             }
@@ -1362,6 +1385,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1399,6 +1427,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1436,6 +1469,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1473,6 +1511,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1511,6 +1554,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1521,6 +1569,7 @@ describe("Me", () => {
         it("returns 'To be confirmed by seller' for shipping_tbd when amount is not present", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = null
+          orderJson.tax_total_cents = null
           orderJson.selected_fulfillment_option = {
             type: "shipping_tbd",
             selected: true,
@@ -1547,6 +1596,9 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: "Calculated after shipping",
+              amount: null,
             },
             {
               __typename: "TotalLine",
