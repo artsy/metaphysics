@@ -307,6 +307,23 @@ const ArtworkImportRowImageType = new GraphQLObjectType({
   },
 })
 
+const moneyField = (
+  minorKey: string
+): GraphQLFieldConfig<any, ResolverContext> => ({
+  type: Money,
+  resolve: (source, args, context, info) => {
+    const minor = source[minorKey]
+    const currencyCode = source.currency
+    if (minor == null || !currencyCode) return null
+    return resolveMinorAndCurrencyFieldsToMoney(
+      { minor, currencyCode },
+      args,
+      context,
+      info
+    )
+  },
+})
+
 const ArtworkImportRowType = new GraphQLObjectType({
   name: "ArtworkImportRow",
   fields: {
@@ -348,236 +365,16 @@ const ArtworkImportRowType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ weight_metric }) => weight_metric,
     },
-    priceListed: {
-      type: Money,
-      resolve: (
-        { price_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    openingBid: {
-      type: Money,
-      resolve: (
-        { opening_bid_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    estimate: {
-      type: Money,
-      resolve: (
-        { estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    lowEstimate: {
-      type: Money,
-      resolve: (
-        { low_estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    highEstimate: {
-      type: Money,
-      resolve: (
-        { high_estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    reserve: {
-      type: Money,
-      resolve: (
-        { reserve_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    priceMin: {
-      type: Money,
-      resolve: (
-        { price_min_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    priceMax: {
-      type: Money,
-      resolve: (
-        { price_max_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    domesticShipping: {
-      type: Money,
-      resolve: (
-        { domestic_shipping_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    internationalShipping: {
-      type: Money,
-      resolve: (
-        { international_shipping_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (minor == null || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
+    priceListed: moneyField("price_minor"),
+    openingBid: moneyField("opening_bid_minor"),
+    estimate: moneyField("estimate_minor"),
+    lowEstimate: moneyField("low_estimate_minor"),
+    highEstimate: moneyField("high_estimate_minor"),
+    reserve: moneyField("reserve_minor"),
+    priceMin: moneyField("price_min_minor"),
+    priceMax: moneyField("price_max_minor"),
+    domesticShipping: moneyField("domestic_shipping_minor"),
+    internationalShipping: moneyField("international_shipping_minor"),
     rawData: {
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
