@@ -67,6 +67,22 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_DATE_EARLIEST_YEAR: { value: "invalid_date_earliest_year" },
     INVALID_DATE_LATEST_YEAR: { value: "invalid_date_latest_year" },
     INVALID_DATE_MODE: { value: "invalid_date_mode" },
+    INVALID_PRICE_MIN: { value: "invalid_price_min" },
+    INVALID_PRICE_MAX: { value: "invalid_price_max" },
+    INVALID_BUY_NOW: { value: "invalid_buy_now" },
+    INVALID_MAKE_OFFER: { value: "invalid_make_offer" },
+    INVALID_DISPLAY_PRICE_RANGE: { value: "invalid_display_price_range" },
+    INVALID_ARTSY_DOMESTIC_SHIPPING: {
+      value: "invalid_artsy_domestic_shipping",
+    },
+    INVALID_ARTSY_INTERNATIONAL_SHIPPING: {
+      value: "invalid_artsy_international_shipping",
+    },
+    INVALID_PICKUP_AVAILABLE: { value: "invalid_pickup_available" },
+    INVALID_DOMESTIC_SHIPPING: { value: "invalid_domestic_shipping" },
+    INVALID_INTERNATIONAL_SHIPPING: { value: "invalid_international_shipping" },
+    INVALID_LOCATION: { value: "invalid_location" },
+    INVALID_INVENTORY_QUANTITY: { value: "invalid_inventory_quantity" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
@@ -291,6 +307,23 @@ const ArtworkImportRowImageType = new GraphQLObjectType({
   },
 })
 
+const moneyField = (
+  minorKey: string
+): GraphQLFieldConfig<any, ResolverContext> => ({
+  type: Money,
+  resolve: (source, args, context, info) => {
+    const minor = source[minorKey]
+    const currencyCode = source.currency
+    if (minor == null || !currencyCode) return null
+    return resolveMinorAndCurrencyFieldsToMoney(
+      { minor, currencyCode },
+      args,
+      context,
+      info
+    )
+  },
+})
+
 const ArtworkImportRowType = new GraphQLObjectType({
   name: "ArtworkImportRow",
   fields: {
@@ -332,144 +365,16 @@ const ArtworkImportRowType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ weight_metric }) => weight_metric,
     },
-    priceListed: {
-      type: Money,
-      resolve: (
-        { price_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    openingBid: {
-      type: Money,
-      resolve: (
-        { opening_bid_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    estimate: {
-      type: Money,
-      resolve: (
-        { estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    lowEstimate: {
-      type: Money,
-      resolve: (
-        { low_estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    highEstimate: {
-      type: Money,
-      resolve: (
-        { high_estimate_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
-    reserve: {
-      type: Money,
-      resolve: (
-        { reserve_minor: minor, currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        if (!minor || !currencyCode) {
-          return null
-        }
-
-        return resolveMinorAndCurrencyFieldsToMoney(
-          {
-            minor,
-            currencyCode,
-          },
-          args,
-          context,
-          info
-        )
-      },
-    },
+    priceListed: moneyField("price_minor"),
+    openingBid: moneyField("opening_bid_minor"),
+    estimate: moneyField("estimate_minor"),
+    lowEstimate: moneyField("low_estimate_minor"),
+    highEstimate: moneyField("high_estimate_minor"),
+    reserve: moneyField("reserve_minor"),
+    priceMin: moneyField("price_min_minor"),
+    priceMax: moneyField("price_max_minor"),
+    domesticShipping: moneyField("domestic_shipping_minor"),
+    internationalShipping: moneyField("international_shipping_minor"),
     rawData: {
       type: new GraphQLNonNull(GraphQLJSON),
       resolve: ({ raw_data }) => raw_data,
@@ -643,6 +548,57 @@ const ArtworkImportRowType = new GraphQLObjectType({
             importSource: {
               type: GraphQLString,
               resolve: ({ ImportSource }) => ImportSource,
+            },
+
+            // Partner Support Fields
+            priceMin: {
+              type: GraphQLString,
+              resolve: ({ PriceMin }) => PriceMin,
+            },
+            priceMax: {
+              type: GraphQLString,
+              resolve: ({ PriceMax }) => PriceMax,
+            },
+            displayPriceRange: {
+              type: GraphQLString,
+              resolve: ({ DisplayPriceRange }) => DisplayPriceRange,
+            },
+            buyNow: {
+              type: GraphQLString,
+              resolve: ({ BuyNow }) => BuyNow,
+            },
+            makeOffer: {
+              type: GraphQLString,
+              resolve: ({ MakeOffer }) => MakeOffer,
+            },
+            artsyDomesticShipping: {
+              type: GraphQLString,
+              resolve: ({ ArtsyDomesticShipping }) => ArtsyDomesticShipping,
+            },
+            artsyInternationalShipping: {
+              type: GraphQLString,
+              resolve: ({ ArtsyInternationalShipping }) =>
+                ArtsyInternationalShipping,
+            },
+            pickupAvailable: {
+              type: GraphQLString,
+              resolve: ({ PickupAvailable }) => PickupAvailable,
+            },
+            domesticShipping: {
+              type: GraphQLString,
+              resolve: ({ DomesticShipping }) => DomesticShipping,
+            },
+            internationalShipping: {
+              type: GraphQLString,
+              resolve: ({ InternationalShipping }) => InternationalShipping,
+            },
+            location: {
+              type: GraphQLString,
+              resolve: ({ Location }) => Location,
+            },
+            inventoryQuantity: {
+              type: GraphQLString,
+              resolve: ({ InventoryQuantity }) => InventoryQuantity,
             },
 
             // Auction Only Fields
