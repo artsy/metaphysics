@@ -356,7 +356,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
@@ -379,7 +379,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
@@ -402,7 +402,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
@@ -425,7 +425,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
@@ -448,7 +448,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
@@ -471,7 +471,7 @@ const ArtworkImportRowType = new GraphQLObjectType({
         context,
         info
       ) => {
-        if (!minor || !currencyCode) {
+        if (minor == null || !currencyCode) {
           return null
         }
 
