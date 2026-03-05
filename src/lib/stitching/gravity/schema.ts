@@ -1,3 +1,4 @@
+import config from "config"
 import { createGravityLink } from "./link"
 import {
   makeRemoteExecutableSchema,
@@ -35,7 +36,13 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  const excludedMutations: string[] = []
+  if (config.USE_UNSTITCHED_RECORD_ARTWORK_VIEW) {
+    duplicatedTypes.push("RecordArtworkViewInput", "RecordArtworkViewPayload")
+  }
+
+  const excludedMutations: string[] = [
+    ...(config.USE_UNSTITCHED_RECORD_ARTWORK_VIEW ? ["recordArtworkView"] : []),
+  ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

@@ -1282,7 +1282,7 @@ export default (accessToken, userID, opts) => {
     purchaseLoader: gravityLoader((id) => `purchase/${id}`),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
-      "me/Recently_viewed_artworks",
+      "me/recently_viewed_artworks",
       {},
       { method: "POST" }
     ),
