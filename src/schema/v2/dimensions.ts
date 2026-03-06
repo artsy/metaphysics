@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const DimensionsType = new GraphQLObjectType<any, ResolverContext>({
+export const DimensionsType = new GraphQLObjectType<any, ResolverContext>({
   name: "dimensions",
   fields: {
     in: {
