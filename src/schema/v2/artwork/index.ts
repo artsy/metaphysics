@@ -38,7 +38,7 @@ import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
 import AttributionClass from "schema/v2/artwork/attributionClass"
-import Dimensions from "schema/v2/dimensions"
+import Dimensions, { DimensionsType } from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
 import cached from "schema/v2/fields/cached"
@@ -616,6 +616,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ diameter_cm }) => diameter_cm,
       },
       dimensions: Dimensions,
+      framedDimensions: {
+        type: DimensionsType,
+        resolve: ({ framed_dimensions }) => framed_dimensions,
+      },
       dominantColors: {
         type: new GraphQLNonNull(
           new GraphQLList(new GraphQLNonNull(GraphQLString))
