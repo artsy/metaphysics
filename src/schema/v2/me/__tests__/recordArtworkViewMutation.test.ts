@@ -1,12 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const describeIfFeatureFlagEnabled = config.USE_UNSTITCHED_RECORD_ARTWORK_VIEW
-  ? describe
-  : describe.skip
-
-describeIfFeatureFlagEnabled("recordArtworkViewMutation", () => {
+describe("recordArtworkViewMutation", () => {
   const mockRecordArtworkViewLoader = jest.fn()
 
   const context = {
