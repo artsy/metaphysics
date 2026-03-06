@@ -243,7 +243,7 @@ export const FulfillmentOptionType = new GraphQLObjectType<
         if (typeof minor !== "number") return null
 
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0.00", exact: true },
           _args,
           context,
           _info
