@@ -1,4 +1,3 @@
-import config from "config"
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
@@ -706,9 +705,7 @@ export default new GraphQLSchema({
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
-      ...(config.USE_UNSTITCHED_RECORD_ARTWORK_VIEW
-        ? { recordArtworkView: recordArtworkViewMutation }
-        : {}),
+      recordArtworkView: recordArtworkViewMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
