@@ -157,6 +157,96 @@ describe("NavigationVersion", () => {
     })
   })
 
+  describe("featuredLinksSet", () => {
+    it("calls setItemsLoader with ordered_set_id and returns items.body as FeaturedLink list", async () => {
+      const setBody = [
+        {
+          id: "link-1",
+          href: "/featured/one",
+          title: "Featured One",
+          subtitle: "Subtitle one",
+        },
+        {
+          id: "link-2",
+          href: "/featured/two",
+          title: "Featured Two",
+          subtitle: "Subtitle two",
+        },
+      ]
+      const setItemsLoader = jest.fn(async () => ({
+        body: setBody,
+        headers: {},
+      }))
+      const navigationVersionLoader = jest.fn(async () => ({
+        id: "version-with-featured",
+        ordered_set_id: "ordered-set-123",
+      }))
+
+      const query = gql`
+        {
+          navigationVersion(id: "version-with-featured") {
+            internalID
+            featuredLinksSet {
+              internalID
+              href
+              title
+              subtitle
+            }
+          }
+        }
+      `
+      const response = await runQuery(query, {
+        navigationVersionLoader,
+        setItemsLoader,
+      })
+
+      expect(navigationVersionLoader).toHaveBeenCalledWith(
+        "version-with-featured"
+      )
+      expect(setItemsLoader).toHaveBeenCalledWith("ordered-set-123")
+      expect(response.navigationVersion.featuredLinksSet).toHaveLength(2)
+      expect(response.navigationVersion.featuredLinksSet[0]).toMatchObject({
+        internalID: "link-1",
+        href: "/featured/one",
+        title: "Featured One",
+        subtitle: "Subtitle one",
+      })
+      expect(response.navigationVersion.featuredLinksSet[1]).toMatchObject({
+        internalID: "link-2",
+        href: "/featured/two",
+        title: "Featured Two",
+        subtitle: "Subtitle two",
+      })
+    })
+
+    it("returns empty array when set has no items", async () => {
+      const setItemsLoader = jest.fn(async () => ({ body: [], headers: {} }))
+      const navigationVersionLoader = jest.fn(async () => ({
+        id: "version-empty-featured",
+        ordered_set_id: "ordered-set-empty",
+      }))
+
+      const query = gql`
+        {
+          navigationVersion(id: "version-empty-featured") {
+            internalID
+            featuredLinksSet {
+              internalID
+              title
+            }
+          }
+        }
+      `
+      const response = await runQuery(query, {
+        navigationVersionLoader,
+        setItemsLoader,
+      })
+
+      expect(setItemsLoader).toHaveBeenCalledWith("ordered-set-empty")
+      expect(response.navigationVersion.featuredLinksSet).toEqual([])
+    })
+  })
+
   it("returns the correct navigation version, including the full navigation tree", async () => {
     const query = gql`
       {

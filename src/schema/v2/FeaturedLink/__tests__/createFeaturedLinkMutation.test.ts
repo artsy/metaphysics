@@ -74,6 +74,90 @@ describe("CreateFeaturedLinkMutation", () => {
         },
       })
     })
+
+    it("calls addSetItemLoader with orderedSetID and created link id when orderedSetID is provided", async () => {
+      const mockAddSetItemLoader = jest.fn().mockResolvedValue(undefined)
+
+      const mutationWithOrderedSet = gql`
+        mutation {
+          createFeaturedLink(
+            input: {
+              description: "link to cats"
+              title: "Cat Link"
+              href: "/percy"
+              orderedSetID: "ordered-set-123"
+            }
+          ) {
+            featuredLinkOrError {
+              ... on CreateFeaturedLinkSuccess {
+                featuredLink {
+                  internalID
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const res = await runAuthenticatedQuery(mutationWithOrderedSet, {
+        ...context,
+        addSetItemLoader: mockAddSetItemLoader,
+      })
+
+      expect(mockAddSetItemLoader).toHaveBeenCalledWith("ordered-set-123", {
+        item_id: "featured-link-id",
+      })
+      expect(
+        res.createFeaturedLink.featuredLinkOrError.featuredLink
+      ).toMatchObject({
+        internalID: "featured-link-id",
+        title: "Cat Link",
+      })
+    })
+  })
+
+  describe("orderedSetID without addSetItemLoader", () => {
+    const featuredLink = {
+      description: "link to cats",
+      title: "Cat Link",
+      href: "/percy",
+      id: "featured-link-id",
+    }
+
+    it("throws when orderedSetID is provided but addSetItemLoader is not defined", async () => {
+      const mutationWithOrderedSet = gql`
+        mutation {
+          createFeaturedLink(
+            input: {
+              description: "link to cats"
+              title: "Cat Link"
+              href: "/percy"
+              orderedSetID: "ordered-set-123"
+            }
+          ) {
+            featuredLinkOrError {
+              ... on CreateFeaturedLinkSuccess {
+                featuredLink {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+      const contextWithoutAddSetItemLoader = {
+        createFeaturedLinkLoader: jest.fn().mockResolvedValue(featuredLink),
+        addSetItemLoader: undefined,
+      }
+
+      await expect(
+        runAuthenticatedQuery(
+          mutationWithOrderedSet,
+          contextWithoutAddSetItemLoader
+        )
+      ).rejects.toThrow("addSetItemLoader is not defined")
+    })
   })
 
   describe("on failure", () => {
