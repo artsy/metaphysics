@@ -210,6 +210,8 @@ const FulfillmentOptionTypeEnum = new GraphQLEnumType({
 
 export type FulfillmentOptionJSONWithCurrencyCode = OrderJSON["fulfillment_options"][number] & {
   _currencyCode: string
+  _format?: string
+  _exact?: boolean
 }
 
 export const FulfillmentOptionType = new GraphQLObjectType<
@@ -234,8 +236,8 @@ export const FulfillmentOptionType = new GraphQLObjectType<
     amount: {
       type: Money,
       resolve: (
-        // _currencyCode loaded from parent
-        { amount_minor: minor, _currencyCode: currencyCode },
+        // _currencyCode, _format, and _exact loaded from parent
+        { amount_minor: minor, _currencyCode: currencyCode, _format, _exact },
         _args,
         context,
         _info
@@ -243,7 +245,12 @@ export const FulfillmentOptionType = new GraphQLObjectType<
         if (typeof minor !== "number") return null
 
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode, format: "0,0.00", exact: true },
+          {
+            minor,
+            currencyCode,
+            format: _format,
+            exact: _exact,
+          },
           _args,
           context,
           _info
