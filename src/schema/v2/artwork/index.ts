@@ -616,10 +616,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ diameter_cm }) => diameter_cm,
       },
       dimensions: Dimensions,
-      framedDimensions: {
-        type: DimensionsType,
-        resolve: ({ framed_dimensions }) => framed_dimensions,
-      },
       dominantColors: {
         type: new GraphQLNonNull(
           new GraphQLList(new GraphQLNonNull(GraphQLString))
@@ -2065,6 +2061,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       framedDepth: {
         type: GraphQLString,
         resolve: ({ framed_depth }) => framed_depth,
+      },
+      framedDimensions: {
+        type: DimensionsType,
+        resolve: ({ framed_dimensions }) => framed_dimensions,
       },
       framedHeight: {
         type: GraphQLString,
