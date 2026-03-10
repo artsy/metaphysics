@@ -51,6 +51,7 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
+import currencyCodes from "lib/currency_codes.json"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
