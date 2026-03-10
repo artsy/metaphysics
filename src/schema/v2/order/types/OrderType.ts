@@ -51,6 +51,7 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
+import currencyCodes from "lib/currency_codes.json"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -345,11 +346,28 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       resolve: ({
         fulfillment_options,
         currency_code,
-      }): Array<FulfillmentOptionJSONWithCurrencyCode> =>
-        fulfillment_options.map((option) => ({
+      }): Array<FulfillmentOptionJSONWithCurrencyCode> => {
+        // Check if any fulfillment option has cents (minor units)
+        const hasMinorUnits = fulfillment_options.some((option) => {
+          const subunitToUnit =
+            currencyCodes[currency_code?.toLowerCase()]?.subunit_to_unit ?? 100
+          return (
+            typeof option.amount_minor === "number" &&
+            option.amount_minor % subunitToUnit !== 0
+          )
+        })
+
+        // Use decimal format only if any option has minor units
+        const format = hasMinorUnits ? "0,0.00" : "0,0"
+        const exact = hasMinorUnits
+
+        return fulfillment_options.map((option) => ({
           ...option,
           _currencyCode: currency_code,
-        })),
+          _format: format,
+          _exact: exact,
+        }))
+      },
     },
     impulseConversationId: {
       type: GraphQLString,
