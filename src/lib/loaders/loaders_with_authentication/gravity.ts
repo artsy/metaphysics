@@ -1281,6 +1281,11 @@ export default (accessToken, userID, opts) => {
     profilesLoader: gravityLoader("profiles", {}, { headers: true }),
     purchaseLoader: gravityLoader((id) => `purchase/${id}`),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
+    confirmPasswordLoader: gravityLoader(
+      "me/confirm_password",
+      {},
+      { method: "POST" }
+    ),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},
