@@ -348,7 +348,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       }): Array<FulfillmentOptionJSONWithCurrencyCode> => {
         // Check if any fulfillment option has cents (minor units)
         const hasMinorUnits = fulfillment_options.some(
-          (option) => option.amount_minor && option.amount_minor % 100 !== 0
+          (option) => typeof option.amount_minor === "number" && option.amount_minor % 100 !== 0
         )
 
         // Use decimal format only if any option has minor units
