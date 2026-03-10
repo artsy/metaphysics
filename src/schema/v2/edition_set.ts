@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash"
 import { InternalIDFields } from "./object_identification"
-import Dimensions from "./dimensions"
+import Dimensions, { DimensionsType } from "./dimensions"
 import {
   GraphQLString,
   GraphQLBoolean,
@@ -81,6 +81,10 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     framedDepth: {
       type: GraphQLString,
       resolve: ({ framed_depth }) => framed_depth,
+    },
+    framedDimensions: {
+      type: DimensionsType,
+      resolve: ({ framed_dimensions }) => framed_dimensions,
     },
     framedWidth: {
       type: GraphQLString,
