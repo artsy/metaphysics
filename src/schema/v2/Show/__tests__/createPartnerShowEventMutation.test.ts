@@ -2,6 +2,15 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("CreatePartnerShowEventMutation", () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date("2025-01-01T12:00:00Z"))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   const mutation = gql`
     mutation {
       createPartnerShowEvent(
