@@ -53,10 +53,17 @@ export const ShowsConnectionField: GraphQLFieldConfig<
     visibleToPublic: { type: GraphQLBoolean },
     sort: { type: ShowSorts },
   }),
-  resolve: async ({ id }, args, { relatedShowsLoader }) => {
+  resolve: async (
+    { id },
+    args,
+    { relatedShowsLoader, relatedShowsUncachedLoader, isCMSRequest }
+  ) => {
+    const loader = isCMSRequest
+      ? relatedShowsUncachedLoader
+      : relatedShowsLoader
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await relatedShowsLoader({
+    const { body, headers } = await loader({
       active: args.active,
       artist_id: id,
       at_a_fair: args.atAFair,
