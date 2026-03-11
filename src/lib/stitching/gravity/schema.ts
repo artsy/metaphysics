@@ -41,9 +41,14 @@ export const executableGravitySchema = () => {
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
-  const unusedTypes = ["LotEvent"]
+  const unusedTypes = [
+    "LotEvent",
+    "CreateBankDebitSetupInput",
+    "CreateBankDebitSetupPayload",
+  ]
 
   const excludedMutations: string[] = [
+    "createBankDebitSetup",
     ...(config.USE_UNSTITCHED_CONFIRM_PASSWORD ? ["confirmPassword"] : []),
   ]
 
