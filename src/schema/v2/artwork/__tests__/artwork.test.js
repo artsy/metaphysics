@@ -6162,6 +6162,52 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("framedDimensions", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          framedDimensions {
+            in
+            cm
+          }
+        }
+      }
+    `
+
+    it("returns framed dimensions in inches and centimeters", async () => {
+      artwork.framed_dimensions = {
+        in: "48 × 38 × 1 1/2 in",
+        cm: "121.9 × 96.5 × 3.8 cm",
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          slug: "richard-prince-untitled-portrait",
+          framedDimensions: {
+            in: "48 × 38 × 1 1/2 in",
+            cm: "121.9 × 96.5 × 3.8 cm",
+          },
+        },
+      })
+    })
+
+    it("returns null when framed dimensions are not available", async () => {
+      artwork.framed_dimensions = null
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          slug: "richard-prince-untitled-portrait",
+          framedDimensions: null,
+        },
+      })
+    })
+  })
+
   describe("unframed height/width/depth/diameter in cm", () => {
     const query = `
       {
