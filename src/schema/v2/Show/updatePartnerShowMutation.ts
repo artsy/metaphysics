@@ -23,8 +23,10 @@ interface UpdatePartnerShowMutationInputProps {
   fairBooth?: string
   fairId?: string
   featured?: boolean
+  group?: boolean
   locationId?: string
   name?: string
+  partnerCity?: string
   partnerId: string
   pressRelease?: string
   showId: string
@@ -83,6 +85,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Is the show featured?",
     },
+    group: {
+      type: GraphQLBoolean,
+      description: "Is the show a group show?",
+    },
     locationId: {
       type: GraphQLString,
       description: "The location id of the show.",
@@ -90,6 +96,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     name: {
       type: GraphQLString,
       description: "The name of the show.",
+    },
+    partnerCity: {
+      type: GraphQLString,
+      description: "The city of the partner for reference shows.",
     },
     partnerId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -171,8 +181,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     const gravityArgs = {
       ...addField("name", args.name),
       ...addField("featured", args.featured),
+      ...addField("group", args.group),
       ...addField("description", args.description),
       ...addField("display_on_partner_profile", args.displayOnPartnerProfile),
+      ...addField("partner_city", args.partnerCity),
       ...addField("press_release", args.pressRelease),
       ...addField("partner_location", args.locationId),
       ...addField(

@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -576,9 +575,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
-      ...(config.USE_UNSTITCHED_CONFIRM_PASSWORD
-        ? { confirmPassword: confirmPasswordMutation }
-        : {}),
+      confirmPassword: confirmPasswordMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,

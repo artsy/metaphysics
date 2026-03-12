@@ -271,6 +271,9 @@ export default (opts) => {
     ),
     relatedSalesLoader: gravityLoader("related/sales"),
     relatedShowsLoader: gravityLoader("related/shows", {}, { headers: true }),
+    relatedShowsUncachedLoader: gravityUncachedLoader("related/shows", {
+      headers: true,
+    }),
     saleArtworkRootLoader: gravityUncachedLoader(
       (id) => `sale_artwork/${id}`,
       null
