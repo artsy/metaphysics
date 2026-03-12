@@ -1286,6 +1286,12 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createImageLoader: gravityLoader("ar_image", {}, { method: "POST" }),
+    transferMyCollectionLoader: gravityLoader(
+      "my_collection/transfer",
+      {},
+      { method: "POST" }
+    ),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},
