@@ -1,12 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
-const describeIfFeatureFlagEnabled = config.USE_UNSTITCHED_CONFIRM_PASSWORD
-  ? describe
-  : describe.skip
-
-describeIfFeatureFlagEnabled("confirmPasswordMutation", () => {
+describe("confirmPasswordMutation", () => {
   const mockConfirmPasswordLoader = jest.fn()
 
   const context = {
