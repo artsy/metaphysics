@@ -41,4 +41,48 @@ describe("DeletePartnerShowMutation", () => {
       },
     })
   })
+
+  describe("without partnerId (partner-less reference show)", () => {
+    const partnerlessMutation = gql`
+      mutation {
+        deletePartnerShow(input: { showId: "ref-show-456" }) {
+          showOrError {
+            __typename
+            ... on DeletePartnerShowSuccess {
+              show {
+                internalID
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("uses the top-level show loader", async () => {
+      const context = {
+        deletePartnerShowLoader: jest.fn(),
+        deleteShowLoader: () =>
+          Promise.resolve({
+            _id: "ref-show-456",
+            name: "Deleted Reference Show",
+          }),
+      }
+
+      const result = await runAuthenticatedQuery(partnerlessMutation, context)
+
+      expect(context.deletePartnerShowLoader).not.toHaveBeenCalled()
+      expect(result).toEqual({
+        deletePartnerShow: {
+          showOrError: {
+            __typename: "DeletePartnerShowSuccess",
+            show: {
+              internalID: "ref-show-456",
+              name: "Deleted Reference Show",
+            },
+          },
+        },
+      })
+    })
+  })
 })

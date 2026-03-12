@@ -71,4 +71,52 @@ describe("UpdatePartnerShowMutation", () => {
       })
     })
   })
+
+  describe("without partnerId (partner-less reference show)", () => {
+    const partnerlessMutation = gql`
+      mutation {
+        updatePartnerShow(
+          input: { showId: "ref-show-123", name: "Updated Name" }
+        ) {
+          showOrError {
+            __typename
+            ... on UpdatePartnerShowSuccess {
+              show {
+                internalID
+              }
+            }
+            ... on UpdatePartnerShowFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("uses the top-level show loader", async () => {
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader: () =>
+          Promise.resolve({
+            _id: "ref-show-123",
+          }),
+      }
+
+      const result = await runAuthenticatedQuery(partnerlessMutation, context)
+
+      expect(context.updatePartnerShowLoader).not.toHaveBeenCalled()
+      expect(result).toEqual({
+        updatePartnerShow: {
+          showOrError: {
+            __typename: "UpdatePartnerShowSuccess",
+            show: {
+              internalID: "ref-show-123",
+            },
+          },
+        },
+      })
+    })
+  })
 })

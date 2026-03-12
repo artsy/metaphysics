@@ -1510,6 +1510,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateShowLoader: gravityLoader(
+      (id) => `show/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteShowLoader: gravityLoader(
+      (id) => `show/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     updatePartnerProfileImageLoader: gravityLoader(
       (id) => `partner/${id}/profile_images`,
       {},
