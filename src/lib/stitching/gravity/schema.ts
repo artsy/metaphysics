@@ -8,7 +8,6 @@ import {
   FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import config from "config"
 
 const rootFieldsAllowList: string[] = []
 
@@ -34,9 +33,8 @@ export const executableGravitySchema = () => {
     "ArtistSeries",
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
-    ...(config.USE_UNSTITCHED_CONFIRM_PASSWORD
-      ? ["ConfirmPasswordInput", "ConfirmPasswordPayload"]
-      : []),
+    "ConfirmPasswordInput",
+    "ConfirmPasswordPayload",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
@@ -48,8 +46,8 @@ export const executableGravitySchema = () => {
   ]
 
   const excludedMutations: string[] = [
+    "confirmPassword",
     "createBankDebitSetup",
-    ...(config.USE_UNSTITCHED_CONFIRM_PASSWORD ? ["confirmPassword"] : []),
   ]
 
   // Return the new modified schema
