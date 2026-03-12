@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
+import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -198,6 +199,8 @@ import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
 import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
 import { confirmPasswordMutation } from "./me/confirmPasswordMutation"
+import { createImageMutation } from "./me/createImageMutation"
+import { transferMyCollectionMutation } from "./me/transferMyCollectionMutation"
 import { recordArtworkViewMutation } from "./me/recordArtworkViewMutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
@@ -581,6 +584,9 @@ export default new GraphQLSchema({
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
+      ...(config.USE_UNSTITCHED_MUTATIONS
+        ? { createImage: createImageMutation }
+        : {}),
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
@@ -728,6 +734,9 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
       submitOrder: submitOrderMutation,
+      ...(config.USE_UNSTITCHED_MUTATIONS
+        ? { transferMyCollection: transferMyCollectionMutation }
+        : {}),
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
