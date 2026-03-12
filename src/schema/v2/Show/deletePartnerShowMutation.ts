@@ -13,7 +13,7 @@ import { ResolverContext } from "types/graphql"
 import Show from "../show"
 
 interface DeletePartnerShowMutationInputProps {
-  partnerId: string
+  partnerId?: string
   showId: string
 }
 
@@ -53,8 +53,9 @@ export const deletePartnerShowMutation = mutationWithClientMutationId<
   description: "Deletes a partner show.",
   inputFields: {
     partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the partner.",
+      type: GraphQLString,
+      description:
+        "The id of the partner. Required for partner-scoped shows, omit for partner-less reference shows.",
     },
     showId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -71,16 +72,23 @@ export const deletePartnerShowMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { partnerId, showId },
-    { deletePartnerShowLoader }
+    { deletePartnerShowLoader, deleteShowLoader }
   ) => {
     if (!deletePartnerShowLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const showIdentifiers = { partnerID: partnerId, showID: showId }
-
     try {
-      const response = await deletePartnerShowLoader(showIdentifiers)
+      // Use the top-level DELETE /show/:id endpoint for partner-less shows
+      // (e.g. galaxy partner reference shows), otherwise use the
+      // partner-scoped endpoint.
+      const response = partnerId
+        ? await deletePartnerShowLoader({
+            partnerID: partnerId,
+            showID: showId,
+          })
+        : await deleteShowLoader(showId)
+
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)

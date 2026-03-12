@@ -27,7 +27,7 @@ interface UpdatePartnerShowMutationInputProps {
   locationId?: string
   name?: string
   partnerCity?: string
-  partnerId: string
+  partnerId?: string
   pressRelease?: string
   showId: string
   startAt?: string
@@ -102,8 +102,9 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       description: "The city of the partner for reference shows.",
     },
     partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the partner to update.",
+      type: GraphQLString,
+      description:
+        "The id of the partner. Required for partner-scoped shows, omit for partner-less reference shows.",
     },
     pressRelease: {
       type: GraphQLString,
@@ -167,13 +168,11 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { partnerId, showId, ...args },
-    { updatePartnerShowLoader }
+    { updatePartnerShowLoader, updateShowLoader }
   ) => {
     if (!updatePartnerShowLoader) {
       return new Error("You need to be signed in to perform this action")
     }
-
-    const showIdentifiers = { partnerId, showId }
 
     const addField = (key, value) =>
       value !== undefined ? { [key]: value } : {}
@@ -201,10 +200,12 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await updatePartnerShowLoader(
-        showIdentifiers,
-        gravityArgs
-      )
+      // Use the top-level PUT /show/:id endpoint for partner-less shows
+      // (e.g. galaxy partner reference shows), otherwise use the
+      // partner-scoped PUT /partner/:partnerId/show/:showId endpoint.
+      const response = partnerId
+        ? await updatePartnerShowLoader({ partnerId, showId }, gravityArgs)
+        : await updateShowLoader(showId, gravityArgs)
 
       return response
     } catch (error) {
