@@ -293,6 +293,34 @@ describe("artworkTemplatesConnection", () => {
     )
   })
 
+  it("supports sorting", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-123") {
+          artworkTemplatesConnection(first: 10, sort: TITLE_ASC) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.partnerArtworkTemplatesLoader).toHaveBeenCalledWith(
+      "partner-123",
+      {
+        page: 1,
+        size: 10,
+        total_count: true,
+        sort: "title",
+      }
+    )
+  })
+
   it("returns empty array when partner has no templates", async () => {
     const emptyContext = {
       partnerLoader: jest.fn().mockResolvedValue({
