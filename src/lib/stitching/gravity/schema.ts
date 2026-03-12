@@ -33,22 +33,13 @@ export const executableGravitySchema = () => {
     "ArtistSeries",
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
-    "ConfirmPasswordInput",
-    "ConfirmPasswordPayload",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
-  const unusedTypes = [
-    "LotEvent",
-    "CreateBankDebitSetupInput",
-    "CreateBankDebitSetupPayload",
-  ]
+  const unusedTypes = ["LotEvent"]
 
-  const excludedMutations: string[] = [
-    "confirmPassword",
-    "createBankDebitSetup",
-  ]
+  const excludedMutations: string[] = []
 
   // Return the new modified schema
   return transformSchema(schema, [
