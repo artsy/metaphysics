@@ -428,13 +428,13 @@ describe("submitOrderMutation", () => {
       expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
     })
 
-    it("does not create inquiry for offer orders in IN_REVIEW state", async () => {
+    it("does not create inquiry for offer orders in in_review state", async () => {
       context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
         ...baseOrderJson,
         id: "order-id",
         source: "artwork_page",
         mode: "offer",
-        state: "IN_REVIEW",
+        state: "in_review",
         payment_method: "WIRE_TRANSFER",
         last_submitted_offer: {
           note: "I would like to purchase this artwork",

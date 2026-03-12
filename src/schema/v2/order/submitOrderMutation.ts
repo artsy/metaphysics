@@ -73,7 +73,7 @@ export const submitOrderMutation = mutationWithClientMutationId<
       if (
         submittedOrder.mode === "offer" &&
         submittedOrder.source !== "inquiry" &&
-        submittedOrder.state !== "IN_REVIEW" &&
+        submittedOrder.state !== "in_review" &&
         submitArtworkInquiryRequestLoader
       ) {
         try {
