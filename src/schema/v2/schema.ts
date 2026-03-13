@@ -291,6 +291,7 @@ import { createShippingPresetMutation } from "./ShippingPreset/createShippingPre
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
 import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
+import { createPartnerArtworksExportMutation } from "./partner/Mutations/createPartnerArtworksExportMutation"
 import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
 import { deletePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistMutation"
 import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
@@ -609,6 +610,7 @@ export default new GraphQLSchema({
       createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
+      createPartnerArtworksExport: createPartnerArtworksExportMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,

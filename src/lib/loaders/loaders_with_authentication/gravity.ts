@@ -409,6 +409,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" } // Intentional PUT even though this is a create operation
     ),
+    createPartnerArtworksExportLoader: gravityLoader(
+      (id) => `partner/${id}/artworks_export`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerContactLoader: gravityLoader(
       (id) => `partner/${id}/contact`,
       {},
