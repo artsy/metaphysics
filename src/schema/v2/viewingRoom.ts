@@ -7,21 +7,21 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { ResolverContext } from "types/graphql"
+import { connectionFromArraySlice } from "graphql-relay"
+import { dateRange } from "lib/date"
 import {
   convertConnectionArgsToGravityArgs,
   defineCustomLocale,
 } from "lib/helpers"
-import { createPageCursors, emptyConnection } from "./fields/pagination"
-import { connectionFromArray } from "graphql-relay"
-import { artworkConnection } from "./artwork"
-import { pageable } from "relay-cursor-paging"
 import moment from "moment"
-import { PartnerType } from "./partner/partner"
-import { dateRange } from "lib/date"
+import { pageable } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+import { artworkConnection } from "./artwork"
+import { createPageCursors, emptyConnection } from "./fields/pagination"
 import { GravityARImageType } from "./GravityARImageType"
-import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
+import { PartnerType } from "./partner/partner"
 import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
+import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -83,6 +83,13 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: artworkConnection.connectionType,
         args: pageable({}),
         resolve: ({ artwork_ids }, args, { artworksLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          // Slice to current page to respect Gravity's 100 IDs limit
+          let ids = artwork_ids.slice(offset, offset + size)
+
           // qs ignores empty array/object and prevents us from sending `?array[]=`.
           // This is a workaround to map an empty array to `[null]` so it gets treated
           // as an empty string.
@@ -91,18 +98,19 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
           // Note that we can't easily change this globally as there are multiple places
           // clients are sending params of empty array but expecting Gravity to return
           // non-empty data. This only fixes the issue for viewing room artworks.
-          let ids = artwork_ids
           if (ids.length === 0) {
             ids = [null]
           }
 
-          const { page, size } = convertConnectionArgsToGravityArgs(args)
           return artworksLoader({ ids, batched: true }).then((body) => {
-            const totalCount = body.length
+            const totalCount = artwork_ids.length
             return {
               totalCount,
               pageCursors: createPageCursors({ page, size }, totalCount),
-              ...connectionFromArray(body, args),
+              ...connectionFromArraySlice(body, args, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+              }),
             }
           })
         },

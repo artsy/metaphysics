@@ -1,12 +1,12 @@
-import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("ViewingRoom", () => {
   describe("all fields", () => {
     const query = gql`
       {
-        viewingRoom(id: "example-viewing-room") {
+        viewingRoom(id: "two-palms-marilyn-minter-bathers") {
           artworkIDs
           artworksConnection(first: 1) {
             totalCount
@@ -120,7 +120,7 @@ describe("ViewingRoom", () => {
       const result = await runQuery(query, context)
 
       expect(artworksLoader).toHaveBeenCalledWith({
-        ids: ["artwork1", "artwork2"],
+        ids: ["artwork1"],
         batched: true,
       })
 
@@ -189,6 +189,228 @@ describe("ViewingRoom", () => {
           },
         }
       `)
+    })
+  })
+
+  describe("artworksConnection pagination", () => {
+    const createArtworkIds = (count) =>
+      Array.from({ length: count }, (_, i) => `artwork-${i + 1}`)
+
+    const createArtworksLoader = () =>
+      jest.fn().mockImplementation(({ ids }) => {
+        const artworks = (ids || [])
+          .filter(Boolean)
+          .map((id) => ({ id, title: `Artwork ${id}` }))
+        return Promise.resolve(artworks)
+      })
+
+    it("slices ids by first - first page", async () => {
+      const artworkIds = createArtworkIds(25)
+      const artworksLoader = createArtworksLoader()
+
+      const query = gql`
+        {
+          viewingRoom(id: "example-viewing-room") {
+            artworksConnection(first: 5) {
+              totalCount
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  id
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        viewingRoomLoader: jest.fn().mockResolvedValue({
+          id: "viewing-room-id",
+          artwork_ids: artworkIds,
+        }),
+        artworksLoader,
+      }
+
+      const result = await runQuery(query, context)
+
+      expect(artworksLoader).toHaveBeenCalledWith({
+        ids: ["artwork-1", "artwork-2", "artwork-3", "artwork-4", "artwork-5"],
+        batched: true,
+      })
+      expect(result.viewingRoom.artworksConnection.totalCount).toBe(25)
+      expect(result.viewingRoom.artworksConnection.pageInfo.hasNextPage).toBe(
+        true
+      )
+      expect(result.viewingRoom.artworksConnection.edges).toHaveLength(5)
+    })
+
+    it("slices ids - second page using after cursor", async () => {
+      const artworkIds = createArtworkIds(25)
+      const artworksLoader = createArtworksLoader()
+
+      const context = {
+        viewingRoomLoader: jest.fn().mockResolvedValue({
+          id: "viewing-room-id",
+          artwork_ids: artworkIds,
+        }),
+        artworksLoader,
+      }
+
+      const firstResult = await runQuery(
+        gql`
+          {
+            viewingRoom(id: "example-viewing-room") {
+              artworksConnection(first: 5) {
+                pageInfo {
+                  endCursor
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+      const endCursor =
+        firstResult.viewingRoom.artworksConnection.pageInfo.endCursor
+
+      const result = await runQuery(
+        gql`
+          query($after: String) {
+            viewingRoom(id: "example-viewing-room") {
+              artworksConnection(first: 5, after: $after) {
+                totalCount
+                pageInfo {
+                  hasNextPage
+                }
+                edges {
+                  node {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          }
+        `,
+        context,
+        { after: endCursor }
+      )
+
+      expect(artworksLoader).toHaveBeenLastCalledWith({
+        ids: ["artwork-6", "artwork-7", "artwork-8", "artwork-9", "artwork-10"],
+        batched: true,
+      })
+      expect(result.viewingRoom.artworksConnection.totalCount).toBe(25)
+      expect(result.viewingRoom.artworksConnection.pageInfo.hasNextPage).toBe(
+        true
+      )
+      expect(result.viewingRoom.artworksConnection.edges).toHaveLength(5)
+    })
+
+    it("never passes more than 100 ids to respect Gravity limit", async () => {
+      const artworkIds = createArtworkIds(150)
+      const artworksLoader = createArtworksLoader()
+
+      const query = gql`
+        {
+          viewingRoom(id: "example-viewing-room") {
+            artworksConnection(first: 10) {
+              totalCount
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        viewingRoomLoader: jest.fn().mockResolvedValue({
+          id: "viewing-room-id",
+          artwork_ids: artworkIds,
+        }),
+        artworksLoader,
+      }
+
+      const result = await runQuery(query, context)
+
+      expect(artworksLoader).toHaveBeenCalledWith({
+        ids: artworkIds.slice(0, 10),
+        batched: true,
+      })
+      expect(artworksLoader.mock.calls[0][0].ids).toHaveLength(10)
+      expect(result.viewingRoom.artworksConnection.totalCount).toBe(150)
+    })
+
+    it("returns empty connection when first is not provided", async () => {
+      const artworkIds = createArtworkIds(5)
+      const artworksLoader = createArtworksLoader()
+
+      const query = gql`
+        {
+          viewingRoom(id: "example-viewing-room") {
+            artworksConnection {
+              totalCount
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        viewingRoomLoader: jest.fn().mockResolvedValue({
+          id: "viewing-room-id",
+          artwork_ids: artworkIds,
+        }),
+        artworksLoader,
+      }
+
+      const result = await runQuery(query, context)
+
+      expect(result.viewingRoom.artworksConnection.totalCount).toBe(5)
+      expect(result.viewingRoom.artworksConnection.edges).toHaveLength(0)
+    })
+
+    it("handles empty artwork list", async () => {
+      const artworksLoader = jest.fn().mockResolvedValue([])
+
+      const query = gql`
+        {
+          viewingRoom(id: "example-viewing-room") {
+            artworksConnection(first: 10) {
+              totalCount
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        viewingRoomLoader: jest.fn().mockResolvedValue({
+          id: "viewing-room-id",
+          artwork_ids: [],
+        }),
+        artworksLoader,
+      }
+
+      const result = await runQuery(query, context)
+
+      expect(result.viewingRoom.artworksConnection.totalCount).toBe(0)
+      expect(result.viewingRoom.artworksConnection.edges).toHaveLength(0)
     })
   })
 
