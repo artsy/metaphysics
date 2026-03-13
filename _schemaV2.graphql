@@ -27313,6 +27313,8 @@ input UpdatePartnerShowFairLocationInput {
 }
 
 input UpdatePartnerShowMutationInput {
+  # The artist ids for the show.
+  artistIds: [String]
   clientMutationId: String
 
   # The description of the show.

@@ -72,6 +72,60 @@ describe("UpdatePartnerShowMutation", () => {
     })
   })
 
+  describe("with artistIds", () => {
+    const artistIdsMutation = gql`
+      mutation {
+        updatePartnerShow(
+          input: { showId: "ref-show-123", artistIds: ["artist-1", "artist-2"] }
+        ) {
+          showOrError {
+            __typename
+            ... on UpdatePartnerShowSuccess {
+              show {
+                internalID
+              }
+            }
+            ... on UpdatePartnerShowFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("passes artist_ids to the Gravity API", async () => {
+      const updateShowLoader = jest.fn().mockResolvedValue({
+        _id: "ref-show-123",
+      })
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader,
+      }
+
+      const result = await runAuthenticatedQuery(artistIdsMutation, context)
+
+      expect(updateShowLoader).toHaveBeenCalledWith(
+        "ref-show-123",
+        expect.objectContaining({
+          artist_ids: ["artist-1", "artist-2"],
+        })
+      )
+      expect(result).toEqual({
+        updatePartnerShow: {
+          showOrError: {
+            __typename: "UpdatePartnerShowSuccess",
+            show: {
+              internalID: "ref-show-123",
+            },
+          },
+        },
+      })
+    })
+  })
+
   describe("without partnerId (partner-less reference show)", () => {
     const partnerlessMutation = gql`
       mutation {

@@ -17,6 +17,7 @@ import Show from "../show"
 import moment from "moment"
 
 interface UpdatePartnerShowMutationInputProps {
+  artistIds?: string[]
   description?: string
   displayOnPartnerProfile?: boolean
   endAt?: string
@@ -69,6 +70,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   name: "UpdatePartnerShowMutation",
   description: "Updates a partner show.",
   inputFields: {
+    artistIds: {
+      type: new GraphQLList(GraphQLString),
+      description: "The artist ids for the show.",
+    },
     description: {
       type: GraphQLString,
       description: "The description of the show.",
@@ -178,6 +183,7 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       value !== undefined ? { [key]: value } : {}
 
     const gravityArgs = {
+      ...addField("artist_ids", args.artistIds),
       ...addField("name", args.name),
       ...addField("featured", args.featured),
       ...addField("group", args.group),
