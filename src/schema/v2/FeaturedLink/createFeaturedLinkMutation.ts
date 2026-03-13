@@ -15,6 +15,7 @@ interface Input {
   subtitle?: string
   sourceBucket?: string
   sourceKey?: string
+  orderedSetID?: string
 }
 
 interface GravityInput {
