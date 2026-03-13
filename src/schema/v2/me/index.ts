@@ -56,6 +56,8 @@ import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auctionResultsByFollowedArtists"
 import { authentications } from "./authentications"
+import { instagramAccounts } from "./instagramAccount"
+import { mailchimpAccounts } from "./mailchimpAccount"
 import { BankAccounts } from "./bank_accounts"
 import { BidderPosition } from "./bidder_position"
 import BidderPositions from "./bidder_positions"
@@ -217,6 +219,8 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     auctionSegmentation: AuctionSegmentation,
     authentications: authentications,
     bankAccounts: BankAccounts,
+    instagramAccounts: instagramAccounts,
+    mailchimpAccounts: mailchimpAccounts,
     basedOnUserSaves: BasedOnUserSaves,
     bidders: Bidders,
     bidderStatus: BidderStatus,

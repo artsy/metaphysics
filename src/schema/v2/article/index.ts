@@ -10,6 +10,7 @@ import {
 } from "graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
+import { decodeUnverifiedJWT } from "lib/decodeUnverifiedJWT"
 import { AuthorType } from "schema/v2/author"
 import cached from "schema/v2/fields/cached"
 import { date } from "schema/v2/fields/date"
@@ -410,7 +411,23 @@ const Article: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the Article",
     },
   },
-  resolve: async (_root, { id }, { articleLoader }) => {
+  resolve: async (
+    _root,
+    { id },
+    { articleLoader, authenticatedArticleLoader, accessToken }
+  ) => {
+    if (authenticatedArticleLoader && accessToken) {
+      try {
+        const decoded = decodeUnverifiedJWT(accessToken)
+        const roles: string[] = decoded?.roles?.split(",") ?? []
+
+        if (roles.includes("editorial")) {
+          return authenticatedArticleLoader(id)
+        }
+      } catch {
+        // Fall through to public loader
+      }
+    }
     return articleLoader(id)
   },
 }

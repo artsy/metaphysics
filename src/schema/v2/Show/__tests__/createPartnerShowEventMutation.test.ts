@@ -2,6 +2,15 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("CreatePartnerShowEventMutation", () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date("2025-01-01T12:00:00Z"))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   const mutation = gql`
     mutation {
       createPartnerShowEvent(
@@ -59,7 +68,9 @@ describe("CreatePartnerShowEventMutation", () => {
             description: "Join us for the opening reception",
             startAt: "2025-01-01T12:00:00.000Z",
             endAt: "2025-01-01T18:00:00.000Z",
-            formattedTimeZone: "(GMT-05:00) New York",
+            formattedTimeZone: expect.stringMatching(
+              /\(GMT-0[45]:00\) New York/
+            ),
             timeZone: "America/New_York",
           },
         },

@@ -547,6 +547,81 @@ describe("Me", () => {
           },
         ])
       })
+
+      it("returns 'To be confirmed by seller' for pendingOffer with shipping_tbd when amount is not present", async () => {
+        orderJson.source = "partner_offer"
+        orderJson.mode = "offer"
+        orderJson.selected_fulfillment_option = {
+          type: "shipping_tbd",
+          selected: true,
+        }
+        orderJson.pending_offer = {
+          id: "offer-1",
+          order_id: "order-id",
+          amount_cents: 450000,
+          buyer_total_cents: null,
+          currency_code: "USD",
+          from_participant: "buyer",
+          note: "This is my offer",
+          shipping_total_cents: null,
+          tax_total_cents: null,
+          created_at: "2023-01-02T00:00:00Z",
+        }
+
+        const offerQuery = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                pendingOffer {
+                  internalID
+                  pricingBreakdownLines {
+                    __typename
+                    ... on ShippingLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
+                    ... on TaxLine {
+                      displayName
+                      amount {
+                        display
+                      }
+                      amountFallbackText
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(offerQuery, context)
+
+        expect(
+          result.me.order.pendingOffer.pricingBreakdownLines
+        ).toContainEqual({
+          __typename: "ShippingLine",
+          displayName: "Shipping",
+          amount: null,
+          amountFallbackText: "To be confirmed by seller",
+        })
+
+        expect(
+          result.me.order.pendingOffer.pricingBreakdownLines
+        ).toContainEqual({
+          __typename: "TaxLine",
+          displayName: "Tax",
+          amount: null,
+          amountFallbackText: "Calculated after shipping",
+        })
+      })
     })
 
     describe("artworkOrEditionSet", () => {
@@ -1266,6 +1341,13 @@ describe("Me", () => {
                       amount
                     }
                   }
+                  ... on TaxLine {
+                    displayName
+                    amountFallbackText
+                    amount {
+                      amount
+                    }
+                  }
                 }
               }
             }
@@ -1303,6 +1385,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1340,6 +1427,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1377,6 +1469,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1414,6 +1511,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1452,6 +1554,11 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: null,
+              amount: {
+                amount: "42.99",
+              },
             },
             {
               __typename: "TotalLine",
@@ -1462,6 +1569,7 @@ describe("Me", () => {
         it("returns 'To be confirmed by seller' for shipping_tbd when amount is not present", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = null
+          orderJson.tax_total_cents = null
           orderJson.selected_fulfillment_option = {
             type: "shipping_tbd",
             selected: true,
@@ -1488,6 +1596,9 @@ describe("Me", () => {
             },
             {
               __typename: "TaxLine",
+              displayName: "Tax",
+              amountFallbackText: "Calculated after shipping",
+              amount: null,
             },
             {
               __typename: "TotalLine",
@@ -2033,6 +2144,222 @@ describe("Me", () => {
 
         expect(result.me.order.totalListPrice.display).toEqual("US$7,000")
         expect(result.me.order.totalListPrice.amount).toEqual("7,000")
+      })
+    })
+
+    describe("fulfillmentOptions amount formatting", () => {
+      const fulfillmentOptionsQuery = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              fulfillmentOptions {
+                type
+                amount {
+                  display
+                  amount
+                  currencyCode
+                  minor
+                }
+              }
+            }
+          }
+        }
+      `
+
+      it("formats amounts with decimals when any option has cents", async () => {
+        // Set up fulfillment options where one has cents
+        orderJson.fulfillment_options = [
+          { type: "pickup", amount_minor: 0 },
+          { type: "domestic_flat", amount_minor: 10050 }, // $100.50 - has cents
+          { type: "international_flat", amount_minor: 20000 }, // $200.00 - no cents but should still show decimals
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          fulfillmentOptionsQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([
+          {
+            type: "PICKUP",
+            amount: {
+              display: "US$0.00",
+              amount: "0.00",
+              currencyCode: "USD",
+              minor: 0,
+            },
+          },
+          {
+            type: "DOMESTIC_FLAT",
+            amount: {
+              display: "US$100.50",
+              amount: "100.50",
+              currencyCode: "USD",
+              minor: 10050,
+            },
+          },
+          {
+            type: "INTERNATIONAL_FLAT",
+            amount: {
+              display: "US$200.00",
+              amount: "200.00",
+              currencyCode: "USD",
+              minor: 20000,
+            },
+          },
+        ])
+      })
+
+      it("formats amounts without decimals when no option has cents", async () => {
+        // Set up fulfillment options where none have cents
+        orderJson.fulfillment_options = [
+          { type: "pickup", amount_minor: 0 },
+          { type: "domestic_flat", amount_minor: 10000 }, // $100.00 - no cents
+          { type: "international_flat", amount_minor: 20000 }, // $200.00 - no cents
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          fulfillmentOptionsQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([
+          {
+            type: "PICKUP",
+            amount: {
+              display: "US$0",
+              amount: "0",
+              currencyCode: "USD",
+              minor: 0,
+            },
+          },
+          {
+            type: "DOMESTIC_FLAT",
+            amount: {
+              display: "US$100",
+              amount: "100",
+              currencyCode: "USD",
+              minor: 10000,
+            },
+          },
+          {
+            type: "INTERNATIONAL_FLAT",
+            amount: {
+              display: "US$200",
+              amount: "200",
+              currencyCode: "USD",
+              minor: 20000,
+            },
+          },
+        ])
+      })
+
+      it("handles mixed amounts with small cents correctly", async () => {
+        // Test with small cent amounts like $0.01, $0.99
+        orderJson.fulfillment_options = [
+          { type: "pickup", amount_minor: 1 }, // $0.01
+          { type: "domestic_flat", amount_minor: 99 }, // $0.99
+          { type: "international_flat", amount_minor: 15000 }, // $150.00
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          fulfillmentOptionsQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([
+          {
+            type: "PICKUP",
+            amount: {
+              display: "US$0.01",
+              amount: "0.01",
+              currencyCode: "USD",
+              minor: 1,
+            },
+          },
+          {
+            type: "DOMESTIC_FLAT",
+            amount: {
+              display: "US$0.99",
+              amount: "0.99",
+              currencyCode: "USD",
+              minor: 99,
+            },
+          },
+          {
+            type: "INTERNATIONAL_FLAT",
+            amount: {
+              display: "US$150.00",
+              amount: "150.00",
+              currencyCode: "USD",
+              minor: 15000,
+            },
+          },
+        ])
+      })
+
+      it("handles null amount_minor gracefully", async () => {
+        orderJson.fulfillment_options = [
+          { type: "pickup", amount_minor: null },
+          { type: "domestic_flat", amount_minor: 10099 }, // $100.99 - has cents
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          fulfillmentOptionsQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([
+          {
+            type: "PICKUP",
+            amount: null, // Should be null when amount_minor is null
+          },
+          {
+            type: "DOMESTIC_FLAT",
+            amount: {
+              display: "US$100.99",
+              amount: "100.99",
+              currencyCode: "USD",
+              minor: 10099,
+            },
+          },
+        ])
+      })
+
+      it("handles empty fulfillment options array", async () => {
+        orderJson.fulfillment_options = []
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          fulfillmentOptionsQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([])
       })
     })
   })

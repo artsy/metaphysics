@@ -2,9 +2,6 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-jest.mock("node-fetch", () => jest.fn())
-import fetch from "node-fetch"
-
 describe("RecentlyViewedArtworks", () => {
   let context
   beforeEach(() => {
@@ -195,31 +192,19 @@ describe("RecentlyViewedArtworks", () => {
     const mutation = gql`
       mutation {
         recordArtworkView(input: { artwork_id: "percy" }) {
+          artworkId
           artwork_id
         }
       }
     `
 
-    const responseData = {
-      data: { recordArtworkView: { artwork_id: "percy" } },
-    }
-
-    const mockFetch = (fetch as unknown) as jest.Mock<any>
-    mockFetch.mockImplementationOnce(() => {
-      return Promise.resolve({
-        text: () => Promise.resolve(JSON.stringify(responseData)),
-      })
-    })
-
     const data = await runAuthenticatedQuery(mutation, context)
 
-    // The graphQL API
-    expect(mockFetch).toBeCalledWith(
-      "https://api.artsy.test/api/graphql",
-      expect.anything()
-    )
+    expect(context.recordArtworkViewLoader).toHaveBeenCalledWith({
+      artwork_id: "percy",
+    })
 
-    const artworkID = data!.recordArtworkView.artwork_id
-    expect(artworkID).toEqual("percy")
+    expect(data!.recordArtworkView.artworkId).toEqual("percy")
+    expect(data!.recordArtworkView.artwork_id).toEqual("percy")
   })
 })

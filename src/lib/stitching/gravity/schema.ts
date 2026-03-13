@@ -35,11 +35,11 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  const excludedMutations: string[] = []
-
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
   const unusedTypes = ["LotEvent"]
+
+  const excludedMutations: string[] = []
 
   // Return the new modified schema
   return transformSchema(schema, [
@@ -74,8 +74,8 @@ export const executableGravitySchema = () => {
     new FilterRootFields((operation, name) => {
       if (!name) return true
 
-      if (operation === "Mutation") {
-        return !excludedMutations.includes(name)
+      if (operation === "Mutation" && excludedMutations.includes(name)) {
+        return false
       }
 
       return true

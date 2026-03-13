@@ -197,6 +197,8 @@ import { deleteUserInterestsMutation } from "./me/deleteUserInterestsMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
 import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
+import { confirmPasswordMutation } from "./me/confirmPasswordMutation"
+import { recordArtworkViewMutation } from "./me/recordArtworkViewMutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
@@ -232,6 +234,20 @@ import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
+import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
+import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
+import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
+import { refreshInstagramAccountMutation } from "./me/refreshInstagramAccountMutation"
+import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccountMutation"
+import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
+import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
+import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import { createInstagramPostMutation } from "./createInstagramPostMutation"
+import { instagramPost, instagramPostsConnection } from "./instagramPost"
+import {
+  mailchimpCampaign,
+  mailchimpCampaignsConnection,
+} from "./mailchimpCampaign"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
@@ -277,6 +293,7 @@ import { createShippingPresetMutation } from "./ShippingPreset/createShippingPre
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
 import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
+import { createPartnerArtworksExportMutation } from "./partner/Mutations/createPartnerArtworksExportMutation"
 import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
 import { deletePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistMutation"
 import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
@@ -476,6 +493,10 @@ const rootFields = {
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
+  instagramPost,
+  instagramPostsConnection,
+  mailchimpCampaign: mailchimpCampaign,
+  mailchimpCampaignsConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -559,6 +580,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
+      confirmPassword: confirmPasswordMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
@@ -592,11 +614,21 @@ export default new GraphQLSchema({
       createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
+      createPartnerArtworksExport: createPartnerArtworksExportMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      authorizeInstagramAccount: authorizeInstagramAccountMutation,
+      completeInstagramOAuth: completeInstagramOAuthMutation,
+      deleteInstagramAccount: deleteInstagramAccountMutation,
+      refreshInstagramAccount: refreshInstagramAccountMutation,
+      createInstagramPost: createInstagramPostMutation,
+      authorizeMailchimpAccount: authorizeMailchimpAccountMutation,
+      completeMailchimpOAuth: completeMailchimpOAuthMutation,
+      deleteMailchimpAccount: deleteMailchimpAccountMutation,
+      createMailchimpCampaign: createMailchimpCampaignMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
@@ -682,6 +714,7 @@ export default new GraphQLSchema({
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
+      recordArtworkView: recordArtworkViewMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,

@@ -23,9 +23,11 @@ interface UpdatePartnerShowMutationInputProps {
   fairBooth?: string
   fairId?: string
   featured?: boolean
+  group?: boolean
   locationId?: string
   name?: string
-  partnerId: string
+  partnerCity?: string
+  partnerId?: string
   pressRelease?: string
   showId: string
   startAt?: string
@@ -83,6 +85,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Is the show featured?",
     },
+    group: {
+      type: GraphQLBoolean,
+      description: "Is the show a group show?",
+    },
     locationId: {
       type: GraphQLString,
       description: "The location id of the show.",
@@ -91,9 +97,14 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "The name of the show.",
     },
+    partnerCity: {
+      type: GraphQLString,
+      description: "The city of the partner for reference shows.",
+    },
     partnerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the partner to update.",
+      type: GraphQLString,
+      description:
+        "The id of the partner. Required for partner-scoped shows, omit for partner-less reference shows.",
     },
     pressRelease: {
       type: GraphQLString,
@@ -157,13 +168,11 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { partnerId, showId, ...args },
-    { updatePartnerShowLoader }
+    { updatePartnerShowLoader, updateShowLoader }
   ) => {
     if (!updatePartnerShowLoader) {
       return new Error("You need to be signed in to perform this action")
     }
-
-    const showIdentifiers = { partnerId, showId }
 
     const addField = (key, value) =>
       value !== undefined ? { [key]: value } : {}
@@ -171,8 +180,10 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     const gravityArgs = {
       ...addField("name", args.name),
       ...addField("featured", args.featured),
+      ...addField("group", args.group),
       ...addField("description", args.description),
       ...addField("display_on_partner_profile", args.displayOnPartnerProfile),
+      ...addField("partner_city", args.partnerCity),
       ...addField("press_release", args.pressRelease),
       ...addField("partner_location", args.locationId),
       ...addField(
@@ -189,10 +200,12 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await updatePartnerShowLoader(
-        showIdentifiers,
-        gravityArgs
-      )
+      // Use the top-level PUT /show/:id endpoint for partner-less shows
+      // (e.g. galaxy partner reference shows), otherwise use the
+      // partner-scoped PUT /partner/:partnerId/show/:showId endpoint.
+      const response = partnerId
+        ? await updatePartnerShowLoader({ partnerId, showId }, gravityArgs)
+        : await updateShowLoader(showId, gravityArgs)
 
       return response
     } catch (error) {

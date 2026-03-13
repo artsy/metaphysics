@@ -447,6 +447,7 @@ export const COUNTRIES = {
   VU: "Vanuatu",
   WF: "Wallis and Futuna",
   WS: "Samoa",
+  XK: "Kosovo",
   YE: "Yemen",
   YT: "Mayotte",
   ZA: "South Africa",

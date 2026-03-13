@@ -34,7 +34,11 @@ const COPY = {
     fallbackText: "Calculated in next steps",
     deferredShippingText: "To be confirmed by seller",
   },
-  tax: { displayName: "Tax", amountFallbackText: "Calculated in next steps" },
+  tax: {
+    displayName: "Tax",
+    amountFallbackText: "Calculated in next steps",
+    deferredTaxText: "Calculated after shipping",
+  },
   total: {
     displayName: "Total",
     amountFallbackText: "Waiting for final costs",
@@ -117,14 +121,14 @@ export const resolveOrderPricingBreakdownLines = (
   }
 
   // Shipping line
-  const selectedFulfillment: FulfillmentOptionJson = selectedFulfillmentOption || {
+  const selectedFulfillmentOrDefault: FulfillmentOptionJson = selectedFulfillmentOption || {
     type: "shipping_tbd",
   }
 
   const hasShippingTotal = shippingTotalCents != null
   let shippingDisplayName: string = COPY.shipping.displayName.fallback
 
-  switch (selectedFulfillment?.type) {
+  switch (selectedFulfillmentOrDefault.type) {
     case "pickup":
       shippingDisplayName = COPY.shipping.displayName.pickup
       break
@@ -153,7 +157,7 @@ export const resolveOrderPricingBreakdownLines = (
   let shippingFallbackText: string | null = null
   if (!hasShippingTotal) {
     shippingFallbackText =
-      selectedFulfillment?.type === "shipping_tbd"
+      selectedFulfillmentOption?.type === "shipping_tbd"
         ? COPY.shipping.deferredShippingText
         : COPY.shipping.fallbackText
   }
@@ -167,11 +171,19 @@ export const resolveOrderPricingBreakdownLines = (
 
   // Tax line
   const hasTaxTotal = taxTotalCents != null
+  let taxFallbackText: string | null = null
+  if (!hasTaxTotal) {
+    taxFallbackText =
+      selectedFulfillmentOption?.type === "shipping_tbd"
+        ? COPY.tax.deferredTaxText
+        : COPY.tax.amountFallbackText
+  }
+
   const taxLine: ResolvedPriceLineData = {
     __typename: "TaxLine",
     displayName: COPY.tax.displayName,
     amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
-    amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
+    amountFallbackText: taxFallbackText,
   }
 
   // Total line uses order.buyer_total_cents
@@ -199,6 +211,7 @@ export const resolveOfferPricingBreakdownLines = (
     amount_cents: amountCents,
     buyer_total_cents: buyerTotalCents,
     from_participant: fromParticipant,
+    _selectedFulfillmentOptionType,
   } = offer
 
   const resolveMoney = (amount: number) => {
@@ -231,20 +244,36 @@ export const resolveOfferPricingBreakdownLines = (
 
   // Shipping line
   const hasShippingTotal = shippingTotalCents != null
+  let shippingFallbackText: string | null = null
+  if (!hasShippingTotal) {
+    shippingFallbackText =
+      _selectedFulfillmentOptionType === "shipping_tbd"
+        ? COPY.shipping.deferredShippingText
+        : COPY.shipping.fallbackText
+  }
+
   const shippingLine: ResolvedPriceLineData = {
     __typename: "ShippingLine",
     displayName: COPY.shipping.displayName.fallback,
     amount: hasShippingTotal ? resolveMoney(shippingTotalCents) : null,
-    amountFallbackText: hasShippingTotal ? null : COPY.shipping.fallbackText,
+    amountFallbackText: shippingFallbackText,
   }
 
   // Tax line
   const hasTaxTotal = taxTotalCents != null
+  let taxFallbackTextForOffer: string | null = null
+  if (!hasTaxTotal) {
+    taxFallbackTextForOffer =
+      _selectedFulfillmentOptionType === "shipping_tbd"
+        ? COPY.tax.deferredTaxText
+        : COPY.tax.amountFallbackText
+  }
+
   const taxLine: ResolvedPriceLineData = {
     __typename: "TaxLine",
     displayName: COPY.tax.displayName,
     amount: hasTaxTotal ? resolveMoney(taxTotalCents) : null,
-    amountFallbackText: hasTaxTotal ? null : COPY.tax.amountFallbackText,
+    amountFallbackText: taxFallbackTextForOffer,
   }
 
   // Total line uses offer.buyer_total_cents
