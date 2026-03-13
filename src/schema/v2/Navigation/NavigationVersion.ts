@@ -10,6 +10,7 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { NavigationItemType } from "./NavigationItem"
 import { date } from "../fields/date"
+import { FeaturedLinkType } from "../FeaturedLink/featuredLink"
 
 export const NavigationVersionType = new GraphQLObjectType<
   any,
@@ -19,12 +20,25 @@ export const NavigationVersionType = new GraphQLObjectType<
   fields: {
     ...InternalIDFields,
     createdAt: date(({ created_at }) => created_at, true),
+    featuredLinksSet: {
+      type: new GraphQLList(FeaturedLinkType),
+      description: "A list of featured links for the visual component",
+      resolve: async ({ ordered_set_id }, _args, { setItemsLoader }) => {
+        if (!ordered_set_id) return null
+        const items = await setItemsLoader(ordered_set_id)
+        return items.body
+      },
+    },
     items: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(NavigationItemType))
       ),
       description:
         "An ordered list of nested navigation items (e.g., By Price, By Seller, etc.)",
+    },
+    orderedSetID: {
+      type: GraphQLString,
+      resolve: ({ ordered_set_id }) => ordered_set_id,
     },
     publishedAt: date(),
     updatedAt: date(({ updated_at }) => updated_at, true),
