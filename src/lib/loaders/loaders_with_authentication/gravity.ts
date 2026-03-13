@@ -1704,6 +1704,19 @@ export default (accessToken, userID, opts) => {
       { method: "DELETE" }
     ),
 
+    // Instagram Post Loaders
+    instagramPostsLoader: gravityLoader(
+      "instagram_posts",
+      {},
+      { headers: true }
+    ),
+    instagramPostLoader: gravityLoader((id) => `instagram_post/${id}`),
+    createInstagramPostLoader: gravityLoader(
+      "instagram_post",
+      {},
+      { method: "POST" }
+    ),
+
     // Mailchimp Account Loaders
     mailchimpAccountsLoader: gravityLoader(
       "mailchimp_accounts",

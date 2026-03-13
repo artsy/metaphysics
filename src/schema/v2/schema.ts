@@ -242,6 +242,8 @@ import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccoun
 import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import { createInstagramPostMutation } from "./createInstagramPostMutation"
+import { instagramPost, instagramPostsConnection } from "./instagramPost"
 import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
@@ -491,6 +493,8 @@ const rootFields = {
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
+  instagramPost,
+  instagramPostsConnection,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   me: Me,
@@ -620,6 +624,7 @@ export default new GraphQLSchema({
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
       refreshInstagramAccount: refreshInstagramAccountMutation,
+      createInstagramPost: createInstagramPostMutation,
       authorizeMailchimpAccount: authorizeMailchimpAccountMutation,
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,
