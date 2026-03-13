@@ -24,9 +24,9 @@ export const NavigationVersionType = new GraphQLObjectType<
       type: new GraphQLList(FeaturedLinkType),
       description: "A list of featured links for the visual component",
       resolve: async ({ ordered_set_id }, _args, { setItemsLoader }) => {
+        if (!ordered_set_id) return null
         const items = await setItemsLoader(ordered_set_id)
         return items.body
-      },
     },
     items: {
       type: new GraphQLNonNull(
