@@ -409,6 +409,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" } // Intentional PUT even though this is a create operation
     ),
+    createPartnerArtworksExportLoader: gravityLoader(
+      (id) => `partner/${id}/artworks_export`,
+      {},
+      { method: "POST" }
+    ),
     createPartnerContactLoader: gravityLoader(
       (id) => `partner/${id}/contact`,
       {},
@@ -1510,6 +1515,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateShowLoader: gravityLoader(
+      (id) => `show/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteShowLoader: gravityLoader(
+      (id) => `show/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     updatePartnerProfileImageLoader: gravityLoader(
       (id) => `partner/${id}/profile_images`,
       {},
@@ -1687,6 +1702,19 @@ export default (accessToken, userID, opts) => {
       (id) => `instagram_account/${id}`,
       {},
       { method: "DELETE" }
+    ),
+
+    // Instagram Post Loaders
+    instagramPostsLoader: gravityLoader(
+      "instagram_posts",
+      {},
+      { headers: true }
+    ),
+    instagramPostLoader: gravityLoader((id) => `instagram_post/${id}`),
+    createInstagramPostLoader: gravityLoader(
+      "instagram_post",
+      {},
+      { method: "POST" }
     ),
 
     // Mailchimp Account Loaders

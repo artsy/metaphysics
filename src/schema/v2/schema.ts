@@ -242,6 +242,8 @@ import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccoun
 import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import { createInstagramPostMutation } from "./createInstagramPostMutation"
+import { instagramPost, instagramPostsConnection } from "./instagramPost"
 import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
@@ -291,6 +293,7 @@ import { createShippingPresetMutation } from "./ShippingPreset/createShippingPre
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
 import { createPartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/createPartnerArtistDocumentMutation"
+import { createPartnerArtworksExportMutation } from "./partner/Mutations/createPartnerArtworksExportMutation"
 import { deletePartnerArtistDocumentMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistDocumentMutation"
 import { deletePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/deletePartnerArtistMutation"
 import { repositionPartnerArtistArtworksMutation } from "./partner/Mutations/PartnerArtist/repositionPartnerArtistArtworksMutation"
@@ -490,6 +493,8 @@ const rootFields = {
   curatedMarketingCollections: CuratedMarketingCollections,
   discoveryMarketingCollections: DiscoveryMarketingCollections,
   marketingCategories: MarketingCategories,
+  instagramPost,
+  instagramPostsConnection,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   me: Me,
@@ -609,6 +614,7 @@ export default new GraphQLSchema({
       createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
+      createPartnerArtworksExport: createPartnerArtworksExportMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,
@@ -618,6 +624,7 @@ export default new GraphQLSchema({
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
       refreshInstagramAccount: refreshInstagramAccountMutation,
+      createInstagramPost: createInstagramPostMutation,
       authorizeMailchimpAccount: authorizeMailchimpAccountMutation,
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,

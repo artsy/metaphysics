@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt } from "graphql"
+import { GraphQLEnumType, GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionWithCursorInfo } from "../fields/pagination"
@@ -11,6 +11,32 @@ export const ArtworkTemplatesConnectionType = connectionWithCursorInfo({
   nodeType: ArtworkTemplateType,
 }).connectionType
 
+const ArtworkTemplatesSort = {
+  type: new GraphQLEnumType({
+    name: "ArtworkTemplatesSort",
+    values: {
+      ARTIST_NAME_ASC: {
+        value: "artist_sortable_name",
+      },
+      ARTIST_NAME_DESC: {
+        value: "-artist_sortable_name",
+      },
+      TITLE_ASC: {
+        value: "title",
+      },
+      TITLE_DESC: {
+        value: "-title",
+      },
+      CREATED_AT_ASC: {
+        value: "created_at",
+      },
+      CREATED_AT_DESC: {
+        value: "-created_at",
+      },
+    },
+  }),
+}
+
 export const ArtworkTemplatesConnection: GraphQLFieldConfig<
   any,
   ResolverContext
@@ -19,6 +45,7 @@ export const ArtworkTemplatesConnection: GraphQLFieldConfig<
   description: "A connection of artwork templates for this partner",
   args: pageable({
     page: { type: GraphQLInt },
+    sort: ArtworkTemplatesSort,
   }),
   resolve: async (
     { id },
@@ -37,6 +64,7 @@ export const ArtworkTemplatesConnection: GraphQLFieldConfig<
       page,
       size,
       total_count: true,
+      sort: args.sort,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
