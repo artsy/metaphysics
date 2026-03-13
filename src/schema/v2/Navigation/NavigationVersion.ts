@@ -27,6 +27,7 @@ export const NavigationVersionType = new GraphQLObjectType<
         if (!ordered_set_id) return null
         const items = await setItemsLoader(ordered_set_id)
         return items.body
+      },
     },
     items: {
       type: new GraphQLNonNull(
