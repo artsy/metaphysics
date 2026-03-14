@@ -126,6 +126,233 @@ describe("UpdatePartnerShowMutation", () => {
     })
   })
 
+  describe("with addArtistIds", () => {
+    const addArtistIdsMutation = gql`
+      mutation {
+        updatePartnerShow(
+          input: { showId: "ref-show-123", addArtistIds: ["new-artist-slug"] }
+        ) {
+          showOrError {
+            __typename
+            ... on UpdatePartnerShowSuccess {
+              show {
+                internalID
+              }
+            }
+            ... on UpdatePartnerShowFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("fetches existing artists and merges with new slugs", async () => {
+      const updateShowLoader = jest.fn().mockResolvedValue({
+        _id: "ref-show-123",
+      })
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader,
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "ref-show-123",
+          artists_without_artworks: [
+            { id: "existing-artist-slug", _id: "existing-artist-id" },
+          ],
+        }),
+      }
+
+      await runAuthenticatedQuery(addArtistIdsMutation, context)
+
+      expect(context.showLoader).toHaveBeenCalledWith("ref-show-123")
+      expect(updateShowLoader).toHaveBeenCalledWith(
+        "ref-show-123",
+        expect.objectContaining({
+          artist_ids: ["existing-artist-slug", "new-artist-slug"],
+        })
+      )
+    })
+
+    it("deduplicates when artist already exists in show", async () => {
+      const updateShowLoader = jest.fn().mockResolvedValue({
+        _id: "ref-show-123",
+      })
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader,
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "ref-show-123",
+          artists_without_artworks: [{ id: "artist-slug", _id: "artist-id" }],
+        }),
+      }
+
+      const addDupeMutation = gql`
+        mutation {
+          updatePartnerShow(
+            input: { showId: "ref-show-123", addArtistIds: ["artist-slug"] }
+          ) {
+            showOrError {
+              __typename
+              ... on UpdatePartnerShowSuccess {
+                show {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(addDupeMutation, context)
+
+      expect(updateShowLoader).toHaveBeenCalledWith(
+        "ref-show-123",
+        expect.objectContaining({
+          artist_ids: ["artist-slug"],
+        })
+      )
+    })
+  })
+
+  describe("with removeArtistIds", () => {
+    const removeArtistIdsMutation = gql`
+      mutation {
+        updatePartnerShow(
+          input: {
+            showId: "ref-show-123"
+            removeArtistIds: ["artist-to-remove"]
+          }
+        ) {
+          showOrError {
+            __typename
+            ... on UpdatePartnerShowSuccess {
+              show {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("fetches existing artists and removes the specified slug", async () => {
+      const updateShowLoader = jest.fn().mockResolvedValue({
+        _id: "ref-show-123",
+      })
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader,
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "ref-show-123",
+          artists_without_artworks: [
+            { id: "artist-to-keep", _id: "id-1" },
+            { id: "artist-to-remove", _id: "id-2" },
+          ],
+        }),
+      }
+
+      await runAuthenticatedQuery(removeArtistIdsMutation, context)
+
+      expect(context.showLoader).toHaveBeenCalledWith("ref-show-123")
+      expect(updateShowLoader).toHaveBeenCalledWith(
+        "ref-show-123",
+        expect.objectContaining({
+          artist_ids: ["artist-to-keep"],
+        })
+      )
+    })
+
+    it("preserves all artists when removing a non-existent slug", async () => {
+      const updateShowLoader = jest.fn().mockResolvedValue({
+        _id: "ref-show-123",
+      })
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader,
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "ref-show-123",
+          artists_without_artworks: [
+            { id: "artist-a", _id: "id-1" },
+            { id: "artist-b", _id: "id-2" },
+          ],
+        }),
+      }
+
+      const removeNonExistentMutation = gql`
+        mutation {
+          updatePartnerShow(
+            input: {
+              showId: "ref-show-123"
+              removeArtistIds: ["does-not-exist"]
+            }
+          ) {
+            showOrError {
+              __typename
+              ... on UpdatePartnerShowSuccess {
+                show {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(removeNonExistentMutation, context)
+
+      expect(updateShowLoader).toHaveBeenCalledWith(
+        "ref-show-123",
+        expect.objectContaining({
+          artist_ids: ["artist-a", "artist-b"],
+        })
+      )
+    })
+  })
+
+  describe("with conflicting artistIds and addArtistIds", () => {
+    const conflictingMutation = gql`
+      mutation {
+        updatePartnerShow(
+          input: {
+            showId: "ref-show-123"
+            artistIds: ["artist-1"]
+            addArtistIds: ["artist-2"]
+          }
+        ) {
+          showOrError {
+            __typename
+            ... on UpdatePartnerShowFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("throws an error when both modes are used", async () => {
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        updateShowLoader: jest.fn(),
+      }
+
+      await expect(
+        runAuthenticatedQuery(conflictingMutation, context)
+      ).rejects.toThrow(
+        /Cannot use artistIds with addArtistIds or removeArtistIds/
+      )
+
+      expect(context.updateShowLoader).not.toHaveBeenCalled()
+    })
+  })
+
   describe("without partnerId (partner-less reference show)", () => {
     const partnerlessMutation = gql`
       mutation {

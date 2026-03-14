@@ -27313,7 +27313,10 @@ input UpdatePartnerShowFairLocationInput {
 }
 
 input UpdatePartnerShowMutationInput {
-  # The artist ids for the show.
+  # Artist slugs to append to the show. Cannot be combined with artistIds.
+  addArtistIds: [String]
+
+  # Artist slugs for the show. Replaces all existing artists. Cannot be combined with addArtistIds or removeArtistIds.
   artistIds: [String]
   clientMutationId: String
 
@@ -27350,6 +27353,9 @@ input UpdatePartnerShowMutationInput {
 
   # The press release of the show.
   pressRelease: String
+
+  # Artist slugs to remove from the show. Cannot be combined with artistIds.
+  removeArtistIds: [String]
 
   # The id of the show to update.
   showId: String!
