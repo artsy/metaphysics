@@ -17,6 +17,9 @@ import Show from "../show"
 import moment from "moment"
 
 interface UpdatePartnerShowMutationInputProps {
+  addArtistIds?: string[]
+  artistIds?: string[]
+  removeArtistIds?: string[]
   description?: string
   displayOnPartnerProfile?: boolean
   endAt?: string
@@ -69,6 +72,21 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   name: "UpdatePartnerShowMutation",
   description: "Updates a partner show.",
   inputFields: {
+    addArtistIds: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "Artist slugs to append to the show. Cannot be combined with artistIds.",
+    },
+    artistIds: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "Artist slugs for the show. Replaces all existing artists. Cannot be combined with addArtistIds or removeArtistIds.",
+    },
+    removeArtistIds: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "Artist slugs to remove from the show. Cannot be combined with artistIds.",
+    },
     description: {
       type: GraphQLString,
       description: "The description of the show.",
@@ -168,38 +186,77 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { partnerId, showId, ...args },
-    { updatePartnerShowLoader, updateShowLoader }
+    { updatePartnerShowLoader, updateShowLoader, showLoader }
   ) => {
     if (!updatePartnerShowLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const addField = (key, value) =>
-      value !== undefined ? { [key]: value } : {}
+    // artistIds is a full replace; addArtistIds/removeArtistIds are
+    // incremental. Using both modes at once is ambiguous, so reject it.
+    const hasFullReplace = args.artistIds && args.artistIds.length > 0
+    const hasIncremental =
+      (args.addArtistIds && args.addArtistIds.length > 0) ||
+      (args.removeArtistIds && args.removeArtistIds.length > 0)
 
-    const gravityArgs = {
-      ...addField("name", args.name),
-      ...addField("featured", args.featured),
-      ...addField("group", args.group),
-      ...addField("description", args.description),
-      ...addField("display_on_partner_profile", args.displayOnPartnerProfile),
-      ...addField("partner_city", args.partnerCity),
-      ...addField("press_release", args.pressRelease),
-      ...addField("partner_location", args.locationId),
-      ...addField(
-        "start_at",
-        args.startAt !== undefined ? moment(args.startAt).unix() : undefined
-      ),
-      ...addField(
-        "end_at",
-        args.endAt !== undefined ? moment(args.endAt).unix() : undefined
-      ),
-      ...addField("fair", args.fairId),
-      ...addField("fair_location", args.fairLocation),
-      ...addField("viewing_room_ids", args.viewingRoomIds),
+    if (hasFullReplace && hasIncremental) {
+      throw new Error(
+        "Cannot use artistIds with addArtistIds or removeArtistIds. Use artistIds for a full replace, or addArtistIds/removeArtistIds for incremental changes."
+      )
     }
 
     try {
+      // Gravity's find_and_assign_many looks up artists by slug, so
+      // addArtistIds, removeArtistIds, and the existing show's artist
+      // slugs must all be slug values (not _id values).
+      let resolvedArtistIds = args.artistIds
+
+      if (hasIncremental) {
+        const existingShow = await showLoader(showId)
+        const existingSlugs: string[] = (
+          existingShow.artists_without_artworks || []
+        ).map((a: any) => a.id)
+
+        let merged = existingSlugs
+
+        if (args.addArtistIds && args.addArtistIds.length > 0) {
+          merged = Array.from(new Set([...merged, ...args.addArtistIds]))
+        }
+
+        if (args.removeArtistIds && args.removeArtistIds.length > 0) {
+          const toRemove = new Set(args.removeArtistIds)
+          merged = merged.filter((slug) => !toRemove.has(slug))
+        }
+
+        resolvedArtistIds = merged
+      }
+
+      const addField = (key, value) =>
+        value !== undefined ? { [key]: value } : {}
+
+      const gravityArgs = {
+        ...addField("artist_ids", resolvedArtistIds),
+        ...addField("name", args.name),
+        ...addField("featured", args.featured),
+        ...addField("group", args.group),
+        ...addField("description", args.description),
+        ...addField("display_on_partner_profile", args.displayOnPartnerProfile),
+        ...addField("partner_city", args.partnerCity),
+        ...addField("press_release", args.pressRelease),
+        ...addField("partner_location", args.locationId),
+        ...addField(
+          "start_at",
+          args.startAt !== undefined ? moment(args.startAt).unix() : undefined
+        ),
+        ...addField(
+          "end_at",
+          args.endAt !== undefined ? moment(args.endAt).unix() : undefined
+        ),
+        ...addField("fair", args.fairId),
+        ...addField("fair_location", args.fairLocation),
+        ...addField("viewing_room_ids", args.viewingRoomIds),
+      }
+
       // Use the top-level PUT /show/:id endpoint for partner-less shows
       // (e.g. galaxy partner reference shows), otherwise use the
       // partner-scoped PUT /partner/:partnerId/show/:showId endpoint.
