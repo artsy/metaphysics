@@ -75,8 +75,9 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       description: "The description of the show.",
     },
     endAt: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The end date of the show.",
+      type: GraphQLString,
+      description:
+        "The end date of the show. Optional for fair booth shows, required for regular shows.",
     },
     featured: {
       type: GraphQLBoolean,
@@ -158,6 +159,15 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
+    // Validate that endAt is provided for non-fair shows
+    if (!args.fairId && !args.endAt) {
+      return {
+        _type: "GravityMutationError",
+        message: "endAt is required for non-fair shows",
+        statusCode: 400,
+      }
+    }
+
     const gravityArgs: {
       name: string
       featured?: boolean
@@ -182,7 +192,7 @@ export const createPartnerShowMutation = mutationWithClientMutationId<
       description: args.description,
       press_release: args.pressRelease,
       start_at: moment(args.startAt).unix(),
-      end_at: moment(args.endAt).unix(),
+      end_at: args.endAt ? moment(args.endAt).unix() : undefined,
       partner_location: args.locationId,
       fair: args.fairId,
       fair_location: args.fairLocation,
