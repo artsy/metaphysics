@@ -780,6 +780,23 @@ describe("Show type", () => {
     })
   })
 
+  it("includes an update on upcoming status changes with maxDays", async () => {
+    showData.end_at = moment().add(3, "d")
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          statusUpdate(maxDays: 1)
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        statusUpdate: null,
+      },
+    })
+  })
+
   it("includes the html version of markdown", async () => {
     const query = gql`
       {
