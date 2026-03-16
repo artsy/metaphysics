@@ -97,7 +97,8 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
     },
     endAt: {
       type: GraphQLString,
-      description: "The end date of the show.",
+      description:
+        "The end date of the show. Can be set to null for fair booth shows only.",
     },
     featured: {
       type: GraphQLBoolean,
@@ -211,8 +212,14 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       // slugs must all be slug values (not _id values).
       let resolvedArtistIds = args.artistIds
 
+      // Fetch existing show if we need it for incremental artist updates
+      // or to validate endAt removal
+      let existingShow
+      if (hasIncremental || args.endAt === null) {
+        existingShow = await showLoader(showId)
+      }
+
       if (hasIncremental) {
-        const existingShow = await showLoader(showId)
         const existingSlugs: string[] = (
           existingShow.artists_without_artworks || []
         ).map((a: any) => a.id)
@@ -229,6 +236,18 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
         }
 
         resolvedArtistIds = merged
+      }
+
+      // Validate that endAt can only be removed for fair shows
+      if (args.endAt === null) {
+        const fairId = args.fairId ?? existingShow?.fair?.id
+        if (!fairId) {
+          return {
+            _type: "GravityMutationError",
+            message: "endAt can only be null for fair booth shows",
+            statusCode: 400,
+          }
+        }
       }
 
       const addField = (key, value) =>
@@ -250,7 +269,11 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
         ),
         ...addField(
           "end_at",
-          args.endAt !== undefined ? moment(args.endAt).unix() : undefined
+          (() => {
+            if (args.endAt === undefined) return undefined
+            if (args.endAt === null) return null
+            return moment(args.endAt).unix()
+          })()
         ),
         ...addField("fair", args.fairId),
         ...addField("fair_location", args.fairLocation),
