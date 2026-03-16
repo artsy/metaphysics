@@ -70,6 +70,32 @@ describeOrSkip("createImageMutation", () => {
     `)
   })
 
+  it("returns a formatted error when Gravity returns an error", async () => {
+    mockCreateImageLoader.mockRejectedValue({
+      body: { error: "Image is too large" },
+      statusCode: 400,
+    })
+
+    const mutation = gql`
+      mutation {
+        createImage(
+          input: {
+            src: "https://bucket.s3.amazonaws.com/path/to/image.jpg"
+            templateKey: "large_rectangle"
+          }
+        ) {
+          image {
+            internalID
+          }
+        }
+      }
+    `
+
+    await expect(runAuthenticatedQuery(mutation, context)).rejects.toThrow(
+      "Image is too large"
+    )
+  })
+
   it("throws an error if user is not authenticated", async () => {
     const unauthenticatedContext = {
       createImageLoader: undefined,
