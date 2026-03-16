@@ -6,6 +6,8 @@ export const DEFAULT_TZ = "UTC"
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
 export function datesAreSameDay(startAt, endAt, timezone) {
+  if (!startAt || !endAt) return false
+
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (
@@ -158,6 +160,8 @@ export function dateTimeRange(
  * Nov 1, 2018 –          (when endAt is nil, ongoing)
  */
 export function dateRange(startAt, endAt, timezone, format = "long") {
+  if (!startAt) return null
+
   const startMoment = moment.tz(startAt, timezone)
   const monthFormat = format === "short" ? "MMM" : "MMMM"
 
@@ -243,14 +247,19 @@ export function exhibitionStatus(startAt, endAt, timezone, max = 5) {
 export function formattedOpeningHours(startAt, endAt, timezone) {
   const thisMoment = moment()
   const startMoment = moment.tz(startAt, timezone)
-  const endMoment = moment.tz(endAt, timezone)
+
   if (thisMoment.isBefore(startMoment)) {
     return `Opens ${singleDateTime(startAt, timezone)}`
-  } else if (thisMoment.isBefore(endMoment)) {
-    return `Closes ${singleDateTime(endAt, timezone)}`
-  } else {
-    return "Closed"
   }
+
+  if (!endAt) return null
+
+  const endMoment = moment.tz(endAt, timezone)
+  if (thisMoment.isBefore(endMoment)) {
+    return `Closes ${singleDateTime(endAt, timezone)}`
+  }
+
+  return "Closed"
 }
 
 export function cascadingFormattedStartDateTime(
@@ -328,29 +337,40 @@ export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
   const tz = timezone || DEFAULT_TZ
   const thisMoment = moment.tz(moment(), tz)
   const startMoment = moment.tz(startAt, tz)
-  const endMoment = moment.tz(endAt, tz)
   const liveStartMoment = moment.tz(liveStartAt, tz)
 
   if (thisMoment.isBefore(startMoment)) {
     return `Starts ${singleDateTime(startAt, tz)}`
   }
 
-  if (thisMoment.isAfter(endMoment)) {
-    return `Ended ${singleDate(endAt, tz)}`
+  if (endAt) {
+    const endMoment = moment.tz(endAt, tz)
+
+    if (thisMoment.isAfter(endMoment)) {
+      return `Ended ${singleDate(endAt, tz)}`
+    }
+
+    if (liveStartAt) {
+      if (thisMoment.isBefore(liveStartMoment)) {
+        return `Live ${singleDateTime(liveStartAt, tz)}`
+      } else if (
+        thisMoment.isAfter(liveStartMoment) &&
+        thisMoment.isBefore(endMoment)
+      ) {
+        return `In progress`
+      }
+    } else if (thisMoment.isBefore(endMoment)) {
+      return `Ends ${singleDateTime(endAt, tz)}`
+    }
+  } else {
+    if (liveStartAt) {
+      if (thisMoment.isBefore(liveStartMoment)) {
+        return `Live ${singleDateTime(liveStartAt, tz)}`
+      } else {
+        return `In progress`
+      }
+    }
   }
 
-  if (liveStartAt) {
-    if (thisMoment.isBefore(liveStartMoment)) {
-      return `Live ${singleDateTime(liveStartAt, tz)}`
-    } else if (
-      thisMoment.isAfter(liveStartMoment) &&
-      (thisMoment.isBefore(endMoment) || !endAt)
-    ) {
-      return `In progress`
-    }
-  } else if (thisMoment.isBefore(endMoment)) {
-    return `Ends ${singleDateTime(endAt, tz)}`
-  } else {
-    return null
-  }
+  return null
 }
