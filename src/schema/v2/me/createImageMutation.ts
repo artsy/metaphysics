@@ -7,6 +7,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { formatGravityError } from "lib/gravityErrorHandler"
 
 const ImageURLsType = new GraphQLObjectType({
   name: "ImageURLs",
@@ -69,9 +70,17 @@ export const createImageMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return await createImageLoader({
-      src: args.src,
-      template_key: args.templateKey,
-    })
+    try {
+      return await createImageLoader({
+        src: args.src,
+        template_key: args.templateKey,
+      })
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        throw new Error(formattedErr.message)
+      }
+      throw error
+    }
   },
 })

@@ -7,7 +7,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { ErrorsType } from "lib/gravityErrorHandler"
+import { ErrorsType, formatGravityError } from "lib/gravityErrorHandler"
 
 const TransferMyCollectionSuccessType = new GraphQLObjectType({
   name: "TransferMyCollectionSuccess",
@@ -63,24 +63,22 @@ export const transferMyCollectionMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (args, { transferMyCollectionLoader }) => {
     if (!transferMyCollectionLoader) {
-      throw new Error(
-        "You need to be signed in as an admin to perform this action"
-      )
+      throw new Error("You need to be signed in to perform this action")
     }
 
     try {
       const response = await transferMyCollectionLoader({
-        email_from: args.emailFrom,
-        email_to: args.emailTo,
         id_from: args.idFrom,
         id_to: args.idTo,
       })
 
       return { count: response.count }
     } catch (error) {
-      const { body } = error as any
-      return {
-        errors: body?.errors ?? [{ code: "unknown", message: String(error) }],
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { errors: [{ message: formattedErr.message }] }
+      } else {
+        throw error
       }
     }
   },

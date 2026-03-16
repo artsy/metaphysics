@@ -73,8 +73,6 @@ describeOrSkip("transferMyCollectionMutation", () => {
 
     await expect(
       runAuthenticatedQuery(mutation, unauthenticatedContext)
-    ).rejects.toThrow(
-      "You need to be signed in as an admin to perform this action"
-    )
+    ).rejects.toThrow("You need to be signed in to perform this action")
   })
 })
