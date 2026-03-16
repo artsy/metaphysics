@@ -797,6 +797,96 @@ describe("Show type", () => {
     })
   })
 
+  describe("with nil end_at", () => {
+    beforeEach(() => {
+      showData.end_at = null
+      showData.fair = {}
+    })
+
+    it("returns a start-only exhibition period", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            exhibitionPeriod
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          exhibitionPeriod: "February 25, 2015 –",
+        },
+      })
+    })
+
+    it("returns a short format start-only exhibition period", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            exhibitionPeriod(format: SHORT)
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          exhibitionPeriod: "Feb 25, 2015 –",
+        },
+      })
+    })
+
+    it("considers the show active if it has started", async () => {
+      showData.start_at = moment().subtract(1, "d").format()
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            isActive
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          isActive: true,
+        },
+      })
+    })
+
+    it("considers the show inactive if it has not started yet", async () => {
+      showData.start_at = moment().add(1, "M").format()
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            isActive
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          isActive: false,
+        },
+      })
+    })
+
+    it("returns null for statusUpdate", async () => {
+      showData.start_at = moment().subtract(1, "M").format()
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            statusUpdate
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          statusUpdate: null,
+        },
+      })
+    })
+  })
+
   it("includes the html version of markdown", async () => {
     const query = gql`
       {
