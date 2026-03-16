@@ -736,10 +736,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         resolve: ({ start_at, end_at }, { maxDays }) => {
-          const options: any = {
-            max_days: maxDays,
-          }
-          return exhibitionStatus(start_at, end_at, options.max_days)
+          return exhibitionStatus(start_at, end_at, "UTC", maxDays)
         },
       },
       type: {
