@@ -400,4 +400,153 @@ describe("UpdatePartnerShowMutation", () => {
       })
     })
   })
+
+  describe("with endAt set to null", () => {
+    it("allows null endAt for fair booth shows", async () => {
+      const nullEndAtFairMutation = gql`
+        mutation {
+          updatePartnerShow(
+            input: {
+              partnerId: "partner123"
+              showId: "show123"
+              endAt: null
+              fairId: "fair123"
+            }
+          ) {
+            showOrError {
+              __typename
+              ... on UpdatePartnerShowSuccess {
+                show {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updatePartnerShowLoader: jest.fn().mockResolvedValue({
+          _id: "show123",
+        }),
+        showLoader: jest.fn(),
+      }
+
+      const result = await runAuthenticatedQuery(nullEndAtFairMutation, context)
+
+      expect(context.updatePartnerShowLoader).toHaveBeenCalledWith(
+        { partnerId: "partner123", showId: "show123" },
+        expect.objectContaining({
+          end_at: null,
+        })
+      )
+      expect(result).toEqual({
+        updatePartnerShow: {
+          showOrError: {
+            __typename: "UpdatePartnerShowSuccess",
+            show: {
+              internalID: "show123",
+            },
+          },
+        },
+      })
+    })
+
+    it("allows null endAt for existing fair booth shows", async () => {
+      const nullEndAtExistingFairMutation = gql`
+        mutation {
+          updatePartnerShow(
+            input: { partnerId: "partner123", showId: "show456", endAt: null }
+          ) {
+            showOrError {
+              __typename
+              ... on UpdatePartnerShowSuccess {
+                show {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updatePartnerShowLoader: jest.fn().mockResolvedValue({
+          _id: "show456",
+        }),
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "show456",
+          fair: { id: "fair123" },
+        }),
+      }
+
+      const result = await runAuthenticatedQuery(
+        nullEndAtExistingFairMutation,
+        context
+      )
+
+      expect(context.showLoader).toHaveBeenCalledWith("show456")
+      expect(context.updatePartnerShowLoader).toHaveBeenCalledWith(
+        { partnerId: "partner123", showId: "show456" },
+        expect.objectContaining({
+          end_at: null,
+        })
+      )
+      expect(result).toEqual({
+        updatePartnerShow: {
+          showOrError: {
+            __typename: "UpdatePartnerShowSuccess",
+            show: {
+              internalID: "show456",
+            },
+          },
+        },
+      })
+    })
+
+    it("returns error when setting endAt to null for non-fair shows", async () => {
+      const invalidNullEndAtMutation = gql`
+        mutation {
+          updatePartnerShow(
+            input: { partnerId: "partner123", showId: "show789", endAt: null }
+          ) {
+            showOrError {
+              __typename
+              ... on UpdatePartnerShowFailure {
+                mutationError {
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updatePartnerShowLoader: jest.fn(),
+        showLoader: jest.fn().mockResolvedValue({
+          _id: "show789",
+          fair: null,
+        }),
+      }
+
+      const result = await runAuthenticatedQuery(
+        invalidNullEndAtMutation,
+        context
+      )
+
+      expect(context.showLoader).toHaveBeenCalledWith("show789")
+      expect(context.updatePartnerShowLoader).not.toHaveBeenCalled()
+      expect(result).toEqual({
+        updatePartnerShow: {
+          showOrError: {
+            __typename: "UpdatePartnerShowFailure",
+            mutationError: {
+              message: "endAt can only be null for fair booth shows",
+            },
+          },
+        },
+      })
+    })
+  })
 })
