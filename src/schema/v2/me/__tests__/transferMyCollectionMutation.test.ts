@@ -52,6 +52,45 @@ describeOrSkip("transferMyCollectionMutation", () => {
     `)
   })
 
+  it("returns a formatted error when Gravity returns an error", async () => {
+    mockTransferMyCollectionLoader.mockRejectedValue({
+      body: { error: "User not found" },
+      statusCode: 404,
+    })
+
+    const mutation = gql`
+      mutation {
+        transferMyCollection(
+          input: { idFrom: "user-id-1", idTo: "user-id-2" }
+        ) {
+          artworkCountOrError {
+            ... on Errors {
+              errors {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "transferMyCollection": {
+          "artworkCountOrError": {
+            "errors": [
+              {
+                "message": "User not found",
+              },
+            ],
+          },
+        },
+      }
+    `)
+  })
+
   it("throws an error if user is not authenticated", async () => {
     const unauthenticatedContext = {
       transferMyCollectionLoader: undefined,
