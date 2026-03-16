@@ -743,7 +743,7 @@ describe("ViewingRoom", () => {
       }
     `
 
-    it("returns Invalid dates if dates are missing", async () => {
+    it("returns null if dates are missing", async () => {
       const viewingRoomData = {
         start_at: null,
         end_at: null,
@@ -754,9 +754,7 @@ describe("ViewingRoom", () => {
       }
 
       const result = await runQuery(query, context)
-      expect(result.viewingRoom.exhibitionPeriod).toEqual(
-        "Invalid date – Invalid date"
-      )
+      expect(result.viewingRoom.exhibitionPeriod).toBeNull()
     })
 
     it("returns formatted date range", async () => {

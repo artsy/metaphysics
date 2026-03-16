@@ -80,6 +80,12 @@ describe("date formatting", () => {
       )
       expect(period).toBe(false)
     })
+
+    it("returns false when endAt is null", () => {
+      expect(datesAreSameDay("2022-12-30T20:00:00+00:00", null, "UTC")).toBe(
+        false
+      )
+    })
   })
 
   describe("formattedStartDateTime", () => {
@@ -146,6 +152,26 @@ describe("date formatting", () => {
       const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
       expect(date).toEqual("In progress")
     })
+
+    it("returns null when endAt is null and event has started", () => {
+      const period = formattedStartDateTime(
+        "2017-12-05T20:00:00+00:00",
+        null,
+        null,
+        "UTC"
+      )
+      expect(period).toBeNull()
+    })
+
+    it("returns 'In progress' when endAt is null and live auction has started", () => {
+      const period = formattedStartDateTime(
+        "2012-12-05T20:00:00+00:00",
+        null,
+        "2012-12-05T20:00:00+00:00",
+        "UTC"
+      )
+      expect(period).toEqual("In progress")
+    })
   })
 
   describe("formattedOpeningHours", () => {
@@ -182,6 +208,15 @@ describe("date formatting", () => {
         "UTC"
       )
       expect(period).toBe("Closed")
+    })
+
+    it("returns null when endAt is null and event has started", () => {
+      const period = formattedOpeningHours(
+        "2017-12-05T20:00:00+00:00",
+        null,
+        "UTC"
+      )
+      expect(period).toBeNull()
     })
   })
 
@@ -425,6 +460,21 @@ describe("date formatting", () => {
       const period = dateRange("2011-01-01", "2011-04-19", "UTC", "short")
       expect(period).toBe("Jan 1 – Apr 19, 2011")
     })
+
+    it("returns null when startAt is null", () => {
+      const period = dateRange(null, null, "UTC")
+      expect(period).toBeNull()
+    })
+
+    it("returns start date with trailing en-dash when endAt is null", () => {
+      const period = dateRange("2011-01-01", null, "UTC")
+      expect(period).toBe("January 1, 2011 –")
+    })
+
+    it("returns abbreviated start date with trailing en-dash when endAt is null and format is short", () => {
+      const period = dateRange("2011-01-01", null, "UTC", "short")
+      expect(period).toBe("Jan 1, 2011 –")
+    })
   })
 
   describe("exhibitionStatus", () => {
@@ -498,6 +548,19 @@ describe("date formatting", () => {
 
       it("returns nothing when it closes in more than a few days", () => {
         const status = exhibitionStatus(past, today.add(6, "d"), "UTC")
+        expect(isNull(status)).toBe(true)
+      })
+    })
+
+    describe("with nil endAt", () => {
+      it("returns opening status when show is opening today", () => {
+        const status = exhibitionStatus(today, null, "UTC")
+        expect(status).toBe("Opening today")
+      })
+
+      it("returns null when show is already open", () => {
+        const past = today.clone().subtract(1, "M")
+        const status = exhibitionStatus(past, null, "UTC")
         expect(isNull(status)).toBe(true)
       })
     })

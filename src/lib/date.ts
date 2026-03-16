@@ -6,6 +6,8 @@ export const DEFAULT_TZ = "UTC"
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
 export function datesAreSameDay(startAt, endAt, timezone) {
+  if (!startAt || !endAt) return false
+
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (
@@ -155,11 +157,19 @@ export function dateTimeRange(
  * A formated date range without hours
  * Nov 1 – 4, 2018
  * Nov 1, 2018 – Jan 4, 2019
+ * Nov 1, 2018 –          (when endAt is nil, ongoing)
  */
 export function dateRange(startAt, endAt, timezone, format = "long") {
+  if (!startAt) return null
+
   const startMoment = moment.tz(startAt, timezone)
-  const endMoment = moment.tz(endAt, timezone)
   const monthFormat = format === "short" ? "MMM" : "MMMM"
+
+  if (!endAt) {
+    return `${startMoment.format(monthFormat + " D, YYYY")} –`
+  }
+
+  const endMoment = moment.tz(endAt, timezone)
   let startFormat = monthFormat + " D"
   let endFormat = "D, YYYY"
   const singleDateFormat = monthFormat + " D, YYYY"
@@ -210,19 +220,22 @@ function relativeDays(prefix, today, other, max) {
  */
 export function exhibitionStatus(startAt, endAt, timezone, max = 5) {
   const today = moment.tz(moment(), timezone).startOf("day")
-  return (
-    relativeDays(
-      "Opening",
-      today,
-      moment.tz(startAt, timezone).startOf("day"),
-      max
-    ) ||
-    relativeDays(
-      "Closing",
-      today,
-      moment.tz(endAt, timezone).startOf("day"),
-      max
-    )
+
+  const openingStatus = relativeDays(
+    "Opening",
+    today,
+    moment.tz(startAt, timezone).startOf("day"),
+    max
+  )
+  if (openingStatus) return openingStatus
+
+  if (!endAt) return null
+
+  return relativeDays(
+    "Closing",
+    today,
+    moment.tz(endAt, timezone).startOf("day"),
+    max
   )
 }
 
@@ -234,14 +247,19 @@ export function exhibitionStatus(startAt, endAt, timezone, max = 5) {
 export function formattedOpeningHours(startAt, endAt, timezone) {
   const thisMoment = moment()
   const startMoment = moment.tz(startAt, timezone)
-  const endMoment = moment.tz(endAt, timezone)
+
   if (thisMoment.isBefore(startMoment)) {
     return `Opens ${singleDateTime(startAt, timezone)}`
-  } else if (thisMoment.isBefore(endMoment)) {
-    return `Closes ${singleDateTime(endAt, timezone)}`
-  } else {
-    return "Closed"
   }
+
+  if (!endAt) return null
+
+  const endMoment = moment.tz(endAt, timezone)
+  if (thisMoment.isBefore(endMoment)) {
+    return `Closes ${singleDateTime(endAt, timezone)}`
+  }
+
+  return "Closed"
 }
 
 export function cascadingFormattedStartDateTime(
@@ -319,29 +337,40 @@ export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
   const tz = timezone || DEFAULT_TZ
   const thisMoment = moment.tz(moment(), tz)
   const startMoment = moment.tz(startAt, tz)
-  const endMoment = moment.tz(endAt, tz)
   const liveStartMoment = moment.tz(liveStartAt, tz)
 
   if (thisMoment.isBefore(startMoment)) {
     return `Starts ${singleDateTime(startAt, tz)}`
   }
 
-  if (thisMoment.isAfter(endMoment)) {
-    return `Ended ${singleDate(endAt, tz)}`
+  if (endAt) {
+    const endMoment = moment.tz(endAt, tz)
+
+    if (thisMoment.isAfter(endMoment)) {
+      return `Ended ${singleDate(endAt, tz)}`
+    }
+
+    if (liveStartAt) {
+      if (thisMoment.isBefore(liveStartMoment)) {
+        return `Live ${singleDateTime(liveStartAt, tz)}`
+      } else if (
+        thisMoment.isAfter(liveStartMoment) &&
+        thisMoment.isBefore(endMoment)
+      ) {
+        return `In progress`
+      }
+    } else if (thisMoment.isBefore(endMoment)) {
+      return `Ends ${singleDateTime(endAt, tz)}`
+    }
+  } else {
+    if (liveStartAt) {
+      if (thisMoment.isBefore(liveStartMoment)) {
+        return `Live ${singleDateTime(liveStartAt, tz)}`
+      } else {
+        return `In progress`
+      }
+    }
   }
 
-  if (liveStartAt) {
-    if (thisMoment.isBefore(liveStartMoment)) {
-      return `Live ${singleDateTime(liveStartAt, tz)}`
-    } else if (
-      thisMoment.isAfter(liveStartMoment) &&
-      (thisMoment.isBefore(endMoment) || !endAt)
-    ) {
-      return `In progress`
-    }
-  } else if (thisMoment.isBefore(endMoment)) {
-    return `Ends ${singleDateTime(endAt, tz)}`
-  } else {
-    return null
-  }
+  return null
 }

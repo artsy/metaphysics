@@ -422,7 +422,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
-        resolve: ({ start_at, end_at }, args) => {
+        resolve: ({ start_at, end_at, fair }, args) => {
+          if (fair?.evergreen) {
+            return null
+          }
+
           const { format } = args
           return dateRange(start_at, end_at, "UTC", format)
         },
@@ -524,6 +528,9 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
         resolve: ({ start_at, end_at }) => {
           const start = moment.utc(start_at).subtract(7, "days")
+          if (!end_at) {
+            return moment.utc().isAfter(start)
+          }
           const end = moment.utc(end_at).add(7, "days")
           return moment.utc().isBetween(start, end)
         },
@@ -736,10 +743,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         resolve: ({ start_at, end_at }, { maxDays }) => {
-          const options: any = {
-            max_days: maxDays,
-          }
-          return exhibitionStatus(start_at, end_at, options.max_days)
+          return exhibitionStatus(start_at, end_at, "UTC", maxDays)
         },
       },
       type: {
