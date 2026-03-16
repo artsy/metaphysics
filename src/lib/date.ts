@@ -155,11 +155,17 @@ export function dateTimeRange(
  * A formated date range without hours
  * Nov 1 – 4, 2018
  * Nov 1, 2018 – Jan 4, 2019
+ * Nov 1, 2018 –          (when endAt is nil, ongoing)
  */
 export function dateRange(startAt, endAt, timezone, format = "long") {
   const startMoment = moment.tz(startAt, timezone)
-  const endMoment = moment.tz(endAt, timezone)
   const monthFormat = format === "short" ? "MMM" : "MMMM"
+
+  if (!endAt) {
+    return `${startMoment.format(monthFormat + " D, YYYY")} –`
+  }
+
+  const endMoment = moment.tz(endAt, timezone)
   let startFormat = monthFormat + " D"
   let endFormat = "D, YYYY"
   const singleDateFormat = monthFormat + " D, YYYY"
@@ -210,19 +216,22 @@ function relativeDays(prefix, today, other, max) {
  */
 export function exhibitionStatus(startAt, endAt, timezone, max = 5) {
   const today = moment.tz(moment(), timezone).startOf("day")
-  return (
-    relativeDays(
-      "Opening",
-      today,
-      moment.tz(startAt, timezone).startOf("day"),
-      max
-    ) ||
-    relativeDays(
-      "Closing",
-      today,
-      moment.tz(endAt, timezone).startOf("day"),
-      max
-    )
+
+  const openingStatus = relativeDays(
+    "Opening",
+    today,
+    moment.tz(startAt, timezone).startOf("day"),
+    max
+  )
+  if (openingStatus) return openingStatus
+
+  if (!endAt) return null
+
+  return relativeDays(
+    "Closing",
+    today,
+    moment.tz(endAt, timezone).startOf("day"),
+    max
   )
 }
 
