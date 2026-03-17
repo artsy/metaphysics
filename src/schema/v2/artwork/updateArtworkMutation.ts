@@ -364,8 +364,6 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         )
       }
 
-      console.log("getGravityArgs(args)", getGravityArgs(args))
-
       const response = await updateArtworkLoader(id, getGravityArgs(args))
 
       return response
