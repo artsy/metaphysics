@@ -54,7 +54,7 @@ interface UpdateArtworkMutationInputProps {
   artistIds?: string[]
   artistProofs?: string
   availability?: string
-  category?: string
+  mediumType?: string
   date?: string
   defaultImageID?: string
   delete?: boolean
@@ -108,7 +108,7 @@ const inputFields = {
     type: GraphQLString,
     description: "The availability of the artwork",
   },
-  category: {
+  mediumType: {
     type: GraphQLString,
     description: "The medium type (category) of the artwork",
   },
@@ -289,7 +289,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         artists: inputArgs.artistIds,
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
-        category: inputArgs.category,
+        category: inputArgs.mediumType,
         date: inputArgs.date,
         delete: inputArgs.delete,
         depth: inputArgs.depth,
@@ -363,6 +363,8 @@ export const updateArtworkMutation = mutationWithClientMutationId<
           })
         )
       }
+
+      console.log("getGravityArgs(args)", getGravityArgs(args))
 
       const response = await updateArtworkLoader(id, getGravityArgs(args))
 

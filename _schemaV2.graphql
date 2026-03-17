@@ -25965,9 +25965,6 @@ input UpdateArtworkEditionSetInput {
   # The availability of the artwork
   availability: String
 
-  # The medium type (category) of the artwork
-  category: String
-
   # The date or year of the artwork
   date: String
 
@@ -26002,6 +25999,9 @@ input UpdateArtworkEditionSetInput {
 
   # The inventory ID of the artwork
   inventoryId: String
+
+  # The medium type (category) of the artwork
+  mediumType: String
 
   # The unit of measurement for artwork dimensions
   metric: String
@@ -26140,9 +26140,6 @@ input UpdateArtworkMutationInput {
 
   # The availability of the artwork
   availability: String
-
-  # The medium type (category) of the artwork
-  category: String
   clientMutationId: String
 
   # The date or year of the artwork
@@ -26185,6 +26182,9 @@ input UpdateArtworkMutationInput {
 
   # The inventory ID of the artwork
   inventoryId: String
+
+  # The medium type (category) of the artwork
+  mediumType: String
 
   # The unit of measurement for artwork dimensions
   metric: String

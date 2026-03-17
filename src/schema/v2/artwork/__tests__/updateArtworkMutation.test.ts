@@ -524,11 +524,11 @@ describe("UpdateArtworkMutation", () => {
     })
   })
 
-  describe("category field", () => {
+  describe("mediumType field", () => {
     it("passes category to the loader", async () => {
       const mutation = gql`
         mutation {
-          updateArtwork(input: { id: "25", category: "Photography" }) {
+          updateArtwork(input: { id: "25", mediumType: "Photography" }) {
             artworkOrError {
               __typename
               ... on updateArtworkSuccess {
