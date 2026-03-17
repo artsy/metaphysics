@@ -1660,10 +1660,10 @@ describe("Me", () => {
         `
 
         it("shows decimals for all amounts when any amount has cents", async () => {
-          orderJson.items_total_cents = 500000 // $5,000.00 - no cents
-          orderJson.shipping_total_cents = 10000 // $100.00 - no cents
-          orderJson.tax_total_cents = 4299 // $42.99 - HAS CENTS!
-          orderJson.buyer_total_cents = 514299 // $5,142.99 - has cents
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 4299
+          orderJson.buyer_total_cents = 514299
           orderJson.selected_fulfillment_option = {
             type: "domestic_flat",
             selected: true,
@@ -1706,10 +1706,10 @@ describe("Me", () => {
         })
 
         it("shows no decimals when all amounts are whole dollars", async () => {
-          orderJson.items_total_cents = 500000 // $5,000 - no cents
-          orderJson.shipping_total_cents = 10000 // $100 - no cents
-          orderJson.tax_total_cents = 40000 // $400 - no cents
-          orderJson.buyer_total_cents = 550000 // $5,500 - no cents
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 550000
           orderJson.selected_fulfillment_option = {
             type: "domestic_flat",
             selected: true,
@@ -1752,10 +1752,10 @@ describe("Me", () => {
         })
 
         it("handles small cent amounts correctly", async () => {
-          orderJson.items_total_cents = 99 // $0.99 - has cents
-          orderJson.shipping_total_cents = 0 // $0.00
-          orderJson.tax_total_cents = 7 // $0.07 - has cents
-          orderJson.buyer_total_cents = 106 // $1.06 - has cents
+          orderJson.items_total_cents = 99
+          orderJson.shipping_total_cents = 0
+          orderJson.tax_total_cents = 7
+          orderJson.buyer_total_cents = 106
           orderJson.selected_fulfillment_option = {
             type: "pickup",
             selected: true,
