@@ -2,7 +2,24 @@
 const { execSync } = require("child_process")
 
 function getStagingEnv() {
-  const envString = execSync("hokusai staging env get").toString().trim()
+  let envString
+  try {
+    envString = execSync("hokusai staging env get").toString().trim()
+  } catch (/** @type {any} */ error) {
+    const stderr = error.stderr?.toString() || ""
+    const stdout = error.stdout?.toString() || ""
+
+    console.error("Error running hokusai command:")
+    console.error(error.message)
+    console.error("stderr:", stderr)
+    console.error("stdout:", stdout)
+
+    if (stderr.includes("AccessDenied") || stdout.includes("AccessDenied")) {
+      console.error("\nHint: Try setting AWS_PROFILE environment variable")
+    }
+
+    return {}
+  }
   const result = {}
 
   for (const [key, value] of envString.split("\n").map((line) => {
