@@ -15,6 +15,7 @@ interface Input {
   subtitle?: string
   sourceBucket?: string
   sourceKey?: string
+  orderedSetID?: string
 }
 
 interface GravityInput {
@@ -67,6 +68,7 @@ export const CreateFeaturedLinkMutation = mutationWithClientMutationId<
     subtitle: { type: GraphQLString },
     sourceBucket: { type: GraphQLString },
     sourceKey: { type: GraphQLString },
+    orderedSetID: { type: GraphQLString },
   },
   outputFields: {
     featuredLinkOrError: {
@@ -74,24 +76,39 @@ export const CreateFeaturedLinkMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { createFeaturedLinkLoader }) => {
+  mutateAndGetPayload: async (
+    args,
+    { addSetItemLoader, createFeaturedLinkLoader }
+  ) => {
     if (!createFeaturedLinkLoader) {
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
-    const gravityArgs: GravityInput = {
-      description: args.description,
-      title: args.title,
-      href: args.href,
-      subtitle: args.subtitle,
-      source_bucket: args.sourceBucket,
-      source_key: args.sourceKey,
-    }
-
     try {
-      return await createFeaturedLinkLoader(gravityArgs)
+      const gravityArgs: GravityInput = {
+        description: args.description,
+        title: args.title,
+        href: args.href,
+        subtitle: args.subtitle,
+        source_bucket: args.sourceBucket,
+        source_key: args.sourceKey,
+      }
+
+      const featuredLink = await createFeaturedLinkLoader(gravityArgs)
+
+      if (args.orderedSetID) {
+        if (!addSetItemLoader) {
+          throw new Error("addSetItemLoader is not defined")
+        }
+
+        await addSetItemLoader(args.orderedSetID, {
+          item_id: featuredLink.id,
+        })
+      }
+
+      return featuredLink
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
