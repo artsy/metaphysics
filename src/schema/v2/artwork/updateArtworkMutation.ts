@@ -62,7 +62,10 @@ interface UpdateArtworkMutationInputProps {
   diameter?: string
   displayPriceRange?: boolean
   ecommerce?: boolean
-  editionSets?: Omit<UpdateArtworkMutationInputProps, "editionSets">[]
+  editionSets?: Omit<
+    UpdateArtworkMutationInputProps,
+    "editionSets" | "artistIds"
+  >[]
   editionSize?: string
   framed?: boolean
   framedDepth?: string
@@ -101,7 +104,7 @@ const inputFields = {
     description: "Additional information about the artwork",
   },
   artistIds: {
-    type: new GraphQLList(GraphQLString),
+    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     description: "List of artist IDs for the artwork",
   },
   availability: {

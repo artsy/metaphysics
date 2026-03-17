@@ -25959,7 +25959,7 @@ input UpdateArtworkEditionSetInput {
   additionalInformation: String
 
   # List of artist IDs for the artwork
-  artistIds: [String]
+  artistIds: [String!]
   artistProofs: String
 
   # The availability of the artwork
@@ -26135,7 +26135,7 @@ input UpdateArtworkMutationInput {
   additionalInformation: String
 
   # List of artist IDs for the artwork
-  artistIds: [String]
+  artistIds: [String!]
   artistProofs: String
 
   # The availability of the artwork
