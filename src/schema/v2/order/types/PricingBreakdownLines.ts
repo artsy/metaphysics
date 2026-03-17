@@ -11,6 +11,7 @@ import {
 } from "schema/v2/fields/money"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 import { OfferJSON } from "./OfferType"
+import currencyCodes from "lib/currency_codes.json"
 
 const COPY = {
   subtotal: {
@@ -95,13 +96,32 @@ export const resolveOrderPricingBreakdownLines = (
     mode,
   } = order
 
+  // Check if currency has minor units
+  const currencyInfo = currencyCodes[currencyCode?.toLowerCase()]
+  const subunitToUnit = currencyInfo?.subunit_to_unit ?? 100
+
+  // Collect all amounts that will be displayed
+  const amounts = [
+    itemsTotalCents,
+    shippingTotalCents,
+    taxTotalCents,
+    buyerTotalCents,
+  ].filter((amount): amount is number => typeof amount === "number")
+
+  // Check if any amount has minor units (cents)
+  const hasMinorUnits = amounts.some((amount) => amount % subunitToUnit !== 0)
+
+  // Use decimal format only if currency supports minor units AND any amount has minor units
+  const format = hasMinorUnits ? "0,0.00" : "0,0"
+  const exact = hasMinorUnits
+
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format: "0,0[.]00",
-        exact: true,
+        format,
+        exact,
       },
       args,
       context,
@@ -214,13 +234,32 @@ export const resolveOfferPricingBreakdownLines = (
     _selectedFulfillmentOptionType,
   } = offer
 
+  // Check if currency has minor units
+  const currencyInfo = currencyCodes[currencyCode?.toLowerCase()]
+  const subunitToUnit = currencyInfo?.subunit_to_unit ?? 100
+
+  // Collect all amounts that will be displayed
+  const amounts = [
+    amountCents,
+    shippingTotalCents,
+    taxTotalCents,
+    buyerTotalCents,
+  ].filter((amount): amount is number => typeof amount === "number")
+
+  // Check if any amount has minor units (cents)
+  const hasMinorUnits = amounts.some((amount) => amount % subunitToUnit !== 0)
+
+  // Use decimal format only if currency supports minor units AND any amount has minor units
+  const format = hasMinorUnits ? "0,0.00" : "0,0"
+  const exact = hasMinorUnits
+
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format: "0,0[.]00",
-        exact: true,
+        format,
+        exact,
       },
       args,
       context,
