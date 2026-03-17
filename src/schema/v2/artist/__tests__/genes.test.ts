@@ -65,4 +65,20 @@ describe("Artist genes", () => {
       min_value: 25,
     })
   })
+
+  it("passes size to the loader", async () => {
+    const query = `
+      {
+        artist(id: "andy-warhol") {
+          genes(size: 1) {
+            slug
+          }
+        }
+      }
+    `
+    await runQuery(query, context)
+    expect(artistGenesLoader).toHaveBeenCalledWith(artist.id, {
+      size: 1,
+    })
+  })
 })
