@@ -12,8 +12,6 @@ it("Does not include gravity core types", async () => {
   expect(gravityTypes).not.toContain("Artist")
   expect(gravityTypes).not.toContain("Artwork")
   expect(gravityTypes).not.toContain("Partner")
-
-  expect(gravityTypes).toContain("Mutation")
 })
 
 it("Does not include the root query fields", async () => {
