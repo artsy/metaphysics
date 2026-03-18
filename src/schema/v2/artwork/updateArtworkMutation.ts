@@ -14,6 +14,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { omit } from "lodash"
 import Artwork from "schema/v2/artwork"
 import { ResolverContext } from "types/graphql"
 
@@ -51,15 +52,21 @@ interface S3LocationInput {
 
 interface UpdateArtworkMutationInputProps {
   additionalInformation?: string
+  artistIds?: string[]
   artistProofs?: string
   availability?: string
+  mediumType?: string
+  date?: string
   defaultImageID?: string
   delete?: boolean
   depth?: string
   diameter?: string
   displayPriceRange?: boolean
   ecommerce?: boolean
-  editionSets?: Omit<UpdateArtworkMutationInputProps, "editionSets">[]
+  editionSets?: Omit<
+    UpdateArtworkMutationInputProps,
+    "editionSets" | "artistIds" | "mediumType" | "date" | "inventoryId" | "provenance"
+  >[]
   editionSize?: string
   framed?: boolean
   framedDepth?: string
@@ -70,9 +77,11 @@ interface UpdateArtworkMutationInputProps {
   height?: string
   id?: string
   imageS3Locations?: S3LocationInput[]
+  inventoryId?: string
   metric?: string
   offer?: boolean
   partnerLocationId?: string
+  provenance?: string
   published?: boolean
   priceCurrency?: string
   priceHidden?: boolean
@@ -95,9 +104,21 @@ const inputFields = {
     type: GraphQLString,
     description: "Additional information about the artwork",
   },
+  artistIds: {
+    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+    description: "List of artist IDs for the artwork",
+  },
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
+  },
+  mediumType: {
+    type: GraphQLString,
+    description: "The medium type (category) of the artwork",
+  },
+  date: {
+    type: GraphQLString,
+    description: "The date or year of the artwork",
   },
   defaultImageID: {
     type: GraphQLString,
@@ -170,8 +191,16 @@ const inputFields = {
   framed: {
     type: GraphQLBoolean,
   },
+  inventoryId: {
+    type: GraphQLString,
+    description: "The inventory ID of the artwork",
+  },
   partnerLocationId: {
     type: GraphQLString,
+  },
+  provenance: {
+    type: GraphQLString,
+    description: "The provenance of the artwork",
   },
   published: {
     type: GraphQLBoolean,
@@ -214,9 +243,17 @@ const S3LocationInputType = new GraphQLInputObjectType({
   },
 })
 
+const editionSetExcludedFields = [
+  "artistIds",
+  "mediumType",
+  "date",
+  "inventoryId",
+  "provenance",
+]
+
 const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   name: "UpdateArtworkEditionSetInput",
-  fields: inputFields,
+  fields: omit(inputFields, editionSetExcludedFields),
 })
 
 export const updateArtworkMutation = mutationWithClientMutationId<
@@ -261,8 +298,11 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     const getGravityArgs = (inputArgs: UpdateArtworkMutationInputProps) => {
       return {
         additional_information: inputArgs.additionalInformation,
+        artists: inputArgs.artistIds,
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
+        category: inputArgs.mediumType,
+        date: inputArgs.date,
         delete: inputArgs.delete,
         depth: inputArgs.depth,
         diameter: inputArgs.diameter,
@@ -277,9 +317,11 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed: inputArgs.framed,
         height: inputArgs.height,
         id: inputArgs.id,
+        inventory_id: inputArgs.inventoryId,
         metric: inputArgs.metric,
         offer: inputArgs.offer,
         partner_location_id: inputArgs.partnerLocationId,
+        provenance: inputArgs.provenance,
         published: inputArgs.published,
         price_currency: inputArgs.priceCurrency,
         price_hidden: inputArgs.priceHidden,
