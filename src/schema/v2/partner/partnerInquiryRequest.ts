@@ -34,7 +34,7 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
           _conversation,
         },
         _args,
-        { partnerOrdersLoader, meOrdersLoader }
+        { partnerOrdersLoader, meOrdersLoader, userID }
       ) => {
         if (inquiry_questions && inquiry_questions.length) {
           const shippingQuote = () => {
@@ -61,9 +61,14 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
         // Fallback for auto-created inquiries from offers
         if (_conversation) {
           try {
+            const isConversationInitiator = !!(
+              userID && _conversation.from_id === userID
+            )
+
             return await getOfferFallbackMessage(_conversation, {
               partnerOrdersLoader,
               meOrdersLoader,
+              isConversationInitiator,
             })
           } catch (error) {
             console.error(
@@ -126,7 +131,10 @@ const getOfferFallbackMessage = async (
   {
     partnerOrdersLoader,
     meOrdersLoader,
-  }: Pick<ResolverContext, "partnerOrdersLoader" | "meOrdersLoader">
+    isConversationInitiator,
+  }: Pick<ResolverContext, "partnerOrdersLoader" | "meOrdersLoader"> & {
+    isConversationInitiator: boolean
+  }
 ) => {
   const artworkId = conversation.items?.find(
     (item) => item.item_type === "Artwork"
@@ -139,17 +147,19 @@ const getOfferFallbackMessage = async (
 
   let orders: OrderWithOffer[] = []
 
-  if (partnerOrdersLoader && buyerID && partnerID) {
-    const result = await partnerOrdersLoader(partnerID, {
+  // Collectors use meOrdersLoader (Exchange's partners/:id/orders requires
+  // partner access). Partners/admins use partnerOrdersLoader.
+  if (isConversationInitiator && meOrdersLoader) {
+    const result = await meOrdersLoader({
       artwork_id: artworkId,
-      buyer_id: buyerID,
       page: 1,
       size: 1,
     })
     orders = result?.body || []
-  } else if (meOrdersLoader) {
-    const result = await meOrdersLoader({
+  } else if (partnerOrdersLoader && buyerID && partnerID) {
+    const result = await partnerOrdersLoader(partnerID, {
       artwork_id: artworkId,
+      buyer_id: buyerID,
       page: 1,
       size: 1,
     })
