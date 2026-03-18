@@ -25957,16 +25957,10 @@ type UpdateArtistSuccess {
 input UpdateArtworkEditionSetInput {
   # Additional information about the artwork
   additionalInformation: String
-
-  # List of artist IDs for the artwork
-  artistIds: [String!]
   artistProofs: String
 
   # The availability of the artwork
   availability: String
-
-  # The date or year of the artwork
-  date: String
 
   # The ID of the image to set as the default for this artwork
   defaultImageID: String
@@ -25997,12 +25991,6 @@ input UpdateArtworkEditionSetInput {
   # The id of the artwork to update.
   id: String!
 
-  # The inventory ID of the artwork
-  inventoryId: String
-
-  # The medium type (category) of the artwork
-  mediumType: String
-
   # The unit of measurement for artwork dimensions
   metric: String
 
@@ -26019,9 +26007,6 @@ input UpdateArtworkEditionSetInput {
   priceListed: String
   priceMax: Int
   priceMin: Int
-
-  # The provenance of the artwork
-  provenance: String
   published: Boolean
   shippingWeight: Float
   shippingWeightMetric: String

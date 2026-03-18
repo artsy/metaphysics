@@ -14,6 +14,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { omit } from "lodash"
 import Artwork from "schema/v2/artwork"
 import { ResolverContext } from "types/graphql"
 
@@ -242,9 +243,17 @@ const S3LocationInputType = new GraphQLInputObjectType({
   },
 })
 
+const editionSetExcludedFields = [
+  "artistIds",
+  "mediumType",
+  "date",
+  "inventoryId",
+  "provenance",
+]
+
 const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   name: "UpdateArtworkEditionSetInput",
-  fields: inputFields,
+  fields: omit(inputFields, editionSetExcludedFields),
 })
 
 export const updateArtworkMutation = mutationWithClientMutationId<
