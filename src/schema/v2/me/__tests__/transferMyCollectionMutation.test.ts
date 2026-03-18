@@ -1,12 +1,7 @@
-import config from "config"
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-const describeOrSkip = config.USE_UNSTITCHED_MUTATIONS
-  ? describe
-  : describe.skip
-
-describeOrSkip("transferMyCollectionMutation", () => {
+describe("transferMyCollectionMutation", () => {
   const mockTransferMyCollectionLoader = jest.fn()
 
   const context = {
