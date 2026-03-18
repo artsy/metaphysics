@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 // import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -584,9 +583,7 @@ export default new GraphQLSchema({
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
-      ...(config.USE_UNSTITCHED_MUTATIONS
-        ? { createImage: createImageMutation }
-        : {}),
+      createImage: createImageMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
@@ -734,9 +731,7 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
       submitOrder: submitOrderMutation,
-      ...(config.USE_UNSTITCHED_MUTATIONS
-        ? { transferMyCollection: transferMyCollectionMutation }
-        : {}),
+      transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
