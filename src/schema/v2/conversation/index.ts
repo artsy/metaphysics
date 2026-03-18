@@ -544,7 +544,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             conversation.inquiry_id
           ) {
             try {
-              return await meInquiryRequestLoader(conversation.inquiry_id)
+              const result = await meInquiryRequestLoader(
+                conversation.inquiry_id
+              )
+              return { ...result, _conversation: conversation }
             } catch (error) {
               console.error(
                 "[schema/v2/conversation/inquiryRequest] Error:",
@@ -557,10 +560,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           // Everyone else (partners, admins, etc.)
           if (partnerInquiryRequestLoader) {
             try {
-              return await partnerInquiryRequestLoader({
+              const result = await partnerInquiryRequestLoader({
                 inquiryId: conversation.inquiry_id,
                 partnerId: conversation.to_id,
               })
+              return { ...result, _conversation: conversation }
             } catch (error) {
               console.error(
                 "[schema/v2/conversation/inquiryRequest] Error:",
