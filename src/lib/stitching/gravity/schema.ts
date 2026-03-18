@@ -5,7 +5,6 @@ import {
   FilterTypes,
   RenameTypes,
   RenameRootFields,
-  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
@@ -21,31 +20,16 @@ export const executableGravitySchema = () => {
   })
 
   // Types which come from Gravity which MP already has copies of.
-  // In the future, these could get merged into the MP types.
   const duplicatedTypes = [
     "Lot",
-    "Money",
-    "MoneyInput",
     "Sale",
     "User",
     "UsersConnection",
     "UsersConnectionEdge",
-    "ArtistSeries",
-    "ArtistSeriesEdge",
-    "ArtistSeriesConnection",
-    "CreateImageInput",
-    "CreateImagePayload",
-    "TransferMyCollectionInput",
-    "TransferMyCollectionPayload",
-    "TransferMyCollectionSuccess",
-    "TransferMyCollectionSuccessOrErrorsUnion",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
-  // In the future, these can be removed from this list as they are needed.
-  const unusedTypes = ["LotEvent", "ARImage", "ImageURLs"]
-
-  const excludedMutations: string[] = ["createImage", "transferMyCollection"]
+  const unusedTypes = ["LotEvent"]
 
   // Return the new modified schema
   return transformSchema(schema, [
@@ -76,15 +60,6 @@ export const executableGravitySchema = () => {
       } else {
         return name
       }
-    }),
-    new FilterRootFields((operation, name) => {
-      if (!name) return true
-
-      if (operation === "Mutation" && excludedMutations.includes(name)) {
-        return false
-      }
-
-      return true
     }),
   ])
 }
