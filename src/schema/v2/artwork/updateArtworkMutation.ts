@@ -65,7 +65,7 @@ interface UpdateArtworkMutationInputProps {
   ecommerce?: boolean
   editionSets?: Omit<
     UpdateArtworkMutationInputProps,
-    "editionSets" | "artistIds"
+    "editionSets" | "artistIds" | "mediumType" | "date" | "inventoryId" | "provenance"
   >[]
   editionSize?: string
   framed?: boolean
