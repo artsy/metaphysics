@@ -38,14 +38,6 @@ export const transferMyCollectionMutation = mutationWithClientMutationId<
   name: "TransferMyCollection",
   description: "Transfers My Collection artworks from one user to another.",
   inputFields: {
-    emailFrom: {
-      type: GraphQLString,
-      description: "Email of the source user.",
-    },
-    emailTo: {
-      type: GraphQLString,
-      description: "Email of the destination user.",
-    },
     idFrom: {
       type: GraphQLString,
       description: "ID of the source user.",

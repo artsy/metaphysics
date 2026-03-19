@@ -649,7 +649,12 @@ describe("Me", () => {
           }
         `
       it("returns null when questions are not present", () => {
-        return runAuthenticatedQuery(query, context).then(
+        const newContext = {
+          ...context,
+          partnerInquiryRequestLoader: undefined,
+          meInquiryRequestLoader: undefined,
+        }
+        return runAuthenticatedQuery(query, newContext).then(
           ({ conversation: { inquiryRequest } }) => {
             expect(inquiryRequest).toBeNull()
           }
@@ -802,6 +807,136 @@ describe("Me", () => {
             expect(inquiryRequest).toBeNull()
           }
         )
+      })
+      describe("offer fallback", () => {
+        const offerConversation = {
+          id: "420",
+          initial_message: "",
+          from_id: "collector-id",
+          from_email: "collector@example.com",
+          from_name: "Percy",
+          to_id: "partner-id",
+          to_type: "Partner",
+          inquiry_id: "inquiry-123",
+          _embedded: { last_message: {} },
+          items: [
+            {
+              item_type: "Artwork",
+              item_id: "artwork-42",
+              properties: { id: "artwork-42", title: "Cats" },
+            },
+          ],
+        }
+
+        const emptyInquiryRequest = {
+          message: null,
+          inquiry_questions: [],
+          inquiry_shipping_location: null,
+        }
+
+        const offerOrderResponse = {
+          body: [
+            {
+              mode: "offer",
+              last_submitted_offer: {
+                amount_cents: 150000,
+                currency_code: "USD",
+              },
+            },
+          ],
+          headers: { "x-total-count": 1 },
+        }
+
+        it("returns an offer fallback message via partnerOrdersLoader", () => {
+          const partnerOrdersLoader = jest.fn(() =>
+            Promise.resolve(offerOrderResponse)
+          )
+          const newContext = {
+            ...context,
+            conversationLoader: () => Promise.resolve(offerConversation),
+            partnerInquiryRequestLoader: () =>
+              Promise.resolve(emptyInquiryRequest),
+            partnerOrdersLoader,
+          }
+          return runAuthenticatedQuery(query, newContext).then(
+            ({ conversation: { inquiryRequest } }) => {
+              expect(inquiryRequest.formattedFirstMessage).toBe(
+                "I sent an offer for US$1,500"
+              )
+              expect(partnerOrdersLoader).toHaveBeenCalledWith(
+                "partner-id",
+                expect.objectContaining({
+                  artwork_id: "artwork-42",
+                  buyer_id: "collector-id",
+                })
+              )
+            }
+          )
+        })
+        it("returns an offer fallback message via meOrdersLoader", () => {
+          const meOrdersLoader = jest.fn(() =>
+            Promise.resolve(offerOrderResponse)
+          )
+          const newContext = {
+            ...context,
+            userID: "collector-id",
+            conversationLoader: () => Promise.resolve(offerConversation),
+            meInquiryRequestLoader: () => Promise.resolve(emptyInquiryRequest),
+            partnerOrdersLoader: undefined,
+            meOrdersLoader,
+          }
+          return runAuthenticatedQuery(query, newContext).then(
+            ({ conversation: { inquiryRequest } }) => {
+              expect(inquiryRequest.formattedFirstMessage).toBe(
+                "I sent an offer for US$1,500"
+              )
+              expect(meOrdersLoader).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  artwork_id: "artwork-42",
+                })
+              )
+            }
+          )
+        })
+        it("does not return a fallback when the order is a buy order", () => {
+          const newContext = {
+            ...context,
+            conversationLoader: () => Promise.resolve(offerConversation),
+            partnerInquiryRequestLoader: () =>
+              Promise.resolve(emptyInquiryRequest),
+            partnerOrdersLoader: () =>
+              Promise.resolve({
+                body: [{ mode: "buy", last_submitted_offer: null }],
+                headers: { "x-total-count": 1 },
+              }),
+          }
+          return runAuthenticatedQuery(query, newContext).then(
+            ({ conversation: { inquiryRequest } }) => {
+              expect(inquiryRequest.formattedFirstMessage).toBeNull()
+            }
+          )
+        })
+        it("does not override an existing message with the offer fallback", () => {
+          const partnerOrdersLoader = jest.fn()
+          const newContext = {
+            ...context,
+            partnerInquiryRequestLoader: () =>
+              Promise.resolve({
+                message: "I have a question about this work",
+                inquiry_questions: [],
+                inquiry_shipping_location: null,
+              }),
+            partnerOrdersLoader,
+          }
+          return runAuthenticatedQuery(query, newContext).then(
+            ({ conversation: { inquiryRequest } }) => {
+              expect(inquiryRequest.formattedFirstMessage).toBe(
+                "I have a question about this work"
+              )
+              expect(partnerOrdersLoader).not.toHaveBeenCalled()
+            }
+          )
+        })
       })
     })
     describe("mixed messages and conversation events", () => {

@@ -768,9 +768,30 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       genes: {
         description: `A list of genes associated with an artist`,
-        type: new GraphQLList(GeneType),
-        resolve: ({ id }, _options, { artistGenesLoader }) => {
-          return artistGenesLoader(id).then((genes) => genes)
+        type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(GeneType))),
+        args: {
+          geneFamilyID: {
+            type: GraphQLString,
+            description: "Filter by gene family ID or slug.",
+          },
+          minValue: {
+            type: GraphQLInt,
+            description: "Minimum gene value (inclusive).",
+          },
+          size: {
+            type: GraphQLInt,
+            description: "Number of genes to return",
+          },
+        },
+        resolve: async ({ id }, args, { artistGenesLoader }) => {
+          const { size, geneFamilyID, minValue } = args
+          const gravityArgs = {
+            size,
+            gene_family_id: geneFamilyID,
+            min_value: minValue,
+          }
+          const genes = await artistGenesLoader(id, gravityArgs)
+          return genes
         },
       },
       gender: { type: GraphQLString },

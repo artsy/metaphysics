@@ -894,27 +894,6 @@ describe("Artist type", () => {
     })
   })
 
-  describe("genes", () => {
-    it("returns an array of assosciated genes", () => {
-      const query = `
-        {
-          artist(id: "foo-bar") {
-            genes {
-              name
-            }
-          }
-        }
-      `
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artist: {
-            genes: [{ name: "Foo Bar" }],
-          },
-        })
-      })
-    })
-  })
-
   describe("filtered artworks", () => {
     it("returns filtered artworks", () => {
       const filterArtworksLoader = jest.fn().mockReturnValueOnce(

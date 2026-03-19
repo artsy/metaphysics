@@ -8,6 +8,7 @@ import {
 import { isArray, isObject, omit, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { HTTPError } from "./HTTPError"
+import GraphQLJSON from "graphql-type-json"
 
 // Gravity-defined error types: https://github.com/artsy/gravity/blob/main/app/graphql/types/errors_type.rb
 
@@ -19,7 +20,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
       description: "Error code",
     },
     data: {
-      type: GraphQLString, // Defined as JSON in Gravity
+      type: GraphQLJSON,
       description: "Extra data about error.",
     },
     message: {
@@ -37,7 +38,7 @@ export const ErrorsType = new GraphQLObjectType<any, ResolverContext>({
   name: "Errors",
   fields: {
     errors: {
-      type: new GraphQLList(ErrorType),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ErrorType))),
     },
   },
 })
