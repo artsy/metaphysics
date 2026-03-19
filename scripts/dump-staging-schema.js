@@ -18,7 +18,7 @@ function getStagingEnv() {
       console.error("\nHint: Try setting AWS_PROFILE environment variable")
     }
 
-    return {}
+    process.exit(1)
   }
   const result = {}
 
