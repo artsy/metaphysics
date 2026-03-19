@@ -484,6 +484,192 @@ describe("UpdateArtworkMutation", () => {
     })
   })
 
+  describe("artistIds field", () => {
+    it("passes artists to the loader", async () => {
+      const mutation = gql`
+        mutation {
+          updateArtwork(
+            input: { id: "25", artistIds: ["artist-1", "artist-2"] }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          artists: ["artist-1", "artist-2"],
+        })
+      )
+    })
+  })
+
+  describe("mediumType field", () => {
+    it("passes category to the loader", async () => {
+      const mutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", mediumType: "Photography" }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({ category: "Photography" })
+      )
+    })
+  })
+
+  describe("date field", () => {
+    it("passes date to the loader", async () => {
+      const mutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", date: "1980" }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({ date: "1980" })
+      )
+    })
+  })
+
+  describe("inventoryId field", () => {
+    it("passes inventory_id to the loader", async () => {
+      const mutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", inventoryId: "INV-001" }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({ inventory_id: "INV-001" })
+      )
+    })
+  })
+
+  describe("provenance field", () => {
+    it("passes provenance to the loader", async () => {
+      const mutation = gql`
+        mutation {
+          updateArtwork(
+            input: { id: "25", provenance: "Acquired from the artist" }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({ provenance: "Acquired from the artist" })
+      )
+    })
+  })
+
   describe("dimension fields", () => {
     const dimensionMutation = gql`
       mutation {
