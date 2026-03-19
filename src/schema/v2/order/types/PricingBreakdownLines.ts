@@ -8,6 +8,7 @@ import {
 import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
+  deriveCurrencyFormatFromAmounts,
 } from "schema/v2/fields/money"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 import { OfferJSON } from "./OfferType"
@@ -95,13 +96,25 @@ export const resolveOrderPricingBreakdownLines = (
     mode,
   } = order
 
+  const amounts = [
+    itemsTotalCents,
+    shippingTotalCents,
+    taxTotalCents,
+    buyerTotalCents,
+  ]
+
+  const { format, exact } = deriveCurrencyFormatFromAmounts(
+    currencyCode,
+    amounts
+  )
+
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format: "0,0[.]00",
-        exact: true,
+        format,
+        exact,
       },
       args,
       context,
@@ -214,13 +227,25 @@ export const resolveOfferPricingBreakdownLines = (
     _selectedFulfillmentOptionType,
   } = offer
 
+  const amounts = [
+    amountCents,
+    shippingTotalCents,
+    taxTotalCents,
+    buyerTotalCents,
+  ]
+
+  const { format, exact } = deriveCurrencyFormatFromAmounts(
+    currencyCode,
+    amounts
+  )
+
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format: "0,0[.]00",
-        exact: true,
+        format,
+        exact,
       },
       args,
       context,

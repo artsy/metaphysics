@@ -1151,9 +1151,9 @@ describe("Me", () => {
             __typename: "SubtotalLine",
             displayName: "Price",
             amount: {
-              display: "US$5,000",
+              display: "US$5,000.00",
               currencySymbol: "$",
-              amount: "5,000",
+              amount: "5,000.00",
             },
           },
           {
@@ -1161,9 +1161,9 @@ describe("Me", () => {
             displayName: "Flat rate shipping",
             amountFallbackText: null,
             amount: {
-              display: "US$20",
+              display: "US$20.00",
               currencySymbol: "$",
-              amount: "20",
+              amount: "20.00",
             },
           },
           {
@@ -1255,6 +1255,9 @@ describe("Me", () => {
 
         it("always uses items_total_cents for subtotal", async () => {
           orderJson.items_total_cents = 750000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 50000
+          orderJson.buyer_total_cents = 810000
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1280,6 +1283,9 @@ describe("Me", () => {
           orderJson.source = "partner_offer"
           orderJson.mode = "offer"
           orderJson.items_total_cents = 600000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 650000
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1305,6 +1311,9 @@ describe("Me", () => {
           orderJson.source = "partner_offer"
           orderJson.mode = "buy"
           orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 550000
           context = {
             meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
             meOrderLoader: jest.fn().mockResolvedValue(orderJson),
@@ -1357,6 +1366,8 @@ describe("Me", () => {
         it("returns a shipping line for type pickup", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 540000
           orderJson.selected_fulfillment_option = {
             type: "pickup",
             selected: true,
@@ -1388,7 +1399,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "42.99",
+                amount: "400",
               },
             },
             {
@@ -1400,6 +1411,8 @@ describe("Me", () => {
         it("returns the correct display name for shipping line with free international shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 540000
           orderJson.selected_fulfillment_option = {
             type: "international_flat",
             selected: true,
@@ -1430,7 +1443,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "42.99",
+                amount: "400",
               },
             },
             {
@@ -1442,6 +1455,8 @@ describe("Me", () => {
         it("returns the correct display name for free domestic shipping", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 0
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 540000
           orderJson.selected_fulfillment_option = {
             type: "domestic_flat",
             selected: true,
@@ -1472,7 +1487,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "42.99",
+                amount: "400",
               },
             },
             {
@@ -1604,6 +1619,216 @@ describe("Me", () => {
               __typename: "TotalLine",
             },
           ])
+        })
+      })
+
+      describe("Decimal formatting for pricing breakdown", () => {
+        const query = gql`
+          query {
+            me {
+              order(id: "order-id") {
+                pricingBreakdownLines {
+                  __typename
+                  ... on SubtotalLine {
+                    displayName
+                    amount {
+                      amount
+                    }
+                  }
+                  ... on ShippingLine {
+                    displayName
+                    amount {
+                      amount
+                    }
+                  }
+                  ... on TaxLine {
+                    displayName
+                    amount {
+                      amount
+                    }
+                  }
+                  ... on TotalLine {
+                    displayName
+                    amount {
+                      amount
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        it("shows decimals for all amounts when any amount has cents", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 4299
+          orderJson.buyer_total_cents = 514299
+          orderJson.selected_fulfillment_option = {
+            type: "domestic_flat",
+            selected: true,
+          }
+
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+
+          const result = await runAuthenticatedQuery(query, context)
+
+          // All amounts should have decimals since tax has cents
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+              displayName: "Price",
+              amount: { amount: "5,000.00" },
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Flat rate shipping",
+              amount: { amount: "100.00" },
+            },
+            {
+              __typename: "TaxLine",
+              displayName: "Tax",
+              amount: { amount: "42.99" },
+            },
+            {
+              __typename: "TotalLine",
+              displayName: "Total",
+              amount: { amount: "5,142.99" },
+            },
+          ])
+        })
+
+        it("shows no decimals when all amounts are whole dollars", async () => {
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 550000
+          orderJson.selected_fulfillment_option = {
+            type: "domestic_flat",
+            selected: true,
+          }
+
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+
+          const result = await runAuthenticatedQuery(query, context)
+
+          // No amounts should have decimals since all are whole dollars
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+              displayName: "Price",
+              amount: { amount: "5,000" },
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Flat rate shipping",
+              amount: { amount: "100" },
+            },
+            {
+              __typename: "TaxLine",
+              displayName: "Tax",
+              amount: { amount: "400" },
+            },
+            {
+              __typename: "TotalLine",
+              displayName: "Total",
+              amount: { amount: "5,500" },
+            },
+          ])
+        })
+
+        it("handles small cent amounts correctly", async () => {
+          orderJson.items_total_cents = 99
+          orderJson.shipping_total_cents = 0
+          orderJson.tax_total_cents = 7
+          orderJson.buyer_total_cents = 106
+          orderJson.selected_fulfillment_option = {
+            type: "pickup",
+            selected: true,
+          }
+
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+
+          const result = await runAuthenticatedQuery(query, context)
+
+          // All amounts should show decimals including $0.00 for pickup
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+              displayName: "Price",
+              amount: { amount: "0.99" },
+            },
+            {
+              __typename: "ShippingLine",
+              displayName: "Pickup",
+              amount: { amount: "0.00" },
+            },
+            {
+              __typename: "TaxLine",
+              displayName: "Tax",
+              amount: { amount: "0.07" },
+            },
+            {
+              __typename: "TotalLine",
+              displayName: "Total",
+              amount: { amount: "1.06" },
+            },
+          ])
+        })
+
+        it("handles null amounts gracefully", async () => {
+          orderJson.items_total_cents = 500000 // $5,000.00 - no cents
+          orderJson.shipping_total_cents = null
+          orderJson.tax_total_cents = null
+          orderJson.buyer_total_cents = null
+          orderJson.selected_fulfillment_option = {
+            type: "domestic_flat",
+            selected: true,
+          }
+
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+
+          const result = await runAuthenticatedQuery(query, context)
+
+          // Items amount should not have decimals (only non-null amount, no cents)
+          expect(result.me.order.pricingBreakdownLines[0]).toEqual({
+            __typename: "SubtotalLine",
+            displayName: "Price",
+            amount: { amount: "5,000" },
+          })
+
+          // Other lines should have null amounts
+          expect(result.me.order.pricingBreakdownLines[1].amount).toBeNull()
+          expect(result.me.order.pricingBreakdownLines[2].amount).toBeNull()
+          expect(result.me.order.pricingBreakdownLines[3].amount).toBeNull()
         })
       })
     })

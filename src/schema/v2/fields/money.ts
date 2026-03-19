@@ -89,6 +89,24 @@ export const amount = (centsResolver) => ({
   },
 })
 
+/**
+ * Determines the appropriate format and exact settings for displaying currency amounts.
+ * Uses decimal format only if the currency supports minor units AND any amount has minor units.
+ */
+export const deriveCurrencyFormatFromAmounts = (
+  currencyCode: string | null,
+  amounts: (number | null | undefined)[]
+): { format: string; exact: boolean } => {
+  const currencyInfo = currencyCodes[currencyCode?.toLowerCase() ?? ""]
+  const subunitToUnit = currencyInfo?.subunit_to_unit ?? 100
+  const filtered = amounts.filter((a): a is number => typeof a === "number")
+  const hasMinorUnits = filtered.some((a) => a % subunitToUnit !== 0)
+  return {
+    format: hasMinorUnits ? "0,0.00" : "0,0",
+    exact: hasMinorUnits,
+  }
+}
+
 export const symbolFromCurrencyCode = (currencyCode, disambiguate = false) => {
   if (!currencyCode) {
     return null
