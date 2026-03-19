@@ -20,6 +20,7 @@ function getStagingEnv() {
 
     process.exit(1)
   }
+  /** @type {Record<string, string>} */
   const result = {}
 
   for (const [key, value] of envString.split("\n").map((line) => {
