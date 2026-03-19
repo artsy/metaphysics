@@ -8,10 +8,10 @@ import {
 import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
+  deriveCurrencyFormatFromAmounts,
 } from "schema/v2/fields/money"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 import { OfferJSON } from "./OfferType"
-import currencyCodes from "lib/currency_codes.json"
 
 const COPY = {
   subtotal: {
@@ -79,20 +79,6 @@ type ResolvedPriceLineData = {
   amountFallbackText: string | null
 }
 
-const getCurrencyFormat = (
-  currencyCode: string | null,
-  amounts: (number | null | undefined)[]
-) => {
-  const currencyInfo = currencyCodes[currencyCode?.toLowerCase() ?? ""]
-  const subunitToUnit = currencyInfo?.subunit_to_unit ?? 100
-  const filtered = amounts.filter((a): a is number => typeof a === "number")
-  const hasMinorUnits = filtered.some((a) => a % subunitToUnit !== 0)
-  return {
-    format: hasMinorUnits ? "0,0.00" : "0,0",
-    exact: hasMinorUnits,
-  }
-}
-
 export const resolveOrderPricingBreakdownLines = (
   order: OrderJSON,
   args,
@@ -117,7 +103,10 @@ export const resolveOrderPricingBreakdownLines = (
     buyerTotalCents,
   ]
 
-  const { format, exact } = getCurrencyFormat(currencyCode, amounts)
+  const { format, exact } = deriveCurrencyFormatFromAmounts(
+    currencyCode,
+    amounts
+  )
 
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
@@ -245,7 +234,10 @@ export const resolveOfferPricingBreakdownLines = (
     buyerTotalCents,
   ]
 
-  const { format, exact } = getCurrencyFormat(currencyCode, amounts)
+  const { format, exact } = deriveCurrencyFormatFromAmounts(
+    currencyCode,
+    amounts
+  )
 
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(

@@ -19,6 +19,7 @@ import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
   symbolFromCurrencyCode,
+  deriveCurrencyFormatFromAmounts,
 } from "../../fields/money"
 import { date } from "../../fields/date"
 import { ArtworkVersionType } from "../../artwork_version"
@@ -51,7 +52,6 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
-import currencyCodes from "lib/currency_codes.json"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -347,19 +347,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         fulfillment_options,
         currency_code,
       }): Array<FulfillmentOptionJSONWithCurrencyCode> => {
-        // Check if any fulfillment option has cents (minor units)
-        const hasMinorUnits = fulfillment_options.some((option) => {
-          const subunitToUnit =
-            currencyCodes[currency_code?.toLowerCase()]?.subunit_to_unit ?? 100
-          return (
-            typeof option.amount_minor === "number" &&
-            option.amount_minor % subunitToUnit !== 0
-          )
-        })
-
-        // Use decimal format only if any option has minor units
-        const format = hasMinorUnits ? "0,0.00" : "0,0"
-        const exact = hasMinorUnits
+        const amounts = fulfillment_options.map((option) => option.amount_minor)
+        const { format, exact } = deriveCurrencyFormatFromAmounts(
+          currency_code,
+          amounts
+        )
 
         return fulfillment_options.map((option) => ({
           ...option,
