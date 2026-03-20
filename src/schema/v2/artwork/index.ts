@@ -423,6 +423,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artwork) => artwork.collector_location,
         description: "The location of the artwork in My Collection",
       },
+      artsyListing: {
+        type: GraphQLBoolean,
+        resolve: ({ artsy_listing }) => artsy_listing,
+        description: "Whether the artwork is listed on Artsy",
+      },
       availability: { type: GraphQLString },
       caption: {
         // This field is intended for use exclusively on the individual Artwork page for alt tags

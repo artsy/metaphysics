@@ -53,6 +53,7 @@ interface S3LocationInput {
 interface UpdateArtworkMutationInputProps {
   additionalInformation?: string
   artistIds?: string[]
+  artsyListing?: boolean
   artistProofs?: string
   availability?: string
   mediumType?: string
@@ -107,6 +108,10 @@ const inputFields = {
   artistIds: {
     type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     description: "List of artist IDs for the artwork",
+  },
+  artsyListing: {
+    type: GraphQLBoolean,
+    description: "Whether the artwork is listed on Artsy",
   },
   availability: {
     type: GraphQLString,
@@ -299,6 +304,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       return {
         additional_information: inputArgs.additionalInformation,
         artists: inputArgs.artistIds,
+        artsy_listing: inputArgs.artsyListing,
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
         category: inputArgs.mediumType,

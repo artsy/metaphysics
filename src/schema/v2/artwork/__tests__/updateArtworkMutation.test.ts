@@ -802,4 +802,75 @@ describe("UpdateArtworkMutation", () => {
       )
     })
   })
+
+  describe("artsyListing field", () => {
+    it("passes artsy_listing to the loader when provided", async () => {
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+        artsy_listing: false,
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const artsyListingMutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", artsyListing: false }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(artsyListingMutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          artsy_listing: false,
+        })
+      )
+    })
+
+    it("does not pass artsy_listing when not provided", async () => {
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const noArtsyListingMutation = gql`
+        mutation {
+          updateArtwork(input: { id: "25", availability: "sold" }) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(noArtsyListingMutation, context)
+
+      const loaderArgs = updateArtworkLoader.mock.calls[0][1]
+      expect(loaderArgs.artsy_listing).toBeUndefined()
+    })
+  })
 })
