@@ -30,7 +30,8 @@ describe("CreatePartnerArtworksExportMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(context.createPartnerArtworksExportLoader).toHaveBeenCalledWith(
-      "partner-123"
+      "partner-123",
+      {}
     )
     expect(result).toEqual({
       createPartnerArtworksExport: {
@@ -40,6 +41,40 @@ describe("CreatePartnerArtworksExportMutation", () => {
         },
       },
     })
+  })
+
+  it("passes artwork_ids to the loader when artworkIds is provided", async () => {
+    const mutationWithIds = gql`
+      mutation {
+        createPartnerArtworksExport(
+          input: {
+            partnerId: "partner-123"
+            artworkIds: ["artwork-1", "artwork-2"]
+          }
+        ) {
+          partnerArtworksExportOrError {
+            ... on CreatePartnerArtworksExportSuccess {
+              exportId
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      createPartnerArtworksExportLoader: jest
+        .fn()
+        .mockResolvedValue({ id: "export-uuid-123" }),
+    }
+
+    await runAuthenticatedQuery(mutationWithIds, context)
+
+    expect(context.createPartnerArtworksExportLoader).toHaveBeenCalledWith(
+      "partner-123",
+      {
+        artwork_ids: ["artwork-1", "artwork-2"],
+      }
+    )
   })
 
   it("returns a mutation error on failure", async () => {
