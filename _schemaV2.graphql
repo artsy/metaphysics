@@ -2718,6 +2718,9 @@ type Artwork implements Node & Searchable & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): [Artist]
+
+  # Whether the artwork is listed on Artsy
+  artsyListing: Boolean
   artsyShippingDomestic: Boolean
   artsyShippingInternational: Boolean
 
