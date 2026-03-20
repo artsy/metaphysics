@@ -5359,6 +5359,9 @@ input BulkUpdateArtworksMetadataInput {
   # The artist IDs to be assigned
   artistIds: [String]
 
+  # Whether the artworks are listed on Artsy
+  artsyListing: Boolean
+
   # Whether Artsy Shipping is enabled for domestic shipments
   artsyShippingDomestic: Boolean
 
@@ -26015,6 +26018,9 @@ input UpdateArtworkEditionSetInput {
   additionalInformation: String
   artistProofs: String
 
+  # Whether the artwork is listed on Artsy
+  artsyListing: Boolean
+
   # The availability of the artwork
   availability: String
 
@@ -26178,6 +26184,9 @@ input UpdateArtworkMutationInput {
   # List of artist IDs for the artwork
   artistIds: [String!]
   artistProofs: String
+
+  # Whether the artwork is listed on Artsy
+  artsyListing: Boolean
 
   # The availability of the artwork
   availability: String
