@@ -1,4 +1,5 @@
 import {
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -13,6 +14,7 @@ import { ResolverContext } from "types/graphql"
 
 interface CreatePartnerArtworksExportMutationInputProps {
   partnerId: string
+  artworkIds?: string[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -55,6 +57,11 @@ export const createPartnerArtworksExportMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the partner.",
     },
+    artworkIds: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Optional list of artwork IDs to export. Exports all artworks if omitted.",
+    },
   },
   outputFields: {
     partnerArtworksExportOrError: {
@@ -65,7 +72,7 @@ export const createPartnerArtworksExportMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerId },
+    { partnerId, artworkIds },
     { createPartnerArtworksExportLoader }
   ) => {
     if (!createPartnerArtworksExportLoader) {
@@ -73,7 +80,9 @@ export const createPartnerArtworksExportMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await createPartnerArtworksExportLoader(partnerId)
+      const response = await createPartnerArtworksExportLoader(partnerId, {
+        ...(artworkIds && { artwork_ids: artworkIds }),
+      })
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
