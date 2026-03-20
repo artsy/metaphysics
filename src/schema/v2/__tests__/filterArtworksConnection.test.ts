@@ -1087,6 +1087,106 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("includeNonArtsyListed filter", () => {
+    it("passes include_non_artsy_listed to the loader when provided", async () => {
+      const mockFilterArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          hits: [
+            {
+              id: "artwork1",
+              title: "Artwork 1",
+            },
+          ],
+          aggregations: {
+            total: {
+              value: 1,
+            },
+          },
+        })
+      )
+
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              includeNonArtsyListed: true
+              aggregations: [TOTAL]
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include_non_artsy_listed: true,
+        })
+      )
+    })
+
+    it("does not pass include_non_artsy_listed when not provided", async () => {
+      const mockFilterArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          hits: [
+            {
+              id: "artwork1",
+              title: "Artwork 1",
+            },
+          ],
+          aggregations: {
+            total: {
+              value: 1,
+            },
+          },
+        })
+      )
+
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { aggregations: [TOTAL], first: 10 }) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          include_non_artsy_listed: expect.anything(),
+        })
+      )
+    })
+  })
+
   describe(`completenessTier filter`, () => {
     let context
 

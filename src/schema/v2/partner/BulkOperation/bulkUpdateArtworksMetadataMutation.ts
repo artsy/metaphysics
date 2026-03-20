@@ -29,6 +29,7 @@ interface Input {
   metadata?: {
     editionSetsCount?: number
     artistIds?: string[]
+    artsyListing?: boolean
     artsyShippingDomestic?: boolean
     artsyShippingInternational?: boolean
     attributionClass?: string
@@ -76,6 +77,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     artistIds: {
       type: GraphQLList(GraphQLString),
       description: "The artist IDs to be assigned",
+    },
+    artsyListing: {
+      type: GraphQLBoolean,
+      description: "Whether the artworks are listed on Artsy",
     },
     artsyShippingDomestic: {
       type: GraphQLBoolean,
@@ -327,6 +332,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     if (metadata) {
       gravityOptions.metadata = {
         artist_ids: metadata.artistIds,
+        artsy_listing: metadata.artsyListing,
         artsy_shipping_domestic: metadata.artsyShippingDomestic,
         artsy_shipping_international: metadata.artsyShippingInternational,
         attribution_class: metadata.attributionClass,
