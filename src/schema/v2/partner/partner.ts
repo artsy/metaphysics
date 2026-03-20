@@ -114,6 +114,10 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
     type: GraphQLBoolean,
   },
+  includeNonArtsyListed: {
+    type: GraphQLBoolean,
+    description: "Include artworks not listed on Artsy (artsy_listing: false).",
+  },
   includeUnpublished: {
     type: GraphQLBoolean,
     description:
@@ -667,6 +671,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             artist_id?: string[]
             exclude_ids?: string[]
             for_sale: boolean
+            include_non_artsy_listed?: boolean
             missing_priority_metadata?: boolean
             partner_offerable?: boolean
             page: number
@@ -692,6 +697,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             visibility_levels: args.visibilityLevels
               ? args.visibilityLevels
               : [ArtworkVisibilityEnumValues.LISTED],
+          }
+
+          if (args.includeNonArtsyListed) {
+            gravityArgs.include_non_artsy_listed = true
           }
 
           if (args.includeUnpublished) {

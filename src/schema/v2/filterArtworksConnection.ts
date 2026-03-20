@@ -186,6 +186,10 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   includeMediumFilterInAggregation: {
     type: GraphQLBoolean,
   },
+  includeNonArtsyListed: {
+    type: GraphQLBoolean,
+    description: "Include artworks not listed on Artsy (artsy_listing: false).",
+  },
   includeUnpublished: {
     type: GraphQLBoolean,
   },
@@ -478,6 +482,7 @@ const convertFilterArgs = ({
   includeAllJSON,
   includeArtworksByFollowedArtists,
   includeMediumFilterInAggregation,
+  includeNonArtsyListed,
   includeUnpublished,
   inquireableOnly,
   keywordMatchExact,
@@ -519,6 +524,7 @@ const convertFilterArgs = ({
     include_all_json: includeAllJSON,
     include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+    include_non_artsy_listed: includeNonArtsyListed,
     include_unpublished: includeUnpublished,
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
