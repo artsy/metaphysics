@@ -190,42 +190,60 @@ export function connectionWithCursorInfo(
 /**
  * Everything you need to create a complete & usuable paginated connection
  */
-export const paginationResolver = <T>({
-  totalCount,
-  offset,
-  page,
-  size,
-  body,
-  args,
-  resolveNode,
-}: {
-  /** Args object containing either `page/size` or `first/after` */
+interface PaginationParams<T> {
   args: ConnectionArguments
-  /** Returned from loader */
   body: T[]
-  /** Returned from `convertConnectionArgsToGravityArgs` */
   offset: number
-  /** Returned from `convertConnectionArgsToGravityArgs` */
   page: number
-  /** Returned from `convertConnectionArgsToGravityArgs`; "per" */
   size: number
-  /** Returned from the 'X-TOTAL-COUNT' header */
-  totalCount: number
-  /** Optional callback. Allows resolution of custom node structure. */
   resolveNode?: GraphQLFieldResolver<any, any> | null
-}) => {
-  const connectionArgs = {
+}
+
+function buildConnectionArgs(size: number, args: ConnectionArguments) {
+  return {
     // If we're exclusively using page/size pagination, `hasNextPage` will
     // always be `false` unless we include `first` as `size` for creating the connection.
     first: size,
     ...pick(args, "before", "after", "first", "last"),
   }
+}
+
+export const paginationResolver = <T>(
+  params: PaginationParams<T> & { totalCount: number }
+) => {
+  const { totalCount, offset, page, size, body, args, resolveNode } = params
 
   return {
     totalCount,
     pageCursors: createPageCursors({ page, size }, totalCount),
-    ...connectionFromArraySlice(body, connectionArgs, {
+    ...connectionFromArraySlice(body, buildConnectionArgs(size, args), {
       arrayLength: totalCount,
+      sliceStart: offset,
+      resolveNode,
+    }),
+  }
+}
+
+export const paginationResolverLazy = <T>(
+  params: PaginationParams<T> & { totalCount?: number }
+) => {
+  const { totalCount, offset, page, size, body, args, resolveNode } = params
+
+  // When totalCount is unavailable, infer from result size:
+  // full page → assume more exist, partial page → last page
+  const arrayLength =
+    totalCount != null
+      ? totalCount
+      : body.length === size
+      ? offset + size + 1
+      : offset + body.length
+
+  return {
+    totalCount: totalCount ?? null,
+    pageCursors:
+      totalCount != null ? createPageCursors({ page, size }, totalCount) : null,
+    ...connectionFromArraySlice(body, buildConnectionArgs(size, args), {
+      arrayLength,
       sliceStart: offset,
       resolveNode,
     }),
