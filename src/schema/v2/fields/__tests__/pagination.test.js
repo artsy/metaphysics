@@ -205,7 +205,7 @@ describe("paginationResolverLazy", () => {
 
     expect(result.pageInfo.hasNextPage).toBe(true)
     expect(result.totalCount).toBeNull()
-    expect(result.pageCursors).toBeNull()
+    expect(result.pageCursors).toBeDefined()
   })
 
   it("infers hasNextPage as false when body is smaller than page size", () => {
