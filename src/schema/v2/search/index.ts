@@ -18,6 +18,7 @@ import {
   SearchAggregationResultsType,
   SearchAggregation,
 } from "schema/v2/search/SearchAggregation"
+import { SearchHighlightType } from "schema/v2/search/SearchHighlight"
 import { map } from "lodash"
 import { SearchResolver } from "./SearchResolver"
 
@@ -80,6 +81,23 @@ export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
 
 const SearchConnection = connectionWithCursorInfo({
   nodeType: Searchable,
+  edgeFields: {
+    highlights: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(SearchHighlightType))
+      ),
+      description:
+        "Server-side search highlights from OpenSearch indicating which fields matched and where",
+      resolve: (edge) => {
+        const raw = edge.node?._highlights
+        if (!raw || Object.keys(raw).length === 0) return []
+        return Object.entries(raw).map(([field, fragments]) => ({
+          field,
+          fragments,
+        }))
+      },
+    },
+  },
   connectionFields: {
     aggregations: SearchAggregations,
   },
