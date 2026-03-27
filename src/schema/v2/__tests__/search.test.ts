@@ -377,6 +377,167 @@ describe("Search", () => {
     expect(context.searchLoader.mock.calls[0][0].query).toBe("David Bowie")
   })
 
+  describe("highlights edge field", () => {
+    it("returns highlights on the edge when present in search results", () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10) {
+            edges {
+              highlights {
+                field
+                fragments
+              }
+              node {
+                displayLabel
+              }
+            }
+          }
+        }
+      `
+      const resultsWithHighlights = searchResults.map((result, i) =>
+        i === 0
+          ? {
+              ...result,
+              highlights: {
+                name: ["<em>David</em> <em>Bowie</em>"],
+              },
+            }
+          : result
+      )
+
+      context.searchLoader = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          body: resultsWithHighlights,
+          headers: { "x-total-count": 40 },
+        })
+      )
+
+      return runQuery(query, context).then((data) => {
+        const firstEdge = data!.searchConnection.edges[0]
+        expect(firstEdge.highlights).toEqual([
+          {
+            field: "name",
+            fragments: ["<em>David</em> <em>Bowie</em>"],
+          },
+        ])
+      })
+    })
+
+    it("returns empty highlights when no highlights are present", () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10) {
+            edges {
+              highlights {
+                field
+                fragments
+              }
+              node {
+                displayLabel
+              }
+            }
+          }
+        }
+      `
+      context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+      return runQuery(query, context).then((data) => {
+        const firstEdge = data!.searchConnection.edges[0]
+        expect(firstEdge.highlights).toEqual([])
+      })
+    })
+
+    it("preserves highlights when fetching full entity types", () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10) {
+            edges {
+              highlights {
+                field
+                fragments
+              }
+              node {
+                __typename
+                ... on Artist {
+                  hometown
+                }
+              }
+            }
+          }
+        }
+      `
+      const resultsWithHighlights = searchResults.map((result, i) =>
+        i === 0
+          ? {
+              ...result,
+              highlights: {
+                name: ["<em>David</em> <em>Bowie</em>"],
+                alternate_names: ["David Robert <em>Jones</em>"],
+              },
+            }
+          : result
+      )
+
+      context.searchLoader = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          body: resultsWithHighlights,
+          headers: { "x-total-count": 40 },
+        })
+      )
+
+      return runQuery(query, context).then((data) => {
+        const firstEdge = data!.searchConnection.edges[0]
+        expect(firstEdge.node.__typename).toBe("Artist")
+        expect(firstEdge.node.hometown).toBe("London, UK")
+        expect(firstEdge.highlights).toEqual(
+          expect.arrayContaining([
+            {
+              field: "name",
+              fragments: ["<em>David</em> <em>Bowie</em>"],
+            },
+            {
+              field: "alternate_names",
+              fragments: ["David Robert <em>Jones</em>"],
+            },
+          ])
+        )
+      })
+    })
+
+    it("returns empty highlights with empty highlights object", () => {
+      const query = `
+        {
+          searchConnection(query: "David Bowie", first: 10) {
+            edges {
+              highlights {
+                field
+                fragments
+              }
+              node {
+                displayLabel
+              }
+            }
+          }
+        }
+      `
+      const resultsWithEmptyHighlights = searchResults.map((result, i) =>
+        i === 0 ? { ...result, highlights: {} } : result
+      )
+
+      context.searchLoader = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          body: resultsWithEmptyHighlights,
+          headers: { "x-total-count": 40 },
+        })
+      )
+
+      return runQuery(query, context).then((data) => {
+        const firstEdge = data!.searchConnection.edges[0]
+        expect(firstEdge.highlights).toEqual([])
+      })
+    })
+  })
+
   describe("visibleToPublic parameter", () => {
     it("passes visibleToPublic parameter to searchLoader when authenticated", async () => {
       const query = `
