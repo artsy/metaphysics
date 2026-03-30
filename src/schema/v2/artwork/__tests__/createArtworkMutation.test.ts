@@ -283,4 +283,67 @@ describe("CreateArtworkMutation", () => {
     // Should not add to a show
     expect(context.addArtworkToPartnerShowLoader).not.toHaveBeenCalled()
   })
+
+  describe("artsyListing field", () => {
+    it("passes artsy_listing to the loader when provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      const artsyListingMutation = gql`
+        mutation {
+          createArtwork(
+            input: {
+              partnerId: "partner123"
+              artistIds: ["artist123"]
+              artsyListing: false
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(artsyListingMutation, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          artsy_listing: false,
+        })
+      )
+    })
+
+    it("does not pass artsy_listing when not provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutationWithoutImage, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          artsy_listing: expect.anything(),
+        })
+      )
+    })
+  })
 })
