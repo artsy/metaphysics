@@ -605,6 +605,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ InventoryQuantity }) => InventoryQuantity,
             },
+            availability: {
+              type: GraphQLString,
+              resolve: ({ Availability }) => Availability,
+            },
 
             // Auction Only Fields
             lotNumber: {
