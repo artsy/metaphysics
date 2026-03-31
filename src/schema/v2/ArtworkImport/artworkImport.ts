@@ -18,6 +18,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
+import { LocationType } from "../location"
 import { ArtworkType } from "../artwork"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
@@ -83,6 +84,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_INTERNATIONAL_SHIPPING: { value: "invalid_international_shipping" },
     INVALID_LOCATION: { value: "invalid_location" },
     INVALID_INVENTORY_QUANTITY: { value: "invalid_inventory_quantity" },
+    INVALID_AVAILABILITY: { value: "invalid_availability" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
@@ -333,6 +335,9 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     artists: {
       type: new GraphQLList(new GraphQLNonNull(ArtistType)),
+    },
+    location: {
+      type: LocationType,
     },
     currency: {
       type: new GraphQLNonNull(GraphQLString),
@@ -600,6 +605,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ InventoryQuantity }) => InventoryQuantity,
             },
+            availability: {
+              type: GraphQLString,
+              resolve: ({ Availability }) => Availability,
+            },
 
             // Auction Only Fields
             lotNumber: {
@@ -703,6 +712,10 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     locationID: {
       type: GraphQLString,
       resolve: ({ location_id }) => location_id,
+    },
+    source: {
+      type: GraphQLString,
+      description: "Source of the import: 'bulk_import' or 'multi_add'",
     },
     state: {
       type: ArtworkImportStateType,

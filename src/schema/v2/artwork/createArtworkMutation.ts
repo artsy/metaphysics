@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLString,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -15,6 +16,7 @@ import { ArtworkType } from "../artwork"
 
 interface CreateArtworkMutationInputProps {
   artistIds: string[]
+  artsyListing?: boolean
   partnerId: string
   imageS3Bucket?: string
   imageS3Key?: string
@@ -63,6 +65,11 @@ export const createArtworkMutation = mutationWithClientMutationId<
       ),
       description: "The IDs of the artists associated with the artwork.",
     },
+    artsyListing: {
+      type: GraphQLBoolean,
+      description:
+        "Whether the artwork is listed on Artsy. If absent, it defaults to true",
+    },
     partnerId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the partner under which the artwork is created.",
@@ -102,6 +109,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (
     {
       artistIds,
+      artsyListing,
       partnerId,
       partnerShowId,
       imageS3Bucket,
@@ -150,6 +158,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
       // Create artwork
       const artwork = await createArtworkLoader({
         artists: artistIds,
+        artsy_listing: artsyListing,
         partner: partnerId,
         sync_to_search: true,
       })

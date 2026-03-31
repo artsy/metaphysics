@@ -79,6 +79,12 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     locationID: {
       type: GraphQLString,
     },
+    source: {
+      type: GraphQLString,
+      defaultValue: "bulk_import",
+      description:
+        "Source of the import: 'bulk_import' or 'multi_add'. Defaults to 'bulk_import'.",
+    },
   },
   outputFields: {
     artworkImportOrError: {
@@ -100,6 +106,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       parse_with_ai: args.parseWithAI,
       parse_with_ai_model: args.parseWithAIModel,
       location_id: args.locationID,
+      source: args.source,
     }
 
     try {

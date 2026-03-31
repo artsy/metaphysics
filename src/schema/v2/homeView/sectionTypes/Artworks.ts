@@ -11,6 +11,7 @@ import { HomeViewSection } from "../sections"
 
 export interface HomeViewArtworksSection extends HomeViewSection {
   trackItemImpressions?: boolean
+  /** @deprecated */
   showArtworksCardView?: (context: ResolverContext) => boolean
 }
 
@@ -30,6 +31,7 @@ export const HomeViewArtworksSectionType = new GraphQLObjectType<
     },
     showArtworksCardView: {
       type: new GraphQLNonNull(GraphQLBoolean),
+      deprecationReason: "No longer used",
       resolve: (parent, _args, context) => {
         return parent.showArtworksCardView
           ? parent.showArtworksCardView(context)

@@ -38,6 +38,7 @@ describe("CreateArtworkImportMutation", () => {
       s3_key: "/some/path/uuid.csv",
       s3_bucket: "someBucket",
       file_name: "import.csv",
+      source: "bulk_import",
     })
 
     expect(result).toEqual({
