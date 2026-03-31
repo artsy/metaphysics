@@ -18,6 +18,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "../artist"
+import { LocationType } from "../location"
 import { ArtworkType } from "../artwork"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../fields/money"
 import { date } from "schema/v2/fields/date"
@@ -334,6 +335,9 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     artists: {
       type: new GraphQLList(new GraphQLNonNull(ArtistType)),
+    },
+    location: {
+      type: LocationType,
     },
     currency: {
       type: new GraphQLNonNull(GraphQLString),
