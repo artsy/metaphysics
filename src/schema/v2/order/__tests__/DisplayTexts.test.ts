@@ -87,6 +87,25 @@ describe("DisplayTexts", () => {
     })
   })
 
+  describe("buyer_state: counteroffer_sent", () => {
+    it("returns correct display texts", async () => {
+      orderJson.buyer_state = "counteroffer_sent"
+      context = {
+        meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+        meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+      }
+
+      const result = await runAuthenticatedQuery(query, context)
+
+      expect(result.me.order.displayTexts).toEqual({
+        title: "Counteroffer sent",
+        messageType: "COUNTEROFFER_SENT",
+        stateName: "Counteroffer sent",
+        actionPrompt: null,
+      })
+    })
+  })
+
   describe("buyer_state: payment_failed", () => {
     it("returns correct display texts", async () => {
       orderJson.buyer_state = "payment_failed"
@@ -377,7 +396,7 @@ describe("DisplayTexts", () => {
       expect(result.me.order.displayTexts).toEqual({
         title: "You declined the offer",
         messageType: "DECLINED_BY_BUYER",
-        stateName: "Canceled",
+        stateName: "Declined offer",
         actionPrompt: null,
       })
     })
