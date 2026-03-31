@@ -3741,6 +3741,7 @@ type ArtworkImportTransformedData {
   artworkCondition: String
   artworkDescription: String
   artworkTitle: String
+  availability: String
   availableEditions: [String]
   bibliography: String
   buyNow: String
