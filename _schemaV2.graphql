@@ -3502,6 +3502,9 @@ type ArtworkImport implements Node {
     first: Int
     last: Int
   ): ArtworkImportRowConnection
+
+  # Source of the import: 'bulk_import' or 'multi_add'
+  source: String
   state: ArtworkImportState
   statistics: ArtworkImportStatistics
   summary: ArtworkImportSummary
@@ -3544,6 +3547,7 @@ enum ArtworkImportError {
   INVALID_ARTIST_PROOF
   INVALID_ARTSY_DOMESTIC_SHIPPING
   INVALID_ARTSY_INTERNATIONAL_SHIPPING
+  INVALID_AVAILABILITY
   INVALID_BUY_NOW
   INVALID_CERTIFICATE_OF_AUTHENTICITY
   INVALID_CLASSIFICATION
@@ -9986,6 +9990,9 @@ input CreateArtworkImportInput {
   partnerID: String!
   s3Bucket: String!
   s3Key: String!
+
+  # Source of the import: 'bulk_import' or 'multi_add'. Defaults to 'bulk_import'.
+  source: String = "bulk_import"
 }
 
 type CreateArtworkImportPayload {
@@ -19855,6 +19862,9 @@ type Partner implements Node {
     before: String
     first: Int
     last: Int
+
+    # Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.
+    source: String
   ): ArtworkImportConnection
 
   # A connection of artwork templates for this partner

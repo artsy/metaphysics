@@ -757,7 +757,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       artworkImportsConnection: {
         description: "A connection of artwork imports from a Partner.",
         type: ArtworkImportsConnectionType,
-        args: pageable(),
+        args: {
+          ...pageable(),
+          source: {
+            type: GraphQLString,
+            description:
+              "Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.",
+          },
+        },
         resolve: async ({ id }, args, { artworkImportsLoader }) => {
           if (!artworkImportsLoader) return null
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -769,6 +776,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
+            ...(args.source && { source: args.source }),
           })
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)

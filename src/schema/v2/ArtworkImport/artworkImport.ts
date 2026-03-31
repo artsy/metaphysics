@@ -83,6 +83,7 @@ export const ArtworkImportErrorType = new GraphQLEnumType({
     INVALID_INTERNATIONAL_SHIPPING: { value: "invalid_international_shipping" },
     INVALID_LOCATION: { value: "invalid_location" },
     INVALID_INVENTORY_QUANTITY: { value: "invalid_inventory_quantity" },
+    INVALID_AVAILABILITY: { value: "invalid_availability" },
 
     // OTHER
     UNMATCHED_IMAGE: { value: "unmatched_image" },
@@ -703,6 +704,10 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     locationID: {
       type: GraphQLString,
       resolve: ({ location_id }) => location_id,
+    },
+    source: {
+      type: GraphQLString,
+      description: "Source of the import: 'bulk_import' or 'multi_add'",
     },
     state: {
       type: ArtworkImportStateType,
