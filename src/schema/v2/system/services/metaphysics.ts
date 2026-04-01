@@ -19,7 +19,7 @@ const mapEnvBooleans = {
   stitching: !config.DISABLE_SCHEMA_STITCHING,
   stitchingConvection: true,
   stitchingExchange: true,
-  stitchingGravity: true,
+  stitchingGravity: !config.USE_UNSTITCHED_TYPES,
 }
 
 // These are config strings that are exposed at runtime.

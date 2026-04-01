@@ -1,4 +1,3 @@
-import { gravityGraphQL } from "lib/apis/gravityGraphQL"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
@@ -808,7 +807,6 @@ export default (accessToken, userID, opts) => {
       }
     ),
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
-    gravityGraphQLLoader: gravityGraphQL(accessToken),
     homepageModulesLoader: gravityLoader("me/modules"),
     // DEPRECATED: This endpoint is no longer in use.
     homepageSuggestedArtworksLoader: gravityLoader(

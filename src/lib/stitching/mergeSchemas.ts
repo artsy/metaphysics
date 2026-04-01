@@ -1,4 +1,5 @@
 import { mergeSchemas as _mergeSchemas } from "graphql-tools"
+import config from "config"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableCausalitySchema } from "lib/stitching/causality/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
@@ -37,8 +38,10 @@ export const incrementalMergeSchemas = (localSchema) => {
     }
   }
 
-  const gravitySchema = executableGravitySchema()
-  schemas.push(gravitySchema)
+  if (!config.USE_UNSTITCHED_TYPES) {
+    const gravitySchema = executableGravitySchema()
+    schemas.push(gravitySchema)
+  }
 
   const causalitySchema = executableCausalitySchema()
   schemas.push(causalitySchema)
