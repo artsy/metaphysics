@@ -10,9 +10,9 @@ describe("Image", () => {
 
     it("takes an image response with options and resizes it to crop", () => {
       const url1x =
-        "https://gemini.cloudfront.test?height=500&quality=80&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500"
+        "https://gemini.cloudfront.test?height=500&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500"
       const url2x =
-        "https://gemini.cloudfront.test?height=1000&quality=50&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=1000"
+        "https://gemini.cloudfront.test?height=1000&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=1000"
 
       expect(croppedImageUrl(image, { width: 500, height: 500 })).toEqual({
         width: 500,
@@ -25,9 +25,9 @@ describe("Image", () => {
 
     it("works with just a url and resizes it to crop", () => {
       const url1x =
-        "https://gemini.cloudfront.test?height=500&quality=80&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg&width=500"
+        "https://gemini.cloudfront.test?height=500&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg&width=500"
       const url2x =
-        "https://gemini.cloudfront.test?height=1000&quality=50&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg&width=1000"
+        "https://gemini.cloudfront.test?height=1000&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg&width=1000"
       const bareImageUrl = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
 
       expect(
@@ -87,9 +87,9 @@ describe("Image", () => {
 
     it("accepts and returns a cachePolicy argument", () => {
       const url1x =
-        "https://gemini.cloudfront.test?cache_policy=short&height=500&quality=80&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500"
+        "https://gemini.cloudfront.test?cache_policy=short&height=500&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500"
       const url2x =
-        "https://gemini.cloudfront.test?cache_policy=short&height=1000&quality=50&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=1000"
+        "https://gemini.cloudfront.test?cache_policy=short&height=1000&quality=85&resize_to=fill&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=1000"
 
       expect(
         croppedImageUrl(image, {
