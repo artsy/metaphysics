@@ -562,18 +562,6 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         }))
       },
     },
-    offers: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
-      deprecationReason: "Use `submittedOffers` field instead",
-      description: "List of submitted offers for this order",
-      resolve: ({ submitted_offers, selected_fulfillment_option }) => {
-        if (!submitted_offers) return []
-        return submitted_offers.map((offer) => ({
-          ...offer,
-          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
-        }))
-      },
-    },
     pendingOffer: {
       type: OfferType,
       description: "The pending offer for this order",
