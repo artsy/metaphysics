@@ -913,7 +913,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               size: size + 1,
               sort: "-iconicity",
               published: true,
-            }),
+            }).catch(() => []),
           ])
 
           const remaining = iconicArtworks.filter(
