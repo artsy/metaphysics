@@ -676,6 +676,8 @@ const resolveBuyerState = (order) => {
       return "SUBMITTED"
     case "offer_received":
       return "OFFER_RECEIVED"
+    case "counteroffer_sent":
+      return "COUNTEROFFER_SENT"
     case "payment_failed":
       return "PAYMENT_FAILED"
     case "processing_payment":

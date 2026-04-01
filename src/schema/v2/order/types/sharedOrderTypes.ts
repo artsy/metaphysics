@@ -93,10 +93,18 @@ export const OrderBuyerStateEnum = new GraphQLEnumType({
       value: "INCOMPLETE",
       description: "Order is incomplete (pending or abandoned)",
     },
-    SUBMITTED: { value: "SUBMITTED", description: "Order has been submitted" },
+    SUBMITTED: {
+      value: "SUBMITTED",
+      description: "Order has been submitted",
+    },
     OFFER_RECEIVED: {
       value: "OFFER_RECEIVED",
       description: "Order is an offer awaiting response from the buyer",
+    },
+    COUNTEROFFER_SENT: {
+      value: "COUNTEROFFER_SENT",
+      description:
+        "Order is an offer in negotiation awaiting response from the seller",
     },
     PAYMENT_FAILED: {
       value: "PAYMENT_FAILED",
@@ -110,10 +118,16 @@ export const OrderBuyerStateEnum = new GraphQLEnumType({
       value: "PROCESSING_OFFLINE_PAYMENT",
       description: "Processing offline payment",
     },
-    APPROVED: { value: "APPROVED", description: "Order has been approved" },
+    APPROVED: {
+      value: "APPROVED",
+      description: "Order has been approved",
+    },
     SHIPPED: { value: "SHIPPED", description: "Order has been shipped" },
     COMPLETED: { value: "COMPLETED", description: "Order is completed" },
-    REFUNDED: { value: "REFUNDED", description: "Order has been refunded" },
+    REFUNDED: {
+      value: "REFUNDED",
+      description: "Order has been refunded",
+    },
     DECLINED_BY_SELLER: {
       value: "DECLINED_BY_SELLER",
       description: "Order was declined by the seller",
@@ -122,8 +136,14 @@ export const OrderBuyerStateEnum = new GraphQLEnumType({
       value: "DECLINED_BY_BUYER",
       description: "Order was declined by the buyer",
     },
-    CANCELED: { value: "CANCELED", description: "Order has been canceled" },
-    UNKNOWN: { value: "UNKNOWN", description: "Order status is unknown" },
+    CANCELED: {
+      value: "CANCELED",
+      description: "Order has been canceled",
+    },
+    UNKNOWN: {
+      value: "UNKNOWN",
+      description: "Order status is unknown",
+    },
   },
 })
 
