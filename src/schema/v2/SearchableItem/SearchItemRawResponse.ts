@@ -16,4 +16,5 @@ export type SearchItemRawResponse = {
   published_at: string
   start_at: string
   venue: string
+  highlights?: Record<string, string[]>
 }

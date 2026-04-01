@@ -885,6 +885,47 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
+      notableArtworks: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(ArtworkType))
+        ),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 3,
+            description: "The number of notable artworks to return.",
+          },
+        },
+        description:
+          "A list of notable artworks by the artist, with the cover artwork first.",
+        resolve: async (
+          { id, cover_artwork_id },
+          { size },
+          { artistArtworksLoader, unauthenticatedLoaders: { artworkLoader } }
+        ) => {
+          const [coverArtwork, iconicArtworks] = await Promise.all([
+            cover_artwork_id
+              ? artworkLoader(cover_artwork_id).catch(() => null)
+              : null,
+
+            artistArtworksLoader(id, {
+              offset: 0,
+              size: size + 1,
+              sort: "-iconicity",
+              published: true,
+            }).catch(() => []),
+          ])
+
+          const remaining = iconicArtworks.filter(
+            (artwork) => artwork.id !== coverArtwork?.id
+          )
+
+          return [...(coverArtwork ? [coverArtwork] : []), ...remaining].slice(
+            0,
+            size
+          )
+        },
+      },
       first: { type: GraphQLString },
       foundations: {
         type: GraphQLString,

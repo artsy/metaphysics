@@ -1990,6 +1990,12 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   middle: String
   name: String
   nationality: String
+
+  # A list of notable artworks by the artist, with the cover artwork first.
+  notableArtworks(
+    # The number of notable artworks to return.
+    size: Int = 3
+  ): [Artwork!]!
   partnerArtists(
     # The number of PartnerArtists to return
     size: Int
@@ -24639,6 +24645,15 @@ enum SearchEntity {
   VIEWING_ROOM
 }
 
+# A highlighted field from an OpenSearch query match, containing the field name and highlighted fragments with <em> tags around matched terms
+type SearchHighlight {
+  # The base field name that matched (e.g. name, alternate_names, artist_names, venue, description)
+  field: String!
+
+  # Highlighted text fragments with <em> tags wrapping matched terms
+  fragments: [String!]!
+}
+
 enum SearchMode {
   AUTOSUGGEST
   INTERNAL_AUTOSUGGEST
@@ -24670,6 +24685,9 @@ type SearchableConnection {
 type SearchableEdge {
   # A cursor for use in pagination
   cursor: String!
+
+  # Server-side search highlights from OpenSearch indicating which fields matched and where
+  highlights: [SearchHighlight!]!
 
   # The item at the end of the edge
   node: Searchable

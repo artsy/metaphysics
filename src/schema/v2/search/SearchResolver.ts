@@ -79,13 +79,16 @@ export class SearchResolver {
   }
 
   processSearchResultItem(searchResultItem) {
-    if (this.shouldFetchEntityType(searchResultItem.label)) {
+    const { highlights, ...rest } = searchResultItem
+
+    if (this.shouldFetchEntityType(rest.label)) {
       return (
-        this.fetch(searchResultItem)
+        this.fetch(rest)
           .then((response) => {
             return {
               ...response,
-              __typename: searchResultItem.label,
+              __typename: rest.label,
+              _highlights: highlights,
             }
           })
           // Due to search indexing lag, it's possible for a search result
@@ -95,7 +98,8 @@ export class SearchResolver {
       )
     } else {
       return Promise.resolve({
-        ...searchResultItem,
+        ...rest,
+        _highlights: highlights,
         __typename: "SearchableItem",
       })
     }
