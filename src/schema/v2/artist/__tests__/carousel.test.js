@@ -82,7 +82,7 @@ describe("ArtistCarousel type", () => {
                 height: 199,
                 width: 300,
                 url:
-                  "https://gemini.cloudfront.test?height=199&quality=80&resize_to=fit&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=300", // eslint-disable-line
+                  "https://gemini.cloudfront.test?height=199&quality=85&resize_to=fit&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=300", // eslint-disable-line
               },
             },
           ],
