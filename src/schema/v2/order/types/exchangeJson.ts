@@ -31,6 +31,7 @@ type OrderBuyerState =
   | "incomplete" // before order is submitted.
   | "submitted"
   | "offer_received"
+  | "counteroffer_sent" // buyer sent a counteroffer, awaiting seller response
   | "payment_failed"
   | "processing_payment"
   | "processing_offline_payment" // the action from buyer to complete the payment is required

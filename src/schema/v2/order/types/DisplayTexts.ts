@@ -20,6 +20,9 @@ const DisplayTextsMessageTypeEnum = new GraphQLEnumType({
     OFFER_RECEIVED: {
       value: "OFFER_RECEIVED",
     },
+    COUNTEROFFER_SENT: {
+      value: "COUNTEROFFER_SENT",
+    },
     PAYMENT_FAILED: {
       value: "PAYMENT_FAILED",
     },
@@ -118,6 +121,13 @@ const resolveDisplayTexts = (order: OrderJSON) => {
         title: "Great choice!",
       }
     }
+    case "counteroffer_sent": {
+      return {
+        messageType: "COUNTEROFFER_SENT",
+        stateName: "Counteroffer sent",
+        title: "Counteroffer sent",
+      }
+    }
     case "offer_received": {
       return {
         actionPrompt: "Respond to Counteroffer",
@@ -199,7 +209,7 @@ const resolveDisplayTexts = (order: OrderJSON) => {
     case "declined_by_buyer":
       return {
         messageType: "DECLINED_BY_BUYER",
-        stateName: "Canceled",
+        stateName: "Declined offer",
         title: "You declined the offer",
       }
     case "canceled":
