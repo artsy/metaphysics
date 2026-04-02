@@ -4,6 +4,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -67,6 +68,11 @@ export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "New value for the field",
     },
+    artistIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Artist IDs to assign directly, skipping name matching. Use when the frontend has already resolved artist identities.",
+    },
     excludedFromImport: {
       type: GraphQLBoolean,
       description: "Whether to exclude this row from import",
@@ -79,7 +85,14 @@ export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, rowID, fieldName, fieldValue, excludedFromImport },
+    {
+      artworkImportID,
+      rowID,
+      fieldName,
+      fieldValue,
+      artistIDs,
+      excludedFromImport,
+    },
     { artworkImportUpdateRowLoader }
   ) => {
     if (!artworkImportUpdateRowLoader) {
@@ -91,6 +104,10 @@ export const UpdateArtworkImportRowMutation = mutationWithClientMutationId<
     if (fieldName && fieldValue !== undefined) {
       updateParams.field_name = fieldName
       updateParams.field_value = fieldValue
+    }
+
+    if (artistIDs) {
+      updateParams.artist_ids = artistIDs
     }
 
     if (excludedFromImport !== undefined) {
