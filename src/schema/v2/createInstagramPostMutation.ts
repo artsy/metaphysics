@@ -1,4 +1,5 @@
 import {
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,12 +14,35 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InstagramPostType } from "./instagramPost"
 
+interface SlideInput {
+  artworkId: string
+  imageUrl?: string
+}
+
 interface Input {
   instagramAccountId: string
-  artworkId: string
+  artworkId?: string
+  slides?: SlideInput[]
   caption?: string
   collaborators?: string[]
 }
+
+const InstagramPostSlideInput = new GraphQLInputObjectType({
+  name: "InstagramPostSlideInput",
+  description:
+    "A slide in an Instagram carousel post. The order of slides in the array determines their position in the carousel.",
+  fields: {
+    artworkId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the artwork for this slide",
+    },
+    imageUrl: {
+      type: GraphQLString,
+      description:
+        "Optional custom image URL to use instead of the artwork's default image",
+    },
+  },
+})
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateInstagramPostSuccess",
@@ -66,8 +90,14 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
       description: "The internal ID of the Instagram account to post from",
     },
     artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artwork to post",
+      type: GraphQLString,
+      description:
+        "Deprecated: use slides instead. The ID of the artwork to post",
+    },
+    slides: {
+      type: new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput)),
+      description:
+        "Slides for the Instagram post. Each slide references an artwork and optionally a custom image. The order determines the carousel position.",
     },
     caption: {
       type: GraphQLString,
@@ -86,20 +116,34 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { instagramAccountId, artworkId, caption, collaborators },
+    { instagramAccountId, artworkId, slides, caption, collaborators },
     { createInstagramPostLoader }
   ) => {
     if (!createInstagramPostLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    if (!slides && !artworkId) {
+      throw new Error("Either slides or artworkId must be provided")
+    }
+
+    const gravityParams: Record<string, unknown> = {
+      instagram_account_id: instagramAccountId,
+      caption,
+      collaborators,
+    }
+
+    if (slides) {
+      gravityParams.slides = slides.map((slide) => ({
+        artwork_id: slide.artworkId,
+        image_url: slide.imageUrl,
+      }))
+    } else {
+      gravityParams.artwork_id = artworkId
+    }
+
     try {
-      return await createInstagramPostLoader({
-        instagram_account_id: instagramAccountId,
-        artwork_id: artworkId,
-        caption,
-        collaborators,
-      })
+      return await createInstagramPostLoader(gravityParams)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

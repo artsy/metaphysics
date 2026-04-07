@@ -1,6 +1,7 @@
 import {
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -39,6 +40,12 @@ export const InstagramPostType = new GraphQLObjectType<any, ResolverContext>({
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ artwork_id }) => artwork_id,
+    },
+    artworkIds: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+      resolve: ({ artwork_ids }) => artwork_ids,
     },
     instagramMediaId: {
       type: GraphQLString,
