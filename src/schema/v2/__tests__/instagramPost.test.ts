@@ -109,6 +109,7 @@ describe("instagramPost", () => {
 
       expect(context.instagramPostsLoader as jest.Mock).toHaveBeenCalledWith({
         partner_id: "partner-1",
+        total_count: true,
         size: 1,
         offset: 0,
       })

@@ -105,6 +105,7 @@ export const instagramPostsConnection: GraphQLFieldConfig<
 
     const { body, headers } = await instagramPostsLoader({
       partner_id: args.partnerId,
+      total_count: true,
       size,
       offset,
     })

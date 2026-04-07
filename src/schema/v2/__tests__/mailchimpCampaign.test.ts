@@ -101,6 +101,7 @@ describe("mailchimpCampaign", () => {
       ).toHaveBeenCalledWith({
         partner_id: "partner-1",
         status: undefined,
+        total_count: true,
         size: 1,
         offset: 0,
       })
