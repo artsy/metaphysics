@@ -15733,7 +15733,6 @@ enum InstagramAccountStatus {
 }
 
 type InstagramPost {
-  artworkId: String!
   artworkIds: [String!]!
   caption: String
   createdAt(

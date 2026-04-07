@@ -9,7 +9,7 @@ describe("instagramPost", () => {
           internalID
           instagramAccountId
           partnerId
-          artworkId
+          artworkIds
           instagramMediaId
           permalink
           caption
@@ -23,7 +23,7 @@ describe("instagramPost", () => {
       _id: "post-1",
       instagram_account_id: "ig-account-1",
       partner_id: "partner-1",
-      artwork_id: "artwork-1",
+      artwork_ids: ["artwork-1"],
       instagram_media_id: "media-123",
       permalink: "https://www.instagram.com/p/ABC123/",
       caption: "Beautiful artwork",
@@ -53,7 +53,9 @@ describe("instagramPost", () => {
       expect(result).toMatchInlineSnapshot(`
         {
           "instagramPost": {
-            "artworkId": "artwork-1",
+            "artworkIds": [
+              "artwork-1",
+            ],
             "caption": "Beautiful artwork",
             "instagramAccountId": "ig-account-1",
             "instagramMediaId": "media-123",

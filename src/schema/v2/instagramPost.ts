@@ -37,10 +37,6 @@ export const InstagramPostType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ partner_id }) => partner_id,
     },
-    artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ artwork_id }) => artwork_id,
-    },
     artworkIds: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))

@@ -40,7 +40,6 @@ const mockGravityResponse = {
   _id: "post-1",
   instagram_account_id: "ig-account-1",
   partner_id: "partner-1",
-  artwork_id: "artwork-1",
   artwork_ids: ["artwork-1", "artwork-2"],
   instagram_media_id: "media-456",
   permalink: "https://www.instagram.com/p/DVgtwjtDPuF/",
