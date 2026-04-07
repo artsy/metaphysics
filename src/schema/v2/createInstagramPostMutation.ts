@@ -82,7 +82,8 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateInstagramPost",
-  description: "Create and publish an Instagram post from an artwork",
+  description:
+    "Create and publish an Instagram post from one or more artworks.",
   inputFields: {
     instagramAccountId: {
       type: new GraphQLNonNull(GraphQLString),
