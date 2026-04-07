@@ -21,8 +21,7 @@ interface SlideInput {
 
 interface Input {
   instagramAccountId: string
-  artworkId?: string
-  slides?: SlideInput[]
+  slides: SlideInput[]
   caption?: string
   collaborators?: string[]
 }
@@ -89,13 +88,10 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the Instagram account to post from",
     },
-    artworkId: {
-      type: GraphQLString,
-      description:
-        "Deprecated: use slides instead. The ID of the artwork to post",
-    },
     slides: {
-      type: new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput))
+      ),
       description:
         "Slides for the Instagram post. Each slide references an artwork and optionally a custom image. The order determines the carousel position.",
     },
@@ -116,34 +112,23 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { instagramAccountId, artworkId, slides, caption, collaborators },
+    { instagramAccountId, slides, caption, collaborators },
     { createInstagramPostLoader }
   ) => {
     if (!createInstagramPostLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    if (!slides && !artworkId) {
-      throw new Error("Either slides or artworkId must be provided")
-    }
-
-    const gravityParams: Record<string, unknown> = {
-      instagram_account_id: instagramAccountId,
-      caption,
-      collaborators,
-    }
-
-    if (slides) {
-      gravityParams.slides = slides.map((slide) => ({
-        artwork_id: slide.artworkId,
-        image_url: slide.imageUrl,
-      }))
-    } else {
-      gravityParams.artwork_id = artworkId
-    }
-
     try {
-      return await createInstagramPostLoader(gravityParams)
+      return await createInstagramPostLoader({
+        instagram_account_id: instagramAccountId,
+        slides: slides.map((slide) => ({
+          artwork_id: slide.artworkId,
+          image_url: slide.imageUrl,
+        })),
+        caption,
+        collaborators,
+      })
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

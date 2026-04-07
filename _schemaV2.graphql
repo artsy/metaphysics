@@ -10374,9 +10374,6 @@ type CreateInstagramPostFailure {
 }
 
 input CreateInstagramPostInput {
-  # Deprecated: use slides instead. The ID of the artwork to post
-  artworkId: String
-
   # Post caption (auto-generated from artwork data if omitted)
   caption: String
   clientMutationId: String
@@ -10388,7 +10385,7 @@ input CreateInstagramPostInput {
   instagramAccountId: String!
 
   # Slides for the Instagram post. Each slide references an artwork and optionally a custom image. The order determines the carousel position.
-  slides: [InstagramPostSlideInput!]
+  slides: [InstagramPostSlideInput!]!
 }
 
 type CreateInstagramPostPayload {
