@@ -145,6 +145,29 @@ describe("createInstagramPost", () => {
     })
   })
 
+  it("throws when slides is empty", async () => {
+    const mutationWithEmptySlides = `
+      mutation {
+        createInstagramPost(input: {
+          instagramAccountId: "ig-account-1"
+          slides: []
+        }) {
+          instagramPostOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context: Partial<ResolverContext> = {
+      createInstagramPostLoader: jest.fn(),
+    }
+
+    await expect(
+      runAuthenticatedQuery(mutationWithEmptySlides, context)
+    ).rejects.toThrow("At least one slide must be provided")
+  })
+
   it("throws when not authenticated", async () => {
     await expect(runQuery(mutation)).rejects.toThrow(
       "You need to be signed in to perform this action"

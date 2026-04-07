@@ -120,6 +120,10 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    if (slides.length === 0) {
+      throw new Error("At least one slide must be provided")
+    }
+
     try {
       return await createInstagramPostLoader({
         instagram_account_id: instagramAccountId,
