@@ -16,7 +16,7 @@ import { InstagramPostType } from "./instagramPost"
 
 interface SlideInput {
   artworkId: string
-  imageUrl?: string
+  imageUrl: string
 }
 
 interface Input {
@@ -36,9 +36,9 @@ const InstagramPostSlideInput = new GraphQLInputObjectType({
       description: "The ID of the artwork for this slide",
     },
     imageUrl: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description:
-        "Optional custom image URL to use instead of the artwork's default image",
+        "Custom image URL to use instead of the artwork's default image",
     },
   },
 })
@@ -94,7 +94,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
         new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput))
       ),
       description:
-        "Slides for the Instagram post. Each slide references an artwork and optionally a custom image. The order determines the carousel position.",
+        "Slides for the Instagram post. Each slide references an artwork and a custom image. The order determines the carousel position.",
     },
     caption: {
       type: GraphQLString,
@@ -129,7 +129,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
         instagram_account_id: instagramAccountId,
         slides: slides.map((slide) => ({
           artwork_id: slide.artworkId,
-          ...(slide.imageUrl && { image_url: slide.imageUrl }),
+          image_url: slide.imageUrl,
         })),
         caption,
         collaborators,

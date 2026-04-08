@@ -10384,7 +10384,7 @@ input CreateInstagramPostInput {
   # The internal ID of the Instagram account to post from
   instagramAccountId: String!
 
-  # Slides for the Instagram post. Each slide references an artwork and optionally a custom image. The order determines the carousel position.
+  # Slides for the Instagram post. Each slide references an artwork and a custom image. The order determines the carousel position.
   slides: [InstagramPostSlideInput!]!
 }
 
@@ -15791,8 +15791,8 @@ input InstagramPostSlideInput {
   # The ID of the artwork for this slide
   artworkId: String!
 
-  # Optional custom image URL to use instead of the artwork's default image
-  imageUrl: String
+  # Custom image URL to use instead of the artwork's default image
+  imageUrl: String!
 }
 
 enum InstagramPostStatus {

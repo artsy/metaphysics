@@ -7,8 +7,8 @@ const mutation = `
     createInstagramPost(input: {
       instagramAccountId: "ig-account-1"
       slides: [
-        { artworkId: "artwork-1", imageUrl: "https://example.com/custom.jpg" }
-        { artworkId: "artwork-2" }
+        { artworkId: "artwork-1", imageUrl: "https://example.com/custom1.jpg" }
+        { artworkId: "artwork-2", imageUrl: "https://example.com/custom2.jpg" }
       ]
       caption: "Beautiful artwork"
       collaborators: ["collab1", "collab2"]
@@ -70,9 +70,12 @@ describe("createInstagramPost", () => {
         slides: [
           {
             artwork_id: "artwork-1",
-            image_url: "https://example.com/custom.jpg",
+            image_url: "https://example.com/custom1.jpg",
           },
-          { artwork_id: "artwork-2", image_url: undefined },
+          {
+            artwork_id: "artwork-2",
+            image_url: "https://example.com/custom2.jpg",
+          },
         ],
         caption: "Beautiful artwork",
         collaborators: ["collab1", "collab2"],
@@ -110,7 +113,7 @@ describe("createInstagramPost", () => {
       mutation {
         createInstagramPost(input: {
           instagramAccountId: "ig-account-1"
-          slides: [{ artworkId: "artwork-1" }]
+          slides: [{ artworkId: "artwork-1", imageUrl: "https://example.com/img.jpg" }]
         }) {
           instagramPostOrError {
             __typename
@@ -138,7 +141,12 @@ describe("createInstagramPost", () => {
         context.createInstagramPostLoader as jest.Mock
       ).toHaveBeenCalledWith({
         instagram_account_id: "ig-account-1",
-        slides: [{ artwork_id: "artwork-1", image_url: undefined }],
+        slides: [
+          {
+            artwork_id: "artwork-1",
+            image_url: "https://example.com/img.jpg",
+          },
+        ],
         caption: undefined,
         collaborators: undefined,
       })
