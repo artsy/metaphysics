@@ -130,6 +130,7 @@ export const mailchimpCampaignsConnection: GraphQLFieldConfig<
     const { body, headers } = await mailchimpCampaignsLoader({
       partner_id: args.partnerId,
       status: args.status,
+      total_count: true,
       size,
       offset,
     })

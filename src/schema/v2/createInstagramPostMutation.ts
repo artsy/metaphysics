@@ -1,4 +1,5 @@
 import {
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,12 +14,34 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InstagramPostType } from "./instagramPost"
 
+interface SlideInput {
+  artworkId: string
+  imageUrl: string
+}
+
 interface Input {
   instagramAccountId: string
-  artworkId: string
+  slides: SlideInput[]
   caption?: string
   collaborators?: string[]
 }
+
+const InstagramPostSlideInput = new GraphQLInputObjectType({
+  name: "InstagramPostSlideInput",
+  description:
+    "A slide in an Instagram carousel post. The order of slides in the array determines their position in the carousel.",
+  fields: {
+    artworkId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the artwork for this slide",
+    },
+    imageUrl: {
+      type: new GraphQLNonNull(GraphQLString),
+      description:
+        "Custom image URL to use instead of the artwork's default image",
+    },
+  },
+})
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateInstagramPostSuccess",
@@ -59,15 +82,19 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateInstagramPost",
-  description: "Create and publish an Instagram post from an artwork",
+  description:
+    "Create and publish an Instagram post from one or more artworks or images.",
   inputFields: {
     instagramAccountId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the Instagram account to post from",
     },
-    artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artwork to post",
+    slides: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput))
+      ),
+      description:
+        "Slides for the Instagram post. Each slide references an artwork and a custom image. The order determines the carousel position.",
     },
     caption: {
       type: GraphQLString,
@@ -86,17 +113,24 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { instagramAccountId, artworkId, caption, collaborators },
+    { instagramAccountId, slides, caption, collaborators },
     { createInstagramPostLoader }
   ) => {
     if (!createInstagramPostLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    if (slides.length === 0) {
+      throw new Error("At least one slide must be provided")
+    }
+
     try {
       return await createInstagramPostLoader({
         instagram_account_id: instagramAccountId,
-        artwork_id: artworkId,
+        slides: slides.map((slide) => ({
+          artwork_id: slide.artworkId,
+          image_url: slide.imageUrl,
+        })),
         caption,
         collaborators,
       })
