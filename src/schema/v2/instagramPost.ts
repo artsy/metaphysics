@@ -1,6 +1,7 @@
 import {
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -36,9 +37,11 @@ export const InstagramPostType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ partner_id }) => partner_id,
     },
-    artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ artwork_id }) => artwork_id,
+    artworkIds: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+      resolve: ({ artwork_ids }) => artwork_ids,
     },
     instagramMediaId: {
       type: GraphQLString,
@@ -98,6 +101,7 @@ export const instagramPostsConnection: GraphQLFieldConfig<
 
     const { body, headers } = await instagramPostsLoader({
       partner_id: args.partnerId,
+      total_count: true,
       size,
       offset,
     })
