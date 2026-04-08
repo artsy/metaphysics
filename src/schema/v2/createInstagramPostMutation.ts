@@ -129,7 +129,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
         instagram_account_id: instagramAccountId,
         slides: slides.map((slide) => ({
           artwork_id: slide.artworkId,
-          image_url: slide.imageUrl,
+          ...(slide.imageUrl && { image_url: slide.imageUrl }),
         })),
         caption,
         collaborators,
