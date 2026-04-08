@@ -108,6 +108,7 @@ import {
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
+import { CatalogArtworkType } from "../catalogArtwork"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -2297,6 +2298,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           return { totalCount }
         },
+      },
+      catalogArtwork: {
+        type: CatalogArtworkType,
+        resolve: ({ catalog_artwork }) => catalog_artwork,
       },
     }
   },
