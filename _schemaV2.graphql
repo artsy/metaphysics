@@ -18001,7 +18001,7 @@ type Mutation {
     input: CommerceCreateInquiryOrderWithArtworkInput!
   ): CommerceCreateInquiryOrderWithArtworkPayload
 
-  # Create and publish an Instagram post from one or more artworks.
+  # Create and publish an Instagram post from one or more artworks or images.
   createInstagramPost(
     input: CreateInstagramPostInput!
   ): CreateInstagramPostPayload
