@@ -266,6 +266,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   viewingRoomID: {
     type: GraphQLID,
   },
+  variant: {
+    type: GraphQLString,
+  },
   signed: {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
