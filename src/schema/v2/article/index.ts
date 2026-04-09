@@ -27,6 +27,7 @@ import { take } from "lodash"
 import { ArticleHero, ArticleLayoutEnum } from "./models"
 import { channelType } from "./channel"
 import { existyValue } from "lib/helpers"
+import { extractOutline } from "./lib/extractOutline"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -194,6 +195,25 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
 
         return news_source
       },
+    },
+    outline: {
+      type: new GraphQLNonNull(
+        new GraphQLList(
+          new GraphQLNonNull(
+            new GraphQLObjectType({
+              name: "ArticleOutlineEntry",
+              fields: {
+                ...IDFields,
+                heading: { type: new GraphQLNonNull(GraphQLString) },
+                slug: { type: new GraphQLNonNull(GraphQLString) },
+              },
+            })
+          )
+        )
+      ),
+      description:
+        "Ordered outline of the article derived from h2 headings in text sections",
+      resolve: ({ sections }) => extractOutline(sections),
     },
     postscript: { type: GraphQLString },
     publishedAt: date(({ published_at }) => published_at),

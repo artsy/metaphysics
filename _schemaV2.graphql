@@ -1387,6 +1387,9 @@ type Article implements Node {
   leadParagraph: String
   media: ArticleMedia
   newsSource: ArticleNewsSource
+
+  # Ordered outline of the article derived from h2 headings in text sections
+  outline: [ArticleOutlineEntry!]!
   postscript: String
   publishedAt(
     format: String
@@ -1509,6 +1512,17 @@ type ArticleMedia {
 type ArticleNewsSource {
   title: String
   url: String
+}
+
+type ArticleOutlineEntry {
+  heading: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  slug: String!
 }
 
 type ArticleSectionCallout {
