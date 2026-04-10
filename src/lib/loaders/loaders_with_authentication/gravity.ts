@@ -1447,6 +1447,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateCatalogArtworkLoader: gravityLoader(
+      (id) => `catalog_artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateArtworkLoader: gravityLoader(
       (id) => `artwork/${id}`,
       {},
