@@ -107,7 +107,7 @@
   },
   "devDependencies": {
     "@artsy/express-reloadable": "1.8.1",
-    "@artsy/update-repo": "0.8.1",
+    "@artsy/update-repo": "0.8.2",
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.25.9",
     "@babel/node": "^7.25.9",
