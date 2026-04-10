@@ -291,6 +291,8 @@ import { updateInstallShotForPartnerShowMutation } from "./Show/updateInstallSho
 import { updatePartnerShowMutation } from "./Show/updatePartnerShowMutation"
 import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMutation"
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
+import { createCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/createCatalogArtworkDocumentMutation"
+import { deleteCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/deleteCatalogArtworkDocumentMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
@@ -600,6 +602,7 @@ export default new GraphQLSchema({
       createBidderPosition: BidderPositionMutation,
       createCanonicalArtist: createCanonicalArtistMutation,
       createCareerHighlight: createCareerHighlightMutation,
+      createCatalogArtworkDocument: createCatalogArtworkDocumentMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createConversationMessageTemplate: createConversationMessageTemplateMutation,
@@ -659,6 +662,7 @@ export default new GraphQLSchema({
       reprocessArtworkImage: ReprocessArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
+      deleteCatalogArtworkDocument: deleteCatalogArtworkDocumentMutation,
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
