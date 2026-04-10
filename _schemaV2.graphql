@@ -15919,7 +15919,10 @@ input InstagramPostSlideInput {
   artworkId: String!
 
   # Custom image URL to use instead of the artwork's default image
-  imageUrl: String!
+  imageUrl: String @deprecated(reason: "Use s3Key instead")
+
+  # S3 object key for this slide's custom image
+  s3Key: String
 }
 
 enum InstagramPostStatus {

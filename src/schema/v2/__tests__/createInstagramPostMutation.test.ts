@@ -7,8 +7,8 @@ const mutation = `
     createInstagramPost(input: {
       instagramAccountId: "ig-account-1"
       slides: [
-        { artworkId: "artwork-1", imageUrl: "https://example.com/custom1.jpg" }
-        { artworkId: "artwork-2", imageUrl: "https://example.com/custom2.jpg" }
+        { artworkId: "artwork-1", s3Key: "partner-1/composite/artwork-1/uuid1.png" }
+        { artworkId: "artwork-2", s3Key: "partner-1/composite/artwork-2/uuid2.png" }
       ]
       caption: "Beautiful artwork"
       collaborators: ["collab1", "collab2"]
@@ -60,7 +60,7 @@ describe("createInstagramPost", () => {
       }
     })
 
-    it("passes slides to Gravity", async () => {
+    it("passes s3_key slides to Gravity", async () => {
       await runAuthenticatedQuery(mutation, context)
 
       expect(
@@ -70,11 +70,11 @@ describe("createInstagramPost", () => {
         slides: [
           {
             artwork_id: "artwork-1",
-            image_url: "https://example.com/custom1.jpg",
+            s3_key: "partner-1/composite/artwork-1/uuid1.png",
           },
           {
             artwork_id: "artwork-2",
-            image_url: "https://example.com/custom2.jpg",
+            s3_key: "partner-1/composite/artwork-2/uuid2.png",
           },
         ],
         caption: "Beautiful artwork",
@@ -113,7 +113,7 @@ describe("createInstagramPost", () => {
       mutation {
         createInstagramPost(input: {
           instagramAccountId: "ig-account-1"
-          slides: [{ artworkId: "artwork-1", imageUrl: "https://example.com/img.jpg" }]
+          slides: [{ artworkId: "artwork-1", s3Key: "partner-1/composite/artwork-1/uuid.png" }]
         }) {
           instagramPostOrError {
             __typename
@@ -136,6 +136,50 @@ describe("createInstagramPost", () => {
       }
 
       await runAuthenticatedQuery(mutationWithoutOptionals, context)
+
+      expect(
+        context.createInstagramPostLoader as jest.Mock
+      ).toHaveBeenCalledWith({
+        instagram_account_id: "ig-account-1",
+        slides: [
+          {
+            artwork_id: "artwork-1",
+            s3_key: "partner-1/composite/artwork-1/uuid.png",
+          },
+        ],
+        caption: undefined,
+        collaborators: undefined,
+      })
+    })
+  })
+
+  describe("with deprecated imageUrl", () => {
+    const mutationWithImageUrl = `
+      mutation {
+        createInstagramPost(input: {
+          instagramAccountId: "ig-account-1"
+          slides: [{ artworkId: "artwork-1", imageUrl: "https://example.com/img.jpg" }]
+        }) {
+          instagramPostOrError {
+            __typename
+            ... on CreateInstagramPostSuccess {
+              instagramPost {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("falls back to image_url when s3Key is not provided", async () => {
+      const context: Partial<ResolverContext> = {
+        createInstagramPostLoader: jest
+          .fn()
+          .mockResolvedValue(mockGravityResponse),
+      }
+
+      await runAuthenticatedQuery(mutationWithImageUrl, context)
 
       expect(
         context.createInstagramPostLoader as jest.Mock
