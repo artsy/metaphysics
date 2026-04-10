@@ -2,7 +2,6 @@
 !**mocks**/
 !.circleci/
 !patches/
-!peril/
 !scripts/
 !src/
 
