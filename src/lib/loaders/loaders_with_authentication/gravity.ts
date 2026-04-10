@@ -196,6 +196,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
+    catalogArtworkDocumentsLoader: gravityLoader(
+      "catalog_artwork_documents",
+      {},
+      { headers: true }
+    ),
     collectionArtistsLoader: gravityLoader(
       (id) => `collection/${id}/artists`,
       { user_id: userID },
@@ -350,6 +355,11 @@ export default (accessToken, userID, opts) => {
     createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
     createBidderPositionLoader: gravityLoader(
       "me/bidder_position",
+      {},
+      { method: "POST" }
+    ),
+    createCatalogArtworkDocumentLoader: gravityLoader(
+      "catalog_artwork_document",
       {},
       { method: "POST" }
     ),
@@ -526,6 +536,11 @@ export default (accessToken, userID, opts) => {
     ),
     deleteBankAccountLoader: gravityLoader(
       (id) => `me/bank_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteCatalogArtworkDocumentLoader: gravityLoader<any, { id: string }>(
+      ({ id }) => `catalog_artwork_document/${id}`,
       {},
       { method: "DELETE" }
     ),
