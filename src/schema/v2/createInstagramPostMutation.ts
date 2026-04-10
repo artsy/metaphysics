@@ -16,8 +16,7 @@ import { InstagramPostType } from "./instagramPost"
 
 interface SlideInput {
   artworkId: string
-  s3Key?: string
-  imageUrl?: string
+  s3Key: string
 }
 
 interface Input {
@@ -37,14 +36,8 @@ const InstagramPostSlideInput = new GraphQLInputObjectType({
       description: "The ID of the artwork for this slide",
     },
     s3Key: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "S3 object key for this slide's custom image",
-    },
-    imageUrl: {
-      type: GraphQLString,
-      deprecationReason: "Use s3Key instead",
-      description:
-        "Custom image URL to use instead of the artwork's default image",
     },
   },
 })
@@ -135,9 +128,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
         instagram_account_id: instagramAccountId,
         slides: slides.map((slide) => ({
           artwork_id: slide.artworkId,
-          ...(slide.s3Key
-            ? { s3_key: slide.s3Key }
-            : { image_url: slide.imageUrl }),
+          s3_key: slide.s3Key,
         })),
         caption,
         collaborators,

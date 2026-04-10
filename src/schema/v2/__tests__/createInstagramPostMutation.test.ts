@@ -153,50 +153,6 @@ describe("createInstagramPost", () => {
     })
   })
 
-  describe("with deprecated imageUrl", () => {
-    const mutationWithImageUrl = `
-      mutation {
-        createInstagramPost(input: {
-          instagramAccountId: "ig-account-1"
-          slides: [{ artworkId: "artwork-1", imageUrl: "https://example.com/img.jpg" }]
-        }) {
-          instagramPostOrError {
-            __typename
-            ... on CreateInstagramPostSuccess {
-              instagramPost {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
-
-    it("falls back to image_url when s3Key is not provided", async () => {
-      const context: Partial<ResolverContext> = {
-        createInstagramPostLoader: jest
-          .fn()
-          .mockResolvedValue(mockGravityResponse),
-      }
-
-      await runAuthenticatedQuery(mutationWithImageUrl, context)
-
-      expect(
-        context.createInstagramPostLoader as jest.Mock
-      ).toHaveBeenCalledWith({
-        instagram_account_id: "ig-account-1",
-        slides: [
-          {
-            artwork_id: "artwork-1",
-            image_url: "https://example.com/img.jpg",
-          },
-        ],
-        caption: undefined,
-        collaborators: undefined,
-      })
-    })
-  })
-
   it("throws when slides is empty", async () => {
     const mutationWithEmptySlides = `
       mutation {
