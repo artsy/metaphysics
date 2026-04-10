@@ -5612,6 +5612,10 @@ type CatalogArtwork {
     timezone: String
   ): String
 
+  # Documents attached to this catalog artwork.
+  documents: [CatalogArtworkDocument]
+  documentsCount: Int
+
   # A globally unique ID.
   id: ID!
 
@@ -5627,6 +5631,32 @@ type CatalogArtwork {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+}
+
+type CatalogArtworkDocument {
+  catalogArtworkId: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  fileSize: Int
+  filename: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  title: String
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  url: String!
 }
 
 type CausalityLotState {
@@ -10201,6 +10231,46 @@ union CreateCareerHighlightSuccessResponseOrError =
     CreateCareerHighlightFailure
   | CreateCareerHighlightSuccess
 
+type CreateCatalogArtworkDocumentFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateCatalogArtworkDocumentMutationInput {
+  # The ID of the catalog artwork.
+  catalogArtworkId: String!
+  clientMutationId: String
+
+  # File size in bytes.
+  fileSize: Int
+
+  # Original filename of the document.
+  filename: String!
+
+  # S3 bucket containing the document.
+  s3Bucket: String!
+
+  # S3 key of the uploaded document.
+  s3Key: String!
+
+  # Label for the document.
+  title: String
+}
+
+type CreateCatalogArtworkDocumentMutationPayload {
+  clientMutationId: String
+
+  # On success: the created document. On error: the error that occurred.
+  documentOrError: CreateCatalogArtworkDocumentResponseOrError
+}
+
+union CreateCatalogArtworkDocumentResponseOrError =
+    CreateCatalogArtworkDocumentFailure
+  | CreateCatalogArtworkDocumentSuccess
+
+type CreateCatalogArtworkDocumentSuccess {
+  document: CatalogArtworkDocument
+}
+
 type CreateCollectionFailure {
   mutationError: GravityMutationError
 }
@@ -11701,6 +11771,34 @@ type DeleteCareerHighlightSuccess {
 union DeleteCareerHighlightSuccessOrErrorType =
     DeleteCareerHighlightFailure
   | DeleteCareerHighlightSuccess
+
+type DeleteCatalogArtworkDocumentFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteCatalogArtworkDocumentMutationInput {
+  # The ID of the catalog artwork.
+  catalogArtworkId: String!
+  clientMutationId: String
+
+  # The ID of the document to delete.
+  documentId: String!
+}
+
+type DeleteCatalogArtworkDocumentMutationPayload {
+  clientMutationId: String
+
+  # On success: the deleted document. On error: the error that occurred.
+  documentOrError: DeleteCatalogArtworkDocumentResponseOrError
+}
+
+union DeleteCatalogArtworkDocumentResponseOrError =
+    DeleteCatalogArtworkDocumentFailure
+  | DeleteCatalogArtworkDocumentSuccess
+
+type DeleteCatalogArtworkDocumentSuccess {
+  document: CatalogArtworkDocument
+}
 
 type DeleteCollectionFailure {
   mutationError: GravityMutationError
@@ -17965,6 +18063,11 @@ type Mutation {
     input: CreateCareerHighlightInput!
   ): CreateCareerHighlightPayload
 
+  # Attaches a document to a catalog artwork.
+  createCatalogArtworkDocument(
+    input: CreateCatalogArtworkDocumentMutationInput!
+  ): CreateCatalogArtworkDocumentMutationPayload
+
   # Create a collection
   createCollection(input: createCollectionInput!): createCollectionPayload
 
@@ -18188,6 +18291,11 @@ type Mutation {
   deleteCareerHighlight(
     input: DeleteCareerHighlightInput!
   ): DeleteCareerHighlightPayload
+
+  # Deletes a catalog artwork document.
+  deleteCatalogArtworkDocument(
+    input: DeleteCatalogArtworkDocumentMutationInput!
+  ): DeleteCatalogArtworkDocumentMutationPayload
 
   # Delete a collection
   deleteCollection(input: deleteCollectionInput!): deleteCollectionPayload
