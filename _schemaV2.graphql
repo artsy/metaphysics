@@ -15576,6 +15576,9 @@ type Image {
   maxTiledWidth: Int
   orientation: String
   originalHeight: Int
+
+  # URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots.
+  originalImageUrl: String
   originalWidth: Int
 
   # Value to use when `padding-bottom` for fluid image placeholders

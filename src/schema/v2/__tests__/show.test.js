@@ -3,6 +3,9 @@ import moment from "moment"
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
+import fetch from "node-fetch"
+
+jest.mock("node-fetch")
 
 describe("Show type", () => {
   let showData = null
@@ -1076,6 +1079,64 @@ describe("Show type", () => {
           artworks: 2,
         },
       },
+    })
+  })
+
+  describe("imagesConnection originalImageUrl", () => {
+    const imageData = {
+      id: "install-shot-id",
+      image_url: "https://cdn.example.com/:version.jpg",
+      image_versions: ["large"],
+    }
+
+    beforeEach(() => {
+      fetch.mockReset()
+      fetch.mockResolvedValue({
+        headers: {
+          get: (header) =>
+            header === "location"
+              ? "https://s3.amazonaws.com/artsy-media/install.jpg"
+              : null,
+        },
+      })
+      context.partnerShowImagesLoader = sinon.stub().returns(
+        Promise.resolve({
+          body: [imageData],
+          headers: { "x-total-count": "1" },
+        })
+      )
+    })
+
+    it("returns the S3 URL via Gravity redirect for install shots", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            imagesConnection(first: 1) {
+              edges {
+                node {
+                  originalImageUrl
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, {
+        ...context,
+        accessToken: "user-access-token",
+      })
+
+      expect(data.show.imagesConnection.edges[0].node.originalImageUrl).toBe(
+        "https://s3.amazonaws.com/artsy-media/install.jpg"
+      )
+
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "/partner_show/new-museum-1-2015-triennial-surround-audience/image/install-shot-id/original.jpg"
+        ),
+        expect.objectContaining({ redirect: "manual" })
+      )
     })
   })
 
