@@ -14,6 +14,7 @@ describe("instagramPost", () => {
           permalink
           caption
           status
+          errorMessage
         }
       }
     `
@@ -28,6 +29,7 @@ describe("instagramPost", () => {
       permalink: "https://www.instagram.com/p/ABC123/",
       caption: "Beautiful artwork",
       status: "published",
+      error_message: "Some error occurred",
       published_at: "2026-03-10T12:00:00Z",
     }
 
@@ -57,6 +59,7 @@ describe("instagramPost", () => {
               "artwork-1",
             ],
             "caption": "Beautiful artwork",
+            "errorMessage": "Some error occurred",
             "instagramAccountId": "ig-account-1",
             "instagramMediaId": "media-123",
             "internalID": "post-1",
