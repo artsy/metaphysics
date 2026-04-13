@@ -56,6 +56,10 @@ export const InstagramPostType = new GraphQLObjectType<any, ResolverContext>({
     status: {
       type: InstagramPostStatusEnum,
     },
+    errorMessage: {
+      type: GraphQLString,
+      resolve: ({ error_message }) => error_message,
+    },
     publishedAt: date(),
     createdAt: date(),
     updatedAt: date(),
