@@ -15723,7 +15723,7 @@ type Image {
   orientation: String
   originalHeight: Int
 
-  # URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots.
+  # URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots and artwork images.
   originalImageUrl: String
   originalWidth: Int
 
