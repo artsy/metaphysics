@@ -48,6 +48,7 @@ import ArticleSorts, { ArticleSort } from "schema/v2/sorts/article_sorts"
 import { allViaLoader } from "lib/all"
 import { truncate } from "lib/helpers"
 import {
+  PartnerListType,
   partnerListConnection,
   PartnerListTypeEnum,
 } from "schema/v2/partnerList"
@@ -1453,6 +1454,21 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       showsSearchConnection: partnerShowsMatchConnection,
+      partnerList: {
+        description: "A single partner list by its ID.",
+        type: PartnerListType,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The ID of the partner list.",
+          },
+        },
+        resolve: async (_source, { id }, { partnerListLoader }) => {
+          if (!partnerListLoader) return null
+
+          return partnerListLoader(id)
+        },
+      },
       partnerListsConnection: {
         description: "A connection of lists from a Partner.",
         type: partnerListConnection.connectionType,
