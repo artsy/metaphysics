@@ -68,7 +68,7 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     originalImageUrl: {
       type: GraphQLString,
       description:
-        "URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots.",
+        "URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots and artwork images.",
       resolve: async (
         { _api_image_redirect_url },
         _args: Record<string, never>,
@@ -81,12 +81,16 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
         }
         if (accessToken) headers["X-ACCESS-TOKEN"] = accessToken
 
-        const response = await fetch(_api_image_redirect_url, {
-          headers,
-          redirect: "manual",
-        })
+        try {
+          const response = await fetch(_api_image_redirect_url, {
+            headers,
+            redirect: "manual",
+          })
 
-        return response.headers.get("location")
+          return response.headers.get("location")
+        } catch {
+          return null
+        }
       },
     },
     cropped: CroppedUrl,
