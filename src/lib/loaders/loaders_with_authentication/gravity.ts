@@ -1780,5 +1780,68 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+
+    // Partner List Loaders
+    partnerListsLoader: gravityLoader("partner_lists", {}, { headers: true }),
+    partnerListLoader: gravityLoader((id) => `partner_list/${id}`),
+    partnerListArtworksLoader: gravityLoader(
+      (id) => `partner_list/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
+    createPartnerListLoader: gravityLoader(
+      "partner_list",
+      {},
+      { method: "POST" }
+    ),
+    updatePartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deletePartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    distributePartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}/distribute`,
+      {},
+      { method: "POST" }
+    ),
+    addArtworkToPartnerListLoader: gravityLoader<
+      any,
+      { listId: string; artworkId: string }
+    >(
+      ({ listId, artworkId }) => `partner_list/${listId}/artwork/${artworkId}`,
+      {},
+      { method: "POST" }
+    ),
+    updatePartnerListArtworkLoader: gravityLoader<
+      any,
+      { listId: string; artworkId: string }
+    >(
+      ({ listId, artworkId }) => `partner_list/${listId}/artwork/${artworkId}`,
+      {},
+      { method: "PUT" }
+    ),
+    removeArtworkFromPartnerListLoader: gravityLoader<
+      any,
+      { listId: string; artworkId: string }
+    >(
+      ({ listId, artworkId }) => `partner_list/${listId}/artwork/${artworkId}`,
+      {},
+      { method: "DELETE" }
+    ),
+    bulkAddArtworksToPartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}/artworks`,
+      {},
+      { method: "POST" }
+    ),
+    repositionPartnerListArtworksLoader: gravityLoader(
+      (id) => `partner_list/${id}/reposition`,
+      {},
+      { method: "POST" }
+    ),
   }
 }
