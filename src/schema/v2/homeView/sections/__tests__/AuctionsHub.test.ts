@@ -1,14 +1,10 @@
-import { AuctionsHub, shouldDisplayAuctionsHub } from "../AuctionsHub"
+import { AuctionsHub } from "../AuctionsHub"
 
 // Mock the artworksForUser module
 jest.mock("schema/v2/artworksForUser", () => ({
   artworksForUser: {
     resolve: jest.fn(),
   },
-}))
-
-jest.mock("lib/featureFlags", () => ({
-  getExperimentVariant: jest.fn(),
 }))
 
 // Mock the AuctionResultsByFollowedArtists module
@@ -29,16 +25,9 @@ describe("AuctionsHub", () => {
     expect(AuctionsHub.shouldBeDisplayed).toBeDefined()
   })
 
-  describe("shouldDisplayAuctionsHub", () => {
-    it("returns false when no user agent is provided", () => {
-      const context = { userAgent: undefined, userID: "user123" } as any
-      expect(shouldDisplayAuctionsHub(context)).toBe(false)
-    })
-
-    it("returns false when user agent doesn't have version info", () => {
-      const context = { userAgent: "Mozilla/5.0", userID: "user123" } as any
-      expect(shouldDisplayAuctionsHub(context)).toBe(false)
-    })
+  it("is never displayed", () => {
+    const context = { userAgent: "Artsy-Mobile/9.0.0", userID: "user123" } as any
+    expect(AuctionsHub.shouldBeDisplayed!(context)).toBe(false)
   })
 
   describe("resolver", () => {

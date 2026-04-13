@@ -4,8 +4,6 @@ import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
 import type { HomeViewCard } from "../sectionTypes/Card"
-import { getExperimentVariant } from "lib/featureFlags"
-import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { ResolverContext } from "types/graphql"
 import { artworksForUser } from "schema/v2/artworksForUser"
 import * as Sentry from "@sentry/node"
@@ -23,31 +21,6 @@ const extractImageUrls = (
   pathExtractor: (item: any) => string | undefined
 ): string[] => {
   return items.map(pathExtractor).filter((url): url is string => Boolean(url))
-}
-
-export const isEligibleForAuctionsHubExperiment = (
-  context: ResolverContext
-): boolean => {
-  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 8, minor: 88, patch: 0 }
-
-  if (actualEigenVersion) {
-    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
-  } else {
-    return false
-  }
-}
-
-export const shouldDisplayAuctionsHub = (context: ResolverContext): boolean => {
-  if (isEligibleForAuctionsHubExperiment(context)) {
-    const variant = getExperimentVariant("onyx_auctions_hub", {
-      userId: context.userID,
-    })
-
-    return variant && variant.enabled && variant.name === "experiment"
-  } else {
-    return false
-  }
 }
 
 const yourAuctionPicksCard: CardFunction = async ({
@@ -219,8 +192,8 @@ export const AuctionsHub: HomeViewCardsSection = {
   },
   requiresAuthentication: true,
   trackItemImpressions: true,
-  shouldBeDisplayed: (context) => {
-    return shouldDisplayAuctionsHub(context)
+  shouldBeDisplayed: (_context) => {
+    return false
   },
 
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {

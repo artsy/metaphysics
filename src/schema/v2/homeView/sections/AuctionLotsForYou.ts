@@ -3,7 +3,6 @@ import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
-import { shouldDisplayAuctionsHub } from "./AuctionsHub"
 
 export const AuctionLotsForYou: HomeViewSection = {
   id: "home-view-section-auction-lots-for-you",
@@ -19,8 +18,8 @@ export const AuctionLotsForYou: HomeViewSection = {
   },
   ownerType: OwnerType.lotsByArtistsYouFollow,
   requiresAuthentication: true,
-  shouldBeDisplayed: (context) => {
-    return !shouldDisplayAuctionsHub(context)
+  shouldBeDisplayed: (_context) => {
+    return true
   },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {

@@ -7,7 +7,6 @@ import {
   AuctionResultsStateEnums,
 } from "schema/v2/auction_result"
 import AuctionResultsByFollowedArtists from "schema/v2/me/auctionResultsByFollowedArtists"
-import { shouldDisplayAuctionsHub } from "./AuctionsHub"
 
 export const LatestAuctionResults: HomeViewSection = {
   id: "home-view-section-latest-auction-results",
@@ -23,8 +22,8 @@ export const LatestAuctionResults: HomeViewSection = {
   },
   ownerType: OwnerType.auctionResultsForArtistsYouFollow,
   requiresAuthentication: true,
-  shouldBeDisplayed: (context) => {
-    return !shouldDisplayAuctionsHub(context)
+  shouldBeDisplayed: (_context) => {
+    return true
   },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
