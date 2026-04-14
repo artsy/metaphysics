@@ -24,7 +24,6 @@ export const isEligibleForGridView = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
   const minimumEigenVersion = { major: 9, minor: 7, patch: 0 }
 
-  console.log("LOGD actualEigenVersion", actualEigenVersion)
   if (actualEigenVersion) {
     return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
   } else {
