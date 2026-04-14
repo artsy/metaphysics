@@ -118,6 +118,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
           availability: "for sale",
           location_id: "oldLocation",
           partner_artist_id: "artist789",
+          partner_list_id: undefined,
           published: true,
         },
         source: "artworks_list",
@@ -139,6 +140,50 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
         },
       },
     })
+  })
+
+  it("respects the partnerListId filter parameter", async () => {
+    const mutationWithPartnerListFilter = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            source: PARTNER_LIST
+            metadata: { category: "Painting" }
+            filters: { partnerListId: "list-uuid-123" }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 3,
+        errors: {
+          count: 0,
+          ids: [],
+        },
+      }),
+    }
+
+    await runAuthenticatedQuery(mutationWithPartnerListFilter, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        source: "partner_list",
+        metadata: {
+          category: "Painting",
+        },
+        filters: {
+          partner_list_id: "list-uuid-123",
+        },
+      }
+    )
   })
 
   it("respects the filter parameters", async () => {

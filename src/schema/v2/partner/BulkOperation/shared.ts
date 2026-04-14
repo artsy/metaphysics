@@ -29,6 +29,10 @@ export const BulkArtworkFilterInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Filter artworks by partner artist id",
     },
+    partnerListId: {
+      type: GraphQLString,
+      description: "Filter artworks by partner list id",
+    },
     published: {
       type: GraphQLBoolean,
       description: "Filter artworks by published status",
