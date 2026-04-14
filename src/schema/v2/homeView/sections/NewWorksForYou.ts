@@ -35,7 +35,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: (parent, context) => {
-    // TODO: add app version check
+  contextModule: (parent, context) => {
 
     const contextModule =
       (parent as HomeViewArtworksSection).shouldShowInGrid &&
