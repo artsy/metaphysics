@@ -47,6 +47,11 @@ import { articleConnection } from "schema/v2/article"
 import ArticleSorts, { ArticleSort } from "schema/v2/sorts/article_sorts"
 import { allViaLoader } from "lib/all"
 import { truncate } from "lib/helpers"
+import {
+  PartnerListType,
+  partnerListConnection,
+  PartnerListTypeEnum,
+} from "schema/v2/partnerList"
 import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
@@ -1449,6 +1454,61 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       showsSearchConnection: partnerShowsMatchConnection,
+      partnerList: {
+        description: "A single partner list by its ID.",
+        type: PartnerListType,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The ID of the partner list.",
+          },
+        },
+        resolve: async (_source, { id }, { partnerListLoader }) => {
+          if (!partnerListLoader) return null
+
+          return partnerListLoader(id)
+        },
+      },
+      partnerListsConnection: {
+        description: "A connection of lists from a Partner.",
+        type: partnerListConnection.connectionType,
+        args: pageable({
+          listType: {
+            type: PartnerListTypeEnum,
+            description: "Filter by list type.",
+          },
+        }),
+        resolve: async ({ id }, args, { partnerListsLoader }) => {
+          if (!partnerListsLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityArgs: Record<string, unknown> = {
+            partner_id: id,
+            page,
+            size,
+            total_count: true,
+          }
+
+          if (args.listType) {
+            gravityArgs.list_type = args.listType
+          }
+
+          const { body, headers } = await partnerListsLoader(gravityArgs)
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        },
+      },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

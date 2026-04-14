@@ -294,6 +294,15 @@ import { updatePartnerShowEventMutation } from "./Show/updatePartnerShowEventMut
 import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocumentMutation"
 import { createCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/createCatalogArtworkDocumentMutation"
 import { deleteCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/deleteCatalogArtworkDocumentMutation"
+import { createPartnerListMutation } from "./partner/Mutations/PartnerList/createPartnerListMutation"
+import { updatePartnerListMutation } from "./partner/Mutations/PartnerList/updatePartnerListMutation"
+import { deletePartnerListMutation } from "./partner/Mutations/PartnerList/deletePartnerListMutation"
+import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/distributePartnerListMutation"
+import { addArtworkToPartnerListMutation } from "./partner/Mutations/PartnerList/addArtworkToPartnerListMutation"
+import { removeArtworkFromPartnerListMutation } from "./partner/Mutations/PartnerList/removeArtworkFromPartnerListMutation"
+import { bulkAddArtworksToPartnerListMutation } from "./partner/Mutations/PartnerList/bulkAddArtworksToPartnerListMutation"
+import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/PartnerList/updatePartnerListArtworkPositionMutation"
+import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
@@ -571,6 +580,7 @@ export default new GraphQLSchema({
     fields: {
       acceptPartnerAgreement: acceptPartnerAgreementMutation,
       ackTask: ackTaskMutation,
+      addArtworkToPartnerList: addArtworkToPartnerListMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       createBuyerOffer: createBuyerOfferMutation,
@@ -583,6 +593,7 @@ export default new GraphQLSchema({
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
       artsyShippingOptIn: artsyShippingOptInMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
+      bulkAddArtworksToPartnerList: bulkAddArtworksToPartnerListMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
@@ -622,6 +633,7 @@ export default new GraphQLSchema({
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerArtworksExport: createPartnerArtworksExportMutation,
+      createPartnerList: createPartnerListMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,
@@ -670,6 +682,7 @@ export default new GraphQLSchema({
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
+      deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
       deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
@@ -696,6 +709,7 @@ export default new GraphQLSchema({
       deleteViewingRoom: deleteViewingRoomMutation,
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,
+      distributePartnerList: distributePartnerListMutation,
       dislikeArtwork: dislikeArtworkMutation,
       dismissTask: dismissTaskMutation,
       enableSecondFactor: enableSecondFactorMutation,
@@ -714,12 +728,14 @@ export default new GraphQLSchema({
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
+      removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
       repositionInstallShotsInPartnerShow: repositionInstallShotsInPartnerShowMutation,
+      repositionPartnerListArtworks: repositionPartnerListArtworksMutation,
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       recordArtworkView: recordArtworkViewMutation,
@@ -791,6 +807,8 @@ export default new GraphQLSchema({
       updatePartnerArtistDocument: updatePartnerArtistDocumentMutation,
       updatePartnerShowDocument: updatePartnerShowDocumentMutation,
       updatePartnerShowEvent: updatePartnerShowEventMutation,
+      updatePartnerList: updatePartnerListMutation,
+      updatePartnerListArtworkPosition: updatePartnerListArtworkPositionMutation,
       updatePartner: updatePartnerMutation,
       updatePartnerFlags: updatePartnerFlagsMutation,
       updateProfile: updateProfileMutation,
