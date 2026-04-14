@@ -56,6 +56,9 @@ interface UpdateArtworkMutationInputProps {
   artsyListing?: boolean
   artistProofs?: string
   availability?: string
+  certificateOfAuthenticity?: boolean
+  coaByGallery?: boolean
+  coaByAuthenticatingBody?: boolean
   mediumType?: string
   date?: string
   defaultImageID?: string
@@ -66,7 +69,12 @@ interface UpdateArtworkMutationInputProps {
   ecommerce?: boolean
   editionSets?: Omit<
     UpdateArtworkMutationInputProps,
-    "editionSets" | "artistIds" | "mediumType" | "date" | "inventoryId" | "provenance"
+    | "editionSets"
+    | "artistIds"
+    | "mediumType"
+    | "date"
+    | "inventoryId"
+    | "provenance"
   >[]
   editionSize?: string
   framed?: boolean
@@ -116,6 +124,20 @@ const inputFields = {
   availability: {
     type: GraphQLString,
     description: "The availability of the artwork",
+  },
+  certificateOfAuthenticity: {
+    type: GraphQLBoolean,
+    description: "Whether the artwork has a certificate of authenticity",
+  },
+  coaByGallery: {
+    type: GraphQLBoolean,
+    description:
+      "Whether the certificate of authenticity is issued by the gallery",
+  },
+  coaByAuthenticatingBody: {
+    type: GraphQLBoolean,
+    description:
+      "Whether the certificate of authenticity is issued by an authenticating body",
   },
   mediumType: {
     type: GraphQLString,
@@ -307,6 +329,9 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         artsy_listing: inputArgs.artsyListing,
         artist_proofs: inputArgs.artistProofs,
         availability: inputArgs.availability,
+        certificate_of_authenticity: inputArgs.certificateOfAuthenticity,
+        coa_by_gallery: inputArgs.coaByGallery,
+        coa_by_authenticating_body: inputArgs.coaByAuthenticatingBody,
         category: inputArgs.mediumType,
         date: inputArgs.date,
         delete: inputArgs.delete,

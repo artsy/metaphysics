@@ -803,6 +803,53 @@ describe("UpdateArtworkMutation", () => {
     })
   })
 
+  describe("certificate of authenticity fields", () => {
+    it("passes coa fields to the loader", async () => {
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader: jest.fn(),
+      }
+
+      const coaMutation = gql`
+        mutation {
+          updateArtwork(
+            input: {
+              id: "25"
+              certificateOfAuthenticity: true
+              coaByGallery: true
+              coaByAuthenticatingBody: false
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(coaMutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          certificate_of_authenticity: true,
+          coa_by_gallery: true,
+          coa_by_authenticating_body: false,
+        })
+      )
+    })
+  })
+
   describe("artsyListing field", () => {
     it("passes artsy_listing to the loader when provided", async () => {
       const updateArtworkLoader = jest.fn().mockResolvedValue({
