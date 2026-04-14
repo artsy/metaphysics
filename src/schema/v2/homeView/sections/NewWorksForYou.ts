@@ -35,8 +35,6 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: (parent, context) => {
-  contextModule: (parent, context) => {
-
     const contextModule =
       (parent as HomeViewArtworksSection).shouldShowInGrid &&
       isEligibleForGridView(context)
