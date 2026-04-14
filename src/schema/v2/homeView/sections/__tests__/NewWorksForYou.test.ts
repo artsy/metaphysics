@@ -60,7 +60,7 @@ describe("NewWorksForYou", () => {
           "title": "New Works for You",
           "type": "ArtworksGrid",
         },
-        "contextModule": "newWorksForYouGrid",
+        "contextModule": "newWorksForYouRail",
         "internalID": "home-view-section-new-works-for-you",
         "ownerType": "newWorksForYou",
         "trackItemImpressions": true,
@@ -194,6 +194,50 @@ describe("NewWorksForYou", () => {
       mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
 
     expect(vortexGraphqlQuery).toMatch('version: "C"')
+  })
+
+  describe("contextModule", () => {
+    const contextModuleQuery = gql`
+      {
+        homeView {
+          section(id: "home-view-section-new-works-for-you") {
+            contextModule
+          }
+        }
+      }
+    `
+
+    it("returns newWorksForYouGrid when user has Eigen 9.7.0+", async () => {
+      const context = {
+        accessToken: "424242",
+        userAgent: "Artsy-Mobile/9.7.0",
+      }
+
+      const { homeView } = await runQuery(contextModuleQuery, context)
+
+      expect(homeView.section.contextModule).toBe("newWorksForYouGrid")
+    })
+
+    it("returns newWorksForYouRail when user has Eigen below 9.7.0", async () => {
+      const context = {
+        accessToken: "424242",
+        userAgent: "Artsy-Mobile/9.6.0",
+      }
+
+      const { homeView } = await runQuery(contextModuleQuery, context)
+
+      expect(homeView.section.contextModule).toBe("newWorksForYouRail")
+    })
+
+    it("returns newWorksForYouRail when user agent is missing", async () => {
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(contextModuleQuery, context)
+
+      expect(homeView.section.contextModule).toBe("newWorksForYouRail")
+    })
   })
 
   describe("showArtworksCardView", () => {
