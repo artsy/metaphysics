@@ -20046,6 +20046,12 @@ enum OrderedSetSorts {
   OWNER_TYPE_DESC
 }
 
+union OriginalImageUrlOrError = GravityMutationError | OriginalImageUrlSuccess
+
+type OriginalImageUrlSuccess {
+  imageUrl: String!
+}
+
 type Page {
   content(format: Format): String
 
@@ -23352,7 +23358,7 @@ type Query {
     term: String
   ): OrderedSetConnection
 
-  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL.
+  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL, or an error if the image is not found or the request is unauthorized.
   originalImageUrl(
     # The ID of the image
     imageId: String!
@@ -23362,7 +23368,7 @@ type Query {
 
     # Whether the image belongs to an artwork or a show
     ownerType: ImageOwnerType!
-  ): String
+  ): OriginalImageUrlOrError
   page(id: ID!): Page!
   pagesConnection(
     after: String
@@ -30133,7 +30139,7 @@ type Viewer {
     term: String
   ): OrderedSetConnection
 
-  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL.
+  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL, or an error if the image is not found or the request is unauthorized.
   originalImageUrl(
     # The ID of the image
     imageId: String!
@@ -30143,7 +30149,7 @@ type Viewer {
 
     # Whether the image belongs to an artwork or a show
     ownerType: ImageOwnerType!
-  ): String
+  ): OriginalImageUrlOrError
   page(id: ID!): Page!
   pagesConnection(
     after: String

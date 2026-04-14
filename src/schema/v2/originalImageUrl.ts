@@ -2,11 +2,14 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import fetch from "node-fetch"
 import config from "config"
 import { ResolverContext } from "types/graphql"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 
 const ImageOwnerType = new GraphQLEnumType({
   name: "ImageOwnerType",
@@ -16,11 +19,32 @@ const ImageOwnerType = new GraphQLEnumType({
   },
 })
 
+const OriginalImageUrlSuccessType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: "OriginalImageUrlSuccess",
+    fields: () => ({
+      imageUrl: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+    }),
+  }
+)
+
+const OriginalImageUrlOrErrorType = new GraphQLUnionType({
+  name: "OriginalImageUrlOrError",
+  types: [OriginalImageUrlSuccessType, GravityMutationErrorType],
+  resolveType: (data) => {
+    if (data._type === "GravityMutationError") return "GravityMutationError"
+    return "OriginalImageUrlSuccess"
+  },
+})
+
 export const originalImageUrl: GraphQLFieldConfig<any, ResolverContext> = {
-  type: GraphQLString,
+  type: OriginalImageUrlOrErrorType,
   description:
     "Resolves the original unprocessed image URL for an artwork or show install shot " +
-    "by following the Gravity redirect server-side. Returns a direct signed S3 URL.",
+    "by following the Gravity redirect server-side. Returns a direct signed S3 URL, " +
+    "or an error if the image is not found or the request is unauthorized.",
   args: {
     ownerType: {
       type: new GraphQLNonNull(ImageOwnerType),
@@ -54,9 +78,41 @@ export const originalImageUrl: GraphQLFieldConfig<any, ResolverContext> = {
 
     try {
       const response = await fetch(url, { headers, redirect: "manual" })
-      return response.headers.get("location")
-    } catch {
-      return null
+      const { status } = response
+
+      if (status === 401 || status === 403) {
+        return {
+          _type: "GravityMutationError",
+          message: "Unauthorized",
+          statusCode: status,
+        }
+      }
+
+      if (status === 404) {
+        return {
+          _type: "GravityMutationError",
+          message: "Image not found",
+          statusCode: 404,
+        }
+      }
+
+      const imageUrl = response.headers.get("location")
+
+      if (!imageUrl) {
+        return {
+          _type: "GravityMutationError",
+          message: "No redirect location returned by Gravity",
+          statusCode: status,
+        }
+      }
+
+      return { imageUrl }
+    } catch (error) {
+      return {
+        _type: "GravityMutationError",
+        message: error.message ?? "Unknown error fetching original image",
+        statusCode: null,
+      }
     }
   },
 }
