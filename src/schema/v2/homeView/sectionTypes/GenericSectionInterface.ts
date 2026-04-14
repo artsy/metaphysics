@@ -27,10 +27,6 @@ export const standardSectionFields: GraphQLFieldConfigMap<
     type: GraphQLString,
     description:
       "[Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)",
-    resolve: (parent, _args, context) =>
-      typeof parent.contextModule === "function"
-        ? parent.contextModule(context)
-        : parent.contextModule,
   },
   component: {
     type: HomeViewComponent,

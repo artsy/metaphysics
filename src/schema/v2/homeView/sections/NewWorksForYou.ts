@@ -7,17 +7,6 @@ import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { ResolverContext } from "types/graphql"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 
-export const isEligibleForGridView = (context: ResolverContext): boolean => {
-  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 9, minor: 7, patch: 0 }
-
-  if (actualEigenVersion) {
-    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
-  } else {
-    return false
-  }
-}
-
 export const isEligibleForNWFYExperiment = (
   context: ResolverContext
 ): boolean => {
@@ -34,11 +23,7 @@ export const isEligibleForNWFYExperiment = (
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: (context) => {
-    return isEligibleForGridView(context)
-      ? ("newWorksForYouGrid" as any)
-      : ContextModule.newWorksForYouRail
-  },
+  contextModule: ContextModule.newWorksForYouRail,
   component: {
     type: "ArtworksGrid",
     title: "New Works for You",
