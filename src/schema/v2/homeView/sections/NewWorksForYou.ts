@@ -34,7 +34,7 @@ export const isEligibleForNWFYExperiment = (
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: (parent, context) => {
+  contextModule: (context) => {
     return isEligibleForGridView(context)
       ? ("newWorksForYouGrid" as any)
       : ContextModule.newWorksForYouRail
