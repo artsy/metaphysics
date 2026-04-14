@@ -29,7 +29,7 @@ export const standardSectionFields: GraphQLFieldConfigMap<
       "[Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)",
     resolve: (parent, _args, context) =>
       typeof parent.contextModule === "function"
-        ? parent.contextModule(parent, context)
+        ? parent.contextModule(context)
         : parent.contextModule,
   },
   component: {
