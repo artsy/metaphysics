@@ -18,7 +18,6 @@ const COPY = {
     displayName: {
       price: "Price",
       galleryOffer: "Gallery offer",
-      counterOffer: "Seller's offer",
       makeOffer: "Your offer",
     },
   },
@@ -45,6 +44,48 @@ const COPY = {
     amountFallbackText: "Waiting for final costs",
   },
 } as const
+
+const getSubtotalDisplayName = (order: OrderJSON): string => {
+  const { mode, source, buyer_state, last_submitted_offer } = order
+
+  if (mode === "buy") {
+    if (source === "partner_offer" && buyer_state === "incomplete") {
+      return COPY.subtotal.displayName.galleryOffer
+    }
+    return COPY.subtotal.displayName.price
+  }
+
+  if (mode === "offer") {
+    // Negotiation completed states show "Price"
+    const isNegotiationCompleted =
+      buyer_state &&
+      [
+        "payment_failed",
+        "processing_payment",
+        "processing_offline_payment",
+        "approved",
+        "shipped",
+        "completed",
+        "refunded",
+        "canceled",
+      ].includes(buyer_state)
+
+    if (isNegotiationCompleted) {
+      return COPY.subtotal.displayName.price
+    }
+
+    // Offer that is still in negotiation
+    if (last_submitted_offer?.from_participant === "buyer") {
+      return COPY.subtotal.displayName.makeOffer
+    }
+    if (last_submitted_offer?.from_participant === "seller") {
+      return COPY.subtotal.displayName.galleryOffer
+    }
+  }
+
+  // Default fallback
+  return COPY.subtotal.displayName.price
+}
 
 const PricingBreakdownLineUnion = new GraphQLUnionType({
   name: "PricingBreakdownLineUnion",
@@ -92,8 +133,6 @@ export const resolveOrderPricingBreakdownLines = (
     items_total_cents: itemsTotalCents,
     buyer_total_cents: buyerTotalCents,
     selected_fulfillment_option: selectedFulfillmentOption,
-    source,
-    mode,
   } = order
 
   const amounts = [
@@ -125,10 +164,7 @@ export const resolveOrderPricingBreakdownLines = (
   // Subtotal line uses order.items_total_cents
   const subtotalLine: ResolvedPriceLineData = {
     __typename: "SubtotalLine",
-    displayName:
-      source === "partner_offer" && mode === "buy"
-        ? COPY.subtotal.displayName.galleryOffer
-        : COPY.subtotal.displayName.price,
+    displayName: getSubtotalDisplayName(order),
     amount: itemsTotalCents != null ? resolveMoney(itemsTotalCents) : null,
     amountFallbackText: null,
   }
@@ -258,7 +294,7 @@ export const resolveOfferPricingBreakdownLines = (
   const subtotalDisplayName =
     fromParticipant === "buyer"
       ? COPY.subtotal.displayName.makeOffer
-      : COPY.subtotal.displayName.counterOffer
+      : COPY.subtotal.displayName.galleryOffer
 
   const subtotalLine: ResolvedPriceLineData = {
     __typename: "SubtotalLine",

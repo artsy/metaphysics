@@ -1066,6 +1066,7 @@ describe("Me", () => {
         it("returns 'Gallery offer' displayName for limited partner offer in buy mode", async () => {
           orderJson.source = "partner_offer"
           orderJson.mode = "buy"
+          orderJson.buyer_state = "incomplete"
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 10000
           orderJson.tax_total_cents = 40000
@@ -1083,6 +1084,35 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Gallery offer",
+              amount: { amount: "5,000" },
+            },
+            { __typename: "ShippingLine" },
+            { __typename: "TaxLine" },
+            { __typename: "TotalLine" },
+          ])
+        })
+
+        it("returns 'Price' displayName for limited partner offer in buy mode after submitting", async () => {
+          orderJson.source = "partner_offer"
+          orderJson.mode = "buy"
+          orderJson.buyer_state = "submitted"
+          orderJson.items_total_cents = 500000
+          orderJson.shipping_total_cents = 10000
+          orderJson.tax_total_cents = 40000
+          orderJson.buyer_total_cents = 550000
+          context = {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+            artworkLoader: jest.fn().mockResolvedValue(artwork),
+            authenticatedArtworkVersionLoader: jest
+              .fn()
+              .mockResolvedValue(artworkVersion),
+          }
+          const result = await runAuthenticatedQuery(query, context)
+          expect(result.me.order.pricingBreakdownLines).toEqual([
+            {
+              __typename: "SubtotalLine",
+              displayName: "Price",
               amount: { amount: "5,000" },
             },
             { __typename: "ShippingLine" },
