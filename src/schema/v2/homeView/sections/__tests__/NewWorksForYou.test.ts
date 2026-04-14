@@ -20,6 +20,7 @@ describe("NewWorksForYou", () => {
             contextModule
             ownerType
             component {
+              type
               title
               description
               behaviors {
@@ -57,6 +58,7 @@ describe("NewWorksForYou", () => {
           },
           "description": null,
           "title": "New Works for You",
+          "type": "ArtworksGrid",
         },
         "contextModule": "newWorksForYouRail",
         "internalID": "home-view-section-new-works-for-you",
@@ -66,9 +68,85 @@ describe("NewWorksForYou", () => {
     `)
   })
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip("returns the section's connection data", async () => {
-    // see artworksForUser.test.ts
+  it("returns the section's connection data", async () => {
+    // detailed resolver logic is covered in artworksForUser.test.ts
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-new-works-for-you") {
+            ... on HomeViewSectionArtworks {
+              artworksConnection(first: 2) {
+                edges {
+                  node {
+                    slug
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const newForYouRecommendations = {
+      edges: [
+        { node: { artworkId: "608a7417bdfbd1a789ba092a" } },
+        { node: { artworkId: "308a7416bdfbd1a789ba0911" } },
+      ],
+    }
+
+    const artworksResponse = [
+      {
+        id: "gerhard-richter-test-artwork-1",
+        slug: "gerhard-richter-test-artwork-1",
+      },
+      {
+        id: "pablo-picasso-test-artwork-2",
+        slug: "pablo-picasso-test-artwork-2",
+      },
+    ]
+
+    const mockVortexGraphqlLoader = jest.fn(() => () =>
+      Promise.resolve({ data: { newForYouRecommendations } })
+    )
+    const artworksLoader = jest.fn(() => Promise.resolve(artworksResponse))
+
+    const context = {
+      accessToken: "424242",
+      userID: "user-id",
+      artworksLoader,
+      setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
+      setItemsLoader: jest.fn(() => Promise.resolve({ body: [] })),
+      authenticatedLoaders: {
+        vortexGraphqlLoader: mockVortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: jest.fn(),
+      },
+    } as any
+
+    const { homeView } = await runQuery(query, context)
+
+    expect(artworksLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
+      })
+    )
+
+    expect(homeView.section.artworksConnection.edges).toMatchInlineSnapshot(`
+      [
+        {
+          "node": {
+            "slug": "gerhard-richter-test-artwork-1",
+          },
+        },
+        {
+          "node": {
+            "slug": "pablo-picasso-test-artwork-2",
+          },
+        },
+      ]
+    `)
   })
 
   it("serves Version C", async () => {

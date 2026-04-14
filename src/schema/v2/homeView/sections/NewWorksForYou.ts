@@ -25,6 +25,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.newWorksForYouRail,
   component: {
+    type: "ArtworksGrid",
     title: "New Works for You",
     behaviors: {
       viewAll: {
