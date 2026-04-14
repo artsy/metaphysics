@@ -3,7 +3,6 @@ import { AuctionEngagementRule } from "../../rules/AuctionEngagementRule"
 import { ResolverContext } from "types/graphql"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../../../sections/AuctionLotsForYou"
-import { AuctionsHub } from "../../../sections/AuctionsHub"
 
 describe("AuctionEngagementRule", () => {
   it("moves auction-related sections after NewWorksForYou for engaged users", async () => {
@@ -27,7 +26,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -43,7 +41,6 @@ describe("AuctionEngagementRule", () => {
       { id: "tasks-section" },
       NewWorksForYou,
       AuctionLotsForYou,
-      AuctionsHub,
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
@@ -72,7 +69,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -88,7 +84,6 @@ describe("AuctionEngagementRule", () => {
       { id: "tasks-section" },
       NewWorksForYou,
       AuctionLotsForYou,
-      AuctionsHub,
       { id: "some-section" },
       { id: "another-section" },
       { id: "yet-another-section" },
@@ -117,7 +112,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -152,7 +146,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -182,7 +175,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()
@@ -212,7 +204,6 @@ describe("AuctionEngagementRule", () => {
       { id: "another-section" },
       AuctionLotsForYou,
       { id: "yet-another-section" },
-      AuctionsHub,
     ]
 
     const auctionEngagementRule = new AuctionEngagementRule()

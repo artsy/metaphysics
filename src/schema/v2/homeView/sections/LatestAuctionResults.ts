@@ -22,9 +22,6 @@ export const LatestAuctionResults: HomeViewSection = {
   },
   ownerType: OwnerType.auctionResultsForArtistsYouFollow,
   requiresAuthentication: true,
-  shouldBeDisplayed: (_context) => {
-    return true
-  },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {

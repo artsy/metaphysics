@@ -10,7 +10,11 @@ import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import { HomeViewCardType } from "./Card"
-import { HomeViewCardsSection } from "../sections/AuctionsHub"
+import { HomeViewSection } from "../sections"
+
+export interface HomeViewCardsSection extends HomeViewSection {
+  trackItemImpressions?: boolean
+}
 
 const HomeViewCardConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewCardType,

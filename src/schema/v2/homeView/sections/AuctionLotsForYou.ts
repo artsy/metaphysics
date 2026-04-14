@@ -18,9 +18,6 @@ export const AuctionLotsForYou: HomeViewSection = {
   },
   ownerType: OwnerType.lotsByArtistsYouFollow,
   requiresAuthentication: true,
-  shouldBeDisplayed: (_context) => {
-    return true
-  },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {
