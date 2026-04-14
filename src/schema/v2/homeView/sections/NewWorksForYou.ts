@@ -35,8 +35,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: (parent, context) => {
-    return parent.component?.type === "ArtworksGrid" &&
-      isEligibleForGridView(context)
+    return isEligibleForGridView(context)
       ? ("newWorksForYouGrid" as any)
       : ContextModule.newWorksForYouRail
   },
