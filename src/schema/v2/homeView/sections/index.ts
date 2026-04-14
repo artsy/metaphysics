@@ -6,7 +6,6 @@ import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { Auctions } from "./Auctions"
-import { AuctionsHub } from "./AuctionsHub"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
 import { ExploreByCategory } from "./ExploreByCategory"
@@ -59,7 +58,6 @@ export type HomeViewSection = {
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
-  AuctionsHub,
   BasedOnYourRecentSaves,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,

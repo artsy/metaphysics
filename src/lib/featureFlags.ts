@@ -9,7 +9,6 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * @see https://tools.artsy.net/feature-flags
  */
 const FEATURE_FLAGS_LIST = [
-  "onyx_auctions_hub",
   "onyx_nwfy-artworks-card-test",
 ] as const
 
