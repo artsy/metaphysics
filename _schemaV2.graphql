@@ -15722,9 +15722,6 @@ type Image {
   maxTiledWidth: Int
   orientation: String
   originalHeight: Int
-
-  # URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots and artwork images.
-  originalImageUrl: String
   originalWidth: Int
 
   # Value to use when `padding-bottom` for fluid image placeholders
@@ -15774,6 +15771,11 @@ type ImageEdge {
 
   # The item at the end of the edge
   node: Image
+}
+
+enum ImageOwnerType {
+  ARTWORK
+  SHOW
 }
 
 type ImageURLs {
@@ -23349,6 +23351,18 @@ type Query {
     # If present, will search by term
     term: String
   ): OrderedSetConnection
+
+  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL.
+  originalImageUrl(
+    # The ID of the image
+    imageId: String!
+
+    # The slug or ID of the artwork or show
+    ownerId: String!
+
+    # Whether the image belongs to an artwork or a show
+    ownerType: ImageOwnerType!
+  ): String
   page(id: ID!): Page!
   pagesConnection(
     after: String
@@ -30118,6 +30132,18 @@ type Viewer {
     # If present, will search by term
     term: String
   ): OrderedSetConnection
+
+  # Resolves the original unprocessed image URL for an artwork or show install shot by following the Gravity redirect server-side. Returns a direct signed S3 URL.
+  originalImageUrl(
+    # The ID of the image
+    imageId: String!
+
+    # The slug or ID of the artwork or show
+    ownerId: String!
+
+    # Whether the image belongs to an artwork or a show
+    ownerType: ImageOwnerType!
+  ): String
   page(id: ID!): Page!
   pagesConnection(
     after: String

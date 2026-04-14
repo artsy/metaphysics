@@ -827,16 +827,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               "Show all images, even if they are not ready or processing failed.",
           },
         },
-        resolve: ({ id, images }, { includeAll }) => {
-          const defaultImage = getDefault(images, includeAll)
-          if (!defaultImage) return null
-          return normalizeImageData(
-            {
-              ...defaultImage,
-              _api_image_redirect_url: `${config.GRAVITY_API_BASE}/artwork/${id}/image/${defaultImage.id}/original.jpg`,
-            },
-            includeAll
-          )
+        resolve: ({ images }, { includeAll }) => {
+          return normalizeImageData(getDefault(images, includeAll), includeAll)
         },
       },
       imageUrl: {
@@ -868,16 +860,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               "Show all images, even if they are not ready or processing failed.",
           },
         },
-        resolve: ({ id, images }, { size, includeAll }) => {
+        resolve: ({ images }, { size, includeAll }) => {
           const sorted = _.sortBy(images, "position")
-          const subset = size ? _.take(sorted, size) : sorted
-          return normalizeImageData(
-            subset.map((img) => ({
-              ...img,
-              _api_image_redirect_url: `${config.GRAVITY_API_BASE}/artwork/${id}/image/${img.id}/original.jpg`,
-            })),
+          const normalized = normalizeImageData(
+            size ? _.take(sorted, size) : sorted,
             includeAll
           )
+          return normalized
         },
       },
       inquiryQuestions: {

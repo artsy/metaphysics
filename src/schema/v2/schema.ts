@@ -209,6 +209,7 @@ import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerifica
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { NotificationsConnection } from "./notifications"
+import { originalImageUrl } from "./originalImageUrl"
 import { OrderedSetsConnection } from "./OrderedSet/orderedSetsConnection"
 import { CreatePageMutation } from "./Page/CreatePageMutation"
 import { DeletePageMutation } from "./Page/DeletePageMutation"
@@ -516,6 +517,7 @@ const rootFields = {
   node: ObjectIdentification.NodeField,
   notificationPreferences,
   notificationsConnection: NotificationsConnection,
+  originalImageUrl,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   orderedSetsConnection: OrderedSetsConnection,

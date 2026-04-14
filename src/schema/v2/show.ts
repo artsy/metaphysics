@@ -49,7 +49,6 @@ import {
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
-import config from "config"
 
 import ShowSorts from "./sorts/show_sorts"
 import EventStatus, { EventStatusEnums } from "./input_fields/event_status"
@@ -470,12 +469,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id }, options, { partnerShowImagesLoader }) => {
           const { body } = await partnerShowImagesLoader(id, options)
 
-          return normalizeImageData(
-            body.map((image: any) => ({
-              ...image,
-              _api_image_redirect_url: `${config.GRAVITY_API_BASE}/partner_show/${id}/image/${image.id}/original.jpg`,
-            }))
-          )
+          return normalizeImageData(body)
         },
       },
       imagesConnection: {
@@ -512,10 +506,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             offset,
             page,
             size,
-            body: body.map((image: any) => ({
-              ...image,
-              _api_image_redirect_url: `${config.GRAVITY_API_BASE}/partner_show/${id}/image/${image.id}/original.jpg`,
-            })),
+            body,
             args: options,
           })
         },

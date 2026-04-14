@@ -1,11 +1,8 @@
 /* eslint-disable promise/always-return */
 import { assign } from "lodash"
 import { getDefault } from "schema/v2/image"
-import fetch from "node-fetch"
 
 import { runQuery } from "schema/v2/test/utils"
-
-jest.mock("node-fetch")
 
 describe("getDefault", () => {
   it("returns the default image", () => {
@@ -367,65 +364,6 @@ describe("Image type", () => {
         expect(data.artwork.image.isProcessing).toBe(false)
         expect(data.artwork.image.processingFailed).toBe(true)
       })
-    })
-  })
-
-  describe("#originalImageUrl", () => {
-    const query = `{
-      artwork(id: "richard-prince-untitled-portrait") {
-        image {
-          originalImageUrl
-        }
-      }
-    }`
-
-    beforeEach(() => {
-      fetch.mockReset()
-    })
-
-    it("follows the Gravity redirect and returns the S3 URL", async () => {
-      fetch.mockResolvedValue({
-        headers: {
-          get: (header) =>
-            header === "location"
-              ? "https://s3.amazonaws.com/artsy-media/original.jpg"
-              : null,
-        },
-      })
-
-      const data = await runQuery(query, {
-        ...context,
-        accessToken: "user-access-token",
-        appToken: "app-token",
-      })
-
-      expect(data.artwork.image.originalImageUrl).toBe(
-        "https://s3.amazonaws.com/artsy-media/original.jpg"
-      )
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(
-          "/artwork/richard-prince-untitled-portrait/image/image-id/original.jpg"
-        ),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "X-ACCESS-TOKEN": "user-access-token",
-          }),
-          redirect: "manual",
-        })
-      )
-    })
-
-    it("returns null when there is no location header in the redirect response", async () => {
-      fetch.mockResolvedValue({
-        headers: { get: () => null },
-      })
-
-      const data = await runQuery(query, {
-        ...context,
-        accessToken: "user-access-token",
-      })
-
-      expect(data.artwork.image.originalImageUrl).toBeNull()
     })
   })
 })

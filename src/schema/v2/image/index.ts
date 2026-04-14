@@ -9,8 +9,6 @@ import {
   GraphQLString,
 } from "graphql"
 import { find, first, isArray } from "lodash"
-import fetch from "node-fetch"
-import config from "config"
 import { NullableIDField } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "../fields/pagination"
@@ -64,34 +62,6 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     caption: {
       type: GraphQLString,
-    },
-    originalImageUrl: {
-      type: GraphQLString,
-      description:
-        "URL to the original unprocessed image. Resolves the Gravity redirect to return a direct S3 URL. Currently supported for show install shots and artwork images.",
-      resolve: async (
-        { _api_image_redirect_url },
-        _args: Record<string, never>,
-        { accessToken, appToken }: ResolverContext
-      ) => {
-        if (!_api_image_redirect_url) return null
-
-        const headers: Record<string, string> = {
-          "X-XAPP-TOKEN": appToken || config.GRAVITY_XAPP_TOKEN,
-        }
-        if (accessToken) headers["X-ACCESS-TOKEN"] = accessToken
-
-        try {
-          const response = await fetch(_api_image_redirect_url, {
-            headers,
-            redirect: "manual",
-          })
-
-          return response.headers.get("location")
-        } catch {
-          return null
-        }
-      },
     },
     cropped: CroppedUrl,
     deepZoom: DeepZoom,
