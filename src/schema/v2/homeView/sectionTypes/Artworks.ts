@@ -13,6 +13,7 @@ export interface HomeViewArtworksSection extends HomeViewSection {
   trackItemImpressions?: boolean
   /** @deprecated */
   showArtworksCardView?: (context: ResolverContext) => boolean
+  shouldShowInGrid?: boolean
 }
 
 export const HomeViewArtworksSectionType = new GraphQLObjectType<
@@ -37,6 +38,10 @@ export const HomeViewArtworksSectionType = new GraphQLObjectType<
           ? parent.showArtworksCardView(context)
           : false
       },
+    },
+    shouldShowInGrid: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (parent) => !!parent.shouldShowInGrid,
     },
     artworksConnection: {
       type: artworkConnection.connectionType,

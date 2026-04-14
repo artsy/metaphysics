@@ -20,10 +20,32 @@ export const isEligibleForNWFYExperiment = (
   }
 }
 
+export const isEligibleForGridView = (context: ResolverContext): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+  const minimumEigenVersion = { major: 9, minor: 7, patch: 0 }
+
+  console.log("LOGD actualEigenVersion", actualEigenVersion)
+  if (actualEigenVersion) {
+    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
+  } else {
+    return false
+  }
+}
+
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.newWorksForYouRail,
+  contextModule: (parent, context) => {
+    // TODO: add app version check
+
+    const contextModule =
+      (parent as HomeViewArtworksSection).shouldShowInGrid &&
+      isEligibleForGridView(context)
+        ? ("newWorksForYouGrid" as any)
+        : ContextModule.newWorksForYouRail
+
+    return contextModule
+  },
   component: {
     title: "New Works for You",
     behaviors: {
@@ -47,6 +69,7 @@ export const NewWorksForYou: HomeViewArtworksSection = {
       variant.name === "variant-a"
     )
   },
+  shouldShowInGrid: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {
       // formerly specified client-side

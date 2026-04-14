@@ -38,7 +38,9 @@ type MaybeResolved<T> =
 
 export type HomeViewSection = {
   id: string
-  contextModule?: ContextModule
+  contextModule?:
+    | ContextModule
+    | ((parent: HomeViewSection, context: ResolverContext) => ContextModule)
   featureFlag?: FeatureFlag
   component?: {
     title?: MaybeResolved<string>
