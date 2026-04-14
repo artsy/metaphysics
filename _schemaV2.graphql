@@ -15061,7 +15061,6 @@ type HomeViewSectionArtworks implements HomeViewSectionGeneric & Node {
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
-  shouldShowInGrid: Boolean!
   showArtworksCardView: Boolean! @deprecated(reason: "No longer used")
   trackItemImpressions: Boolean!
 }

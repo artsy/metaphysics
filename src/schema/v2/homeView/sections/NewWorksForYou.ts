@@ -1,4 +1,4 @@
-import { ContextModule, OwnerType } from "@artsy/cohesion"
+import { /* ContextModule, */ OwnerType } from "@artsy/cohesion"
 import { getExperimentVariant } from "lib/featureFlags"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -20,30 +20,13 @@ export const isEligibleForNWFYExperiment = (
   }
 }
 
-export const isEligibleForGridView = (context: ResolverContext): boolean => {
-  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
-  const minimumEigenVersion = { major: 9, minor: 7, patch: 0 }
-
-  if (actualEigenVersion) {
-    return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
-  } else {
-    return false
-  }
-}
-
 export const NewWorksForYou: HomeViewArtworksSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: (parent, context) => {
-    const contextModule =
-      (parent as HomeViewArtworksSection).shouldShowInGrid &&
-      isEligibleForGridView(context)
-        ? ("newWorksForYouGrid" as any)
-        : ContextModule.newWorksForYouRail
-
-    return contextModule
-  },
+  // TODO: add new ContextModule
+  contextModule: "newWorksForYouGrid" as any,
   component: {
+    type: "ArtworksGrid",
     title: "New Works for You",
     behaviors: {
       viewAll: {
@@ -66,7 +49,6 @@ export const NewWorksForYou: HomeViewArtworksSection = {
       variant.name === "variant-a"
     )
   },
-  shouldShowInGrid: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {
       // formerly specified client-side
