@@ -67,6 +67,7 @@ interface Input {
     artworkIds?: string[]
     locationId?: string
     partnerArtistId?: string
+    partnerListId?: string
     published?: boolean
   }
 }
@@ -376,6 +377,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         artwork_ids: filters.artworkIds,
         location_id: filters.locationId,
         partner_artist_id: filters.partnerArtistId,
+        partner_list_id: filters.partnerListId,
         published: filters.published,
       }
     }
