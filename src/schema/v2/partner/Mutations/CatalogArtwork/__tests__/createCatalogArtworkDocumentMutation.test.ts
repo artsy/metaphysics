@@ -20,7 +20,7 @@ describe("CreateCatalogArtworkDocumentMutation", () => {
               internalID
               filename
               title
-              url
+              publicURL
             }
           }
           ... on CreateCatalogArtworkDocumentFailure {
@@ -66,8 +66,8 @@ describe("CreateCatalogArtworkDocumentMutation", () => {
             internalID: "document-abc",
             filename: "document.pdf",
             title: "Provenance",
-            url:
-              "https://s3.amazonaws.com/artsy-uploads/catalog_artworks/catalog-artwork-123/document.pdf",
+            publicURL:
+              "https://api.artsy.test/api/v1/catalog_artwork_document/document-abc.pdf?catalog_artwork_id=catalog-artwork-123",
           },
         },
       },
