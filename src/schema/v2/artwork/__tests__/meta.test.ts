@@ -1,4 +1,9 @@
 import { runQuery } from "schema/v2/test/utils"
+import * as featureFlags from "lib/featureFlags"
+
+jest.mock("lib/featureFlags", () => ({
+  getExperimentVariant: jest.fn(),
+}))
 
 describe("Meta", () => {
   const artworkData = {
@@ -91,6 +96,107 @@ describe("Meta", () => {
               "Check out Hans Hartung, P. 25-1975-H-8 (1975), From Galerie Michel Descours",
           },
         },
+      })
+    })
+  })
+
+  describe("title experiment", () => {
+    beforeEach(() => {
+      artworkData.sale_message = "Price on request"
+    })
+
+    const query = `
+      {
+        artwork(id:"hans-hartung-p-25-1975-h-8") {
+          meta {
+            title
+          }
+        }
+      }
+    `
+
+    test("control renders current title", async () => {
+      jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+        enabled: true,
+        name: "control",
+      } as any)
+
+      const data = await runQuery(query, context as any)
+
+      expect(data.artwork.meta.title).toBe(
+        "Hans Hartung | P. 25-1975-H-8 (1975) | Available for Sale | Artsy"
+      )
+    })
+
+    test("variant-a shortens availability", async () => {
+      jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+        enabled: true,
+        name: "variant-a",
+      } as any)
+
+      const data = await runQuery(query, context as any)
+
+      expect(data.artwork.meta.title).toBe(
+        "Hans Hartung | P. 25-1975-H-8 (1975) | For Sale | Artsy"
+      )
+    })
+
+    test("variant-b shortens availability and removes year", async () => {
+      jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+        enabled: true,
+        name: "variant-b",
+      } as any)
+
+      const data = await runQuery(query, context as any)
+
+      expect(data.artwork.meta.title).toBe(
+        "Hans Hartung | P. 25-1975-H-8 | For Sale | Artsy"
+      )
+    })
+
+    describe("with a long title", () => {
+      beforeEach(() => {
+        artworkData.title =
+          "This title is very very very very very very very very very long"
+      })
+
+      test("control displays full title", async () => {
+        jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+          enabled: true,
+          name: "control",
+        } as any)
+
+        const data = await runQuery(query, context as any)
+
+        expect(data.artwork.meta.title).toBe(
+          "Hans Hartung | This title is very very very very very very very very very long (1975) | Available for Sale | Artsy"
+        )
+      })
+
+      test("variant-a truncates title", async () => {
+        jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+          enabled: true,
+          name: "variant-a",
+        } as any)
+
+        const data = await runQuery(query, context as any)
+
+        expect(data.artwork.meta.title).toBe(
+          "Hans Hartung | This title is very very very very very very very ver… (1975) | For Sale | Artsy"
+        )
+      })
+
+      test("variant-b truncates title", async () => {
+        jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
+          enabled: true,
+          name: "variant-b",
+        } as any)
+
+        const data = await runQuery(query, context as any)
+
+        expect(data.artwork.meta.title).toBe(
+          "Hans Hartung | This title is very very very very very very very ver… | For Sale | Artsy"
+        )
       })
     })
   })
