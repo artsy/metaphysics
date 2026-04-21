@@ -301,6 +301,8 @@ import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/d
 import { addArtworkToPartnerListMutation } from "./partner/Mutations/PartnerList/addArtworkToPartnerListMutation"
 import { removeArtworkFromPartnerListMutation } from "./partner/Mutations/PartnerList/removeArtworkFromPartnerListMutation"
 import { bulkAddArtworksToPartnerListMutation } from "./partner/Mutations/PartnerList/bulkAddArtworksToPartnerListMutation"
+import { bulkDeleteArtworksFromPartnerListMutation } from "./partner/Mutations/PartnerList/bulkDeleteArtworksFromPartnerListMutation"
+import { moveArtworksBetweenPartnerListsMutation } from "./partner/Mutations/PartnerList/moveArtworksBetweenPartnerListsMutation"
 import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/PartnerList/updatePartnerListArtworkPositionMutation"
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
@@ -594,6 +596,7 @@ export default new GraphQLSchema({
       artsyShippingOptIn: artsyShippingOptInMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToPartnerList: bulkAddArtworksToPartnerListMutation,
+      bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
@@ -728,6 +731,7 @@ export default new GraphQLSchema({
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
+      moveArtworksBetweenPartnerLists: moveArtworksBetweenPartnerListsMutation,
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
