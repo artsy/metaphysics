@@ -596,6 +596,41 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
     )
   })
 
+  it("passes update_catalog when provided", async () => {
+    const updateCatalogMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            updateCatalog: true
+            metadata: { category: "Painting" }
+            filters: { artworkIds: ["artwork1"] }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(updateCatalogMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      expect.objectContaining({
+        update_catalog: true,
+      })
+    )
+  })
+
   it("passes artsy_listing in metadata when provided", async () => {
     const artsyListingMutation = gql`
       mutation {

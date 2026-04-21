@@ -3544,6 +3544,7 @@ type ArtworkImport implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   locationID: String
+  partnerListID: String
   rawDataMapping: JSON!
   rowsConnection(
     after: String
@@ -5566,6 +5567,9 @@ input BulkUpdateArtworksMetadataMutationInput {
 
   # Source of the mutation being triggered, E.g. admin, artworks_list
   source: BulkUpdateSourceEnum
+
+  # When true, catalog-eligible fields are routed to CatalogArtwork records instead of Artwork
+  updateCatalog: Boolean
 }
 
 type BulkUpdateArtworksMetadataMutationPayload {
@@ -10128,6 +10132,7 @@ input CreateArtworkImportInput {
   parseWithAI: Boolean
   parseWithAIModel: String
   partnerID: String!
+  partnerListID: String
   s3Bucket: String!
   s3Key: String!
 
@@ -10912,6 +10917,9 @@ input CreatePartnerListMutationInput {
 
   # End date for the list.
   endAt: String
+
+  # The ID of the fair to associate with this list.
+  fairID: String
 
   # The type of list (show, fair, or other).
   listType: PartnerListTypeEnum
@@ -21390,6 +21398,7 @@ type PartnerList {
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+  fair: Fair
 
   # A globally unique ID.
   id: ID!
@@ -27696,6 +27705,9 @@ input UpdatePartnerListMutationInput {
 
   # End date for the list.
   endAt: String
+
+  # The ID of the fair to associate with this list.
+  fairID: String
 
   # The ID of the partner list.
   id: String!
