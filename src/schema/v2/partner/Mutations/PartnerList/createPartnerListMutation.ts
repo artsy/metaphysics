@@ -18,6 +18,7 @@ interface CreatePartnerListMutationInputProps {
   listType?: string
   startAt?: string
   endAt?: string
+  fairID?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -75,6 +76,10 @@ export const createPartnerListMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "End date for the list.",
     },
+    fairID: {
+      type: GraphQLString,
+      description: "The ID of the fair to associate with this list.",
+    },
   },
   outputFields: {
     partnerListOrError: {
@@ -85,7 +90,7 @@ export const createPartnerListMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { partnerID, name, listType, startAt, endAt },
+    { partnerID, name, listType, startAt, endAt, fairID },
     { createPartnerListLoader }
   ) => {
     if (!createPartnerListLoader) {
@@ -100,6 +105,7 @@ export const createPartnerListMutation = mutationWithClientMutationId<
     if (listType !== undefined) gravityArgs.list_type = listType
     if (startAt !== undefined) gravityArgs.start_at = startAt
     if (endAt !== undefined) gravityArgs.end_at = endAt
+    if (fairID !== undefined) gravityArgs.fair_id = fairID
 
     try {
       return await createPartnerListLoader(gravityArgs)

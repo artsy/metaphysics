@@ -713,6 +713,10 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ location_id }) => location_id,
     },
+    partnerListID: {
+      type: GraphQLString,
+      resolve: ({ partner_list_id }) => partner_list_id,
+    },
     source: {
       type: GraphQLString,
       description: "Source of the import: 'bulk_import' or 'multi_add'",

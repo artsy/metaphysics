@@ -59,6 +59,34 @@ describe("UpdatePartnerListMutation", () => {
     })
   })
 
+  it("passes fairID to gravity when provided", async () => {
+    const fairMutation = gql`
+      mutation {
+        updatePartnerList(input: { id: "list-abc", fairID: "fair-xyz" }) {
+          partnerListOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerListLoader: jest.fn().mockResolvedValue({
+        id: "list-abc",
+        name: "Updated Name",
+        list_type: "fair",
+        artworks_count: 5,
+        fair_id: "fair-xyz",
+      }),
+    }
+
+    await runAuthenticatedQuery(fairMutation, context)
+
+    expect(context.updatePartnerListLoader).toHaveBeenCalledWith("list-abc", {
+      fair_id: "fair-xyz",
+    })
+  })
+
   it("returns a mutation error on failure", async () => {
     const context = {
       updatePartnerListLoader: jest.fn().mockRejectedValue({
