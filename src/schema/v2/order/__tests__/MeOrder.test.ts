@@ -48,6 +48,7 @@ describe("Me", () => {
       shipping_address_line2: "Apt 4B",
       tax_total_cents: 4299,
       shipping_origin: "Marfa, TX, US",
+      shipping_radius: "domestic",
       submitted_offers: [],
     }
     artwork = artwork || {
@@ -133,6 +134,7 @@ describe("Me", () => {
                 type
               }
               shippingOrigin
+              shippingRadius
               shippingTotal {
                 minor
               }
@@ -242,6 +244,7 @@ describe("Me", () => {
           type: "DOMESTIC_FLAT",
         },
         shippingOrigin: "Marfa, TX, US",
+        shippingRadius: "domestic",
         shippingTotal: {
           minor: 2000,
         },
