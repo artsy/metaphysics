@@ -260,6 +260,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   showID: {
     type: GraphQLString,
   },
+  partnerListID: {
+    type: GraphQLString,
+  },
   sold: {
     type: GraphQLBoolean,
   },
@@ -493,6 +496,7 @@ const convertFilterArgs = ({
   partnerCities,
   partnerID,
   partnerIDs,
+  partnerListID,
   priceRange,
   saleID,
   showID,
@@ -535,6 +539,7 @@ const convertFilterArgs = ({
     partner_cities: partnerCities,
     partner_id: partnerID,
     partner_ids: partnerIDs,
+    partner_list_id: partnerListID,
     partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
@@ -563,6 +568,7 @@ const filterArtworksConnectionTypeFactory = (
       filterArtworksUncachedLoader,
       isCMSRequest,
       partnerArtworksAllLoader,
+      partnerListArtworksLoader,
     } = ctx
     const argsProvidedAtRoot = convertFilterArgs(rootArguments as any)
     removeEmptyValues(argsProvidedAtRoot)
@@ -676,17 +682,20 @@ const filterArtworksConnectionTypeFactory = (
 
     let hits, aggregations
 
-    // For simple CMS requests, use partnerArtworksAllLoader instead of search.
+    // For simple CMS requests, bypass search and use a direct loader instead.
     // This is a workaround to try to not use search if we don't need to (for resiliency).
     // We've seen search can not be stable and partners notice that in CMS.
-    // Currently, this will serve requests for the landing page of /artworks listings in CMS.
-    if (isCMSRequest && partnerArtworksAllLoader) {
+    // Currently, this will serve requests for the landing page of /artworks, OS catalog, and
+    // PartnerList artworks listings in CMS.
+    if (isCMSRequest) {
       const {
         partnerID,
+        partnerListID,
         sort,
         includeUnpublished,
         disableNotForSaleSorting,
         medium,
+        includeNonArtsyListed,
         // pagination arguments we want to exclude
         // from the check for other filters
         first,
@@ -695,9 +704,7 @@ const filterArtworksConnectionTypeFactory = (
         ...otherFilters
       } = input
 
-      const isSimpleRequest =
-        Boolean(partnerID) &&
-        sort === "-created_at" &&
+      const isSimpleCMSRequest =
         includeUnpublished &&
         disableNotForSaleSorting &&
         // medium must be either undefined/null or the wildcard "*"
@@ -706,22 +713,44 @@ const filterArtworksConnectionTypeFactory = (
         // (and ignored pagination args) were passed in
         Object.keys(otherFilters).length === 0
 
-      if (isSimpleRequest) {
-        const partnerArtworksOptions = {
+      if (
+        isSimpleCMSRequest &&
+        partnerArtworksAllLoader &&
+        Boolean(partnerID) &&
+        sort === "-created_at"
+      ) {
+        const { body, headers } = await partnerArtworksAllLoader(partnerID, {
           size: gravityOptions.size,
           page: gravityOptions.page,
           sort: "-created_at,-id",
           total_count: true,
-        }
-
-        const { body, headers } = await partnerArtworksAllLoader(
-          partnerID,
-          partnerArtworksOptions
-        )
+          include_non_artsy_listed: includeNonArtsyListed,
+        })
 
         const total = parseInt(headers["x-total-count"] || "0", 10)
         aggregations = { total: { value: total } }
         hits = body
+      } else if (
+        isSimpleCMSRequest &&
+        partnerListArtworksLoader &&
+        Boolean(partnerListID) &&
+        sort === "partner_list_position"
+      ) {
+        // After creating a list by adding artworks, the user will likely
+        // quickly navigate to that list page. In case the OS reindexing is
+        // delayed, serve the basic landing page directly.
+        const { body, headers } = await partnerListArtworksLoader(
+          partnerListID,
+          {
+            size: gravityOptions.size,
+            page: gravityOptions.page,
+            total_count: true,
+          }
+        )
+
+        const total = parseInt(headers["x-total-count"] || "0", 10)
+        aggregations = { total: { value: total } }
+        hits = body.map((node: any) => node.artwork)
       }
     }
 
