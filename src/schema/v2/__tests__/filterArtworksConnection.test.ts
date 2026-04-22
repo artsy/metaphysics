@@ -1087,6 +1087,142 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("simple partner list CMS requests", () => {
+    it("uses partnerListArtworksLoader for simple partner list CMS requests", async () => {
+      const partnerListArtworks = [
+        { artwork: { id: "artwork1", title: "Artwork 1" } },
+        { artwork: { id: "artwork2", title: "Artwork 2" } },
+      ]
+
+      const mockPartnerListArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          body: partnerListArtworks,
+          headers: {
+            "x-total-count": "2",
+          },
+        })
+      )
+
+      const mockFilterArtworksLoader = jest.fn()
+
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+        isCMSRequest: true,
+        partnerListArtworksLoader: mockPartnerListArtworksLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              partnerListID: "list123"
+              sort: "partner_list_position"
+              includeUnpublished: true
+              disableNotForSaleSorting: true
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+            counts {
+              total
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockPartnerListArtworksLoader).toHaveBeenCalledWith(
+        "list123",
+        expect.objectContaining({
+          size: 10,
+          page: 1,
+          total_count: true,
+        })
+      )
+
+      expect(mockFilterArtworksLoader).not.toHaveBeenCalled()
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "artwork1", title: "Artwork 1" } },
+        { node: { slug: "artwork2", title: "Artwork 2" } },
+      ])
+      expect(artworksConnection.counts.total).toEqual(2)
+    })
+
+    it("falls back to search for partner list requests with additional filters", async () => {
+      const mockFilterArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          hits: [
+            {
+              id: "artwork1",
+              title: "Artwork 1",
+            },
+          ],
+          aggregations: {
+            total: {
+              value: 1,
+            },
+          },
+        })
+      )
+
+      const mockPartnerListArtworksLoader = jest.fn()
+
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+        isCMSRequest: true,
+        partnerListArtworksLoader: mockPartnerListArtworksLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              partnerListID: "list123"
+              sort: "partner_list_position"
+              includeUnpublished: true
+              disableNotForSaleSorting: true
+              priceRange: "1000-5000"
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+            counts {
+              total
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalled()
+      expect(mockPartnerListArtworksLoader).not.toHaveBeenCalled()
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "artwork1", title: "Artwork 1" } },
+      ])
+      expect(artworksConnection.counts.total).toEqual(1)
+    })
+  })
+
   describe("includeNonArtsyListed filter", () => {
     it("passes include_non_artsy_listed to the loader when provided", async () => {
       const mockFilterArtworksLoader = jest.fn(() =>
