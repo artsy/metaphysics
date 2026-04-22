@@ -245,6 +245,11 @@ import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccoun
 import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import { createBrandKitMutation } from "./partner/Mutations/createBrandKitMutation"
+import { updateBrandKitMutation } from "./partner/Mutations/updateBrandKitMutation"
+import { deleteBrandKitMutation } from "./partner/Mutations/deleteBrandKitMutation"
+import { updateBrandKitLogoMutation } from "./partner/Mutations/updateBrandKitLogoMutation"
+import { deleteBrandKitLogoMutation } from "./partner/Mutations/deleteBrandKitLogoMutation"
 import { createInstagramPostMutation } from "./createInstagramPostMutation"
 import { instagramPost, instagramPostsConnection } from "./instagramPost"
 import {
@@ -648,6 +653,11 @@ export default new GraphQLSchema({
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,
       createMailchimpCampaign: createMailchimpCampaignMutation,
+      createBrandKit: createBrandKitMutation,
+      updateBrandKit: updateBrandKitMutation,
+      deleteBrandKit: deleteBrandKitMutation,
+      updateBrandKitLogo: updateBrandKitLogoMutation,
+      deleteBrandKitLogo: deleteBrandKitLogoMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,

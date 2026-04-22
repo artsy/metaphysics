@@ -74,6 +74,7 @@ import {
   EXAMPLE_TEMPLATES,
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
+import { BrandKitType } from "./brandKit"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -1366,6 +1367,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
+      },
+      brandKit: {
+        type: BrandKitType,
+        description:
+          "The partner's brand kit — colors, fonts, and logo used for branded surfaces",
+        resolve: async ({ _id }, _args, { brandKitLoader }) => {
+          if (!brandKitLoader) return null
+          const response = await brandKitLoader({ partner_id: _id }).catch(
+            () => null
+          )
+          return response && Object.keys(response).length > 0 ? response : null
+        },
       },
       analyticsPageTimeFrame: {
         description: "Time frame selected for analytics page",
