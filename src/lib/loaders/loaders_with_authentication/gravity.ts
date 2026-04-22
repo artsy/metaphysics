@@ -1867,5 +1867,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    bulkDeleteArtworksFromPartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}/artworks`,
+      {},
+      { method: "DELETE" }
+    ),
+    moveArtworksBetweenPartnerListsLoader: gravityLoader(
+      (id) => `partner_list/${id}/move`,
+      {},
+      { method: "POST" }
+    ),
   }
 }
