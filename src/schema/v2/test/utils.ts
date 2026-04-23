@@ -4,7 +4,7 @@ import { graphql, GraphQLError, GraphQLArgs } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 
-export const runQueryOrThrow = (args: GraphQLArgs) => {
+export const runQueryOrThrow = (args: GraphQLArgs): Promise<any> => {
   return graphql(args).then((result) => {
     if (result.errors) {
       const errors = result.errors.reduce((acc, gqlError) => {

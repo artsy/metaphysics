@@ -81,7 +81,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const HomeView: GraphQLFieldConfig<void, ResolverContext> = {
-  type: GraphQLNonNull(HomeViewType),
+  type: new GraphQLNonNull(HomeViewType),
   description: "Home view content",
   resolve: () => {
     // dummy response object, otherwise the nested fields won’t work

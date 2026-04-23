@@ -671,7 +671,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       editionSet: {
         type: EditionSet.type,
-        args: { id: { type: GraphQLNonNull(GraphQLString) } },
+        args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: ({ edition_sets }, { id }) =>
           (edition_sets ?? []).find((edition) => edition.id === id),
       },
@@ -1238,14 +1238,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           artworkLayers(id, relatedLayersLoader),
       },
       listedArtworksConnection: {
-        type: GraphQLNonNull(artworkConnection.connectionType),
+        type: new GraphQLNonNull(artworkConnection.connectionType),
         args: pageable(),
         deprecationReason:
           "This field is deprecated as collector artwork submissions are no longer accepted.",
         resolve: () => emptyConnection,
       },
       isListed: {
-        type: GraphQLNonNull(GraphQLBoolean),
+        type: new GraphQLNonNull(GraphQLBoolean),
         deprecationReason:
           "This field is deprecated as collector artwork submissions are no longer accepted.",
         resolve: () => false,

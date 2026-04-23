@@ -77,7 +77,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
   fields: {
     artistIds: {
-      type: GraphQLList(GraphQLString),
+      type: new GraphQLList(GraphQLString),
       description: "The artist IDs to be assigned",
     },
     artsyListing: {
@@ -107,7 +107,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       description: "The category (medium type) to be assigned",
     },
     dates: {
-      type: GraphQLList(GraphQLInt),
+      type: new GraphQLList(GraphQLInt),
       description: "Array of dates as numbers to be assigned",
     },
     editionSetsCount: {
@@ -230,7 +230,7 @@ const BulkUpdateArtworksMetadataResponseType = new GraphQLObjectType<
   name: "BulkUpdateArtworksMetadataResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 

@@ -114,7 +114,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
   },
   artistNationalities: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   artistSeriesID: {
     type: GraphQLString,
@@ -175,7 +175,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   importSources: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   includeAllJSON: {
     type: GraphQLBoolean,
@@ -218,7 +218,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   materialsTerms: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   medium: {
     type: GraphQLString,

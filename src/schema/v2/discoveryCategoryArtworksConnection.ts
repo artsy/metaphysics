@@ -10,11 +10,11 @@ export const discoveryCategoryArtworksConnection = {
   args: {
     ...baseConnection.args,
     categorySlug: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The slug of the discovery category to filter artworks by",
     },
     filterSlug: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description:
         "The slug of the specific filter within the category to apply",
     },

@@ -7,12 +7,12 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
-  Thunk,
   GraphQLFieldConfigMap,
   GraphQLFieldConfig,
   GraphQLEnumType,
   GraphQLInt,
 } from "graphql"
+import { Thunk } from "types/graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"

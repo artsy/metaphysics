@@ -7,7 +7,7 @@ import {
   getExchangeStitchedSchema,
 } from "./testingUtils"
 import schema from "schema/v2/schema"
-import { addMockFunctionsToSchema } from "graphql-tools"
+import { addMocksToSchema } from "@graphql-tools/mock"
 
 it("extends the Order objects", async () => {
   const mergedSchema = await getExchangeMergedSchema()
@@ -724,7 +724,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -739,7 +739,7 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: true } },
@@ -760,7 +760,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -774,7 +774,7 @@ describe.skip("resolving a stitched conversation", () => {
         }),
       },
     })
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: false } },
@@ -805,7 +805,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -820,11 +820,10 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(
-      allMergedSchemas,
-      query,
-      {},
-      {
+    const result = await graphql({
+      schema: mockedSchema,
+      source: query,
+      contextValue: {
         conversationLoader: jest.fn(() =>
           Promise.resolve({
             items: [
@@ -837,8 +836,8 @@ describe.skip("resolving a stitched conversation", () => {
             ],
           })
         ),
-      }
-    )
+      },
+    })
 
     expect(result).toEqual({
       data: {
@@ -872,7 +871,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -887,7 +886,7 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: {

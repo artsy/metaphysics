@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
-  Thunk,
 } from "graphql"
+import { Thunk } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "./artist"

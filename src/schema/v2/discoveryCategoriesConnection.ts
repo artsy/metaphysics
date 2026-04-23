@@ -25,17 +25,17 @@ const ArtworkFilterNodeType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkFilterNode",
   fields: {
     href: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The href for this filtered connection",
       resolve: ({ href }) => href,
     },
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The display title for this filtered connection",
       resolve: ({ title }) => title,
     },
     slug: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The slug for this filter, derived from the title",
       resolve: ({ slug }) => slug,
     },
@@ -55,12 +55,12 @@ const FiltersForArtworksConnectionType = connectionWithCursorInfo({
 const DiscoveryCategoryFields = {
   id: GlobalIDField,
   internalID: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: "A type-specific ID",
     resolve: ({ slug }) => slug,
   },
   category: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: "The ID of the category",
   },
   imageUrl: {
@@ -72,11 +72,11 @@ const DiscoveryCategoryFields = {
     description: "The slug of the category",
   },
   href: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: "The href of the category",
   },
   title: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: "The display title of the category",
   },
 }
@@ -91,8 +91,8 @@ export const DiscoveryMarketingCollectionType = new GraphQLObjectType<
   fields: {
     ...DiscoveryCategoryFields,
     marketingCollections: {
-      type: GraphQLNonNull(
-        GraphQLList(GraphQLNonNull(MarketingCollectionType))
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(MarketingCollectionType))
       ),
       args: pageable({}),
       description: "Marketing collections for this discovery category",
@@ -238,12 +238,12 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
   fields: {
     id: GlobalIDField,
     internalID: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "A type-specific ID",
       resolve: ({ slug }) => slug,
     },
     category: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the category",
     },
     imageUrl: {
@@ -255,11 +255,11 @@ export const DiscoveryCategoryType = new GraphQLObjectType<
       description: "The slug of the category",
     },
     href: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The href of the category",
     },
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The display title of the category",
     },
     filtersForArtworksConnection: {

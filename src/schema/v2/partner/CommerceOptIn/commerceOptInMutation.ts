@@ -22,7 +22,7 @@ export const CommerceOptInResponseType = new GraphQLObjectType<
   name: "CommerceOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 

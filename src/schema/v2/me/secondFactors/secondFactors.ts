@@ -191,7 +191,7 @@ export const BackupSecondFactors = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     secondFactors: {
       type: new GraphQLNonNull(
-        GraphQLList(new GraphQLNonNull(BackupSecondFactor))
+        new GraphQLList(new GraphQLNonNull(BackupSecondFactor))
       ),
     },
   },

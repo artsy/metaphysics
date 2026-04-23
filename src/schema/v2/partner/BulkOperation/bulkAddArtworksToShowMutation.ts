@@ -36,7 +36,7 @@ const BulkAddArtworksToShowResponseType = new GraphQLObjectType<
   name: "BulkAddArtworksToShowResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 

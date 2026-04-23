@@ -1,4 +1,4 @@
-import { mergeSchemas as _mergeSchemas } from "graphql-tools"
+import { stitchSchemas } from "@graphql-tools/stitch"
 import { executableCausalitySchema } from "lib/stitching/causality/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import {
@@ -70,8 +70,9 @@ export const incrementalMergeSchemas = (localSchema) => {
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
-  const mergedSchema = _mergeSchemas({
-    schemas: [...schemas, ...extensionSchemas],
+  const mergedSchema = stitchSchemas({
+    subschemas: schemas,
+    typeDefs: extensionSchemas,
     resolvers: extensionResolvers,
     mergeDirectives: true,
   })

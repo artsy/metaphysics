@@ -29,7 +29,7 @@ const ArtsyShippingOptInResponseType = new GraphQLObjectType<
   name: "ArtsyShippingOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 

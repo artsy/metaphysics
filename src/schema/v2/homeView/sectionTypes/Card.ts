@@ -73,7 +73,7 @@ export const HomeViewCardType = new GraphQLObjectType<
       },
     },
     subtitle: { type: GraphQLString },
-    title: { type: GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
