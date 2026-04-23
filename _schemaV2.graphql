@@ -20525,7 +20525,7 @@ type Partner implements Node {
   # Preview counts of artworks affected by a bulk metadata update.
   bulkUpdateMetadataPreview(
     # IDs of artworks to include in the preview.
-    artworkIds: [String]
+    artworkIds: [String!]
 
     # ID of a partner list to filter artworks.
     partnerListId: String

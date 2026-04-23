@@ -44,7 +44,7 @@ export const bulkUpdateMetadataPreview: GraphQLFieldConfig<
   description: "Preview counts of artworks affected by a bulk metadata update.",
   args: {
     artworkIds: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: "IDs of artworks to include in the preview.",
     },
     partnerListId: {

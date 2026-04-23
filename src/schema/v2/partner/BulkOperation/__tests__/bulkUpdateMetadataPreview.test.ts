@@ -138,6 +138,52 @@ describe("bulkUpdateMetadataPreview", () => {
     )
   })
 
+  it("passes all args together to the loader", async () => {
+    const queryWithArgs = gql`
+      {
+        partner(id: "catty-partner") {
+          bulkUpdateMetadataPreview(
+            artworkIds: ["artwork1"]
+            partnerListId: "list-456"
+            updateCatalog: true
+          ) {
+            counts {
+              total
+              editable
+              nonEditable
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      partnerLoader: jest.fn().mockResolvedValue(partnerData),
+      bulkUpdateMetadataPreviewLoader: jest.fn().mockResolvedValue({
+        counts: { total: 3, editable: 1 },
+      }),
+    }
+
+    const data = await runAuthenticatedQuery(queryWithArgs, context)
+
+    expect(context.bulkUpdateMetadataPreviewLoader).toHaveBeenCalledWith(
+      "catty-partner",
+      {
+        artwork_ids: ["artwork1"],
+        partner_list_id: "list-456",
+        update_catalog: true,
+      }
+    )
+
+    expect(data).toEqual({
+      partner: {
+        bulkUpdateMetadataPreview: {
+          counts: { total: 3, editable: 1, nonEditable: 2 },
+        },
+      },
+    })
+  })
+
   it("returns null when not authenticated", async () => {
     const context = {
       partnerLoader: jest.fn().mockResolvedValue(partnerData),
