@@ -5,7 +5,7 @@ import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
 import { createLoaders } from "./lib/loaders"
-import depthLimit from "graphql-depth-limit"
+import { useDepthLimit } from "@envelop/depth-limit"
 import express from "express"
 import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
@@ -164,9 +164,6 @@ const validationRulesPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
     ) {
       addValidationRule(NoSchemaIntrospectionCustomRule)
     }
-    if (QUERY_DEPTH_LIMIT) {
-      addValidationRule(depthLimit(QUERY_DEPTH_LIMIT))
-    }
   },
 }
 
@@ -308,6 +305,9 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
   },
   plugins: [
     validationRulesPlugin,
+    ...(QUERY_DEPTH_LIMIT
+      ? [useDepthLimit({ maxDepth: QUERY_DEPTH_LIMIT })]
+      : []),
     rootValuePlugin,
     extensionsPlugin,
     errorFormatPlugin,

@@ -1656,6 +1656,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@envelop/depth-limit@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@envelop/depth-limit@npm:7.1.1"
+  dependencies:
+    graphql-depth-limit: "npm:^1.1.0"
+    tslib: "npm:^2.5.0"
+  peerDependencies:
+    "@envelop/core": ^5.5.1
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10c0/6af1971f1439e67ca85b07d84e0466cfce2db53400733ed633866ee8e19d1dee7120521aa91396e4ccf9e4d93ddc41737bbf07cc50a94b5d32054521c45f27b2
+  languageName: node
+  linkType: hard
+
 "@envelop/instrumentation@npm:^1.0.0":
   version: 1.0.0
   resolution: "@envelop/instrumentation@npm:1.0.0"
@@ -7662,7 +7675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-depth-limit@npm:1.1.0":
+"graphql-depth-limit@npm:^1.1.0":
   version: 1.1.0
   resolution: "graphql-depth-limit@npm:1.1.0"
   dependencies:
@@ -10306,6 +10319,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.25.9"
     "@babel/preset-typescript": "npm:^7.25.9"
     "@cloudflare/workers-types": "npm:^4.20260205.0"
+    "@envelop/depth-limit": "npm:^7.1.1"
     "@graphql-inspector/core": "npm:1.27.0"
     "@graphql-tools/delegate": "npm:6.0.10"
     "@sentry/node": "npm:5.18.1"
@@ -10352,7 +10366,6 @@ __metadata:
     express-rate-limit: "npm:3.2.0"
     google-libphonenumber: "npm:^3.2.25"
     graphql: "npm:15.8.0"
-    graphql-depth-limit: "npm:1.1.0"
     graphql-middleware: "npm:4.0.3"
     graphql-parse-resolve-info: "npm:^4.12.3"
     graphql-relay: "npm:0.7.0"
