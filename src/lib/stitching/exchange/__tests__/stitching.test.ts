@@ -99,7 +99,6 @@ const restOfResolveArgs = {
   operation: OperationTypeNode.QUERY,
   schema: expect.anything(),
   context: expect.anything(),
-  transforms: expect.anything(),
   info: expect.anything(),
 }
 
