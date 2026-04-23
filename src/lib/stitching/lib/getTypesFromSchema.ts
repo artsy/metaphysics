@@ -14,7 +14,7 @@ export const getTypesFromSchema = async (schema: GraphQLSchema) => {
       }
     }
   `
-  const response = await graphql(schema, q, null, null)
+  const response = await graphql({ schema, source: q, rootValue: null, contextValue: null })
   // Throw an error to make it easy to read in the failing test
   if (response.errors) {
     throw new Error(
@@ -23,7 +23,7 @@ export const getTypesFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.types.map((t) => t.name) as string[]
+  return (response.data as any).__schema.types.map((t) => t.name) as string[]
 }
 
 /**
@@ -43,7 +43,7 @@ export const getRootFieldsFromSchema = async (schema: GraphQLSchema) => {
       }
     }
   `
-  const response = await graphql(schema, q, null, null)
+  const response = await graphql({ schema, source: q, rootValue: null, contextValue: null })
   // Throw an error to make it easy to read in the failing test
   if (response.errors) {
     throw new Error(
@@ -52,7 +52,7 @@ export const getRootFieldsFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.queryType.fields.map((t) => t.name) as string[]
+  return (response.data as any).__schema.queryType.fields.map((t) => t.name) as string[]
 }
 
 /**
@@ -71,7 +71,7 @@ export const getFieldsForTypeFromSchema = async (
       }
     }
   `
-  const response = await graphql(schema, q, null, null)
+  const response = await graphql({ schema, source: q, rootValue: null, contextValue: null })
   // Throw an error to make it easy to read in the failing test
   if (response.errors) {
     throw new Error(
@@ -80,7 +80,7 @@ export const getFieldsForTypeFromSchema = async (
   }
 
   // Return the real data
-  return response.data!.__type.fields.map((t) => t.name) as string[]
+  return (response.data as any).__type.fields.map((t) => t.name) as string[]
 }
 
 /**
@@ -98,7 +98,7 @@ export const getMutationFieldsFromSchema = async (schema: GraphQLSchema) => {
       }
     }
   `
-  const response = await graphql(schema, q, null, null)
+  const response = await graphql({ schema, source: q, rootValue: null, contextValue: null })
   // Throw an error to make it easy to read in the failing test
   if (response.errors) {
     throw new Error(
@@ -107,7 +107,7 @@ export const getMutationFieldsFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.mutationType.fields.map(
+  return (response.data as any).__schema.mutationType.fields.map(
     (t) => t.name
   ) as string[]
 }

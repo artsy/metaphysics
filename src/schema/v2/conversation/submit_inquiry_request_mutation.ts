@@ -21,11 +21,11 @@ const InquiryItemType = new GraphQLUnionType({
   resolveType: ({ __typename }) => {
     switch (__typename) {
       case "Artwork":
-        return ArtworkType
+        return ArtworkType.name
       case "PartnerShow":
-        return ShowType
+        return ShowType.name
       default:
-        return null
+        return undefined
     }
   },
 })
