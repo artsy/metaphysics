@@ -66,6 +66,7 @@ interface Input {
     provenance?: string
     published?: boolean
     signature?: string
+    signatureTypes?: string[]
     title?: string
     width?: string
   }
@@ -309,9 +310,9 @@ const BulkUpdateArtworksMetadataMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkUpdateArtworksMetadataMutationFailureType
+      return BulkUpdateArtworksMetadataMutationFailureType.name
     }
-    return BulkUpdateArtworksMetadataMutationSuccessType
+    return BulkUpdateArtworksMetadataMutationSuccessType.name
   },
 })
 

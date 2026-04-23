@@ -180,11 +180,11 @@ const MessageOrConversationEventType = new GraphQLUnionType({
   resolveType: ({ type }) => {
     switch (type) {
       case "message_detail":
-        return MessageType
+        return MessageType.name
       case "conversation_event":
-        return ConversationEventType
+        return ConversationEventType.name
       default:
-        return null
+        return undefined
     }
   },
 })

@@ -68,9 +68,9 @@ const ArtsyShippingOptInMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return ArtsyShippingOptInMutationFailureType
+      return ArtsyShippingOptInMutationFailureType.name
     }
-    return ArtsyShippingOptInMutationSuccessType
+    return ArtsyShippingOptInMutationSuccessType.name
   },
 })
 
