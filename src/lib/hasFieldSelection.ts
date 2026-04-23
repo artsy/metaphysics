@@ -30,6 +30,13 @@ export const hasFieldSelection = (
           if (path.length > SELECTION_DEPTH_THRESHOLD) {
             return false
           }
+          // `__typename` is a meta-field resolved by GraphQL itself and never
+          // requires a data loader. The executor may synthesize it into shared
+          // FragmentDefinition AST when resolving abstract types, so exclude it
+          // here for consistency between inline and spread fragments.
+          if (node.name.value === "__typename") {
+            return
+          }
           if (
             path.length === SELECTION_DEPTH_THRESHOLD &&
             match(node.name.value)

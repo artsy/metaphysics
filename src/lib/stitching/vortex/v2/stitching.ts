@@ -75,61 +75,34 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   resolvers: {
     AnalyticsPricingContext: {
       appliedFiltersDisplay: {
-        fragment: gql`
-          ... on AnalyticsPricingContext {
-            appliedFilters{
-              dimension
-              category
-            }
+        selectionSet: `{
+          appliedFilters {
+            dimension
+            category
           }
-          ... on Artwork { artistNames }
-        `,
+        }`,
         resolve: (parent, _args, _context, _info) =>
           filtersDescription(parent.appliedFilters, parent.artistNames),
       },
     },
     AnalyticsHistogramBin: {
       minPrice: {
-        fragment: gql`
-          ... on AnalyticsHistogramBin {
-            minPriceCents
-          }
-        `,
+        selectionSet: `{ minPriceCents }`,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.minPriceCents).resolve({}, args),
       },
       maxPrice: {
-        fragment: gql`
-          ... on AnalyticsHistogramBin {
-            maxPriceCents
-          }
-        `,
+        selectionSet: `{ maxPriceCents }`,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.maxPriceCents).resolve({}, args),
       },
     },
     Artwork: {
       pricingContext: {
-        fragment: gql`
-          ... on Artwork {
+        selectionSet: `{
+          sizeScore
+          editionSets {
             sizeScore
-            editionSets {
-              sizeScore
-              listPrice {
-                __typename
-                ... on PriceRange {
-                  minPrice {
-                    minor
-                  }
-                  maxPrice {
-                    minor
-                  }
-                }
-                ... on Money {
-                  minor
-                }
-              }
-            }
             listPrice {
               __typename
               ... on PriceRange {
@@ -144,21 +117,35 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
                 minor
               }
             }
-            artist {
-              internalID
-              disablePriceContext
-            }
-            category
-            isForSale
-            isPriceHidden
-            isInAuction
-            priceCurrency
-            pricingContextArtists: artists(shallow: true) {
-              internalID
-            }
-            artistNames
           }
-        `,
+          listPrice {
+            __typename
+            ... on PriceRange {
+              minPrice {
+                minor
+              }
+              maxPrice {
+                minor
+              }
+            }
+            ... on Money {
+              minor
+            }
+          }
+          artist {
+            internalID
+            disablePriceContext
+          }
+          category
+          isForSale
+          isPriceHidden
+          isInAuction
+          priceCurrency
+          pricingContextArtists: artists(shallow: true) {
+            internalID
+          }
+          artistNames
+        }`,
         resolve: async (source, _, context, info) => {
           const {
             artist,
@@ -178,7 +165,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const edition = sortBy(
             [
               { sizeScore: mainSizeScore, listPrice },
-              ...(editionSets || []),
+              ...(Array.isArray(editionSets) ? editionSets : []),
             ].filter((e) => e.sizeScore),
             getMaxPrice
           ).pop() as any
@@ -249,10 +236,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     Partner: {
       analytics: {
-        fragment: gql`... on Partner {
+        selectionSet: `{
           internalID
         }`,
-
         resolve: async (source, _, context, info) => {
           const args = { partnerId: source.internalID }
           return await delegateToSchema({
@@ -268,7 +254,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     User: {
       analytics: {
-        fragment: gql`... on User {
+        selectionSet: `{
           internalID
         }`,
         resolve: async (source, _, context, info) => {
@@ -286,47 +272,37 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     AnalyticsPartnerSalesStats: {
       total: {
-        fragment: gql`
-          ... on AnalyticsPartnerSalesStats {
-            totalCents
-          }
-        `,
+        selectionSet: `{ totalCents }`,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsPartnerSalesTimeSeriesStats: {
       total: {
-        fragment: gql`
-          ... on AnalyticsPartnerSalesTimeSeriesStats {
-            totalCents
-          }
-        `,
+        selectionSet: `{ totalCents }`,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsRankedStats: {
       entity: {
-        fragment: gql`
-          ... on AnalyticsRankedStats {
-            rankedEntity {
-              __typename
-              ... on AnalyticsArtwork {
-                entityId
-              }
-              ... on AnalyticsShow {
-                entityId
-              }
-              ... on AnalyticsArtist {
-                entityId
-              }
-              ... on AnalyticsViewingRoom {
-                entityId
-              }
+        selectionSet: `{
+          rankedEntity {
+            __typename
+            ... on AnalyticsArtwork {
+              entityId
+            }
+            ... on AnalyticsShow {
+              entityId
+            }
+            ... on AnalyticsArtist {
+              entityId
+            }
+            ... on AnalyticsViewingRoom {
+              entityId
             }
           }
-        `,
+        }`,
         resolve: (parent, _args, context, info) => {
           const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename

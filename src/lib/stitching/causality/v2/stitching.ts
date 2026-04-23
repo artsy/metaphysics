@@ -41,13 +41,11 @@ export const causalityStitchingEnvironment = ({
     resolvers: {
       AuctionsLotStanding: {
         saleArtwork: {
-          fragment: gql`
-            fragment AuctionsLotStandingSaleArtwork on AuctionsLotStanding {
-              lotState {
-                internalID
-              }
+          selectionSet: `{
+            lotState {
+              internalID
             }
-          `,
+          }`,
           resolve: (parent, _args, context, info) => {
             return delegateToSchema({
               schema: localSchema,
@@ -62,42 +60,25 @@ export const causalityStitchingEnvironment = ({
       },
       AuctionsLotState: {
         floorSellingPrice: {
-          fragment: gql`
-            ... on AuctionsLotState {
-              internalID
-              floorSellingPriceCents
-            }
-          `,
+          selectionSet: `{ internalID floorSellingPriceCents }`,
           resolve: resolveLotCentsFieldToMoney("floorSellingPriceCents"),
         },
         sellingPrice: {
-          fragment: gql`
-            ... on AuctionsLotState {
-              internalID
-              sellingPriceCents
-            }
-          `,
+          selectionSet: `{ internalID sellingPriceCents }`,
           resolve: resolveLotCentsFieldToMoney("sellingPriceCents"),
         },
         onlineAskingPrice: {
-          fragment: gql`
-            ... on AuctionsLotState {
-              internalID
-              onlineAskingPriceCents
-            }
-          `,
+          selectionSet: `{ internalID onlineAskingPriceCents }`,
           resolve: resolveLotCentsFieldToMoney("onlineAskingPriceCents"),
         },
       },
       Lot: {
         lot: {
-          fragment: gql`
-            ... on Lot {
-              saleArtwork {
-                internalID
-              }
+          selectionSet: `{
+            saleArtwork {
+              internalID
             }
-          `,
+          }`,
 
           resolve: (parent, _args, context, info) => {
             return delegateToSchema({
@@ -115,11 +96,7 @@ export const causalityStitchingEnvironment = ({
         auctionsLotStandingConnection: {
           // The required query to get access to the object, e.g. we have to
           // request `id` on a Me in order to access the user's lot standings
-          fragment: gql`
-            fragment MeLotStandings on Me {
-              internalID
-            }
-          `,
+          selectionSet: `{ internalID }`,
           // The function to handle getting the lot standings correctly, we
           // use the root query `_unused_auctionsLotStandingConnection` to grab
           // the data from the local causality schema. Other args from the field
