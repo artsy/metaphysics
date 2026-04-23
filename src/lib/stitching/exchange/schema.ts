@@ -6,7 +6,7 @@ import {
   TransformObjectFields,
   wrapSchema,
 } from "@graphql-tools/wrap"
-import { linkToExecutor } from "@graphql-tools/links"
+import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { buildSchema } from "graphql"
 import { createExchangeLink } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"

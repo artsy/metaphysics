@@ -1,11 +1,12 @@
 import { delegateToSchema } from "@graphql-tools/delegate"
 import type { AsyncExecutor } from "@graphql-tools/utils"
 import { WrapQuery } from "@graphql-tools/wrap"
-import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { GraphQLError, GraphQLSchema, Kind, OperationTypeNode, SelectionSetNode } from "graphql"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
+import { transformsForExchange } from "lib/stitching/exchange/schema"
 
 const orderTotals = [
   "itemsTotal",
@@ -100,14 +101,14 @@ export const exchangeStitchingEnvironment = ({
           info.mergeInfo
             .delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: typename === "CommerceUser" ? "user" : "partner",
               args: {
                 id,
               },
               context,
               info,
-              transforms: exchangeSchema.transforms,
+              transforms: transformsForExchange,
             })
             // Re-jigger the type systems back into place, as right now
             // it is considered a CommerceUser and clients will reject it.
@@ -143,14 +144,14 @@ export const exchangeStitchingEnvironment = ({
       } else {
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: "query",
+          operation: OperationTypeNode.QUERY,
           fieldName: "creditCard",
           args: {
             id,
           },
           context,
           info,
-          transforms: exchangeSchema.transforms,
+          transforms: transformsForExchange,
         })
       }
     },
@@ -171,7 +172,7 @@ export const exchangeStitchingEnvironment = ({
       if (paymentMethod === "CREDIT_CARD" && Boolean(creditCardId)) {
         const creditCard = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: "query",
+          operation: OperationTypeNode.QUERY,
           fieldName: "creditCard",
           args: {
             id: creditCardId,
@@ -187,7 +188,7 @@ export const exchangeStitchingEnvironment = ({
       ) {
         const bankAccount = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: "query",
+          operation: OperationTypeNode.QUERY,
           fieldName: "bankAccount",
           args: {
             id: bankAccountId,
@@ -228,7 +229,7 @@ export const exchangeStitchingEnvironment = ({
 
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: "query",
+          operation: OperationTypeNode.QUERY,
           fieldName: "_do_not_use_conversation",
           args: { id: impulseConversationId },
           context,
@@ -265,7 +266,7 @@ export const exchangeStitchingEnvironment = ({
     resolve: async (parent, _args, context, info) => {
       return await info.mergeInfo.delegateToSchema({
         schema: localSchema,
-        operation: "query",
+        operation: OperationTypeNode.QUERY,
         fieldName: "collectorProfile",
         args: { userID: parent.buyer.id },
         context,
@@ -426,7 +427,7 @@ export const exchangeStitchingEnvironment = ({
 
               const bnmoPurchases = await info.mergeInfo.delegateToSchema({
                 schema: exchangeSchema,
-                operation: "query",
+                operation: OperationTypeNode.QUERY,
                 fieldName: "commerceBuyerActivity",
                 args: exchangeArgs,
                 context,
@@ -486,7 +487,7 @@ export const exchangeStitchingEnvironment = ({
 
             return info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "commerceOrders",
               args: exchangeArgs,
               context,
@@ -523,7 +524,7 @@ export const exchangeStitchingEnvironment = ({
             const id = parent.artworkId
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "artwork",
               args: {
                 id,
@@ -540,14 +541,14 @@ export const exchangeStitchingEnvironment = ({
             const globalID = toGlobalId("ArtworkVersion", id)
             return delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "node",
               args: {
                 id: globalID,
               },
               context,
               info,
-              transforms: exchangeSchema.transforms,
+              transforms: transformsForExchange,
               returnType: ArtworkVersionType,
             })
           },
@@ -567,7 +568,7 @@ export const exchangeStitchingEnvironment = ({
             if (editionSetId) {
               return info.mergeInfo.delegateToSchema({
                 schema: localSchema,
-                operation: "query",
+                operation: OperationTypeNode.QUERY,
                 fieldName: "artwork",
                 args: {
                   id: artworkId,
@@ -613,7 +614,7 @@ export const exchangeStitchingEnvironment = ({
 
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "artwork",
               args: {
                 id: artworkId,
@@ -646,7 +647,7 @@ export const exchangeStitchingEnvironment = ({
           resolve: async (_source, args, context, info) => {
             return await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "commerceMyOrders",
               args,
               context,
@@ -665,7 +666,7 @@ export const exchangeStitchingEnvironment = ({
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "commerceOrders",
               args,
               context,
@@ -720,7 +721,7 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections }
+                    return { ...selectionSet, selections: newSelections } as SelectionSetNode
                   },
                   (result) => {
                     return result
@@ -797,7 +798,7 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections }
+                    return { ...selectionSet, selections: newSelections } as SelectionSetNode
                   },
                   (result) => {
                     return result
@@ -953,7 +954,7 @@ export const exchangeStitchingEnvironment = ({
                     return {
                       ...selectionSet,
                       selections: newSelections,
-                    }
+                    } as SelectionSetNode
                   },
                   (result) => {
                     return result
@@ -1036,7 +1037,7 @@ export const exchangeStitchingEnvironment = ({
                 schema: exchangeSchema,
                 executor: customExecutor,
               },
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "commerceOrder",
               args,
               context,

@@ -166,9 +166,9 @@ export const SmsSecondFactorMutationResponseOrErrorsType = new GraphQLNonNull(
     types: [SmsSecondFactor, ErrorsType],
     resolveType: (data) => {
       if (data._id) {
-        return SmsSecondFactor
+        return SmsSecondFactor.name
       }
-      return ErrorsType
+      return ErrorsType.name
     },
   })
 )
@@ -179,9 +179,9 @@ export const AppSecondFactorMutationResponseOrErrorsType = new GraphQLNonNull(
     types: [AppSecondFactor, ErrorsType],
     resolveType: (data) => {
       if (data._id) {
-        return AppSecondFactor
+        return AppSecondFactor.name
       }
-      return ErrorsType
+      return ErrorsType.name
     },
   })
 )
@@ -203,9 +203,9 @@ export const BackupSecondFactorsMutationResponseOrErrorsType = new GraphQLNonNul
     types: [BackupSecondFactors, ErrorsType],
     resolveType: (data) => {
       if (data.secondFactors) {
-        return BackupSecondFactors
+        return BackupSecondFactors.name
       }
-      return ErrorsType
+      return ErrorsType.name
     },
   })
 )
@@ -218,12 +218,12 @@ export const SecondFactorOrErrorsUnionType = new GraphQLNonNull(
       if (data._id) {
         switch (data.type) {
           case "AppSecondFactor":
-            return AppSecondFactor
+            return AppSecondFactor.name
           case "SmsSecondFactor":
-            return SmsSecondFactor
+            return SmsSecondFactor.name
         }
       }
-      return ErrorsType
+      return ErrorsType.name
     },
   })
 )

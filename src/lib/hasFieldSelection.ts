@@ -131,7 +131,7 @@ export const parseConnectionArgsFromConnection = (
 
                     if (arg.value.kind === "Variable") {
                       const variableName = arg.value.name.value
-                      val = info.variableValues[variableName]
+                      val = info.variableValues[variableName] as string
                     } else if (
                       arg.value.kind === "IntValue" ||
                       arg.value.kind === "StringValue"

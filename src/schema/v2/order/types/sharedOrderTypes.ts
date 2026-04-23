@@ -340,12 +340,12 @@ export const OrderMutationResponseType = new GraphQLUnionType({
   resolveType: (data) => {
     switch (data._type) {
       case ORDER_MUTATION_FLAGS.ACTION_REQUIRED:
-        return ActionRequiredType
+        return ActionRequiredType.name
       case ORDER_MUTATION_FLAGS.ERROR:
-        return ErrorType
+        return ErrorType.name
       case ORDER_MUTATION_FLAGS.SUCCESS:
       default:
-        return SuccessType
+        return SuccessType.name
     }
   },
 })

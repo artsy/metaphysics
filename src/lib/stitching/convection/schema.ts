@@ -1,6 +1,6 @@
 import { wrapSchema, RenameTypes, RenameRootFields } from "@graphql-tools/wrap"
 import { addResolversToSchema } from "@graphql-tools/schema"
-import { linkToExecutor } from "@graphql-tools/links"
+import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { readFileSync } from "fs"
 import { buildSchema, GraphQLError } from "graphql"
 import { createHttpLink } from "apollo-link-http"

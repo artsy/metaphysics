@@ -108,7 +108,7 @@ const SellerType = new GraphQLUnionType({
   name: "SellerType",
   types: () => [PartnerType],
   resolveType: () => {
-    return PartnerType
+    return PartnerType.name
   },
 })
 

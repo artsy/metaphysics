@@ -75,10 +75,10 @@ export const ArtworkFilterAggregations: GraphQLFieldConfig<
   },
 }
 
-export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
+export const ArtworkFilterFacetType = new GraphQLUnionType({
   name: "ArtworkFilterFacet",
   types: [TagType, GeneType],
-  resolveType: ({ context_type }) => context_type,
+  resolveType: ({ context_type }) => context_type?.name,
 })
 
 export const FilterArtworksCounts = {

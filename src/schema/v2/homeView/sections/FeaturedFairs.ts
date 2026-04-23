@@ -27,6 +27,6 @@ export const FeaturedFairs: HomeViewSection = {
       info
     )
 
-    return connectionFromArray(featuredFairs, args)
+    return connectionFromArray(featuredFairs as readonly unknown[], args)
   }),
 }

@@ -200,12 +200,10 @@ export const DiscoveryCategoryUnion = new GraphQLUnionType({
     DiscoveryArtworksWithFiltersCollectionType,
   ],
   resolveType: (value) => {
-    // If the object has artworkFilters, it's the artwork filters collection type
     if (value.artworkFilters) {
-      return DiscoveryArtworksWithFiltersCollectionType
+      return DiscoveryArtworksWithFiltersCollectionType.name
     }
-    // Otherwise, it's the marketing collection type
-    return DiscoveryMarketingCollectionType
+    return DiscoveryMarketingCollectionType.name
   },
 })
 

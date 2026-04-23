@@ -20,6 +20,8 @@ interface CreateArtworkMutationInputProps {
   partnerId: string
   imageS3Bucket?: string
   imageS3Key?: string
+  imageS3Buckets?: string[]
+  imageS3Keys?: string[]
   partnerShowId?: string
 }
 

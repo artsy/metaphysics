@@ -44,11 +44,11 @@ export const ArticleSectionImageCollection = new GraphQLObjectType<
               resolveType: (image) => {
                 switch (image.type) {
                   case "image":
-                    return ArticleImageSection
+                    return ArticleImageSection.name
                   case "unpublished_artwork":
-                    return ArticleUnpublishedArtwork
+                    return ArticleUnpublishedArtwork.name
                   default:
-                    return ArtworkType
+                    return ArtworkType.name
                 }
               },
             })

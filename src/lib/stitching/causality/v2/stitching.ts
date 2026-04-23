@@ -1,4 +1,4 @@
-import { GraphQLSchema } from "graphql"
+import { GraphQLSchema, OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
 
@@ -50,7 +50,7 @@ export const causalityStitchingEnvironment = ({
           resolve: (parent, _args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "saleArtwork",
               args: { id: parent.lotState.internalID },
               context,
@@ -101,7 +101,7 @@ export const causalityStitchingEnvironment = ({
           resolve: (parent, _args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "_unused_auctionsLot",
               args: { id: parent.saleArtwork.internalID },
               context,
@@ -128,7 +128,7 @@ export const causalityStitchingEnvironment = ({
             return info.mergeInfo
               .delegateToSchema({
                 schema: causalitySchema,
-                operation: "query",
+                operation: OperationTypeNode.QUERY,
                 fieldName: "_unused_auctionsLotStandingConnection",
                 args: {
                   userId: parent.internalID,

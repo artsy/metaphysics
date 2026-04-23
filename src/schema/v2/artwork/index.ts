@@ -2240,9 +2240,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
                 types: [VideoType, ImageType],
                 resolveType: ({ type }) => {
                   if (type === "Image") {
-                    return ImageType
+                    return ImageType.name
                   } else if (type === "Video") {
-                    return VideoType
+                    return VideoType.name
                   }
                 },
               })
