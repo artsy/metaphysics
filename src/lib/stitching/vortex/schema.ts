@@ -5,6 +5,7 @@ import {
   RenameTypes,
   wrapSchema,
 } from "@graphql-tools/wrap"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { buildSchema } from "graphql"
 import { createVortexLink } from "./link"
@@ -53,15 +54,18 @@ export const transformsForVortex = ({ removeRootFields = true } = {}) => [
   }),
 ]
 
-export const executableVortexSchema = ({
+export const vortexSubschemaConfig = ({
   removeRootFields = true,
-}: { removeRootFields?: boolean } = {}) => {
+}: { removeRootFields?: boolean } = {}): SubschemaConfig => {
   const vortexLink = createVortexLink()
   const vortexTypeDefs = readFileSync("src/data/vortex.graphql", "utf8")
 
-  return wrapSchema({
+  return {
     schema: buildSchema(vortexTypeDefs, { assumeValidSDL: true }),
     executor: linkToExecutor(vortexLink),
     transforms: transformsForVortex({ removeRootFields }),
-  })
+  }
 }
+
+export const executableVortexSchema = (opts: { removeRootFields?: boolean } = {}) =>
+  wrapSchema(vortexSubschemaConfig(opts))

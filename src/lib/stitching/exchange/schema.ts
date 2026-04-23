@@ -6,21 +6,25 @@ import {
   TransformObjectFields,
   wrapSchema,
 } from "@graphql-tools/wrap"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { buildSchema } from "graphql"
 import { createExchangeLink } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
-export const executableExchangeSchema = (transforms) => {
+export const exchangeSubschemaConfig = (transforms): SubschemaConfig => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const exchangeLink = createExchangeLink()
 
-  return wrapSchema({
+  return {
     schema: buildSchema(exchangeSDL, { assumeValidSDL: true }),
     executor: linkToExecutor(exchangeLink),
     transforms,
-  })
+  }
 }
+
+export const executableExchangeSchema = (transforms) =>
+  wrapSchema(exchangeSubschemaConfig(transforms))
 
 export const transformsForExchange = [
   // Apply a prefix to all the typenames

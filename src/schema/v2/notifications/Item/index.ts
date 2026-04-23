@@ -21,19 +21,19 @@ export const NotificationItemType = new GraphQLUnionType({
   resolveType: ({ activity_type }) => {
     switch (activity_type) {
       case "SavedSearchHitActivity":
-        return AlertNotificationItemType
+        return AlertNotificationItemType.name
       case "ArtworkPublishedActivity":
-        return ArtworkPublishedNotificationItemType
+        return ArtworkPublishedNotificationItemType.name
       case "ArticleFeaturedArtistActivity":
-        return ArticleFeaturedArtistNotificationItemType
+        return ArticleFeaturedArtistNotificationItemType.name
       case "PartnerShowOpenedActivity":
-        return ShowOpenedNotificationItemType
+        return ShowOpenedNotificationItemType.name
       case "ViewingRoomPublishedActivity":
-        return ViewingRoomPublishedNotificationItemType
+        return ViewingRoomPublishedNotificationItemType.name
       case "PartnerOfferCreatedActivity":
-        return PartnerOfferCreatedNotificationItemType
+        return PartnerOfferCreatedNotificationItemType.name
       case "CollectorProfileUpdatePromptActivity":
-        return CollectorProfileUpdatePromptNotificationItemType
+        return CollectorProfileUpdatePromptNotificationItemType.name
       default:
         throw new Error("Unknown notification content type")
     }

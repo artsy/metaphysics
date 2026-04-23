@@ -142,7 +142,7 @@ describe("artworkOrEditionSet", () => {
 
 const orderFixture = {
   data: {
-    order: {
+    commerceOrder: {
       __typename: "BuyOrder",
       id: "fooid123",
       code: "1",
@@ -219,12 +219,12 @@ const orderFixture = {
 
 const editionSetOrderFixture = merge(orderFixture, {
   data: {
-    order: {
+    commerceOrder: {
       lineItems: {
         edges: [
           {
             node: {
-              ...orderFixture.data.order.lineItems.edges[0].node,
+              ...orderFixture.data.commerceOrder.lineItems.edges[0].node,
               editionSetId: "abc123",
             },
           },
