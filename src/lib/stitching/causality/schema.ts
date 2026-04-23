@@ -7,6 +7,7 @@ import {
   FilterRootFields,
   FilterTypes,
 } from "@graphql-tools/wrap"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { readFileSync } from "fs"
 
@@ -15,11 +16,11 @@ const whitelistedRootFields: string[] = []
 const privateFields: string[] = ["lot", "lotStandingConnection"]
 const permittedRootFields = [...whitelistedRootFields, ...privateFields]
 
-export const executableCausalitySchema = () => {
+export const causalitySubschemaConfig = (): SubschemaConfig => {
   const causalityLink = createCausalityLink()
   const causalityTypeDefs = readFileSync("src/data/causality.graphql", "utf8")
 
-  return wrapSchema({
+  return {
     schema: buildSchema(causalityTypeDefs, { assumeValidSDL: true }),
     executor: linkToExecutor(causalityLink),
     transforms: [
@@ -45,5 +46,7 @@ export const executableCausalitySchema = () => {
         return `auctions${capitalizedName}`
       }),
     ],
-  })
+  }
 }
+
+export const executableCausalitySchema = () => wrapSchema(causalitySubschemaConfig())
