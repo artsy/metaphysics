@@ -48,6 +48,7 @@
     "@artsy/multienv": "^1.2.0",
     "@artsy/to-title-case": "^1.1.0",
     "@artsy/xapp": "2.0.0",
+    "@envelop/disable-introspection": "^9.1.1",
     "@graphql-tools/delegate": "6.0.10",
     "@sentry/node": "5.18.1",
     "accounting": "0.4.1",

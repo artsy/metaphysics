@@ -29,10 +29,10 @@ import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 import { graphqlBatchHTTPWrapper } from "react-relay-network-modern"
 import { createYoga, Plugin } from "graphql-yoga"
+import { useDisableIntrospection } from "@envelop/disable-introspection"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
-import { NoSchemaIntrospectionCustomRule } from "lib/noSchemaIntrospectionCustomRule"
 import { optionalFieldsDirectiveExtension } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { principalFieldDirectiveExtension } from "directives/principalField/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "directives/principalField/principalFieldDirectiveValidation"
@@ -155,20 +155,23 @@ type YogaServerContext = { req: express.Request; res: express.Response }
 // Adds validation rules per-request. onValidate runs before onContextBuilding,
 // so the user context isn't built yet — read `req` from the server context.
 const validationRulesPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
-  onValidate({ context, addValidationRule }) {
+  onValidate({ addValidationRule }) {
     addValidationRule(principalFieldDirectiveValidation)
-    const req = ((context as unknown) as YogaServerContext).req
-    if (
-      INTROSPECT_TOKEN &&
-      req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
-    ) {
-      addValidationRule(NoSchemaIntrospectionCustomRule)
-    }
     if (QUERY_DEPTH_LIMIT) {
       addValidationRule(depthLimit(QUERY_DEPTH_LIMIT))
     }
   },
 }
+
+// Disable GraphQL introspection unless the caller presents the bearer token.
+// When INTROSPECT_TOKEN isn't configured, introspection stays enabled.
+const disableIntrospectionPlugin = useDisableIntrospection({
+  disableIf: ({ context }) => {
+    if (!INTROSPECT_TOKEN) return false
+    const req = ((context as unknown) as YogaServerContext).req
+    return req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
+  },
+})
 
 // The `Viewer` type's resolver returns rootValue (see src/schema/v2/schema.ts).
 // Without a non-null rootValue, every `viewer { ... }` query resolves to null.
@@ -308,6 +311,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
   },
   plugins: [
     validationRulesPlugin,
+    disableIntrospectionPlugin,
     rootValuePlugin,
     extensionsPlugin,
     errorFormatPlugin,

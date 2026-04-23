@@ -1656,6 +1656,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@envelop/disable-introspection@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "@envelop/disable-introspection@npm:9.1.1"
+  dependencies:
+    tslib: "npm:^2.5.0"
+  peerDependencies:
+    "@envelop/core": ^5.5.1
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10c0/27fb4103c621754582b75355de60af1abc03783ecbc13726f56c23cde674ca1ef8713d9a3ec8fdd59d6fb796375aed10294bc8de6511ae9f294558b53055631b
+  languageName: node
+  linkType: hard
+
 "@envelop/instrumentation@npm:^1.0.0":
   version: 1.0.0
   resolution: "@envelop/instrumentation@npm:1.0.0"
@@ -10306,6 +10318,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.25.9"
     "@babel/preset-typescript": "npm:^7.25.9"
     "@cloudflare/workers-types": "npm:^4.20260205.0"
+    "@envelop/disable-introspection": "npm:^9.1.1"
     "@graphql-inspector/core": "npm:1.27.0"
     "@graphql-tools/delegate": "npm:6.0.10"
     "@sentry/node": "npm:5.18.1"
