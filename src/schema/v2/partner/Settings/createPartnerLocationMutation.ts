@@ -15,6 +15,7 @@ import { LocationType } from "../../location"
 
 interface Input {
   partnerId: string
+  name: string
   addressType: string
   country: string
   address: string
@@ -66,6 +67,9 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner",
     },
+    name: {
+      type: GraphQLString,
+    },
     addressType: {
       type: GraphQLString,
     },
@@ -109,6 +113,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      name,
       addressType,
       address,
       address2,
@@ -129,6 +134,7 @@ export const CreatePartnerLocationMutation = mutationWithClientMutationId<
 
     try {
       const response = await createPartnerLocationLoader(partnerId, {
+        name,
         address,
         address_2: address2,
         address_type: addressType,
