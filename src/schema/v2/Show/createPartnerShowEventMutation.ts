@@ -21,6 +21,7 @@ interface CreatePartnerShowEventMutationInputProps {
   endAt: string
   eventType: string
   description?: string
+  timeZone?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -116,8 +117,8 @@ export const createPartnerShowEventMutation = mutationWithClientMutationId<
       description?: string
       time_zone?: string
     } = {
-      start_at: momentTimezone.tz(args.startAt, args.timeZone).unix(),
-      end_at: momentTimezone.tz(args.endAt, args.timeZone).unix(),
+      start_at: momentTimezone.tz(args.startAt, args.timeZone!).unix(),
+      end_at: momentTimezone.tz(args.endAt, args.timeZone!).unix(),
       event_type: args.eventType,
       time_zone: args.timeZone,
     }

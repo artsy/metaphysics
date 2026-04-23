@@ -1,6 +1,6 @@
 import { createDiffusionLink } from "./link"
 import { wrapSchema, RenameTypes } from "@graphql-tools/wrap"
-import { linkToExecutor } from "@graphql-tools/links"
+import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { readFileSync } from "fs"
 import { buildSchema } from "graphql"
 
