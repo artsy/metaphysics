@@ -4,9 +4,10 @@ import {
   RenameTypes,
   TransformInterfaceFields,
   TransformObjectFields,
-  makeRemoteExecutableSchema,
-  transformSchema,
-} from "graphql-tools"
+  wrapSchema,
+} from "@graphql-tools/wrap"
+import { linkToExecutor } from "@graphql-tools/links"
+import { buildSchema } from "graphql"
 import { createExchangeLink } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
@@ -14,14 +15,11 @@ export const executableExchangeSchema = (transforms) => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const exchangeLink = createExchangeLink()
 
-  const schema = makeRemoteExecutableSchema({
-    schema: exchangeSDL,
-    link: exchangeLink,
+  return wrapSchema({
+    schema: buildSchema(exchangeSDL, { assumeValidSDL: true }),
+    executor: linkToExecutor(exchangeLink),
+    transforms,
   })
-
-  // Return the new modified schema
-  return transformSchema(schema, transforms)
-  // Note that changes in this will need to be
 }
 
 export const transformsForExchange = [

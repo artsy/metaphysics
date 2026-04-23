@@ -55,7 +55,7 @@ export const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
   },
   materialsTerms: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   offerable: {
     type: GraphQLBoolean,
