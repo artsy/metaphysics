@@ -9,12 +9,19 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { getExperimentVariant } from "lib/featureFlags"
+
+const EXPERIMENT_NAME = "diamond_artwork-title-experiment"
+const TITLE_MAX_LENGTH = 52 // p95
 
 const isInquireAboutAvailability = (saleMessage) =>
   saleMessage == "Inquire about availability"
 
 const titleWithDate = ({ title, date }) =>
   join(" ", [title, date ? `(${date})` : undefined])
+
+const titleWithDateV2 = ({ title, date }) =>
+  join(" ", [truncate(title, TITLE_MAX_LENGTH), date ? `(${date})` : undefined])
 
 export const artistNames = (artwork) =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
@@ -23,6 +30,11 @@ const forSaleIndication = (artwork) =>
   artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
     ? "Available for Sale"
     : undefined
+
+const forSaleIndicationV2 = (artwork) =>
+  artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
+    ? "For Sale"
+    : "Art & Prints"
 
 const dimensions = (artwork) => artwork.dimensions[artwork.metric]
 
@@ -81,12 +93,12 @@ const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
       resolve: (artwork) => {
-        return join(" | ", [
-          artistNames(artwork),
-          titleWithDate(artwork),
-          forSaleIndication(artwork),
-          "Artsy",
-        ])
+        const variant = getExperimentVariant(EXPERIMENT_NAME, {
+          artworkId: artwork._id,
+        })
+        const variantName =
+          variant && variant.enabled ? variant.name : undefined
+        return generateTitle(artwork, variantName)
       },
     },
   },
@@ -98,3 +110,39 @@ const Meta: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export default Meta
+
+/**
+ * Generates a title for the artwork based on its properties and the
+ * experiment variant, resulting in different formats/lengths.
+ *
+ * ```
+ * control   ➡︎ Mevlana Lipp | Cups (2021) | Available for Sale | Artsy
+ * variant-a ➡︎ Mevlana Lipp | Cups (2021) | For Sale | Artsy
+ * variant-b ➡︎ Mevlana Lipp | Cups | For Sale | Artsy
+ * ```
+ */
+function generateTitle(artwork, variant) {
+  switch (variant) {
+    case "variant-a":
+      return join(" | ", [
+        artistNames(artwork),
+        titleWithDateV2(artwork),
+        forSaleIndicationV2(artwork),
+        "Artsy",
+      ])
+    case "variant-b":
+      return join(" | ", [
+        artistNames(artwork),
+        truncate(artwork.title, TITLE_MAX_LENGTH), // omits date
+        forSaleIndicationV2(artwork),
+        "Artsy",
+      ])
+    default:
+      return join(" | ", [
+        artistNames(artwork),
+        titleWithDate(artwork),
+        forSaleIndication(artwork),
+        "Artsy",
+      ])
+  }
+}

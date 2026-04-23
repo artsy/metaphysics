@@ -114,6 +114,7 @@ export interface OrderJSON {
   shipping_country?: string
   shipping_name?: string
   shipping_origin?: string
+  shipping_radius?: string
   shipping_postal_code?: string
   shipping_region?: string
   shipping_total_cents?: number

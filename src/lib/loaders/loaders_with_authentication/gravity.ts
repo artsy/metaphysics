@@ -1781,6 +1781,30 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
 
+    // Brand Kit Loaders
+    brandKitLoader: gravityLoader("brand_kit"),
+    createBrandKitLoader: gravityLoader("brand_kit", {}, { method: "POST" }),
+    updateBrandKitLoader: gravityLoader(
+      (id) => `brand_kit/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteBrandKitLoader: gravityLoader(
+      (id) => `brand_kit/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    uploadBrandKitLogoLoader: gravityLoader(
+      (id) => `brand_kit/${id}/logo`,
+      {},
+      { method: "POST" }
+    ),
+    deleteBrandKitLogoLoader: gravityLoader(
+      (id) => `brand_kit/${id}/logo`,
+      {},
+      { method: "DELETE" }
+    ),
+
     // Partner List Loaders
     partnerListsLoader: gravityLoader("partner_lists", {}, { headers: true }),
     partnerListLoader: gravityLoader((id) => `partner_list/${id}`),
@@ -1840,6 +1864,16 @@ export default (accessToken, userID, opts) => {
     ),
     repositionPartnerListArtworksLoader: gravityLoader(
       (id) => `partner_list/${id}/reposition`,
+      {},
+      { method: "POST" }
+    ),
+    bulkDeleteArtworksFromPartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}/artworks`,
+      {},
+      { method: "DELETE" }
+    ),
+    moveArtworksBetweenPartnerListsLoader: gravityLoader(
+      (id) => `partner_list/${id}/move`,
       {},
       { method: "POST" }
     ),

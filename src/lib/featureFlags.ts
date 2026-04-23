@@ -10,6 +10,7 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  */
 const FEATURE_FLAGS_LIST = [
   "onyx_nwfy-artworks-card-test",
+  "diamond_artwork-title-experiment",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]

@@ -79,6 +79,9 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
     locationID: {
       type: GraphQLString,
     },
+    partnerListID: {
+      type: GraphQLString,
+    },
     source: {
       type: GraphQLString,
       defaultValue: "bulk_import",
@@ -106,6 +109,7 @@ export const CreateArtworkImportMutation = mutationWithClientMutationId<
       parse_with_ai: args.parseWithAI,
       parse_with_ai_model: args.parseWithAIModel,
       location_id: args.locationID,
+      partner_list_id: args.partnerListID,
       source: args.source,
     }
 

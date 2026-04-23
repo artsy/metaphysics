@@ -245,6 +245,11 @@ import { authorizeMailchimpAccountMutation } from "./me/authorizeMailchimpAccoun
 import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutation"
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
+import { createBrandKitMutation } from "./partner/Mutations/createBrandKitMutation"
+import { updateBrandKitMutation } from "./partner/Mutations/updateBrandKitMutation"
+import { deleteBrandKitMutation } from "./partner/Mutations/deleteBrandKitMutation"
+import { updateBrandKitLogoMutation } from "./partner/Mutations/updateBrandKitLogoMutation"
+import { deleteBrandKitLogoMutation } from "./partner/Mutations/deleteBrandKitLogoMutation"
 import { createInstagramPostMutation } from "./createInstagramPostMutation"
 import { instagramPost, instagramPostsConnection } from "./instagramPost"
 import {
@@ -301,6 +306,8 @@ import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/d
 import { addArtworkToPartnerListMutation } from "./partner/Mutations/PartnerList/addArtworkToPartnerListMutation"
 import { removeArtworkFromPartnerListMutation } from "./partner/Mutations/PartnerList/removeArtworkFromPartnerListMutation"
 import { bulkAddArtworksToPartnerListMutation } from "./partner/Mutations/PartnerList/bulkAddArtworksToPartnerListMutation"
+import { bulkDeleteArtworksFromPartnerListMutation } from "./partner/Mutations/PartnerList/bulkDeleteArtworksFromPartnerListMutation"
+import { moveArtworksBetweenPartnerListsMutation } from "./partner/Mutations/PartnerList/moveArtworksBetweenPartnerListsMutation"
 import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/PartnerList/updatePartnerListArtworkPositionMutation"
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
@@ -595,6 +602,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToPartnerList: bulkAddArtworksToPartnerListMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
+      bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
       createImage: createImageMutation,
@@ -648,6 +656,11 @@ export default new GraphQLSchema({
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,
       createMailchimpCampaign: createMailchimpCampaignMutation,
+      createBrandKit: createBrandKitMutation,
+      updateBrandKit: updateBrandKitMutation,
+      deleteBrandKit: deleteBrandKitMutation,
+      updateBrandKitLogo: updateBrandKitLogoMutation,
+      deleteBrandKitLogo: deleteBrandKitLogoMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
@@ -723,6 +736,7 @@ export default new GraphQLSchema({
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
       mergeArtists: mergeArtistsMutation,
+      moveArtworksBetweenPartnerLists: moveArtworksBetweenPartnerListsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,

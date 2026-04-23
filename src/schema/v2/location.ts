@@ -64,6 +64,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...IDFields,
     cached,
+    name: {
+      type: GraphQLString,
+    },
     address: {
       type: GraphQLString,
     },

@@ -465,6 +465,11 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       description: "Display short version of order's artwork location",
       resolve: ({ shipping_origin }) => shipping_origin,
     },
+    shippingRadius: {
+      type: GraphQLString,
+      description: "Whether the order ships domestically or internationally",
+      resolve: ({ shipping_radius }) => shipping_radius,
+    },
     shippingTotal: {
       type: Money,
       description: "The total amount for shipping",

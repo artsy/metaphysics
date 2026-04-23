@@ -72,6 +72,44 @@ describe("CreatePartnerListMutation", () => {
     })
   })
 
+  it("passes fairID to gravity when provided", async () => {
+    const fairMutation = gql`
+      mutation {
+        createPartnerList(
+          input: {
+            partnerID: "partner-123"
+            name: "Art Basel 2026"
+            listType: FAIR
+            fairID: "fair-abc"
+          }
+        ) {
+          partnerListOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      createPartnerListLoader: jest.fn().mockResolvedValue({
+        id: "list-xyz",
+        name: "Art Basel 2026",
+        list_type: "fair",
+        artworks_count: 0,
+        fair_id: "fair-abc",
+      }),
+    }
+
+    await runAuthenticatedQuery(fairMutation, context)
+
+    expect(context.createPartnerListLoader).toHaveBeenCalledWith({
+      partner_id: "partner-123",
+      name: "Art Basel 2026",
+      list_type: "fair",
+      fair_id: "fair-abc",
+    })
+  })
+
   it("returns a mutation error on failure", async () => {
     const context = {
       createPartnerListLoader: jest.fn().mockRejectedValue({

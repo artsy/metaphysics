@@ -26,6 +26,7 @@ import { BulkArtworkFilterInput } from "./shared"
 interface Input {
   id: string
   source: string
+  updateCatalog?: boolean
   metadata?: {
     editionSetsCount?: number
     artistIds?: string[]
@@ -295,6 +296,11 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
       description:
         "Source of the mutation being triggered, E.g. admin, artworks_list",
     },
+    updateCatalog: {
+      type: GraphQLBoolean,
+      description:
+        "When true, catalog-eligible fields are routed to CatalogArtwork records instead of Artwork",
+    },
     metadata: {
       type: BulkUpdateArtworksMetadataInput,
       description: "Metadata to be updated",
@@ -323,11 +329,12 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, filters, metadata, source },
+    { id, filters, metadata, source, updateCatalog },
     { updatePartnerArtworksMetadataLoader }
   ) => {
     const gravityOptions: any = {
       source,
+      update_catalog: updateCatalog,
     }
 
     if (metadata) {

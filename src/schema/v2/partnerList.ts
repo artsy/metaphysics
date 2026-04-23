@@ -9,6 +9,7 @@ import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
+import { FairType } from "./fair"
 import { date } from "./fields/date"
 import {
   connectionWithCursorInfo,
@@ -59,6 +60,14 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
       partnerShowID: {
         type: GraphQLString,
         resolve: ({ partner_show_id }) => partner_show_id,
+      },
+      fair: {
+        type: FairType,
+        resolve: async ({ fair_id }, _args, { fairLoader }) => {
+          if (!fair_id) return null
+
+          return fairLoader(fair_id)
+        },
       },
       distributedAt: date(({ distributed_at }) => distributed_at),
       createdAt: date(),
