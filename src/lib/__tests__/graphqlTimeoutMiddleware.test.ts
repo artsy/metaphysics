@@ -111,9 +111,12 @@ describe("graphQLTimeoutMiddleware", () => {
         typeDefs,
         resolvers,
       })
-      applyMiddleware(schema, graphqlTimeoutMiddleware(defaultTimeout))
-      return graphql({
+      const schemaWithMiddleware = applyMiddleware(
         schema,
+        graphqlTimeoutMiddleware(defaultTimeout)
+      )
+      return graphql({
+        schema: schemaWithMiddleware,
         source: gql`
           query {
             artwork {
