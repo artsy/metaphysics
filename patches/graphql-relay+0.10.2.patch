@@ -15,7 +15,7 @@
  /**
   * A simple function that accepts an array and connection arguments, and returns
 --- a/node_modules/graphql-relay/connection/arrayConnection.js	1985-10-26 09:15:00
-+++ b/node_modules/graphql-relay/connection/arrayConnection.js	2026-04-23 11:20:55
++++ b/node_modules/graphql-relay/connection/arrayConnection.js	2026-04-23 22:34:43
 @@ -73,10 +73,23 @@
      startOffset - sliceStart,
      endOffset - sliceStart,
@@ -133,3 +133,16 @@
  Object.defineProperty(exports, 'connectionFromArray', {
    enumerable: true,
    get: function () {
+--- a/node_modules/graphql-relay/utils/base64.js	1985-10-26 09:15:00
++++ b/node_modules/graphql-relay/utils/base64.js	2026-04-23 22:36:41
+@@ -46,6 +46,10 @@
+   return toBase64Char(c & 63);
+ }
+ function unbase64(input) {
++  // Pad input so that length is a multiple of 4; graphql-relay 0.10's
++  // stricter decoder rejects unpadded base64 otherwise.
++  const padLen = (4 - (input.length % 4)) % 4
++  if (padLen) input = input + "=".repeat(padLen)
+   const utf8Array = [];
+   for (let i = 0; i < input.length; i += 4) {
+     const a = fromBase64Char(input[i]);
