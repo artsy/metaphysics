@@ -84,7 +84,7 @@ export const mockFetch = jest.fn(() =>
                 },
               ],
             },
-            analyticsRankedStats: {
+            rankedStats: {
               edges: [
                 {
                   node: {
