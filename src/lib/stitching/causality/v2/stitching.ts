@@ -1,3 +1,4 @@
+import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
 import { GraphQLSchema, OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
@@ -48,7 +49,7 @@ export const causalityStitchingEnvironment = ({
             }
           `,
           resolve: (parent, _args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
+            return delegateToSchema({
               schema: localSchema,
               operation: OperationTypeNode.QUERY,
               fieldName: "saleArtwork",
@@ -99,7 +100,7 @@ export const causalityStitchingEnvironment = ({
           `,
 
           resolve: (parent, _args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
+            return delegateToSchema({
               schema: causalitySchema,
               operation: OperationTypeNode.QUERY,
               fieldName: "_unused_auctionsLot",
@@ -125,8 +126,7 @@ export const causalityStitchingEnvironment = ({
           // (eg first, after, last, before) are forwarded automatically, so we only
           // need the userId.
           resolve: (parent, _args, context, info) => {
-            return info.mergeInfo
-              .delegateToSchema({
+            return delegateToSchema({
                 schema: causalitySchema,
                 operation: OperationTypeNode.QUERY,
                 fieldName: "_unused_auctionsLotStandingConnection",
