@@ -28,6 +28,7 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 import { graphqlBatchHTTPWrapper } from "react-relay-network-modern"
+import { createYoga, Plugin } from "graphql-yoga"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -128,7 +129,7 @@ app.use(
   // even though it is also included in the root index.js file.
   bodyParserMiddleware,
   rateLimiterMiddleware,
-  // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
+  // Ensure this divider is logged before both fetchPersistedQuery and the GraphQL handler
   (_req, _res, next) => {
     info("----------")
     next()
@@ -140,92 +141,191 @@ app.use(
 
 const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
-const { graphqlHTTP } = require("express-graphql")
-const graphqlServer = graphqlHTTP((req, res, params) => {
-  const accessToken = req.headers["x-access-token"] as string | undefined
-  const appToken = req.headers["x-xapp-token"] as string | undefined
-  const xUserID = req.headers["x-user-id"] as string | undefined
-  const xOriginalSessionID = req.headers["x-original-session-id"] as
-    | string
-    | undefined
-  const timezone = req.headers["x-timezone"] as string | undefined
-  const userAgent = req.headers["user-agent"]
-  const xImpersonateUserID = req.headers["x-impersonate-user-id"] as
-    | string
-    | undefined
-  const isCMSRequest = !!(req.headers["x-cms-request"] == "true")
-  const ipAddress = requestIPAddress(req)
+// Internal context fields used by the plugins below — prefixed `_` to avoid
+// colliding with real resolver context keys.
+type YogaInternalContext = ResolverContext & {
+  _requestID: string
+  _userAgent?: string
+  _req: express.Request
+  _params?: { query?: string; variables?: Record<string, any> }
+}
 
-  const { requestIDs } = res.locals
-  const requestID = requestIDs.requestID
+type YogaServerContext = { req: express.Request; res: express.Response }
 
-  if (enableRequestLogging) {
-    fetchLoggerSetup(requestID)
-  }
+// Adds validation rules per-request. onValidate runs before onContextBuilding,
+// so the user context isn't built yet — read `req` from the server context.
+const validationRulesPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
+  onValidate({ context, addValidationRule }) {
+    addValidationRule(principalFieldDirectiveValidation)
+    const req = ((context as unknown) as YogaServerContext).req
+    if (
+      INTROSPECT_TOKEN &&
+      req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
+    ) {
+      addValidationRule(NoSchemaIntrospectionCustomRule)
+    }
+    if (QUERY_DEPTH_LIMIT) {
+      addValidationRule(depthLimit(QUERY_DEPTH_LIMIT))
+    }
+  },
+}
 
-  // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
-  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  let defaultTimezone
-  if (timezone && moment.tz.zone(timezone)) {
-    defaultTimezone = timezone
-  }
+// The `Viewer` type's resolver returns rootValue (see src/schema/v2/schema.ts).
+// Without a non-null rootValue, every `viewer { ... }` query resolves to null.
+const rootValuePlugin: Plugin<YogaInternalContext, YogaServerContext> = {
+  onExecute({ args }) {
+    args.rootValue = {}
+  },
+}
 
-  // Currently the xImpersonateUserID is only used for Braze purposes
-  const userID = xUserID || xImpersonateUserID
+// Merges our computed extensions (principalField, optionalFields, request
+// logger) onto the final result after execute.
+const extensionsPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
+  onExecute() {
+    return {
+      onExecuteDone({ args, result, setResult }) {
+        if (
+          "initialResult" in (result as any) ||
+          !("data" in (result as any))
+        ) {
+          return
+        }
+        const ctx = args.contextValue as YogaInternalContext
+        const extensions = createExtensions(
+          args.document,
+          result,
+          ctx._requestID,
+          ctx._userAgent
+        )
+        if (extensions) {
+          setResult({
+            ...(result as any),
+            extensions: {
+              ...((result as any).extensions ?? {}),
+              ...extensions,
+            },
+          })
+        }
+      },
+    }
+  },
+}
 
-  const loaders = createLoaders(accessToken, userID, {
-    requestIDs,
-    userAgent,
-    appToken,
-    xOriginalSessionID,
-    isMutation: !!req.body?.query?.includes("mutation"),
-    xImpersonateUserID,
-  })
+// Runs every GraphQL error through `graphqlErrorHandler` (Sentry reporting,
+// stack inclusion in dev, httpStatusCodes extension). Yoga's default error
+// masking is disabled in the config below so the handler sees real errors.
+const errorFormatPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
+  onExecutionResult({ result, setResult, context }) {
+    if (!result || "initialResult" in (result as any)) return
+    const r = result as any
+    if (!r.errors?.length) return
+    // onExecutionResult receives Yoga's server context (req/res + params from
+    // YogaInitialContext), not the user-built context.
+    const ctx = (context as unknown) as YogaServerContext & {
+      params?: { query?: string; variables?: Record<string, any> }
+    }
+    // Prevent CDNs from caching responses that contain errors.
+    ctx.res.setHeader("Cache-Control", "no-cache")
+    const handler = graphqlErrorHandler(enableSentry, {
+      req: ctx.req,
+      variables: ctx.params?.variables,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      query: ctx.params?.query!,
+    })
+    setResult({ ...r, errors: r.errors.map((e: any) => handler(e)) })
+  },
+}
 
-  const context: ResolverContext = {
-    accessToken,
-    userID,
-    defaultTimezone,
-    ...loaders,
-    // For stitching purposes
-    exchangeSchema,
-    requestIDs,
-    userAgent,
-    appToken,
-    ipAddress,
-    xImpersonateUserID,
-    isCMSRequest,
-  }
+const yoga = createYoga<YogaServerContext, YogaInternalContext>({
+  schema,
+  graphqlEndpoint: "/v2",
+  graphiql: !PRODUCTION_ENV,
+  maskedErrors: false,
+  // Client-side batching is handled by graphqlBatchHTTPWrapper below, which
+  // invokes this handler once per batched operation.
+  batching: false,
+  landingPage: false,
+  // Clients include `id` alongside `query`
+  // `fetchPersistedQuery` leaves `documentID` on the body after resolving it
+  extraParamNames: ["id", "documentID"],
+  context: ({ req, res, params }) => {
+    const accessToken = req.headers["x-access-token"] as string | undefined
+    const appToken = req.headers["x-xapp-token"] as string | undefined
+    const xUserID = req.headers["x-user-id"] as string | undefined
+    const xOriginalSessionID = req.headers["x-original-session-id"] as
+      | string
+      | undefined
+    const timezone = req.headers["x-timezone"] as string | undefined
+    const userAgent = req.headers["user-agent"]
+    const xImpersonateUserID = req.headers["x-impersonate-user-id"] as
+      | string
+      | undefined
+    const isCMSRequest = req.headers["x-cms-request"] === "true"
+    const ipAddress = requestIPAddress(req)
 
-  const validationRules = [
-    principalFieldDirectiveValidation,
+    const { requestIDs } = res.locals
+    const requestID = requestIDs.requestID
 
-    // require Authorization header for introspection (in production if configured)
-    ...(INTROSPECT_TOKEN &&
-    req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
-      ? [NoSchemaIntrospectionCustomRule]
-      : []),
-  ]
-  if (QUERY_DEPTH_LIMIT) validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
+    if (enableRequestLogging) {
+      fetchLoggerSetup(requestID)
+    }
 
-  return {
-    schema,
-    graphiql: !PRODUCTION_ENV,
-    context,
-    rootValue: {},
-    customFormatErrorFn: graphqlErrorHandler(enableSentry, {
-      req,
-      // Why the checking on params? Do we reach this code if params is falsy?
-      variables: params && params.variables,
-      query: (params && params.query)!,
-    }),
-    validationRules,
-    extensions: ({ document, result }) =>
-      createExtensions(document, result, requestID, userAgent),
-  }
+    let defaultTimezone
+    if (timezone && moment.tz.zone(timezone)) {
+      defaultTimezone = timezone
+    }
+
+    const userID = xUserID || xImpersonateUserID
+
+    const loaders = createLoaders(accessToken, userID, {
+      requestIDs,
+      userAgent,
+      appToken,
+      xOriginalSessionID,
+      isMutation: !!req.body?.query?.includes("mutation"),
+      xImpersonateUserID,
+    })
+
+    const context: YogaInternalContext = {
+      accessToken,
+      userID,
+      defaultTimezone,
+      ...loaders,
+      exchangeSchema,
+      requestIDs,
+      userAgent,
+      appToken,
+      ipAddress,
+      xImpersonateUserID,
+      isCMSRequest,
+      _req: req,
+      _requestID: requestID,
+      _userAgent: userAgent,
+      _params: params,
+    }
+
+    return context
+  },
+  plugins: [
+    validationRulesPlugin,
+    rootValuePlugin,
+    extensionsPlugin,
+    errorFormatPlugin,
+  ],
 })
 
-app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
+// Adapter: graphqlBatchHTTPWrapper and supportedV2RouteHandler expect an
+// Express-style `(req, res, next)` middleware. Yoga is a `(req, res)` handler
+// that writes the response itself, so we forward errors to `next`.
+const yogaExpressMiddleware: express.RequestHandler = (req, res, next) => {
+  Promise.resolve(yoga.handle(req as any, res as any, { req, res })).catch(next)
+}
+
+app.use(
+  "/batch",
+  bodyParser.json(),
+  graphqlBatchHTTPWrapper(yogaExpressMiddleware as any)
+)
 
 // This is mounted at '/v2' and matches all routes that start with '/v2'.
 //
@@ -250,7 +350,7 @@ export const supportedV2RouteHandler = (req, res, next, server) => {
 }
 
 app.use("/v2", (req, res, next) => {
-  supportedV2RouteHandler(req, res, next, graphqlServer)
+  supportedV2RouteHandler(req, res, next, yogaExpressMiddleware)
 })
 
 app.use("*", (_req, res, _next) => {
