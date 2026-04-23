@@ -1,7 +1,5 @@
-import {
-  executableVortexSchema,
-  transformsForVortex,
-} from "lib/stitching/vortex/schema"
+import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { amount } from "schema/v2/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import { OperationTypeNode } from "graphql"
@@ -228,7 +226,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
 
           try {
-            const vortexContext = await info.mergeInfo.delegateToSchema({
+            const vortexContext = await delegateToSchema({
               schema: vortexSchema,
               operation: OperationTypeNode.QUERY,
               fieldName: "analyticsPricingContext",
@@ -257,7 +255,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
 
         resolve: async (source, _, context, info) => {
           const args = { partnerId: source.internalID }
-          return await info.mergeInfo.delegateToSchema({
+          return await delegateToSchema({
             schema: vortexSchema,
             operation: OperationTypeNode.QUERY,
             fieldName: "analyticsPartnerStats",
@@ -275,7 +273,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         }`,
         resolve: async (source, _, context, info) => {
           const args = { userId: source.internalID }
-          return await info.mergeInfo.delegateToSchema({
+          return await delegateToSchema({
             schema: vortexSchema,
             operation: OperationTypeNode.QUERY,
             fieldName: "analyticsUserStats",
@@ -339,8 +337,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
 
-          return info.mergeInfo
-            .delegateToSchema({
+          return delegateToSchema({
               schema: localSchema,
               operation: OperationTypeNode.QUERY,
               fieldName,
@@ -349,7 +346,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               },
               context,
               info,
-              transforms: transformsForVortex({ removeRootFields: false }),
             })
             .then((response) => {
               response.__typename = removeVortexPrefix(typename)
