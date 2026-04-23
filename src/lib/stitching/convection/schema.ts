@@ -1,11 +1,12 @@
 import { wrapSchema, RenameTypes, RenameRootFields } from "@graphql-tools/wrap"
 import { addResolversToSchema } from "@graphql-tools/schema"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { readFileSync } from "fs"
 import { buildSchema, GraphQLError } from "graphql"
 import { createHttpLink } from "apollo-link-http"
 
-export const executableConvectionSchema = () => {
+const buildConvectionSchema = () => {
   const convectionLink = createHttpLink({
     fetch,
     uri: "https://example.com/graphql",
@@ -107,8 +108,7 @@ export const executableConvectionSchema = () => {
     },
   })
 
-  // Return the new modified schema with disabled resolvers
-  return wrapSchema({
+  return {
     schema,
     transforms: [
       new RenameTypes((name) => {
@@ -125,5 +125,11 @@ export const executableConvectionSchema = () => {
         return name
       }),
     ],
-  })
+  }
 }
+
+export const convectionSubschemaConfig = (): SubschemaConfig =>
+  buildConvectionSchema()
+
+export const executableConvectionSchema = () =>
+  wrapSchema(convectionSubschemaConfig())

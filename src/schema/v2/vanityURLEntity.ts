@@ -14,9 +14,9 @@ export const VanityURLEntityType = new GraphQLUnionType({
   resolveType(value, _context, _info) {
     switch (value.context_type) {
       case "Partner":
-        return PartnerType
+        return PartnerType.name
       case "Fair":
-        return FairType
+        return FairType.name
       default:
         throw new Error(`Unknown context type: ${value.context_type}`)
     }

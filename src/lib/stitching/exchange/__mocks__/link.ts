@@ -10,7 +10,7 @@ export const mockFetch = jest.fn(() =>
     new Response(
       JSON.stringify({
         data: {
-          order: {
+          commerceOrder: {
             __typename: "BuyOrder",
             id: "fooid123",
             code: "1",

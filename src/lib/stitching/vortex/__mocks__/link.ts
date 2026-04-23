@@ -10,7 +10,7 @@ export const mockFetch = jest.fn(() =>
     new Response(
       JSON.stringify({
         data: {
-          pricingContext: {
+          analyticsPricingContext: {
             appliedFilters: {
               category: "ARCHITECTURE",
               dimension: "SMALL",
@@ -38,7 +38,7 @@ export const mockFetch = jest.fn(() =>
               },
             ],
           },
-          partnerStats: {
+          analyticsPartnerStats: {
             uniqueVisitors: 0,
             artworksPublished: {
               timeSeries: [
@@ -84,7 +84,7 @@ export const mockFetch = jest.fn(() =>
                 },
               ],
             },
-            rankedStats: {
+            analyticsRankedStats: {
               edges: [
                 {
                   node: {
