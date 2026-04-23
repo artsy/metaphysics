@@ -10181,7 +10181,7 @@ __metadata:
     typescript: "npm:4.6.4"
     unleash-client: "npm:^5.5.2"
     url-join: "npm:4.0.0"
-    uuid: "npm:3.1.0"
+    uuid: "npm:14.0.0"
     wrangler: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
@@ -14002,12 +14002,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:3.1.0":
-  version: 3.1.0
-  resolution: "uuid@npm:3.1.0"
+"uuid@npm:14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
   bin:
-    uuid: ./bin/uuid
-  checksum: 10c0/2304c9d1e66e32ec16abb4c7875796c5ede6404cace9226edb9ecd54310ff55a1171c97b8be4e6927f2b72fb6c4412141e94578eeff913318bc59fe9e477471c
+    uuid: dist-node/bin/uuid
+  checksum: 10c0/a57ae7794c45005c1a9208989196c5baf79a7679c30f43c1bee9033a2c4d113a2cea216fa6fcc9663b08b0d55635df1a7c6eb7e7f3d21c3e50688c698fa39a50
   languageName: node
   linkType: hard
 
