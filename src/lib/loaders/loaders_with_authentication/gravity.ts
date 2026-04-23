@@ -1509,6 +1509,9 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    bulkUpdateMetadataPreviewLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/update_metadata/preview`
+    ),
     addArtworksToShowLoader: gravityLoader(
       (id) => `partner/${id}/bulk_operations/add_artworks_to_show`,
       {},

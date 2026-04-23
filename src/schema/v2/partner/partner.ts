@@ -75,6 +75,7 @@ import {
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
 import { BrandKitType } from "./brandKit"
+import { bulkUpdateMetadataPreview } from "./BulkOperation/bulkUpdateMetadataPreview"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -1467,6 +1468,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       showsSearchConnection: partnerShowsMatchConnection,
+      bulkUpdateMetadataPreview,
       partnerList: {
         description: "A single partner list by its ID.",
         type: PartnerListType,
