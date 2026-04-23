@@ -10,7 +10,8 @@ import express from "express"
 import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
 import morgan from "@artsy/morgan"
-import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
+import { usePersistedOperations } from "@graphql-yoga/plugin-persisted-operations"
+import persistedQueryMap from "./data/complete.queryMap.json"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
@@ -129,14 +130,13 @@ app.use(
   // even though it is also included in the root index.js file.
   bodyParserMiddleware,
   rateLimiterMiddleware,
-  // Ensure this divider is logged before both fetchPersistedQuery and the GraphQL handler
+  // Ensure this divider is logged before the GraphQL handler
   (_req, _res, next) => {
     info("----------")
     next()
   },
   logQueryDetailsIfEnabled(),
-  nameOldEigenQueries,
-  fetchPersistedQuery
+  nameOldEigenQueries
 )
 
 const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
@@ -169,6 +169,23 @@ const validationRulesPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
     }
   },
 }
+
+// Resolves persisted queries by `documentID` against the static queryMap.
+// `allowArbitraryOperations: true` preserves today's permissive behavior —
+// clients can send ad-hoc queries without a persisted ID.
+const persistedOperationsPlugin = usePersistedOperations({
+  allowArbitraryOperations: true,
+  extractPersistedOperationId: (params) =>
+    (params as { documentID?: string }).documentID ?? null,
+  getPersistedOperation: (key) => {
+    const query = (persistedQueryMap as Record<string, string>)[key]
+    if (query) {
+      info(`Serving persisted query with ID ${key}`)
+      return query
+    }
+    return null
+  },
+})
 
 // The `Viewer` type's resolver returns rootValue (see src/schema/v2/schema.ts).
 // Without a non-null rootValue, every `viewer { ... }` query resolves to null.
@@ -245,8 +262,8 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
   // invokes this handler once per batched operation.
   batching: false,
   landingPage: false,
-  // Clients include `id` alongside `query`
-  // `fetchPersistedQuery` leaves `documentID` on the body after resolving it
+  // Clients include `id` alongside `query`; `documentID` is consumed by the
+  // persisted-operations plugin below.
   extraParamNames: ["id", "documentID"],
   context: ({ req, res, params }) => {
     const accessToken = req.headers["x-access-token"] as string | undefined
@@ -307,6 +324,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     return context
   },
   plugins: [
+    persistedOperationsPlugin,
     validationRulesPlugin,
     rootValuePlugin,
     extensionsPlugin,
