@@ -67,9 +67,8 @@ export const exchangeStitchingEnvironment = ({
     //
     // It's possible that this working around a bug in how the fragment is put
     // together by graphql-tools.
-    const aliasedPartyFragment = (field, alias) => {
-      return gql`
-      ... on CommerceOrder {
+    const aliasedPartySelectionSet = (field, alias) => {
+      return `{
         ${alias}: ${field} {
           __typename
           ... on CommerceUser {
@@ -85,11 +84,11 @@ export const exchangeStitchingEnvironment = ({
     }
 
     return {
-      // Bit of a magic in next line, when adding fragment, it seems
+      // Bit of a magic in next line, when adding selectionSet, it seems
       // all second level fields (e.g. b in this query { a { b } }) are
       // ignored, so __typename and id couldn't be added, so the hack
       // was to alias the fragment field and that gets the current fields
-      fragment: aliasedPartyFragment(from, to),
+      selectionSet: aliasedPartySelectionSet(from, to),
       resolve: (parent, _args, context, info) => {
         const typename = parent[to].__typename
         const id = parent[to].id
@@ -133,7 +132,7 @@ export const exchangeStitchingEnvironment = ({
   })
 
   const creditCardResolver = {
-    fragment: `fragment CommerceOrderCreditCard on CommerceOrder { creditCardId }`,
+    selectionSet: `{ creditCardId }`,
     resolve: (parent, _args, context, info) => {
       const id = parent.creditCardId
       if (!id) {
@@ -154,13 +153,11 @@ export const exchangeStitchingEnvironment = ({
   }
 
   const paymentMethodDetailsResolver = {
-    fragment: gql`
-      fragment CommerceOrderPaymentMethod on CommerceOrder {
-        creditCardId
-        bankAccountId
-        paymentMethod
-      }
-    `,
+    selectionSet: `{
+      creditCardId
+      bankAccountId
+      paymentMethod
+    }`,
 
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
@@ -203,22 +200,14 @@ export const exchangeStitchingEnvironment = ({
 
   const inquiryOrderResolvers = {
     isInquiryOrder: {
-      fragment: gql`
-        fragment CommerceOrderIsInquiryOrder on CommerceOfferOrder {
-          impulseConversationId
-        }
-      `,
+      selectionSet: `{ impulseConversationId }`,
       resolve: async (order) => {
         const { impulseConversationId } = order
         return Boolean(impulseConversationId)
       },
     },
     conversation: {
-      fragment: gql`
-        fragment CommerceOrderConversation on CommerceOfferOrder {
-          impulseConversationId
-        }
-      `,
+      selectionSet: `{ impulseConversationId }`,
       resolve: async (order, _args, context, info) => {
         const { impulseConversationId } = order
         if (!impulseConversationId) return null
@@ -236,12 +225,11 @@ export const exchangeStitchingEnvironment = ({
   }
 
   // Map the totals array to a set of resolvers that call the amount function
-  // the type param is only used for the fragment name
-  const totalsResolvers = (type, totalSDLS) =>
+  const totalsResolvers = (_type: string, totalSDLS: string[]) =>
     reduceToResolvers(
       totalSDLS.map((name) => ({
         [name]: {
-          fragment: `fragment ${type}_${name} on ${type} { ${name}Cents currencyCode }`,
+          selectionSet: `{ ${name}Cents currencyCode }`,
           resolve: (parent, args, _context, _info) => {
             return amount((_) => parent[name + "Cents"]).resolve(parent, args)
           },
@@ -250,15 +238,13 @@ export const exchangeStitchingEnvironment = ({
     )
 
   const buyerProfileResolver = {
-    fragment: gql`
-        ... on CommerceOrder {
-          buyer {
-            ... on CommerceUser {
-              id
-            }
-          }
+    selectionSet: `{
+      buyer {
+        ... on CommerceUser {
+          id
         }
-        `,
+      }
+    }`,
     resolve: async (parent, _args, context, info) => {
       return await delegateToSchema({
         schema: localSchema,
@@ -402,15 +388,13 @@ export const exchangeStitchingEnvironment = ({
     resolvers: {
       CollectorResume: {
         buyerActivity: {
-          fragment: gql`
-            ... on CollectorResume {
-             userId
-             purchases {
-                totalAuctionCount
-                totalPrivateSaleCount
-              }
+          selectionSet: `{
+            userId
+            purchases {
+              totalAuctionCount
+              totalPrivateSaleCount
             }
-          `,
+          }`,
           resolve: async (parent, _args, context, info) => {
             try {
               const nonBnmoPurchases =
@@ -446,11 +430,7 @@ export const exchangeStitchingEnvironment = ({
       },
       Conversation: {
         orderConnection: {
-          fragment: gql`
-            fragment Conversation_orderConnection on Conversation {
-              internalID
-            }
-          `,
+          selectionSet: `{ internalID }`,
           resolve: (
             { internalID: conversationId },
             {
@@ -515,7 +495,7 @@ export const exchangeStitchingEnvironment = ({
       },
       CommerceLineItem: {
         artwork: {
-          fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkId }`,
+          selectionSet: `{ artworkId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkId
             return delegateToSchema({
@@ -531,7 +511,7 @@ export const exchangeStitchingEnvironment = ({
           },
         },
         artworkVersion: {
-          fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkVersionId }`,
+          selectionSet: `{ artworkVersionId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkVersionId
             const globalID = toGlobalId("ArtworkVersion", id)
@@ -550,12 +530,10 @@ export const exchangeStitchingEnvironment = ({
         },
 
         artworkOrEditionSet: {
-          fragment: gql`
-            ... on CommerceLineItem {
-              artworkId
-              editionSetId
-            }
-          `,
+          selectionSet: `{
+            artworkId
+            editionSetId
+          }`,
           resolve: async (parent, _args, context, info) => {
             const artworkId = parent.artworkId
             const editionSetId = parent.editionSetId
@@ -636,9 +614,7 @@ export const exchangeStitchingEnvironment = ({
       },
       Me: {
         orders: {
-          fragment: gql`... on Me {
-            __typename
-          }`,
+          selectionSet: `{ __typename }`,
           resolve: async (_source, args, context, info) => {
             return await delegateToSchema({
               schema: exchangeSchema,
@@ -653,11 +629,7 @@ export const exchangeStitchingEnvironment = ({
       },
       Viewer: {
         commerceOrders: {
-          fragment: gql`
-            ... on Viewer {
-              __typename
-            }
-          `,
+          selectionSet: `{ __typename }`,
           resolve: (_parent, args, context, info) => {
             return delegateToSchema({
               schema: exchangeSchema,
