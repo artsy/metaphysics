@@ -65,7 +65,7 @@ export const bulkUpdateMetadataPreview: GraphQLFieldConfig<
 
     const params: Record<string, unknown> = {}
 
-    if (artworkIds) params.artwork_ids = artworkIds
+    if (artworkIds?.length) params.artwork_ids = artworkIds
     if (partnerListId) params.partner_list_id = partnerListId
     if (updateCatalog != null) params.update_catalog = updateCatalog
 
