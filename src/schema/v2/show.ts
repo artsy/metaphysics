@@ -762,7 +762,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       viewingRoomIDs: {
         type: new GraphQLNonNull(
-          GraphQLList(new GraphQLNonNull(GraphQLString))
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         resolve: ({ viewing_room_ids }) => viewing_room_ids,
       },

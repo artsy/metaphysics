@@ -7,7 +7,8 @@ import {
 } from "lib/stitching/lib/getTypesFromSchema"
 import { consignmentStitchingEnvironment } from "../v2/stitching"
 
-import { GraphQLSchemaWithTransforms, mergeSchemas } from "graphql-tools"
+import { stitchSchemas } from "@graphql-tools/stitch"
+import { GraphQLSchema } from "graphql"
 import localSchema from "schema/v2/schema"
 
 /**
@@ -35,9 +36,9 @@ export async function useConvectionStitching() {
  * stitching environment and then caching the results.
  */
 
-let cachedSchema: GraphQLSchemaWithTransforms
+let cachedSchema: GraphQLSchema
 let stitchedSchema: ReturnType<typeof consignmentStitchingEnvironment>
-let mergedSchema: GraphQLSchemaWithTransforms
+let mergedSchema: GraphQLSchema
 
 /**
  * Gets a cached copy of the transformed convection schema
@@ -72,10 +73,11 @@ const getConvectionMergedSchema = async () => {
 
     // The order should only matter in that extension schemas come after the
     // objects that they are expected to build upon
-    mergedSchema = mergeSchemas({
-      schemas: [localSchema, cachedSchema, extensionSchema],
+    mergedSchema = stitchSchemas({
+      subschemas: [localSchema, cachedSchema],
+      typeDefs: extensionSchema ? [extensionSchema] : undefined,
       resolvers: resolvers,
-    }) as GraphQLSchemaWithTransforms
+    })
 
     const anyMergedSchema = mergedSchema as any
     anyMergedSchema.__allowedLegacyNames = ["__id"]
