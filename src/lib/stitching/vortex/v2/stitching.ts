@@ -1,6 +1,10 @@
-import { executableVortexSchema } from "lib/stitching/vortex/schema"
+import {
+  executableVortexSchema,
+  transformsForVortex,
+} from "lib/stitching/vortex/schema"
 import { amount } from "schema/v2/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
+import { OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
 
@@ -226,7 +230,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           try {
             const vortexContext = await info.mergeInfo.delegateToSchema({
               schema: vortexSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName: "analyticsPricingContext",
               args,
               context,
@@ -255,7 +259,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const args = { partnerId: source.internalID }
           return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
-            operation: "query",
+            operation: OperationTypeNode.QUERY,
             fieldName: "analyticsPartnerStats",
             args,
             context,
@@ -273,7 +277,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const args = { userId: source.internalID }
           return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
-            operation: "query",
+            operation: OperationTypeNode.QUERY,
             fieldName: "analyticsUserStats",
             args,
             context,
@@ -338,14 +342,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           return info.mergeInfo
             .delegateToSchema({
               schema: localSchema,
-              operation: "query",
+              operation: OperationTypeNode.QUERY,
               fieldName,
               args: {
                 id,
               },
               context,
               info,
-              transforms: vortexSchema.transforms,
+              transforms: transformsForVortex({ removeRootFields: false }),
             })
             .then((response) => {
               response.__typename = removeVortexPrefix(typename)

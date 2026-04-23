@@ -1,4 +1,4 @@
-import { graphql } from "graphql"
+import { graphql, OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { getFieldsForTypeFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
@@ -96,7 +96,7 @@ it("resolves price field on CommerceShippingQuote", async () => {
 
 // These are used in all delegate calls, and not useful to the test
 const restOfResolveArgs = {
-  operation: "query",
+  operation: OperationTypeNode.QUERY,
   schema: expect.anything(),
   context: expect.anything(),
   transforms: expect.anything(),
@@ -114,7 +114,7 @@ describe("when handling resolver delegation", () => {
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { id: "ARTWORK-ID" },
       fieldName: "artwork",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -170,7 +170,7 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
 
-    operation: "query",
+    operation: OperationTypeNode.QUERY,
     schema: expect.anything(),
     context: expect.anything(),
     info: expect.anything(),
@@ -187,7 +187,7 @@ it("delegates to the local schema for a CommerceOrder's buyerProfile", async () 
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { userID: "userid" },
     fieldName: "collectorProfile",
-    operation: "query",
+    operation: OperationTypeNode.QUERY,
     schema: expect.anything(),
     context: expect.anything(),
     info: expect.anything(),
@@ -646,7 +646,7 @@ describe("Conversation with orders", () => {
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { buyerId: "user-id", impulseConversationId: "conversation-id" },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -672,7 +672,7 @@ describe("Conversation with orders", () => {
         impulseConversationId: "conversation-id",
       },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -699,7 +699,7 @@ describe("Conversation with orders", () => {
         state: "SUBMITTED",
       },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),

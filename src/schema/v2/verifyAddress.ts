@@ -126,9 +126,9 @@ const VerifyAddressMutationType = new GraphQLUnionType({
   types: [VerifyAddressType, VerifyAddressFailureType],
   resolveType: (object) => {
     if (object._type === "GravityMutationError") {
-      return VerifyAddressFailureType
+      return VerifyAddressFailureType.name
     }
-    return VerifyAddressType
+    return VerifyAddressType.name
   },
 })
 

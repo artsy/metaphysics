@@ -79,9 +79,9 @@ const BulkAddArtworksToShowMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkAddArtworksToShowMutationFailureType
+      return BulkAddArtworksToShowMutationFailureType.name
     }
-    return BulkAddArtworksToShowMutationSuccessType
+    return BulkAddArtworksToShowMutationSuccessType.name
   },
 })
 

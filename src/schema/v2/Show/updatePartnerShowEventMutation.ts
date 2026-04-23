@@ -22,6 +22,7 @@ interface UpdatePartnerShowEventMutationInputProps {
   endAt?: string
   eventType?: string
   description?: string
+  timeZone?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -124,12 +125,12 @@ export const updatePartnerShowEventMutation = mutationWithClientMutationId<
 
     if (args.startAt) {
       gravityArgs.start_at = momentTimezone
-        .tz(args.startAt, args.timeZone)
+        .tz(args.startAt, args.timeZone!)
         .unix()
     }
 
     if (args.endAt) {
-      gravityArgs.end_at = momentTimezone.tz(args.endAt, args.timeZone).unix()
+      gravityArgs.end_at = momentTimezone.tz(args.endAt, args.timeZone!).unix()
     }
 
     if (args.eventType) {

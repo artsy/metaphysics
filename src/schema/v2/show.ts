@@ -698,9 +698,9 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           types: [PartnerType, ExternalPartnerType],
           resolveType: (value) => {
             if (value._links) {
-              return ExternalPartnerType
+              return ExternalPartnerType.name
             }
-            return PartnerType
+            return PartnerType.name
           },
         }),
         resolve: (
