@@ -1,5 +1,4 @@
 import { GraphQLSchema } from "graphql"
-import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import gql from "lib/gql"
 import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
 
@@ -7,7 +6,7 @@ export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
 }: {
-  causalitySchema: GraphQLSchemaWithTransforms
+  causalitySchema: GraphQLSchema
   localSchema: GraphQLSchema
 }) => {
   return {

@@ -198,7 +198,7 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     quantity: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
     },
   }),

@@ -1,8 +1,8 @@
 import { delegateToSchema } from "@graphql-tools/delegate"
-import type { AsyncExecutor } from "@graphql-tools/delegate/types"
+import type { AsyncExecutor } from "@graphql-tools/utils"
+import { WrapQuery } from "@graphql-tools/wrap"
 import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { toGlobalId } from "graphql-relay"
-import { GraphQLSchemaWithTransforms, WrapQuery } from "graphql-tools"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
@@ -34,7 +34,7 @@ export const exchangeStitchingEnvironment = ({
   exchangeSchema,
 }: {
   localSchema: GraphQLSchema
-  exchangeSchema: GraphQLSchemaWithTransforms
+  exchangeSchema: GraphQLSchema
 }) => {
   // Dynamically get all types that implement the CommerceOrder interface
   // This ensures the union automatically includes new order types added to Exchange
