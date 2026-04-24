@@ -135,6 +135,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   availability: {
     type: GraphQLString,
   },
+  certificateOfAuthenticity: {
+    type: GraphQLString,
+    description:
+      "Filter by certificate of authenticity. Accepted values: gallery, authenticating_body, no.",
+  },
   categories: {
     type: new GraphQLList(GraphQLString),
   },
@@ -474,6 +479,7 @@ const convertFilterArgs = ({
   artworkIDs,
   atAuction,
   attributionClass,
+  certificateOfAuthenticity,
   completenessTier,
   dimensionRange,
   excludeArtworkIDs,
@@ -516,6 +522,7 @@ const convertFilterArgs = ({
     artist_series_ids: artistSeriesIDs,
     at_auction: atAuction,
     attribution_class: attributionClass,
+    certificate_of_authenticity: certificateOfAuthenticity,
     completeness_tier: completenessTier,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
