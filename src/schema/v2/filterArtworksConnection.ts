@@ -135,13 +135,13 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   availability: {
     type: GraphQLString,
   },
+  categories: {
+    type: new GraphQLList(GraphQLString),
+  },
   certificateOfAuthenticity: {
     type: GraphQLString,
     description:
       "Filter by certificate of authenticity. Accepted values: gallery, authenticating_body, no.",
-  },
-  categories: {
-    type: new GraphQLList(GraphQLString),
   },
   color: {
     type: GraphQLString,
