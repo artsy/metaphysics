@@ -57,6 +57,7 @@ interface Input {
     priceCurrency?: string
     priceHidden?: boolean
     priceListed?: number
+    priceMinor?: number
     provenance?: string
     published?: boolean
     signature?: string
@@ -199,6 +200,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     priceListed: {
       type: GraphQLFloat,
       description: "The price for the artworks",
+    },
+    priceMinor: {
+      type: GraphQLInt,
+      description:
+        "The price in minor units, targeting the catalog artwork field",
     },
     provenance: {
       type: GraphQLString,
@@ -369,6 +375,7 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         price_currency: metadata.priceCurrency,
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
+        price_minor: metadata.priceMinor,
         provenance: metadata.provenance,
         published: metadata.published,
         signature: metadata.signature,
