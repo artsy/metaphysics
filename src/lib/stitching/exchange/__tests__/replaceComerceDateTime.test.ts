@@ -4,8 +4,8 @@ import gql from "lib/gql"
 import {
   TransformInterfaceFields,
   TransformObjectFields,
-  transformSchema,
-} from "graphql-tools"
+  wrapSchema,
+} from "@graphql-tools/wrap"
 import { ReplaceCommerceDateTimeType } from "../transformers/replaceCommerceDateTimeType"
 
 const originalSchema = new GraphQLSchema({
@@ -29,10 +29,13 @@ const originalSchema = new GraphQLSchema({
   }),
 })
 
-const schema = transformSchema(originalSchema, [
-  new TransformInterfaceFields(ReplaceCommerceDateTimeType),
-  new TransformObjectFields(ReplaceCommerceDateTimeType),
-])
+const schema = wrapSchema({
+  schema: originalSchema,
+  transforms: [
+    new TransformInterfaceFields(ReplaceCommerceDateTimeType),
+    new TransformObjectFields(ReplaceCommerceDateTimeType),
+  ],
+})
 
 describe("ReplaceCommerceDateTimeType", () => {
   it("replaces CommerceDateTime fields", async () => {

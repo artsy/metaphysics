@@ -19,8 +19,14 @@ export default (_accessToken, _opts) => {
     return {} as Record<string, T>
   }
 
-  const createConsignmentInquiryLoader = () => {
-    throw new GraphQLError("Artwork submissions are not accepted at this time.")
+  const createConsignmentInquiryLoader = (
+    _args?: Record<string, unknown>
+  ): Promise<never> => {
+    return Promise.reject(
+      new GraphQLError(
+        "Artwork submissions are not accepted at this time."
+      )
+    )
   }
 
   const assetCreateLoader = () => {

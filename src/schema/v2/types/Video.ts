@@ -56,7 +56,7 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       },
       title: {
         description: "Title of the video",
-        type: GraphQLNonNull(GraphQLString),
+        type: new GraphQLNonNull(GraphQLString),
         resolve: (parent, _args, _context, _info) => {
           return parent?.title || ""
         },
@@ -65,7 +65,7 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       playerUrl: {
         description:
           "Returns a full-qualified url that can be embedded in an iframe player",
-        type: GraphQLNonNull(GraphQLString),
+        type: new GraphQLNonNull(GraphQLString),
         resolve: (parent, _args, _context, _info) => {
           const {
             playerUrl, // if Artwork
@@ -96,11 +96,11 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       },
       height: {
         description: "The height of the video",
-        type: GraphQLNonNull(GraphQLInt),
+        type: new GraphQLNonNull(GraphQLInt),
       },
       width: {
         description: "The width of the video",
-        type: GraphQLNonNull(GraphQLInt),
+        type: new GraphQLNonNull(GraphQLInt),
       },
       aspectRatio: {
         description: "The aspect ratio of the video (width / height)",

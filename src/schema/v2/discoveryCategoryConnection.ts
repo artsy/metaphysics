@@ -13,7 +13,7 @@ export const discoveryCategoryConnection: GraphQLFieldConfig<
   type: DiscoveryCategoryUnion,
   args: {
     slug: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The slug of the discovery category to retrieve",
     },
   },

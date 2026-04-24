@@ -36,7 +36,7 @@ const BulkAddArtworksToShowResponseType = new GraphQLObjectType<
   name: "BulkAddArtworksToShowResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 
@@ -79,9 +79,9 @@ const BulkAddArtworksToShowMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkAddArtworksToShowMutationFailureType
+      return BulkAddArtworksToShowMutationFailureType.name
     }
-    return BulkAddArtworksToShowMutationSuccessType
+    return BulkAddArtworksToShowMutationSuccessType.name
   },
 })
 

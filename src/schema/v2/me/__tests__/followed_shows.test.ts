@@ -111,7 +111,7 @@ describe("returns followed shows for a user", () => {
           followedShowsLoader,
           geodataCitiesLoader: () => Promise.resolve([]),
         })
-      ).rejects.toMatchInlineSnapshot(`[Error: Cannot find valid city]`)
+      ).rejects.toMatchInlineSnapshot(`[GraphQLError: Cannot find valid city]`)
     })
   })
 })

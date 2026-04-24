@@ -87,7 +87,7 @@ export const deletePartnerShowMutation = mutationWithClientMutationId<
             partnerID: partnerId,
             showID: showId,
           })
-        : await deleteShowLoader(showId)
+        : await deleteShowLoader!(showId)
 
       return response
     } catch (error) {

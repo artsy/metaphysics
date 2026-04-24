@@ -48,10 +48,10 @@ export const OfferMutationResponseType = new GraphQLUnionType({
   resolveType: (data) => {
     switch (data._type) {
       case OFFER_MUTATION_FLAGS.ERROR:
-        return ErrorType
+        return ErrorType.name
       case OFFER_MUTATION_FLAGS.SUCCESS:
       default:
-        return SuccessType
+        return SuccessType.name
     }
   },
 })

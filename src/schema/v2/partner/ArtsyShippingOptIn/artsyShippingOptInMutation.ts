@@ -29,7 +29,7 @@ const ArtsyShippingOptInResponseType = new GraphQLObjectType<
   name: "ArtsyShippingOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: GraphQLList(GraphQLString) },
+    ids: { type: new GraphQLList(GraphQLString) },
   }),
 })
 
@@ -68,9 +68,9 @@ const ArtsyShippingOptInMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return ArtsyShippingOptInMutationFailureType
+      return ArtsyShippingOptInMutationFailureType.name
     }
-    return ArtsyShippingOptInMutationSuccessType
+    return ArtsyShippingOptInMutationSuccessType.name
   },
 })
 

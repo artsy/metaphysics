@@ -79,7 +79,7 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     internalName: { type: GraphQLString },
     itemId: { type: GraphQLString },
-    itemIds: { type: GraphQLList(GraphQLString) },
+    itemIds: { type: new GraphQLList(GraphQLString) },
     itemType: { type: new GraphQLNonNull(GraphQLString) },
     key: { type: new GraphQLNonNull(GraphQLString) },
     layout: { type: OrderedSetLayoutsEnum },

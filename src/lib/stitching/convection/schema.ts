@@ -1,25 +1,21 @@
-import {
-  makeRemoteExecutableSchema,
-  transformSchema,
-  RenameTypes,
-  RenameRootFields,
-  addResolveFunctionsToSchema,
-} from "graphql-tools"
+import { wrapSchema, RenameTypes, RenameRootFields } from "@graphql-tools/wrap"
+import { addResolversToSchema } from "@graphql-tools/schema"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
+import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { readFileSync } from "fs"
-import { GraphQLError } from "graphql"
+import { buildSchema, GraphQLError } from "graphql"
 import { createHttpLink } from "apollo-link-http"
 
-export const executableConvectionSchema = () => {
+const buildConvectionSchema = () => {
   const convectionLink = createHttpLink({
     fetch,
     uri: "https://example.com/graphql",
   })
   const convectionTypeDefs = readFileSync("src/data/convection.graphql", "utf8")
 
-  // Setup the default Schema
-  const schema = makeRemoteExecutableSchema({
-    schema: convectionTypeDefs,
-    link: convectionLink,
+  const remoteSchema = wrapSchema({
+    schema: buildSchema(convectionTypeDefs, { assumeValidSDL: true }),
+    executor: linkToExecutor(convectionLink),
   })
 
   // Remap the names of certain types from Convection to fit in the larger
@@ -42,8 +38,8 @@ export const executableConvectionSchema = () => {
   }
 
   // Add disabled resolvers to the schema
-  addResolveFunctionsToSchema({
-    schema,
+  const schema = addResolversToSchema({
+    schema: remoteSchema,
     resolvers: {
       Query: {
         consignments: () => ({
@@ -112,20 +108,28 @@ export const executableConvectionSchema = () => {
     },
   })
 
-  // Return the new modified schema with disabled resolvers
-  return transformSchema(schema, [
-    new RenameTypes((name) => {
-      const newName = remap[name] || name
-      return newName
-    }),
-    new RenameRootFields((_operation, name) => {
-      // We re-define createConsignmentSubmission mutation in Metaphysics, but we want to
-      // use the Convection version of the mutation there, that's why we rename it here.
-      if (name === "createConsignmentSubmission") {
-        return "convectionCreateConsignmentSubmission"
-      }
+  return {
+    schema,
+    transforms: [
+      new RenameTypes((name) => {
+        const newName = remap[name] || name
+        return newName
+      }),
+      new RenameRootFields((_operation, name) => {
+        // We re-define createConsignmentSubmission mutation in Metaphysics, but we want to
+        // use the Convection version of the mutation there, that's why we rename it here.
+        if (name === "createConsignmentSubmission") {
+          return "convectionCreateConsignmentSubmission"
+        }
 
-      return name
-    }),
-  ])
+        return name
+      }),
+    ],
+  }
 }
+
+export const convectionSubschemaConfig = (): SubschemaConfig =>
+  buildConvectionSchema()
+
+export const executableConvectionSchema = () =>
+  wrapSchema(convectionSubschemaConfig())

@@ -14,8 +14,8 @@ import {
   GraphQLFieldConfigMap,
   GraphQLNonNull,
   GraphQLFieldConfig,
-  Thunk,
 } from "graphql"
+import { Thunk } from "types/graphql"
 import { ResolverContext } from "types/graphql"
 import Image, { normalizeImageData } from "schema/v2/image"
 

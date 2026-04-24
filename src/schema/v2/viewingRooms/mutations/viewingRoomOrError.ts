@@ -8,10 +8,10 @@ export const ViewingRoomOrErrorType = new GraphQLNonNull(
     types: [ViewingRoomType, ErrorsType],
     resolveType: (data) => {
       if (data.id) {
-        return ViewingRoomType
+        return ViewingRoomType.name
       }
 
-      return ErrorsType
+      return ErrorsType.name
     },
   })
 )

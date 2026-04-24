@@ -19,11 +19,11 @@ export const ClientFeatureFlagType = new GraphQLObjectType<
     "An client-facing feature flag, used for tracking releases, experiments, etc.",
   fields: {
     name: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The name of the feature",
     },
     enabled: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "Whether the feature is enabled",
     },
     description: {
@@ -43,10 +43,10 @@ export const ClientFeatureFlagType = new GraphQLObjectType<
           name: "ClientFeatureFlagVariant",
           fields: {
             name: {
-              type: GraphQLNonNull(GraphQLString),
+              type: new GraphQLNonNull(GraphQLString),
             },
             weight: {
-              type: GraphQLNonNull(GraphQLInt),
+              type: new GraphQLNonNull(GraphQLInt),
             },
             stickiness: {
               type: GraphQLString,

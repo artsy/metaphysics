@@ -768,7 +768,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       genes: {
         description: `A list of genes associated with an artist`,
-        type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(GeneType))),
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneType))),
         args: {
           geneFamilyID: {
             type: GraphQLString,
@@ -869,7 +869,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
           slugs: {
-            type: new GraphQLList(GraphQLNonNull(GraphQLString)),
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
           },
           size: {
             type: GraphQLInt,

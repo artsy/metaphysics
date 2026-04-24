@@ -48,7 +48,7 @@ export const MatchType = new GraphQLUnionType({
   name: "Match",
   types: Object.values(MODELS).map(({ type }) => type),
   resolveType: ({ __typename }) => {
-    return MODELS[__typename].type
+    return MODELS[__typename]?.type.name
   },
 })
 

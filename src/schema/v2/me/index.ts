@@ -472,7 +472,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     labFeatures: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
       description: "List of lab features for this user",
       resolve: ({ lab_features }) => lab_features || [],
     },
