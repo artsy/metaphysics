@@ -122,6 +122,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistSeriesIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artsyListing: {
+    type: GraphQLBoolean,
+  },
   artworkIDs: {
     type: new GraphQLList(GraphQLString),
     description: "When provided, will only return artworks with these IDs.",
@@ -210,6 +213,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   locationCities: {
     type: new GraphQLList(GraphQLString),
+  },
+  locationId: {
+    type: GraphQLString,
   },
   majorPeriods: {
     type: new GraphQLList(GraphQLString),
@@ -476,6 +482,7 @@ const convertFilterArgs = ({
   artistNationalities,
   artistSeriesID,
   artistSeriesIDs,
+  artsyListing,
   artworkIDs,
   atAuction,
   attributionClass,
@@ -496,6 +503,7 @@ const convertFilterArgs = ({
   inquireableOnly,
   keywordMatchExact,
   locationCities,
+  locationId,
   majorPeriods,
   marketingCollectionID,
   materialsTerms,
@@ -520,6 +528,7 @@ const convertFilterArgs = ({
     artist_nationalities: artistNationalities,
     artist_series_id: artistSeriesID,
     artist_series_ids: artistSeriesIDs,
+    artsy_listing: artsyListing,
     at_auction: atAuction,
     attribution_class: attributionClass,
     certificate_of_authenticity: certificateOfAuthenticity,
@@ -540,6 +549,7 @@ const convertFilterArgs = ({
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
     location_cities: locationCities,
+    location_id: locationId,
     major_periods: majorPeriods,
     marketing_collection_id: marketingCollectionID,
     materials_terms: materialsTerms,

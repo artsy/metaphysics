@@ -41,16 +41,20 @@ interface Input {
     coaByGallery?: boolean
     coaByAuthenticatingBody?: boolean
     conditionDescription?: string
+    depth?: string
+    diameter?: string
     displayPriceRange?: boolean
     domesticShippingFeeCents?: number
     ecommerce: boolean
     exactPrice?: boolean
     exhibitionHistory?: string
+    height?: string
     imageRights?: string
     internationalShippingFeeCents?: number
     literature?: string
     locationId?: string
     medium?: string
+    metric?: string
     offer: boolean
     pickupAvailable?: boolean
     priceAdjustment?: number
@@ -58,10 +62,12 @@ interface Input {
     priceHidden?: boolean
     priceListed?: number
     priceMinor?: number
+    privateNotes?: string
     provenance?: string
     published?: boolean
     signature?: string
     title?: string
+    width?: string
   }
   filters?: {
     artistId?: string
@@ -133,6 +139,14 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The artwork condition to be assigned",
     },
+    depth: {
+      type: GraphQLString,
+      description: "Depth of the artwork",
+    },
+    diameter: {
+      type: GraphQLString,
+      description: "Diameter of the artwork",
+    },
     displayPriceRange: {
       type: GraphQLBoolean,
       description: "Set artwork price visibility to price range",
@@ -154,6 +168,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "The exhibition history to be assigned",
     },
+    height: {
+      type: GraphQLString,
+      description: "Height of the artwork",
+    },
     imageRights: {
       type: GraphQLString,
       description: "The image rights to be assigned",
@@ -174,6 +192,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     medium: {
       type: GraphQLString,
       description: "The medium (materials) to be assigned, E.g. Oil on Canvas",
+    },
+    metric: {
+      type: GraphQLString,
+      description: "Metric unit for dimensions (in or cm)",
     },
     offer: {
       type: GraphQLBoolean,
@@ -206,6 +228,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       description:
         "The price in minor units, targeting the catalog artwork field",
     },
+    privateNotes: {
+      type: GraphQLString,
+      description: "Private notes about the artwork",
+    },
     provenance: {
       type: GraphQLString,
       description: "The provenance to be assigned",
@@ -225,6 +251,10 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
     title: {
       type: GraphQLString,
       description: "The title of the artwork",
+    },
+    width: {
+      type: GraphQLString,
+      description: "Width of the artwork",
     },
   },
 })
@@ -358,16 +388,20 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         coa_by_gallery: metadata.coaByGallery,
         coa_by_authenticating_body: metadata.coaByAuthenticatingBody,
         condition_description: metadata.conditionDescription,
+        depth: metadata.depth,
+        diameter: metadata.diameter,
         domestic_shipping_fee_cents: metadata.domesticShippingFeeCents,
         ecommerce: metadata.ecommerce,
         exact_price: metadata.exactPrice,
         exhibition_history: metadata.exhibitionHistory,
+        height: metadata.height,
         image_rights: metadata.imageRights,
         international_shipping_fee_cents:
           metadata.internationalShippingFeeCents,
         literature: metadata.literature,
         location_id: metadata.locationId,
         medium: metadata.medium,
+        metric: metadata.metric,
         offer: metadata.offer,
         pickup_available: metadata.pickupAvailable,
         display_price_range: metadata.displayPriceRange,
@@ -376,11 +410,13 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
         price_minor: metadata.priceMinor,
+        private_notes: metadata.privateNotes,
         provenance: metadata.provenance,
         published: metadata.published,
         signature: metadata.signature,
         ...transformSignatureFieldsToGravityFields(metadata.signatureTypes),
         title: metadata.title,
+        width: metadata.width,
       }
     }
 

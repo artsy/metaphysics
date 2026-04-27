@@ -631,6 +631,86 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
     )
   })
 
+  it("updates artworks with dimension fields", async () => {
+    const dimensionMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: {
+              height: "24"
+              width: "36"
+              depth: "2"
+              diameter: "10"
+              metric: "in"
+            }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(dimensionMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          height: "24",
+          width: "36",
+          depth: "2",
+          diameter: "10",
+          metric: "in",
+        },
+      }
+    )
+  })
+
+  it("updates artworks with privateNotes field", async () => {
+    const privateNotesMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            metadata: { privateNotes: "Internal note about condition" }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(privateNotesMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      {
+        metadata: {
+          private_notes: "Internal note about condition",
+        },
+      }
+    )
+  })
+
   it("passes artsy_listing in metadata when provided", async () => {
     const artsyListingMutation = gql`
       mutation {
