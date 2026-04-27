@@ -122,6 +122,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistSeriesIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artsyListing: {
+    type: GraphQLBoolean,
+  },
   artworkIDs: {
     type: new GraphQLList(GraphQLString),
     description: "When provided, will only return artworks with these IDs.",
@@ -479,6 +482,7 @@ const convertFilterArgs = ({
   artistNationalities,
   artistSeriesID,
   artistSeriesIDs,
+  artsyListing,
   artworkIDs,
   atAuction,
   attributionClass,
@@ -524,6 +528,7 @@ const convertFilterArgs = ({
     artist_nationalities: artistNationalities,
     artist_series_id: artistSeriesID,
     artist_series_ids: artistSeriesIDs,
+    artsy_listing: artsyListing,
     at_auction: atAuction,
     attribution_class: attributionClass,
     certificate_of_authenticity: certificateOfAuthenticity,
