@@ -211,6 +211,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   locationCities: {
     type: new GraphQLList(GraphQLString),
   },
+  locationId: {
+    type: GraphQLString,
+  },
   majorPeriods: {
     type: new GraphQLList(GraphQLString),
   },
@@ -496,6 +499,7 @@ const convertFilterArgs = ({
   inquireableOnly,
   keywordMatchExact,
   locationCities,
+  locationId,
   majorPeriods,
   marketingCollectionID,
   materialsTerms,
@@ -540,6 +544,7 @@ const convertFilterArgs = ({
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
     location_cities: locationCities,
+    location_id: locationId,
     major_periods: majorPeriods,
     marketing_collection_id: marketingCollectionID,
     materials_terms: materialsTerms,
