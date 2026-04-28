@@ -1176,6 +1176,48 @@ describe("Partner type", () => {
           await runAuthenticatedQuery(query, context)
           expect(partnerArtworksAllLoader).toHaveBeenCalled()
         })
+
+        it("forwards include_non_artsy_listed to partnerArtworksAllLoader when set", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(
+                  first: 3
+                  shallow: false
+                  includeNonArtsyListed: true
+                ) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runAuthenticatedQuery(query, context)
+          const loaderArgs = partnerArtworksAllLoader.mock.calls[0][1]
+          expect(loaderArgs).toHaveProperty("include_non_artsy_listed", true)
+        })
+
+        it("does not forward include_non_artsy_listed when not set", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 3, shallow: false) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runAuthenticatedQuery(query, context)
+          const loaderArgs = partnerArtworksAllLoader.mock.calls[0][1]
+          expect(loaderArgs).not.toHaveProperty("include_non_artsy_listed")
+        })
       })
       describe("when shallow is true", () => {
         it("does not call partnerArtworksAllLoader", async () => {
