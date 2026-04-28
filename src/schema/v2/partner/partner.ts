@@ -734,9 +734,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const gravityArtworkArgs: {
               artwork_id: string[]
               include_non_artsy_listed?: boolean
+              size: number
               sort: string
             } = {
               artwork_id: artworkIds,
+              size: artworkIds.length,
               sort: args.sort,
             }
 

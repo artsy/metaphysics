@@ -1218,6 +1218,25 @@ describe("Partner type", () => {
           const loaderArgs = partnerArtworksAllLoader.mock.calls[0][1]
           expect(loaderArgs).not.toHaveProperty("include_non_artsy_listed")
         })
+
+        it("forwards size matching the number of resolved artwork ids", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 50, shallow: false) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runAuthenticatedQuery(query, context)
+          const loaderArgs = partnerArtworksAllLoader.mock.calls[0][1]
+          expect(loaderArgs).toHaveProperty("size", artworksResponse.length)
+        })
       })
       describe("when shallow is true", () => {
         it("does not call partnerArtworksAllLoader", async () => {
