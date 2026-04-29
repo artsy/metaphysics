@@ -180,6 +180,24 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     // End RESTful Artwork Import Loaders
+    artworkDuplicatePairsLoader: gravityLoader(
+      "artwork_duplicate_pairs",
+      {},
+      { headers: true }
+    ),
+    artworkDuplicatePairLoader: gravityLoader(
+      (id) => `artwork_duplicate_pair/${id}`
+    ),
+    detectArtworkDuplicatesLoader: gravityLoader(
+      "artwork_duplicate_pair/detect",
+      {},
+      { method: "POST" }
+    ),
+    updateArtworkDuplicatePairLoader: gravityLoader(
+      (id) => `artwork_duplicate_pair/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artworksCollectionsBatchUpdateLoader: gravityLoader(
       "artworks/collections/batch",
       {},
