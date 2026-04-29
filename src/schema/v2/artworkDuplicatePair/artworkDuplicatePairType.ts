@@ -29,13 +29,13 @@ export const ArtworkDuplicatePairType = new GraphQLObjectType<
   fields: () => ({
     ...IDFields,
     artwork1: {
-      type: new GraphQLNonNull(ArtworkType),
+      type: ArtworkType,
       resolve: ({ artwork_1_id }, _args, { artworkLoader }) => {
         return artworkLoader(artwork_1_id)
       },
     },
     artwork2: {
-      type: new GraphQLNonNull(ArtworkType),
+      type: ArtworkType,
       resolve: ({ artwork_2_id }, _args, { artworkLoader }) => {
         return artworkLoader(artwork_2_id)
       },
