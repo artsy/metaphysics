@@ -265,6 +265,12 @@ import deleteConversationMessageTemplateMutation from "./conversationMessageTemp
 import { discoveryCategoriesConnection } from "./discoveryCategoriesConnection"
 import { discoveryCategoryConnection } from "./discoveryCategoryConnection"
 import { discoveryCategoryArtworksConnection } from "./discoveryCategoryArtworksConnection"
+import { artworkDuplicatePair } from "./artworkDuplicatePair/artworkDuplicatePair"
+import { artworkDuplicatePairsConnection } from "./artworkDuplicatePair/artworkDuplicatePairs"
+import { detectArtworkDuplicatesMutation } from "./artworkDuplicatePair/detectArtworkDuplicatesMutation"
+import { dismissArtworkDuplicatePairMutation } from "./artworkDuplicatePair/dismissArtworkDuplicatePairMutation"
+import { reopenArtworkDuplicatePairMutation } from "./artworkDuplicatePair/reopenArtworkDuplicatePairMutation"
+import { mergeArtworkDuplicatePairMutation } from "./artworkDuplicatePair/mergeArtworkDuplicatePairMutation"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
@@ -451,6 +457,8 @@ const rootFields = {
   artistSeriesConnection: ArtistSeriesConnection,
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
+  artworkDuplicatePair,
+  artworkDuplicatePairsConnection,
   artworkMediums: ArtworkMediums,
   artworkImport: ArtworkImport,
   artworkResult: ArtworkResult,
@@ -684,6 +692,8 @@ export default new GraphQLSchema({
       deleteArtworkImport: DeleteArtworkImportMutation,
       deleteArtworkTemplate: deleteArtworkTemplateMutation,
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
+      detectArtworkDuplicates: detectArtworkDuplicatesMutation,
+      dismissArtworkDuplicatePair: dismissArtworkDuplicatePairMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       reprocessArtworkImage: ReprocessArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
@@ -736,12 +746,14 @@ export default new GraphQLSchema({
       markNotificationAsRead: markNotificationAsReadMutation,
       markNotificationsAsSeen: markNotificationsAsSeenMutation,
       mergeArtists: mergeArtistsMutation,
+      mergeArtworkDuplicatePair: mergeArtworkDuplicatePairMutation,
       moveArtworksBetweenPartnerLists: moveArtworksBetweenPartnerListsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
+      reopenArtworkDuplicatePair: reopenArtworkDuplicatePairMutation,
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
