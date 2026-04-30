@@ -74,6 +74,7 @@ import {
   EXAMPLE_TEMPLATES,
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
+import { ArtworkDuplicatePairsConnection } from "schema/v2/artworkDuplicatePair/artworkDuplicatePairs"
 import { BrandKitType } from "./brandKit"
 import { bulkUpdateMetadataPreview } from "./BulkOperation/bulkUpdateMetadataPreview"
 
@@ -857,6 +858,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      artworkDuplicatePairsConnection: ArtworkDuplicatePairsConnection,
       conversationMessageTemplatesConnection: ConversationMessageTemplatesConnection,
       artworkTemplatesConnection: ArtworkTemplatesConnection,
       conversationMessageTemplateExamples: {
