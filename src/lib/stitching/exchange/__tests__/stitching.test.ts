@@ -123,37 +123,40 @@ describe("when handling resolver delegation", () => {
   it("calls a user or partner when looking up party details", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const { buyerDetails } = resolvers.CommerceBuyOrder
-    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-    info.mergeInfo.delegateToSchema.mockResolvedValue({})
+    const userByIDLoader = jest.fn().mockResolvedValue({ name: "Some User" })
+    const partnerLoader = jest.fn().mockResolvedValue({ name: "Some Partner" })
+    const context = { userByIDLoader, partnerLoader }
 
-    const parentUser = {
-      buyerDetails: { __typename: "CommerceUser", id: "USER-ID" },
-    }
+    const userResult = await buyerDetails.resolve(
+      { buyerDetails: { __typename: "CommerceUser", id: "USER-ID" } },
+      {},
+      context,
+      {}
+    )
 
-    buyerDetails.resolve(parentUser, {}, {}, info)
-
-    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-      args: { id: "USER-ID" },
-      fieldName: "user",
-      ...restOfResolveArgs,
-    })
+    expect(userByIDLoader).toHaveBeenCalledWith("USER-ID")
+    expect(partnerLoader).not.toHaveBeenCalled()
+    expect(userResult).toEqual({ name: "Some User", __typename: "User" })
 
     // Reset and verify what happens when we get a partner's details
     // back from Exchange
-    info.mergeInfo.delegateToSchema.mockReset()
-    info.mergeInfo.delegateToSchema.mockResolvedValue({})
+    userByIDLoader.mockReset()
+    partnerLoader.mockReset()
+    partnerLoader.mockResolvedValue({ name: "Some Partner" })
 
-    const parentPartner = {
-      buyerDetails: { __typename: "CommercePartner", id: "PARTNER-ID" },
-    }
+    const partnerResult = await buyerDetails.resolve(
+      { buyerDetails: { __typename: "CommercePartner", id: "PARTNER-ID" } },
+      {},
+      context,
+      {}
+    )
 
-    buyerDetails.resolve(parentPartner, {}, {}, info)
-
-    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-      args: { id: "PARTNER-ID" },
-      fieldName: "partner",
-      ...restOfResolveArgs,
+    expect(partnerLoader).toHaveBeenCalledWith("PARTNER-ID")
+    expect(userByIDLoader).not.toHaveBeenCalled()
+    expect(partnerResult).toEqual({
+      name: "Some Partner",
+      __typename: "Partner",
     })
   })
 })
