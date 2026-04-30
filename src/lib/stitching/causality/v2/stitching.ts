@@ -102,52 +102,54 @@ export const causalityStitchingEnvironment = ({
           // the data from the local causality schema. Other args from the field
           // (eg first, after, last, before) are forwarded automatically, so we only
           // need the userId.
-          resolve: (parent, _args, context, info) => {
-            return delegateToSchema({
-                schema: causalitySchema,
-                operation: OperationTypeNode.QUERY,
-                fieldName: "_unused_auctionsLotStandingConnection",
-                args: {
-                  userId: parent.internalID,
-                },
-                context,
-                info,
-              })
-              .then(async (lotStandingsConnection) => {
-                const promisedSaleArtworks = lotStandingsConnection.edges.map(
-                  ({ node: { lot } }) => {
-                    return context
-                      .saleArtworkRootLoader(lot.internalID)
-                      .catch(() => null)
-                  }
-                )
+          // `await`/async (was a `.then(...)` chain): in
+          // `@graphql-tools/delegate` v10 `delegateToSchema` returns
+          // `MaybePromise<unknown>` — synchronous executions return the value
+          // directly, blowing up `.then` with "is not a function".
+          resolve: async (parent, _args, context, info) => {
+            const lotStandingsConnection = await delegateToSchema({
+              schema: causalitySchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "_unused_auctionsLotStandingConnection",
+              args: {
+                userId: parent.internalID,
+              },
+              context,
+              info,
+            })
+            const promisedSaleArtworks = lotStandingsConnection.edges.map(
+              ({ node: { lot } }) => {
+                return context
+                  .saleArtworkRootLoader(lot.internalID)
+                  .catch(() => null)
+              }
+            )
 
-                const availableSaleArtworks = (
-                  await Promise.all(promisedSaleArtworks)
-                ).filter((sa) => sa !== null)
+            const availableSaleArtworks = (
+              await Promise.all(promisedSaleArtworks)
+            ).filter((sa) => sa !== null)
 
-                // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
-                const availableEdges = lotStandingsConnection.edges.reduce(
-                  (acc: any, edge: any) => {
-                    const saleArtwork = availableSaleArtworks.find(
-                      (sa: any) => sa._id === edge.node.lot.internalID
-                    )
-                    if (saleArtwork) {
-                      return [
-                        ...acc,
-                        { ...edge, node: { ...edge.node, saleArtwork } },
-                      ]
-                    } else {
-                      return acc
-                    }
-                  },
-                  []
+            // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
+            const availableEdges = lotStandingsConnection.edges.reduce(
+              (acc: any, edge: any) => {
+                const saleArtwork = availableSaleArtworks.find(
+                  (sa: any) => sa._id === edge.node.lot.internalID
                 )
-                return {
-                  ...lotStandingsConnection,
-                  edges: availableEdges,
+                if (saleArtwork) {
+                  return [
+                    ...acc,
+                    { ...edge, node: { ...edge.node, saleArtwork } },
+                  ]
+                } else {
+                  return acc
                 }
-              })
+              },
+              []
+            )
+            return {
+              ...lotStandingsConnection,
+              edges: availableEdges,
+            }
           },
         },
       },

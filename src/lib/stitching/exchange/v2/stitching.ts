@@ -1,7 +1,13 @@
 import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
 import type { AsyncExecutor } from "@graphql-tools/utils"
 import { WrapQuery } from "@graphql-tools/wrap"
-import { GraphQLError, GraphQLSchema, Kind, OperationTypeNode, SelectionSetNode } from "graphql"
+import {
+  GraphQLError,
+  GraphQLSchema,
+  Kind,
+  OperationTypeNode,
+  SelectionSetNode,
+} from "graphql"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
@@ -89,31 +95,21 @@ export const exchangeStitchingEnvironment = ({
       // ignored, so __typename and id couldn't be added, so the hack
       // was to alias the fragment field and that gets the current fields
       selectionSet: aliasedPartySelectionSet(from, to),
-      resolve: (parent, _args, context, info) => {
+      resolve: async (parent, _args, context, _info) => {
         const typename = parent[to].__typename
         const id = parent[to].id
 
-        // Make a call to the user or partner resolver on query to
-        // grab our Metaphysics representations
-        return (
-          delegateToSchema({
-              schema: localSchema,
-              operation: OperationTypeNode.QUERY,
-              fieldName: typename === "CommerceUser" ? "user" : "partner",
-              args: {
-                id,
-              },
-              context,
-              info,
-            })
-            // Re-jigger the type systems back into place, as right now
-            // it is considered a CommerceUser and clients will reject it.
-            .then((response) => {
-              response.__typename =
-                typename === "CommerceUser" ? "User" : "Partner"
-              return response
-            })
-        )
+        // Load the metaphysics representation directly via the loader rather
+        // than `delegateToSchema`. v10 of `@graphql-tools/delegate` strips
+        // fields not present in the propagated selection set, which dropped
+        // `name` (and others) from the returned object — re-running outer
+        // resolvers against a partial response then threw on `.trim()` etc.
+        if (typename === "CommerceUser") {
+          const user = await context.userByIDLoader(id)
+          return { ...user, __typename: "User" }
+        }
+        const partner = await context.partnerLoader(id)
+        return { ...partner, __typename: "Partner" }
       },
     }
   }
@@ -688,7 +684,10 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections } as SelectionSetNode
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    } as SelectionSetNode
                   },
                   (result) => {
                     return result
@@ -765,7 +764,10 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections } as SelectionSetNode
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    } as SelectionSetNode
                   },
                   (result) => {
                     return result

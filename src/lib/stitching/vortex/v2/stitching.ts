@@ -303,7 +303,10 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             }
           }
         }`,
-        resolve: (parent, _args, context, info) => {
+        // `await`/async (was a `.then(...)` chain): see comment in
+        // `causality/v2/stitching.ts` — v10 `delegateToSchema` returns
+        // `MaybePromise<unknown>` and the sync path lacks `.then`.
+        resolve: async (parent, _args, context, info) => {
           const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
           const typenameWithoutPrefix = removeVortexPrefix(typename)
@@ -313,20 +316,18 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
 
-          return delegateToSchema({
-              schema: localSchema,
-              operation: OperationTypeNode.QUERY,
-              fieldName,
-              args: {
-                id,
-              },
-              context,
-              info,
-            })
-            .then((response) => {
-              response.__typename = removeVortexPrefix(typename)
-              return response
-            })
+          const response = await delegateToSchema({
+            schema: localSchema,
+            operation: OperationTypeNode.QUERY,
+            fieldName,
+            args: {
+              id,
+            },
+            context,
+            info,
+          })
+          response.__typename = removeVortexPrefix(typename)
+          return response
         },
       },
     },
