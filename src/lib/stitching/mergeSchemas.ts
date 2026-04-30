@@ -1,5 +1,5 @@
-import { stitchSchemas } from "@graphql-tools/stitch"
 import type { SubschemaConfig } from "@graphql-tools/delegate"
+import { stitchSchemas } from "@graphql-tools/stitch"
 import {
   causalitySubschemaConfig,
   executableCausalitySchema,
@@ -8,22 +8,19 @@ import {
   convectionSubschemaConfig,
   executableConvectionSchema,
 } from "lib/stitching/convection/schema"
+import { diffusionSubschemaConfig } from "lib/stitching/diffusion/schema"
 import {
   exchangeSubschemaConfig,
   executableExchangeSchema,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
-import { diffusionSubschemaConfig } from "lib/stitching/diffusion/schema"
-import {
-  vortexSubschemaConfig,
-  executableVortexSchema,
-} from "lib/stitching/vortex/schema"
+import { vortexSubschemaConfig } from "lib/stitching/vortex/schema"
 
 import { GraphQLSchema } from "graphql"
-import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/v2/stitching"
-import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
-import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
+import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
+import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
+import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/v2/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -76,10 +73,6 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
   subschemas.push(vortexSubschemaConfig())
 
   useStitchingEnvironment(vortexStitchingEnvironmentv2(localSchema))
-
-  // Reference the wrapped vortex schema so `executableVortexSchema` stays
-  // reachable for stitching resolvers that look up fields on it.
-  void executableVortexSchema
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
