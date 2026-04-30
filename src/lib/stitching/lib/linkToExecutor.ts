@@ -11,7 +11,13 @@ export function linkToExecutor(link: ApolloLink): Executor {
         query: document,
         variables: variables ?? {},
         operationName,
-        context,
+        // Wrap the resolver context as `{ graphqlContext }` to match the v5
+        // shape every link's `setContext` callback destructures (see
+        // `src/lib/stitching/{exchange,vortex,causality,diffusion}/link.ts`).
+        // Without this, all stitched services received `graphqlContext =
+        // undefined` and silently fell back to the unauthenticated path —
+        // exchange threw outright on `graphqlContext.appToken` access.
+        context: { graphqlContext: context },
       })
     )
   }) as Executor
