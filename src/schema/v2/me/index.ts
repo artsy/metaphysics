@@ -344,6 +344,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     emailFrequency: {
       description: "Frequency of marketing emails.",
+      deprecationReason: "This field is no longer used.",
       resolve: ({ email_frequency }) => email_frequency,
       type: GraphQLString,
     },
