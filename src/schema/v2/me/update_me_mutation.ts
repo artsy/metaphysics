@@ -131,6 +131,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     email: { description: "The given email of the user.", type: GraphQLString },
     emailFrequency: {
       description: "Frequency of marketing emails.",
+      deprecationReason: "This field is no longer used.",
       type: GraphQLString,
     },
     gender: { type: GraphQLString, description: "Gender." },
