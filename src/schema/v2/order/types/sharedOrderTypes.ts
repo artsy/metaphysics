@@ -278,6 +278,10 @@ export const FulfillmentOptionType = new GraphQLObjectType<
       },
     },
     selected: { type: GraphQLBoolean },
+    shippingQuoteId: {
+      type: GraphQLString,
+      resolve: ({ shipping_quote_id }) => shipping_quote_id ?? null,
+    },
   },
 })
 

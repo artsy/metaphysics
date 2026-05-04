@@ -20,6 +20,7 @@ const mockMutation = (type: string) => `
                 currencyCode
               }
               selected
+              shippingQuoteId
             }
           }
         }
@@ -47,6 +48,7 @@ describe("setOrderFulfillmentOption", () => {
             amount_minor: 2000,
             currency_code: "USD",
             selected: true,
+            shipping_quote_id: "quote-abc-123",
           },
           {
             type: "pickup",
@@ -84,11 +86,13 @@ describe("setOrderFulfillmentOption", () => {
                   currencyCode: "USD",
                 },
                 selected: true,
+                shippingQuoteId: "quote-abc-123",
               },
               {
                 type: "PICKUP",
                 amount: null,
                 selected: null,
+                shippingQuoteId: null,
               },
             ],
           },
@@ -183,6 +187,7 @@ describe("setOrderFulfillmentOption", () => {
                 type: "SHIPPING_TBD",
                 amount: null,
                 selected: null,
+                shippingQuoteId: null,
               },
             ],
           },

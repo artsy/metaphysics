@@ -2376,5 +2376,47 @@ describe("Me", () => {
         expect(result.me.order.fulfillmentOptions).toEqual([])
       })
     })
+
+    describe("fulfillmentOptions shippingQuoteId", () => {
+      const shippingQuoteIdQuery = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              fulfillmentOptions {
+                type
+                shippingQuoteId
+              }
+            }
+          }
+        }
+      `
+
+      it("exposes shippingQuoteId when present", async () => {
+        orderJson.fulfillment_options = [
+          {
+            type: "domestic_flat",
+            amount_minor: 2000,
+            selected: true,
+            shipping_quote_id: "quote-abc-123",
+          },
+          { type: "pickup", amount_minor: 0 },
+        ]
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(
+          shippingQuoteIdQuery,
+          context
+        )
+
+        expect(result.me.order.fulfillmentOptions).toEqual([
+          { type: "DOMESTIC_FLAT", shippingQuoteId: "quote-abc-123" },
+          { type: "PICKUP", shippingQuoteId: null },
+        ])
+      })
+    })
   })
 })
