@@ -123,7 +123,7 @@ export const mockFetch = jest.fn(() =>
 
 export const createVortexLink = () => {
   const httpLink = createHttpLink({
-    fetch: mockFetch,
+    fetch: mockFetch as any,
     uri: urljoin(VORTEX_API_BASE, "graphql"),
   })
   return middlewareLink.concat(httpLink)
