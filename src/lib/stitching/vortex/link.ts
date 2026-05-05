@@ -15,9 +15,7 @@ const { VORTEX_API_BASE, VORTEX_TOKEN } = config
 
 export const createVortexLink = () => {
   const httpLink = createHttpLink({
-    // node-fetch's Request conflicts with the global Fetch Request type pulled
-    // in via graphql-yoga. The runtime is unaffected.
-    fetch: fetch as any,
+    fetch,
     uri: urljoin(VORTEX_API_BASE, "graphql"),
   })
 
