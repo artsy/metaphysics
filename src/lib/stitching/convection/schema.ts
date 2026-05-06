@@ -1,21 +1,16 @@
 import { wrapSchema, RenameTypes, RenameRootFields } from "@graphql-tools/wrap"
 import { addResolversToSchema } from "@graphql-tools/schema"
 import type { SubschemaConfig } from "@graphql-tools/delegate"
-import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
 import { readFileSync } from "fs"
 import { buildSchema, GraphQLError } from "graphql"
-import { createHttpLink } from "apollo-link-http"
 
 const buildConvectionSchema = () => {
-  const convectionLink = createHttpLink({
-    fetch,
-    uri: "https://example.com/graphql",
-  })
   const convectionTypeDefs = readFileSync("src/data/convection.graphql", "utf8")
 
   const remoteSchema = wrapSchema({
     schema: buildSchema(convectionTypeDefs, { assumeValidSDL: true }),
-    executor: linkToExecutor(convectionLink),
+    executor: buildHTTPExecutor({ endpoint: "https://example.com/graphql" }),
   })
 
   // Remap the names of certain types from Convection to fit in the larger
