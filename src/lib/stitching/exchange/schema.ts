@@ -7,18 +7,15 @@ import {
   wrapSchema,
 } from "@graphql-tools/wrap"
 import type { SubschemaConfig } from "@graphql-tools/delegate"
-import { linkToExecutor } from "lib/stitching/lib/linkToExecutor"
 import { buildSchema } from "graphql"
-import { createExchangeLink } from "./link"
+import { createExchangeExecutor } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
 export const exchangeSubschemaConfig = (transforms): SubschemaConfig => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
-  const exchangeLink = createExchangeLink()
-
   return {
     schema: buildSchema(exchangeSDL, { assumeValidSDL: true }),
-    executor: linkToExecutor(exchangeLink),
+    executor: createExchangeExecutor(),
     transforms,
   }
 }

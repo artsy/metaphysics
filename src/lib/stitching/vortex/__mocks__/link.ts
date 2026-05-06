@@ -1,7 +1,6 @@
-import { createHttpLink } from "apollo-link-http"
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
 import config from "config"
 import urljoin from "url-join"
-import { middlewareLink } from "../../lib/middlewareLink"
 import { Response } from "node-fetch"
 
 const { VORTEX_API_BASE } = config
@@ -121,13 +120,11 @@ export const mockFetch = jest.fn(() =>
   )
 )
 
-export const createVortexLink = () => {
-  const httpLink = createHttpLink({
+export const createVortexExecutor = () =>
+  buildHTTPExecutor({
     fetch: mockFetch as any,
-    uri: urljoin(VORTEX_API_BASE, "graphql"),
+    endpoint: urljoin(VORTEX_API_BASE, "graphql"),
   })
-  return middlewareLink.concat(httpLink)
-}
 
 beforeEach(() => {
   mockFetch.mockClear()
