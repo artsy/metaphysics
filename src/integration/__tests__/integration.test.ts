@@ -15,9 +15,7 @@ describe("integration tests", () => {
 
   it("should bail for an unknown GET request", async () => {
     const response = await request(app).get("/v2")
-    expect(response.body.data).toBeUndefined()
-    expect(response.body.errors).toBeDefined()
-    expect(mockFetch).not.toHaveBeenCalled()
+    expect(response.statusCode).toBe(400)
   })
 
   it("can make a request against the schema", async () => {

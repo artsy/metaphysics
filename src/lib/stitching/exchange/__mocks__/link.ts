@@ -90,7 +90,7 @@ export const mockFetch = jest.fn(() =>
 
 export const createExchangeLink = () => {
   const httpLink = createHttpLink({
-    fetch: mockFetch as any,
+    fetch: mockFetch,
     uri: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
   return middlewareLink.concat(httpLink)
