@@ -14,7 +14,9 @@ const { CAUSALITY_API_BASE } = config
 
 export const createCausalityLink = () => {
   const httpLink = createHttpLink({
-    fetch,
+    // node-fetch's Request conflicts with the global Fetch Request type pulled
+    // in via graphql-yoga. The runtime is unaffected.
+    fetch: fetch as any,
     uri: urljoin(CAUSALITY_API_BASE, "graphql"),
   })
 
