@@ -14,9 +14,7 @@ const { EXCHANGE_API_BASE, EXCHANGE_APP_ID } = config
 
 export const createExchangeLink = () => {
   const httpLink = createHttpLink({
-    // node-fetch's Request conflicts with the global Fetch Request type pulled
-    // in via graphql-yoga. The runtime is unaffected.
-    fetch: fetch as any,
+    fetch,
     uri: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
 
