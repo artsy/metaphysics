@@ -263,7 +263,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       featuredKeywords: {
         type: new GraphQLNonNull(
-          GraphQLList(new GraphQLNonNull(GraphQLString))
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
         resolve: ({ featured_keywords }) => featured_keywords ?? [],

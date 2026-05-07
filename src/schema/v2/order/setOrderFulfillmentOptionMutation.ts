@@ -15,6 +15,7 @@ import { handleExchangeError } from "./exchangeErrorHandling"
 interface Input {
   id: string
   type?: string
+  fulfillmentOption?: { type: string; amount?: { minor?: number | null; currencyCode?: string | null } | null }
 }
 
 // Similar to `FulfillmentOptionTypeEnum` but for input: Expects an all-caps
@@ -68,6 +69,9 @@ export const setOrderFulfillmentOptionMutation = mutationWithClientMutationId<
     }
     try {
       const { fulfillmentOption } = input
+      if (!fulfillmentOption) {
+        throw new Error("fulfillmentOption is required")
+      }
 
       const type = fulfillmentOption.type.toLowerCase()
 

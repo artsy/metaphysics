@@ -104,7 +104,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     previewImages: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Image.type))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Image.type))),
       args: {
         size: { type: GraphQLInt },
       },

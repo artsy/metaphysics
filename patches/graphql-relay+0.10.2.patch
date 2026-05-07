@@ -1,0 +1,162 @@
+diff --git a/node_modules/graphql-relay/connection/arrayConnection.d.ts b/node_modules/graphql-relay/connection/arrayConnection.d.ts
+index 5eb5482..960c963 100644
+--- a/node_modules/graphql-relay/connection/arrayConnection.d.ts
++++ b/node_modules/graphql-relay/connection/arrayConnection.d.ts
+@@ -1,3 +1,4 @@
++import type { GraphQLFieldResolver } from 'graphql';
+ import type {
+   Connection,
+   ConnectionArguments,
+@@ -6,6 +7,8 @@ import type {
+ interface ArraySliceMetaInfo {
+   sliceStart: number;
+   arrayLength: number;
++  useValueAsEdge?: boolean;
++  resolveNode?: GraphQLFieldResolver<any, any> | null;
+ }
+ /**
+  * A simple function that accepts an array and connection arguments, and returns
+diff --git a/node_modules/graphql-relay/connection/arrayConnection.js b/node_modules/graphql-relay/connection/arrayConnection.js
+index 31a9ad8..6037d70 100644
+--- a/node_modules/graphql-relay/connection/arrayConnection.js
++++ b/node_modules/graphql-relay/connection/arrayConnection.js
+@@ -73,10 +73,23 @@ function connectionFromArraySlice(arraySlice, args, meta) {
+     startOffset - sliceStart,
+     endOffset - sliceStart,
+   );
+-  const edges = slice.map((value, index) => ({
+-    cursor: offsetToCursor(startOffset + index),
+-    node: value,
+-  }));
++  const edges = slice.map((value, index) => {
++    const newEdge = meta.useValueAsEdge
++      ? {
++          ...value,
++          cursor: offsetToCursor(startOffset + index),
++        }
++      : {
++          cursor: offsetToCursor(startOffset + index),
++          node: !!meta.resolveNode ? meta.resolveNode(value) : value,
++        };
++
++    if (meta.resolveNode) {
++      return { ...value, ...newEdge };
++    }
++
++    return newEdge;
++  });
+   const firstEdge = edges[0];
+   const lastEdge = edges[edges.length - 1];
+   const lowerBound = after != null ? afterOffset + 1 : 0;
+diff --git a/node_modules/graphql-relay/connection/connection.d.ts b/node_modules/graphql-relay/connection/connection.d.ts
+index 166d767..8538de4 100644
+--- a/node_modules/graphql-relay/connection/connection.d.ts
++++ b/node_modules/graphql-relay/connection/connection.d.ts
+@@ -4,8 +4,10 @@ import type {
+   GraphQLFieldConfigArgumentMap,
+   GraphQLFieldConfig,
+   GraphQLFieldResolver,
++  GraphQLInterfaceType,
+   ThunkObjMap,
+ } from 'graphql';
++export declare const PageInfoType: GraphQLObjectType<any, any>;
+ /**
+  * Returns a GraphQLFieldConfigArgumentMap appropriate to include on a field
+  * whose return type is a connection type with forward pagination.
+@@ -39,8 +41,11 @@ export interface ConnectionConfig {
+   nodeType: GraphQLNamedOutputType | GraphQLNonNull<GraphQLNamedOutputType>;
+   resolveNode?: GraphQLFieldResolver<any, any>;
+   resolveCursor?: GraphQLFieldResolver<any, any>;
++  edgeType?: GraphQLObjectType | null;
+   edgeFields?: ThunkObjMap<GraphQLFieldConfig<any, any>>;
++  edgeInterfaces?: GraphQLInterfaceType[];
+   connectionFields?: ThunkObjMap<GraphQLFieldConfig<any, any>>;
++  connectionInterfaces?: GraphQLInterfaceType[];
+ }
+ export interface GraphQLConnectionDefinitions {
+   edgeType: GraphQLObjectType;
+diff --git a/node_modules/graphql-relay/connection/connection.js b/node_modules/graphql-relay/connection/connection.js
+index 2641d40..4bd4b65 100644
+--- a/node_modules/graphql-relay/connection/connection.js
++++ b/node_modules/graphql-relay/connection/connection.js
+@@ -7,6 +7,7 @@ exports.connectionDefinitions = connectionDefinitions;
+ exports.connectionArgs =
+   exports.backwardConnectionArgs =
+   exports.forwardConnectionArgs =
++  exports.PageInfoType =
+     void 0;
+ var _graphql = require('graphql');
+ /**
+@@ -71,9 +72,10 @@ function connectionDefinitions(config) {
+     (_config$name = config.name) !== null && _config$name !== void 0
+       ? _config$name
+       : (0, _graphql.getNamedType)(nodeType).name;
+-  const edgeType = new _graphql.GraphQLObjectType({
++  const edgeType = config.edgeType || new _graphql.GraphQLObjectType({
+     name: name + 'Edge',
+     description: 'An edge in a connection.',
++    interfaces: config.edgeInterfaces,
+     fields: () => {
+       var _config$edgeFields;
+       return {
+@@ -99,6 +101,7 @@ function connectionDefinitions(config) {
+   const connectionType = new _graphql.GraphQLObjectType({
+     name: name + 'Connection',
+     description: 'A connection to a list of items.',
++    interfaces: config.connectionInterfaces,
+     fields: () => {
+       var _config$connectionFie;
+       return {
+@@ -136,7 +139,7 @@ function connectionDefinitions(config) {
+ /**
+  * The common page info type used by all connections.
+  */
+-const pageInfoType = new _graphql.GraphQLObjectType({
++const pageInfoType = exports.PageInfoType = new _graphql.GraphQLObjectType({
+   name: 'PageInfo',
+   description: 'Information about pagination in a connection.',
+   fields: () => ({
+diff --git a/node_modules/graphql-relay/index.d.ts b/node_modules/graphql-relay/index.d.ts
+index 2eff176..2cf50eb 100644
+--- a/node_modules/graphql-relay/index.d.ts
++++ b/node_modules/graphql-relay/index.d.ts
+@@ -12,6 +12,7 @@ export {
+   connectionArgs,
+   connectionDefinitions,
+   forwardConnectionArgs,
++  PageInfoType,
+ } from './connection/connection';
+ export {
+   connectionFromArray,
+diff --git a/node_modules/graphql-relay/index.js b/node_modules/graphql-relay/index.js
+index e758526..9dcbe0c 100644
+--- a/node_modules/graphql-relay/index.js
++++ b/node_modules/graphql-relay/index.js
+@@ -27,6 +27,12 @@ Object.defineProperty(exports, 'forwardConnectionArgs', {
+     return _connection.forwardConnectionArgs;
+   },
+ });
++Object.defineProperty(exports, 'PageInfoType', {
++  enumerable: true,
++  get: function () {
++    return _connection.PageInfoType;
++  },
++});
+ Object.defineProperty(exports, 'connectionFromArray', {
+   enumerable: true,
+   get: function () {
+diff --git a/node_modules/graphql-relay/utils/base64.js b/node_modules/graphql-relay/utils/base64.js
+index 06f179b..d7e9325 100644
+--- a/node_modules/graphql-relay/utils/base64.js
++++ b/node_modules/graphql-relay/utils/base64.js
+@@ -46,6 +46,10 @@ function last6Bits(c) {
+   return toBase64Char(c & 63);
+ }
+ function unbase64(input) {
++  // Pad input so that length is a multiple of 4; graphql-relay 0.10's
++  // stricter decoder rejects unpadded base64 otherwise.
++  const padLen = (4 - (input.length % 4)) % 4
++  if (padLen) input = input + "=".repeat(padLen)
+   const utf8Array = [];
+   for (let i = 0; i < input.length; i += 4) {
+     const a = fromBase64Char(input[i]);
