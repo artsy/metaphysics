@@ -10,7 +10,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
   name: "HomePageMyCollectionOnboardingModule",
   fields: {
     showMyCollectionCard: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: async (_root, _options, { collectionLoader, meLoader }) => {
         if (!collectionLoader || !meLoader) {
           return false
@@ -27,7 +27,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
       },
     },
     showSWACard: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: async (_root, _options, { collectionLoader, meLoader }) => {
         if (!collectionLoader || !meLoader) {
           return false

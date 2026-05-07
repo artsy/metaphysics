@@ -93,18 +93,18 @@ const PricingBreakdownLineUnion = new GraphQLUnionType({
   types: () => [ShippingLine, TaxLine, SubtotalLine, TotalLine],
   resolveType: (value) => {
     if (value.__typename === "ShippingLine") {
-      return ShippingLine
+      return ShippingLine.name
     }
     if (value.__typename === "TaxLine") {
-      return TaxLine
+      return TaxLine.name
     }
     if (value.__typename === "SubtotalLine") {
-      return SubtotalLine
+      return SubtotalLine.name
     }
     if (value.__typename === "TotalLine") {
-      return TotalLine
+      return TotalLine.name
     }
-    return null
+    return undefined
   },
 })
 
