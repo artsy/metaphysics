@@ -18,7 +18,6 @@ interface UpdatePartnerShowDocumentMutationInputProps {
   showId: string
   documentId: string
   title?: string
-  remoteDocumentUrl?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({

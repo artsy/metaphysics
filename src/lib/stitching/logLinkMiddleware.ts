@@ -1,4 +1,4 @@
-import type { ExecutionRequest, Executor } from "@graphql-tools/utils"
+import { ApolloLink } from "apollo-link"
 import { print } from "graphql/language"
 import config from "../../config"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
@@ -9,35 +9,39 @@ const shouldLogLinkTraffic =
 const { ENABLE_REQUEST_LOGGING } = config
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 
-export const getResolverContext = (
-  request: ExecutionRequest | undefined
-): ResolverContext | undefined =>
-  (request?.context as unknown) as ResolverContext | undefined
-
-export function withResponseLogging(
-  name: string,
-  executor: Executor
-): Executor {
-  return async (request) => {
-    const result = await executor(request)
-
-    if (shouldLogLinkTraffic) {
-      console.log(`>\n> Made query to ${name}:`)
-      console.log(">\n" + print(request.document))
-      console.log(`> Got Response:`)
-      console.log("> " + JSON.stringify(result))
+/**
+ * This acts more like a post-middleware logger, by running the operation
+ * waiting until it's done, and then logging out the response.
+ *
+ * To use, set `LOG_HTTP_LINKS=true` in .env file.
+ */
+export const responseLoggerLink = (name: string) => {
+  return new ApolloLink((operation, forward) => {
+    // @ts-expect-error
+    if (!(forward && operation)) {
+      return null
     }
 
-    if (enableRequestLogging) {
-      const requestID = getResolverContext(request)?.requestIDs?.requestID
-      if (requestID) {
-        extensionsLogger(requestID, "stitching", name.toLowerCase(), {
-          query: print(request.document),
-          vars: request.variables,
-        })
+    return forward(operation).map((response) => {
+      // Log to CLI
+      if (shouldLogLinkTraffic) {
+        console.log(`>\n> Made query to ${name}:`)
+        console.log(">\n" + print(operation.query))
+        console.log(`> Got Response:`)
+        console.log("> " + JSON.stringify(response))
       }
-    }
-
-    return result
-  }
+      // Log the query/vars sent to the stitched API in the extensions
+      if (enableRequestLogging) {
+        const requestID = (operation.getContext()
+          .graphqlContext as ResolverContext).requestIDs.requestID
+        if (requestID) {
+          extensionsLogger(requestID, "stitching", name.toLowerCase(), {
+            query: print(operation.query),
+            vars: operation.variables,
+          })
+        }
+      }
+      return response
+    })
+  })
 }

@@ -70,17 +70,12 @@ describe("addressConnection", () => {
 
     const args = { first: 10 }
 
-    const result = (await UserAddressesConnection.resolve!(
+    const result = await UserAddressesConnection.resolve!(
       undefined,
       args,
       mockContext,
       {} as any
-    )) as {
-      totalCount: number
-      edges: Array<{ node: typeof mockUserAddress }>
-      pageCursors: unknown
-      pageInfo: { hasNextPage: boolean }
-    }
+    )
 
     expect(result).toHaveProperty("totalCount", 1)
     expect(result).toHaveProperty("pageCursors")
@@ -99,16 +94,12 @@ describe("addressConnection", () => {
 
     const args = { first: 10 }
 
-    const result = (await UserAddressesConnection.resolve!(
+    const result = await UserAddressesConnection.resolve!(
       undefined,
       args,
       mockContext,
       {} as any
-    )) as {
-      totalCount: number
-      edges: unknown[]
-      pageInfo: { hasNextPage: boolean }
-    }
+    )
 
     expect(result.totalCount).toBe(0)
     expect(result.edges).toHaveLength(0)

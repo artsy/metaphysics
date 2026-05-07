@@ -1,46 +1,95 @@
-import { buildHTTPExecutor } from "@graphql-tools/executor-http"
+import { setContext } from "apollo-link-context"
+import { createHttpLink } from "apollo-link-http"
 import config from "config"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import fetch from "node-fetch"
 import urljoin from "url-join"
 import gravity from "lib/apis/gravity"
 
-import { getResolverContext, withResponseLogging } from "../logLinkMiddleware"
+import { middlewareLink } from "../lib/middlewareLink"
+import { responseLoggerLink } from "../logLinkMiddleware"
+import { ResolverContext } from "types/graphql"
 
 const { EXCHANGE_API_BASE, EXCHANGE_APP_ID } = config
 
-export const createExchangeExecutor = () =>
-  withResponseLogging("Exchange", async (request) => {
-    const ctx = getResolverContext(request)
-    const headers: Record<string, string> = {
-      ...(ctx && requestIDHeaders(ctx.requestIDs)),
-    }
-    if (ctx) {
-      headers["User-Agent"] = ctx.userAgent
-        ? ctx.userAgent + "; Metaphysics"
-        : "Metaphysics"
-    }
-
-    if (ctx?.exchangeTokenLoader) {
-      const { token } = await ctx.exchangeTokenLoader()
-      headers.Authorization = `Bearer ${token}`
-    } else if (ctx?.appToken) {
-      const response = await gravity(
-        `token/exchange?client_application_id=${EXCHANGE_APP_ID}`,
-        null,
-        {
-          method: "POST",
-          appToken: ctx.appToken,
-          requestIDs: ctx.requestIDs,
-        }
-      )
-      const { token } = response.body
-      headers.Authorization = `Bearer ${token}`
-    }
-
-    return buildHTTPExecutor({
-      endpoint: urljoin(EXCHANGE_API_BASE, "graphql"),
-      fetch: fetch as any,
-      headers,
-    })(request)
+export const createExchangeLink = () => {
+  const httpLink = createHttpLink({
+    // node-fetch's Request conflicts with the global Fetch Request type pulled
+    // in via graphql-yoga. The runtime is unaffected.
+    fetch: fetch as any,
+    uri: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
+
+  const authMiddleware = setContext(
+    async (
+      _request,
+      { graphqlContext }: { graphqlContext: ResolverContext }
+    ) => {
+      const tokenLoader = graphqlContext && graphqlContext.exchangeTokenLoader
+      const headers = {
+        ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
+      }
+
+      // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
+      // authenticated requests to Exchange.
+      if (tokenLoader) {
+        return tokenLoader().then(({ token }) => {
+          return {
+            headers: Object.assign(headers, {
+              Authorization: `Bearer ${token}`,
+            }),
+          }
+        })
+      }
+
+      // Use the app token when an application is trying to reach Exchange eg. Impulse calling Metaphysics
+      // Swap the app token for an Exchange-scoped token via Gravity
+      if (graphqlContext.appToken) {
+        const response = await gravity(
+          `token/exchange?client_application_id=${EXCHANGE_APP_ID}`,
+          null,
+          {
+            method: "POST",
+            appToken: graphqlContext.appToken,
+            requestIDs: graphqlContext.requestIDs,
+          }
+        )
+        const { token } = response.body
+        return {
+          headers: Object.assign(headers, {
+            Authorization: `Bearer ${token}`,
+          }),
+        }
+      }
+
+      // Exchange uses no authentication for now
+      return {
+        headers,
+      }
+    }
+  )
+
+  const analyticsMiddleware = setContext(
+    (
+      _request,
+      context: {
+        headers: Record<string, unknown>
+        graphqlContext: ResolverContext
+      }
+    ) => {
+      if (!context.graphqlContext) return context
+      const userAgent = context.graphqlContext.userAgent
+      const headers = {
+        ...context.headers,
+        "User-Agent": userAgent ? userAgent + "; Metaphysics" : "Metaphysics",
+      }
+      return { headers }
+    }
+  )
+
+  return middlewareLink
+    .concat(authMiddleware)
+    .concat(analyticsMiddleware)
+    .concat(responseLoggerLink("Exchange"))
+    .concat(httpLink)
+}

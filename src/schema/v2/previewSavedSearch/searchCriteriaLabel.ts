@@ -68,19 +68,19 @@ export const SearchCriteriaLabel = new GraphQLObjectType<
     "Human-friendly representation of a single SearchCriteria filter",
   fields: {
     field: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "The GraphQL field name of the filter facet",
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly name of the filter facet",
     },
     value: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "The value of the filter facet",
     },
     displayValue: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly label of the filter facet",
     },
   },

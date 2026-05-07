@@ -22,7 +22,7 @@ export const CommerceOptInResponseType = new GraphQLObjectType<
   name: "CommerceOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: new GraphQLList(GraphQLString) },
+    ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
@@ -73,10 +73,10 @@ const CommerceOptInMutationType = new GraphQLUnionType({
   types: [CommerceOptInSuccesssType, CommerceOptInFailureType],
   resolveType: (object) => {
     if (object._type == "GravityMutationError") {
-      return CommerceOptInFailureType.name
+      return CommerceOptInFailureType
     }
 
-    return CommerceOptInSuccesssType.name
+    return CommerceOptInSuccesssType
   },
 })
 

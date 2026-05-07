@@ -13,7 +13,7 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 
 interface DeletePartnerLocationInputProps {
-  locationId: string
+  LocationId: string
   partnerId: string
 }
 

@@ -1,14 +1,8 @@
-import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
-import type { AsyncExecutor } from "@graphql-tools/utils"
-import { WrapQuery } from "@graphql-tools/wrap"
-import {
-  GraphQLError,
-  GraphQLSchema,
-  Kind,
-  OperationTypeNode,
-  SelectionSetNode,
-} from "graphql"
+import { delegateToSchema } from "@graphql-tools/delegate"
+import type { AsyncExecutor } from "@graphql-tools/delegate/types"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { toGlobalId } from "graphql-relay"
+import { GraphQLSchemaWithTransforms, WrapQuery } from "graphql-tools"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
@@ -40,7 +34,7 @@ export const exchangeStitchingEnvironment = ({
   exchangeSchema,
 }: {
   localSchema: GraphQLSchema
-  exchangeSchema: GraphQLSchema
+  exchangeSchema: GraphQLSchemaWithTransforms
 }) => {
   // Dynamically get all types that implement the CommerceOrder interface
   // This ensures the union automatically includes new order types added to Exchange
@@ -73,8 +67,9 @@ export const exchangeStitchingEnvironment = ({
     //
     // It's possible that this working around a bug in how the fragment is put
     // together by graphql-tools.
-    const aliasedPartySelectionSet = (field, alias) => {
-      return `{
+    const aliasedPartyFragment = (field, alias) => {
+      return gql`
+      ... on CommerceOrder {
         ${alias}: ${field} {
           __typename
           ... on CommerceUser {
@@ -90,26 +85,38 @@ export const exchangeStitchingEnvironment = ({
     }
 
     return {
-      // Bit of a magic in next line, when adding selectionSet, it seems
+      // Bit of a magic in next line, when adding fragment, it seems
       // all second level fields (e.g. b in this query { a { b } }) are
       // ignored, so __typename and id couldn't be added, so the hack
       // was to alias the fragment field and that gets the current fields
-      selectionSet: aliasedPartySelectionSet(from, to),
-      resolve: async (parent, _args, context, _info) => {
+      fragment: aliasedPartyFragment(from, to),
+      resolve: (parent, _args, context, info) => {
         const typename = parent[to].__typename
         const id = parent[to].id
 
-        // Load the metaphysics representation directly via the loader rather
-        // than `delegateToSchema`. v10 of `@graphql-tools/delegate` strips
-        // fields not present in the propagated selection set, which dropped
-        // `name` (and others) from the returned object — re-running outer
-        // resolvers against a partial response then threw on `.trim()` etc.
-        if (typename === "CommerceUser") {
-          const user = await context.userByIDLoader(id)
-          return { ...user, __typename: "User" }
-        }
-        const partner = await context.partnerLoader(id)
-        return { ...partner, __typename: "Partner" }
+        // Make a call to the user or partner resolver on query to
+        // grab our Metaphysics representations
+        return (
+          info.mergeInfo
+            .delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: typename === "CommerceUser" ? "user" : "partner",
+              args: {
+                id,
+              },
+              context,
+              info,
+              transforms: exchangeSchema.transforms,
+            })
+            // Re-jigger the type systems back into place, as right now
+            // it is considered a CommerceUser and clients will reject it.
+            .then((response) => {
+              response.__typename =
+                typename === "CommerceUser" ? "User" : "Partner"
+              return response
+            })
+        )
       },
     }
   }
@@ -128,40 +135,43 @@ export const exchangeStitchingEnvironment = ({
   })
 
   const creditCardResolver = {
-    selectionSet: `{ creditCardId }`,
+    fragment: `fragment CommerceOrderCreditCard on CommerceOrder { creditCardId }`,
     resolve: (parent, _args, context, info) => {
       const id = parent.creditCardId
       if (!id) {
         return null
       } else {
-        return delegateToSchema({
+        return info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: OperationTypeNode.QUERY,
+          operation: "query",
           fieldName: "creditCard",
           args: {
             id,
           },
           context,
           info,
+          transforms: exchangeSchema.transforms,
         })
       }
     },
   }
 
   const paymentMethodDetailsResolver = {
-    selectionSet: `{
-      creditCardId
-      bankAccountId
-      paymentMethod
-    }`,
+    fragment: gql`
+      fragment CommerceOrderPaymentMethod on CommerceOrder {
+        creditCardId
+        bankAccountId
+        paymentMethod
+      }
+    `,
 
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
 
       if (paymentMethod === "CREDIT_CARD" && Boolean(creditCardId)) {
-        const creditCard = await delegateToSchema({
+        const creditCard = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: OperationTypeNode.QUERY,
+          operation: "query",
           fieldName: "creditCard",
           args: {
             id: creditCardId,
@@ -175,9 +185,9 @@ export const exchangeStitchingEnvironment = ({
           paymentMethod === "SEPA_DEBIT") &&
         Boolean(bankAccountId)
       ) {
-        const bankAccount = await delegateToSchema({
+        const bankAccount = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: OperationTypeNode.QUERY,
+          operation: "query",
           fieldName: "bankAccount",
           args: {
             id: bankAccountId,
@@ -196,21 +206,29 @@ export const exchangeStitchingEnvironment = ({
 
   const inquiryOrderResolvers = {
     isInquiryOrder: {
-      selectionSet: `{ impulseConversationId }`,
+      fragment: gql`
+        fragment CommerceOrderIsInquiryOrder on CommerceOfferOrder {
+          impulseConversationId
+        }
+      `,
       resolve: async (order) => {
         const { impulseConversationId } = order
         return Boolean(impulseConversationId)
       },
     },
     conversation: {
-      selectionSet: `{ impulseConversationId }`,
+      fragment: gql`
+        fragment CommerceOrderConversation on CommerceOfferOrder {
+          impulseConversationId
+        }
+      `,
       resolve: async (order, _args, context, info) => {
         const { impulseConversationId } = order
         if (!impulseConversationId) return null
 
-        return delegateToSchema({
+        return info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: OperationTypeNode.QUERY,
+          operation: "query",
           fieldName: "_do_not_use_conversation",
           args: { id: impulseConversationId },
           context,
@@ -221,11 +239,12 @@ export const exchangeStitchingEnvironment = ({
   }
 
   // Map the totals array to a set of resolvers that call the amount function
-  const totalsResolvers = (_type: string, totalSDLS: string[]) =>
+  // the type param is only used for the fragment name
+  const totalsResolvers = (type, totalSDLS) =>
     reduceToResolvers(
       totalSDLS.map((name) => ({
         [name]: {
-          selectionSet: `{ ${name}Cents currencyCode }`,
+          fragment: `fragment ${type}_${name} on ${type} { ${name}Cents currencyCode }`,
           resolve: (parent, args, _context, _info) => {
             return amount((_) => parent[name + "Cents"]).resolve(parent, args)
           },
@@ -234,17 +253,19 @@ export const exchangeStitchingEnvironment = ({
     )
 
   const buyerProfileResolver = {
-    selectionSet: `{
-      buyer {
-        ... on CommerceUser {
-          id
+    fragment: gql`
+        ... on CommerceOrder {
+          buyer {
+            ... on CommerceUser {
+              id
+            }
+          }
         }
-      }
-    }`,
+        `,
     resolve: async (parent, _args, context, info) => {
-      return await delegateToSchema({
+      return await info.mergeInfo.delegateToSchema({
         schema: localSchema,
-        operation: OperationTypeNode.QUERY,
+        operation: "query",
         fieldName: "collectorProfile",
         args: { userID: parent.buyer.id },
         context,
@@ -384,13 +405,15 @@ export const exchangeStitchingEnvironment = ({
     resolvers: {
       CollectorResume: {
         buyerActivity: {
-          selectionSet: `{
-            userId
-            purchases {
-              totalAuctionCount
-              totalPrivateSaleCount
+          fragment: gql`
+            ... on CollectorResume {
+             userId
+             purchases {
+                totalAuctionCount
+                totalPrivateSaleCount
+              }
             }
-          }`,
+          `,
           resolve: async (parent, _args, context, info) => {
             try {
               const nonBnmoPurchases =
@@ -401,9 +424,9 @@ export const exchangeStitchingEnvironment = ({
                 buyerId: parent.userId,
               }
 
-              const bnmoPurchases = await delegateToSchema({
+              const bnmoPurchases = await info.mergeInfo.delegateToSchema({
                 schema: exchangeSchema,
-                operation: OperationTypeNode.QUERY,
+                operation: "query",
                 fieldName: "commerceBuyerActivity",
                 args: exchangeArgs,
                 context,
@@ -426,7 +449,11 @@ export const exchangeStitchingEnvironment = ({
       },
       Conversation: {
         orderConnection: {
-          selectionSet: `{ internalID }`,
+          fragment: gql`
+            fragment Conversation_orderConnection on Conversation {
+              internalID
+            }
+          `,
           resolve: (
             { internalID: conversationId },
             {
@@ -457,9 +484,9 @@ export const exchangeStitchingEnvironment = ({
               impulseConversationId: conversationId,
             }
 
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "commerceOrders",
               args: exchangeArgs,
               context,
@@ -491,12 +518,12 @@ export const exchangeStitchingEnvironment = ({
       },
       CommerceLineItem: {
         artwork: {
-          selectionSet: `{ artworkId }`,
+          fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkId
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "artwork",
               args: {
                 id,
@@ -507,37 +534,40 @@ export const exchangeStitchingEnvironment = ({
           },
         },
         artworkVersion: {
-          selectionSet: `{ artworkVersionId }`,
+          fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkVersionId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkVersionId
             const globalID = toGlobalId("ArtworkVersion", id)
             return delegateToSchema({
               schema: localSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "node",
               args: {
                 id: globalID,
               },
               context,
               info,
+              transforms: exchangeSchema.transforms,
               returnType: ArtworkVersionType,
             })
           },
         },
 
         artworkOrEditionSet: {
-          selectionSet: `{
-            artworkId
-            editionSetId
-          }`,
+          fragment: gql`
+            ... on CommerceLineItem {
+              artworkId
+              editionSetId
+            }
+          `,
           resolve: async (parent, _args, context, info) => {
             const artworkId = parent.artworkId
             const editionSetId = parent.editionSetId
 
             if (editionSetId) {
-              return delegateToSchema({
+              return info.mergeInfo.delegateToSchema({
                 schema: localSchema,
-                operation: OperationTypeNode.QUERY,
+                operation: "query",
                 fieldName: "artwork",
                 args: {
                   id: artworkId,
@@ -581,9 +611,9 @@ export const exchangeStitchingEnvironment = ({
               })
             }
 
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "artwork",
               args: {
                 id: artworkId,
@@ -610,11 +640,13 @@ export const exchangeStitchingEnvironment = ({
       },
       Me: {
         orders: {
-          selectionSet: `{ __typename }`,
+          fragment: gql`... on Me {
+            __typename
+          }`,
           resolve: async (_source, args, context, info) => {
-            return await delegateToSchema({
+            return await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "commerceMyOrders",
               args,
               context,
@@ -625,11 +657,15 @@ export const exchangeStitchingEnvironment = ({
       },
       Viewer: {
         commerceOrders: {
-          selectionSet: `{ __typename }`,
+          fragment: gql`
+            ... on Viewer {
+              __typename
+            }
+          `,
           resolve: (_parent, args, context, info) => {
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "commerceOrders",
               args,
               context,
@@ -658,9 +694,9 @@ export const exchangeStitchingEnvironment = ({
               )
             }
 
-            const orderResult = await delegateToSchema({
+            const orderResult = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.MUTATION,
+              operation: "mutation",
               fieldName: "commerceCreateInquiryOrderWithArtwork",
               args,
               context,
@@ -684,10 +720,7 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return {
-                      ...selectionSet,
-                      selections: newSelections,
-                    } as SelectionSetNode
+                    return { ...selectionSet, selections: newSelections }
                   },
                   (result) => {
                     return result
@@ -738,9 +771,9 @@ export const exchangeStitchingEnvironment = ({
               )
             }
 
-            const offerResult = await delegateToSchema({
+            const offerResult = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.MUTATION,
+              operation: "mutation",
               fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
               args,
               context,
@@ -764,10 +797,7 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return {
-                      ...selectionSet,
-                      selections: newSelections,
-                    } as SelectionSetNode
+                    return { ...selectionSet, selections: newSelections }
                   },
                   (result) => {
                     return result
@@ -806,9 +836,9 @@ export const exchangeStitchingEnvironment = ({
           resolve: async (_source, args, context, info) => {
             const { submitArtworkInquiryRequestLoader } = context
 
-            const submitOrderWithOffer = await delegateToSchema({
+            const submitOrderWithOffer = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
-              operation: OperationTypeNode.MUTATION,
+              operation: "mutation",
               fieldName: "commerceSubmitOrderWithOffer",
               args,
               context,
@@ -923,7 +953,7 @@ export const exchangeStitchingEnvironment = ({
                     return {
                       ...selectionSet,
                       selections: newSelections,
-                    } as SelectionSetNode
+                    }
                   },
                   (result) => {
                     return result
@@ -1006,7 +1036,7 @@ export const exchangeStitchingEnvironment = ({
                 schema: exchangeSchema,
                 executor: customExecutor,
               },
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "commerceOrder",
               args,
               context,

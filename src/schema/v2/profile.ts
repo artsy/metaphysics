@@ -91,11 +91,11 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
           resolveType: (owner) => {
             switch (owner.__ownerType) {
               case "Fair":
-                return FairType.name
+                return FairType
               case "FairOrganizer":
-                return FairOrganizerType.name
+                return FairOrganizerType
               default:
-                return PartnerType.name
+                return PartnerType
             }
           },
         })

@@ -139,21 +139,15 @@ const ArtworkImportSummaryType = new GraphQLObjectType({
   name: "ArtworkImportSummary",
   fields: {
     currencies: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: ({ currencies_found }) => currencies_found,
     },
     dimensionMetrics: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: ({ dimension_metrics_found }) => dimension_metrics_found,
     },
     weightMetrics: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: ({ weight_metrics_found }) => weight_metrics_found,
     },
   },
@@ -204,14 +198,14 @@ const ErrorIdentifiersType = new GraphQLObjectType({
   fields: {
     blocking: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
+        GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
       ),
       description:
         "Array of blocking errors with errorType and rowId. Frontend constructs error IDs for UI cycling.",
     },
     nonBlocking: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
+        GraphQLList(new GraphQLNonNull(ErrorIdentifierType))
       ),
       description:
         "Array of non-blocking errors with errorType and rowId. Frontend constructs error IDs for UI cycling.",
@@ -257,7 +251,7 @@ const ArtworkImportStatisticsType = new GraphQLObjectType({
     },
     errorTypeCounts: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ErrorTypeCountType))
+        GraphQLList(new GraphQLNonNull(ErrorTypeCountType))
       ),
       description: "Breakdown of error types and their counts",
       resolve: ({ error_type_counts }) => error_type_counts,
@@ -664,13 +658,13 @@ const ArtworkImportRowType = new GraphQLObjectType({
     },
     errors: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ArtworkImportRowErrorType))
+        GraphQLList(new GraphQLNonNull(ArtworkImportRowErrorType))
       ),
       resolve: ({ artwork_import_row_errors }) => artwork_import_row_errors,
     },
     images: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ArtworkImportRowImageType))
+        GraphQLList(new GraphQLNonNull(ArtworkImportRowImageType))
       ),
       resolve: ({ artwork_import_row_images }) => artwork_import_row_images,
     },
@@ -691,9 +685,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...InternalIDFields,
     columns: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description:
         "Columns to display for an import, will exist in a row's `transformedData`",
     },
@@ -749,9 +741,7 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     unmatchedArtistNames: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: async (
         { id },
         _args,

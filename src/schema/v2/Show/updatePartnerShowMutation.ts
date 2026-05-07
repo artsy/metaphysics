@@ -35,14 +35,6 @@ interface UpdatePartnerShowMutationInputProps {
   showId: string
   startAt?: string
   viewingRoomIds?: string[]
-  fairLocation?: {
-    booth?: string
-    floor?: string
-    hall?: string
-    pier?: string
-    room?: string
-    section?: string
-  }
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -293,7 +285,7 @@ export const updatePartnerShowMutation = mutationWithClientMutationId<
       // partner-scoped PUT /partner/:partnerId/show/:showId endpoint.
       const response = partnerId
         ? await updatePartnerShowLoader({ partnerId, showId }, gravityArgs)
-        : await updateShowLoader!(showId, gravityArgs)
+        : await updateShowLoader(showId, gravityArgs)
 
       return response
     } catch (error) {
