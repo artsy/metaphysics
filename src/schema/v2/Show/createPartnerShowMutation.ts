@@ -25,8 +25,6 @@ interface CreatePartnerShowMutationInputProps {
   partnerId: string
   pressRelease?: string
   startAt?: string
-  fairId?: string
-  viewingRoomIds?: string[]
   fairLocation?: {
     booth?: string
     floor?: string

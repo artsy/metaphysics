@@ -27,25 +27,25 @@ export const CareerHighlightType = new GraphQLObjectType<any, any>({
         },
       },
       solo: {
-        type: new GraphQLNonNull(GraphQLBoolean),
+        type: GraphQLNonNull(GraphQLBoolean),
         resolve: ({ solo }) => {
           return solo
         },
       },
       group: {
-        type: new GraphQLNonNull(GraphQLBoolean),
+        type: GraphQLNonNull(GraphQLBoolean),
         resolve: ({ group }) => {
           return group
         },
       },
       collected: {
-        type: new GraphQLNonNull(GraphQLBoolean),
+        type: GraphQLNonNull(GraphQLBoolean),
         resolve: ({ collected }) => {
           return collected
         },
       },
       venue: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLNonNull(GraphQLString),
         resolve: ({ venue }) => {
           return venue
         },

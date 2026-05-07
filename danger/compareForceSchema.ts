@@ -18,9 +18,7 @@ export default async () => {
     )
   ).text()
 
-  // `@graphql-inspector/core` v7's `diff` returns `Promise<Change[]>`
-  // (older sync version returned a plain array).
-  const allChanges = await schemaDiff(
+  const allChanges = schemaDiff(
     buildSchema(forceSchema),
     buildSchema(localSchema)
   )

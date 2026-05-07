@@ -108,7 +108,7 @@ const SellerType = new GraphQLUnionType({
   name: "SellerType",
   types: () => [PartnerType],
   resolveType: () => {
-    return PartnerType.name
+    return PartnerType
   },
 })
 
@@ -198,7 +198,7 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     quantity: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
     },
   }),

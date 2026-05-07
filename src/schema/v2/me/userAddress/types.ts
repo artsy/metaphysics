@@ -48,8 +48,8 @@ export const UserAddressOrErrorsUnion = new GraphQLUnionType({
   description: "An address or errors object",
   resolveType: (obj) => {
     if (obj._type === "GravityMutationError" || obj.errors) {
-      return ErrorsType.name
+      return ErrorsType
     }
-    return UserAddressType.name
+    return UserAddressType
   },
 })

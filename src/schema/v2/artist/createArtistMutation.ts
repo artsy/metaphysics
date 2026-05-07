@@ -23,7 +23,6 @@ interface CreateArtistMutationInput {
   lastName: string
   middleName: string
   nationality: string
-  partnerID?: string
 }
 
 const CreateArtistSuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -122,7 +121,7 @@ export const createArtistMutation = mutationWithClientMutationId<
       const createdArtist = await createArtistLoader(gravityPayload)
 
       if (partnerID) {
-        await createPartnerArtistLoader!(
+        await createPartnerArtistLoader(
           {
             artistID: createdArtist.id,
             partnerID: partnerID,

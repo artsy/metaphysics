@@ -24,9 +24,9 @@ const TransferMyCollectionSuccessOrErrorsUnionType = new GraphQLUnionType({
   types: [ErrorsType, TransferMyCollectionSuccessType],
   resolveType: (value) => {
     if ("errors" in value) {
-      return ErrorsType.name
+      return ErrorsType
     }
-    return TransferMyCollectionSuccessType.name
+    return TransferMyCollectionSuccessType
   },
 })
 

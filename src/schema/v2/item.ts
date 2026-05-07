@@ -27,21 +27,21 @@ export const OrderedSetItemType = new GraphQLUnionType({
   ) => {
     switch (value.item_type) {
       case "Artist":
-        return ArtistType.name
+        return ArtistType
       case "Artwork":
-        return ArtworkType.name
+        return ArtworkType
       case "FeaturedLink":
-        return FeaturedLinkType.name
+        return FeaturedLinkType
       case "Gene":
-        return GeneType.name
+        return GeneType
       case "PartnerShow":
-        return ShowType.name
+        return ShowType
       case "Profile":
-        return ProfileType.name
+        return ProfileType
       case "Sale":
-        return SaleType.name
+        return SaleType
       case "Video":
-        return VideoType.name
+        return VideoType
       default:
         throw new Error(`Unknown context type: ${value.item_type}`)
     }

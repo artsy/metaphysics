@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
+  Thunk,
 } from "graphql"
-import { Thunk } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "./artist"
@@ -60,8 +60,7 @@ export const userInterestOwnerTypeEnum = new GraphQLEnumType({
 export const userInterestInterestUnion = new GraphQLUnionType({
   name: "UserInterestInterest",
   types: () => [ArtistType, GeneType],
-  resolveType: (object) =>
-    "birthday" in object ? ArtistType.name : GeneType.name,
+  resolveType: (object) => ("birthday" in object ? ArtistType : GeneType),
 })
 
 export const userInterestType = new GraphQLObjectType<
