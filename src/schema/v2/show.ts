@@ -698,9 +698,9 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           types: [PartnerType, ExternalPartnerType],
           resolveType: (value) => {
             if (value._links) {
-              return ExternalPartnerType.name
+              return ExternalPartnerType
             }
-            return PartnerType.name
+            return PartnerType
           },
         }),
         resolve: (
@@ -762,7 +762,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       viewingRoomIDs: {
         type: new GraphQLNonNull(
-          new GraphQLList(new GraphQLNonNull(GraphQLString))
+          GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         resolve: ({ viewing_room_ids }) => viewing_room_ids,
       },

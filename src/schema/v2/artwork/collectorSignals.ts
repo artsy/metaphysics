@@ -157,7 +157,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         description: "Primary label signal available to collector",
         args: {
           ignore: {
-            type: new GraphQLList(LabelSignalEnumType),
+            type: GraphQLList(LabelSignalEnumType),
             description: "Signals to ignore",
           },
         },

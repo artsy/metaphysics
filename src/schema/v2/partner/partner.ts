@@ -1025,7 +1025,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       featuredKeywords: {
         type: new GraphQLNonNull(
-          new GraphQLList(new GraphQLNonNull(GraphQLString))
+          GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
         resolve: ({ featured_keywords }) => featured_keywords ?? [],
@@ -1078,7 +1078,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
       },
       hasVisibleFollowsCount: {
-        type: new GraphQLNonNull(GraphQLBoolean),
+        type: GraphQLNonNull(GraphQLBoolean),
         description: "If the partner has more than 500 follows",
         resolve: async ({ default_profile_id }, _, { profileLoader }) => {
           try {

@@ -19,17 +19,15 @@ const AlgoliaType = new GraphQLObjectType({
   name: "Algolia",
   fields: () => ({
     apiKey: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       deprecationReason: DEPRECATION_REASON,
     },
     appID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       deprecationReason: DEPRECATION_REASON,
     },
     indices: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(AlgoliaIndexType))
-      ),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(AlgoliaIndexType))),
       deprecationReason: DEPRECATION_REASON,
     },
   }),
@@ -39,15 +37,15 @@ const AlgoliaIndexType = new GraphQLObjectType({
   name: "AlgoliaIndex",
   fields: {
     displayName: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       deprecationReason: DEPRECATION_REASON,
     },
     key: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       deprecationReason: DEPRECATION_REASON,
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       deprecationReason: DEPRECATION_REASON,
     },
   },
