@@ -146,8 +146,7 @@ export const NodeInterface = new GraphQLInterfaceType({
       id,
     }
   },
-  resolveType: ({ __type }) =>
-    typeof __type === "string" ? __type : __type?.name,
+  resolveType: ({ __type }) => __type,
 })
 
 const NodeField: GraphQLFieldConfig<any, ResolverContext> = {

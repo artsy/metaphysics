@@ -31,6 +31,6 @@ export const Auctions: HomeViewSection = {
 
     const result = await resolver.resolve(parent, args, context, info)
 
-    return connectionFromArray(result as readonly unknown[], args)
+    return connectionFromArray(result, args)
   }),
 }

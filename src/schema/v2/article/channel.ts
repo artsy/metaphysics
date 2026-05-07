@@ -68,7 +68,7 @@ export const channelType = new GraphQLObjectType<Channel, ResolverContext>({
         )
       },
     },
-    name: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: GraphQLNonNull(GraphQLString) },
     articlesConnection: {
       description: "A connection of articles related to a partner.",
       type: articleConnection.connectionType,
@@ -99,7 +99,7 @@ export const channelType = new GraphQLObjectType<Channel, ResolverContext>({
     slug: { type: GraphQLString },
     tagline: { type: GraphQLString },
     type: {
-      type: new GraphQLNonNull(
+      type: GraphQLNonNull(
         new GraphQLEnumType({
           name: "ChannelType",
           values: {

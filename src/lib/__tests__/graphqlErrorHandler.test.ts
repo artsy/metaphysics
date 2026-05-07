@@ -6,14 +6,7 @@ import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { HTTPError } from "lib/HTTPError"
 import { GraphQLError } from "graphql"
 import config from "config"
-
-type ServerError = {
-  message: string
-  response: Response
-  name: string
-  result: any
-  statusCode: number
-}
+import { ServerError } from "apollo-link-http-common"
 
 describe("graphqlErrorHandler", () => {
   describe("shouldReportError", () => {

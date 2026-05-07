@@ -60,7 +60,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
 > = {
   ...InternalIDFields,
   slug: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ slug }) => slug,
   },
   createdAt: date(({ created_at }) => created_at),
@@ -100,7 +100,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ credit }) => credit,
   },
   category: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ category }) => category,
   },
   priceGuidance: {
@@ -108,7 +108,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ price_guidance }) => price_guidance,
   },
   title: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ title }) => title,
   },
   geneIds: {
@@ -124,21 +124,19 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ keyword }) => keyword,
   },
   isDepartment: {
-    type: new GraphQLNonNull(GraphQLBoolean),
+    type: GraphQLNonNull(GraphQLBoolean),
     resolve: ({ is_department }) => is_department,
   },
   query: {
-    type: new GraphQLNonNull(MarketingCollectionQuery),
+    type: GraphQLNonNull(MarketingCollectionQuery),
     resolve: ({ query }) => query,
   },
   isFeaturedArtistContent: {
-    type: new GraphQLNonNull(GraphQLBoolean),
+    type: GraphQLNonNull(GraphQLBoolean),
     resolve: ({ is_featured_artist_content }) => is_featured_artist_content,
   },
   featuredArtistExclusionIds: {
-    type: new GraphQLNonNull(
-      new GraphQLList(new GraphQLNonNull(GraphQLString))
-    ),
+    type: GraphQLNonNull(new GraphQLList(GraphQLNonNull(GraphQLString))),
     resolve: ({ featured_artist_exclusion_ids }) =>
       featured_artist_exclusion_ids,
   },
@@ -151,11 +149,11 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ thumbnail }) => thumbnail,
   },
   showHeaderArtworksRail: {
-    type: new GraphQLNonNull(GraphQLBoolean),
+    type: GraphQLNonNull(GraphQLBoolean),
     resolve: ({ show_header_artworks_rail }) => show_header_artworks_rail,
   },
   showFeaturedArtists: {
-    type: new GraphQLNonNull(GraphQLBoolean),
+    type: GraphQLNonNull(GraphQLBoolean),
     resolve: ({ show_featured_artists }) => show_featured_artists,
   },
   artworkIds: {
@@ -217,16 +215,16 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
   name: "MarketingCollectionGroup",
   fields: {
     groupType: {
-      type: new GraphQLNonNull(MarketingCollectionGroupTypeEnum),
+      type: GraphQLNonNull(MarketingCollectionGroupTypeEnum),
       resolve: ({ group_type }) => group_type,
     },
     internalID: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID),
       resolve: ({ internalID }) => internalID,
     },
     members: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(MarketingCollectionType))
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(MarketingCollectionType))
       ),
       resolve: async (
         { member_ids },
@@ -245,15 +243,15 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
       },
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       resolve: ({ name }) => name,
     },
   },
 })
 
 const LinkedCollections: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MarketingCollectionGroupType))
+  type: GraphQLNonNull(
+    GraphQLList(GraphQLNonNull(MarketingCollectionGroupType))
   ),
   description: "Linked Collections",
   resolve: ({ linked_collections }) => {
@@ -262,9 +260,7 @@ const LinkedCollections: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 const RelatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MarketingCollectionType))
-  ),
+  type: GraphQLNonNull(GraphQLList(GraphQLNonNull(MarketingCollectionType))),
   description: "Related Collections",
   args: {
     size: {
@@ -304,9 +300,7 @@ export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MarketingCollectionType))
-  ),
+  type: GraphQLNonNull(GraphQLList(GraphQLNonNull(MarketingCollectionType))),
   description: "A list of MarketingCollections",
   args: pageable({
     slugs: {
