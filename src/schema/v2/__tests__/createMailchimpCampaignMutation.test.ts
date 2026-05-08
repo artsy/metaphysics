@@ -61,6 +61,7 @@ describe("createMailchimpCampaign", () => {
         list_id: "list-1",
         artwork_ids: ["artwork-1", "artwork-2"],
         partner_show_id: undefined,
+        html_content: undefined,
         preview_text: undefined,
       })
     })
@@ -125,6 +126,90 @@ describe("createMailchimpCampaign", () => {
         list_id: "list-1",
         artwork_ids: undefined,
         partner_show_id: "show-1",
+        html_content: undefined,
+        preview_text: undefined,
+      })
+    })
+  })
+
+  describe("with htmlContent", () => {
+    const mutationWithHtml = `
+      mutation {
+        createMailchimpCampaign(input: {
+          mailchimpAccountId: "mc-account-1"
+          subjectLine: "Custom Campaign"
+          listId: "list-1"
+          htmlContent: "<html><body>Partner-authored content</body></html>"
+        }) {
+          mailchimpCampaignOrError {
+            __typename
+            ... on CreateMailchimpCampaignSuccess {
+              mailchimpCampaign {
+                internalID
+                subjectLine
+                status
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("passes correct args to Gravity", async () => {
+      const context: Partial<ResolverContext> = {
+        createMailchimpCampaignLoader: jest
+          .fn()
+          .mockResolvedValue(mockGravityResponse),
+      }
+
+      await runAuthenticatedQuery(mutationWithHtml, context)
+
+      expect(
+        context.createMailchimpCampaignLoader as jest.Mock
+      ).toHaveBeenCalledWith({
+        mailchimp_account_id: "mc-account-1",
+        subject_line: "Custom Campaign",
+        list_id: "list-1",
+        artwork_ids: undefined,
+        partner_show_id: undefined,
+        html_content: "<html><body>Partner-authored content</body></html>",
+        preview_text: undefined,
+      })
+    })
+
+    it("can be combined with artworkIds for tracking", async () => {
+      const mutationWithHtmlAndArtworks = `
+        mutation {
+          createMailchimpCampaign(input: {
+            mailchimpAccountId: "mc-account-1"
+            subjectLine: "Custom Campaign"
+            listId: "list-1"
+            htmlContent: "<html><body>Partner-authored content</body></html>"
+            artworkIds: ["artwork-1", "artwork-2"]
+          }) {
+            mailchimpCampaignOrError {
+              __typename
+            }
+          }
+        }
+      `
+      const context: Partial<ResolverContext> = {
+        createMailchimpCampaignLoader: jest
+          .fn()
+          .mockResolvedValue(mockGravityResponse),
+      }
+
+      await runAuthenticatedQuery(mutationWithHtmlAndArtworks, context)
+
+      expect(
+        context.createMailchimpCampaignLoader as jest.Mock
+      ).toHaveBeenCalledWith({
+        mailchimp_account_id: "mc-account-1",
+        subject_line: "Custom Campaign",
+        list_id: "list-1",
+        artwork_ids: ["artwork-1", "artwork-2"],
+        partner_show_id: undefined,
+        html_content: "<html><body>Partner-authored content</body></html>",
         preview_text: undefined,
       })
     })

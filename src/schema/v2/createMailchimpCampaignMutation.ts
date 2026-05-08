@@ -17,6 +17,7 @@ interface Input {
   mailchimpAccountId: string
   artworkIds?: string[]
   partnerShowId?: string
+  htmlContent?: string
   subjectLine: string
   previewText?: string
   listId: string
@@ -70,12 +71,17 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
     artworkIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
-        "Artwork IDs to include in the campaign (mutually exclusive with partnerShowId)",
+        "Artwork IDs to associate with the campaign (mutually exclusive with partnerShowId; used to render content unless htmlContent is provided)",
     },
     partnerShowId: {
       type: GraphQLString,
       description:
-        "Partner show ID to create campaign from (mutually exclusive with artworkIds)",
+        "Partner show ID to associate with the campaign (mutually exclusive with artworkIds; used to render content unless htmlContent is provided)",
+    },
+    htmlContent: {
+      type: GraphQLString,
+      description:
+        "Pre-rendered HTML body for the campaign. When provided, supersedes the formatter's output but does not preclude tracking via artworkIds or partnerShowId",
     },
     subjectLine: {
       type: new GraphQLNonNull(GraphQLString),
@@ -102,6 +108,7 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
       mailchimpAccountId,
       artworkIds,
       partnerShowId,
+      htmlContent,
       subjectLine,
       previewText,
       listId,
@@ -123,6 +130,7 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
         mailchimp_account_id: mailchimpAccountId,
         artwork_ids: artworkIds,
         partner_show_id: partnerShowId,
+        html_content: htmlContent,
         subject_line: subjectLine,
         preview_text: previewText,
         list_id: listId,
