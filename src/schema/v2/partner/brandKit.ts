@@ -38,7 +38,13 @@ export const BrandKitType = new GraphQLObjectType<any, ResolverContext>({
     },
     logo: {
       type: Image.type,
-      resolve: ({ image }) => normalizeImageData(image),
+      resolve: ({ image }) => {
+        if (!image) return null
+        return {
+          ...normalizeImageData(image, true),
+          gemini_template_key: "brand-kit-logo",
+        }
+      },
     },
     createdAt: date(),
     updatedAt: date(),

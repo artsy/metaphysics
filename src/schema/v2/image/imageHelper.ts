@@ -1,19 +1,39 @@
 /**
- * Expected artwork image versions for processing validation.
+ * Expected image versions per Gemini template, used to detect processing state.
  *
- * Generate from Gemini console with:
- * Account.find_by(name: "Gravity").templates.find_by(key: "additional-image").versions.map(&:key).sort
+ * Generate from the Gemini console with:
+ *   Account.find_by(name: "Gravity").templates.find_by(key: "<template-key>").versions.map(&:key).sort
  */
-export const EXPECTED_ARTWORK_IMAGE_VERSIONS = [
-  "large",
-  "larger",
-  "main",
-  "medium",
-  "normalized",
-  "small",
-  "square",
-  "tall",
-]
+export const EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE = {
+  "additional-image": [
+    "large",
+    "larger",
+    "main",
+    "medium",
+    "normalized",
+    "small",
+    "square",
+    "tall",
+  ],
+  "brand-kit-logo": ["square_brand_kit"],
+} as const
+
+// The last version Gemini emits per template — its presence signals processing is complete.
+export const COMPLETION_VERSION_BY_TEMPLATE = {
+  "additional-image": "normalized",
+  "brand-kit-logo": "square_brand_kit",
+} as const
+
+type TemplateKey = keyof typeof EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE
+const DEFAULT_TEMPLATE: TemplateKey = "additional-image"
+
+const isKnownTemplate = (k: unknown): k is TemplateKey =>
+  typeof k === "string" && k in EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE
+
+const getTemplate = (image): TemplateKey =>
+  isKnownTemplate(image.gemini_template_key)
+    ? image.gemini_template_key
+    : DEFAULT_TEMPLATE
 
 // Grace period for image processing (30 minutes in milliseconds)
 export const GRACE_PERIOD_FOR_PROCESSING = 30 * 60 * 1000
@@ -26,9 +46,8 @@ export const hasImageVersion = (image, version: string) => {
 // Helper function to check if any expected image version is missing
 export const hasMissingImageVersion = (image) => {
   if (!image.image_versions) return true
-  return EXPECTED_ARTWORK_IMAGE_VERSIONS.some(
-    (version) => !image.image_versions.includes(version)
-  )
+  const expected = EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE[getTemplate(image)]
+  return expected.some((version) => !image.image_versions.includes(version))
 }
 
 // Check if image is currently processing
@@ -55,6 +74,8 @@ export const hasProcessingFailed = (image) => {
     return false
   }
 
-  // Normalized is the last generated version and indicates that the image is processed
-  return !hasImageVersion(image, "normalized")
+  return !hasImageVersion(
+    image,
+    COMPLETION_VERSION_BY_TEMPLATE[getTemplate(image)]
+  )
 }
