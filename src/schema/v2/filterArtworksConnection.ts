@@ -75,10 +75,10 @@ export const ArtworkFilterAggregations: GraphQLFieldConfig<
   },
 }
 
-export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
+export const ArtworkFilterFacetType = new GraphQLUnionType({
   name: "ArtworkFilterFacet",
   types: [TagType, GeneType],
-  resolveType: ({ context_type }) => context_type,
+  resolveType: ({ context_type }) => context_type?.name,
 })
 
 export const FilterArtworksCounts = {
@@ -114,7 +114,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
   },
   artistNationalities: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   artistSeriesID: {
     type: GraphQLString,
@@ -183,7 +183,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   importSources: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   includeAllJSON: {
     type: GraphQLBoolean,
@@ -229,7 +229,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   materialsTerms: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   medium: {
     type: GraphQLString,

@@ -1,5 +1,5 @@
-import { ApolloLink } from "apollo-link"
-import { print } from "graphql/language"
+import type { ExecutionRequest, Executor } from "@graphql-tools/utils"
+import { DocumentNode, print, visit } from "graphql/index"
 import config from "../../config"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import { ResolverContext } from "types/graphql"
@@ -9,39 +9,55 @@ const shouldLogLinkTraffic =
 const { ENABLE_REQUEST_LOGGING } = config
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 
-/**
- * This acts more like a post-middleware logger, by running the operation
- * waiting until it's done, and then logging out the response.
- *
- * To use, set `LOG_HTTP_LINKS=true` in .env file.
- */
-export const responseLoggerLink = (name: string) => {
-  return new ApolloLink((operation, forward) => {
-    // @ts-expect-error
-    if (!(forward && operation)) {
-      return null
+// Directives declared locally by metaphysics that have no meaning on remote
+// services. `delegateToSchema` copies directives from the user's field nodes
+// onto the delegated root field; without stripping, the remote rejects them.
+const METAPHYSICS_ONLY_DIRECTIVES = new Set([
+  "principalField",
+  "optionalField",
+  "cacheable",
+])
+
+const stripLocalDirectives = (document: DocumentNode): DocumentNode =>
+  visit(document, {
+    Directive(node) {
+      if (METAPHYSICS_ONLY_DIRECTIVES.has(node.name.value)) {
+        return null
+      }
+      return undefined
+    },
+  })
+
+export const getResolverContext = (
+  request: ExecutionRequest | undefined
+): ResolverContext | undefined =>
+  (request?.context as unknown) as ResolverContext | undefined
+
+export function withResponseLogging(
+  name: string,
+  executor: Executor
+): Executor {
+  return async (request) => {
+    request = { ...request, document: stripLocalDirectives(request.document) }
+    const result = await executor(request)
+
+    if (shouldLogLinkTraffic) {
+      console.log(`>\n> Made query to ${name}:`)
+      console.log(">\n" + print(request.document))
+      console.log(`> Got Response:`)
+      console.log("> " + JSON.stringify(result))
     }
 
-    return forward(operation).map((response) => {
-      // Log to CLI
-      if (shouldLogLinkTraffic) {
-        console.log(`>\n> Made query to ${name}:`)
-        console.log(">\n" + print(operation.query))
-        console.log(`> Got Response:`)
-        console.log("> " + JSON.stringify(response))
+    if (enableRequestLogging) {
+      const requestID = getResolverContext(request)?.requestIDs?.requestID
+      if (requestID) {
+        extensionsLogger(requestID, "stitching", name.toLowerCase(), {
+          query: print(request.document),
+          vars: request.variables,
+        })
       }
-      // Log the query/vars sent to the stitched API in the extensions
-      if (enableRequestLogging) {
-        const requestID = (operation.getContext()
-          .graphqlContext as ResolverContext).requestIDs.requestID
-        if (requestID) {
-          extensionsLogger(requestID, "stitching", name.toLowerCase(), {
-            query: print(operation.query),
-            vars: operation.variables,
-          })
-        }
-      }
-      return response
-    })
-  })
+    }
+
+    return result
+  }
 }

@@ -1,6 +1,6 @@
 module.exports = {
   cacheDirectory: ".cache/jest",
-  moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"],
+  moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx", "mjs"],
   setupFilesAfterEnv: ["jest-extended", "<rootDir>/src/test/helper.js"],
   testRegex: "(.test)\\.(js|ts)$",
   testPathIgnorePatterns: [
@@ -13,6 +13,9 @@ module.exports = {
     "src/schema/v2/__tests__/ecommerce/",
   ],
   transform: {
-    "^.+\\.(js|ts)$": require.resolve("babel-jest"),
+    "^.+\\.(js|ts|mjs)$": require.resolve("babel-jest"),
   },
+  transformIgnorePatterns: [
+    "/node_modules/(?!(apollo-upload-client|extract-files)/)",
+  ],
 }
