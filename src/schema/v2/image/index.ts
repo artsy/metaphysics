@@ -11,6 +11,7 @@ import {
 import { find, first, isArray } from "lodash"
 import { NullableIDField } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import { date } from "../fields/date"
 import { connectionWithCursorInfo } from "../fields/pagination"
 import CroppedUrl from "./cropped"
 import DeepZoom, { isZoomable } from "./deep_zoom"
@@ -69,6 +70,7 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ gemini_token }) => gemini_token,
     },
+    geminiTokenUpdatedAt: date(),
     href: {
       type: GraphQLString,
     },
