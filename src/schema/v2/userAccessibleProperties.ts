@@ -11,13 +11,13 @@ const userAccessControlPropertiesType = new GraphQLUnionType({
   resolveType: ({ propertyType }) => {
     switch (propertyType) {
       case "Artist":
-        return ArtistType.name
+        return ArtistType
       case "Artwork":
-        return ArtworkType.name
+        return ArtworkType
       case "Partner":
-        return PartnerType.name
+        return PartnerType
       case "Profile":
-        return ProfileType.name
+        return ProfileType
       default:
         throw new Error(`Unknown context type: ${propertyType}`)
     }

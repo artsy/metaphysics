@@ -48,7 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   name: "DismissTaskResponseOrError",
   types: [SuccessType, ErrorType],
   resolveType: (data) =>
-    data._type === "GravityMutationError" ? ErrorType.name : SuccessType.name,
+    data._type === "GravityMutationError" ? ErrorType : SuccessType,
 })
 
 export const dismissTaskMutation = mutationWithClientMutationId<

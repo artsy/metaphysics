@@ -671,7 +671,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       editionSet: {
         type: EditionSet.type,
-        args: { id: { type: new GraphQLNonNull(GraphQLString) } },
+        args: { id: { type: GraphQLNonNull(GraphQLString) } },
         resolve: ({ edition_sets }, { id }) =>
           (edition_sets ?? []).find((edition) => edition.id === id),
       },
@@ -1238,14 +1238,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           artworkLayers(id, relatedLayersLoader),
       },
       listedArtworksConnection: {
-        type: new GraphQLNonNull(artworkConnection.connectionType),
+        type: GraphQLNonNull(artworkConnection.connectionType),
         args: pageable(),
         deprecationReason:
           "This field is deprecated as collector artwork submissions are no longer accepted.",
         resolve: () => emptyConnection,
       },
       isListed: {
-        type: new GraphQLNonNull(GraphQLBoolean),
+        type: GraphQLNonNull(GraphQLBoolean),
         deprecationReason:
           "This field is deprecated as collector artwork submissions are no longer accepted.",
         resolve: () => false,
@@ -2240,9 +2240,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
                 types: [VideoType, ImageType],
                 resolveType: ({ type }) => {
                   if (type === "Image") {
-                    return ImageType.name
+                    return ImageType
                   } else if (type === "Video") {
-                    return VideoType.name
+                    return VideoType
                   }
                 },
               })

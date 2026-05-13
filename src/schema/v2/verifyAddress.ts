@@ -53,7 +53,7 @@ const VerifyAddressType = new GraphQLObjectType<any, ResolverContext>({
   name: "VerifyAddressType",
   fields: () => ({
     addressVerificationId: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       resolve: (result) => result.id,
     },
     verificationStatus: {
@@ -126,9 +126,9 @@ const VerifyAddressMutationType = new GraphQLUnionType({
   types: [VerifyAddressType, VerifyAddressFailureType],
   resolveType: (object) => {
     if (object._type === "GravityMutationError") {
-      return VerifyAddressFailureType.name
+      return VerifyAddressFailureType
     }
-    return VerifyAddressType.name
+    return VerifyAddressType
   },
 })
 

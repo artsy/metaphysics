@@ -1,4 +1,4 @@
-import { createExchangeExecutor } from "../link"
+import { createExchangeLink } from "../link"
 
 jest.mock("dd-trace", () => {
   return {
@@ -23,7 +23,7 @@ describe.skip("exchange link", () => {
   it("passes request ID headers to the fetch", () => {
     expect.assertions(1)
 
-    const link = createExchangeExecutor()
+    const link = createExchangeLink()
     const defaultContext = {
       graphqlContext: {
         requestIDs: {
@@ -54,7 +54,7 @@ describe.skip("exchange link", () => {
 
       // The difference here is that locals will now include a dataloader named exchangeTokenLoader
       // which would normally only show up in locals if you have an auth'd user
-      const link = createExchangeExecutor()
+      const link = createExchangeLink()
       const defaultContext = {
         graphqlContext: {
           requestIDs: {

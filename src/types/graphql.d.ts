@@ -35,5 +35,3 @@ export interface ResolverContextValues {
 
 export type ResolverContext = ResolverContextValues &
   ReturnType<typeof createLoaders>
-
-export type Thunk<T> = T | (() => T)

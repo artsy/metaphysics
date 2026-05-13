@@ -14,34 +14,34 @@ const DeviceType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     // FIXME: Use the InternalIDFields
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID),
       description: "Unique ID for this device",
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "Name of the device",
     },
     token: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "The device token",
     },
     appId: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "E.g., net.artsy.artsy",
     },
     production: {
-      type: new GraphQLNonNull(GraphQLBoolean),
+      type: GraphQLNonNull(GraphQLBoolean),
       description: "If device is beta/dev or prod.",
     },
     platform: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString),
       description: "Either android or ios",
     },
   },
 })
 
 export const Devices: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DeviceType))),
+  type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(DeviceType))),
   resolve: async (root, _args, { devicesLoader }) => {
     if (!devicesLoader) return []
 

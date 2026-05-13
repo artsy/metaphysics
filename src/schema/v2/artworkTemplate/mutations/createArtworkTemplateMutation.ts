@@ -52,8 +52,8 @@ interface CreateArtworkTemplatePayload {
 }
 
 export const CreateArtworkTemplateMutation = mutationWithClientMutationId<
-  CreateArtworkTemplateInput,
   CreateArtworkTemplatePayload,
+  CreateArtworkTemplateInput,
   ResolverContext
 >({
   name: "CreateArtworkTemplate",
