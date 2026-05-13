@@ -20739,6 +20739,9 @@ type Partner implements Node {
     after: String
     before: String
     first: Int
+
+    # Include cancelled imports in results. Defaults to false.
+    includeCanceled: Boolean
     last: Int
 
     # Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.
