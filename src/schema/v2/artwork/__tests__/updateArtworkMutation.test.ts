@@ -920,4 +920,128 @@ describe("UpdateArtworkMutation", () => {
       expect(loaderArgs.artsy_listing).toBeUndefined()
     })
   })
+
+  describe("editionSets field", () => {
+    it("creates new edition sets when no id is provided", async () => {
+      const createArtworkEditionSetLoader = jest.fn().mockResolvedValue({})
+      const updateArtworkEditionSetLoader = jest.fn()
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const convertMutation = gql`
+        mutation {
+          updateArtwork(
+            input: {
+              id: "25"
+              attributionClass: LIMITED_EDITION
+              editionSets: [
+                {
+                  editionSize: "10"
+                  inventoryCount: 5
+                  sizeType: "hwd"
+                  height: "10"
+                  width: "20"
+                  metric: "cm"
+                  priceListed: "1000"
+                  priceCurrency: "USD"
+                  availability: "for sale"
+                }
+                { editionSize: "20", inventoryCount: 3 }
+              ]
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader,
+        createArtworkEditionSetLoader,
+      }
+
+      await runAuthenticatedQuery(convertMutation, context)
+
+      expect(updateArtworkLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({ attribution_class: "limited edition" })
+      )
+      expect(updateArtworkEditionSetLoader).not.toHaveBeenCalled()
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledTimes(2)
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          edition_size: "10",
+          inventory: { count: 5 },
+          height: "10",
+          width: "20",
+          metric: "cm",
+          size_type: "hwd",
+          price_listed: "1000",
+          price_currency: "USD",
+          availability: "for sale",
+        })
+      )
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        "25",
+        expect.objectContaining({
+          edition_size: "20",
+          inventory: { count: 3 },
+        })
+      )
+    })
+
+    it("updates existing edition sets when id is provided", async () => {
+      const createArtworkEditionSetLoader = jest.fn()
+      const updateArtworkEditionSetLoader = jest.fn().mockResolvedValue({})
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const updateMutation = gql`
+        mutation {
+          updateArtwork(
+            input: {
+              id: "25"
+              editionSets: [{ id: "set-1", editionSize: "15" }]
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader,
+        createArtworkEditionSetLoader,
+      }
+
+      await runAuthenticatedQuery(updateMutation, context)
+
+      expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
+      expect(updateArtworkEditionSetLoader).toHaveBeenCalledWith(
+        { artworkId: "25", editionSetId: "set-1" },
+        expect.objectContaining({ edition_size: "15" })
+      )
+    })
+  })
 })
