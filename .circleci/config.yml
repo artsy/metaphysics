@@ -1,5 +1,17 @@
 version: 2.1
 
+# Set `canary_build: true` when triggering a pipeline to build a canary image
+# from any branch without touching the moving :staging / :production tags.
+# Trigger via the CircleCI API:
+#   curl -X POST -u <CIRCLE_TOKEN>: \
+#     -H 'Content-Type: application/json' \
+#     -d '{"branch":"<your-branch>","parameters":{"canary_build":true}}' \
+#     https://circleci.com/api/v2/project/gh/artsy/metaphysics/pipeline
+parameters:
+  canary_build:
+    type: boolean
+    default: false
+
 orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
@@ -123,9 +135,55 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
       - run: yarn deploy-cloudflare-workers
+  canary-image-push:
+    # Builds the canary image from the current commit and pushes it to ECR
+    # tagged with the commit SHA only. Verifies that the moving :staging tag
+    # is not overwritten — if it is, the job fails loudly so the operator can
+    # roll the tag back before any pod restart pulls the new image.
+    executor:
+      name: node/default
+      tag: "22.5"
+    steps:
+      - checkout
+      - setup_hokusai
+      - run:
+          name: Build & push canary image (SHA tag only)
+          command: |
+            set -euo pipefail
+            SHA=$(git rev-parse HEAD)
+            echo "==> canary build for $SHA"
+
+            BEFORE=$(aws ecr describe-images --repository-name metaphysics --region us-east-1 \
+              --image-ids imageTag=staging \
+              --query 'imageDetails[0].imageDigest' --output text)
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "None" ]; then
+              echo "could not resolve :staging digest" >&2
+              exit 1
+            fi
+            echo "    :staging currently points at $BEFORE"
+
+            # Flag name varies by hokusai version. Try both.
+            if ! hokusai registry push --tag "$SHA" --skip-latest 2>/dev/null; then
+              hokusai registry push --tag "$SHA" --no-update-latest
+            fi
+
+            AFTER=$(aws ecr describe-images --repository-name metaphysics --region us-east-1 \
+              --image-ids imageTag=staging \
+              --query 'imageDetails[0].imageDigest' --output text)
+            if [ "$AFTER" != "$BEFORE" ]; then
+              echo "FATAL: :staging digest moved during canary push" >&2
+              echo "  before: $BEFORE" >&2
+              echo "  after:  $AFTER" >&2
+              echo "Roll the :staging tag back to $BEFORE before any pod restart." >&2
+              exit 1
+            fi
+            echo "    :staging unchanged ✓"
+            echo "canary image ready: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:$SHA"
 
 workflows:
   default:
+    when:
+      not: << pipeline.parameters.canary_build >>
     jobs:
       - test:
           <<: *not_staging_or_release
@@ -179,3 +237,18 @@ workflows:
           context: cloudflare
           requires:
             - hokusai/deploy-production
+
+  canary:
+    # Triggered by setting the canary_build pipeline parameter. Runs on any
+    # branch (no branch filter) so feature branches can build a SHA-tagged
+    # image without merging to main. Does NOT deploy — operator wires the
+    # SHA into hokusai/<env>.yml in a separate canary YAML PR.
+    when: << pipeline.parameters.canary_build >>
+    jobs:
+      - test
+      - type-check
+      - canary-image-push:
+          context: hokusai
+          requires:
+            - test
+            - type-check
