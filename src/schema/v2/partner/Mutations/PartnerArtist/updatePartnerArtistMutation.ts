@@ -17,11 +17,6 @@ import Partner from "../../partner"
 interface UpdatePartnerArtistMutationInputProps {
   id: string
   remoteImageUrl?: string
-  biography?: string
-  useDefaultBiography?: boolean
-  displayOnPartnerProfile?: boolean
-  hideInPresentationMode?: boolean
-  representedBy?: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({

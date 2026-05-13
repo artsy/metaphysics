@@ -1,6 +1,6 @@
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
 import { graphql } from "graphql"
-import { addMocksToSchema } from "@graphql-tools/mock"
+import { addMockFunctionsToSchema } from "graphql-tools"
 import { useCausalityStitching } from "./testingUtils"
 import gql from "lib/gql"
 import v2Schema from "schema/v2/schema"
@@ -32,7 +32,7 @@ describe("causality/stitching", () => {
         }
       `
 
-      const mockedSchema = addMocksToSchema({
+      addMockFunctionsToSchema({
         schema: allMergedSchemas,
         mocks: {
           Query: () => ({
@@ -53,13 +53,9 @@ describe("causality/stitching", () => {
         },
       })
 
-      const result = await graphql({
-        schema: mockedSchema,
-        source: query,
-        contextValue: {
-          accessToken: null,
-          userID: null,
-        },
+      const result = await graphql(allMergedSchemas, query, {
+        accessToken: null,
+        userID: null,
       })
 
       expect(result).toEqual({
@@ -95,7 +91,7 @@ describe("causality/stitching", () => {
           }
         `
 
-        const mockedSchema = addMocksToSchema({
+        addMockFunctionsToSchema({
           schema: allMergedSchemas,
           mocks: {
             Query: () => ({
@@ -108,10 +104,7 @@ describe("causality/stitching", () => {
           },
         })
 
-        const result = await graphql({
-          schema: mockedSchema,
-          source: query,
-        })
+        const result = await graphql(allMergedSchemas, query, {}, {})
 
         expect(result).toEqual({
           data: {

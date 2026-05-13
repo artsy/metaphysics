@@ -54,7 +54,7 @@ async function updateSchemaFile({
         if (dest.endsWith(".json")) {
           const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
           const schema = buildSchema(sdl, { commentDescriptions: true })
-          const gql = graphqlSync({ schema, source: introspectionQuery })
+          const gql = graphqlSync(schema, introspectionQuery)
           writeFileSync(repoDest, JSON.stringify(gql, null, 2))
         } else {
           execSync(`cp _schemaV2.graphql '${repoDest}'`)

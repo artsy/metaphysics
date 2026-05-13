@@ -4,8 +4,7 @@ import {
   timeoutForField,
 } from "../graphqlTimeoutMiddleware"
 
-import { makeExecutableSchema } from "@graphql-tools/schema"
-import { IResolvers } from "@graphql-tools/utils"
+import { makeExecutableSchema, IResolvers } from "graphql-tools"
 import gql from "../../lib/gql"
 import { graphql, buildSchema, GraphQLResolveInfo } from "graphql"
 import { applyMiddleware } from "graphql-middleware"
@@ -111,13 +110,10 @@ describe("graphQLTimeoutMiddleware", () => {
         typeDefs,
         resolvers,
       })
-      const schemaWithMiddleware = applyMiddleware(
+      applyMiddleware(schema, graphqlTimeoutMiddleware(defaultTimeout))
+      return graphql(
         schema,
-        graphqlTimeoutMiddleware(defaultTimeout)
-      )
-      return graphql({
-        schema: schemaWithMiddleware,
-        source: gql`
+        gql`
           query {
             artwork {
               title
@@ -126,8 +122,8 @@ describe("graphQLTimeoutMiddleware", () => {
               }
             }
           }
-        `,
-      })
+        `
+      )
     }
 
     it("resolves if execution does not take longer than the set timeout", async () => {

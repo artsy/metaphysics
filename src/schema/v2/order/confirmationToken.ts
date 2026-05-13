@@ -55,15 +55,15 @@ const PaymentMethodPreviewUnion = new GraphQLUnionType({
   types: [CardType, UsBankAccountType, SepaType],
   resolveType: (obj) => {
     if (obj.type === "card") {
-      return CardType.name
+      return CardType
     }
     if (obj.type === "us_bank_account") {
-      return UsBankAccountType.name
+      return UsBankAccountType
     }
     if (obj.type === "sepa_debit") {
-      return SepaType.name
+      return SepaType
     }
-    return undefined
+    return null
   },
 })
 

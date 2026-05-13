@@ -1,5 +1,9 @@
-import { GraphQLObjectType, GraphQLFieldMap, GraphQLUnionType } from "graphql"
-import { Thunk } from "types/graphql"
+import {
+  GraphQLObjectType,
+  GraphQLFieldMap,
+  Thunk,
+  GraphQLUnionType,
+} from "graphql"
 
 type DeprecationOptions = { inVersion: 2 } & (
   | { preferUsageOf: string; reason?: undefined }

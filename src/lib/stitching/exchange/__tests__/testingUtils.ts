@@ -1,12 +1,11 @@
-import { stitchSchemas } from "@graphql-tools/stitch"
-import { GraphQLSchema } from "graphql"
+import { GraphQLSchemaWithTransforms, mergeSchemas } from "graphql-tools"
 import localSchema from "schema/v2/schema"
 import { executableExchangeSchema, transformsForExchange } from "../schema"
 import { exchangeStitchingEnvironment } from "../v2/stitching"
 
-let cachedSchema: GraphQLSchema
+let cachedSchema: GraphQLSchemaWithTransforms
 let stitchedSchema: ReturnType<typeof exchangeStitchingEnvironment>
-let mergedSchema: GraphQLSchema
+let mergedSchema: GraphQLSchemaWithTransforms
 
 /** Gets a cached copy of the transformed exchange schema  */
 export const getExchangeTransformedSchema = async () => {
@@ -37,11 +36,10 @@ export const getExchangeMergedSchema = async () => {
 
     // The order should only matter in that extension schemas come after the
     // objects that they are expected to build upon
-    mergedSchema = stitchSchemas({
-      subschemas: [localSchema, cachedSchema],
-      typeDefs: extensionSchema ? [extensionSchema] : undefined,
+    mergedSchema = mergeSchemas({
+      schemas: [localSchema, cachedSchema, extensionSchema],
       resolvers: resolvers,
-    })
+    }) as GraphQLSchemaWithTransforms
 
     const anyMergedSchema = mergedSchema as any
     anyMergedSchema.__allowedLegacyNames = ["__id"]
