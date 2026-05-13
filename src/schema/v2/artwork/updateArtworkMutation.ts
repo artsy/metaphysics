@@ -16,6 +16,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { omit } from "lodash"
 import Artwork from "schema/v2/artwork"
+import { ArtworkAttributionClassEnum } from "schema/v2/me/myCollectionCreateArtworkMutation"
 import { ResolverContext } from "types/graphql"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -55,6 +56,7 @@ interface UpdateArtworkMutationInputProps {
   artistIds?: string[]
   artsyListing?: boolean
   artistProofs?: string
+  attributionClass?: string
   availability?: string
   certificateOfAuthenticity?: boolean
   coaByGallery?: boolean
@@ -71,6 +73,7 @@ interface UpdateArtworkMutationInputProps {
     UpdateArtworkMutationInputProps,
     | "editionSets"
     | "artistIds"
+    | "attributionClass"
     | "mediumType"
     | "date"
     | "inventoryId"
@@ -84,8 +87,11 @@ interface UpdateArtworkMutationInputProps {
   framedMetric?: string
   framedWidth?: string
   height?: string
+  hwdMetric?: string
+  diameterMetric?: string
   id?: string
   imageS3Locations?: S3LocationInput[]
+  inventoryCount?: number
   inventoryId?: string
   metric?: string
   offer?: boolean
@@ -100,6 +106,7 @@ interface UpdateArtworkMutationInputProps {
   priceMin?: number
   shippingWeight?: number
   shippingWeightMetric?: string
+  sizeType?: string
   title?: string
   width?: string
 }
@@ -170,6 +177,10 @@ const inputFields = {
   artistProofs: {
     type: GraphQLString,
   },
+  attributionClass: {
+    type: ArtworkAttributionClassEnum,
+    description: "The attribution class of the artwork",
+  },
   delete: {
     type: GraphQLBoolean,
   },
@@ -196,6 +207,15 @@ const inputFields = {
     type: GraphQLString,
     description: "The unit of measurement for artwork dimensions",
   },
+  hwdMetric: {
+    type: GraphQLString,
+    description:
+      "The unit of measurement for height/width/depth on an edition set",
+  },
+  diameterMetric: {
+    type: GraphQLString,
+    description: "The unit of measurement for diameter on an edition set",
+  },
   width: {
     type: GraphQLString,
     description: "The width of the artwork",
@@ -217,6 +237,10 @@ const inputFields = {
   },
   framed: {
     type: GraphQLBoolean,
+  },
+  inventoryCount: {
+    type: GraphQLInt,
+    description: "The inventory count for an edition set",
   },
   inventoryId: {
     type: GraphQLString,
@@ -250,6 +274,11 @@ const inputFields = {
   shippingWeight: {
     type: GraphQLFloat,
   },
+  sizeType: {
+    type: GraphQLString,
+    description:
+      'The size type for an edition set, e.g. "hwd" or "diameter". Defaults to "hwd" on new edition sets when any dimension is provided.',
+  },
   title: {
     type: GraphQLString,
   },
@@ -272,6 +301,7 @@ const S3LocationInputType = new GraphQLInputObjectType({
 
 const editionSetExcludedFields = [
   "artistIds",
+  "attributionClass",
   "mediumType",
   "date",
   "inventoryId",
@@ -280,7 +310,14 @@ const editionSetExcludedFields = [
 
 const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   name: "UpdateArtworkEditionSetInput",
-  fields: omit(inputFields, editionSetExcludedFields),
+  fields: {
+    ...omit(inputFields, editionSetExcludedFields),
+    id: {
+      type: GraphQLString,
+      description:
+        "The id of the edition set to update. Omit to create a new edition set.",
+    },
+  },
 })
 
 export const updateArtworkMutation = mutationWithClientMutationId<
@@ -314,11 +351,16 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     {
       updateArtworkLoader,
       updateArtworkEditionSetLoader,
+      createArtworkEditionSetLoader,
       addImageToArtworkLoader,
       setDefaultArtworkImageLoader,
     }
   ) => {
-    if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
+    if (
+      !updateArtworkLoader ||
+      !updateArtworkEditionSetLoader ||
+      !createArtworkEditionSetLoader
+    ) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -328,6 +370,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         artists: inputArgs.artistIds,
         artsy_listing: inputArgs.artsyListing,
         artist_proofs: inputArgs.artistProofs,
+        attribution_class: inputArgs.attributionClass,
         availability: inputArgs.availability,
         certificate_of_authenticity: inputArgs.certificateOfAuthenticity,
         coa_by_gallery: inputArgs.coaByGallery,
@@ -347,7 +390,10 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed_width: inputArgs.framedWidth,
         framed: inputArgs.framed,
         height: inputArgs.height,
+        hwd_metric: inputArgs.hwdMetric,
+        diameter_metric: inputArgs.diameterMetric,
         id: inputArgs.id,
+        inventory_count: inputArgs.inventoryCount,
         inventory_id: inputArgs.inventoryId,
         metric: inputArgs.metric,
         offer: inputArgs.offer,
@@ -362,6 +408,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         price_min: inputArgs.priceMin,
         shipping_weight_metric: inputArgs.shippingWeightMetric,
         shipping_weight: inputArgs.shippingWeight,
+        size_type: inputArgs.sizeType,
         title: inputArgs.title,
         width: inputArgs.width,
       }
@@ -394,15 +441,17 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       if (editionSets?.length > 0) {
         await Promise.all(
           editionSets.map((editionSet) => {
-            const input = getGravityArgs(editionSet)
+            if (editionSet.id) {
+              return updateArtworkEditionSetLoader(
+                {
+                  artworkId: id,
+                  editionSetId: editionSet.id,
+                },
+                getGravityArgs(editionSet)
+              )
+            }
 
-            return updateArtworkEditionSetLoader(
-              {
-                artworkId: id,
-                editionSetId: editionSet.id,
-              },
-              input
-            )
+            return createArtworkEditionSetLoader(id, getGravityArgs(editionSet))
           })
         )
       }
