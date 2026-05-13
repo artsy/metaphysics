@@ -1,5 +1,5 @@
 import type { ExecutionRequest, Executor } from "@graphql-tools/utils"
-import { print } from "graphql/language"
+import { DocumentNode, print, visit } from "graphql/index"
 import config from "../../config"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import { ResolverContext } from "types/graphql"
@@ -8,6 +8,25 @@ const shouldLogLinkTraffic =
   !!process.env.LOG_HTTP_LINKS && typeof jest === "undefined"
 const { ENABLE_REQUEST_LOGGING } = config
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
+
+// Directives declared locally by metaphysics that have no meaning on remote
+// services. `delegateToSchema` copies directives from the user's field nodes
+// onto the delegated root field; without stripping, the remote rejects them.
+const METAPHYSICS_ONLY_DIRECTIVES = new Set([
+  "principalField",
+  "optionalField",
+  "cacheable",
+])
+
+const stripLocalDirectives = (document: DocumentNode): DocumentNode =>
+  visit(document, {
+    Directive(node) {
+      if (METAPHYSICS_ONLY_DIRECTIVES.has(node.name.value)) {
+        return null
+      }
+      return undefined
+    },
+  })
 
 export const getResolverContext = (
   request: ExecutionRequest | undefined
@@ -19,6 +38,7 @@ export function withResponseLogging(
   executor: Executor
 ): Executor {
   return async (request) => {
+    request = { ...request, document: stripLocalDirectives(request.document) }
     const result = await executor(request)
 
     if (shouldLogLinkTraffic) {
