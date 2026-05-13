@@ -16,6 +16,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { omit } from "lodash"
 import Artwork from "schema/v2/artwork"
+import { ArtworkAttributionClassEnum } from "schema/v2/me/myCollectionCreateArtworkMutation"
 import { ResolverContext } from "types/graphql"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -55,6 +56,7 @@ interface UpdateArtworkMutationInputProps {
   artistIds?: string[]
   artsyListing?: boolean
   artistProofs?: string
+  attributionClass?: string
   availability?: string
   certificateOfAuthenticity?: boolean
   coaByGallery?: boolean
@@ -71,6 +73,7 @@ interface UpdateArtworkMutationInputProps {
     UpdateArtworkMutationInputProps,
     | "editionSets"
     | "artistIds"
+    | "attributionClass"
     | "mediumType"
     | "date"
     | "inventoryId"
@@ -86,6 +89,7 @@ interface UpdateArtworkMutationInputProps {
   height?: string
   id?: string
   imageS3Locations?: S3LocationInput[]
+  inventoryCount?: number
   inventoryId?: string
   metric?: string
   offer?: boolean
@@ -100,6 +104,7 @@ interface UpdateArtworkMutationInputProps {
   priceMin?: number
   shippingWeight?: number
   shippingWeightMetric?: string
+  sizeType?: string
   title?: string
   width?: string
 }
@@ -170,6 +175,10 @@ const inputFields = {
   artistProofs: {
     type: GraphQLString,
   },
+  attributionClass: {
+    type: ArtworkAttributionClassEnum,
+    description: "The attribution class of the artwork",
+  },
   delete: {
     type: GraphQLBoolean,
   },
@@ -218,6 +227,10 @@ const inputFields = {
   framed: {
     type: GraphQLBoolean,
   },
+  inventoryCount: {
+    type: GraphQLInt,
+    description: "The inventory count",
+  },
   inventoryId: {
     type: GraphQLString,
     description: "The inventory ID of the artwork",
@@ -250,6 +263,10 @@ const inputFields = {
   shippingWeight: {
     type: GraphQLFloat,
   },
+  sizeType: {
+    type: GraphQLString,
+    description: 'The size type, e.g. "hwd" or "diameter".',
+  },
   title: {
     type: GraphQLString,
   },
@@ -272,6 +289,7 @@ const S3LocationInputType = new GraphQLInputObjectType({
 
 const editionSetExcludedFields = [
   "artistIds",
+  "attributionClass",
   "mediumType",
   "date",
   "inventoryId",
@@ -280,7 +298,14 @@ const editionSetExcludedFields = [
 
 const UpdateArtworkEditionSetInput = new GraphQLInputObjectType({
   name: "UpdateArtworkEditionSetInput",
-  fields: omit(inputFields, editionSetExcludedFields),
+  fields: {
+    ...omit(inputFields, editionSetExcludedFields),
+    id: {
+      type: GraphQLString,
+      description:
+        "The id of the edition set to update. Omit to create a new edition set.",
+    },
+  },
 })
 
 export const updateArtworkMutation = mutationWithClientMutationId<
@@ -314,11 +339,16 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     {
       updateArtworkLoader,
       updateArtworkEditionSetLoader,
+      createArtworkEditionSetLoader,
       addImageToArtworkLoader,
       setDefaultArtworkImageLoader,
     }
   ) => {
-    if (!updateArtworkLoader || !updateArtworkEditionSetLoader) {
+    if (
+      !updateArtworkLoader ||
+      !updateArtworkEditionSetLoader ||
+      !createArtworkEditionSetLoader
+    ) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -328,6 +358,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         artists: inputArgs.artistIds,
         artsy_listing: inputArgs.artsyListing,
         artist_proofs: inputArgs.artistProofs,
+        attribution_class: inputArgs.attributionClass,
         availability: inputArgs.availability,
         certificate_of_authenticity: inputArgs.certificateOfAuthenticity,
         coa_by_gallery: inputArgs.coaByGallery,
@@ -348,6 +379,10 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed: inputArgs.framed,
         height: inputArgs.height,
         id: inputArgs.id,
+        inventory:
+          inputArgs.inventoryCount != null
+            ? { count: inputArgs.inventoryCount }
+            : undefined,
         inventory_id: inputArgs.inventoryId,
         metric: inputArgs.metric,
         offer: inputArgs.offer,
@@ -362,6 +397,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         price_min: inputArgs.priceMin,
         shipping_weight_metric: inputArgs.shippingWeightMetric,
         shipping_weight: inputArgs.shippingWeight,
+        size_type: inputArgs.sizeType,
         title: inputArgs.title,
         width: inputArgs.width,
       }
@@ -394,15 +430,17 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       if (editionSets?.length > 0) {
         await Promise.all(
           editionSets.map((editionSet) => {
-            const input = getGravityArgs(editionSet)
+            if (editionSet.id) {
+              return updateArtworkEditionSetLoader(
+                {
+                  artworkId: id,
+                  editionSetId: editionSet.id,
+                },
+                getGravityArgs(editionSet)
+              )
+            }
 
-            return updateArtworkEditionSetLoader(
-              {
-                artworkId: id,
-                editionSetId: editionSet.id,
-              },
-              input
-            )
+            return createArtworkEditionSetLoader(id, getGravityArgs(editionSet))
           })
         )
       }

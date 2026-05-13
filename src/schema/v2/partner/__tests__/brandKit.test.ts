@@ -101,4 +101,126 @@ describe("Partner brandKit field", () => {
       },
     })
   })
+
+  describe("logo field", () => {
+    const partnerData = {
+      _id: "partner-internal-id",
+      id: "catty-partner",
+    }
+
+    const logoQuery = gql`
+      {
+        partner(id: "catty-partner") {
+          brandKit {
+            logo {
+              geminiToken
+              geminiTokenUpdatedAt
+              imageURL
+              imageVersions
+              originalWidth
+              originalHeight
+              aspectRatio
+              isProcessing
+              processingFailed
+            }
+          }
+        }
+      }
+    `
+
+    it("returns null when the brand kit has no logo (image: null)", async () => {
+      const context = {
+        partnerLoader: jest.fn().mockResolvedValue(partnerData),
+        brandKitLoader: jest.fn().mockResolvedValue({
+          id: "brand-kit-1",
+          image: null,
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(logoQuery, context)
+      expect(data).toEqual({ partner: { brandKit: { logo: null } } })
+    })
+
+    it("returns null when the image key is absent", async () => {
+      const context = {
+        partnerLoader: jest.fn().mockResolvedValue(partnerData),
+        brandKitLoader: jest.fn().mockResolvedValue({
+          id: "brand-kit-1",
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(logoQuery, context)
+      expect(data).toEqual({ partner: { brandKit: { logo: null } } })
+    })
+
+    it("exposes processing-state fields while Gemini is still working", async () => {
+      const recentTime = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+      const context = {
+        partnerLoader: jest.fn().mockResolvedValue(partnerData),
+        brandKitLoader: jest.fn().mockResolvedValue({
+          id: "brand-kit-1",
+          image: {
+            id: "image-1",
+            gemini_token: "tok-abc",
+            gemini_token_updated_at: recentTime,
+            image_url: null,
+            image_urls: {},
+            image_versions: [],
+            original_width: null,
+            original_height: null,
+            aspect_ratio: null,
+          },
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(logoQuery, context)
+      expect(data.partner.brandKit.logo).toMatchObject({
+        geminiToken: "tok-abc",
+        geminiTokenUpdatedAt: recentTime,
+        imageURL: null,
+        imageVersions: [],
+        originalWidth: null,
+        originalHeight: null,
+        isProcessing: true,
+        processingFailed: false,
+      })
+    })
+
+    it("exposes a fully processed logo with all fields populated", async () => {
+      const recentTime = new Date(Date.now() - 1 * 60 * 1000).toISOString()
+      const context = {
+        partnerLoader: jest.fn().mockResolvedValue(partnerData),
+        brandKitLoader: jest.fn().mockResolvedValue({
+          id: "brand-kit-1",
+          image: {
+            id: "image-1",
+            gemini_token: "tok-xyz",
+            gemini_token_updated_at: recentTime,
+            image_url: "https://d7hftxdivxxvm.cloudfront.net/abc/:version.jpg",
+            image_urls: {
+              square_brand_kit:
+                "https://d7hftxdivxxvm.cloudfront.net/abc/square_brand_kit.jpg",
+            },
+            image_versions: ["square_brand_kit"],
+            original_width: 1200,
+            original_height: 800,
+            aspect_ratio: 1.5,
+          },
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(logoQuery, context)
+      expect(data.partner.brandKit.logo).toMatchObject({
+        geminiToken: "tok-xyz",
+        geminiTokenUpdatedAt: recentTime,
+        imageURL: "https://d7hftxdivxxvm.cloudfront.net/abc/:version.jpg",
+        imageVersions: ["square_brand_kit"],
+        originalWidth: 1200,
+        originalHeight: 800,
+        aspectRatio: 1.5,
+        isProcessing: false,
+        processingFailed: false,
+      })
+    })
+  })
 })
