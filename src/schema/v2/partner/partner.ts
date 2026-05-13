@@ -1355,6 +1355,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
+      distributionSyncEnabled: {
+        type: GraphQLBoolean,
+        description:
+          "Whether auto-sync of variable fields to marketplaces is enabled. Defaults to false.",
+        resolve: async ({ _id }, _args, { partnerAllLoader }) => {
+          if (!partnerAllLoader) return false
+          const partner = await partnerAllLoader(_id)
+          return (
+            partner.partner_flags?.catalog_distribution_sync_enabled === true
+          )
+        },
+      },
       distinguishRepresentedArtists: {
         type: GraphQLBoolean,
         resolve: ({ distinguish_represented_artists }) =>
