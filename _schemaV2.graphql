@@ -27200,9 +27200,6 @@ input UpdateArtworkEditionSetInput {
   # The diameter of the artwork
   diameter: String
 
-  # The unit of measurement for diameter on an edition set
-  diameterMetric: String
-
   # Show/Hide the price range of an artwork
   displayPriceRange: Boolean
 
@@ -27219,13 +27216,10 @@ input UpdateArtworkEditionSetInput {
   # The height of the artwork
   height: String
 
-  # The unit of measurement for height/width/depth on an edition set
-  hwdMetric: String
-
   # The id of the edition set to update. Omit to create a new edition set.
   id: String
 
-  # The inventory count for an edition set
+  # The inventory count
   inventoryCount: Int
 
   # The unit of measurement for artwork dimensions
@@ -27248,7 +27242,7 @@ input UpdateArtworkEditionSetInput {
   shippingWeight: Float
   shippingWeightMetric: String
 
-  # The size type for an edition set, e.g. "hwd" or "diameter". Defaults to "hwd" on new edition sets when any dimension is provided.
+  # The size type, e.g. "hwd" or "diameter".
   sizeType: String
   title: String
 
@@ -27397,9 +27391,6 @@ input UpdateArtworkMutationInput {
   # The diameter of the artwork
   diameter: String
 
-  # The unit of measurement for diameter on an edition set
-  diameterMetric: String
-
   # Show/Hide the price range of an artwork
   displayPriceRange: Boolean
 
@@ -27419,16 +27410,13 @@ input UpdateArtworkMutationInput {
   # The height of the artwork
   height: String
 
-  # The unit of measurement for height/width/depth on an edition set
-  hwdMetric: String
-
   # The id of the artwork to update.
   id: String!
 
   # A list of S3 locations (bucket and key pairs) for artwork images to be added.
   imageS3Locations: [S3LocationInput!]
 
-  # The inventory count for an edition set
+  # The inventory count
   inventoryCount: Int
 
   # The inventory ID of the artwork
@@ -27460,7 +27448,7 @@ input UpdateArtworkMutationInput {
   shippingWeight: Float
   shippingWeightMetric: String
 
-  # The size type for an edition set, e.g. "hwd" or "diameter". Defaults to "hwd" on new edition sets when any dimension is provided.
+  # The size type, e.g. "hwd" or "diameter".
   sizeType: String
   title: String
 

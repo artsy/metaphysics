@@ -943,8 +943,7 @@ describe("UpdateArtworkMutation", () => {
                   sizeType: "hwd"
                   height: "10"
                   width: "20"
-                  hwdMetric: "cm"
-                  diameterMetric: "cm"
+                  metric: "cm"
                   priceListed: "1000"
                   priceCurrency: "USD"
                   availability: "for sale"
@@ -983,11 +982,10 @@ describe("UpdateArtworkMutation", () => {
         "25",
         expect.objectContaining({
           edition_size: "10",
-          inventory_count: 5,
+          inventory: { count: 5 },
           height: "10",
           width: "20",
-          hwd_metric: "cm",
-          diameter_metric: "cm",
+          metric: "cm",
           size_type: "hwd",
           price_listed: "1000",
           price_currency: "USD",
@@ -998,7 +996,7 @@ describe("UpdateArtworkMutation", () => {
         "25",
         expect.objectContaining({
           edition_size: "20",
-          inventory_count: 3,
+          inventory: { count: 3 },
         })
       )
     })

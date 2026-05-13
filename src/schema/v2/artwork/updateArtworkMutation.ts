@@ -87,8 +87,6 @@ interface UpdateArtworkMutationInputProps {
   framedMetric?: string
   framedWidth?: string
   height?: string
-  hwdMetric?: string
-  diameterMetric?: string
   id?: string
   imageS3Locations?: S3LocationInput[]
   inventoryCount?: number
@@ -207,15 +205,6 @@ const inputFields = {
     type: GraphQLString,
     description: "The unit of measurement for artwork dimensions",
   },
-  hwdMetric: {
-    type: GraphQLString,
-    description:
-      "The unit of measurement for height/width/depth on an edition set",
-  },
-  diameterMetric: {
-    type: GraphQLString,
-    description: "The unit of measurement for diameter on an edition set",
-  },
   width: {
     type: GraphQLString,
     description: "The width of the artwork",
@@ -240,7 +229,7 @@ const inputFields = {
   },
   inventoryCount: {
     type: GraphQLInt,
-    description: "The inventory count for an edition set",
+    description: "The inventory count",
   },
   inventoryId: {
     type: GraphQLString,
@@ -276,8 +265,7 @@ const inputFields = {
   },
   sizeType: {
     type: GraphQLString,
-    description:
-      'The size type for an edition set, e.g. "hwd" or "diameter". Defaults to "hwd" on new edition sets when any dimension is provided.',
+    description: 'The size type, e.g. "hwd" or "diameter".',
   },
   title: {
     type: GraphQLString,
@@ -390,10 +378,11 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         framed_width: inputArgs.framedWidth,
         framed: inputArgs.framed,
         height: inputArgs.height,
-        hwd_metric: inputArgs.hwdMetric,
-        diameter_metric: inputArgs.diameterMetric,
         id: inputArgs.id,
-        inventory_count: inputArgs.inventoryCount,
+        inventory:
+          inputArgs.inventoryCount != null
+            ? { count: inputArgs.inventoryCount }
+            : undefined,
         inventory_id: inputArgs.inventoryId,
         metric: inputArgs.metric,
         offer: inputArgs.offer,
