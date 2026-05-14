@@ -1030,7 +1030,7 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Price",
-              amount: { amount: "7,500" },
+              amount: { amount: "7,500.00" },
             },
             { __typename: "ShippingLine" },
             { __typename: "TaxLine" },
@@ -1058,7 +1058,7 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Price",
-              amount: { amount: "6,000" },
+              amount: { amount: "6,000.00" },
             },
             { __typename: "ShippingLine" },
             { __typename: "TaxLine" },
@@ -1087,7 +1087,7 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Gallery offer",
-              amount: { amount: "5,000" },
+              amount: { amount: "5,000.00" },
             },
             { __typename: "ShippingLine" },
             { __typename: "TaxLine" },
@@ -1116,7 +1116,7 @@ describe("Me", () => {
             {
               __typename: "SubtotalLine",
               displayName: "Price",
-              amount: { amount: "5,000" },
+              amount: { amount: "5,000.00" },
             },
             { __typename: "ShippingLine" },
             { __typename: "TaxLine" },
@@ -1180,7 +1180,7 @@ describe("Me", () => {
               displayName: "Pickup",
               amountFallbackText: null,
               amount: {
-                amount: "0",
+                amount: "0.00",
               },
             },
             {
@@ -1188,7 +1188,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "400",
+                amount: "400.00",
               },
             },
             {
@@ -1224,7 +1224,7 @@ describe("Me", () => {
               displayName: "Free shipping",
               amountFallbackText: null,
               amount: {
-                amount: "0",
+                amount: "0.00",
               },
             },
             {
@@ -1232,7 +1232,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "400",
+                amount: "400.00",
               },
             },
             {
@@ -1268,7 +1268,7 @@ describe("Me", () => {
               displayName: "Free shipping",
               amountFallbackText: null,
               amount: {
-                amount: "0",
+                amount: "0.00",
               },
             },
             {
@@ -1276,7 +1276,7 @@ describe("Me", () => {
               displayName: "Tax",
               amountFallbackText: null,
               amount: {
-                amount: "400",
+                amount: "400.00",
               },
             },
             {
@@ -1607,11 +1607,11 @@ describe("Me", () => {
 
           const result = await runAuthenticatedQuery(query, context)
 
-          // Items amount should not have decimals (only non-null amount, no cents)
+          // Items amount should always have decimals
           expect(result.me.order.pricingBreakdownLines[0]).toEqual({
             __typename: "SubtotalLine",
             displayName: "Price",
-            amount: { amount: "5,000" },
+            amount: { amount: "5,000.00" },
           })
 
           // Other lines should have null amounts
