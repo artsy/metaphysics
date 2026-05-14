@@ -381,6 +381,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    syncCatalogToArtworkLoader: gravityLoader(
+      (id) => `catalog_artwork/${id}/sync_to_artwork`,
+      {},
+      { method: "POST" }
+    ),
     createCreditCardLoader: gravityLoader(
       "me/credit_cards",
       {},
