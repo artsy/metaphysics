@@ -1494,7 +1494,7 @@ describe("Me", () => {
           ])
         })
 
-        it("shows no decimals when all amounts are whole dollars", async () => {
+        it("shows decimals even when all amounts are whole dollars", async () => {
           orderJson.items_total_cents = 500000
           orderJson.shipping_total_cents = 10000
           orderJson.tax_total_cents = 40000
@@ -1515,27 +1515,27 @@ describe("Me", () => {
 
           const result = await runAuthenticatedQuery(query, context)
 
-          // No amounts should have decimals since all are whole dollars
+          // All amounts should have decimals always
           expect(result.me.order.pricingBreakdownLines).toEqual([
             {
               __typename: "SubtotalLine",
               displayName: "Price",
-              amount: { amount: "5,000" },
+              amount: { amount: "5,000.00" },
             },
             {
               __typename: "ShippingLine",
               displayName: "Flat rate shipping",
-              amount: { amount: "100" },
+              amount: { amount: "100.00" },
             },
             {
               __typename: "TaxLine",
               displayName: "Tax",
-              amount: { amount: "400" },
+              amount: { amount: "400.00" },
             },
             {
               __typename: "TotalLine",
               displayName: "Total",
-              amount: { amount: "5,500" },
+              amount: { amount: "5,500.00" },
             },
           ])
         })
