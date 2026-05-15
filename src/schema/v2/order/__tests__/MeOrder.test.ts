@@ -967,9 +967,9 @@ describe("Me", () => {
             __typename: "SubtotalLine",
             displayName: "Price",
             amount: {
-              display: "US$5,000",
+              display: "US$5,000.00",
               currencySymbol: "$",
-              amount: "5,000",
+              amount: "5,000.00",
             },
           },
           {
