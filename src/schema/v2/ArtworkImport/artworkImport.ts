@@ -112,6 +112,7 @@ export const ArtworkImportStateType = new GraphQLEnumType({
       value: "artwork_import_processing_complete",
     },
     CANCELED: { value: "canceled" },
+    FAILED: { value: "failed" },
   },
 })
 
