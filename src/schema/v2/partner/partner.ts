@@ -782,6 +782,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.",
           },
+          includeInactive: {
+            type: GraphQLBoolean,
+            description:
+              "Include inactive imports in results. Defaults to false.",
+          },
         },
         resolve: async ({ id }, args, { artworkImportsLoader }) => {
           if (!artworkImportsLoader) return null
@@ -795,6 +800,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             total_count: true,
             partner_id: id,
             ...(args.source && { source: args.source }),
+            ...(args.includeInactive && { include_inactive: true }),
           })
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
