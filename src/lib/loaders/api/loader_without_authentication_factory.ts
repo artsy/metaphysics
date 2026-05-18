@@ -41,6 +41,9 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
   globalAPIOptions: APIOptions = {}
 ) => {
   const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
+    const method = (pathAPIOptions as APIOptions).method
+    const isMutatingMethod = !!method && method !== "GET"
+
     const loader = new DataLoader<DataLoaderKey, T | { body: T; headers: any }>(
       (keys) =>
         Promise.all<any>(
@@ -161,7 +164,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
         ),
       {
         batch: false,
-        cache: true,
+        cache: !isMutatingMethod,
         cacheKeyFn: (input) => JSON.stringify(input),
       }
     )
