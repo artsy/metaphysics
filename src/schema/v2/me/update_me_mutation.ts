@@ -61,7 +61,7 @@ export const EditableLocationFields = new GraphQLInputObjectType({
     },
     coordinates: {
       description: "The optional location coordinates. [lat, lng]",
-      type: GraphQLList(GraphQLNonNull(GraphQLFloat)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLFloat)),
     },
   },
 })

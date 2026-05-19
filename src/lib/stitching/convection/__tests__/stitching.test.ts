@@ -74,9 +74,13 @@ it("returns null for submission query since Convection is disabled", async () =>
     }
   `
 
-  const result = await graphql(allMergedSchemas, query, {
-    accessToken: null,
-    userID: null,
+  const result = await graphql({
+    schema: allMergedSchemas,
+    source: query,
+    contextValue: {
+      accessToken: null,
+      userID: null,
+    },
   })
 
   expect(result).toEqual({
