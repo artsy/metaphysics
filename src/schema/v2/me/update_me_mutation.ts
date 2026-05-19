@@ -129,11 +129,6 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: CurrencyPreference,
     },
     email: { description: "The given email of the user.", type: GraphQLString },
-    emailFrequency: {
-      description: "Frequency of marketing emails.",
-      deprecationReason: "This field is no longer used.",
-      type: GraphQLString,
-    },
     gender: { type: GraphQLString, description: "Gender." },
     industry: {
       type: GraphQLString,
