@@ -342,12 +342,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     email: {
       type: GraphQLString,
     },
-    emailFrequency: {
-      description: "Frequency of marketing emails.",
-      deprecationReason: "This field is no longer used.",
-      resolve: ({ email_frequency }) => email_frequency,
-      type: GraphQLString,
-    },
     canRequestEmailConfirmation: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether user is allowed to request email confirmation",
