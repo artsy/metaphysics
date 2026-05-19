@@ -87,6 +87,66 @@ describe("SyncCatalogToArtworkMutation", () => {
     })
   })
 
+  describe("with fields parameter", () => {
+    const fieldsQuery = gql`
+      mutation {
+        syncCatalogToArtwork(
+          input: { artworkID: "artwork-123", fields: [PRICE] }
+        ) {
+          artworkOrError {
+            __typename
+            ... on SyncCatalogToArtworkSuccess {
+              syncedFields
+            }
+          }
+        }
+      }
+    `
+
+    it("forwards fields to the loader", async () => {
+      const context = {
+        syncCatalogToArtworkLoader: jest.fn(() =>
+          Promise.resolve({
+            success: true,
+            synced_fields: ["price"],
+            errors: [],
+          })
+        ),
+        artworkLoader: jest.fn(() =>
+          Promise.resolve({ _id: "artwork-123", id: "artwork-slug" })
+        ),
+      }
+
+      await runAuthenticatedQuery(fieldsQuery, context)
+
+      expect(
+        context.syncCatalogToArtworkLoader
+      ).toHaveBeenCalledWith("artwork-123", { fields: ["price"] })
+    })
+
+    it("passes empty params when fields is omitted", async () => {
+      const context = {
+        syncCatalogToArtworkLoader: jest.fn(() =>
+          Promise.resolve({
+            success: true,
+            synced_fields: ["availability", "medium", "price"],
+            errors: [],
+          })
+        ),
+        artworkLoader: jest.fn(() =>
+          Promise.resolve({ _id: "artwork-123", id: "artwork-slug" })
+        ),
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+
+      expect(context.syncCatalogToArtworkLoader).toHaveBeenCalledWith(
+        "artwork-123",
+        {}
+      )
+    })
+  })
+
   describe("on API failure", () => {
     it("returns a mutation error", async () => {
       const context = {

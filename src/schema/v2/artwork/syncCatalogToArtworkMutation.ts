@@ -1,4 +1,5 @@
 import {
+  GraphQLEnumType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,8 +14,19 @@ import {
 import { ResolverContext } from "types/graphql"
 import Artwork from "schema/v2/artwork"
 
+const CatalogSyncableFieldEnum = new GraphQLEnumType({
+  name: "CatalogSyncableField",
+  description: "Fields that can be synced from catalog artwork (OS) to CMS.",
+  values: {
+    AVAILABILITY: { value: "availability" },
+    MEDIUM: { value: "medium" },
+    PRICE: { value: "price" },
+  },
+})
+
 interface SyncCatalogToArtworkMutationInputProps {
   artworkID: string
+  fields?: string[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -67,6 +79,10 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the artwork to sync.",
     },
+    fields: {
+      type: new GraphQLList(CatalogSyncableFieldEnum),
+      description: "Specific fields to sync. Omit to sync all.",
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -77,7 +93,7 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkID },
+    { artworkID, fields },
     { syncCatalogToArtworkLoader }
   ) => {
     if (!syncCatalogToArtworkLoader) {
@@ -85,7 +101,8 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response = await syncCatalogToArtworkLoader(artworkID)
+      const params = fields?.length ? { fields } : {}
+      const response = await syncCatalogToArtworkLoader(artworkID, params)
       return { ...response, artworkID, _type: "SyncCatalogToArtworkSuccess" }
     } catch (error) {
       const formattedErr = formatGravityError(error)
