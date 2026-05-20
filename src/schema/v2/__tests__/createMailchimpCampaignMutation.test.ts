@@ -8,7 +8,7 @@ const mutation = `
       mailchimpAccountId: "mc-account-1"
       subjectLine: "New Artworks from Acme Gallery"
       listId: "list-1"
-      artworkIds: ["artwork-1", "artwork-2"]
+      htmlContent: "<html><body>Partner-authored content</body></html>"
     }) {
       mailchimpCampaignOrError {
         __typename
@@ -39,83 +39,103 @@ const mockGravityResponse = {
 }
 
 describe("createMailchimpCampaign", () => {
-  describe("with artworkIds", () => {
-    let context: Partial<ResolverContext>
+  let context: Partial<ResolverContext>
 
-    beforeEach(() => {
-      context = {
-        createMailchimpCampaignLoader: jest
-          .fn()
-          .mockResolvedValue(mockGravityResponse),
-      }
-    })
+  beforeEach(() => {
+    context = {
+      createMailchimpCampaignLoader: jest
+        .fn()
+        .mockResolvedValue(mockGravityResponse),
+    }
+  })
 
-    it("passes correct args to Gravity", async () => {
-      await runAuthenticatedQuery(mutation, context)
+  it("passes correct args to Gravity", async () => {
+    await runAuthenticatedQuery(mutation, context)
 
-      expect(
-        context.createMailchimpCampaignLoader as jest.Mock
-      ).toHaveBeenCalledWith({
-        mailchimp_account_id: "mc-account-1",
-        subject_line: "New Artworks from Acme Gallery",
-        list_id: "list-1",
-        artwork_ids: ["artwork-1", "artwork-2"],
-        partner_show_id: undefined,
-        html_content: undefined,
-        preview_text: undefined,
-      })
-    })
-
-    it("returns the created campaign on success", async () => {
-      const result = await runAuthenticatedQuery(mutation, context)
-
-      expect(result).toMatchInlineSnapshot(`
-        {
-          "createMailchimpCampaign": {
-            "mailchimpCampaignOrError": {
-              "__typename": "CreateMailchimpCampaignSuccess",
-              "mailchimpCampaign": {
-                "internalID": "campaign-1",
-                "status": "DRAFT",
-                "subjectLine": "New Artworks from Acme Gallery",
-              },
-            },
-          },
-        }
-      `)
+    expect(
+      context.createMailchimpCampaignLoader as jest.Mock
+    ).toHaveBeenCalledWith({
+      mailchimp_account_id: "mc-account-1",
+      subject_line: "New Artworks from Acme Gallery",
+      list_id: "list-1",
+      artwork_ids: undefined,
+      partner_show_id: undefined,
+      html_content: "<html><body>Partner-authored content</body></html>",
+      preview_text: undefined,
     })
   })
 
-  describe("with partnerShowId", () => {
-    const mutationWithShow = `
+  it("returns the created campaign on success", async () => {
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "createMailchimpCampaign": {
+          "mailchimpCampaignOrError": {
+            "__typename": "CreateMailchimpCampaignSuccess",
+            "mailchimpCampaign": {
+              "internalID": "campaign-1",
+              "status": "DRAFT",
+              "subjectLine": "New Artworks from Acme Gallery",
+            },
+          },
+        },
+      }
+    `)
+  })
+
+  describe("with artworkIds for tracking", () => {
+    const mutationWithArtworks = `
       mutation {
         createMailchimpCampaign(input: {
           mailchimpAccountId: "mc-account-1"
-          subjectLine: "Gallery Show"
+          subjectLine: "Custom Campaign"
           listId: "list-1"
-          partnerShowId: "show-1"
+          htmlContent: "<html><body>Partner-authored content</body></html>"
+          artworkIds: ["artwork-1", "artwork-2"]
         }) {
           mailchimpCampaignOrError {
             __typename
-            ... on CreateMailchimpCampaignSuccess {
-              mailchimpCampaign {
-                internalID
-                subjectLine
-                status
-              }
-            }
           }
         }
       }
     `
 
     it("passes correct args to Gravity", async () => {
-      const context: Partial<ResolverContext> = {
-        createMailchimpCampaignLoader: jest
-          .fn()
-          .mockResolvedValue(mockGravityResponse),
-      }
+      await runAuthenticatedQuery(mutationWithArtworks, context)
 
+      expect(
+        context.createMailchimpCampaignLoader as jest.Mock
+      ).toHaveBeenCalledWith({
+        mailchimp_account_id: "mc-account-1",
+        subject_line: "Custom Campaign",
+        list_id: "list-1",
+        artwork_ids: ["artwork-1", "artwork-2"],
+        partner_show_id: undefined,
+        html_content: "<html><body>Partner-authored content</body></html>",
+        preview_text: undefined,
+      })
+    })
+  })
+
+  describe("with partnerShowId for tracking", () => {
+    const mutationWithShow = `
+      mutation {
+        createMailchimpCampaign(input: {
+          mailchimpAccountId: "mc-account-1"
+          subjectLine: "Gallery Show"
+          listId: "list-1"
+          htmlContent: "<html><body>Partner-authored content</body></html>"
+          partnerShowId: "show-1"
+        }) {
+          mailchimpCampaignOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    it("passes correct args to Gravity", async () => {
       await runAuthenticatedQuery(mutationWithShow, context)
 
       expect(
@@ -126,89 +146,6 @@ describe("createMailchimpCampaign", () => {
         list_id: "list-1",
         artwork_ids: undefined,
         partner_show_id: "show-1",
-        html_content: undefined,
-        preview_text: undefined,
-      })
-    })
-  })
-
-  describe("with htmlContent", () => {
-    const mutationWithHtml = `
-      mutation {
-        createMailchimpCampaign(input: {
-          mailchimpAccountId: "mc-account-1"
-          subjectLine: "Custom Campaign"
-          listId: "list-1"
-          htmlContent: "<html><body>Partner-authored content</body></html>"
-        }) {
-          mailchimpCampaignOrError {
-            __typename
-            ... on CreateMailchimpCampaignSuccess {
-              mailchimpCampaign {
-                internalID
-                subjectLine
-                status
-              }
-            }
-          }
-        }
-      }
-    `
-
-    it("passes correct args to Gravity", async () => {
-      const context: Partial<ResolverContext> = {
-        createMailchimpCampaignLoader: jest
-          .fn()
-          .mockResolvedValue(mockGravityResponse),
-      }
-
-      await runAuthenticatedQuery(mutationWithHtml, context)
-
-      expect(
-        context.createMailchimpCampaignLoader as jest.Mock
-      ).toHaveBeenCalledWith({
-        mailchimp_account_id: "mc-account-1",
-        subject_line: "Custom Campaign",
-        list_id: "list-1",
-        artwork_ids: undefined,
-        partner_show_id: undefined,
-        html_content: "<html><body>Partner-authored content</body></html>",
-        preview_text: undefined,
-      })
-    })
-
-    it("can be combined with artworkIds for tracking", async () => {
-      const mutationWithHtmlAndArtworks = `
-        mutation {
-          createMailchimpCampaign(input: {
-            mailchimpAccountId: "mc-account-1"
-            subjectLine: "Custom Campaign"
-            listId: "list-1"
-            htmlContent: "<html><body>Partner-authored content</body></html>"
-            artworkIds: ["artwork-1", "artwork-2"]
-          }) {
-            mailchimpCampaignOrError {
-              __typename
-            }
-          }
-        }
-      `
-      const context: Partial<ResolverContext> = {
-        createMailchimpCampaignLoader: jest
-          .fn()
-          .mockResolvedValue(mockGravityResponse),
-      }
-
-      await runAuthenticatedQuery(mutationWithHtmlAndArtworks, context)
-
-      expect(
-        context.createMailchimpCampaignLoader as jest.Mock
-      ).toHaveBeenCalledWith({
-        mailchimp_account_id: "mc-account-1",
-        subject_line: "Custom Campaign",
-        list_id: "list-1",
-        artwork_ids: ["artwork-1", "artwork-2"],
-        partner_show_id: undefined,
         html_content: "<html><body>Partner-authored content</body></html>",
         preview_text: undefined,
       })
@@ -222,6 +159,7 @@ describe("createMailchimpCampaign", () => {
           mailchimpAccountId: "mc-account-1"
           subjectLine: "Test"
           listId: "list-1"
+          htmlContent: "<html><body>Partner-authored content</body></html>"
           artworkIds: ["artwork-1"]
           partnerShowId: "show-1"
         }) {
@@ -233,10 +171,6 @@ describe("createMailchimpCampaign", () => {
     `
 
     it("throws when both artworkIds and partnerShowId are provided", async () => {
-      const context: Partial<ResolverContext> = {
-        createMailchimpCampaignLoader: jest.fn(),
-      }
-
       await expect(
         runAuthenticatedQuery(mutationWithBoth, context)
       ).rejects.toThrow(
@@ -256,9 +190,9 @@ describe("createMailchimpCampaign", () => {
       400,
       gravityResponseBody
     )
-    const context: Partial<ResolverContext> = {
-      createMailchimpCampaignLoader: jest.fn().mockRejectedValue(error),
-    }
+    ;(context.createMailchimpCampaignLoader as jest.Mock).mockRejectedValue(
+      error
+    )
 
     const result = await runAuthenticatedQuery(mutation, context)
 
