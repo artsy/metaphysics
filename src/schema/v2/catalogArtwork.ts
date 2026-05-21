@@ -21,6 +21,10 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
     medium: {
       type: GraphQLString,
     },
+    syncedMedium: {
+      type: GraphQLString,
+      resolve: ({ synced_medium }) => synced_medium,
+    },
     availability: { type: GraphQLString },
     priceCurrency: {
       type: GraphQLString,
