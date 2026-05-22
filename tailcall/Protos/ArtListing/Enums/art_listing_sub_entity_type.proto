@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_sub_entity_type;
+
+// The possible sub entity types for an Art Listing
+enum ArtListingSubEntityType {
+	// Unspecified sub entity type.
+	UNSPECIFIED = 0;
+
+	// The sub entity type to indicate the Creator is a Artist.
+	ARTIST = 1;
+
+  // The sub entity type to indicate the Art MArket Institution is an Auction House.
+  AUCTION_HOUSE = 2;
+
+  // The sub entity type to indicate the Art MArket Institution is a Gallery.
+  GALLERY = 3;
+
+	// The sub entity type to indicate the Creator is a Manufacturer.
+	MANUFACTURER = 4;
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor";
+
+import "Protos/ArtListing/Search/art_listing_search_results.proto";
+import "Protos/Common/warning.proto";
+
+package artnet.coredata.aiartadvisor;
+
+message AISearchResponse {
+  string global_response_id = 1;
+  string conversation_id = 2;
+  int32 user_prompt_index = 3;
+  optional string user_prompt_text = 4;
+  optional string response_image_url = 5;
+  optional string next_page_cursor = 6;
+  bool has_next_page = 7;
+  optional string user_prompt_summary = 8;
+  repeated artnet.coredata.artlisting.search.search_results.ArtListingSummary results = 9;
+  int32 total_result_count = 10;
+  optional string total_result_count_relation = 11;
+  int32 remaining_conversations = 12;
+  int32 remaining_prompts = 13;
+  int32 remaining_pages = 14;
+  repeated artnet.coredata.common.Warning warnings = 15;
+  optional string image_embedding_reference_id = 16;
+}
+
+message AISearchFeedbackResponse {
+  string conversation_id = 1;
+  int32 user_prompt_index = 2;
+}

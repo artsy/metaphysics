@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_sort_by;
+
+// All the sorting options available for an Artwork Listing.
+enum ArtListingSortBy {
+
+  // Sort by the date the artwork was sold.
+  SALE_DATE = 0;
+
+  // Sort by the date the artwork was created.
+  CREATION_DATE = 1;
+
+  // Sort by the price of the artwork.
+  PRICE = 2;
+
+  // Sort by the sale id of the artwork.
+  SALE_ID = 3;
+
+  // Sort by the catalog lot number.
+  CATALOG_LOT_NUMBER = 4;
+
+  // Sort by the title of the artwork listing.
+  ARTWORK_LISTING_TITLE = 5;
+
+  // Sort by the relevancy.
+  RELEVANCY = 6;
+
+  // Sort by the last updated date.
+  LAST_UPDATED_DATE = 7;
+
+  // Sort by the listed date.
+  LISTED_DATE = 8;
+
+  // Sort by the availability status. (Ascending returns unavailable listings first; Descending returns available listings first)
+  IS_AVAILABLE = 9;
+
+  // Sort by a randomized pattern, which is refreshed daily. It will always be applied after every other sort clause.
+  RANDOM_SCORE_REFRESHED_DAILY = 10;
+
+  // Sort by presence of a listing price.
+  HAS_PRICE = 11;
+
+  // Sort by upcoming event date.
+  UPCOMING_EVENT_DATE = 12;
+
+  // Sort by the latest upcoming event date.
+  LATEST_UPCOMING_EVENT_DATE = 13;
+
+  // Sort by the earliest upcoming event date.
+  EARLIEST_UPCOMING_EVENT_DATE = 14;
+}

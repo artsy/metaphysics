@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_sale_price_type;
+
+// The type of price for a sale of an artwork.
+enum ArtListingSalePriceType {
+	// Unspecified price type.
+	UNSPECIFIED = 0;
+
+	// The price will be updated soon.
+	COMING_SOON = 2;
+	
+	// The price is the hammer price.
+	HAMMER = 3;
+
+	// The price includes the premium fees.
+	PREMIUM = 4;
+}

@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Search";
+
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "Protos/Common/dimension_types.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/Common/Enums/era.proto";
+import "Protos/Common/Enums/subscription_scope.proto";
+import "Protos/Common/warning.proto";
+import "Protos/Artwork/Common/artwork_sort_by_clause.proto";
+import "Protos/Artwork/Search/artwork_summary_creator.proto";
+import "Protos/Artwork/Search/artwork_summary_filters.proto";
+import "Protos/Artwork/Search/artwork_summary_timeline_event.proto";
+
+package artnet.coredata.artwork.search;
+
+/*
+    Provides a range of APIs pertaining to artworks.
+*/
+service ArtworkService {
+    // Gets artworks based on your search criteria.
+    rpc GetArtworks (GetArtworksRequest) returns (GetArtworksResponse)
+    {
+        option (google.api.http) = {
+            post: "/v1/artwork/search",
+            body: "*"
+        };
+    }
+}
+
+// The attributes of a given artwork, which remain true over time, plus the ongoing timeline events for that artwork.
+message ArtworkSummary {
+
+    // The unique identifier of the artwork.
+    string id = 1;
+
+    // The title of the artwork.
+    string title = 2;
+
+    // The year creation started for the artwork.
+    optional google.protobuf.Int32Value creation_year_from = 3;
+
+    // The era of the year creation started for the artwork.
+    optional artnet.coredata.common.enums.era.Era creation_year_from_era = 4;
+
+    // The qualifier for the year creation started for the artwork.
+    optional string creation_year_from_qualifier = 5;
+
+    // The year artwork creation was completed.
+    optional google.protobuf.Int32Value creation_year_to = 6;
+
+    // The era of the year the artwork was completed.
+    optional artnet.coredata.common.enums.era.Era creation_year_to_era = 7;
+
+    // The qualifier for the year the artwork was completed.
+    optional string creation_year_to_qualifier = 8;
+
+    // The classifications of the artwork.
+    repeated artnet.coredata.common.Entity classifications = 9;
+
+    // The creator of the artwork.
+    optional artnet.coredata.artwork.search.ArtworkSummaryCreator creator = 10;
+
+    // The dimensions of the artwork.
+    optional artnet.coredata.common.Dimensions dimensions = 11;
+
+    // The edition of the artwork (if applicable).
+    optional string edition = 12;
+
+    // The artwork media/mediums.
+    repeated string media = 13;
+
+    // The object types of the artwork.
+    repeated artnet.coredata.common.Entity object_types = 14;
+
+    // All known events for the artwork through time.
+    repeated artnet.coredata.artwork.search.ArtworkSummaryTimelineEvent timeline_events = 15;
+
+    // The last time the artwork was updated.
+    google.protobuf.Timestamp last_updated = 16;
+
+    // The URI of the artwork.
+    optional string uri = 17;
+}
+
+// The request to retrieve paginated artwork summaries according to your desired filters.
+message GetArtworksRequest {
+
+    // Your desired filters to narrow down results.
+    optional artnet.coredata.artwork.search.ArtworkSummaryFilters filters = 1;
+
+    // The page number of the results.
+    int32 page = 2;
+
+    // The number of results in each page.
+    int32 page_size = 3;
+
+    // Your desired sorting criteria for the results.
+    repeated artnet.coredata.artwork.common.ArtworkSortByClause sort_by = 4;
+
+    // The subscription ID you want to use for your search.
+    optional string subscription_id = 5;
+
+    // The scope/type of your subscription.
+    optional artnet.coredata.common.enums.subscription_scope.SubscriptionScope subscription_scope = 6;
+}
+
+// The artworks corresponding to your request.
+message GetArtworksResponse {
+
+    // The artworks that matched your request.
+    repeated ArtworkSummary results = 1;
+
+    // The total number of search results.
+    optional int64 count = 2;
+
+    // Warnings related to the search and the results.
+    repeated artnet.coredata.common.Warning warnings = 3;
+}

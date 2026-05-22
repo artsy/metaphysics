@@ -1,0 +1,12 @@
+query MyQuery {
+  publicArtworkListings(
+    input: { page: 1, pageSize: 10, filters: { listingDomain: { keys: ["PdbTeaser"] } } }
+  ) {
+    count
+  }
+
+  artist(id: "linus-borgo") {
+    sortableID
+    bio
+  }
+}

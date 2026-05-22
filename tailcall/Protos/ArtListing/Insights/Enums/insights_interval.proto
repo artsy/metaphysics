@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+package artnet.coredata.artlisting.insights.enums.insights_interval;
+
+// The valid intervals for insights.
+enum InsightsInterval {
+	// Unspecified interval.
+	UNSPECIFIED = 0;
+
+	// The interval is a month.
+	MONTH = 1;
+
+	// The interval is a quarter.
+	QUARTER = 2;
+
+	// The interval is a year.
+	YEAR = 3;
+}

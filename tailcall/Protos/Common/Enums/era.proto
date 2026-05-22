@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.era;
+
+// The available date eras.
+enum Era {
+    // Unspecified era.
+    UNSPECIFIED = 0;
+
+    // Common era also known as AD.
+    CE = 1;
+
+    // Before common era also known as BC.
+    BCE = 2;
+}

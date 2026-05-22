@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor.Enums";
+
+package artnet.coredata.aiartadvisor.enums.feedback_value;
+
+enum FeedbackValue {
+    UNSPECIFIED = 0;
+    DISLIKE = 1;
+    LIKE = 2;
+}

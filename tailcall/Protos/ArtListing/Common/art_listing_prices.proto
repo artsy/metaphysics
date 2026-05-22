@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Common";
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/ArtListing/Enums/art_listing_sale_price_type.proto";
+
+package artnet.coredata.artlisting.common;
+
+// ArtListingSalePrice is a message that contains the sale price of an artwork listing.
+message ArtListingFinalPrice {
+	// The price of the artwork listing.
+	double price = 1;
+
+	// The difference from the closest estimate in percentage
+	optional google.protobuf.DoubleValue difference_from_closest_estimate = 2;
+
+	// The type of price
+	optional artnet.coredata.artlisting.enums.art_listing_sale_price_type.ArtListingSalePriceType price_type = 3;
+}
+
+// ArtListingSalePrice is a message that contains all the selling price points of an artwork listing.
+message ArtListingSalePrice {
+	// The currency code of the price
+	artnet.coredata.common.Entity currency_code = 1;
+
+	// The precision of the price e.g. for USD this is 2
+	optional google.protobuf.Int32Value custom_precision = 2;
+
+	// The lower bound estimated price of the artwork listing.
+	optional google.protobuf.DoubleValue estimated_price_low = 3;
+
+	// The upper bound estimated price of the artwork listing.
+	optional google.protobuf.DoubleValue estimated_price_high = 4;
+
+	// The final prices of the artwork listing.
+	repeated ArtListingFinalPrice final_prices = 5;
+
+	// A flag to indicate if the price is in the original currency.
+	optional bool is_original_currency = 6;
+}

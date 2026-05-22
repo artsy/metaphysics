@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.currency_code_standard;
+
+// The supported currency code standards.
+enum CurrencyCodeStandard {
+	// The ISO 4217 standard for all current fiat currencies.
+	ISO_4217 = 0;
+
+	// The standard for all cryptocurrencies. e.g. ETH, BTC, SOL etc
+	CRYPTO   = 1; 
+}

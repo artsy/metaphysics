@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.date_interval;
+
+// The available date intervals.
+enum DateInterval {
+	// The year interval.
+	YEAR = 0;
+
+	// The month interval.
+	MONTH = 1;
+
+	// The day interval.
+	DAY = 2;
+}

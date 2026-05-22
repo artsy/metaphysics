@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.CurrencyTypes";
+import "Protos/Common/Enums/currency_code_standard.proto";
+
+package artnet.coredata.common;
+
+// A container for currency code data.
+message CurrencyCode {
+	// The currency code identifier.
+	string code = 1;
+
+	// The currency code standard, that the code is scoped to.
+	artnet.coredata.common.enums.currency_code_standard.CurrencyCodeStandard standard = 2;
+}

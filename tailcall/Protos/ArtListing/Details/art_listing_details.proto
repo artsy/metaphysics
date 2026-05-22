@@ -1,0 +1,178 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListingDetail";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/dimension_types.proto";
+import "Protos/Common/image_types.proto";
+import "Protos/Common/date_types.proto";
+import "Protos/Common/location_types.proto";
+import "Protos/Common/Enums/creator_type.proto";
+import "Protos/Common/Enums/era.proto";
+import "Protos/ArtListing/Common/art_listing_prices.proto";
+import "Protos/Common/Enums/subscription_scope.proto";
+import "Protos/ArtListing/Enums/public_art_listing_domain.proto";
+
+package artnet.coredata.artlisting.details;
+
+service ArtListingDetailsQuery {
+  rpc GetArtListingById(ArtListingDetailsRequest) returns (ArtListingDetailsResults);
+  rpc GetArtListingByPublicId(GetArtListingByPublicIdRequest) returns (ArtListingDetailsResults); // incurs a charge $$
+}
+
+message GetArtListingByPublicIdRequest {
+    string id = 1;
+    string subscription_id = 2;
+    artnet.coredata.common.enums.subscription_scope.SubscriptionScope subscription_scope = 3;
+    artnet.coredata.artlisting.enums.public_art_listing_domain.PublicArtListingDomain public_listing_domain = 4;
+}
+
+
+message ArtListingDetailsRequest {
+    string id = 1;
+}
+
+message WorkYear {
+    optional google.protobuf.StringValue modifier = 1;
+    optional google.protobuf.Int32Value year_from = 2;
+    artnet.coredata.common.enums.era.Era era_from = 3;
+    optional google.protobuf.Int32Value year_to = 4;
+    artnet.coredata.common.enums.era.Era era_to = 5;
+}
+
+message Markings {
+    optional bool is_inscribed = 1;
+    optional bool is_signed = 2;
+    optional bool is_stamped = 3;
+    optional bool is_plate_signed = 4;
+}
+
+message Artist {
+    string id = 1;
+    optional google.protobuf.StringValue first_name = 2;
+    optional google.protobuf.StringValue last_name = 3;
+    repeated string aliases = 4;
+    optional google.protobuf.StringValue sort_name = 5;
+    optional artnet.coredata.common.Location home_location = 6;
+    optional bool enabled = 7;
+    optional google.protobuf.Int32Value birth_year = 8;
+    optional artnet.coredata.common.enums.era.Era birth_year_era = 9;
+    optional string birth_year_qualifier = 10;
+    optional google.protobuf.Int32Value death_year = 11;
+    optional artnet.coredata.common.Location birth_location = 12;
+    optional artnet.coredata.common.enums.era.Era death_year_era = 13;
+    optional string death_year_qualifier = 14;
+    optional artnet.coredata.common.Location death_location = 15;
+    optional google.protobuf.StringValue cause_of_death = 16;
+    optional bool is_school_of = 17;
+    repeated string nationalities = 18;
+    optional string uri = 19;
+    optional google.protobuf.StringValue cultural_identification = 20;
+    optional google.protobuf.StringValue notes = 21;
+    optional google.protobuf.StringValue job_title = 22;
+    optional string gender = 23;
+}
+
+message RelatedArtistOverview {
+    int32 artist_id = 1;
+    int32 related_to = 2;
+    optional google.protobuf.StringValue uri = 3;
+    optional google.protobuf.StringValue first_name = 4;
+    optional google.protobuf.StringValue last_name = 5;
+}
+
+message Creator {
+    optional google.protobuf.StringValue id = 1;
+    optional google.protobuf.StringValue modifier = 2;
+    optional google.protobuf.StringValue name = 3;
+    optional google.protobuf.StringValue uri = 4;
+    artnet.coredata.common.enums.creator_type.CreatorType creator_type = 5;
+    repeated Artist artists = 6;
+    repeated RelatedArtistOverview related_artists = 7;
+}
+
+message Specialty {
+    optional google.protobuf.StringValue name = 1;
+    optional google.protobuf.StringValue uri = 2;
+}
+
+message Category {
+    int32 id = 1;
+    optional google.protobuf.StringValue name = 2;
+    optional google.protobuf.StringValue uri = 3;
+}
+
+message RelatedSaleOverview {
+    int32 sale_id = 1;
+    optional google.protobuf.StringValue name = 2;
+    optional google.protobuf.StringValue uri = 3;
+}
+
+message AuctionHouse {
+    string id = 1;
+    optional string name = 2;
+    optional string uri = 3;
+    optional string key = 4;
+    artnet.coredata.common.Location location = 5;
+}
+
+message ArtListingDetailsArtwork {
+    optional Creator creator = 1;
+    optional bool is_signed = 2;
+    optional bool is_edition = 3;
+    repeated artnet.coredata.common.Dimensions dimensions = 4;
+    optional google.protobuf.StringValue creation_year_qualifier = 5;
+    optional google.protobuf.Int32Value creation_year_from = 6;
+    artnet.coredata.common.enums.era.Era creation_era_from = 7;
+    optional google.protobuf.Int32Value creation_year_to = 8;
+    artnet.coredata.common.enums.era.Era creation_era_to = 9;
+    optional google.protobuf.StringValue medium_raw = 10;
+    optional google.protobuf.StringValue artwork_uri = 11;
+    repeated Specialty object_type = 12;
+    repeated Specialty materials = 13;
+    repeated Specialty classification = 14;
+    repeated Specialty period = 15;
+    repeated Specialty region = 16;
+    repeated Specialty subject_matter = 17;
+    repeated Category category = 18;
+    repeated Specialty movement = 19;
+    optional Markings markings = 20;
+    optional google.protobuf.StringValue edition = 21;
+    optional google.protobuf.StringValue provenance = 22;
+    optional google.protobuf.StringValue exhibition = 23;
+    optional google.protobuf.StringValue literature = 24;
+    optional google.protobuf.StringValue catalogue_note = 25;
+    optional google.protobuf.StringValue monograph_url = 26;
+    optional google.protobuf.StringValue publisher = 27;
+    optional google.protobuf.StringValue raisonne_author = 28;
+    optional google.protobuf.StringValue raisonne_number = 29;
+    optional WorkYear cast_year = 30;
+}
+
+message Lot {
+    optional string title = 1;
+    optional string catalog_lot_number = 2;
+    optional string artnet_lot_id = 3;
+    repeated ArtListingDetailsArtwork artworks = 4;
+    optional string description = 5;
+    optional google.protobuf.Int32Value lot_number = 6;
+    optional string external_url = 7;
+}
+
+message ArtListingDetailsResults {
+    string id = 1;
+    optional AuctionHouse auction_house = 2;
+    optional Lot lot = 3;
+    optional string sale_name = 4;
+    optional string sale_description = 5;
+    repeated artnet.coredata.common.CustomDate sale_dates = 6;
+    repeated artnet.coredata.artlisting.common.ArtListingSalePrice prices = 7;
+    optional string sale_id = 8;
+    optional string transaction_status_clarification = 9;
+    optional string sale_code = 10;
+    optional artnet.coredata.common.Location sale_location = 11;
+    optional string sale_original_url = 12;
+    repeated RelatedSaleOverview related_sales = 13;
+    repeated artnet.coredata.common.Image images = 14;
+    optional artnet.coredata.common.Image featured_image = 15;
+}

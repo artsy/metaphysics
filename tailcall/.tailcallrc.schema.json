@@ -1,0 +1,830 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RuntimeConfig",
+  "type": "object",
+  "properties": {
+    "links": {
+      "description": "A list of all links in the schema.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Link"
+      }
+    },
+    "server": {
+      "description": "Dictates how the server behaves and helps tune tailcall for all ingress requests. Features such as request batching, SSL, HTTP2 etc. can be configured here.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Server"
+        }
+      ]
+    },
+    "telemetry": {
+      "description": "Enable [opentelemetry](https://opentelemetry.io) support",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Telemetry"
+        }
+      ]
+    },
+    "upstream": {
+      "description": "Dictates how tailcall should handle upstream requests/responses. Tuning upstream can improve performance and reliability for connections.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Upstream"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Apollo": {
+      "type": "object",
+      "required": [
+        "apiKey",
+        "graphRef"
+      ],
+      "properties": {
+        "apiKey": {
+          "description": "Setting `apiKey` for Apollo.",
+          "type": "string"
+        },
+        "graphRef": {
+          "description": "Setting `graphRef` for Apollo in the format <graphId>@<variant>.",
+          "type": "string"
+        },
+        "platform": {
+          "description": "Setting `platform` for Apollo.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "userVersion": {
+          "description": "Setting `userVersion` for Apollo.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "description": "Setting `version` for Apollo.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "Batch": {
+      "type": "object",
+      "properties": {
+        "delay": {
+          "default": 0,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "headers": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "maxSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Cors": {
+      "description": "Type to configure Cross-Origin Resource Sharing (CORS) for a server.",
+      "type": "object",
+      "properties": {
+        "allowCredentials": {
+          "description": "Indicates whether the server allows credentials (e.g., cookies, authorization headers) to be sent in cross-origin requests.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "allowHeaders": {
+          "description": "A list of allowed headers in cross-origin requests. This can be used to specify custom headers that are allowed to be included in cross-origin requests.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowMethods": {
+          "description": "A list of allowed HTTP methods in cross-origin requests. These methods specify the actions that are permitted in cross-origin requests.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Method"
+          }
+        },
+        "allowOrigins": {
+          "description": "A list of origins that are allowed to access the server's resources in cross-origin requests. An origin can be a domain, a subdomain, or even 'null' for local file schemes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowPrivateNetwork": {
+          "description": "Indicates whether requests from private network addresses are allowed in cross-origin requests. Private network addresses typically include IP addresses reserved for internal networks.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "exposeHeaders": {
+          "description": "A list of headers that the server exposes to the browser in cross-origin responses. Exposing certain headers allows the client-side code to access them in the response.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxAge": {
+          "description": "The maximum time (in seconds) that the client should cache preflight OPTIONS requests in order to avoid sending excessive requests to the server.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "vary": {
+          "description": "A list of header names that indicate the values of which might cause the server's response to vary, potentially affecting caching.",
+          "default": [
+            "origin",
+            "access-control-request-method",
+            "access-control-request-headers"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Headers": {
+      "type": "object",
+      "properties": {
+        "cacheControl": {
+          "description": "`cacheControl` sends `Cache-Control` headers in responses when activated. The `max-age` value is the least of the values received from upstream services. @default `false`.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "cors": {
+          "description": "`cors` allows Cross-Origin Resource Sharing (CORS) for a server.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Cors"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "custom": {
+          "description": "`headers` are key-value pairs included in every server response. Useful for setting headers like `Access-Control-Allow-Origin` for cross-origin requests or additional headers for downstream services.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "experimental": {
+          "description": "`experimental` allows the use of `X-*` experimental headers in the response. @default `[]`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "setCookies": {
+          "description": "`setCookies` when enabled stores `set-cookie` headers and all the response will be sent with the headers.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "HttpVersion": {
+      "type": "string",
+      "enum": [
+        "HTTP1",
+        "HTTP2"
+      ]
+    },
+    "KeyValue": {
+      "type": "object",
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "Link": {
+      "description": "The @link directive allows you to import external resources, such as configuration – which will be merged into the config importing it –, or a .proto file – which will be later used by `@grpc` directive –.",
+      "type": "object",
+      "properties": {
+        "headers": {
+          "description": "Custom headers for gRPC reflection server.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "id": {
+          "description": "The id of the link. It is used to reference the link in the schema.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "meta": {
+          "description": "Additional metadata pertaining to the linked resource."
+        },
+        "proto_paths": {
+          "description": "The proto paths to be used when resolving dependencies. Only valid when [`Link::type_of`] is [`LinkType::Protobuf`]",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "src": {
+          "description": "The source of the link. It can be a URL or a path to a file. If a path is provided, it is relative to the file that imports the link.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the link. It can be `Config`, or `Protobuf`.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/LinkType"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "LinkType": {
+      "oneOf": [
+        {
+          "description": "Points to another Tailcall Configuration file. The imported configuration will be merged into the importing configuration.",
+          "type": "string",
+          "enum": [
+            "Config"
+          ]
+        },
+        {
+          "description": "Points to a Protobuf file. The imported Protobuf file will be used by the `@grpc` directive. If your API exposes a reflection endpoint, you should set the type to `Grpc` instead.",
+          "type": "string",
+          "enum": [
+            "Protobuf"
+          ]
+        },
+        {
+          "description": "Points to a JS file. The imported JS file will be used by the `@js` directive.",
+          "type": "string",
+          "enum": [
+            "Script"
+          ]
+        },
+        {
+          "description": "Points to a Cert file. The imported Cert file will be used by the server to serve over HTTPS.",
+          "type": "string",
+          "enum": [
+            "Cert"
+          ]
+        },
+        {
+          "description": "Points to a Key file. The imported Key file will be used by the server to serve over HTTPS.",
+          "type": "string",
+          "enum": [
+            "Key"
+          ]
+        },
+        {
+          "description": "A trusted document that contains GraphQL operations (queries, mutations) that can be exposed a REST API using the `@rest` directive.",
+          "type": "string",
+          "enum": [
+            "Operation"
+          ]
+        },
+        {
+          "description": "Points to a Htpasswd file. The imported Htpasswd file will be used by the server to authenticate users.",
+          "type": "string",
+          "enum": [
+            "Htpasswd"
+          ]
+        },
+        {
+          "description": "Points to a Jwks file. The imported Jwks file will be used by the server to authenticate users.",
+          "type": "string",
+          "enum": [
+            "Jwks"
+          ]
+        },
+        {
+          "description": "Points to a reflection endpoint. The imported reflection endpoint will be used by the `@grpc` directive to resolve data from gRPC services.",
+          "type": "string",
+          "enum": [
+            "Grpc"
+          ]
+        }
+      ]
+    },
+    "Method": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "HEAD",
+        "OPTIONS",
+        "CONNECT",
+        "TRACE"
+      ]
+    },
+    "OtlpExporter": {
+      "description": "Output the opentelemetry data to otlp collector",
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "PrometheusExporter": {
+      "description": "Output the telemetry metrics data to prometheus server",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/definitions/PrometheusFormat"
+        },
+        "path": {
+          "default": "/metrics",
+          "type": "string"
+        }
+      }
+    },
+    "PrometheusFormat": {
+      "description": "Output format for prometheus data",
+      "type": "string",
+      "enum": [
+        "text",
+        "protobuf"
+      ]
+    },
+    "Proxy": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "Routes": {
+      "type": "object",
+      "properties": {
+        "graphQL": {
+          "default": "/graphql",
+          "type": "string"
+        },
+        "status": {
+          "default": "/status",
+          "type": "string"
+        }
+      }
+    },
+    "ScriptOptions": {
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Server": {
+      "description": "The `@server` directive, when applied at the schema level, offers a comprehensive set of server configurations. It dictates how the server behaves and helps tune tailcall for various use-cases.",
+      "type": "object",
+      "properties": {
+        "apolloTracing": {
+          "description": "`apolloTracing` exposes GraphQL query performance data, including execution time of queries and individual resolvers.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "batchRequests": {
+          "description": "`batchRequests` combines multiple requests into one, improving performance but potentially introducing latency and complicating debugging. Use judiciously. @default `false`.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "enableFederation": {
+          "description": "`enableFederation` enables functionality to Tailcall server to act as a federation subgraph.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "globalResponseTimeout": {
+          "description": "`globalResponseTimeout` sets the maximum query duration before termination, acting as a safeguard against long-running queries.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "headers": {
+          "description": "`headers` contains key-value pairs that are included as default headers in server responses, allowing for consistent header management across all responses.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Headers"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hostname": {
+          "description": "`hostname` sets the server hostname.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "introspection": {
+          "description": "`introspection` allows clients to fetch schema information directly, aiding tools and applications in understanding available types, fields, and operations. @default `true`.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "pipelineFlush": {
+          "description": "`pipelineFlush` allows to control flushing behavior of the server pipeline.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "port": {
+          "description": "`port` sets the Tailcall running port. @default `8000`.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "queryValidation": {
+          "description": "`queryValidation` checks incoming GraphQL queries against the schema, preventing errors from invalid queries. Can be disabled for performance. @default `false`.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "responseValidation": {
+          "description": "`responseValidation` Tailcall automatically validates responses from upstream services using inferred schema. @default `false`.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "routes": {
+          "description": "`routes` allows customization of server endpoint paths. It provides options to change the default paths for status and GraphQL endpoints. Default values are: - status: \"/status\" - graphQL: \"/graphql\" If not specified, these default values will be used.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Routes"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "script": {
+          "description": "A link to an external JS file that listens on every HTTP request response event.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ScriptOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showcase": {
+          "description": "`showcase` enables the /showcase/graphql endpoint.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "vars": {
+          "description": "This configuration defines local variables for server operations. Useful for storing constant configurations, secrets, or shared information.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "version": {
+          "description": "`version` sets the HTTP version for the server. Options are `HTTP1` and `HTTP2`. @default `HTTP1`.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HttpVersion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workers": {
+          "description": "`workers` sets the number of worker threads. @default the number of system cores.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "StdoutExporter": {
+      "description": "Output the opentelemetry data to the stdout. Mostly used for debug purposes",
+      "type": "object",
+      "properties": {
+        "pretty": {
+          "description": "Output to stdout in pretty human-readable format",
+          "type": "boolean"
+        }
+      }
+    },
+    "Telemetry": {
+      "description": "The @telemetry directive facilitates seamless integration with OpenTelemetry, enhancing the observability of your GraphQL services powered by Tailcall.  By leveraging this directive, developers gain access to valuable insights into the performance and behavior of their applications.",
+      "type": "object",
+      "properties": {
+        "export": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelemetryExporter"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requestHeaders": {
+          "description": "The list of headers that will be sent as additional attributes to telemetry exporters Be careful about **leaking sensitive information** from requests when enabling the headers that may contain sensitive data",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TelemetryExporter": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "stdout"
+          ],
+          "properties": {
+            "stdout": {
+              "$ref": "#/definitions/StdoutExporter"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "otlp"
+          ],
+          "properties": {
+            "otlp": {
+              "$ref": "#/definitions/OtlpExporter"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "prometheus"
+          ],
+          "properties": {
+            "prometheus": {
+              "$ref": "#/definitions/PrometheusExporter"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "apollo"
+          ],
+          "properties": {
+            "apollo": {
+              "$ref": "#/definitions/Apollo"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Upstream": {
+      "description": "The `upstream` directive allows you to control various aspects of the upstream server connection. This includes settings like connection timeouts, keep-alive intervals, and more. If not specified, default values are used.",
+      "type": "object",
+      "properties": {
+        "allowedHeaders": {
+          "description": "`allowedHeaders` defines the HTTP headers allowed to be forwarded to upstream services. If not set, no headers are forwarded, enhancing security but possibly limiting data flow.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "batch": {
+          "description": "An object that specifies the batch settings, including `maxSize` (the maximum size of the batch), `delay` (the delay in milliseconds between each batch), and `headers` (an array of HTTP headers to be included in the batch).",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Batch"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connectTimeout": {
+          "description": "The time in seconds that the connection will wait for a response before timing out.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "http2Only": {
+          "description": "The `http2Only` setting allows you to specify whether the client should always issue HTTP2 requests, without checking if the server supports it or not. By default it is set to `false` for all HTTP requests made by the server, but is automatically set to true for GRPC.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "httpCache": {
+          "description": "Providing httpCache size enables Tailcall's HTTP caching, adhering to the [HTTP Caching RFC](https://tools.ietf.org/html/rfc7234), to enhance performance by minimizing redundant data fetches. Defaults to `0` if unspecified.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "keepAliveInterval": {
+          "description": "The time in seconds between each keep-alive message sent to maintain the connection.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "keepAliveTimeout": {
+          "description": "The time in seconds that the connection will wait for a keep-alive message before closing.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "keepAliveWhileIdle": {
+          "description": "A boolean value that determines whether keep-alive messages should be sent while the connection is idle.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "onRequest": {
+          "description": "onRequest field gives the ability to specify the global request interception handler.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "poolIdleTimeout": {
+          "description": "The time in seconds that the connection pool will wait before closing idle connections.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "poolMaxIdlePerHost": {
+          "description": "The maximum number of idle connections that will be maintained per host.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "proxy": {
+          "description": "The `proxy` setting defines an intermediary server through which the upstream requests will be routed before reaching their intended endpoint. By specifying a proxy URL, you introduce an additional layer, enabling custom routing and security policies.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Proxy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tcpKeepAlive": {
+          "description": "The time in seconds between each TCP keep-alive message sent to maintain the connection.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "timeout": {
+          "description": "The maximum time in seconds that the connection will wait for a response.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "userAgent": {
+          "description": "The User-Agent header value to be used in HTTP requests. @default `Tailcall/1.0`",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verifySSL": {
+          "description": "A boolean value that determines whether to verify certificates. Setting this as `false` will make tailcall accept self-signed certificates. NOTE: use this *only* during development or testing. It is highly recommended to keep this enabled (`true`) in production.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Aggregations";
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/date_types.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/Common/Enums/date_interval.proto";
+import "Protos/Common/Enums/aggregation_sort_by.proto";
+import "Protos/Common/Enums/sort_direction.proto";
+
+package artnet.coredata.common;
+
+// Options pertaining to the group by aggregation.
+message GroupByAggregation {
+	// Limit the number of grouped results returned.
+	optional int32 limit = 1;
+
+	// The sort by clauses to apply to the aggregation results.
+	repeated AggregationSortByClause sort_by = 2;
+}
+
+// Options pertaining to the variable width aggregation.
+message VariableWidthAggregation {
+	// The number of variable width buckets to return.
+	optional int32 number_of_buckets = 1;
+}
+
+// Options pertaining to the variable width date aggregation.
+message VariableWidthDateAggregationResults {
+	// The desired interval unit used as the scale.
+	optional artnet.coredata.common.enums.date_interval.DateInterval scale = 1;
+
+	// The scale multiplier e.g. A scale of year and factor of 2 equates to 2 year intervals.
+	optional int32 scale_factor = 2;
+	
+	// The variable width aggregation bucket results.
+	repeated VariableWidthDateAggregationResult results = 3;
+
+	// The number of unknown / uncategorized results that do not have the date field you are aggregating on.
+	optional int64 count_unknown = 4;
+}
+
+// Container for a single variable width date aggregation result.
+message VariableWidthDateAggregationResult {
+	// The start date of the range for this bucket.
+	optional artnet.coredata.common.CustomDate lower_bound = 1;
+
+	// The end date of the range for this bucket.
+	optional artnet.coredata.common.CustomDate upper_bound = 2;
+
+	// The number of items that fall within this date range.
+	optional int64 count = 3;
+}
+
+// Container for numeric range aggregation results.
+message NumericRangeBucketResults {
+	// The numeric range bucket results.
+	repeated NumericRangeBucketResult results = 1;
+
+	// The number of items that do not have the numeric field you are aggregating on.
+	optional int64 count_unknown = 2;
+}
+
+// Container for a single numeric range bucket result.
+message NumericRangeBucketResult {
+	// The lower bound of this numeric range.
+	optional google.protobuf.DoubleValue lower_bound = 1;
+
+	// The upper bound of this numeric range.
+	optional google.protobuf.DoubleValue upper_bound = 2;
+
+	// The count of items in this numeric range.
+	optional int64 count = 3;
+
+	// The display name for this numeric range bucket.
+	optional string display_name = 4;
+}
+
+// Container for a single entity bucket aggregation result.
+message EntityBucketResults {
+	// The items in the bucket.
+	repeated EntityBucketResult results = 1;
+
+	// The count of the items in this bucket.
+	int64 count = 2;
+}
+
+// Container for a single entity bucket result.
+message EntityBucketResult {
+	// The entity that this bucket represents.
+	artnet.coredata.common.Entity entity = 1;
+}
+
+// Options pertaining to the group by aggregation.
+message GroupByTermsAggregation {
+	// Limit the number of grouped results returned.
+	optional int32 limit = 1;
+
+	// The terms to include.
+	repeated string include_terms = 2;
+
+	// The sort by clauses to apply to the aggregation results.
+	repeated AggregationSortByClause sort_by = 3;
+}
+
+// Request to sort by desired fields and direction.
+message AggregationSortByClause {
+	// Fields to sort by.
+	repeated artnet.coredata.common.enums.aggregation_sort_by.AggregationSortBy fields = 1;	
+
+	// Direction to sort by.
+	optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 2;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Common";
+package artnet.coredata.artwork.common;
+
+import "Protos/Common/Enums/sort_direction.proto";
+import "Protos/Artwork/Enums/artwork_sort_by.proto";
+
+// Sort by clause for artworks.
+message ArtworkSortByClause {
+
+    // The desired direction of your sort.
+    optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 1;
+
+    // The data you want to sort by.
+    optional artnet.coredata.artwork.enums.artwork_sort_by.ArtworkSortBy field = 2;
+}

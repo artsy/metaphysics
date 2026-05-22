@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "Protos/Common/Enums/warning_code.proto";
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common";
+
+package artnet.coredata.common;
+
+/*
+    A warning provides informative details alongside your result data. 
+        - To help you understand unexpected results.
+        - Warn you of an impending issue.
+*/
+message Warning {
+    // The warning code, used to determine the type of warning.
+    artnet.coredata.common.enums.warning_code.WarningCode code = 1;
+
+    // The parameters/fields the warnings pertain to.
+    repeated string keys = 2;
+
+    // The descriptive human readable warning message for this warning. e.g. "PII data redacted due to privacy concerns."
+    string message = 3;
+}

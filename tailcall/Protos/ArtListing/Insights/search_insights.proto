@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "Protos/ArtListing/Search/art_listing_filters.proto";
+import "Protos/ArtListing/Insights/search_statistics.proto";
+import "Protos/ArtListing/Insights/offered_vs_sold.proto";
+import "Protos/ArtListing/Insights/price_distribution.proto";
+import "Protos/ArtListing/Insights/total_sales.proto";
+import "Protos/ArtListing/Insights/Enums/insights_interval.proto";
+import "Protos/ArtListing/Insights/Enums/search_insights_type.proto";
+import "google/protobuf/timestamp.proto";
+
+package artnet.coredata.artlisting.insights;
+
+// The request data used to obtain search insights data.
+message GetSearchInsightsRequest {
+	// The freeform text you want to apply for your search.
+	optional string freeform_text_query = 1;
+
+	// The filters you want to apply to your search insights.
+	optional artnet.coredata.artlisting.search.filters.ArtListingFilters filters = 2;
+
+	// The types of insights you want to receive.
+	repeated enums.search_insights_type.SearchInsightsType insight_types = 3;
+
+	// The interval unit you want to receive the insights in.
+	enums.insights_interval.InsightsInterval calendar_interval = 4;
+
+	// Options to apply to your automatically determined date range.
+	optional SearchInsightsAutoRange auto_range = 5;
+
+	// Options to apply to your custom date range. The date range you use here will be respected.
+	optional SearchInsightsCustomRange custom_range = 6;
+
+	// Other options you can apply to your insights request.
+	optional SearchInsightsConfiguration configuration = 7;
+}
+
+// The configuration options you can apply to your search insights request.
+message SearchInsightsConfiguration {
+	// The number of buckets you want to receive for the price distribution.
+	optional int32 price_distribution_bucket_count = 1;
+}
+
+// Custom date range parameters for your search insights request.
+message SearchInsightsCustomRange {
+	// The start date you want to use in your search. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp start = 1;
+
+	// The end date you want to use in your search. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp end = 2;
+}
+
+// Options you can apply to your automatically determined date range for your search insights request.
+message SearchInsightsAutoRange {
+	// The number of years that you want returned.
+	optional int32 years = 1;
+}
+
+// The response data used to obtain search insights data.
+message GetSearchInsightsResponse {
+	// If insights is not applicable for this search, this will be false.
+	bool is_applicable = 1;
+
+	// Statistics pertaining to your search.
+	optional SearchStatistics statistics = 2;
+
+	// Offered vs sold breakdown pertaining to your search.
+	optional OfferedVsSoldResults offered_vs_sold = 3;
+
+	// Price distribution breakdown pertaining to your search.
+	optional PriceDistributionResults price_distribution = 4;
+
+	// Total sales breakdown pertaining to your search.
+	optional TotalSalesResults total_sales = 5;
+
+	// The timeframe of your results.
+	optional SearchInsightsResultTimeframe result_timeframe = 6;
+}
+
+// The timeframe of your search insights results.
+message SearchInsightsResultTimeframe {
+	// The start date of your search insights results.
+	google.protobuf.Timestamp start = 1;
+
+	// The end date of your search insights results.
+	google.protobuf.Timestamp end = 2;
+}

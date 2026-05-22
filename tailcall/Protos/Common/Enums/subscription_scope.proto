@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.subscription_scope;
+
+// SubscriptionScope defines the scope of the subscription.
+enum SubscriptionScope {
+
+  // UNSPECIFIED is the default value and should not be used.
+  UNSPECIFIED = 0;
+
+  // LEGACY_PDB is the scope for the legacy PDB subscription.
+  LEGACY_PDB = 1;
+
+  // AI_SEARCH is the scope for the AI search subscription.
+  AI_SEARCH = 2;
+}

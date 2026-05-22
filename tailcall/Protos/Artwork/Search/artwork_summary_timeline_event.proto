@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Search";
+package artnet.coredata.artwork.search;
+
+import "Protos/ArtListing/Common/art_listing_prices.proto";
+import "Protos/ArtListing/Enums/public_art_listing_domain.proto";
+import "Protos/Artwork/Enums/art_market_institution_type.proto";
+import "Protos/Artwork/Enums/artwork_timeline_event_type.proto";
+import "Protos/Common/date_types.proto";
+
+/*
+    A dated event for an artwork, which includes:
+        - the timestamp of the event
+        - the type of the event
+        - (optional) metadata
+*/
+message ArtworkSummaryTimelineEvent {
+
+    // The type of event.
+    artnet.coredata.artwork.enums.artwork_timeline_event_type.ArtworkTimelineEventType type = 1;
+
+    // The date and time of the event.
+    artnet.coredata.common.CustomDateTime timestamp = 2;
+
+    // The metadata for the event.
+    optional ArtworkSummaryTimelineEventMetadata metadata = 3;
+}
+
+message ArtworkSummaryTimelineEventMetadata {
+
+    // The ID of art institution associated with the event.
+    optional string art_market_institution_id = 1;
+
+    // The name of art institution associated with the event.
+    optional string art_market_institution_name = 2;
+
+    // The type of art institution that is associated with the event.
+    optional artnet.coredata.artwork.enums.art_market_institution_type.ArtMarketInstitutionType art_market_institution_type = 3;
+
+    // The prices if any associated with the event.
+    repeated artnet.coredata.artlisting.common.ArtListingSalePrice prices = 4;
+
+    // The public listing domain for the event, if applicable.
+    optional artnet.coredata.artlisting.enums.public_art_listing_domain.PublicArtListingDomain public_listing_domain = 5;
+
+    // The public listing ID of the event, if applicable.
+    optional string public_listing_id = 6;
+
+    // The sale name of the event, if applicable.
+    optional string sale_name = 7;
+
+    // The URI of the event, if applicable.
+    optional string uri = 8;
+}

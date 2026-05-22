@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor";
+
+import "google/api/annotations.proto";
+import "Protos/AIArtAdvisor/Search/ai_art_advisor_conversations_request.proto";
+import "Protos/AIArtAdvisor/Search/ai_art_advisor_conversations_response.proto";
+import "Protos/AIArtAdvisor/Search/ai_art_advisor_request.proto";
+import "Protos/AIArtAdvisor/Search/ai_art_advisor_response.proto";
+
+package artnet.coredata.aiartadvisor;
+
+service AIArtAdvisorService {
+  rpc GetAiArtworkListingConversationById (GetConversationRequest) returns (GetConversationResponse) {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/conversations/get",
+      body: "*"
+    };
+  }
+
+  rpc GetAiArtworkListingConversations (GetConversationsRequest) returns (GetConversationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/conversations",
+      body: "*"
+    };
+  }
+
+  rpc GetArtworkListingsFromAI(AISearchRequest) returns (AISearchResponse) {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/ai-search",
+      body: "*"
+    };
+  }
+
+  rpc SaveAiSearchFeedback (AISearchFeedbackRequest) returns (AISearchFeedbackResponse) {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/ai-feedback",
+      body: "*"
+    };
+  }
+}

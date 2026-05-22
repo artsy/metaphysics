@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Contribution.Artist.Enums";
+
+package artnet.coredata.artist.contribution.enums.artist_contribution_type;
+
+enum ArtistContributionType {
+    UNSPECIFIED = 0;
+    SHORT_BIOGRAPHY = 1;
+    FULL_BIOGRAPHY = 2;
+}

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor";
+
+import "Protos/AIArtAdvisor/Enums/feedback_value.proto";
+import "Protos/ArtListing/Enums/listing_domain.proto";
+
+package artnet.coredata.aiartadvisor;
+
+message AISearchRequest {
+  optional string conversation_id = 1;
+  optional int32 user_prompt_index = 2;
+  optional string user_prompt_text = 3;
+  optional string next_page_cursor = 4;
+  int32 page_size = 5;
+  repeated artnet.coredata.artlisting.enums.listing_domain.ListingDomain listing_domains = 6;
+  optional string image_name = 7;
+  optional string image_embedding_reference_id = 8;
+}
+
+message AISearchFeedbackRequest {
+  string conversation_id = 1;
+  int32 user_prompt_index = 2;
+  optional string feedback_text = 3;
+  artnet.coredata.aiartadvisor.enums.feedback_value.FeedbackValue feedback_value = 4;
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_event_kind;
+
+// The Art Listing Event Kind
+enum ArtListingEventKind {
+	// Unspecified.
+	UNSPECIFIED = 0;
+
+  // Auction
+	AUCTION = 1;
+
+	// Sale
+	SALE = 2;
+
+	// Exhibition
+	EXHIBITION = 3;
+
+  //Group Exhibition
+  GROUP_EXHIBIT = 4;
+
+}

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.DateTypes";
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.common;
+
+// A container representing a date type with a possible unknown month and day.
+message CustomDate {
+	// The year.
+	int32 year = 1;
+
+	// The month, if known.
+	optional google.protobuf.Int32Value month = 2;
+
+	// The day, if known.
+	optional google.protobuf.Int32Value day = 3;
+}
+
+// A container representing a date and time type with potentially less precision.
+message CustomDateTime {
+	// The year.
+	optional google.protobuf.Int32Value year = 1;
+
+	// The month, if known.
+	optional google.protobuf.Int32Value month = 2;
+
+	// The day, if known.
+	optional google.protobuf.Int32Value day = 3;
+
+	// The hour, if known.
+	optional google.protobuf.Int32Value hour = 4;
+
+	// The minute, if known.
+	optional google.protobuf.Int32Value minute = 5;
+
+	// The second, if known.
+	optional google.protobuf.Int32Value second = 6;
+
+	// The time zone, if known.
+	optional string time_zone = 7;
+}
+
+// A container representing a crude date range with a timestamp and timezone information.
+// Returned to the UI so they can display the words LIVE NOW
+// Highly precise date/time in UTC for a time sensitive Auction sales e.g. Artnet Auctions.
+// The CustomDateTime has nullable properties the time, so we can return only the date when this makes sense.
+message Timing {
+  // The start date.
+  CustomDateTime start = 1;
+  // The end date.
+  optional CustomDateTime end = 2;
+}

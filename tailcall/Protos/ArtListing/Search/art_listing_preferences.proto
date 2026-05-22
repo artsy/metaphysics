@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Search";
+import "Protos/Common/currency_types.proto";
+
+package artnet.coredata.artlisting.search.preferences;
+
+// A container for all your Artwork Listing preferences.
+message ArtListingPreferences {
+	// Request your preferred currencies.
+	repeated artnet.coredata.common.CurrencyCode preferred_currencies = 1;
+}

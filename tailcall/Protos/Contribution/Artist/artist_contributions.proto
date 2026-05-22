@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Contribution.Artist";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "Protos/Common/Enums/sort_direction.proto";
+import "Protos/Contribution/Artist/Enums/artist_contribution_type.proto";
+
+package artnet.coredata.artist.contribution;
+
+service ArtistContributionService {
+  // Get contributions for an artist
+  rpc GetContributions (GetContributionsRequest) returns (GetContributionsResponse) {
+    option (google.api.http) = {
+      post: "/v1/artist/contributions",
+      body: "*"
+    };
+  };
+
+  // Submit a contribution for an artist
+  rpc Contribute (ArtistContributionRequest) returns (ArtistContributionResponse) {
+    option (google.api.http) = {
+      post: "/v1/artist/contribute",
+      body: "*"
+    };
+  };
+}
+
+message GetContributionsRequest {
+    repeated GetContributionsRequestFilter filters = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+    repeated ContributionSortByClause sort_by = 4;
+}
+
+message GetContributionsResponse {
+    repeated ArtistContribution results = 1;
+}
+
+message GetContributionsRequestFilter {
+    ArtistIdentifier artist_id = 1;
+    repeated artnet.coredata.artist.contribution.enums.artist_contribution_type.ArtistContributionType type_filter = 2;
+}
+
+enum ContributionSortBy {
+    UNSPECIFIED = 0;
+    LAST_SUBMITTED = 1;
+    SIZE = 2;
+}
+
+message ContributionSortByClause {
+    repeated ContributionSortBy fields = 1;
+    optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 2;
+}
+
+message ArtistContributionRequest {
+    ArtistIdentifier artist_id = 1;
+    repeated ArtistContribution contributions = 2;
+}
+
+message ArtistContributionResponse {
+    repeated string contribution_ids = 1;
+    bool successful = 2;
+    repeated string errors = 3;
+}
+
+message ArtistContribution {
+    string id = 1;
+    artnet.coredata.artist.contribution.enums.artist_contribution_type.ArtistContributionType type = 2;
+    string entity_id = 3;
+    string content = 4;
+    repeated string sources = 5;
+    google.protobuf.Timestamp date_submitted = 6;
+}
+
+message ArtistIdentifier {
+    string artist_id = 1;
+}

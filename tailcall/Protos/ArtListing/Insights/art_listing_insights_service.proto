@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "google/api/annotations.proto";
+import "Protos/ArtListing/Insights/art_price_index.proto";
+import "Protos/ArtListing/Insights/search_insights.proto";
+import "Protos/ArtListing/Insights/notable_art_listings.proto";
+
+package artnet.coredata.artlisting.insights;
+
+/*
+    Provides a range of APIs pertaining to insights, analytics and aggregated data for Artwork Listings.
+*/
+service ArtListingInsightsService {
+  // Gets Artwork Listing Insights based on your search criteria
+  rpc GetSearchInsights (GetSearchInsightsRequest) returns (GetSearchInsightsResponse)
+  {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/search/insights",
+      body: "*"
+    };
+  }
+
+  // Gets Artwork Price Indices based on your criteria
+  rpc GetArtPriceIndices (GetArtPriceIndicesRequest) returns (GetArtPriceIndicesResponse) {
+    option (google.api.http) = {
+	  post: "/v1/artwork-listing/price-indices",
+	  body: "*"
+	};
+  }
+
+  // Gets Notable Artwork Listings based on your criteria
+  rpc GetNotableArtListings(GetNotableArtListingsRequest) returns (GetNotableArtListingsResponse);
+}

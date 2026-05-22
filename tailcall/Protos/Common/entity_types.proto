@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.EntityTypes";
+
+package artnet.coredata.common;
+
+// A container to represent an entity type.
+message Entity {
+	// The unique identifier for the entity.
+	string id = 1;
+
+	// The unique identifier for the entity, can be used in subsequent searches.
+	optional string key = 2;
+
+	// The value of the entity.
+	optional string value = 3;
+}

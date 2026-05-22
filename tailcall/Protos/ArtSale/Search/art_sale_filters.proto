@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtSale.Filters";
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/common_filters.proto";
+
+package artnet.coredata.artsale.filters;
+
+message ArtSaleFilters {
+	optional artnet.coredata.common.DateFilter sale_date = 1;
+	optional artnet.coredata.common.EntityFilter auction_house = 2;
+	optional artnet.coredata.common.EntityFilter sale = 3;
+	// future
+	// filter by total sales value
+	// filter by total number of lots
+}

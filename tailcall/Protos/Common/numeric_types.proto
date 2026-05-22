@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.NumericTypes";
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.common;
+
+// A container representing an numeric range.
+message NumericRange {
+	// The lower bound of the range.
+	optional google.protobuf.DoubleValue lower_bound = 1;
+
+	// The upper bound of the range.
+	optional google.protobuf.DoubleValue upper_bound = 2;
+
+	// Include results without data for this field.
+	optional bool include_unknown = 3;
+}
+
+// A single numeric range result.
+message NumericRangeResult {
+	// Numeric range data.
+	NumericRange range = 1;
+
+	// The number of results that cannot fall into the numeric range, as they are missing the numeric field.
+	int64 count_unknown = 2;
+}

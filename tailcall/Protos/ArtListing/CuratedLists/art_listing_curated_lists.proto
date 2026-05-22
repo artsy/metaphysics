@@ -1,0 +1,202 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.CuratedLists";
+import "Protos/Common/Enums/sort_direction.proto";
+import "Protos/Common/image_types.proto";
+import "Protos/ArtListing/CuratedLists/Enums/art_listing_curated_list_item_sort_by.proto";
+import "Protos/ArtListing/CuratedLists/Enums/art_listing_curated_list_sort_by.proto";
+import "Protos/ArtListing/CuratedLists/Enums/art_listing_curated_list_status.proto";
+import "Protos/ArtListing/CuratedLists/Enums/art_listing_curated_list_origin.proto";
+import "Protos/ArtListing/Search/art_listing_search_results.proto";
+import "google/protobuf/timestamp.proto";
+
+package artnet.coredata.artlisting.curated_lists;
+
+service ArtListingCuratedLists {
+  // Lists APIs
+  rpc GetArtListingCuratedLists(GetArtListingCuratedListsRequest) returns (GetArtListingCuratedListsResponse);
+  rpc GetArtListingCuratedListById(GetArtListingCuratedListByIdRequest) returns (GetArtListingCuratedListByIdResponse);
+  rpc CreateArtListingCuratedList(CreateArtListingCuratedListRequest) returns (CreateArtListingCuratedListResponse);
+  rpc UpdateArtListingCuratedList(UpdateArtListingCuratedListRequest) returns (UpdateArtListingCuratedListResponse);
+  rpc UpdateArtListingCuratedListStatus(UpdateArtListingCuratedListStatusRequest) returns (UpdateArtListingCuratedListStatusResponse);
+  rpc CloneArtListingCuratedList(CloneArtListingCuratedListRequest) returns (CloneArtListingCuratedListResponse);
+  
+  // List items APIs
+  rpc AddArtListingCuratedListItems(AddArtListingCuratedListItemsRequest) returns (AddArtListingCuratedListItemsResponse);
+  rpc RemoveArtListingCuratedListItems(RemoveArtListingCuratedListItemsRequest) returns (RemoveArtListingCuratedListItemsResponse);
+  rpc RepositionArtListingCuratedListItems(RepositionArtListingCuratedListItemsRequest) returns (RepositionArtListingCuratedListItemsResponse);
+}
+
+// Get List Summaries
+
+message GetArtListingCuratedListsRequest {
+  optional string freeform_text_query = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  repeated ArtListingCuratedListSortByClause sort_by = 4;
+  repeated artnet.coredata.artlisting.curated_lists.enums.curated_list_origin.ArtListingCuratedListOrigin origins = 9;
+}
+
+message GetArtListingCuratedListsResponse {
+  repeated ArtListingCuratedListSummary results = 1;
+  int64 count = 2;
+}
+
+message ArtListingCuratedListSummary {
+	string id = 1;
+	string title = 2;
+	optional artnet.coredata.common.Image featured_image = 3;
+	int32 count = 4;
+	google.protobuf.Timestamp date_modified = 5;
+	google.protobuf.Timestamp date_created = 6;
+	artnet.coredata.artlisting.curated_lists.enums.curated_list_status.ArtListingCuratedListStatus status = 7;
+	artnet.coredata.artlisting.curated_lists.enums.curated_list_origin.ArtListingCuratedListOrigin origin = 9;
+}
+
+// Get List
+
+message GetArtListingCuratedListByIdRequest {
+  string id = 1;
+  optional string freeform_text_query = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  repeated ArtListingCuratedListItemSortByClause sort_by = 5;
+}
+
+message GetArtListingCuratedListByIdResponse {
+	optional ArtListingCuratedList result = 1;
+}
+
+message ArtListingCuratedList {
+	string id = 1;
+	string title = 2;
+	optional artnet.coredata.common.Image featured_image = 3;
+	int32 count = 4;
+	google.protobuf.Timestamp date_modified = 5;
+	google.protobuf.Timestamp date_created = 6;
+	repeated ArtListingCuratedListItem items = 7;
+	artnet.coredata.artlisting.curated_lists.enums.curated_list_status.ArtListingCuratedListStatus status = 8;
+	artnet.coredata.artlisting.curated_lists.enums.curated_list_origin.ArtListingCuratedListOrigin origin = 9;
+}
+
+// Create List
+
+message CreateArtListingCuratedListRequest {
+	string title = 1;
+	repeated string item_ids = 2;
+}
+
+message CreateArtListingCuratedListResponse {
+	ArtListingCuratedList result = 1;
+}
+
+// Clone List
+
+message CloneArtListingCuratedListRequest {
+	string existing_list_id = 1;
+}
+
+message CloneArtListingCuratedListResponse {
+	ArtListingCuratedList result = 1;
+}
+
+// Update List
+
+message UpdateArtListingCuratedListRequest {
+	string id = 1;
+	optional string title = 2;
+	optional string featured_item_id = 3;
+}
+
+message UpdateArtListingCuratedListResponse {
+	ArtListingCuratedListSummary result = 1;
+}
+
+message UpdateArtListingCuratedListStatusRequest {
+	repeated string list_ids = 1;
+	artnet.coredata.artlisting.curated_lists.enums.curated_list_status.ArtListingCuratedListStatus status = 2;
+}
+
+message UpdateArtListingCuratedListStatusResponse {
+	repeated ArtListingCuratedListSummary results = 1;
+}
+
+// Common for Lists
+
+message ArtListingCuratedListSortByClause {
+	repeated artnet.coredata.artlisting.curated_lists.enums.curated_list_sort_by.ArtListingCuratedListSortBy fields = 1;
+	optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 2;
+}
+
+
+// Add list items
+
+message AddArtListingCuratedListItemsRequest {
+	repeated string list_ids = 1;
+	repeated string item_ids = 2;
+}
+
+message AddArtListingCuratedListItemsResponse {
+	repeated AddCuratedListItemsResult results = 1;
+}
+
+message AddCuratedListItemsResult {
+	int32 num_added = 1;
+	artnet.coredata.artlisting.curated_lists.ArtListingCuratedListSummary list = 2;
+}
+
+// Remove list items
+
+message RemoveArtListingCuratedListItemsRequest {
+	string list_id = 1;
+	repeated string item_ids = 2;
+}
+
+message RemoveArtListingCuratedListItemsResponse {
+	repeated RemoveCuratedListItemsResult results = 1;
+}
+
+message RemoveCuratedListItemsResult {
+	int32 num_removed = 1;
+	artnet.coredata.artlisting.curated_lists.ArtListingCuratedListSummary list = 2;
+}
+
+// Reposition list items
+
+message RepositionArtListingCuratedListItemsRequest {
+	string source_list_id = 1;
+	optional string destination_list_id = 2;
+	repeated UpdateArtListingCuratedListItemPosition update_item_position = 3;
+}
+
+message UpdateArtListingCuratedListItemPosition {
+	string art_listing_id = 1;
+	int32 new_position = 2;
+}
+
+message RepositionArtListingCuratedListItemsResponse {
+	ArtListingCuratedList result = 1;
+}
+
+// Common for List Items
+
+message ArtListingCuratedListItemSummary {
+	string id = 1; // make sure this is always the art listing id
+	int32 position = 2;
+	string title = 3;
+	google.protobuf.Timestamp date_added = 4;
+}
+
+message ArtListingCuratedListItem {
+	string id = 1; // make sure this is always the art listing id
+	int32 position = 2;
+	string title = 3;
+	google.protobuf.Timestamp date_added = 4;
+	optional artnet.coredata.artlisting.search.search_results.ArtListingSummary art_listing = 5;
+
+}
+
+message ArtListingCuratedListItemSortByClause {
+	repeated artnet.coredata.artlisting.curated_lists.enums.curated_list_item_sort_by.ArtListingCuratedListItemSortBy fields = 1;
+	optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 2;
+}

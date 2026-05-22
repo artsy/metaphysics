@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtSale.Enums";
+package artnet.coredata.artlisting.enums.art_sale_sort_by;
+
+enum ArtSaleSortBy {
+	UNSPECIFIED = 0;
+	SALE_DATE = 1;
+	RELEVANCY = 2;
+	TOTAL_SALES_VALUE = 3;
+	SELL_THROUGH_RATE = 4;
+	SOLD_PRICE_VS_ESTIMATE = 5;
+	LAST_UPDATED_DATE = 6;
+}

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.artlisting.insights;
+
+// A container for all statistics related to a search.
+message SearchStatistics {
+	// The percentage of lots sold vs listed in your search. Not populated if nothing sold.
+	optional google.protobuf.DoubleValue sell_through_rate = 2;
+
+	// The percentage of lots sold vs listed in the last year in your search. Not populated if your requested range does not include the last year.
+	optional google.protobuf.DoubleValue sell_through_rate_last_year = 3;
+
+	// The percentage of lots sold above their own high estimate in your search.
+	optional google.protobuf.DoubleValue above_high_estimate_rate = 4;
+
+	// The percentage of lots sold above their own high estimate in the last year, in your search. Not populated if your requested range does not include the last year.
+	optional google.protobuf.DoubleValue above_high_estimate_rate_last_year = 5;
+
+	// The percentage of lots sold below their own low estimate in your search.
+	optional google.protobuf.DoubleValue below_low_estimate_rate = 6;
+
+	// The percentage of lots sold below their own low estimate in the last year, in your search. Not populated if your requested range does not include the last year.
+	optional google.protobuf.DoubleValue below_low_estimate_rate_last_year = 7;
+
+	// The total number of upcoming listings in your search. 0 if none, or null if not applicable.
+	optional google.protobuf.Int64Value total_upcoming_listings = 8;
+
+	// The total number of listings in your search that have been recently updated.
+	int64 recently_updated = 9;
+
+	// The total number of listings in your search.
+	int64 total_listings_count = 10;
+}

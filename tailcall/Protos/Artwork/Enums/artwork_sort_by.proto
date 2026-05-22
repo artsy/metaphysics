@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Enums";
+package artnet.coredata.artwork.enums.artwork_sort_by;
+
+// The possible options for sorting artworks.
+enum ArtworkSortBy {
+
+    // Unspecified artwork sorting.
+    UNSPECIFIED = 0;
+
+    // Artnet-defined relevancy based on your criteria.
+    RELEVANCY = 1;
+
+    // The artwork creation year.
+    ARTWORK_CREATION_YEAR = 2;
+
+    // The title of the artwork.
+    ARTWORK_TITLE = 3;
+
+    // The known number of listings for the artwork.
+    LISTING_COUNT = 4;
+
+    // The dates the artwork was listed.
+    LISTING_DATE = 5;
+
+    // The prices the artwork was listed at.
+    LISTING_PRICE = 6;
+    
+    // The relative price growth of the artwork over time. Adjusted for inflation and currency fluctuations.
+    LISTING_PRICE_GROWTH = 7;
+
+    // The number of events associated with the artwork.
+    EVENT_COUNT = 8;
+
+    // The dates associated with the artwork events.
+    EVENT_DATE = 9;
+}

@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtSale.SearchResults";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "Protos/ArtAuctionHouse/auction_house_summary.proto";
+import "Protos/ArtListing/Enums/art_listing_notable_for.proto";
+import "Protos/Common/date_types.proto";
+import "Protos/Common/aggregations.proto";
+import "Protos/Common/image_types.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/Common/location_types.proto";
+
+package artnet.coredata.artsale.search_results;
+
+message ArtSaleSearchResults {
+	repeated ArtSaleSummary results = 1;
+	optional int64 count = 2;
+}
+
+message ArtSaleSummary {
+	string id = 1;
+	optional string name = 2;
+	repeated artnet.coredata.common.CustomDate dates = 3;
+	google.protobuf.Timestamp last_updated = 4;
+	optional artnet.coredata.common.Image featured_image = 5; // always null for now
+	optional ArtSaleInsights insights = 6;
+	optional artnet.coredata.artauctionhouse.ArtAuctionHouseSummary auction_house = 7;
+}
+
+message ArtSaleInsights {
+	optional ArtSaleInsightsStatistics statistics = 1;
+}
+
+message ArtSaleInsightsStatistics {
+	ArtSaleCounts listing_counts = 1;
+	ArtSaleSoldPrices listing_sold_prices = 2;
+	ArtSaleBreakdowns listing_breakdowns = 3;
+	ArtSaleNotableArtListings notable_listings = 4;
+}
+
+message ArtSaleCounts {
+	int64 offered = 1;
+	int64 sold = 2;
+	int64 estimated = 3;
+	int64 sold_below_low_estimate = 4;
+	int64 sold_above_high_estimate = 5;
+}
+
+message ArtSaleSoldPrices {
+	optional google.protobuf.DoubleValue lowest = 1;
+	optional google.protobuf.DoubleValue highest = 1;
+	optional google.protobuf.DoubleValue average = 1;
+	optional google.protobuf.DoubleValue median = 1;
+	optional google.protobuf.DoubleValue highest_per_sq_in = 1;
+	optional google.protobuf.DoubleValue highest_per_sq_cm = 1;
+	optional google.protobuf.DoubleValue total_sale_value = 1;
+}
+
+message ArtSaleBreakdowns {
+	optional artnet.coredata.common.EntityBucketResults transaction_status = 1; // returning entity allows searching with the Art Listing API
+	optional artnet.coredata.common.NumericRangeBucketResults liquidity = 2;
+}
+
+message ArtSaleNotableArtListings {
+	repeated ArtSaleNotableArtListing results = 1;
+	int64 count = 2;
+}
+
+message ArtSaleNotableArtListing {
+	artnet.coredata.artlisting.search.search_results.ArtListingSummary art_listing = 1; // The return properties can be limited in GraphQL mesh
+	artnet.coredata.artlisting.enums.art_listing_notable_for notable_for = 2;
+}
+

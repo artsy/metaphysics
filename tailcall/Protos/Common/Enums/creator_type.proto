@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.creator_type;
+
+// The available types of creator.
+enum CreatorType {
+	// The creator is unspecified.
+	UNSPECIFIED = 0;
+
+	// The creator is an artist.
+	ARTIST = 1;
+
+	// The creator is a collaboration between two artists or entities.
+	COLLABORATION = 2;
+
+	// The creator is a manufacturer/publisher/foundry.
+	MANUFACTURER = 3;
+}

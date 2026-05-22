@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.aggregation_sort_by;
+
+// The available sorting types for aggregations.
+enum AggregationSortBy {
+	// The sort order is unspecified.
+	UNSPECIFIED = 0;
+
+	// Default: Sort by the count (number of results).
+	COUNT = 1;
+
+	// Sort by the display name.
+	DISPLAY_NAME = 2;
+
+	// Sort by the date of the aggregation result (if applicable)
+	DATE = 3;
+
+	// Sort buckets by maximum query score within each bucket (higher-scoring buckets first).
+	RELEVANCY = 4;
+}

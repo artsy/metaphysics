@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_notable_for;
+
+// The reasons an Artwork Listing would be notable
+enum ArtListingNotableFor {
+	// Unspecified reasons.
+	UNSPECIFIED = 0;
+
+	// The highest price an artwork has sold for.
+	HIGHEST_PRICE = 1;
+
+	// The highest percentage an artwork has sold above its estimate.
+	HIGHEST_SOLD_ABOVE_ESTIMATE_RATE = 2;
+
+	// The highest price per square inch an artwork has sold for.
+	HIGHEST_PRICE_PER_SQ_INCH = 3;
+}

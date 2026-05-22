@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "google/protobuf/timestamp.proto";
+
+package artnet.coredata.artlisting.insights;
+
+// A container for offered vs sold insights results.
+message OfferedVsSoldResults {
+	// The offered vs sold insights data.
+	repeated OfferedVsSoldPoint results = 1;
+}
+
+// A single point of offered vs sold insights data.
+message OfferedVsSoldPoint {
+	// The start date of this data range.
+	google.protobuf.Timestamp start_date = 1; // e.g. 2020
+
+	// The offered lots in this data range.
+	int64 lots_offered = 2;
+
+	// The sold lots in this data range.
+	int64 lots_sold = 3;
+
+	// A boolean flag to indicate whether this data falls completely inside the requested range or not.
+	bool in_requested_range = 4;
+}

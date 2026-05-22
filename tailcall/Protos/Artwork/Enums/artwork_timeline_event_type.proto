@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Enums";
+package artnet.coredata.artwork.enums.artwork_timeline_event_type;
+
+// The possible event types that can occur for an artwork in its lifetime.
+enum ArtworkTimelineEventType {
+
+    // Unspecified event type.
+    UNSPECIFIED = 0;
+
+    // The artwork creation event.
+    CREATED = 1;
+
+    // The artwork listed event.
+    LISTED = 2;
+
+    // The artwork destroyed event. Usually the final event for an artwork.
+    DESTROYED = 3;
+
+    // The artwork stolen event.
+    STOLEN = 4;
+}

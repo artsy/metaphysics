@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.CustomerFeedback";
+
+package artnet.coredata.artlisting.customer_feedback;
+
+service CustomerFeedback {
+  rpc FlagForMisinformation (FlagForMisinformationRequest) returns (FlagForMisinformationResponse);
+}
+
+message FlagForMisinformationRequest {
+	string user_id = 1;
+	string lot_id = 2;
+	string feedback = 3;
+}
+
+message FlagForMisinformationResponse {
+	bool is_received = 1;
+}

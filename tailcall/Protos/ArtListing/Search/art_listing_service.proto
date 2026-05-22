@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing";
+
+import "google/api/annotations.proto";
+import "Protos/Common/Enums/sort_direction.proto";
+import "Protos/Common/Enums/subscription_scope.proto";
+import "Protos/ArtListing/Enums/art_listing_sort_by.proto";
+import "Protos/ArtListing/Search/art_listing_filters.proto";
+import "Protos/ArtListing/Search/art_listing_aggregations.proto";
+import "Protos/ArtListing/Search/art_listing_search_results.proto";
+import "Protos/ArtListing/Search/art_listing_preferences.proto";
+import "Protos/ArtListing/Search/art_listing_prepared_search.proto";
+
+package artnet.coredata.artlisting.search;
+
+/*
+  Provides a range of APIs pertaining to artwork listings.
+*/
+service ArtListingService {
+
+  // Gets artwork listings based on your search criteria.
+  rpc GetArtListings (SearchRequest) returns (artnet.coredata.artlisting.search.search_results.SearchResults)
+  {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/search",
+      body: "*"
+    };
+  }
+
+  // Gets aggregated artwork listing data based on your search criteria.
+  rpc GetArtListingAggregations (AggregationRequest) returns (artnet.coredata.artlisting.search.aggregations.AggregationResults)
+  {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/aggregate",
+      body: "*"
+    };
+  }
+
+  // Gets a list of suggestions based on your search criteria.
+  rpc GetArtListingSuggestions (GetSuggestionsRequest) returns (GetSuggestionsResponse);
+
+  // Gets a list of artwork listings with aggregation results included alongside search results.
+  rpc GetArtListingsWithAggregations (SearchWithAggregationsRequest) returns (SearchWithAggregationsResponse);
+
+  // Gets artwork listings for public discovery based on your search criteria.
+  // This endpoint requires neither Artnet account nor PDB subscription.
+  rpc GetPublicArtworkListings (SearchRequest) returns (artnet.coredata.artlisting.search.search_results.SearchResults)
+  {
+    option (google.api.http) = {
+      post: "/v1/artwork-listing/discovery",
+      body: "*"
+    };
+  }
+
+  // Gets search filters for comparable works.
+  rpc GetSearchFiltersForComparableWorks(artnet.coredata.artlisting.search.prepared_search.GetSearchFiltersForComparableWorksRequest) returns (artnet.coredata.artlisting.search.prepared_search.GetSearchFiltersForComparableWorksResponse);
+
+  // Gets search filters for public art listings.
+  rpc GetSearchFiltersForPublicArtListing(artnet.coredata.artlisting.search.prepared_search.GetSearchFiltersForPublicArtListingRequest) returns (artnet.coredata.artlisting.search.prepared_search.GetSearchFiltersForPublicArtListingResponse);
+}
+
+message GetSuggestionsRequest {
+  string freeform_text_query = 1;
+  optional int32 limit = 2;
+  optional artnet.coredata.artlisting.search.filters.ArtListingFilters filters = 3;
+}
+
+message GetSuggestionsResponse {
+  repeated artnet.coredata.artlisting.search.aggregations.AggregationResult results = 1;
+  optional int64 count = 2;
+}
+
+// Request to get artwork listings.
+message SearchRequest {
+
+  // A general search term that will be used to search across many fields.
+  optional string freeform_text_query = 1;
+
+  // Filters to apply to the search.
+  optional artnet.coredata.artlisting.search.filters.ArtListingFilters filters = 2;
+
+  // Page number to return. (required)
+  int32 page = 3;
+
+  // Number of results per page. (required)
+  int32 page_size = 4;
+
+  // Sort by fields and direction.
+  repeated SortByClause sort_by = 5;
+
+  // Subscription ID to use for the search.
+  string subscription_id = 6;
+
+  // Subscription scope associated with your Subscription ID.
+  optional artnet.coredata.common.enums.subscription_scope.SubscriptionScope subscription_scope = 7;
+
+  // Preferences to apply to your search.
+  optional artnet.coredata.artlisting.search.preferences.ArtListingPreferences preferences = 8;
+}
+
+// Request to get aggregated data.
+message AggregationRequest {
+
+  // A general search term that will be used to search across many fields.
+  optional string freeform_text_query = 1;
+
+  // Filters to apply to the search.
+  optional artnet.coredata.artlisting.search.filters.ArtListingFilters filters = 2;
+
+  // Aggregation criteria used to build the desired aggregation. (required)
+  artnet.coredata.artlisting.search.aggregations.AggregationCriteria aggregation_criteria = 3;
+}
+
+message SearchWithAggregationsRequest {
+  SearchRequest search_request = 1;
+  repeated artnet.coredata.artlisting.search.aggregations.AggregationCriteria aggregation_criteria = 2;
+}
+
+message SearchWithAggregationsResponse {
+  optional artnet.coredata.artlisting.search.search_results.SearchResults search_results = 1;
+  optional artnet.coredata.artlisting.search.aggregations.AggregationResults aggregation_results = 2;
+}
+
+// Request to sort by desired fields and direction.
+message SortByClause {
+
+  // Fields to sort by.
+  repeated artnet.coredata.artlisting.enums.art_listing_sort_by.ArtListingSortBy fields = 1;
+
+  // Direction to sort by.
+  optional artnet.coredata.common.enums.sort_direction.SortDirection direction = 2;
+}

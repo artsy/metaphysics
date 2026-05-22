@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Search";
+package artnet.coredata.artwork.search;
+
+import "Protos/Artwork/Enums/art_market_institution_type.proto";
+import "Protos/Common/common_filters.proto";
+import "Protos/Common/numeric_types.proto";
+
+// All the possible options for filtering artworks.
+message ArtworkSummaryFilters {
+
+    // Filter on creation_year.
+    optional artnet.coredata.common.YearFilter creation_year = 1;
+
+    // Filter on dimensions/size.
+    repeated artnet.coredata.common.DimensionFilter dimension = 2;
+
+    // Filter on artwork title.
+    optional artnet.coredata.common.EntityFilter title = 3;
+
+    // Filter on the birth year of the creator/artist.
+    optional artnet.coredata.common.YearFilter creator_birth_year = 4;
+
+    // Filter on the death year of the creator/artist.
+    optional artnet.coredata.common.YearFilter creator_death_year = 5;
+
+    // Filter on the movement associated with the creator/artist.
+    optional artnet.coredata.common.EntityFilter creator_movement = 6;
+
+    // Filter on creator/artist.
+    optional artnet.coredata.common.EntityFilter creator = 7;
+
+    // Filter on creator/artist nationality.
+    optional artnet.coredata.common.EntityFilter creator_nationality = 8;
+
+    // Filter to include or exclude attributing artists. Set to false to ignore attributing artists.
+    optional artnet.coredata.common.BoolFilter include_creator_attributions = 9;
+
+    // Filter on the listings of the artwork.
+    optional ArtworkSummaryListingFilters listings = 10;
+
+    // Filter on event date associated with the artwork.
+    optional artnet.coredata.common.DateTimeFilter event_date = 11;
+
+    // Filter on the artwork's object type.
+    optional artnet.coredata.common.EntityFilter object_type = 12;
+
+    // Filter on the price direction, growth/momentum of the artwork.
+    optional artnet.coredata.common.NumericRange price_growth = 13;
+}
+
+/*
+    Filters the entire grouping of artwork listings associated with the artwork.
+        - auction_house     -> Get artworks listed by a given auction house.
+        - count             -> Get artworks with a given number (range) of listings.
+        - gallery           -> Get artworks listed by a given gallery.
+        - listed_by         -> Get artworks listed by a given type of art market institution (e.g. auction house, gallery).
+*/
+message ArtworkSummaryListingFilters {
+
+    // Filter on the auction house that is listing the artwork.
+    optional artnet.coredata.common.EntityFilter auction_house = 1;
+
+    // Filter on the number of listings associated with the artwork.
+    optional artnet.coredata.common.NumericRange count = 2;
+
+    // Filter on the gallery that is listing the artwork.
+    optional artnet.coredata.common.EntityFilter gallery = 3;
+
+    // Filter on the entity type that is listing the artwork.
+    repeated artnet.coredata.artwork.enums.art_market_institution_type.ArtMarketInstitutionType listed_by = 4;
+
+    // Filter on the listing date of the lot/artwork listing.
+    optional artnet.coredata.common.DateFilter listed_date = 5;
+}

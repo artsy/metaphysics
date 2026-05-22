@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.sale_status;
+
+// The Sale Status
+enum SaleStatus {
+  // Unspecified
+  UNSPECIFIED = 0;
+
+  // Bought In
+  BOUGHT_IN = 1;
+
+  // Canceled
+  CANCELED = 2;
+
+  // Contact Auction House
+  CONTACT_AUCTION_HOUSE = 3;
+
+  // Contact Gallery
+  CONTACT_GALLERY = 4;
+
+  // For Sale
+  FOR_SALE = 5;
+
+  // Not Available
+  NOT_AVAILABLE = 6;
+
+  // Not For Sale
+  NOT_FOR_SALE = 7;
+
+  // Other
+  OTHER = 8;
+
+  // Price On Request
+  PRICE_ON_REQUEST = 9;
+
+  // Removed
+  REMOVED = 10;
+
+  // Reserved
+  RESERVED = 11;
+
+  // Sold
+  SOLD = 12;
+
+  // Under The Reserved Price
+  UNDER_THE_RESERVE_PRICE = 13;
+
+  // Withdrawn
+  WITHDRAWN = 14;
+
+}

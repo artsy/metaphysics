@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.LocationTypes";
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.common;
+
+// A container representing a physical location on planet earth.
+message Location {
+	// The first line of the address.
+	optional google.protobuf.StringValue address_line1 = 1;
+
+	// The second line of the address.
+	optional google.protobuf.StringValue address_line2 = 2;
+
+	// The city of the location.
+	optional google.protobuf.StringValue city = 3;
+
+	// The state of the location.
+	optional google.protobuf.StringValue state = 4;
+
+	// The country of the location.
+	optional google.protobuf.StringValue country = 5;
+
+	// The longitude of the location.
+	optional google.protobuf.DoubleValue longitude = 6;
+
+	// The latitude of the location.
+	optional google.protobuf.DoubleValue latitude = 7;
+}

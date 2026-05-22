@@ -1,0 +1,2049 @@
+schema @server @upstream {
+  query: Query
+}
+
+type Query {
+  # greet: String! @expr(body: "Hello, World!")
+
+  artist(
+    """
+    The slug or ID of the Artist
+    """
+    id: String!
+  ): Artist
+    @http(
+      url: "https://stagingapi.artsy.net/api/v1/artist/{{.args.id}}"
+      select: { sortableID: "{{.sortable_id}}", bio: "{{.biography}}" }
+      # onResponseBody: "onResponseBody"
+    )
+
+  publicArtworkListings(input: SearchRequest_Input): SearchResults!
+    @grpc(
+      url: "http://localhost:5210"
+      method: "artnet.coredata.artlisting.search.ArtListingService.GetPublicArtworkListings"
+      body: "{{.args.input}}"
+      headers: [
+        { key: "authorization", value: "Bearer {{.env.ARTNET_ACCESS_TOKEN}}" }
+        { key: "cf-access-client-id", value: "{{.env.CF_ACCESS_CLIENT_ID}}" }
+        {
+          key: "cf-access-client-secret"
+          value: "{{.env.CF_ACCESS_CLIENT_SECRET}}"
+        }
+      ]
+    )
+
+  playgroundUserInfo: PlaygroundEchoUserInfoResponse
+    @grpc(
+      url: "http://localhost:5210"
+      method: "artnet.coredata.playground.Playground.GetUserInfo"
+    )
+
+  # getCountriesWithFinancing(): GetCountriesWithFinancingResponse
+  #   @grpc(
+  #     url: "http://localhost:5210"
+  #     method: ""
+  #   )
+}
+
+type PlaygroundEchoUserInfoResponse {
+  userInfo: String
+}
+
+# type PlaygroundEchoInputRequest {
+#   price: PlayGroundPriceFilter!
+# }
+
+# type PlayGroundPriceFilter {
+#   range: PlayGroundPriceRange
+# }
+
+# type PlayGroundPriceRange
+
+# type GetCountriesWithFinancingResponse {
+#   results: [Country!]!
+# }
+
+type Country {
+  id: ID!
+  name: String!
+}
+
+type Artist {
+  alternateNames: [String]
+  awards: String
+
+  """
+  In applicable contexts, this is what the artist (as a suggestion) is based on.
+  """
+  basedOn: Artist
+
+  """
+  The biennials the artist has participated in
+  """
+  biennials: String
+  bio: String
+
+  birthday: String
+
+  """
+  A slug ID.
+  """
+  slug: ID!
+
+  """
+  Use this attribute to sort by when sorting a collection of Artists
+  """
+  sortableID: String
+  years: String
+}
+
+########################################################
+
+# Indicates exactly one field must be supplied and this field must not be `null`.
+directive @oneOf on INPUT_OBJECT
+
+# A valid absolute URL string starting with either a valid protocol or a leading www
+scalar AbsoluteUrl
+
+input AddArtListingCuratedListItemsRequest_Input {
+  listIds: [ID!]
+  itemIds: [ID!]
+}
+
+type AddArtListingCuratedListItemsResponse {
+  results: [AddCuratedListItemsResult!]!
+}
+
+type AddCuratedListItemsResult {
+  numAdded: Int!
+  list: ArtListingCuratedListSummary!
+}
+
+input AggregationCriteria_Input {
+  artMarketInstitution: GroupByAggregation_Input
+  artMarketInstitutionCountry: GroupByAggregation_Input
+  artworkListingTitle: GroupByAggregation_Input
+  attribute: GroupByAggregation_Input
+  birthYear: VariableWidthAggregation_Input
+  catalogueRaisonneAuthor: GroupByAggregation_Input
+  catalogueRaisonneNumber: GroupByAggregation_Input
+  catalogLotNumber: GroupByAggregation_Input
+  category: GroupByAggregation_Input
+  classification: GroupByAggregation_Input
+  creationYear: VariableWidthAggregation_Input
+  creator: GroupByAggregation_Input
+  creatorNationality: GroupByAggregation_Input
+  currency: GroupByAggregation_Input
+  deathYear: VariableWidthAggregation_Input
+  dimension: [DimensionBucketAggregation_Input!]
+  hasImage: GroupByAggregation_Input
+  isEdition: GroupByAggregation_Input
+  isInscribed: GroupByAggregation_Input
+  isSigned: GroupByAggregation_Input
+  isStamped: GroupByAggregation_Input
+  listingDomain: GroupByAggregation_Input
+  material: GroupByAggregation_Input
+  maker: GroupByAggregation_Input
+  media: GroupByAggregation_Input
+  medium: GroupByAggregation_Input
+  mediumRaw: GroupByAggregation_Input
+  movement: GroupByAggregation_Input
+  objectType: GroupByAggregation_Input
+  period: GroupByAggregation_Input
+  price: PriceAggregation_Input
+  region: GroupByAggregation_Input
+  sale: GroupByAggregation_Input
+  saleCountry: GroupByAggregation_Input
+  saleDate: VariableWidthAggregation_Input
+  saleNumber: GroupByAggregation_Input
+  saleStatus: GroupByAggregation_Input
+  searchSuggestion: GroupByAggregation_Input
+  subjectMatter: GroupByAggregation_Input
+  substrate: GroupByAggregation_Input
+  simplifiedTransactionStatus: GroupByAggregation_Input
+}
+
+input AggregationRequest_Input {
+  freeformTextQuery: String
+  filters: ArtListingFilters_Input
+  aggregationCriteria: AggregationCriteria_Input!
+}
+
+type AggregationResult {
+  id: ID!
+  entityType: ArtListingEntityType
+  subAggregations: [AggregationResult!]!
+  displayName: String
+  description: String
+  count: Int64
+  subEntityType: ArtListingSubEntityType
+}
+
+type AggregationResults {
+  artMarketInstitution: EntityAggregationResults
+  artMarketInstitutionCountry: EntityAggregationResults
+  artworkListingTitle: EntityAggregationResults
+  attribute: EntityAggregationResults
+  birthYear: NumericRangeBucketResults
+  catalogueRaisonneAuthor: EntityAggregationResults
+  catalogueRaisonneNumber: EntityAggregationResults
+  catalogLotNumber: EntityAggregationResults
+  category: EntityAggregationResults
+  classification: EntityAggregationResults
+  creationYear: NumericRangeBucketResults
+  creator: EntityAggregationResults
+  creatorNationality: EntityAggregationResults
+  currency: EntityAggregationResults
+  deathYear: NumericRangeBucketResults
+  dimension: DimensionAggregationResults
+  hasImage: EntityAggregationResults
+  isEdition: EntityAggregationResults
+  isInscribed: EntityAggregationResults
+  isSigned: EntityAggregationResults
+  isStamped: EntityAggregationResults
+  listingDomain: EntityAggregationResults
+  maker: EntityAggregationResults
+  material: EntityAggregationResults
+  media: EntityAggregationResults
+  medium: EntityAggregationResults
+  mediumRaw: EntityAggregationResults
+  movement: EntityAggregationResults
+  objectType: EntityAggregationResults
+  period: EntityAggregationResults
+  price: NumericRangeBucketResults
+  region: EntityAggregationResults
+  sale: EntityAggregationResults
+  saleCountry: EntityAggregationResults
+  saleDate: VariableWidthDateAggregationResults
+  saleNumber: EntityAggregationResults
+  saleStatus: EntityAggregationResults
+  searchSuggestion: EntityAggregationResults
+  subjectMatter: EntityAggregationResults
+  substrate: EntityAggregationResults
+  simplifiedTransactionStatus: EntityAggregationResults
+}
+
+enum AggregationSortBy {
+  UNSPECIFIED
+  COUNT
+  DISPLAY_NAME
+  DATE
+}
+
+input AggregationSortByClause_Input {
+  fields: [AggregationSortBy!]
+  direction: SortDirection
+}
+
+input AISearchFeedbackRequest_Input {
+  conversationId: ID!
+  userPromptIndex: Int!
+  feedbackText: String
+  feedbackValue: FeedbackValue!
+}
+
+type AISearchFeedbackResponse {
+  conversationId: ID!
+  userPromptIndex: Int!
+}
+
+input AISearchRequest_Input {
+  conversationId: ID
+  userPromptIndex: Int
+  userPromptText: String
+  nextPageCursor: String
+  pageSize: Int!
+  listingDomains: [ListingDomain!]
+  imageName: String
+  imageEmbeddingReferenceId: ID
+}
+
+type AISearchResponse {
+  globalResponseId: ID!
+  conversationId: ID!
+  userPromptIndex: Int!
+  userPromptText: String
+  responseImageUrl: String
+  nextPageCursor: String
+  hasNextPage: Boolean!
+  userPromptSummary: String
+  results: [ArtListingSummary!]!
+  totalResultCount: Int!
+  totalResultCountRelation: String
+  remainingConversations: Int!
+  remainingPrompts: Int!
+  remainingPages: Int!
+  warnings: [Warning!]!
+  imageEmbeddingReferenceId: ID
+}
+
+type AiSearchSubscription {
+  title: String!
+  type: AiSearchSubscriptionType!
+  quota: AiSearchSubscriptionQuota!
+}
+
+type AiSearchSubscriptionQuota {
+  quotaType: AiSearchSubscriptionQuotaType!
+  totalConversationsPerPeriod: Int!
+  periodInHours: Int!
+  usedConversations: Int!
+  remainingConversations: Int!
+  promptsPerConversation: Int!
+  pagesPerPrompt: Int!
+}
+
+enum AiSearchSubscriptionQuotaType {
+  UNSPECIFIED
+  FIXED_QUOTA
+  PAY_PER_SEARCH
+}
+
+enum AiSearchSubscriptionType {
+  UNSPECIFIED
+  FREE
+  PAID
+}
+
+# type Artist {
+#   id: ID!
+#   firstName: String
+#   lastName: String
+#   aliases: [String!]!
+#   sortName: String
+#   homeLocation: Location
+#   enabled: Boolean
+#   birthYear: Int
+#   birthYearEra: Era
+#   birthYearQualifier: String
+#   deathYear: Int
+#   birthLocation: Location
+#   deathYearEra: Era
+#   deathYearQualifier: String
+#   deathLocation: Location
+#   causeOfDeath: String
+#   isSchoolOf: Boolean
+#   nationalities: [String!]!
+#   uri: String
+#   culturalIdentification: String
+#   notes: String
+#   jobTitle: String
+#   gender: String
+# }
+
+type ArtistContribution {
+  id: ID!
+  type: ArtistContributionType!
+  entityId: ID!
+  content: String!
+  sources: [String!]!
+  dateSubmitted: DateTime!
+}
+
+input ArtistContribution_Input {
+  id: ID!
+  type: ArtistContributionType!
+  entityId: ID!
+  content: String!
+  sources: [String!]
+  dateSubmitted: DateTime!
+}
+
+input ArtistContributionRequest_Input {
+  artistId: ArtistIdentifier_Input!
+  contributions: [ArtistContribution_Input!]
+}
+
+type ArtistContributionResponse {
+  contributionIds: [ID!]!
+  successful: Boolean!
+  errors: [String!]!
+}
+
+enum ArtistContributionType {
+  UNSPECIFIED
+  SHORT_BIOGRAPHY
+  FULL_BIOGRAPHY
+}
+
+input ArtistIdentifier_Input {
+  artistId: ID!
+}
+
+type ArtistSummary {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  birthYear: Int
+  birthYearEra: Era
+  birthYearQualifier: String
+  deathYear: Int
+  deathYearEra: Era
+  deathYearQualifier: String
+  nationalities: [Entity!]!
+  uri: String
+}
+
+type ArtListingCuratedList {
+  id: ID!
+  title: String!
+  featuredImage: Image
+  count: Int!
+  dateModified: DateTime!
+  dateCreated: DateTime!
+  items: [ArtListingCuratedListItem!]!
+  status: ArtListingCuratedListStatus!
+  origin: ArtListingCuratedListOrigin!
+}
+
+type ArtListingCuratedListItem {
+  id: ID!
+  position: Int!
+  title: String!
+  dateAdded: DateTime!
+  artListing: ArtListingSummary
+}
+
+enum ArtListingCuratedListItemSortBy {
+  UNSPECIFIED
+  TITLE
+  DATE_ADDED
+  SALE_DATE
+  CREATION_DATE
+  PRICE
+}
+
+input ArtListingCuratedListItemSortByClause_Input {
+  fields: [ArtListingCuratedListItemSortBy!]
+  direction: SortDirection
+}
+
+enum ArtListingCuratedListOrigin {
+  UNSPECIFIED
+  LEGACY
+  CREATED_BY_CUSTOMER
+}
+
+enum ArtListingCuratedListSortBy {
+  UNSPECIFIED
+  TITLE
+  DATE_ADDED
+  DATE_MODIFIED
+}
+
+input ArtListingCuratedListSortByClause_Input {
+  fields: [ArtListingCuratedListSortBy!]
+  direction: SortDirection
+}
+
+enum ArtListingCuratedListStatus {
+  UNSPECIFIED
+  ACTIVE
+  SCHEDULED_FOR_DELETION
+}
+
+type ArtListingCuratedListSummary {
+  id: ID!
+  title: String!
+  featuredImage: Image
+  count: Int!
+  dateModified: DateTime!
+  dateCreated: DateTime!
+  status: ArtListingCuratedListStatus!
+  origin: ArtListingCuratedListOrigin!
+}
+
+type ArtListingDetailsArtwork {
+  creator: Creator
+  isSigned: Boolean
+  isEdition: Boolean
+  dimensions: [Dimensions!]!
+  creationYearQualifier: String
+  creationYearFrom: Int
+  creationEraFrom: Era!
+  creationYearTo: Int
+  creationEraTo: Era!
+  mediumRaw: String
+  artworkUri: String
+  objectType: [Specialty!]!
+  materials: [Specialty!]!
+  classification: [Specialty!]!
+  period: [Specialty!]!
+  region: [Specialty!]!
+  subjectMatter: [Specialty!]!
+  category: [Category!]!
+  movement: [Specialty!]!
+  markings: Markings
+  edition: String
+  provenance: String
+  exhibition: String
+  literature: String
+  catalogueNote: String
+  monographUrl: String
+  publisher: String
+  raisonneAuthor: String
+  raisonneNumber: String
+  castYear: WorkYear
+}
+
+input ArtListingDetailsRequest_Input {
+  id: ID!
+}
+
+type ArtListingDetailsResults {
+  id: ID!
+  auctionHouse: AuctionHouse
+  lot: Lot
+  saleName: String
+  saleDescription: String
+  saleDates: [CustomDate!]!
+  prices: [ArtListingSalePrice!]!
+  saleId: ID
+  transactionStatusClarification: String
+  saleCode: String
+  saleLocation: Location
+  saleOriginalUrl: String
+  relatedSales: [RelatedSaleOverview!]!
+  images: [Image!]!
+  featuredImage: Image
+}
+
+enum ArtListingEntityType {
+  UNSPECIFIED
+  ART_MARKET_INSTITUTION
+  CREATOR
+  MOVEMENT
+}
+
+type ArtListingEvent {
+  id: ID!
+  name: String!
+  key: String
+  kind: ArtListingEventKind!
+  timing: [Timing!]!
+}
+
+enum ArtListingEventKind {
+  UNSPECIFIED
+  AUCTION
+  SALE
+  EXHIBITION
+  GROUP_EXHIBIT
+}
+
+input ArtListingFilters_Input {
+  creator: CreatorFilter_Input
+  creatorNationality: EntityFilter_Input
+  artMarketInstitution: EntityFilter_Input
+  artMarketInstitutionCountry: EntityFilter_Input
+  saleStatus: EnumFilter_Input
+  currency: EntityFilter_Input
+  sale: EntityFilter_Input
+  saleDate: [DateFilter_Input!]
+  saleNumber: EntityFilter_Input
+  creationYear: YearFilter_Input
+  price: PriceFilter_Input
+  dimension: [DimensionFilter_Input!]
+  catalogueRaisonneAuthor: EntityFilter_Input
+  catalogueRaisonneNumber: EntityFilter_Input
+  category: HierarchicalEntityFilter_Input
+  catalogLotNumber: CatalogLotNumberFilter_Input
+  maker: EntityFilter_Input
+  medium: EntityFilter_Input
+  mediumRaw: EntityFilter_Input
+  substrate: EntityFilter_Input
+  attribute: EntityFilter_Input
+  movement: EntityFilter_Input
+  material: EntityFilter_Input
+  media: EntityFilter_Input
+  classification: EntityFilter_Input
+  hasImage: BoolFilter_Input
+  isEdition: BoolFilter_Input
+  isSigned: BoolFilter_Input
+  birthYear: YearFilter_Input
+  deathYear: YearFilter_Input
+  period: EntityFilter_Input
+  region: EntityFilter_Input
+  subjectMatter: EntityFilter_Input
+  objectType: EntityFilter_Input
+  artListingId: EntityFilter_Input
+  artworkListingTitle: EntityFilter_Input
+  lastUpdated: [DateTimeFilter_Input!]
+  isStamped: BoolFilter_Input
+  isInscribed: BoolFilter_Input
+  listedDate: [DateTimeFilter_Input!]
+  listingDomain: EnumFilter_Input
+  simplifiedTransactionStatus: EnumFilter_Input
+}
+
+type ArtListingFinalPrice {
+  price: Float!
+  differenceFromClosestEstimate: Float
+  priceType: ArtListingSalePriceType
+}
+
+input ArtListingPreferences_Input {
+  preferredCurrencies: [CurrencyCode_Input!]
+}
+
+type ArtListingSalePrice {
+  currencyCode: Entity!
+  customPrecision: Int
+  estimatedPriceLow: Float
+  estimatedPriceHigh: Float
+  finalPrices: [ArtListingFinalPrice!]!
+  isOriginalCurrency: Boolean
+}
+
+enum ArtListingSalePriceType {
+  UNSPECIFIED
+  COMING_SOON
+  HAMMER
+  PREMIUM
+}
+
+enum ArtListingSortBy {
+  SALE_DATE
+  CREATION_DATE
+  PRICE
+  SALE_ID
+  CATALOG_LOT_NUMBER
+  ARTWORK_LISTING_TITLE
+  RELEVANCY
+  LAST_UPDATED_DATE
+  LISTED_DATE
+  IS_AVAILABLE
+  RANDOM_SCORE_REFRESHED_DAILY
+  HAS_PRICE
+  UPCOMING_EVENT_DATE
+  LATEST_UPCOMING_EVENT_DATE
+  EARLIEST_UPCOMING_EVENT_DATE
+}
+
+enum ArtListingSubEntityType {
+  UNSPECIFIED
+  ARTIST
+  AUCTION_HOUSE
+  GALLERY
+  MANUFACTURER
+}
+
+type ArtListingSummary {
+  id: ID!
+  # listingDomain: ListingDomain!
+  # artMarketInstitution: ArtMarketInstitution
+  # listingData: ListingData!
+  # saleName: String
+  # timing: [Timing!]!
+  # saleCountries: [String!]!
+  # saleStatus: SaleStatus
+  # prices: [ArtListingSalePrice!]!
+  # saleId: ID
+  # featuredImage: Image
+  # artListingDetailId: ID!
+  # lastUpdated: DateTime!
+  # listedDate: DateTime!
+  # isRedacted: Boolean
+  # events: [ArtListingEvent!]!
+  # artListingInternalId: ID
+}
+
+type ArtMarketInstitution {
+  id: ID!
+  name: String!
+  uri: String
+  key: String
+  location: [Location!]!
+  kind: ArtMarketInstitutionKind!
+  relationship: ArtMarketInstitutionRelationship
+}
+
+enum ArtMarketInstitutionKind {
+  UNSPECIFIED
+  ARTNET_AUCTION
+  AUCTION_HOUSE
+  GALLERY
+}
+
+enum ArtMarketInstitutionRelationship {
+  UNSPECIFIED
+  FEATURED
+  PARTNERSHIP
+}
+
+enum ArtMarketInstitutionType {
+  UNSPECIFIED
+  AUCTION_HOUSE
+  GALLERY
+}
+
+type ArtPriceIndex {
+  name: String!
+  results: [ArtPriceIndexPoint!]!
+}
+
+input ArtPriceIndexAutoRange_Input {
+  initialRangeStart: DateTime
+  initialRangeEnd: DateTime
+  fullRangeYears: Int!
+  interval: ArtPriceIndexInterval!
+}
+
+input ArtPriceIndexCustomRange_Input {
+  start: DateTime
+  end: DateTime
+  interval: ArtPriceIndexInterval!
+}
+
+enum ArtPriceIndexInterval {
+  UNSPECIFIED
+  BIANNUAL
+}
+
+type ArtPriceIndexPoint {
+  date: DateTime!
+  value: Float!
+  distanceFromBaseline: Float!
+}
+
+input ArtPriceIndexRequest_Input {
+  name: String
+  creatorId: ID
+}
+
+type ArtPriceIndices {
+  baseline: Float!
+  primaryIndex: ArtPriceIndex!
+  remainingIndices: [ArtPriceIndex!]!
+}
+
+type ArtPriceIndicesTimeframe {
+  start: DateTime!
+  end: DateTime!
+}
+
+enum ArtworkSortBy {
+  UNSPECIFIED
+  RELEVANCY
+  ARTWORK_CREATION_YEAR
+  ARTWORK_TITLE
+  LISTING_COUNT
+  LISTING_DATE
+  LISTING_PRICE
+  LISTING_PRICE_GROWTH
+  EVENT_COUNT
+  EVENT_DATE
+}
+
+input ArtworkSortByClause_Input {
+  direction: SortDirection
+  field: ArtworkSortBy
+}
+
+type ArtworkSummary {
+  id: ID!
+  title: String!
+  creationYearFrom: Int
+  creationYearFromEra: Era
+  creationYearFromQualifier: String
+  creationYearTo: Int
+  creationYearToEra: Era
+  creationYearToQualifier: String
+  classifications: [Entity!]!
+  creator: ArtworkSummaryCreator
+  dimensions: Dimensions
+  edition: String
+  media: [String!]!
+  objectTypes: [Entity!]!
+  timelineEvents: [ArtworkSummaryTimelineEvent!]!
+  lastUpdated: DateTime!
+  uri: String
+}
+
+type ArtworkSummaryArtist {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  birthYear: Int
+  birthYearEra: Era
+  deathYear: Int
+  deathYearEra: Era
+  nationalities: [Entity!]!
+  uri: String
+}
+
+type ArtworkSummaryCreator {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  artists: [ArtworkSummaryArtist!]!
+  attributionQualifier: String
+  kind: CreatorType
+  movements: [Entity!]!
+  uri: String
+}
+
+input ArtworkSummaryFilters_Input {
+  creationYear: YearFilter_Input
+  dimension: [DimensionFilter_Input!]
+  title: EntityFilter_Input
+  creatorBirthYear: YearFilter_Input
+  creatorDeathYear: YearFilter_Input
+  creatorMovement: EntityFilter_Input
+  creator: EntityFilter_Input
+  creatorNationality: EntityFilter_Input
+  includeCreatorAttributions: BoolFilter_Input
+  listings: ArtworkSummaryListingFilters_Input
+  eventDate: DateTimeFilter_Input
+  objectType: EntityFilter_Input
+  priceGrowth: NumericRange_Input
+}
+
+input ArtworkSummaryListingFilters_Input {
+  auctionHouse: EntityFilter_Input
+  count: NumericRange_Input
+  gallery: EntityFilter_Input
+  listedBy: [ArtMarketInstitutionType!]
+  listedDate: DateFilter_Input
+}
+
+type ArtworkSummaryTimelineEvent {
+  type: ArtworkTimelineEventType!
+  timestamp: CustomDateTime!
+  metadata: ArtworkSummaryTimelineEventMetadata
+}
+
+type ArtworkSummaryTimelineEventMetadata {
+  artMarketInstitutionId: ID
+  artMarketInstitutionName: String
+  artMarketInstitutionType: ArtMarketInstitutionType
+  prices: [ArtListingSalePrice!]!
+  publicListingDomain: PublicArtListingDomain
+  publicListingId: ID
+  saleName: String
+  uri: String
+}
+
+enum ArtworkTimelineEventType {
+  UNSPECIFIED
+  CREATED
+  LISTED
+  DESTROYED
+  STOLEN
+}
+
+type AuctionHouse {
+  id: ID!
+  name: String
+  uri: String
+  key: String
+  location: Location!
+}
+
+type AuctionsSearchHint implements SearchHint {
+  id: ID!
+  name: String!
+  description: String
+  url: AbsoluteUrl!
+}
+
+input BoolFilter_Input {
+  values: [Boolean!]
+  includeUnknown: Boolean
+}
+
+input CatalogLotNumberFilter_Input {
+  selection: EntityFilter_Input
+  range: IntegerRangeFilter_Input
+}
+
+type Category {
+  id: Int!
+  name: String
+  uri: String
+}
+
+input CloneArtListingCuratedListRequest_Input {
+  existingListId: ID!
+}
+
+type CloneArtListingCuratedListResponse {
+  result: ArtListingCuratedList!
+}
+
+enum ConnectivityState {
+  IDLE
+  CONNECTING
+  READY
+  TRANSIENT_FAILURE
+  SHUTDOWN
+}
+
+enum ContributionSortBy {
+  UNSPECIFIED
+  LAST_SUBMITTED
+  SIZE
+}
+
+input ContributionSortByClause_Input {
+  fields: [ContributionSortBy!]
+  direction: SortDirection
+}
+
+type Conversation {
+  conversationId: ID!
+  firstUserPromptText: String
+  firstUserPromptImageUrl: String
+  firstResponseImageUrl: String
+  dateCreated: DateTime!
+}
+
+type Country {
+  id: ID!
+  name: String!
+}
+
+input CreateArtListingCuratedListRequest_Input {
+  title: String!
+  itemIds: [ID!]
+}
+
+type CreateArtListingCuratedListResponse {
+  result: ArtListingCuratedList!
+}
+
+type Creator {
+  id: String
+  modifier: String
+  name: String
+  uri: String
+  creatorType: CreatorType!
+  # artists: [Artist!]!
+  relatedArtists: [RelatedArtistOverview!]!
+}
+
+input CreatorFilter_Input {
+  keys: [String!]
+  excludeKeys: [String!]
+  searchTerms: [String!]
+  includeUnknown: Boolean
+  includeAttributions: Boolean
+  includeCollaborations: Boolean
+}
+
+type CreatorSummary {
+  id: ID!
+  modifier: String
+  name: String!
+  aliases: [String!]!
+  uri: String
+  creatorType: CreatorType
+  artists: [ArtistSummary!]!
+}
+
+enum CreatorType {
+  UNSPECIFIED
+  ARTIST
+  COLLABORATION
+  MANUFACTURER
+}
+
+input CurrencyCode_Input {
+  code: String!
+  standard: CurrencyCodeStandard!
+}
+
+enum CurrencyCodeStandard {
+  ISO_4217
+  CRYPTO
+}
+
+type CurrentUserResult {
+  isLoggedIn: Boolean!
+  isReauthenticationRequired: Boolean!
+  user: User
+}
+
+type CustomDate {
+  year: Int!
+  month: Int
+  day: Int
+}
+
+input CustomDate_Input {
+  year: Int!
+  month: Int32Value_Input
+  day: Int32Value_Input
+}
+
+type CustomDateTime {
+  year: Int
+  month: Int
+  day: Int
+  hour: Int
+  minute: Int
+  second: Int
+  timeZone: String
+}
+
+input DateFilter_Input {
+  lowerBound: CustomDate_Input
+  upperBound: CustomDate_Input
+  includeUnknown: Boolean
+}
+
+enum DateInterval {
+  YEAR
+  MONTH
+  DAY
+}
+
+input DateTimeFilter_Input {
+  lowerBound: DateTime
+  upperBound: DateTime
+}
+
+type DimensionAggregationResults {
+  results: [DimensionBucketAggregationResult!]!
+  countUnknown: Int64!
+  count: Int64!
+}
+
+input DimensionBucketAggregation_Input {
+  bucketName: String
+  longestEdge: NumericRange_Input
+  height: NumericRange_Input
+  width: NumericRange_Input
+  depth: NumericRange_Input
+  unit: DimensionUnit!
+  includeUnknown: Boolean
+}
+
+type DimensionBucketAggregationResult {
+  bucketName: String!
+  longestEdge: NumericRangeResult
+  height: NumericRangeResult
+  width: NumericRangeResult
+  depth: NumericRangeResult
+  unit: DimensionUnit!
+  count: Int64!
+  countUnknown: Int64!
+}
+
+input DimensionFilter_Input {
+  height: NumericRange_Input
+  width: NumericRange_Input
+  depth: NumericRange_Input
+  longestEdge: NumericRange_Input
+  unit: DimensionUnit!
+}
+
+type Dimensions {
+  height: Float
+  width: Float
+  depth: Float
+  unit: DimensionUnit!
+}
+
+enum DimensionUnit {
+  UNSPECIFIED
+  IN
+  CM
+  MM
+}
+
+input DoubleValue_Input {
+  value: Float!
+}
+
+type EchoInputRequest {
+  price: PlayGroundPriceFilter!
+}
+
+input EchoInputRequest_Input {
+  price: PlayGroundPriceFilter_Input!
+}
+
+scalar EchoUserInfoRequest_Input
+
+type EchoUserInfoResponse {
+  userInfo: String!
+}
+
+scalar Empty_Input
+
+type Entity {
+  id: ID!
+  key: String
+  value: String
+}
+
+type EntityAggregationResults {
+  results: [AggregationResult!]!
+  count: Int64
+  countUnknown: Int64
+  countBeyondLimit: Int64
+}
+
+input EntityFilter_Input {
+  keys: [String!]
+  excludeKeys: [String!]
+  searchTerms: [String!]
+  includeUnknown: Boolean
+}
+
+input EnumFilter_Input {
+  keys: [String!]
+  excludeKeys: [String!]
+  includeUnknown: Boolean
+}
+
+enum Era {
+  UNSPECIFIED
+  CE
+  BCE
+}
+
+enum FeedbackValue {
+  UNSPECIFIED
+  DISLIKE
+  LIKE
+}
+
+input FlagForMisinformationRequest_Input {
+  userId: ID!
+  lotId: ID!
+  feedback: String!
+}
+
+type FlagForMisinformationResponse {
+  isReceived: Boolean!
+}
+
+input FloatValue_Input {
+  value: Float!
+}
+
+input GetArtListingByPublicIdRequest_Input {
+  id: ID!
+  subscriptionId: ID!
+  subscriptionScope: SubscriptionScope!
+  publicListingDomain: PublicArtListingDomain!
+}
+
+input GetArtListingCuratedListByIdRequest_Input {
+  id: ID!
+  freeformTextQuery: String
+  page: Int!
+  pageSize: Int!
+  sortBy: [ArtListingCuratedListItemSortByClause_Input!]
+}
+
+type GetArtListingCuratedListByIdResponse {
+  result: ArtListingCuratedList
+}
+
+input GetArtListingCuratedListsRequest_Input {
+  freeformTextQuery: String
+  page: Int!
+  pageSize: Int!
+  sortBy: [ArtListingCuratedListSortByClause_Input!]
+  origins: [ArtListingCuratedListOrigin!]
+}
+
+type GetArtListingCuratedListsResponse {
+  results: [ArtListingCuratedListSummary!]!
+  count: Int64!
+}
+
+input GetArtPriceIndicesRequest_Input {
+  request: [ArtPriceIndexRequest_Input!]
+  customRange: ArtPriceIndexCustomRange_Input
+  autoRange: ArtPriceIndexAutoRange_Input
+}
+
+type GetArtPriceIndicesResponse {
+  result: ArtPriceIndices
+  resultTimeframe: ArtPriceIndicesTimeframe
+}
+
+input GetArtworksRequest_Input {
+  filters: ArtworkSummaryFilters_Input
+  page: Int!
+  pageSize: Int!
+  sortBy: [ArtworkSortByClause_Input!]
+  subscriptionId: ID
+  subscriptionScope: SubscriptionScope
+}
+
+type GetArtworksResponse {
+  results: [ArtworkSummary!]!
+  count: Int64
+  warnings: [Warning!]!
+}
+
+input GetContributionsRequest_Input {
+  filters: [GetContributionsRequestFilter_Input!]
+  page: Int!
+  pageSize: Int!
+  sortBy: [ContributionSortByClause_Input!]
+}
+
+input GetContributionsRequestFilter_Input {
+  artistId: ArtistIdentifier_Input!
+  typeFilter: [ArtistContributionType!]
+}
+
+type GetContributionsResponse {
+  results: [ArtistContribution!]!
+}
+
+input GetConversationRequest_Input {
+  conversationId: ID!
+}
+
+type GetConversationResponse {
+  conversationId: ID!
+  remainingUserPrompts: Int!
+  userPrompts: UserPrompts!
+  lastUserPromptIndex: Int!
+}
+
+input GetConversationsRequest_Input {
+  page: Int
+  pageSize: Int
+}
+
+type GetConversationsResponse {
+  count: Int!
+  results: [Conversation!]!
+}
+
+scalar GetCountriesWithFinancingRequest_Input
+
+type GetCountriesWithFinancingResponse {
+  results: [Country!]!
+}
+
+input GetNewsArticlesRequest_Filters {
+  creator: EntityFilter_Input
+  gallery: EntityFilter_Input
+  auctionHouse: EntityFilter_Input
+}
+
+input GetNewsArticlesRequest_Input {
+  filters: GetNewsArticlesRequest_Filters
+  page: Int!
+  pageSize: Int!
+}
+
+type GetNewsArticlesResponse {
+  count: Int!
+  results: [NewsArticle!]!
+}
+
+input GetNotableArtListingsRequest_Input {
+  filters: NotableArtListingFilters_Input
+  notableFor: NotableFor!
+  minimumTotalListings: Int32Value_Input
+  limit: Int
+}
+
+type GetNotableArtListingsResponse {
+  results: [ArtListingSummary!]!
+  count: Int64
+}
+
+input GetSearchFiltersForComparableWorksRequest_Input {
+  artListingDetailsId: ID!
+}
+
+type GetSearchFiltersForComparableWorksResponse {
+  filters: [PreparedSearchFilter!]!
+}
+
+input GetSearchFiltersForPublicArtListingRequest_Input {
+  publicArtListingId: ID
+}
+
+type GetSearchFiltersForPublicArtListingResponse {
+  filters: [PreparedSearchFilter!]!
+}
+
+input GetSearchInsightsRequest_Input {
+  freeformTextQuery: String
+  filters: ArtListingFilters_Input
+  insightTypes: [SearchInsightsType!]
+  calendarInterval: InsightsInterval!
+  autoRange: SearchInsightsAutoRange_Input
+  customRange: SearchInsightsCustomRange_Input
+  configuration: SearchInsightsConfiguration_Input
+}
+
+type GetSearchInsightsResponse {
+  isApplicable: Boolean!
+  statistics: SearchStatistics
+  offeredVsSold: OfferedVsSoldResults
+  priceDistribution: PriceDistributionResults
+  totalSales: TotalSalesResults
+  resultTimeframe: SearchInsightsResultTimeframe
+}
+
+scalar GetSsoUserInfoRequest_Input
+
+type GetSsoUserInfoResponse {
+  expiry: String!
+  issuedBy: String!
+  clientId: ID!
+  scope: [String!]!
+  authorizationHeader: String!
+  artnetUserId: String!
+}
+
+input GetSubscriptionByIdRequest_Input {
+  id: ID!
+  scope: SubscriptionScope!
+}
+
+input GetSuggestionsRequest_Input {
+  freeformTextQuery: String!
+  limit: Int
+  filters: ArtListingFilters_Input
+}
+
+type GetSuggestionsResponse {
+  results: [AggregationResult!]!
+  count: Int64
+}
+
+input GetUserSubscriptionsRequest_Input {
+  scopes: [SubscriptionScope!]
+  statusFilter: [SubscriptionStatus!]
+}
+
+type GlobalSearchHint implements SearchHint {
+  id: ID!
+  name: String!
+  description: String
+  url: AbsoluteUrl!
+}
+
+input GroupByAggregation_Input {
+  limit: Int
+  sortBy: [AggregationSortByClause_Input!]
+}
+
+input HierarchicalEntityFilter_Input {
+  subtree: SubtreeSelection_Input
+  individual: IndividualSelection_Input
+  includeUnknown: Boolean
+}
+
+type Image {
+  baseImageUrl: String!
+  alt: String
+  title: String
+}
+
+input IndividualSelection_Input {
+  keys: [String!]
+  excludeKeys: [String!]
+  searchTerms: [String!]
+}
+
+input InquireAboutFinancingRequest_Input {
+  customerName: String!
+  customerPhone: String!
+  customerPhoneExt: String!
+  customerEmail: String!
+  messageBody: String!
+  requestedLoanAmount: String!
+  artworkCountryId: ID!
+  customerCountryId: ID
+  multipleArtworks: Boolean
+}
+
+type InquireAboutFinancingResponse {
+  id: ID!
+  message: String!
+  errors: [MutationError!]!
+}
+
+enum InsightsInterval {
+  UNSPECIFIED
+  MONTH
+  QUARTER
+  YEAR
+}
+
+input Int32Value_Input {
+  value: Int!
+}
+
+input Int64Value_Input {
+  value: Int64!
+}
+
+input IntegerRangeFilter_Input {
+  lowerBound: Int32Value_Input
+  upperBound: Int32Value_Input
+  includeUnknown: Boolean
+}
+
+type ListingData {
+  id: ID
+  title: String
+  catalogLotNumber: String
+  artworks: [ListingDataArtworkSummary!]!
+  uri: String
+  externalUrl: String
+  saleNumber: String
+}
+
+type ListingDataArtworkSummary {
+  creator: CreatorSummary
+  classification: [Entity!]!
+  creationYearFrom: Int
+  creationEraFrom: Era
+  creationYearTo: Int
+  creationEraTo: Era
+  title: String
+  hasImage: Boolean
+  isSigned: Boolean
+  isEdition: Boolean
+  edition: String
+  category: [Entity!]!
+  maker: String
+  mediumRaw: String
+  materials: [Entity!]!
+  movement: [Entity!]!
+  creationYearFromQualifier: String
+  dimensions: [Dimensions!]!
+  period: [Entity!]!
+  region: [Entity!]!
+  subjectMatter: [Entity!]!
+  objectType: [Entity!]!
+  isStamped: Boolean
+  isInscribed: Boolean
+  isPlateSigned: Boolean
+}
+
+enum ListingDomain {
+  UNSPECIFIED
+  PDB
+  PDB_TEASER
+  GALLERY
+  ARTNET_AUCTION
+}
+
+type Location {
+  addressLine1: String
+  addressLine2: String
+  city: String
+  state: String
+  country: String
+  longitude: Float
+  latitude: Float
+}
+
+type Lot {
+  title: String
+  catalogLotNumber: String
+  artnetLotId: ID
+  artworks: [ArtListingDetailsArtwork!]!
+  description: String
+  lotNumber: Int
+  externalUrl: String
+}
+
+type Markings {
+  isInscribed: Boolean
+  isSigned: Boolean
+  isStamped: Boolean
+  isPlateSigned: Boolean
+}
+
+type Mutation {
+  saveAiSearchFeedback(
+    input: AISearchFeedbackRequest_Input
+  ): AISearchFeedbackResponse!
+  createArtListingCuratedList(
+    input: CreateArtListingCuratedListRequest_Input
+  ): CreateArtListingCuratedListResponse!
+  updateArtListingCuratedList(
+    input: UpdateArtListingCuratedListRequest_Input
+  ): UpdateArtListingCuratedListResponse!
+  updateArtListingCuratedListStatus(
+    input: UpdateArtListingCuratedListStatusRequest_Input
+  ): UpdateArtListingCuratedListStatusResponse!
+  cloneArtListingCuratedList(
+    input: CloneArtListingCuratedListRequest_Input
+  ): CloneArtListingCuratedListResponse!
+  addArtListingCuratedListItems(
+    input: AddArtListingCuratedListItemsRequest_Input
+  ): AddArtListingCuratedListItemsResponse!
+  removeArtListingCuratedListItems(
+    input: RemoveArtListingCuratedListItemsRequest_Input
+  ): RemoveArtListingCuratedListItemsResponse!
+  repositionArtListingCuratedListItems(
+    input: RepositionArtListingCuratedListItemsRequest_Input
+  ): RepositionArtListingCuratedListItemsResponse!
+  flagForMisinformation(
+    input: FlagForMisinformationRequest_Input
+  ): FlagForMisinformationResponse!
+  isAuthenticated(input: Empty_Input): Empty!
+  isAuthenticatedToArtworkListingSearch(input: Empty_Input): Empty!
+  contribute(
+    input: ArtistContributionRequest_Input
+  ): ArtistContributionResponse!
+  inquireAboutFinancing(
+    input: InquireAboutFinancingRequest_Input
+  ): InquireAboutFinancingResponse!
+}
+
+type MutationError {
+  message: String!
+  code: String!
+}
+
+type NewsArticle {
+  author: String!
+  authorUrl: AbsoluteUrl!
+  categoryName: String!
+  categoryUrl: String!
+  date: DateTime!
+  id: ID!
+  featuredImage: [NewsImage]!
+  title: String!
+  url: AbsoluteUrl!
+}
+
+type NewsImage {
+  aspectRatio: String!
+  url: AbsoluteUrl!
+}
+
+type NewsSearchHint implements SearchHint {
+  date: DateTime!
+  author: String!
+  id: ID!
+  name: String!
+  description: String
+  url: AbsoluteUrl!
+}
+
+input NotableArtListingFilters_Input {
+  creator: EntityFilter_Input
+}
+
+enum NotableFor {
+  UNSPECIFIED
+  HIGHEST_PRICE
+  HIGHEST_SOLD_ABOVE_ESTIMATE_RATE
+  HIGHEST_PRICE_PER_SQ_INCH
+}
+
+type NumericRange {
+  lowerBound: Float
+  upperBound: Float
+  includeUnknown: Boolean
+}
+
+input NumericRange_Input {
+  lowerBound: DoubleValue_Input
+  upperBound: DoubleValue_Input
+  includeUnknown: Boolean
+}
+
+type NumericRangeBucketResult {
+  lowerBound: Float
+  upperBound: Float
+  count: Int64
+  displayName: String
+}
+
+type NumericRangeBucketResults {
+  results: [NumericRangeBucketResult!]!
+  countUnknown: Int64
+}
+
+type NumericRangeResult {
+  range: NumericRange!
+  countUnknown: Int64!
+}
+
+type OfferedVsSoldPoint {
+  startDate: DateTime!
+  lotsOffered: Int64!
+  lotsSold: Int64!
+  inRequestedRange: Boolean!
+}
+
+type OfferedVsSoldResults {
+  results: [OfferedVsSoldPoint!]!
+}
+
+enum PdbAccessResult {
+  UNSPECIFIED
+  NO_ACCESS
+  PAY_PER_SEARCH
+  UNLIMITED
+}
+
+type PdbProductPermissions {
+  fineArt: PdbAccessResult!
+  decArt: PdbAccessResult!
+}
+
+type PdbSubscription {
+  id: ID!
+  isValid: Boolean!
+  title: String!
+  type: PdbSubscriptionType!
+  expiry: DateTime
+  quota: PdbSubscriptionQuota!
+  invalidityReasons: [PdbSubscriptionInvalidityReason!]!
+  warnings: [PdbSubscriptionWarning!]!
+}
+
+enum PdbSubscriptionInvalidityReason {
+  UNKNOWN
+  EXPIRED
+  INACTIVE
+  OUT_OF_CREDITS
+  SUSPENDED
+}
+
+type PdbSubscriptionQuota {
+  quotaType: PdbSubscriptionQuotaType!
+  numSearchesRemaining: Int
+}
+
+enum PdbSubscriptionQuotaType {
+  UNSPECIFIED
+  PAY_PER_SEARCH
+  PAY_PER_SEARCH_WITHOUT_VISIBLITY
+}
+
+enum PdbSubscriptionType {
+  UNSPECIFIED
+  DEC_ART
+  FINE_ART
+}
+
+enum PdbSubscriptionWarning {
+  NONE
+  CLOSE_TO_EXPIRY
+  NUMBER_OF_SEARCHES_LOW
+}
+
+type PlayGroundPriceFilter {
+  range: PlayGroundPriceRange!
+}
+
+input PlayGroundPriceFilter_Input {
+  range: PlayGroundPriceRange_Input!
+}
+
+type PlayGroundPriceRange {
+  valueDouble: Float!
+  valueFloat: Float!
+  valueLong: Int64!
+  valueInt: Int64!
+  valueLongNotnull: Int64!
+}
+
+input PlayGroundPriceRange_Input {
+  valueDouble: DoubleValue_Input!
+  valueFloat: FloatValue_Input!
+  valueLong: Int64Value_Input!
+  valueInt: Int64Value_Input!
+  valueLongNotnull: Int64!
+}
+
+type PreparedSearchChildFilter {
+  id: ID!
+  criteria: [PreparedSearchFilterCriteria!]!
+}
+
+type PreparedSearchFilter {
+  id: ID!
+  criteria: [PreparedSearchFilterCriteria!]!
+  childFilters: [PreparedSearchChildFilter!]!
+  metadata: [PreparedSearchMetadata!]!
+}
+
+type PreparedSearchFilterCriteria {
+  key: String!
+  value: String!
+  displayName: String
+  displayLabels: [PreparedSearchMetadata!]!
+}
+
+type PreparedSearchMetadata {
+  key: String!
+  value: String!
+}
+
+input PriceAggregation_Input {
+  includeSold: Boolean
+  includeEstimates: Boolean
+  numberOfBuckets: Int
+}
+
+type PriceDistributionPoint {
+  lowerBound: Float!
+  lowerBoundLog: Float!
+  upperBound: Float!
+  upperBoundLog: Float!
+  count: Int64!
+  countLog: Float!
+}
+
+type PriceDistributionResults {
+  results: [PriceDistributionPoint!]!
+}
+
+input PriceFilter_Input {
+  range: PriceRange_Input!
+  includeEstimates: Boolean!
+  includeUnknown: Boolean!
+}
+
+input PriceRange_Input {
+  lowerBound: DoubleValue_Input
+  upperBound: DoubleValue_Input
+}
+
+type ProductPermissions {
+  pdb: PdbProductPermissions!
+}
+
+type ProductSubscription {
+  pdb: PdbSubscription
+  aiSearch: AiSearchSubscription
+}
+
+type ProductSubscriptions {
+  overview: SubscriptionsOverview!
+  pdb: [PdbSubscription!]!
+  aiSearch: [AiSearchSubscription!]!
+}
+
+enum PublicArtListingDomain {
+  UNSPECIFIED
+  PDB
+  GALLERY
+  AUCTIONS
+}
+
+type RelatedArtistOverview {
+  artistId: Int!
+  relatedTo: Int!
+  uri: String
+  firstName: String
+  lastName: String
+}
+
+type RelatedSaleOverview {
+  saleId: Int!
+  name: String
+  uri: String
+}
+
+input RemoveArtListingCuratedListItemsRequest_Input {
+  listId: ID!
+  itemIds: [ID!]
+}
+
+type RemoveArtListingCuratedListItemsResponse {
+  results: [RemoveCuratedListItemsResult!]!
+}
+
+type RemoveCuratedListItemsResult {
+  numRemoved: Int!
+  list: ArtListingCuratedListSummary!
+}
+
+input RepositionArtListingCuratedListItemsRequest_Input {
+  sourceListId: ID!
+  destinationListId: ID
+  updateItemPosition: [UpdateArtListingCuratedListItemPosition_Input!]
+}
+
+type RepositionArtListingCuratedListItemsResponse {
+  result: ArtListingCuratedList!
+}
+
+enum SaleStatus {
+  UNSPECIFIED
+  BOUGHT_IN
+  CANCELED
+  CONTACT_AUCTION_HOUSE
+  CONTACT_GALLERY
+  FOR_SALE
+  NOT_AVAILABLE
+  NOT_FOR_SALE
+  OTHER
+  PRICE_ON_REQUEST
+  REMOVED
+  RESERVED
+  SOLD
+  UNDER_THE_RESERVE_PRICE
+  WITHDRAWN
+}
+
+interface SearchHint {
+  id: ID!
+  name: String!
+  description: String
+  url: AbsoluteUrl!
+}
+
+input SearchInsightsAutoRange_Input {
+  years: Int
+}
+
+input SearchInsightsConfiguration_Input {
+  priceDistributionBucketCount: Int
+}
+
+input SearchInsightsCustomRange_Input {
+  start: DateTime
+  end: DateTime
+}
+
+type SearchInsightsResultTimeframe {
+  start: DateTime!
+  end: DateTime!
+}
+
+enum SearchInsightsType {
+  UNSPECIFIED
+  STATISTICS
+  OFFERED_VS_SOLD
+  PRICE_DISTRIBUTION
+  TOTAL_SALES
+}
+
+input SearchRequest_Input {
+  freeformTextQuery: String
+  filters: ArtListingFilters_Input
+  page: Int!
+  pageSize: Int!
+  sortBy: [SortByClause_Input!]
+  subscriptionId: ID!
+  subscriptionScope: SubscriptionScope
+  preferences: ArtListingPreferences_Input
+}
+
+type SearchResults {
+  results: [ArtListingSummary!]
+  count: Int64
+  warnings: [Warning]
+}
+
+type SearchStatistics {
+  sellThroughRate: Float
+  sellThroughRateLastYear: Float
+  aboveHighEstimateRate: Float
+  aboveHighEstimateRateLastYear: Float
+  belowLowEstimateRate: Float
+  belowLowEstimateRateLastYear: Float
+  totalUpcomingListings: Int64
+  recentlyUpdated: Int64!
+  totalListingsCount: Int64!
+}
+
+enum SearchType {
+  GLOBAL
+  NEWS
+  AUCTIONS
+}
+
+input SearchWithAggregationsRequest_Input {
+  searchRequest: SearchRequest_Input!
+  aggregationCriteria: [AggregationCriteria_Input!]
+}
+
+type SearchWithAggregationsResponse {
+  searchResults: SearchResults
+  aggregationResults: AggregationResults
+}
+
+type SiteSearchResults {
+  results: [SearchHint!]!
+}
+
+input SnailMailRequest_Input {
+  allowCancellation: Boolean!
+  fakeDataLength: Int!
+  waitSeconds: Int!
+}
+
+type SnailMailResponse {
+  fakeData: String!
+}
+
+input SortByClause_Input {
+  fields: [ArtListingSortBy!]
+  direction: SortDirection
+}
+
+enum SortDirection {
+  ASCENDING
+  DESCENDING
+}
+
+type Specialty {
+  name: String
+  uri: String
+}
+
+type SubscriptionByIdResponse {
+  result: ProductSubscription!
+}
+
+enum SubscriptionScope {
+  UNSPECIFIED
+  LEGACY_PDB
+  AI_SEARCH
+}
+
+type SubscriptionsOverview {
+  hasLegacyPdb: Boolean!
+}
+
+enum SubscriptionStatus {
+  ANY
+  INVALID
+  VALID
+}
+
+input SubtreeSelection_Input {
+  parentIds: [ID!]
+  includeParent: Boolean!
+  recursive: Boolean
+}
+
+type Timing {
+  start: CustomDateTime!
+  end: CustomDateTime
+}
+
+type TotalSalesPoint {
+  startDate: DateTime!
+  valueUsd: Float!
+  quantitySold: Int64!
+}
+
+type TotalSalesResults {
+  results: [TotalSalesPoint!]!
+}
+
+input UpdateArtListingCuratedListItemPosition_Input {
+  artListingId: ID!
+  newPosition: Int!
+}
+
+input UpdateArtListingCuratedListRequest_Input {
+  id: ID!
+  title: String
+  featuredItemId: ID
+}
+
+type UpdateArtListingCuratedListResponse {
+  result: ArtListingCuratedListSummary!
+}
+
+input UpdateArtListingCuratedListStatusRequest_Input {
+  listIds: [ID!]
+  status: ArtListingCuratedListStatus!
+}
+
+type UpdateArtListingCuratedListStatusResponse {
+  results: [ArtListingCuratedListSummary!]!
+}
+
+type User {
+  id: ID!
+  displayName: String!
+  email: String!
+}
+
+enum UserPermissionScope {
+  Unspecified
+  Pdb
+}
+
+input UserPermissionsRequest_Input {
+  scope: UserPermissionScope
+}
+
+type UserPermissionsResult {
+  productPermissions: ProductPermissions!
+}
+
+type UserPrompt {
+  userPromptIndex: Int!
+  userPromptImage: String
+  userPromptImageUrl: String
+  userPromptText: String
+  userPromptSummary: String
+  globalResponseId: ID!
+  responseImageUrl: String
+  feedbackValue: FeedbackValue
+}
+
+type UserPrompts {
+  count: Int!
+  results: [UserPrompt!]!
+}
+
+type UserSubscriptionsResponse {
+  results: ProductSubscriptions!
+}
+
+input VariableWidthAggregation_Input {
+  numberOfBuckets: Int
+}
+
+type VariableWidthDateAggregationResult {
+  lowerBound: CustomDate
+  upperBound: CustomDate
+  count: Int64
+}
+
+type VariableWidthDateAggregationResults {
+  scale: DateInterval
+  scaleFactor: Int
+  results: [VariableWidthDateAggregationResult!]!
+  countUnknown: Int64
+}
+
+type Warning {
+  code: WarningCode
+  keys: [String]
+  message: String
+}
+
+enum WarningCode {
+  UNSPECIFIED
+  REDACTED
+  ACCOUNT_BALANCE
+  RESTRICTED
+}
+
+type WorkYear {
+  modifier: String
+  yearFrom: Int
+  eraFrom: Era!
+  yearTo: Int
+  eraTo: Era!
+}
+
+input YearFilter_Input {
+  lowerBound: Int32Value_Input
+  upperBound: Int32Value_Input
+  includeUnknown: Boolean
+}

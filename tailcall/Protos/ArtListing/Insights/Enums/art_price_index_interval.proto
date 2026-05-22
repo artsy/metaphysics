@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+package artnet.coredata.artlisting.insights.enums.art_price_index_interval;
+
+// The permitted intervals for the Art Price Index.
+enum ArtPriceIndexInterval {
+	// Unspecified interval.
+	UNSPECIFIED = 0;
+
+	// Biannual interval, twice a year.
+	BIANNUAL = 1;
+}

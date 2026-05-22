@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "google/protobuf/timestamp.proto";
+
+package artnet.coredata.artlisting.insights;
+
+// A container for total sales result data.
+message TotalSalesResults {
+	// The total sales data.
+	repeated TotalSalesPoint results = 1;
+}
+
+// A single point of total sales data.
+message TotalSalesPoint {
+	// The start date in the total sales point date range.
+	google.protobuf.Timestamp start_date = 1;
+
+	// The total value of the lots in this date range in USD.
+	double value_usd = 2;
+
+	// The quantity of lots in this date range.
+	int64 quantity_sold = 3;
+}

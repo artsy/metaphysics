@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+package artnet.coredata.artlisting.insights.enums.search_insights_type;
+
+// The type of insights you can get for your search.
+enum SearchInsightsType {
+	// Unspecified type.
+	UNSPECIFIED = 0;
+
+	// Statistics returns a number of data points for your search.
+	STATISTICS = 1;
+
+	// Offered vs sold returns stacked histogram data comparing offered vs sold for each interval.
+	OFFERED_VS_SOLD = 2;
+
+	// Price distribution returns histogram data representing all the prices in your search.
+	PRICE_DISTRIBUTION = 3;
+
+	// Total sales returns the total sales value over time for your search.
+	TOTAL_SALES = 4;
+}

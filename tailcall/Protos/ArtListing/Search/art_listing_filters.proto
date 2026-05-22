@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Filters";
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/common_filters.proto";
+
+package artnet.coredata.artlisting.search.filters;
+
+// A container for all the filters that can be applied to an artwork listing search.
+message ArtListingFilters {
+  // Filter on the creator of the artwork.
+  optional artnet.coredata.common.CreatorFilter creator = 1;
+
+  // Filter on the nationality of the creator of the artwork.
+  optional artnet.coredata.common.EntityFilter creator_nationality = 2;
+
+  // Filter on the art market institution that listed the artwork.
+  optional artnet.coredata.common.EntityFilter art_market_institution = 3;
+
+  // Filter on the art market institution's country that listed the artwork.
+  optional artnet.coredata.common.EntityFilter art_market_institution_country = 38;
+
+  // Filter on the sale status of the artwork listing.
+  optional artnet.coredata.common.EnumFilter sale_status = 4;
+
+  // Filter on the currency of the artwork listing.
+  optional artnet.coredata.common.EntityFilter currency = 5;
+
+  // Filter on the name of the sale the artwork was listed in.
+  optional artnet.coredata.common.EntityFilter sale = 6;
+
+  // Filter on the date of the  date of the artwork.
+  repeated artnet.coredata.common.DateFilter sale_date = 7;
+
+  // Filter on the sale number of the listing.
+  optional artnet.coredata.common.EntityFilter sale_number = 42;
+
+  // Filter on the year the artwork was created.
+  optional artnet.coredata.common.YearFilter creation_year = 8;
+
+  // Filter on the price of the artwork listing.
+  optional PriceFilter price = 9;
+
+  // Filter on the dimensions of the artwork.
+  repeated artnet.coredata.common.DimensionFilter dimension = 10;
+
+  // Filter on the catalogue raisonne author of the artwork.
+  optional artnet.coredata.common.EntityFilter catalogue_raisonne_author = 43;
+
+  // Filter on the catalogue raisonne number of the artwork.
+  optional artnet.coredata.common.EntityFilter catalogue_raisonne_number = 44;
+
+  // Filter on the category of the artwork.
+  optional artnet.coredata.common.HierarchicalEntityFilter category = 11;
+
+  // Filter on the catalog lot number of the listing.
+  optional CatalogLotNumberFilter catalog_lot_number = 41;
+
+  // Filter on the maker of the artwork.
+  optional artnet.coredata.common.EntityFilter maker = 39;
+
+  // Filter on the medium of the artwork.
+  optional artnet.coredata.common.EntityFilter medium = 12;
+
+  // Filter on the medium freetext description of the artwork.
+  optional artnet.coredata.common.EntityFilter medium_raw = 13;
+
+  // Filter on the substrate of the artwork.
+  optional artnet.coredata.common.EntityFilter substrate = 14;
+
+  // Filter on the attribute of the artwork.
+  optional artnet.coredata.common.EntityFilter attribute = 15;
+
+  // Filter on the movement of the artwork.
+  optional artnet.coredata.common.EntityFilter movement = 16;
+
+  // Filter on the material of the artwork.
+  optional artnet.coredata.common.EntityFilter material = 17;
+
+  // Filter on the media of the artwork.
+  optional artnet.coredata.common.EntityFilter media = 18;
+
+  // Filter on the classification of the artwork.
+  optional artnet.coredata.common.EntityFilter classification = 19;
+
+  // Filter on the photo status of the artwork.
+  optional artnet.coredata.common.BoolFilter has_image = 40;
+
+  // Filter on the edition status of the artwork.
+  optional artnet.coredata.common.BoolFilter is_edition = 20;
+
+  // Filter on the signed status of the artwork.
+  optional artnet.coredata.common.BoolFilter is_signed = 21;
+
+  // Filter on the creator's birth year.
+  optional artnet.coredata.common.YearFilter birth_year = 23;
+
+  // Filter on the creator's death year.
+  optional artnet.coredata.common.YearFilter death_year = 24;
+
+  // Filter on the artwork period.
+  optional artnet.coredata.common.EntityFilter period = 25;
+
+  // Filter on the artwork region.
+  optional artnet.coredata.common.EntityFilter region = 26;
+
+  // Filter on the subject matter of the artwork.
+  optional artnet.coredata.common.EntityFilter subject_matter = 27;
+
+  // Filter on the artwork's object type.
+  optional artnet.coredata.common.EntityFilter object_type = 28;
+
+  // Filter on the unique identifier of the artwork.
+  optional artnet.coredata.common.EntityFilter art_listing_id = 29;
+
+  // Filter on the title the artwork listing title.
+  optional artnet.coredata.common.EntityFilter artwork_listing_title = 30;
+
+  // Filter on the last updated date of the artwork listing.
+  repeated artnet.coredata.common.DateTimeFilter last_updated = 32;
+
+  // Filter on the artwork's stamp status.
+  optional artnet.coredata.common.BoolFilter is_stamped = 33;
+
+  // Filter on the artwork's inscription status.
+  optional artnet.coredata.common.BoolFilter is_inscribed = 34;
+
+  // Filter on the listed date of the artwork listing.
+  repeated artnet.coredata.common.DateTimeFilter listed_date = 35;
+
+  // Filter on the listing domain.
+  optional artnet.coredata.common.EnumFilter listing_domain = 36;
+
+  // Filter on the simplified transaction status of the artwork listing.
+  optional artnet.coredata.common.EnumFilter simplified_transaction_status = 37;
+
+  // Filter on the sold price of the artwork listing.
+  optional SoldPriceFilter sold_price = 45;
+
+  // Filter on the estimated price of the artwork listing.
+  optional EstimatedPriceFilter estimated_price = 46;
+
+}
+
+// A filter for a catalog lot number.
+message CatalogLotNumberFilter {
+  // Filter on Catalog Lot Number with exact match or search terms. Useful for text based catalog lot numbers.
+  optional artnet.coredata.common.EntityFilter selection = 1;
+
+  // Filter on Catalog Lot Number by numeric range. Useful for numeric lot numbers.
+  optional artnet.coredata.common.IntegerRangeFilter range = 2;
+}
+
+// A filter for the sold price of an artwork listing.
+message SoldPriceFilter {
+  // Use to specify a desired sold price range.
+  PriceRange range = 1;
+
+  // Specify true to include artworks that do not have a sold price at all.
+  bool include_unknown = 2;
+}
+
+// A filter for the estimated price of an artwork listing.
+message EstimatedPriceFilter {
+  // Use to specify a desired estimated price range.
+  PriceRange range = 1;
+
+  // Specify true to include artworks that do not have an estimated price at all.
+  bool include_unknown = 2;
+}
+
+// A filter for the price of an artwork listing.
+message PriceFilter {
+  // Use to specify a desired price range.
+  PriceRange range = 1;
+
+  // Specify true to include estimates in your price filter.
+  bool include_estimates = 2;
+
+  // Specify true to include artworks that do not have a price at all.
+  bool include_unknown = 3;
+}
+
+// A container for specifying a price range for an artwork listing.
+message PriceRange {
+  // The lower bound of the price range.
+  optional google.protobuf.DoubleValue lower_bound = 1;
+
+  // The upper bound of the price range.
+  optional google.protobuf.DoubleValue upper_bound = 2;
+}

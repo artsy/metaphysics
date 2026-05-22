@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.DimensionTypes";
+import "Protos/Common/Enums/dimension_unit.proto";
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.common;
+
+// The dimension of a physical object.
+message Dimensions { 
+	// The height of the object, if known.
+	optional google.protobuf.DoubleValue height = 1;
+
+	// The height of the object, if known.
+	optional google.protobuf.DoubleValue width = 2;
+
+	// The depth of the object, if known.
+	optional google.protobuf.DoubleValue depth = 3;
+
+	// The dimension unit pertaining to these dimensions.
+	artnet.coredata.common.enums.dimension_unit.DimensionUnit unit = 4;
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor";
+
+import "Protos/AIArtAdvisor/Enums/feedback_value.proto";
+
+package artnet.coredata.aiartadvisor;
+
+message GetConversationsRequest {
+  optional int32 page = 1;
+  optional int32 page_size = 2;
+}
+
+message GetConversationRequest {
+  string conversation_id = 1;
+}

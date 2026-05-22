@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.listing_domain;
+
+// The listing domain.
+enum ListingDomain {
+
+    UNSPECIFIED = 0;
+
+    PDB = 1;
+
+    PDB_TEASER = 2;
+
+    GALLERY = 3;
+
+    ARTNET_AUCTION = 4;
+}

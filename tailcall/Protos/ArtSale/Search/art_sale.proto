@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtSale";
+
+import "Protos/Common/aggregations.proto";
+import "Protos/Common/Enums/sort_direction.proto";
+import "Protos/Common/Enums/subscription_scope.proto";
+import "Protos/ArtSale/art_sale_filters.proto";
+import "Protos/ArtSale/art_sale_search_results.proto";
+
+package artnet.coredata.artsale.search;
+
+service ArtSale {
+  rpc GetArtSales (ArtSaleSearchRequest) returns (artnet.coredata.artsale.search.search_results.ArtSaleSearchResults);
+}
+
+message ArtSaleSearchRequest {
+  optional string freeform_text_query = 1;
+  repeated artnet.coredata.artsale.filters.ArtSaleFilters filters = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  repeated ArtSaleSortByClause sort_by = 5;
+  string subscription_id = 6;
+  artnet.coredata.common.enums.subscription_scope.SubscriptionScope subscription_scope = 7;
+}
+
+message ArtSaleSortByClause {
+	repeated artnet.coredata.artlisting.search.enums.SortBy fields = 1;
+	optional artnet.coredata.common.enums.SortDirection direction = 2;
+}

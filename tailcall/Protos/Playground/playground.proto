@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Playground";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package artnet.coredata.playground;
+
+service Playground {
+  rpc GetInput (EchoInputRequest) returns (EchoInputRequest);
+  rpc GetSnailMail (SnailMailRequest) returns (SnailMailResponse);
+  rpc GetUserInfo (EchoUserInfoRequest) returns (EchoUserInfoResponse);
+  
+  // Gets user information for your SSO token
+  rpc GetSsoUserInfo(GetSsoUserInfoRequest) returns (GetSsoUserInfoResponse)
+  {
+	  option (google.api.http) = {
+		get: "/playground/get-sso-user-info"
+	  };
+  };
+
+  // Checks if the user is authenticated
+  rpc IsAuthenticated(google.protobuf.Empty) returns (google.protobuf.Empty)
+  {
+	  option (google.api.http) = {
+		get: "/playground/is-authenticated"
+	  };
+  };
+
+    // Checks if the user is authenticated to the Artwork Listing Search API
+  rpc IsAuthenticatedToArtworkListingSearch(google.protobuf.Empty) returns (google.protobuf.Empty)
+  {
+	  option (google.api.http) = {
+		get: "/playground/is-authenticated-to-artwork-listing-search"
+	  };
+  };
+}
+
+message GetSsoUserInfoRequest {
+
+}
+
+message GetSsoUserInfoResponse {
+	string expiry = 1;
+	string issued_by = 2;
+	string client_id = 3;
+	repeated string scope = 4;
+	string authorization_header = 5;
+	string artnetUserId = 6;
+}
+
+message EchoInputRequest {
+	PlayGroundPriceFilter price = 3; // USD standarize
+}
+
+message EchoUserInfoRequest {
+
+}
+
+message EchoUserInfoResponse {
+	string user_info = 1;
+}
+
+message PlayGroundPriceFilter {
+	PlayGroundPriceRange range = 1;	
+}
+
+message PlayGroundPriceRange {
+	google.protobuf.DoubleValue value_double = 1;
+	google.protobuf.FloatValue value_float = 2;
+	google.protobuf.Int64Value value_long = 3;
+	google.protobuf.Int64Value value_int = 4;
+	int64 value_long_notnull = 5;
+}
+
+message SnailMailRequest {
+	bool allow_cancellation = 1;
+	int32 fake_data_length = 2;
+	int32 wait_seconds = 3;
+}
+
+message SnailMailResponse {
+	string fake_data = 1;
+}

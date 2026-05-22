@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_market_institution_relationship;
+
+// The Art Market Institution Relationship
+enum ArtMarketInstitutionRelationship {
+	// Unspecified
+	UNSPECIFIED = 0;
+
+	// Featured
+	FEATURED = 1;
+
+	// Partnership
+	PARTNERSHIP = 2;
+
+}

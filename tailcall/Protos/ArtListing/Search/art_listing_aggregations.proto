@@ -1,0 +1,408 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Aggregations";
+import "Protos/Common/aggregations.proto";
+import "Protos/ArtListing/Enums/art_listing_entity_type.proto";
+import "Protos/ArtListing/Enums/art_listing_sub_entity_type.proto";
+import "Protos/Common/Enums/dimension_unit.proto";
+import "Protos/Common/numeric_types.proto";
+
+package artnet.coredata.artlisting.search.aggregations;
+
+// A container you can specify all how you want to build your aggregations.
+message AggregationCriteria {
+
+	// Group your results by the Art Market Institution
+	optional artnet.coredata.common.GroupByAggregation art_market_institution = 1;
+
+  	// Group your results by the Art Market Institution
+	optional artnet.coredata.common.GroupByAggregation art_market_institution_country = 36;
+
+	// Group your results by artwork listing title.
+	optional artnet.coredata.common.GroupByAggregation artwork_listing_title = 2;
+
+	// Group your results by the artwork attribute.
+	optional artnet.coredata.common.GroupByAggregation attribute = 3;
+
+	// Aggregate your results into a histogram based on birth year.
+	optional artnet.coredata.common.VariableWidthAggregation birth_year = 4;
+
+  // Group your results by Catalogue Raisonne Author.
+	optional artnet.coredata.common.GroupByAggregation catalogue_raisonne_author = 41;
+
+  // Group your results by Catalogue Raisonne Number.
+	optional artnet.coredata.common.GroupByAggregation catalogue_raisonne_number = 42;
+
+  // Group your results by the catalog lot number.
+	optional artnet.coredata.common.GroupByAggregation catalog_lot_number = 39;
+
+	// Group your results by category.
+	optional artnet.coredata.common.GroupByAggregation category = 5;
+
+	// Group your results based on artwork classification.
+	optional artnet.coredata.common.GroupByAggregation classification = 6;
+
+	// Group your results by creation year.
+	optional artnet.coredata.common.VariableWidthAggregation creation_year = 7;
+
+	// Group your results by the Artwork creator.
+	optional artnet.coredata.common.GroupByAggregation creator = 8;
+
+	// Group your results by the creator nationality.
+	optional artnet.coredata.common.GroupByAggregation creator_nationality = 9;
+
+	// Group your results by currency.
+	optional artnet.coredata.common.GroupByAggregation currency = 10;
+
+	// Aggregate your results into a histogram based on death year.
+	optional artnet.coredata.common.VariableWidthAggregation death_year = 11;
+
+	// Aggregate your results into dimension range buckets.
+	repeated DimensionBucketAggregation dimension = 12;
+
+	// Group your results based on whether the artwork has a image or not.
+	optional artnet.coredata.common.GroupByAggregation has_image = 38;
+
+	// Group your results based on edition status.
+	optional artnet.coredata.common.GroupByAggregation is_edition = 14;
+
+	// Group your results by the inscribed status of the artwork.
+	optional artnet.coredata.common.GroupByAggregation is_inscribed = 15;
+
+	// Group your results based on signature status.
+	optional artnet.coredata.common.GroupByAggregation is_signed = 16;
+
+	// Group your results by the stamped status of the artwork.
+	optional artnet.coredata.common.GroupByAggregation is_stamped = 17;
+
+  // Group your results by listing domain.
+  optional artnet.coredata.common.GroupByAggregation listing_domain = 18;
+
+	// Group your results by the artwork material.
+	optional artnet.coredata.common.GroupByAggregation material = 19;	
+
+	// Group your results by maker.
+	optional artnet.coredata.common.GroupByAggregation maker = 37;
+
+	// Group your results by media.
+	optional artnet.coredata.common.GroupByAggregation media = 20;
+
+	// Group your results by the artwork medium.
+	optional artnet.coredata.common.GroupByAggregation medium = 21;
+
+	// Group your results by the artwork medium freeform text raw field.
+	optional artnet.coredata.common.GroupByAggregation medium_raw = 22;
+
+ 	// Group your results by movement.
+	optional artnet.coredata.common.GroupByAggregation movement = 23;
+
+	// Group your results by the artwork object type.
+	optional artnet.coredata.common.GroupByAggregation object_type = 24;
+
+	// Group your results by the artwork period.
+	optional artnet.coredata.common.GroupByAggregation period = 25;
+
+	// Aggregate your results into a price range histogram.
+	optional PriceAggregation price = 26;
+
+	// Aggregate your results into a sold price range histogram.
+	optional SoldPriceAggregation sold_price = 43;
+
+	// Aggregate your results into an estimated price range histogram.
+	optional EstimatedPriceAggregation estimated_price = 44;
+
+	// Group your results by the artwork region.
+	optional artnet.coredata.common.GroupByAggregation region = 27;
+
+	// Group your results by sale name.
+	optional artnet.coredata.common.GroupByAggregation sale = 28;
+
+	// Group your results by sale country.
+	optional artnet.coredata.common.GroupByAggregation sale_country = 29;
+
+  // Group your results by sale date.
+	optional artnet.coredata.common.VariableWidthAggregation sale_date = 30;
+
+  // Group your results by sale number.
+	optional artnet.coredata.common.GroupByAggregation sale_number = 40;
+
+  // Group your results by sale status.
+  optional artnet.coredata.common.GroupByAggregation sale_status = 31;
+
+  // Group your results by the search suggestion field.
+	optional artnet.coredata.common.GroupByAggregation search_suggestion = 32;
+
+	// Group your results by the artwork subject matter.
+	optional artnet.coredata.common.GroupByAggregation subject_matter = 33;
+
+	// Group your results by the artwork substrate.
+	optional artnet.coredata.common.GroupByAggregation substrate = 34;
+
+	// Group your results by the simplified transaction status.
+	optional artnet.coredata.common.GroupByAggregation simplified_transaction_status = 35;
+}
+
+// A container for all the aggregation results.
+message EntityAggregationResults 
+{
+	// The results of your aggregation.
+	repeated AggregationResult results = 1;
+
+	// The number of results in your aggregation.
+	optional int64 count = 2;
+
+	// The number of results that are not possible to include in your aggregation as they have insufficient data.
+	optional int64 count_unknown = 4;
+
+	// The number of results that are not included in your aggregation as they are found in buckets beyond the maximum bucket limit.
+	optional int64 count_beyond_limit = 5;
+}
+
+// A container for a single aggregation result.
+message AggregationResult {
+	// The unique identifier of the aggregation.
+	string id = 1;
+
+	// The type of entity that the aggregation is based on.
+	optional artnet.coredata.artlisting.enums.art_listing_entity_type.ArtListingEntityType entity_type = 2;
+
+	// The sub aggregations of the aggregation.
+	repeated AggregationResult sub_aggregations = 3;
+
+	// The display name of the aggregation.
+	optional string display_name = 4;
+
+	// A descriptive message for the aggregation.
+	optional string description = 5;
+
+	// A count of the number of results in this aggregation.
+	optional int64 count = 6;
+
+	// The subtype of the entity this aggregation is based on.
+	optional artnet.coredata.artlisting.enums.art_listing_sub_entity_type.ArtListingSubEntityType sub_entity_type = 7;
+}
+
+// Options for aggregating on price.
+message PriceAggregation {
+	// Include sold prices in the aggregation.
+	optional bool include_sold = 1;
+
+	// Include estimated prices in the aggregation.
+	optional bool include_estimates = 2;
+
+	// Desired number of buckets in the aggregation.
+	optional int32 number_of_buckets = 4;
+}
+
+// Options for aggregating on sold price.
+message SoldPriceAggregation {
+	// Desired number of buckets in the aggregation.
+	optional int32 number_of_buckets = 1;
+}
+
+// Options for aggregating on estimated price.
+message EstimatedPriceAggregation {
+	// Desired number of buckets in the aggregation.
+	optional int32 number_of_buckets = 1;
+}
+
+// Options for aggregating on dimension/size.
+message DimensionAggregation {
+	// Your desired dimension aggregations.
+	repeated DimensionBucketAggregation aggregations = 1;
+}
+
+// Options to configure your desired dimension bucket aggregation.
+message DimensionBucketAggregation {
+	// The desired name of the bucket, used for later identification.
+	optional string bucket_name = 1;
+
+	// The range on the longest edge, that you want to apply to this bucket.
+	optional artnet.coredata.common.NumericRange longest_edge = 2;
+
+	// The range on the height, that you want to apply to this bucket
+	optional artnet.coredata.common.NumericRange height = 3;
+
+	// The range on the width, that you want to apply to this bucket
+	optional artnet.coredata.common.NumericRange width = 4;
+
+	// The range on the depth, that you want to apply to this bucket
+	optional artnet.coredata.common.NumericRange depth = 5;
+
+	// Specify the unit for your ranges.
+	artnet.coredata.common.enums.dimension_unit.DimensionUnit unit = 6;
+
+	// Specify if you want to include artworks with unknown dimensions in your aggregation.
+	optional bool include_unknown = 7;
+}
+
+// A container for aggregation results.
+message AggregationResults {
+	// Your Art Market Institution aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults art_market_institution = 1;
+
+	// Your Art Market Institution's country aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults art_market_institution_country = 36;
+
+	// Your artwork listing title aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults artwork_listing_title = 2;
+
+	// Your attribute aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults attribute = 3;
+
+	// Your birth year aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults birth_year = 4;
+
+  // Your catalogue raisonne author aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults catalogue_raisonne_author = 41;
+
+  // Your catalogue raisonne number aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults catalogue_raisonne_number = 42;
+
+  // Your catalog lot number aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults catalog_lot_number = 39;
+
+	// Your category aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults category = 5;
+
+	// Your classification status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults classification = 6;
+
+	// Your creation year aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults creation_year = 7;
+
+	// Your creator aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults creator = 8;
+
+	// Your creator nationality aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults creator_nationality = 9;
+
+	// Your currency aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults currency = 10;
+
+	// Your death year aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults death_year = 11;
+
+	// Your dimension/size aggregation results, if you requested this aggregation.
+	optional DimensionAggregationResults dimension = 12;
+
+	// Your image status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults has_image = 38;
+
+	// Your edition status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults is_edition = 14;
+
+  	// Your inscribed status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults is_inscribed = 15;
+
+	// Your signature status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults is_signed = 16;
+
+	// Your stamped status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults is_stamped = 17;
+  
+  // Your listing domain aggregation results, if you requested this aggregation.
+  optional EntityAggregationResults listing_domain = 18;
+
+	// Your maker aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults maker = 37;
+
+	// Your material aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults material = 19;
+
+	// Your media aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults media = 20;
+
+	// Your medium aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults medium = 21;
+
+	// Your medium freetext aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults medium_raw = 22;
+
+	// Your movement aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults movement = 23;
+
+	// Your object type aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults object_type = 24;
+
+	// Your artwork period aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults period = 25;
+
+	// Your price aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults price = 26;
+
+	// Your sold price aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults sold_price = 43;
+
+	// Your estimated price aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.NumericRangeBucketResults estimated_price = 44;
+
+	// Your region aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults region = 27;
+
+	// Your sale name aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults sale = 28;
+
+	// Your sale country aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults sale_country = 29;
+
+	// Your sale date aggregation results, if you requested this aggregation.
+	optional artnet.coredata.common.VariableWidthDateAggregationResults sale_date = 30;
+
+	// Your sale number aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults sale_number = 40;
+
+	// Your sale status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults sale_status = 31;
+
+	// Your search suggestion aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults search_suggestion = 32;
+
+	// Your artwork subject matter aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults subject_matter = 33;
+
+	// Your substrate aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults substrate = 34;
+
+	// Your simplified transaction status aggregation results, if you requested this aggregation.
+	optional EntityAggregationResults simplified_transaction_status = 35;
+}
+
+// A container for dimension aggregation results. 
+message DimensionAggregationResults {
+	// The dimension aggregation results.
+	repeated DimensionBucketAggregationResult results = 1;
+
+	// The number of unknown/uncategorized results.
+	int64 count_unknown = 2;
+	
+	// The total number of results
+	int64 count = 3;
+}
+
+// A container for a single dimension bucket aggregation result.
+message DimensionBucketAggregationResult {
+	// The name of the bucket.
+	string bucket_name = 1;
+
+	// The range of the longest edge for this bucket.
+	optional artnet.coredata.common.NumericRangeResult longest_edge = 2;
+
+	// The range of the height for this bucket.
+	optional artnet.coredata.common.NumericRangeResult height = 3;
+
+	// The range of the width for this bucket.
+	optional artnet.coredata.common.NumericRangeResult width = 4;
+
+	// The range of the depth for this bucket.
+	optional artnet.coredata.common.NumericRangeResult depth = 5;
+
+	// The unit of the dimensions.
+	artnet.coredata.common.enums.dimension_unit.DimensionUnit unit = 6;
+
+	// The number of results that fall into the intersection of all your dimension filters.
+	int64 count = 7;
+
+	// The number of results that cannot fall into the dimension filters as they are missing dimensions.
+	int64 count_unknown = 8;
+}

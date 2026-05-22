@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Search.PreparedSearch";
+package artnet.coredata.artlisting.search.prepared_search;
+
+message GetSearchFiltersForPublicArtListingRequest {
+  optional string public_art_listing_id = 1; // the public art listing id e.g. plume-1-pe5dmou67e5pe46VjaooSA2 for https://www.artnet.com/artists/lucy-bull/plume-1-pe5dmou67e5pe46VjaooSA2.
+}
+
+message GetSearchFiltersForPublicArtListingResponse {
+  repeated artnet.coredata.artlisting.search.prepared_search.PreparedSearchFilter filters = 1;
+}
+
+message GetSearchFiltersForComparableWorksRequest {
+    string art_listing_details_id = 1;
+}
+
+message GetSearchFiltersForComparableWorksResponse {
+  repeated artnet.coredata.artlisting.search.prepared_search.PreparedSearchFilter filters = 1;
+}
+
+message PreparedSearchFilter {
+	string id = 1; // ObjectType
+	repeated PreparedSearchFilterCriteria criteria = 2;
+	repeated PreparedSearchChildFilter child_filters = 3; // only for Dimension Filter and complex nested filters
+	repeated PreparedSearchMetadata metadata = 4;
+}
+
+message PreparedSearchFilterCriteria {
+	string key = 1; // Keys
+	string value = 2; // 565
+	optional string display_name = 3;
+	repeated PreparedSearchMetadata display_labels = 4;
+}
+
+message PreparedSearchMetadata {
+	string key = 1; // displayName, description
+	string value = 2;
+}
+
+message PreparedSearchChildFilter {
+	string id = 1; // Height
+	repeated PreparedSearchFilterCriteria criteria = 2;
+}

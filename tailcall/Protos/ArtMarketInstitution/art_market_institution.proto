@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtMarketInstitution";
+import "Protos/Common/location_types.proto";
+import "Protos/ArtListing/Enums/art_market_institution_kind.proto";
+import "Protos/ArtListing/Enums/art_market_institution_relationship.proto";
+
+package artnet.coredata.artmarketinstitution;
+
+// Key data for Art Market Institution.
+message ArtMarketInstitution {
+	// The unique identifier for the Art Market Institution, used in subsequent search requests.
+	string id = 1;
+
+	// The name of the Art Market Institution.
+	string name = 2;
+
+	// The homepage URI of the Art Market Institution.
+	optional string uri = 3;
+
+	// The key of the Art Market Institution, used in subsequent search requests.
+	optional string key = 4;
+
+	// The physical location of the Art Market Institution.
+	repeated artnet.coredata.common.Location location = 5;
+
+  // The kind of Art Market Institution.
+  artnet.coredata.artlisting.enums.art_market_institution_kind.ArtMarketInstitutionKind kind = 6;
+
+  // The relationship of Art Market Institution.
+  optional artnet.coredata.artlisting.enums.art_market_institution_relationship.ArtMarketInstitutionRelationship relationship = 7;
+}

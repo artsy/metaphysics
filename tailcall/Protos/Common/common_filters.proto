@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Filters";
+import "Protos/Common/numeric_types.proto";
+import "Protos/Common/date_types.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/Enums/dimension_unit.proto";
+
+package artnet.coredata.common;
+
+// Filter on date and time.
+message DateTimeFilter {
+	// Lower bound of the date and time range. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp lower_bound = 1;
+
+	// Lower bound of the date and time range. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp upper_bound = 2;
+}
+
+// Filter results based on a specific entity.
+message EntityFilter {
+	// List of entity keys to include.
+	repeated string keys = 1;
+
+	// List of entity keys to exclude.
+	repeated string exclude_keys = 2;
+
+	// List of terms to search on.
+	repeated string search_terms = 3;
+
+	// Include results that cannot be categorized by this entity/field.
+	optional bool include_unknown = 4;
+}
+
+// Filter results based on specific entities and their children.
+message HierarchicalEntityFilter {
+	// Filter for nodes relative to a parent node.
+	optional SubtreeSelection subtree = 1;
+
+	// Filter nodes by their ids or other attributes.
+	optional IndividualSelection individual = 2;
+
+	// Include results that cannot be categorized by this entity/field.
+	optional bool include_unknown = 3;
+}
+
+// Filter for nodes relative to a parent node.
+message SubtreeSelection {
+	// Optional: if you do not provide any parent_ids, the parent is the root node.
+	repeated string parent_ids = 1;
+	
+	// If true, the parent node itself is included in the result.
+	bool include_parent = 2;
+	
+	// If true, gets all descendants recursively. 
+	// If false, only gets immediate children.
+	optional bool recursive = 3;
+}
+
+// Filter nodes by their ids or other attributes.
+message IndividualSelection {
+	// List of entity keys to include.
+	repeated string keys = 1;
+
+	// List of entity keys to exclude.
+	repeated string exclude_keys = 2;
+
+	// List of terms to search on.
+	repeated string search_terms = 3;
+}
+
+// Filter results based on a specific creator.
+message CreatorFilter {
+	// List of entity keys to include.
+	repeated string keys = 1;
+
+	// List of entity keys to exclude.
+	repeated string exclude_keys = 2;
+
+	// List of terms to search on.
+	repeated string search_terms = 3;
+
+	// Include results that cannot be categorized by this entity/field.
+	optional bool include_unknown = 4;
+
+	// Include all attributing to this creator in addition to the original creator.
+	optional bool include_attributions = 5;
+
+	// Include all collaborations involving this creator.
+	optional bool include_collaborations = 6;
+}
+
+// Filter results based on a specific enum.
+message EnumFilter {
+	// List of entity keys to include.
+  repeated string keys = 1;
+
+	// List of entity keys to exclude.
+	repeated string exclude_keys = 2;
+
+	// Include results that cannot be categorized by this entity/field.
+	optional bool include_unknown = 3;
+}
+
+// Filter on year.
+message YearFilter {
+	// The lowest year to consider in the range.
+	optional google.protobuf.Int32Value lower_bound = 1;
+
+	// The highest year to consider in the range.
+	optional google.protobuf.Int32Value upper_bound = 3;
+
+	// Include results that are missing the year field.
+	optional bool include_unknown = 5;
+}
+
+// Filter on integer by range.
+message IntegerRangeFilter {
+	// The lowest value to consider in the range.
+	optional google.protobuf.Int32Value lower_bound = 1;
+
+	// The highest value to consider in the range.
+	optional google.protobuf.Int32Value upper_bound = 3;
+
+	// Include results that are missing the value altogether.
+	optional bool include_unknown = 5;
+}
+
+// Filter on date.
+message DateFilter {
+	// The lowest date to consider in the range.
+	optional artnet.coredata.common.CustomDate lower_bound = 1;
+
+	// The highest date to consider in the range.
+	optional artnet.coredata.common.CustomDate upper_bound = 2;
+
+	// Include results that are missing the date field.
+	optional bool include_unknown = 3;
+}
+
+// Filter on boolean properties.
+message BoolFilter {
+	// List of boolean values to include.
+	repeated bool values = 1;
+
+	// Include results that are missing the boolean field.
+	optional bool include_unknown = 2;
+}
+
+// Filter on dimension properties.
+message DimensionFilter {
+	// Filter to apply on the height property.
+	optional artnet.coredata.common.NumericRange height = 1;
+
+	// Filter to apply on the width property.
+	optional artnet.coredata.common.NumericRange width = 2;
+
+	// Filter to apply on the depth property.
+	optional artnet.coredata.common.NumericRange depth = 3;
+
+	// Filter to apply on the longest edge property.
+	optional artnet.coredata.common.NumericRange longest_edge = 4;
+
+	// The dimension unit used by this filter.
+	artnet.coredata.common.enums.dimension_unit.DimensionUnit unit = 5;
+}

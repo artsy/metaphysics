@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+package artnet.coredata.artlisting.insights;
+
+// A container for price distribution results.
+message PriceDistributionResults {
+	// The results of the price distribution.
+	repeated PriceDistributionPoint results = 1;
+}
+
+// A point in the price distribution.
+message PriceDistributionPoint {
+	// The lower bound of the price range.
+	double lower_bound = 1;
+
+	// The logarithmic lower bound of the price range.
+	double lower_bound_log = 2;
+
+	// The upper bound of the price range.
+	double upper_bound = 3;
+
+	// The logarithmic upper bound of the price range.
+	double upper_bound_log = 4;
+
+	// The number of lots in this price range.
+	int64 count = 5;
+
+	// The logarithmic number of lots in this price range.
+	double count_log = 6;
+}

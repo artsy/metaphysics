@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_market_institution_kind;
+
+// The Art Market Institution Kind
+enum ArtMarketInstitutionKind {
+  // Unspecified.
+  UNSPECIFIED = 0;
+
+  // ArtNet auction.
+  ARTNET_AUCTION = 1;
+
+  // Auction House
+  AUCTION_HOUSE = 2;
+
+  // Gallery
+  GALLERY = 3;
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.warning_code;
+
+// The available warning codes.
+enum WarningCode {
+    // Unspecified warning code.
+    UNSPECIFIED = 0;
+
+    // Some data is redacted, please see warning messages for details.
+    REDACTED = 1;
+    
+    // There is an issue with your account balance, please see warning messages for details.
+    ACCOUNT_BALANCE = 2;
+
+    // Some data will not be returned due to restrictions in place on your account, please see warning messages for details.
+    RESTRICTED = 3;
+}

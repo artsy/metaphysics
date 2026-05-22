@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Enums";
+package artnet.coredata.artwork.enums.art_market_institution_type;
+
+// The types of institutions in the art marketplace.
+enum ArtMarketInstitutionType {
+
+    // Unspecified institution.
+    UNSPECIFIED = 0;
+
+    // Auction house institution.
+    AUCTION_HOUSE = 1;
+
+    // Gallery institution.
+    GALLERY = 2;
+}

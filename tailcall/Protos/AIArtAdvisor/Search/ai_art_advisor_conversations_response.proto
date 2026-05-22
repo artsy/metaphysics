@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.AIArtAdvisor";
+
+import "google/protobuf/timestamp.proto";
+import "Protos/AIArtAdvisor/Enums/feedback_value.proto";
+
+package artnet.coredata.aiartadvisor;
+
+message GetConversationsResponse{
+  int32 count = 1;
+  repeated Conversation results = 2;
+}
+
+message Conversation {
+  string conversation_id = 1;
+  optional string first_user_prompt_text = 2;
+  optional string first_user_prompt_image_url = 5;
+  optional string first_response_image_url = 3;
+  google.protobuf.Timestamp date_created = 4;
+}
+
+message GetConversationResponse{
+  string conversation_id = 1;
+  int32 remaining_user_prompts = 2;
+  UserPrompts user_prompts = 3;
+  int32 last_user_prompt_index = 4;
+}
+
+message UserPrompts {
+  int32 count = 1;
+  repeated UserPrompt results = 2;
+}
+
+message UserPrompt {
+  int32 user_prompt_index = 1;
+  optional string user_prompt_image = 2;
+  optional string user_prompt_image_url = 3;
+  optional string user_prompt_text = 4;
+  optional string user_prompt_summary = 5;
+  string global_response_id = 6;
+  optional string response_image_url = 7;
+  optional artnet.coredata.aiartadvisor.enums.feedback_value.FeedbackValue feedback_value = 8;
+}

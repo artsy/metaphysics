@@ -1,0 +1,265 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.SearchResults";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "Protos/ArtMarketInstitution/art_market_institution.proto";
+import "Protos/ArtListing/Common/art_listing_prices.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/Common/dimension_types.proto";
+import "Protos/Common/image_types.proto";
+import "Protos/Common/date_types.proto";
+import "Protos/Common/Enums/era.proto";
+import "Protos/Common/Enums/creator_type.proto";
+import "Protos/ArtListing/Enums/listing_domain.proto";
+import "Protos/ArtListing/Enums/sale_status.proto";
+import "Protos/ArtListing/Enums/art_listing_event_kind.proto";
+import "Protos/Common/warning.proto";
+
+package artnet.coredata.artlisting.search.search_results;
+
+// A container for artwork listing search results.
+message SearchResults {
+  // The search results.
+  repeated ArtListingSummary results = 1;
+  
+  // The total number of search results.
+  optional int64 count = 2;
+
+  // Warnings related to the search and the results.
+  repeated artnet.coredata.common.Warning warnings = 3;
+}
+
+// A summary of an artwork listing with key details included.
+message ArtListingSummary {
+  // The unique identifier of the artwork listing.
+  string id = 1;
+
+  // The listing domain, (Gallery, PDB, Artnet Auction)
+  artnet.coredata.artlisting.enums.listing_domain.ListingDomain listing_domain = 2;
+
+  // The art market institution that the artwork listing is associated with.
+  optional artnet.coredata.artmarketinstitution.ArtMarketInstitution art_market_institution = 3;
+
+  // The lot summary of the artwork listing.
+  ListingData listing_data = 4;
+
+  // The name of the sale that the artwork was listed in.
+  optional string sale_name = 5;
+
+  // The sale timing of the artwork listing.
+  repeated artnet.coredata.common.Timing timing = 6;
+
+  // The countries where the sale took place.
+  repeated string sale_countries = 7;
+
+  // The sale status.
+  optional artnet.coredata.artlisting.enums.sale_status.SaleStatus sale_status = 8;
+
+  // The prices of the artwork listing.
+  repeated artnet.coredata.artlisting.common.ArtListingSalePrice prices = 9;
+
+  // The unique identifier of the sale that the artwork was listed in.
+  optional string sale_id = 10;
+
+  // The featured image of the artwork listing.
+  optional artnet.coredata.common.Image featured_image = 11;
+
+  // The unique identifier of the artwork listing detail.
+  string art_listing_detail_id = 12;
+
+  // The last time the artwork listing was updated.
+  google.protobuf.Timestamp last_updated = 13;
+
+  // The date the artwork was listed.
+  google.protobuf.Timestamp listed_date = 14;
+
+  // The redaction status of this listing. If true, speak to your account manager to gain access to the data for this listing.
+  optional bool is_redacted = 15;
+
+  // The events related to the artwork listing.
+  repeated ArtListingEvent events = 16;
+
+  // The unique identifier of the artwork listing that maps directly to lot ID and to be populated for the employees only.
+  optional string art_listing_internal_id = 17;
+}
+
+// A summary of a listing with key details included.
+message ListingData {
+  // The artwork listing identifier.
+  optional string id = 1;
+
+  // The title of the lot.
+  optional string title = 2;
+
+  // The lot number of the lot as represented by the entity selling the artwork.
+  optional string catalog_lot_number = 3;
+
+  // The artworks involved in the artwork listing.
+  repeated ListingDataArtworkSummary artworks = 4;
+
+  // The Artnet URI of the artwork listing.
+  optional string uri = 5;
+
+  // The external URL of the artwork listing.
+  optional string external_url = 6;
+
+  // The sale number, a property of auction/collection.
+  optional string sale_number = 7;
+}
+
+// A summary the creator of the artwork.
+message CreatorSummary {
+  // The unique identifier of the creator.
+  string id = 1;
+
+  // The modifier/attribution of the creator.
+  optional string modifier = 2;
+
+  // The name of the creator.
+  string name = 3;
+
+  // The aliases of the creator.
+  repeated string aliases = 4;
+
+  // The URI of the creator.
+  optional string uri = 5;
+
+  // The type of creator.
+  optional artnet.coredata.common.enums.creator_type.CreatorType creator_type = 6;
+
+  // The artists linked to this creator.
+  repeated ArtistSummary artists = 7;
+}
+
+// A summary of an artist.
+message ArtistSummary {
+  // The unique identifier of the artist.
+  string id = 1;
+
+  // The name of the artist.
+  string name = 2;
+
+  // The aliases of the artist.
+  repeated string aliases = 3;
+
+  // The birth year of the artist.
+  optional google.protobuf.Int32Value birth_year = 4;
+
+  // The era of the birth year of the artist.
+  optional artnet.coredata.common.enums.era.Era birth_year_era = 5;
+
+  // The qualifier of the birth year of the artist.
+  optional string birth_year_qualifier = 6;
+
+  // The death year of the artist.
+  optional google.protobuf.Int32Value death_year = 7;
+
+  // The era of the death year of the artist.
+  optional artnet.coredata.common.enums.era.Era death_year_era = 8;
+
+  // The qualifier of the death year of the artist.
+  optional string death_year_qualifier = 9;
+
+  // The nationalities of the creator.
+  repeated artnet.coredata.common.Entity nationalities = 10;
+
+  // The URI of the artist.
+  optional string uri = 11;
+}
+
+// A summary of the artwork as represented by the seller.
+message ListingDataArtworkSummary {
+  // A summary of the artwork creator.
+  optional CreatorSummary creator = 1;
+
+  // The classification of the artwork.
+  repeated artnet.coredata.common.Entity classification = 2;
+
+  // The year that creation began for the artwork.
+  optional google.protobuf.Int32Value creation_year_from = 3;
+
+  // The era of the year that creation began for the artwork.
+  optional artnet.coredata.common.enums.era.Era creation_era_from = 4;
+
+  // The year the artwork was completed/created. 
+  optional google.protobuf.Int32Value creation_year_to = 5;
+
+  // The era of the year that the artwork was completed/created.
+  optional artnet.coredata.common.enums.era.Era creation_era_to = 6;
+
+  // The title of the artwork.
+  optional string title = 7;
+
+    // The edition status of the artwork.
+  optional bool has_image = 25;
+
+  // The signature status of the artwork.
+  optional bool is_signed = 8;
+
+  // The edition status of the artwork.
+  optional bool is_edition = 9;
+
+  // The edition of the artwork.
+  optional string edition = 10;
+
+  // The category of the artwork.
+  repeated artnet.coredata.common.Entity category = 11;
+
+  // The maker of the artwork.
+  optional string maker = 24;
+
+  // The medium freetext description of the artwork.
+  optional string medium_raw = 12;
+
+  // The materials of the artwork.
+  repeated artnet.coredata.common.Entity materials = 13;
+
+  // The movement of the artwork.
+  repeated artnet.coredata.common.Entity movement = 14;
+
+  // Additional information about the creation from year.
+  optional string creation_year_from_qualifier = 15;
+
+  // The artwork dimensions.
+  repeated artnet.coredata.common.Dimensions dimensions = 16;
+
+  // The artwork period.
+  repeated artnet.coredata.common.Entity period = 17;
+
+  // The artwork region.
+  repeated artnet.coredata.common.Entity region = 18;
+
+  // The artwork subject matter.
+  repeated artnet.coredata.common.Entity subject_matter = 19;
+
+  // The artwork object type.
+  repeated artnet.coredata.common.Entity object_type = 20;
+
+  // The stamped status of the artwork.
+  optional bool is_stamped = 21;
+
+  // The inscribed status of the artwork.
+  optional bool is_inscribed = 22;
+
+  // The plate signed status of the artwork.
+  optional bool is_plate_signed = 23;
+}
+
+// An event related to an artwork listing.
+message ArtListingEvent {
+  // The unique identifier of the event.
+  string id = 1;
+
+  // The name of the event.
+  string name = 2;
+
+  // The key of the artwork listing event, used in subsequent search requests.
+  optional string key = 3;
+
+  // The kind of the artwork listing event.
+  artnet.coredata.artlisting.enums.art_listing_event_kind.ArtListingEventKind kind = 4;
+
+  // The artwork listing event timing.
+  repeated artnet.coredata.common.Timing timing = 5;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.ImageTypes";
+
+package artnet.coredata.common;
+
+// A container representing image/photo data.
+message Image {
+	// The relative image URL.
+	string base_image_url = 1;
+
+	// The alt text for the image, used for accessibility.
+	optional string alt = 2;
+
+	// The title of the image.
+	optional string title = 3;
+}

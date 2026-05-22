@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Enums";
+package artnet.coredata.artlisting.enums.art_listing_entity_type;
+
+// The entity type of the art listing.
+enum ArtListingEntityType {
+	// Unspecified entity type.
+	UNSPECIFIED = 0;
+
+	// Art Market Institution entity type.
+	ART_MARKET_INSTITUTION = 1;
+
+	// Creator entity type.
+	CREATOR = 2;
+
+	// Movement entity type.
+	MOVEMENT = 3;
+
+}

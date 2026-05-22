@@ -1,0 +1,27 @@
+server:
+  headers:
+    cors:
+      allowHeaders: ["*"]
+      allowOrigins: ["http://localhost:8000", "http://localhost:4000"]
+      allowMethods: ["GET", "POST", "OPTIONS"]
+      maxAge: 600
+      vary: ["Origin"]
+upstream:
+  onRequest: onRequest
+links:
+  - id: main
+    src: main.graphql
+  - id: coredata-playground
+    type: Protobuf
+    src: Protos/Playground/playground.proto
+    proto_paths:
+      - Protos
+    # src: Protos/ArtListing/Search/art_sale.proto
+  - id: coredata-search-art-listing-service
+    type: Protobuf
+    src: Protos/ArtListing/Search/art_listing_service.proto
+    proto_paths:
+      - Protos
+      - . # allows it to find protobuf imports prefixed with 'Protos/'
+  - type: Script
+    src: middleware/add-auth-headers.js

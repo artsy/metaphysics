@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.CuratedLists.Enums";
+package artnet.coredata.artlisting.curated_lists.enums.curated_list_origin;
+
+enum ArtListingCuratedListOrigin {
+	UNSPECIFIED = 0;
+	LEGACY = 1;
+	CREATED_BY_CUSTOMER = 2;
+}

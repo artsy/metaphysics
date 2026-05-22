@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.CuratedLists.Enums";
+package artnet.coredata.artlisting.curated_lists.enums.curated_list_status;
+
+enum ArtListingCuratedListStatus {
+	UNSPECIFIED = 0;
+	ACTIVE = 1;
+	SCHEDULED_FOR_DELETION = 2;
+}

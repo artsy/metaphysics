@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Insights";
+
+import "Protos/ArtListing/Insights/Enums/art_price_index_interval.proto";
+import "google/protobuf/timestamp.proto";
+
+package artnet.coredata.artlisting.insights;
+
+// A container for requesting Art Price Indices.
+message GetArtPriceIndicesRequest {
+	// The request object for the Art Price Index.
+	repeated ArtPriceIndexRequest request = 1;
+
+	// Customize your timeframe for the request.
+	optional ArtPriceIndexCustomRange custom_range = 2;
+
+	// Automatically determine the range with limited controls.
+	optional ArtPriceIndexAutoRange auto_range = 3;
+}
+
+// A container for requesting Art Price Index data.
+message ArtPriceIndexRequest {
+	// The name of the index you want to request.
+	optional string name = 1;
+
+	// The creator that you want to base your index on.
+	optional string creator_id = 2;
+}
+
+// A container for requesting a custom range of Art Price Indices.
+message ArtPriceIndexCustomRange  {
+	// The start date of the range. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp start = 1;
+
+	// The end date of the range. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp end = 2;
+
+	// The interval unit you want the data to be broken down into e.g. biannual.
+	enums.art_price_index_interval.ArtPriceIndexInterval interval = 3;
+}
+
+// A container for requesting an automatically determined range of Art Price Indices.
+message ArtPriceIndexAutoRange {
+	// The initial start date of the range. The precise start date will be automatically decided. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp initial_range_start = 1;
+
+	// The initial end date of the range. The precise end date will be automatically decided. Use RFC3339 format. e.g. 2016-01-01T13:10:20Z
+	optional google.protobuf.Timestamp initial_range_end = 2;
+
+	// The number of years you want to be returned surrounding the initial range.
+	int32 full_range_years = 3;
+
+	// The interval unit you want the data to be broken down into e.g. biannual.
+	enums.art_price_index_interval.ArtPriceIndexInterval interval = 4;
+}
+
+// A container for the response of Art Price Indices.
+message GetArtPriceIndicesResponse {
+	// The Art Price Indices data.
+	optional ArtPriceIndices result = 1;
+
+	// Information about the timeframe of the data.
+	optional ArtPriceIndicesTimeframe result_timeframe = 2;
+}
+
+// A container for the timeframe of the Art Price Indices data.
+message ArtPriceIndicesTimeframe {
+	// The actual start date for the Art Price Indices.
+	google.protobuf.Timestamp start = 1;
+
+	// The actual end date for the Art Price Indices.
+	google.protobuf.Timestamp end = 2;
+}
+
+// A container for Art Price Indices data.
+message ArtPriceIndices {
+	// The first point on the primary index. All metrics are relative to this point.
+	double baseline = 1;
+
+	// The primary index that forms the baseline.
+	ArtPriceIndex primary_index = 2;
+
+	// The remaining indices.
+	repeated ArtPriceIndex remaining_indices = 3;
+}
+
+// A container for Art Price Index data.
+message ArtPriceIndex {
+	// The name used to identify the index.
+	string name = 1;
+	
+	// The index data point.
+	repeated ArtPriceIndexPoint results = 2;
+}
+
+// A container for Art Price Index data points.
+message ArtPriceIndexPoint {
+	// The date the index data point pertains to. e.g. 1990-01-01.
+	google.protobuf.Timestamp date = 1;
+
+	// The value to plot on the graph. e.g. 8989877.1
+	double value = 2;
+
+	// The percentage change from the baseline. e.g. 0.3 if 30% higher or -0.5 if 50% lower.
+	double distance_from_baseline = 3;
+}

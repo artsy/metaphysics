@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.ArtListing.Common.Enums";
+package artnet.coredata.artlisting.enums.public_art_listing_domain;
+
+// The public art listing domain.
+enum PublicArtListingDomain {
+
+    // Unspecified domain for the artwork listing.
+    UNSPECIFIED = 0;
+
+    // The artwork is publicly available on the Artnet Price Database.
+    PDB = 1;
+
+    // The artwork is publicly available on Artnet Galleries or a gallery's own website.
+    GALLERY = 2;
+
+    // The artwork is publicly available on Artnet Auctions or an auction house's own website.
+    AUCTIONS = 3;
+}

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Artwork.Search";
+package artnet.coredata.artwork.search;
+
+import "google/protobuf/wrappers.proto";
+import "Protos/Common/entity_types.proto";
+import "Protos/Common/Enums/creator_type.proto";
+import "Protos/Common/Enums/era.proto";
+
+// Data associated with the creator of the artwork.
+message ArtworkSummaryCreator {
+
+    // The unique identifier for the creator.
+    string id = 1;
+
+    // The full name of the creator.
+    string name = 2;
+
+    // A list of aliases/other names associated with the creator.
+    repeated string aliases = 3;
+
+    // The artists associated with the creator.
+    repeated ArtworkSummaryArtist artists = 4;
+
+    // The attribution qualifier for the creator. If they are an `attributing artist`.
+    optional string attribution_qualifier = 5;
+    
+    // The type/kind of creator.
+    optional artnet.coredata.common.enums.creator_type.CreatorType kind = 6;
+
+    // The movements associated with the creator.
+    repeated artnet.coredata.common.Entity movements = 7;
+
+    // The URI associated with the creator.
+    optional string uri = 8;
+}
+
+// Data associated with the artist of the Artwork.
+message ArtworkSummaryArtist {
+
+    // The unique identifier for the artist.
+    string id = 1;
+
+    // The full name of the artist.
+    string name = 2;
+
+    // A list of aliases/other names associated with the artist.
+    repeated string aliases = 3;
+
+    // The birth year of the artist.
+    optional google.protobuf.Int32Value birth_year = 4;
+
+    // The birth year era of the artist.
+    optional artnet.coredata.common.enums.era.Era birth_year_era = 5;
+
+    // The death year of the artist (if applicable).
+    optional google.protobuf.Int32Value death_year = 6;
+
+    // The death year era of the artist (if applicable).
+    optional artnet.coredata.common.enums.era.Era death_year_era = 7;
+
+    // The nationalities of the artist.
+    repeated artnet.coredata.common.Entity nationalities = 8;
+
+    // The URI associated with the artist.
+    optional string uri = 9;
+}

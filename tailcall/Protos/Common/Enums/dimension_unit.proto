@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Artnet.Manager.CoreData.Host.Grpc.Protos.Common.Enums";
+package artnet.coredata.common.enums.dimension_unit;
+
+// The available dimension units.
+enum DimensionUnit {
+	// Unspecified dimension unit.
+	UNSPECIFIED = 0;
+
+	// The dimension unit is in inches.
+	IN = 1;
+
+	// The dimension unit is in centimeters.
+	CM = 2;
+
+	// The dimension unit is in millimeters.
+	MM = 3;
+}
