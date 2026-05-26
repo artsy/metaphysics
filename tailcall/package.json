@@ -1,0 +1,9 @@
+{
+  "name": "tailcall",
+  "version": "1.0.0",
+  "main": "fetch-xapp-token.js",
+  "type": "module",
+  "author": "",
+  "license": "UNLICENSED",
+  "description": ""
+}

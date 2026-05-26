@@ -371,16 +371,16 @@ input ArtistIdentifier_Input {
 }
 
 type ArtistSummary {
-  id: ID!
-  name: String!
-  aliases: [String!]!
-  birthYear: Int
+  id: String
+  name: String
+  aliases: [String!]
+  birthYear: Int32Value
   birthYearEra: Era
   birthYearQualifier: String
-  deathYear: Int
+  deathYear: Int32Value
   deathYearEra: Era
   deathYearQualifier: String
-  nationalities: [Entity!]!
+  nationalities: [Entity!]
   uri: String
 }
 
@@ -629,10 +629,10 @@ enum ArtListingSubEntityType {
 }
 
 type ArtListingSummary {
-  id: ID!
+  id: ID
   # listingDomain: ListingDomain!
   # artMarketInstitution: ArtMarketInstitution
-  # listingData: ListingData!
+  listingData: ListingData
   # saleName: String
   # timing: [Timing!]!
   # saleCountries: [String!]!
@@ -932,13 +932,13 @@ input CreatorFilter_Input {
 }
 
 type CreatorSummary {
-  id: ID!
+  id: String
   modifier: String
-  name: String!
-  aliases: [String!]!
+  name: String
+  aliases: [String!]
   uri: String
   creatorType: CreatorType
-  artists: [ArtistSummary!]!
+  artists: [ArtistSummary!]
 }
 
 enum CreatorType {
@@ -1039,10 +1039,10 @@ input DimensionFilter_Input {
 }
 
 type Dimensions {
-  height: Float
-  width: Float
-  depth: Float
-  unit: DimensionUnit!
+  height: DoubleValue
+  width: DoubleValue
+  depth: DoubleValue
+  unit: DimensionUnit
 }
 
 enum DimensionUnit {
@@ -1050,6 +1050,11 @@ enum DimensionUnit {
   IN
   CM
   MM
+}
+
+type DoubleValue {
+  # Note: Tailcall treats GraphQL Float as type Any
+  value: Int
 }
 
 input DoubleValue_Input {
@@ -1073,7 +1078,7 @@ type EchoUserInfoResponse {
 scalar Empty_Input
 
 type Entity {
-  id: ID!
+  id: String
   key: String
   value: String
 }
@@ -1376,6 +1381,10 @@ enum InsightsInterval {
   YEAR
 }
 
+type Int32Value {
+  value: Int
+}
+
 input Int32Value_Input {
   value: Int!
 }
@@ -1394,7 +1403,7 @@ type ListingData {
   id: ID
   title: String
   catalogLotNumber: String
-  artworks: [ListingDataArtworkSummary!]!
+  artworks: [ListingDataArtworkSummary!]
   uri: String
   externalUrl: String
   saleNumber: String
@@ -1402,27 +1411,27 @@ type ListingData {
 
 type ListingDataArtworkSummary {
   creator: CreatorSummary
-  classification: [Entity!]!
-  creationYearFrom: Int
+  classification: [Entity!]
+  creationYearFrom: Int32Value
   creationEraFrom: Era
-  creationYearTo: Int
+  creationYearTo: Int32Value
   creationEraTo: Era
   title: String
   hasImage: Boolean
   isSigned: Boolean
   isEdition: Boolean
   edition: String
-  category: [Entity!]!
+  category: [Entity!]
   maker: String
   mediumRaw: String
-  materials: [Entity!]!
-  movement: [Entity!]!
+  materials: [Entity!]
+  movement: [Entity!]
   creationYearFromQualifier: String
-  dimensions: [Dimensions!]!
-  period: [Entity!]!
-  region: [Entity!]!
-  subjectMatter: [Entity!]!
-  objectType: [Entity!]!
+  dimensions: [Dimensions!]
+  period: [Entity!]
+  region: [Entity!]
+  subjectMatter: [Entity!]
+  objectType: [Entity!]
   isStamped: Boolean
   isInscribed: Boolean
   isPlateSigned: Boolean

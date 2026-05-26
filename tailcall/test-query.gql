@@ -1,12 +1,28 @@
-query MyQuery {
-  publicArtworkListings(
-    input: { page: 1, pageSize: 10, filters: { listingDomain: { keys: ["PdbTeaser"] } } }
-  ) {
-    count
-  }
-
+query TailcallPOC {
   artist(id: "linus-borgo") {
     sortableID
     bio
+  }
+
+  publicArtworkListings(
+    input: {
+      page: 1
+      pageSize: 10
+      subscriptionId: ""
+      filters: { listingDomain: { keys: ["PdbTeaser"] } }
+    }
+  ) {
+    results {
+      id
+      listingData {
+        title
+        artworks {
+          title
+          creator {
+            name
+          }
+        }
+      }
+    }
   }
 }
