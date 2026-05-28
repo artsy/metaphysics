@@ -34,6 +34,7 @@ import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
+import { PartnerAgreementType } from "./partnerAgreement"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import ArtistSorts from "schema/v2/sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
@@ -1398,6 +1399,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
+      },
+      remainingAgreements: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(PartnerAgreementType))
+        ),
+        description:
+          "Partner agreements that the partner still needs to accept",
+        resolve: ({ remaining_agreements }) => remaining_agreements || [],
       },
       brandKit: {
         type: BrandKitType,

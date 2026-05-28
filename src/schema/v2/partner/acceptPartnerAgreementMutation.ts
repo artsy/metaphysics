@@ -1,37 +1,8 @@
-import {
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLID,
-  GraphQLUnionType,
-} from "graphql"
+import { GraphQLNonNull, GraphQLString, GraphQLUnionType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { formatGravityError, ErrorsType } from "lib/gravityErrorHandler"
-import { AgreementType } from "schema/v2/agreement"
-import { date } from "schema/v2/fields/date"
-
-const PartnerAgreementType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerAgreement",
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: "Unique ID for this partner agreement",
-      resolve: ({ id }) => id,
-    },
-    acceptedAt: date(),
-    acceptedBy: {
-      type: GraphQLString,
-      description: "ID of user who accepted this agreement",
-      resolve: ({ accepted_by }) => accepted_by,
-    },
-    agreement: {
-      type: new GraphQLNonNull(AgreementType),
-      description: "The associated agreement",
-      resolve: ({ agreement }) => agreement,
-    },
-  }),
-})
+import { PartnerAgreementType } from "schema/v2/partner/partnerAgreement"
 
 const PartnerAgreementOrErrorsUnion = new GraphQLUnionType({
   name: "PartnerAgreementOrErrorsUnion",

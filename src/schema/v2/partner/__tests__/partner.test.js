@@ -72,6 +72,67 @@ describe("Partner type", () => {
     })
   })
 
+  it("returns remainingAgreements field", async () => {
+    partnerData.remaining_agreements = [
+      {
+        id: "partner-agreement-id",
+        agreement: {
+          id: "agreement-id",
+          description: "An agreement",
+          content: "## Terms",
+        },
+      },
+    ]
+
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          remainingAgreements {
+            id
+            agreement {
+              description
+              content
+            }
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        remainingAgreements: [
+          {
+            id: "partner-agreement-id",
+            agreement: {
+              description: "An agreement",
+              content: "## Terms",
+            },
+          },
+        ],
+      },
+    })
+  })
+
+  it("returns an empty remainingAgreements array when none are present", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          remainingAgreements {
+            id
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        remainingAgreements: [],
+      },
+    })
+  })
+
   it("returns isInquireable field", async () => {
     const query = gql`
       {

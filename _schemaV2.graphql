@@ -21120,6 +21120,9 @@ type Partner implements Node {
   profileArtistsLayout: String
   profileBannerDisplay: String
 
+  # Partner agreements that the partner still needs to accept
+  remainingAgreements: [PartnerAgreement!]!
+
   # A connection of shipping presets for this partner.
   shippingPresetsConnection(
     after: String
