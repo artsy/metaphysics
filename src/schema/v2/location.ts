@@ -279,7 +279,7 @@ export const COUNTRIES = {
   FO: "Faroe Islands",
   FR: "France",
   GA: "Gabon",
-  GB: "United Kingdom [U.K.]",
+  GB: "United Kingdom",
   GD: "Grenada",
   GE: "Georgia",
   GF: "French Guiana",

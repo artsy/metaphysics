@@ -2850,7 +2850,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: £10 within United Kingdom [U.K.] \nInternational: £210",
+              "Domestic: £10 within United Kingdom \nInternational: £210",
           },
         })
       })
@@ -2892,7 +2892,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: Free within United Kingdom [U.K.] \nInternational: Free",
+              "Domestic: Free within United Kingdom \nInternational: Free",
           },
         })
       })
