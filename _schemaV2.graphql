@@ -68,6 +68,10 @@ input ARImageInput {
   internalID: ID!
 }
 
+type AcceptPartnerAgreementFailure {
+  mutationError: GravityMutationError
+}
+
 input AcceptPartnerAgreementInput {
   clientMutationId: String
 
@@ -75,9 +79,23 @@ input AcceptPartnerAgreementInput {
   partnerAgreementID: String!
 }
 
+union AcceptPartnerAgreementOrError =
+    AcceptPartnerAgreementFailure
+  | AcceptPartnerAgreementSuccess
+
 type AcceptPartnerAgreementPayload {
+  # On success: the accepted partner agreement. On failure: mutation errors.
+  acceptPartnerAgreementOrError: AcceptPartnerAgreementOrError!
   clientMutationId: String
   partnerAgreementOrErrors: PartnerAgreementOrErrorsUnion!
+    @deprecated(
+      reason: "Prefer to use `acceptPartnerAgreementOrError`. [Will be removed in v2]"
+    )
+}
+
+type AcceptPartnerAgreementSuccess {
+  # The accepted partner agreement
+  partnerAgreement: PartnerAgreement!
 }
 
 type AccountMutationFailure {

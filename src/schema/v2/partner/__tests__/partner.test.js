@@ -72,17 +72,21 @@ describe("Partner type", () => {
     })
   })
 
-  it("returns remainingAgreements field", async () => {
-    partnerData.remaining_agreements = [
-      {
-        id: "partner-agreement-id",
-        agreement: {
-          id: "agreement-id",
-          description: "An agreement",
-          content: "## Terms",
-        },
-      },
-    ]
+  it("returns remainingAgreements from the partner/all loader", async () => {
+    context.partnerAllLoader = sinon.stub().returns(
+      Promise.resolve({
+        remaining_agreements: [
+          {
+            id: "partner-agreement-id",
+            agreement: {
+              id: "agreement-id",
+              description: "An agreement",
+              content: "## Terms",
+            },
+          },
+        ],
+      })
+    )
 
     const query = gql`
       {
@@ -115,6 +119,10 @@ describe("Partner type", () => {
   })
 
   it("returns an empty remainingAgreements array when none are present", async () => {
+    context.partnerAllLoader = sinon
+      .stub()
+      .returns(Promise.resolve({ remaining_agreements: [] }))
+
     const query = gql`
       {
         partner(id: "catty-partner") {

@@ -73,6 +73,82 @@ describe("acceptPartnerAgreementMutation", () => {
     `)
   })
 
+  it("accepts a partner agreement via acceptPartnerAgreementOrError", async () => {
+    const mutation = gql`
+      mutation {
+        acceptPartnerAgreement(
+          input: { partnerAgreementID: "partner-agreement-123" }
+        ) {
+          acceptPartnerAgreementOrError {
+            __typename
+            ... on AcceptPartnerAgreementSuccess {
+              partnerAgreement {
+                acceptedBy
+                agreement {
+                  id
+                  description
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "acceptPartnerAgreement": {
+          "acceptPartnerAgreementOrError": {
+            "__typename": "AcceptPartnerAgreementSuccess",
+            "partnerAgreement": {
+              "acceptedBy": "user-456",
+              "agreement": {
+                "description": "Test agreement",
+                "id": "agreement-789",
+              },
+            },
+          },
+        },
+      }
+    `)
+  })
+
+  it("returns a failure via acceptPartnerAgreementOrError when not found", async () => {
+    mockAcceptPartnerAgreementLoader.mockRejectedValue({
+      statusCode: 404,
+      body: {
+        error: "Partner agreement not found",
+      },
+    })
+
+    const mutation = gql`
+      mutation {
+        acceptPartnerAgreement(input: { partnerAgreementID: "invalid-id" }) {
+          acceptPartnerAgreementOrError {
+            __typename
+            ... on AcceptPartnerAgreementFailure {
+              mutationError {
+                message
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    const { acceptPartnerAgreementOrError } = result.acceptPartnerAgreement
+    expect(acceptPartnerAgreementOrError.__typename).toEqual(
+      "AcceptPartnerAgreementFailure"
+    )
+    expect(acceptPartnerAgreementOrError.mutationError.message).toEqual(
+      "Partner agreement not found"
+    )
+  })
+
   it("returns an error when the partner agreement is not found", async () => {
     mockAcceptPartnerAgreementLoader.mockRejectedValue({
       statusCode: 404,

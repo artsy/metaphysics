@@ -1406,7 +1406,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         ),
         description:
           "Partner agreements that the partner still needs to accept",
-        resolve: ({ remaining_agreements }) => remaining_agreements || [],
+        // `remaining_agreements` is only present on the `partner/:id/all`
+        // response, not the default `partner/:id` one that backs this type.
+        resolve: async ({ _id }, _args, { partnerAllLoader }) => {
+          if (!partnerAllLoader) return []
+          const partner = await partnerAllLoader(_id)
+          return partner.remaining_agreements || []
+        },
       },
       brandKit: {
         type: BrandKitType,
