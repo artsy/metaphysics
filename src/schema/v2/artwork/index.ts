@@ -57,7 +57,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { COUNTRIES, LocationType } from "schema/v2/location"
+import { LocationType } from "schema/v2/location"
 import {
   CollectionsConnectionType,
   CollectionSorts,
@@ -102,6 +102,7 @@ import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
+  getShippingOriginDisplayName,
   isEligibleForOnPlatformTransaction,
   isEligibleToCreateAlert,
   isEmbeddedVideo,
@@ -1607,14 +1608,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           let domesticLine = ""
           let internationalLine = "Contact gallery"
 
-          const fullCountryName = artwork.shipping_origin
-            ? COUNTRIES[
-                artwork.shipping_origin[artwork.shipping_origin.length - 1]
-              ]
-            : "country"
-          const withingCountry = artwork.eu_shipping_origin
-            ? "European Union"
-            : fullCountryName
+          const withingCountry = getShippingOriginDisplayName(
+            artwork.shipping_origin,
+            artwork.eu_shipping_origin,
+            "country"
+          )
 
           // domestic related
           if (artwork.process_with_artsy_shipping_domestic) {
@@ -1657,6 +1655,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Minimal location information describing from where artwork will be shipped.",
         resolve: (artwork) => {
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+        },
+      },
+      shippingOriginDisplayName: {
+        type: GraphQLString,
+        description:
+          "Display name of the shipping origin country or region (e.g., 'United Kingdom', 'European Union'). Returns empty string if shipping origin is not set.",
+        resolve: (artwork) => {
+          return getShippingOriginDisplayName(
+            artwork.shipping_origin,
+            artwork.eu_shipping_origin
+          )
         },
       },
       submissionId: {

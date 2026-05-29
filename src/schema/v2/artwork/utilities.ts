@@ -4,6 +4,7 @@ import { Artwork } from "types/runtime/gravity"
 import { parse } from "url"
 import { normalizeImageData } from "../image"
 import mediums from "lib/artworkMediums"
+import { COUNTRIES } from "../location"
 
 export const isTwoDimensional = ({
   width_cm,
@@ -141,4 +142,18 @@ export const isEligibleToCreateAlert = (artwork: {
   if (category == mediums.Other.name) return false
 
   return true
+}
+
+export const getShippingOriginDisplayName = (
+  shippingOrigin: string[] | null,
+  euShippingOrigin: boolean,
+  fallback = ""
+): string => {
+  if (!shippingOrigin) {
+    return fallback
+  }
+
+  const countryName = COUNTRIES[shippingOrigin[shippingOrigin.length - 1]]
+
+  return euShippingOrigin ? "European Union" : countryName
 }

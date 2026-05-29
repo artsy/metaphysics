@@ -3625,6 +3625,64 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#shippingOriginDisplayName", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingOriginDisplayName
+        }
+      }
+    `
+
+    it("returns empty string when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginDisplayName: "",
+          },
+        })
+      })
+    })
+
+    it("returns the country display name when shipping_origin is present", () => {
+      artwork.shipping_origin = ["New York", "NY", "US"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginDisplayName: "United States",
+          },
+        })
+      })
+    })
+
+    it("returns 'European Union' when eu_shipping_origin is true", () => {
+      artwork.shipping_origin = ["Paris", "FR"]
+      artwork.eu_shipping_origin = true
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginDisplayName: "European Union",
+          },
+        })
+      })
+    })
+
+    it("returns the country name when eu_shipping_origin is false", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginDisplayName: "United Kingdom",
+          },
+        })
+      })
+    })
+  })
+
   describe("#vatRequirementComplete", () => {
     const query = `
       {
