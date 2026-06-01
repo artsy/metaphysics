@@ -102,6 +102,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworkRecommendationsLoader: gravityLoader("artwork_recommendations"),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
     artworkImportMatchImagesLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_images`,
