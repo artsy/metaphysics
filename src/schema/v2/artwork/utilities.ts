@@ -144,7 +144,7 @@ export const isEligibleToCreateAlert = (artwork: {
   return true
 }
 
-export const getShippingOriginDisplayName = (
+export const getDomesticShippingRegionName = (
   shippingOrigin: string[] | null,
   euShippingOrigin: boolean,
   fallback = ""
@@ -155,5 +155,5 @@ export const getShippingOriginDisplayName = (
 
   const countryName = COUNTRIES[shippingOrigin[shippingOrigin.length - 1]]
 
-  return euShippingOrigin ? "European Union" : countryName
+  return euShippingOrigin ? "European Union" : countryName ?? fallback
 }

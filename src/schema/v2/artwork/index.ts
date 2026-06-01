@@ -102,7 +102,7 @@ import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
-  getShippingOriginDisplayName,
+  getDomesticShippingRegionName,
   isEligibleForOnPlatformTransaction,
   isEligibleToCreateAlert,
   isEmbeddedVideo,
@@ -1608,7 +1608,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           let domesticLine = ""
           let internationalLine = "Contact gallery"
 
-          const withingCountry = getShippingOriginDisplayName(
+          const shipsWithin = getDomesticShippingRegionName(
             artwork.shipping_origin,
             artwork.eu_shipping_origin,
             "country"
@@ -1618,7 +1618,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (artwork.process_with_artsy_shipping_domestic) {
             domesticLine = "Calculated in checkout"
           } else if (artwork.domestic_shipping_fee_cents === 0) {
-            domesticLine = `Free within ${withingCountry}`
+            domesticLine = `Free within ${shipsWithin}`
           } else if (artwork.domestic_shipping_fee_cents > 0) {
             const formattedPrice = amount(
               ({ domestic_shipping_fee_cents }) =>
@@ -1627,7 +1627,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               precision: 0,
               symbol: symbolFromCurrencyCode(artwork.price_currency),
             })
-            domesticLine = `${formattedPrice} within ${withingCountry}`
+            domesticLine = `${formattedPrice} within ${shipsWithin}`
           }
 
           // international related
@@ -1657,12 +1657,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
       },
-      shippingOriginDisplayName: {
+      shippingOriginRegion: {
         type: GraphQLString,
         description:
           "Display name of the shipping origin country or region (e.g., 'United Kingdom', 'European Union'). Returns empty string if shipping origin is not set.",
         resolve: (artwork) => {
-          return getShippingOriginDisplayName(
+          return getDomesticShippingRegionName(
             artwork.shipping_origin,
             artwork.eu_shipping_origin
           )

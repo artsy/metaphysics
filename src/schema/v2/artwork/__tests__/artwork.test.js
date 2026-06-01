@@ -3625,11 +3625,11 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#shippingOriginDisplayName", () => {
+  describe("#shippingOriginRegion", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          shippingOriginDisplayName
+          shippingOriginRegion
         }
       }
     `
@@ -3640,7 +3640,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingOriginDisplayName: "",
+            shippingOriginRegion: "",
           },
         })
       })
@@ -3652,7 +3652,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingOriginDisplayName: "United States",
+            shippingOriginRegion: "United States",
           },
         })
       })
@@ -3664,7 +3664,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingOriginDisplayName: "European Union",
+            shippingOriginRegion: "European Union",
           },
         })
       })
@@ -3676,7 +3676,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingOriginDisplayName: "United Kingdom",
+            shippingOriginRegion: "United Kingdom",
           },
         })
       })
