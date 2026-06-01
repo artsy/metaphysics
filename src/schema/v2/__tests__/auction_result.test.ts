@@ -3,6 +3,7 @@ import { runQuery } from "schema/v2/test/utils"
 
 const mockAuctionResult = {
   id: "foo-bar",
+  artist_id: "andy-warhol",
   sale_date_text: "10-12-2020",
   sale_title: "sale-title",
   title: "title",
@@ -319,6 +320,40 @@ describe("AuctionResult type", () => {
       return runQuery(query, context).then((data) => {
         expect(data.auctionResult.artist.name).toEqual("Andy Warhol")
       })
+    })
+  })
+
+  describe("when the underlying row has no artist", () => {
+    it("throws a 404 instead of returning an orphan node", async () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        artist_id: undefined,
+      }
+
+      const artistLoader = jest.fn()
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+        artistLoader,
+      }
+
+      const query = `
+        {
+          auctionResult(id: "103") {
+            internalID
+            artist {
+              name
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        `Auction result "103" not found`
+      )
+
+      // We should never make the doomed `GET /artist/undefined` call.
+      expect(artistLoader).not.toHaveBeenCalled()
     })
   })
 
