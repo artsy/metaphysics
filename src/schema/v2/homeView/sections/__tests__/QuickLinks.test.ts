@@ -121,9 +121,9 @@ describe("QuickLinks", () => {
             "title": "Statement Pieces",
           },
           {
-            "href": "/collection/paintings",
+            "href": "/gene/painting",
             "icon": "ArtworkIcon",
-            "ownerType": "collection",
+            "ownerType": "gene",
             "title": "Paintings",
           },
           {
