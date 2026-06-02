@@ -2850,7 +2850,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: £10 within United Kingdom [U.K.] \nInternational: £210",
+              "Domestic: £10 within United Kingdom \nInternational: £210",
           },
         })
       })
@@ -2892,7 +2892,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: Free within United Kingdom [U.K.] \nInternational: Free",
+              "Domestic: Free within United Kingdom \nInternational: Free",
           },
         })
       })
@@ -3619,6 +3619,64 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingOrigin: "Kharkov, Ukraine",
+          },
+        })
+      })
+    })
+  })
+
+  describe("#shippingOriginRegion", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingOriginRegion
+        }
+      }
+    `
+
+    it("returns empty string when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "",
+          },
+        })
+      })
+    })
+
+    it("returns the country display name when shipping_origin is present", () => {
+      artwork.shipping_origin = ["New York", "NY", "US"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "United States",
+          },
+        })
+      })
+    })
+
+    it("returns 'European Union' when eu_shipping_origin is true", () => {
+      artwork.shipping_origin = ["Paris", "FR"]
+      artwork.eu_shipping_origin = true
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "European Union",
+          },
+        })
+      })
+    })
+
+    it("returns the country name when eu_shipping_origin is false", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "United Kingdom",
           },
         })
       })
