@@ -35,6 +35,7 @@ import {
   resolveAlertFromJSON,
 } from "../Alerts"
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
+import { GuidedTourField } from "./guidedTour"
 import { artworkConnection } from "../artwork"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
@@ -500,6 +501,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return meNotificationLoader(id)
       },
     },
+    guidedTour: GuidedTourField,
     initials: initials("name"),
     order: MeOrder,
     ordersConnection: MeOrdersConnection,
