@@ -157,6 +157,7 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
+import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionSetMutation"
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
@@ -790,6 +791,7 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
+      updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
