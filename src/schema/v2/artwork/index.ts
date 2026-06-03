@@ -81,7 +81,7 @@ import { date } from "../fields/date"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
-import { PartnerOfferType } from "../partnerOffer"
+import { PartnerOfferType, PartnerOfferTypeEnumType } from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
@@ -1356,6 +1356,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
+          userID: {
+            type: GraphQLString,
+            description:
+              "Only return offers targeting this user (e.g. a personalized offer from a conversation).",
+          },
+          offerType: {
+            type: new GraphQLList(PartnerOfferTypeEnumType),
+            description:
+              "Filter by offer type(s). Gravity defaults to bulk offers when omitted.",
+          },
           sort: {
             type: new GraphQLEnumType({
               name: "PartnerOfferSorts",
@@ -1392,6 +1402,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             artwork_id: artwork.id,
+            user_id: args.userID,
+            offer_type: args.offerType,
             sort: args.sort,
           })
 
