@@ -204,6 +204,7 @@ import { confirmPasswordMutation } from "./me/confirmPasswordMutation"
 import { createImageMutation } from "./me/createImageMutation"
 import { transferMyCollectionMutation } from "./me/transferMyCollectionMutation"
 import { recordArtworkViewMutation } from "./me/recordArtworkViewMutation"
+import { recordGuidedTourEventMutation } from "./me/guidedTour/recordGuidedTourEventMutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
@@ -767,6 +768,7 @@ export default new GraphQLSchema({
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       recordArtworkView: recordArtworkViewMutation,
+      recordGuidedTourEvent: recordGuidedTourEventMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
