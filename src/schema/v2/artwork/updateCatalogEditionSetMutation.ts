@@ -27,6 +27,10 @@ const UpdateCatalogEditionSetInputType = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Availability of the edition set.",
     },
+    priceCurrency: {
+      type: GraphQLString,
+      description: "Price currency (ISO 4217).",
+    },
     priceMinor: {
       type: GraphQLInt,
       description: "Price in minor currency units (e.g., cents).",
@@ -77,7 +81,7 @@ export const updateCatalogEditionSetMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { editionSetID, availability, priceMinor },
+    { editionSetID, availability, priceCurrency, priceMinor },
     { updateCatalogEditionSetLoader }
   ) => {
     if (!updateCatalogEditionSetLoader) {
@@ -86,7 +90,7 @@ export const updateCatalogEditionSetMutation = mutationWithClientMutationId<
 
     try {
       const gravityParams = snakeCaseKeys(
-        omitBy({ availability, priceMinor }, isUndefined)
+        omitBy({ availability, priceCurrency, priceMinor }, isUndefined)
       )
 
       const result = await updateCatalogEditionSetLoader(
