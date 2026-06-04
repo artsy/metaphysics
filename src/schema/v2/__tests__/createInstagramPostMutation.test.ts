@@ -153,6 +153,49 @@ describe("createInstagramPost", () => {
     })
   })
 
+  describe("with custom image-only slides (no artworkId)", () => {
+    const mutationWithoutArtworkId = `
+      mutation {
+        createInstagramPost(input: {
+          instagramAccountId: "ig-account-1"
+          slides: [{ s3Key: "partner-1/custom/uuid.png" }]
+        }) {
+          instagramPostOrError {
+            __typename
+            ... on CreateInstagramPostSuccess {
+              instagramPost {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("omits artworkId if empty", async () => {
+      const context: Partial<ResolverContext> = {
+        createInstagramPostLoader: jest
+          .fn()
+          .mockResolvedValue(mockGravityResponse),
+      }
+
+      await runAuthenticatedQuery(mutationWithoutArtworkId, context)
+
+      expect(
+        context.createInstagramPostLoader as jest.Mock
+      ).toHaveBeenCalledWith({
+        instagram_account_id: "ig-account-1",
+        slides: [
+          {
+            s3_key: "partner-1/custom/uuid.png",
+          },
+        ],
+        caption: undefined,
+        collaborators: undefined,
+      })
+    })
+  })
+
   it("throws when slides is empty", async () => {
     const mutationWithEmptySlides = `
       mutation {
