@@ -24,6 +24,7 @@ describe("UpdateCatalogEditionSetMutation", () => {
             input: {
               editionSetID: "some-edition-set"
               availability: "for sale"
+              priceCurrency: "USD"
               priceMinor: 150000
             }
           ) {
@@ -49,6 +50,7 @@ describe("UpdateCatalogEditionSetMutation", () => {
         "some-edition-set",
         {
           availability: "for sale",
+          price_currency: "USD",
           price_minor: 150000,
         }
       )
