@@ -9,6 +9,7 @@ import { InternalIDFields } from "./object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 import { date } from "./fields/date"
 import { CatalogArtworkDocumentType } from "./catalogArtworkDocument"
+import { CatalogEditionSetType } from "./catalogEditionSet"
 
 export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "CatalogArtwork",
@@ -66,6 +67,11 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
         })
         return body
       },
+    },
+    catalogEditionSets: {
+      type: new GraphQLList(CatalogEditionSetType),
+      description: "Edition sets associated with this catalog artwork.",
+      resolve: ({ catalog_edition_sets }) => catalog_edition_sets ?? [],
     },
   },
 })
