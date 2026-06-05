@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+OPTION1="${1:-}"
+if [ "$OPTION1" = "--log-tokens" ]; then
+  SHOULD_LOG_TOKENS=true
+else
+  SHOULD_LOG_TOKENS=false
+fi
+
 OIDC_ISSUER="https://login.artnet-dev.com"
 OIDC_CLIENT_ID="shared-client-new-stack"
 OIDC_CLIENT_SECRET="password"
@@ -13,6 +20,10 @@ GRAVITY_XAPP_TOKEN=$(node "$SCRIPT_DIR/fetch-xapp-token.js")
 if [ -z "$GRAVITY_XAPP_TOKEN" ]; then
   echo "Error: failed to fetch xapp token" >&2
   exit 1
+fi
+
+if [ "$SHOULD_LOG_TOKENS" = true ]; then
+  echo "Gravity access token: $GRAVITY_XAPP_TOKEN"
 fi
 
 # Write the middleware with the token baked in (QuickJS has no process.env)
@@ -33,6 +44,10 @@ ARTNET_ACCESS_TOKEN=$(curl -sf -X POST "$OIDC_ISSUER/connect/token" \
 if [ -z "$ARTNET_ACCESS_TOKEN" ]; then
   echo "Error: failed to fetch access token" >&2
   exit 1
+fi
+
+if [ "$SHOULD_LOG_TOKENS" = true ]; then
+  echo "Artnet access token: $ARTNET_ACCESS_TOKEN"
 fi
 
 echo "Tokens fetched, starting Tailcall..."

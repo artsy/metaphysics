@@ -3,8 +3,6 @@ schema @server @upstream {
 }
 
 type Query {
-  # greet: String! @expr(body: "Hello, World!")
-
   artist(
     """
     The slug or ID of the Artist
@@ -13,7 +11,11 @@ type Query {
   ): Artist
     @http(
       url: "https://stagingapi.artsy.net/api/v1/artist/{{.args.id}}"
-      select: { sortableID: "{{.sortable_id}}", bio: "{{.biography}}" }
+      select: {
+        id: "{{.id}}"
+        sortableID: "{{.sortable_id}}"
+        bio: "{{.biography}}"
+      }
       # onResponseBody: "onResponseBody"
     )
 
@@ -45,23 +47,9 @@ type Query {
   #   )
 }
 
-type PlaygroundEchoUserInfoResponse {
-  userInfo: String
-}
-
-# type PlaygroundEchoInputRequest {
-#   price: PlayGroundPriceFilter!
-# }
-
-# type PlayGroundPriceFilter {
-#   range: PlayGroundPriceRange
-# }
-
-# type PlayGroundPriceRange
-
-# type GetCountriesWithFinancingResponse {
-#   results: [Country!]!
-# }
+########################################################
+# Artsy Types
+########################################################
 
 type Country {
   id: ID!
@@ -69,6 +57,7 @@ type Country {
 }
 
 type Artist {
+  id: ID!
   alternateNames: [String]
   awards: String
 
@@ -95,9 +84,75 @@ type Artist {
   """
   sortableID: String
   years: String
+
+  # artworksConnection(
+  #   # before: String # exclude: [String]
+  #   # filter: [ArtistArtworksFilters]
+  #   # first: Int
+  #   # last: Int
+  #   # published: Boolean = true
+  #   # sort: ArtworkSorts
+  #   after: String
+  # ): ArtworkConnection
+  #   @http(
+  #     url: "https://stagingapi.artsy.net/api/v1/artist/{{.value.id}}/artworks"
+  #     # select: {  }
+  #   )
+
+  artworksConnection(
+    # before: String # exclude: [String]
+    # filter: [ArtistArtworksFilters]
+    # first: Int
+    # last: Int
+    # published: Boolean = true
+    # sort: ArtworkSorts
+    after: String
+  ): [Artwork!]!
+    @http(
+      url: "https://stagingapi.artsy.net/api/v1/artist/{{.value.id}}/artworks"
+      # select: {  }
+    )
+}
+
+type ArtworkConnection {
+  edges: [ArtworkEdge]
+  # pageCursors: PageCursors!
+  # pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type ArtworkEdge {
+  cursor: String!
+  node: Artwork
+}
+
+type Artwork {
+  id: ID!
+  title: String
+  artist: Artist
 }
 
 ########################################################
+# Artnet Types
+########################################################
+
+type PlaygroundEchoUserInfoResponse {
+  userInfo: String
+}
+
+# type PlaygroundEchoInputRequest {
+#   price: PlayGroundPriceFilter!
+# }
+
+# type PlayGroundPriceFilter {
+#   range: PlayGroundPriceRange
+# }
+
+# type PlayGroundPriceRange
+
+# type GetCountriesWithFinancingResponse {
+#   results: [Country!]!
+# }
 
 # Indicates exactly one field must be supplied and this field must not be `null`.
 directive @oneOf on INPUT_OBJECT
