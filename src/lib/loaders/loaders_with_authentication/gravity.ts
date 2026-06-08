@@ -979,6 +979,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     mePingLoader: gravityLoader("me/ping"),
+    meGuidedTourLoader: gravityLoader("me/guided_tour"),
+    recordGuidedTourEventLoader: gravityLoader(
+      "me/guided_tour/events",
+      {},
+      { method: "POST" }
+    ),
     meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
     meDismissTaskLoader: gravityLoader(
       (id) => `me/task/${id}/dismiss`,
