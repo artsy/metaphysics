@@ -26,6 +26,7 @@ const CatalogSyncableFieldEnum = new GraphQLEnumType({
 
 interface SyncCatalogToArtworkMutationInputProps {
   artworkID: string
+  editionSetID?: string
   fields?: string[]
 }
 
@@ -79,6 +80,11 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the artwork to sync.",
     },
+    editionSetID: {
+      type: GraphQLString,
+      description:
+        "Edition set ID. When provided, syncs the catalog edition set to the edition set instead of the artwork.",
+    },
     fields: {
       type: new GraphQLList(CatalogSyncableFieldEnum),
       description: "Specific fields to sync. Omit to sync all.",
@@ -93,7 +99,7 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkID, fields },
+    { artworkID, editionSetID, fields },
     { syncCatalogToArtworkLoader }
   ) => {
     if (!syncCatalogToArtworkLoader) {
@@ -101,7 +107,9 @@ export const syncCatalogToArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      const params = fields?.length ? { fields } : {}
+      const params: Record<string, unknown> = {}
+      if (editionSetID) params.edition_set_id = editionSetID
+      if (fields?.length) params.fields = fields
       const response = await syncCatalogToArtworkLoader(artworkID, params)
       return { ...response, artworkID, _type: "SyncCatalogToArtworkSuccess" }
     } catch (error) {
