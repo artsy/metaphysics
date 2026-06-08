@@ -4,6 +4,5 @@
   "main": "fetch-xapp-token.js",
   "type": "module",
   "author": "",
-  "license": "UNLICENSED",
-  "description": ""
+  "license": "UNLICENSED"
 }

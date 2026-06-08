@@ -24,4 +24,4 @@ links:
       - Protos
       - . # allows it to find protobuf imports prefixed with 'Protos/'
   - type: Script
-    src: middleware/generated_add-auth-headers.js
+    src: generated/middleware.js

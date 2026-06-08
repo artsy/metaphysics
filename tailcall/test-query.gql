@@ -2,6 +2,17 @@ query TailcallPOC {
   artist(id: "linus-borgo") {
     sortableID
     bio
+    artworksConnection {
+      edges {
+        node {
+          title
+          artist {
+            id
+            sortableID
+          }
+        }
+      }
+    }
   }
 
   publicArtworkListings(

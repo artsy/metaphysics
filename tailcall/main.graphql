@@ -85,20 +85,6 @@ type Artist {
   sortableID: String
   years: String
 
-  # artworksConnection(
-  #   # before: String # exclude: [String]
-  #   # filter: [ArtistArtworksFilters]
-  #   # first: Int
-  #   # last: Int
-  #   # published: Boolean = true
-  #   # sort: ArtworkSorts
-  #   after: String
-  # ): ArtworkConnection
-  #   @http(
-  #     url: "https://stagingapi.artsy.net/api/v1/artist/{{.value.id}}/artworks"
-  #     # select: {  }
-  #   )
-
   artworksConnection(
     # before: String # exclude: [String]
     # filter: [ArtistArtworksFilters]
@@ -107,12 +93,27 @@ type Artist {
     # published: Boolean = true
     # sort: ArtworkSorts
     after: String
-  ): [Artwork!]!
+  ): ArtworkConnection!
     @http(
       url: "https://stagingapi.artsy.net/api/v1/artist/{{.value.id}}/artworks"
-      # select: {  }
+      onResponseBody: "onArtworksConnectionResponse"
     )
 }
+
+#   artworksConnection(
+#     # before: String # exclude: [String]
+#     # filter: [ArtistArtworksFilters]
+#     # first: Int
+#     # last: Int
+#     # published: Boolean = true
+#     # sort: ArtworkSorts
+#     after: String
+#   ): [Artwork!]!
+#     @http(
+#       url: "https://stagingapi.artsy.net/api/v1/artist/{{.value.id}}/artworks"
+#       # select: {  }
+#     )
+# }
 
 type ArtworkConnection {
   edges: [ArtworkEdge]

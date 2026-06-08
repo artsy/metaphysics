@@ -27,12 +27,15 @@ if [ "$SHOULD_LOG_TOKENS" = true ]; then
 fi
 
 # Write the middleware with the token baked in (QuickJS has no process.env)
-cat > "$SCRIPT_DIR/middleware/generated_add-auth-headers.js" << EOF
+cat > "$SCRIPT_DIR/generated/middleware.js" << EOF
 function onRequest({ request }) {
   request.headers['X-XAPP-TOKEN'] = '${GRAVITY_XAPP_TOKEN}'
   return { request }
 }
 EOF
+
+# Append static middleware functions (not safe to put in generated file directly)
+cat "$SCRIPT_DIR/middleware/artworks-to-connection.js" >> "$SCRIPT_DIR/generated/middleware.js"
 
 echo "Fetching Artnet access token..."
 ARTNET_ACCESS_TOKEN=$(curl -sf -X POST "$OIDC_ISSUER/connect/token" \
