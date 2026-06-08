@@ -147,6 +147,91 @@ describe("SyncCatalogToArtworkMutation", () => {
     })
   })
 
+  describe("with editionSetID parameter", () => {
+    const editionSetQuery = gql`
+      mutation {
+        syncCatalogToArtwork(
+          input: { artworkID: "artwork-123", editionSetID: "edition-set-456" }
+        ) {
+          artworkOrError {
+            __typename
+            ... on SyncCatalogToArtworkSuccess {
+              syncedFields
+            }
+          }
+        }
+      }
+    `
+
+    it("forwards edition_set_id to the loader", async () => {
+      const context = {
+        syncCatalogToArtworkLoader: jest.fn(() =>
+          Promise.resolve({
+            success: true,
+            synced_fields: ["availability", "price"],
+            errors: [],
+          })
+        ),
+        artworkLoader: jest.fn(() =>
+          Promise.resolve({ _id: "artwork-123", id: "artwork-slug" })
+        ),
+      }
+
+      await runAuthenticatedQuery(editionSetQuery, context)
+
+      expect(context.syncCatalogToArtworkLoader).toHaveBeenCalledWith(
+        "artwork-123",
+        {
+          edition_set_id: "edition-set-456",
+        }
+      )
+    })
+
+    it("combines editionSetID and fields when both are provided", async () => {
+      const combinedQuery = gql`
+        mutation {
+          syncCatalogToArtwork(
+            input: {
+              artworkID: "artwork-123"
+              editionSetID: "edition-set-456"
+              fields: [PRICE]
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on SyncCatalogToArtworkSuccess {
+                syncedFields
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        syncCatalogToArtworkLoader: jest.fn(() =>
+          Promise.resolve({
+            success: true,
+            synced_fields: ["price"],
+            errors: [],
+          })
+        ),
+        artworkLoader: jest.fn(() =>
+          Promise.resolve({ _id: "artwork-123", id: "artwork-slug" })
+        ),
+      }
+
+      await runAuthenticatedQuery(combinedQuery, context)
+
+      expect(context.syncCatalogToArtworkLoader).toHaveBeenCalledWith(
+        "artwork-123",
+        {
+          edition_set_id: "edition-set-456",
+          fields: ["price"],
+        }
+      )
+    })
+  })
+
   describe("on API failure", () => {
     it("returns a mutation error", async () => {
       const context = {
