@@ -44,6 +44,7 @@ import {
 } from "../identityVerification"
 import Image from "../image"
 import { NotificationType } from "../notifications"
+import { PartnerOfferTypeEnumType } from "../partnerOffer"
 import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
@@ -515,6 +516,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         artworkID: {
           type: GraphQLString,
         },
+        offerType: {
+          type: new GraphQLList(PartnerOfferTypeEnumType),
+          description:
+            "Filter by offer type(s). Gravity defaults to bulk offers when omitted.",
+        },
         page: { type: GraphQLInt },
         size: { type: GraphQLInt },
         sort: { type: PartnerOfferToCollectorSortsType },
@@ -537,6 +543,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         }
         if (args.artworkID) {
           gravityArgs["artwork_id"] = args.artworkID
+        }
+        if (args.offerType) {
+          gravityArgs["offer_type"] = args.offerType
         }
 
         const { body, headers } = await mePartnerOffersLoader(gravityArgs)
