@@ -3653,6 +3653,9 @@ union ArtworkHighlight = Article | Show
 type ArtworkImport implements Node {
   # Columns to display for an import, will exist in a row's `transformedData`
   columns: [String!]!
+
+  # Type of partner conversion: 'standard' or 'auction'
+  conversionType: String
   createdAt(
     format: String
 
@@ -3670,7 +3673,19 @@ type ArtworkImport implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   locationID: String
+
+  # Original exclude from marketing flag from partner conversion
+  originalExcludeFromMarketing: Boolean
+
+  # Original image filenames provided during partner conversion
+  originalImageFilenames: String
+
+  # Original sale slug provided during partner conversion
+  originalSaleSlug: String
   partnerListID: String
+
+  # Type of partner template detected during conversion
+  partnerTemplateType: String
   rawDataMapping: JSON!
   rowsConnection(
     after: String
@@ -3679,7 +3694,7 @@ type ArtworkImport implements Node {
     last: Int
   ): ArtworkImportRowConnection
 
-  # Source of the import: 'bulk_import' or 'multi_add'
+  # Source of the import: 'bulk_import', 'multi_add', or 'partner_conversion'
   source: String
   state: ArtworkImportState
   statistics: ArtworkImportStatistics
@@ -5337,6 +5352,9 @@ input BatchArtworkImportImagesInput {
 
   # Array of image objects to match
   images: [BatchArtworkImportImagesImageInput!]!
+
+  # Enable intelligent image matching for partner conversions
+  partnerConversion: Boolean = false
 }
 
 type BatchArtworkImportImagesPayload {
@@ -11134,6 +11152,52 @@ union CreatePartnerArtistDocumentResponseOrError =
 type CreatePartnerArtistDocumentSuccess {
   document: PartnerDocument
   partner: Partner
+}
+
+type CreatePartnerArtworkImportFailure {
+  mutationError: GravityMutationError
+}
+
+input CreatePartnerArtworkImportInput {
+  clientMutationId: String
+
+  # Metadata required for partner data conversion
+  conversionMetadata: PartnerConversionMetadataInput!
+
+  # Type of conversion: 'standard' or 'auction'
+  conversionType: String = "auction"
+
+  # Name of the partner file
+  fileName: String
+
+  # ID of the partner location
+  locationID: String
+
+  # ID of the partner
+  partnerID: String!
+
+  # ID of the partner list to add artworks to
+  partnerListID: String
+
+  # S3 bucket where the partner file is stored
+  s3Bucket: String!
+
+  # S3 key of the partner file
+  s3Key: String!
+}
+
+type CreatePartnerArtworkImportPayload {
+  artworkImportOrError: CreatePartnerArtworkImportResponseOrError
+  clientMutationId: String
+}
+
+union CreatePartnerArtworkImportResponseOrError =
+    CreatePartnerArtworkImportFailure
+  | CreatePartnerArtworkImportSuccess
+
+type CreatePartnerArtworkImportSuccess {
+  artworkImport: ArtworkImport
+  conversionSummary: PartnerConversionSummary
 }
 
 type CreatePartnerArtworksExportFailure {
@@ -18908,6 +18972,11 @@ type Mutation {
     input: CreatePartnerArtistDocumentMutationInput!
   ): CreatePartnerArtistDocumentMutationPayload
 
+  # Create an artwork import from a partner spreadsheet with data conversion
+  createPartnerArtworkImport(
+    input: CreatePartnerArtworkImportInput!
+  ): CreatePartnerArtworkImportPayload
+
   # Enqueue a CSV export of all artworks for a partner.
   createPartnerArtworksExport(
     input: CreatePartnerArtworksExportMutationInput!
@@ -21870,6 +21939,20 @@ type PartnerConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
+}
+
+input PartnerConversionMetadataInput {
+  # Whether to exclude from marketing
+  excludeFromMarketing: Boolean = false
+
+  # Sale slug for the auction
+  saleSlug: String!
+}
+
+type PartnerConversionSummary {
+  originalRowsCount: String
+  partnerTemplateType: String
+  transformedRowsCount: String
 }
 
 type PartnerCounts {

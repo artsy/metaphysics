@@ -256,6 +256,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerArtworkImportLoader: gravityLoader(
+      "artwork_imports/partner_conversion",
+      {},
+      { method: "POST" }
+    ),
     deleteArtworkImportLoader: gravityLoader(
       (id) => `artwork_import/${id}`,
       {},

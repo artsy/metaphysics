@@ -89,6 +89,11 @@ export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
       ),
       description: "Array of image objects to match",
     },
+    partnerConversion: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description: "Enable intelligent image matching for partner conversions",
+    },
   },
   outputFields: {
     batchArtworkImportImagesOrError: {
@@ -97,7 +102,7 @@ export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkImportID, images },
+    { artworkImportID, images, partnerConversion },
     { artworkImportMatchImagesLoader }
   ) => {
     if (!artworkImportMatchImagesLoader) {
@@ -111,6 +116,7 @@ export const BatchArtworkImportImagesMutation = mutationWithClientMutationId<
         s3_bucket: s3Bucket,
         ...(rowID && { row_id: rowID }),
       })),
+      partner_conversion: partnerConversion,
     }
 
     try {
