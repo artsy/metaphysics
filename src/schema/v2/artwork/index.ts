@@ -81,7 +81,10 @@ import { date } from "../fields/date"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
-import { PartnerOfferType, PartnerOfferTypeEnumType } from "../partnerOffer"
+import {
+  PartnerOfferConnectionType,
+  PartnerOfferTypeEnumType,
+} from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
@@ -1350,9 +1353,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       partnerOffersConnection: {
-        type: connectionWithCursorInfo({
-          nodeType: PartnerOfferType,
-        }).connectionType,
+        type: PartnerOfferConnectionType,
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
