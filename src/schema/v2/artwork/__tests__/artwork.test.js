@@ -485,6 +485,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#isPartnerOfferable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          isPartnerOfferable
+        }
+      }
+    `
+
+    it("will return the value of partner_offerable", () => {
+      artwork.partner_offerable = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            isPartnerOfferable: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("visibility_level", () => {
     const query = `
       {
