@@ -9,7 +9,7 @@ providing a sandbox to work with.
 
 It is currently used in production all over the place in
 [Artsy.net](http://github.com/artsy/force/), and the
-[Artsy iOS App](http://github.com/artsy/eigen)
+[Artsy's mobile app](http://github.com/artsy/eigen)
 
 ## Meta [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics) [![codecov](https://codecov.io/gh/artsy/metaphysics/branch/main/graph/badge.svg)](https://codecov.io/gh/artsy/metaphysics)
 

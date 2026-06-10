@@ -18,6 +18,8 @@ interface Input {
   artwork_id: string
   discount_percentage: number
   note?: string
+  impulse_conversation_id?: string
+  user_id?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -65,6 +67,8 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
     artwork_id: { type: new GraphQLNonNull(GraphQLString) },
     discount_percentage: { type: new GraphQLNonNull(GraphQLInt) },
     note: { type: GraphQLString },
+    impulse_conversation_id: { type: GraphQLString },
+    user_id: { type: GraphQLString },
   },
   outputFields: {
     partnerOfferOrError: {
@@ -83,6 +87,8 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
         artwork_id: args.artwork_id,
         discount_percentage: args.discount_percentage,
         note: args.note,
+        impulse_conversation_id: args.impulse_conversation_id,
+        user_id: args.user_id,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)

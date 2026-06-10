@@ -157,6 +157,7 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
+import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionSetMutation"
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
@@ -203,6 +204,7 @@ import { confirmPasswordMutation } from "./me/confirmPasswordMutation"
 import { createImageMutation } from "./me/createImageMutation"
 import { transferMyCollectionMutation } from "./me/transferMyCollectionMutation"
 import { recordArtworkViewMutation } from "./me/recordArtworkViewMutation"
+import { recordGuidedTourEventMutation } from "./me/guidedTour/recordGuidedTourEventMutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
@@ -766,6 +768,7 @@ export default new GraphQLSchema({
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       recordArtworkView: recordArtworkViewMutation,
+      recordGuidedTourEvent: recordGuidedTourEventMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
@@ -790,6 +793,7 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
+      updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,

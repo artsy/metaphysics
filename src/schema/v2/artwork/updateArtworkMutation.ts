@@ -340,6 +340,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       updateArtworkLoader,
       updateArtworkEditionSetLoader,
       createArtworkEditionSetLoader,
+      deleteArtworkEditionSetLoader,
       addImageToArtworkLoader,
       setDefaultArtworkImageLoader,
     }
@@ -347,12 +348,15 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     if (
       !updateArtworkLoader ||
       !updateArtworkEditionSetLoader ||
-      !createArtworkEditionSetLoader
+      !createArtworkEditionSetLoader ||
+      !deleteArtworkEditionSetLoader
     ) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const getGravityArgs = (inputArgs: Partial<UpdateArtworkMutationInputProps>) => {
+    const getGravityArgs = (
+      inputArgs: Partial<UpdateArtworkMutationInputProps>
+    ) => {
       return {
         additional_information: inputArgs.additionalInformation,
         artists: inputArgs.artistIds,
@@ -431,6 +435,13 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         await Promise.all(
           editionSets.map((editionSet) => {
             if (editionSet.id) {
+              if (editionSet.delete) {
+                return deleteArtworkEditionSetLoader({
+                  artworkId: id,
+                  editionSetId: editionSet.id,
+                })
+              }
+
               return updateArtworkEditionSetLoader(
                 {
                   artworkId: id,

@@ -102,6 +102,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworkRecommendationsLoader: gravityLoader("artwork_recommendations"),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
     artworkImportMatchImagesLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_images`,
@@ -978,6 +979,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     mePingLoader: gravityLoader("me/ping"),
+    meGuidedTourLoader: gravityLoader("me/guided_tour"),
+    recordGuidedTourEventLoader: gravityLoader(
+      "me/guided_tour/events",
+      {},
+      { method: "POST" }
+    ),
     meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
     meDismissTaskLoader: gravityLoader(
       (id) => `me/task/${id}/dismiss`,
@@ -1487,6 +1494,11 @@ export default (accessToken, userID, opts) => {
     ),
     updateCatalogArtworkLoader: gravityLoader(
       (id) => `catalog_artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    updateCatalogEditionSetLoader: gravityLoader(
+      (id) => `catalog_edition_set/${id}`,
       {},
       { method: "PUT" }
     ),

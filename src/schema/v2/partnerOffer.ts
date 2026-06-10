@@ -18,6 +18,15 @@ export const PartnerOfferSourceEnumType = new GraphQLEnumType({
   values: {
     SAVE: { value: "Save" },
     ABANDONED_ORDER: { value: "Abandoned Order" },
+    CONVERSATION: { value: "Conversation" },
+  },
+})
+
+export const PartnerOfferTypeEnumType = new GraphQLEnumType({
+  name: "PartnerOfferTypeEnum",
+  values: {
+    BULK: { value: "bulk" },
+    PERSONALIZED: { value: "personalized" },
   },
 })
 

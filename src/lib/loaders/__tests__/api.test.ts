@@ -56,6 +56,21 @@ describe("API loaders", () => {
       })
     })
 
+    it("does not coalesce identical calls for non-GET methods", () => {
+      const postLoader = apiLoader(
+        "some/post/no-coalesce/path",
+        {},
+        { method: "POST" }
+      )
+      const callsBefore = api.mock.calls.length
+      return Promise.all([
+        postLoader({ same: "payload" }),
+        postLoader({ same: "payload" }),
+      ]).then(() => {
+        expect(api.mock.calls.length - callsBefore).toEqual(2)
+      })
+    })
+
     it("passes options for the api function on", () => {
       // Needs to be a new path so that it hasn’t been cached in memcache yet
       loader = apiLoader("some/post/path", {}, { method: "POST" })

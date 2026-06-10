@@ -4,7 +4,7 @@ import { verbose, warn } from "lib/loggers"
 import timer from "lib/timer"
 import { pick } from "lodash"
 import { LoaderFactory } from "../index"
-import { DataLoaderKey } from "./index"
+import { APIOptions, DataLoaderKey } from "./index"
 import { loaderInterface } from "./loader_interface"
 
 /**
@@ -27,6 +27,9 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
 ) => {
   return (accessTokenLoader) => {
     const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
+      const method = (pathAPIOptions as APIOptions).method
+      const isMutatingMethod = !!method && method !== "GET"
+
       const loader = new DataLoader<
         DataLoaderKey,
         T | { body: T; headers: any }
@@ -82,7 +85,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
         },
         {
           batch: false,
-          cache: true,
+          cache: !isMutatingMethod,
           cacheKeyFn: (input) => JSON.stringify(input),
         }
       )

@@ -35,6 +35,7 @@ import {
   resolveAlertFromJSON,
 } from "../Alerts"
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
+import { GuidedTourField } from "./guidedTour"
 import { artworkConnection } from "../artwork"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
@@ -43,6 +44,7 @@ import {
 } from "../identityVerification"
 import Image from "../image"
 import { NotificationType } from "../notifications"
+import { PartnerOfferTypeEnumType } from "../partnerOffer"
 import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
@@ -342,12 +344,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     email: {
       type: GraphQLString,
     },
-    emailFrequency: {
-      description: "Frequency of marketing emails.",
-      deprecationReason: "This field is no longer used.",
-      resolve: ({ email_frequency }) => email_frequency,
-      type: GraphQLString,
-    },
     canRequestEmailConfirmation: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether user is allowed to request email confirmation",
@@ -508,6 +504,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return meNotificationLoader(id)
       },
     },
+    guidedTour: GuidedTourField,
     initials: initials("name"),
     order: MeOrder,
     ordersConnection: MeOrdersConnection,
@@ -520,6 +517,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       args: pageable({
         artworkID: {
           type: GraphQLString,
+        },
+        offerType: {
+          type: new GraphQLList(PartnerOfferTypeEnumType),
+          description:
+            "Filter by offer type(s). Gravity defaults to all a users partner offers when omitted.",
         },
         page: { type: GraphQLInt },
         size: { type: GraphQLInt },
@@ -543,6 +545,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         }
         if (args.artworkID) {
           gravityArgs["artwork_id"] = args.artworkID
+        }
+        if (args.offerType) {
+          gravityArgs["offer_type"] = args.offerType
         }
 
         const { body, headers } = await mePartnerOffersLoader(gravityArgs)

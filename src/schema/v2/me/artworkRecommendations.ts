@@ -1,5 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -7,41 +8,30 @@ import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 
-// This limits the maximum number of artworks we receive from Vortex and is related to how we implement the Connection in this resolver.
+// This limits the maximum number of artworks we receive from the recommendation
+// backend and is related to how we implement the Connection in this resolver.
 const MAX_ARTWORKS = 50
 
-export const ArtworkRecommendations: GraphQLFieldConfig<
-  void,
-  ResolverContext
-> = {
-  description: "A connection of artwork recommendations for the current user.",
-  type: artworkConnection.connectionType,
-  args: pageable({
-    page: { type: GraphQLInt },
-  }),
-  resolve: async (
-    _root,
-    args: CursorPageable,
-    {
-      artworksLoader,
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-      },
-      xImpersonateUserID,
-      userID,
-    }
-  ) => {
-    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
+// WTYL canary: route to the Gravity REST endpoint (live) instead of Vortex
+// GraphQL (legacy daily-batch). Flipped per-user in the Unleash admin UI.
+const GRAVITY_RAIL_FLAG = "onyx_artwork-recommendations-gravity"
 
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+const getArtworkIdsFromVortex = async (
+  userId: string | undefined,
+  context: ResolverContext
+): Promise<string[]> => {
+  const {
+    authenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+    },
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+    },
+    xImpersonateUserID,
+  } = context
 
-    const userId = userID || xImpersonateUserID
-    // Fetching artwork IDs from Vortex
-    const query = {
-      query: gql`
+  const query = {
+    query: gql`
         query artworkRecommendationsQuery {
           artworkRecommendations(first: ${MAX_ARTWORKS}, userId: "${userId}") {
             totalCount
@@ -54,31 +44,84 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
           }
         }
       `,
+  }
+
+  const vortexResult = xImpersonateUserID
+    ? await vortexGraphQLUnauthenticatedLoader!(query)()
+    : await vortexGraphQLAuthenticatedLoader!(query)()
+
+  return extractNodes(vortexResult.data?.artworkRecommendations).map(
+    (node: any) => node?.artworkId
+  )
+}
+
+const getArtworkIdsFromGravity = async (
+  context: ResolverContext
+): Promise<string[]> => {
+  const { artworkRecommendationsLoader } = context
+
+  try {
+    const { artwork_ids } = await artworkRecommendationsLoader!({
+      size: MAX_ARTWORKS,
+    })
+
+    return artwork_ids ?? []
+  } catch (err) {
+    if (err.statusCode === 404) {
+      return []
     }
+    throw err
+  }
+}
 
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphQLUnauthenticatedLoader(query)()
-      : await vortexGraphQLAuthenticatedLoader(query)()
+export const ArtworkRecommendations: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  description: "A connection of artwork recommendations for the current user.",
+  type: artworkConnection.connectionType,
+  args: pageable({
+    page: { type: GraphQLInt },
+  }),
+  resolve: async (_root, args: CursorPageable, context) => {
+    const {
+      artworksLoader,
+      artworkRecommendationsLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      },
+      xImpersonateUserID,
+      userID,
+    } = context
 
-    const artworkRecommendations = extractNodes(
-      vortexResult.data?.artworkRecommendations
-    )
+    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
 
-    const artworkIds = artworkRecommendations.map(
-      (node: any) => node?.artworkId
-    )
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const userId = userID || xImpersonateUserID
+
+    // The Gravity endpoint serves the authenticated `current_user` and has no
+    // `user_id` param, so impersonated/app requests stay on the Vortex path.
+    const useGravity =
+      !!artworkRecommendationsLoader &&
+      !xImpersonateUserID &&
+      isFeatureFlagEnabled(GRAVITY_RAIL_FLAG, { userId })
+
+    // Fetching artwork IDs from the selected recommendation backend.
+    const artworkIds = useGravity
+      ? await getArtworkIdsFromGravity(context)
+      : await getArtworkIdsFromVortex(userId, context)
 
     const pageArtworkIDs = artworkIds?.slice(offset, offset + size)
 
     // Fetching artwork details from Gravity
-
     const artworks = artworkIds?.length
       ? await artworksLoader({
           ids: pageArtworkIDs,
         })
       : []
 
-    const totalCount = artworkRecommendations.length
+    const totalCount = artworkIds.length
 
     const connection = connectionFromArraySlice(artworks, args, {
       arrayLength: totalCount,

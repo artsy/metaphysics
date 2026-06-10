@@ -4039,6 +4039,11 @@ type Artwork implements Node & Searchable & Sellable {
   """
   isOfferableFromInquiry: Boolean
   isOnHold: String
+
+  """
+  Whether a partner can send an offer for this work
+  """
+  isPartnerOfferable: Boolean!
   isPartnerPromoted: Boolean
 
   """
@@ -4164,9 +4169,19 @@ type Artwork implements Node & Searchable & Sellable {
     before: String
     first: Int
     last: Int
+
+    """
+    Filter by offer type(s). Gravity defaults to bulk offers when omitted.
+    """
+    offerType: [PartnerOfferTypeEnum]
     page: Int
     size: Int
     sort: PartnerOfferSorts
+
+    """
+    Only return offers targeting this user (e.g. a personalized offer from a conversation).
+    """
+    userID: String
   ): PartnerOfferConnection
 
   """
@@ -4259,6 +4274,11 @@ type Artwork implements Node & Searchable & Sellable {
   Minimal location information describing from where artwork will be shipped.
   """
   shippingOrigin: String
+
+  """
+  Display name of the shipping origin country or region (e.g., 'United Kingdom', 'European Union'). Returns empty string if shipping origin is not set.
+  """
+  shippingOriginRegion: String
   shippingWeight: Float
 
   """
@@ -5086,6 +5106,7 @@ enum ArtworkImportState {
   ARTWORKS_CREATION_COMPLETE
   ARTWORK_IMPORT_PROCESSING_COMPLETE
   CANCELED
+  FAILED
   PENDING
   POSITION_VALIDATION_COMPLETE
   SALE_ARTWORKS_CREATION_COMPLETE
@@ -7806,6 +7827,11 @@ type CareerHighlight implements Node {
 type CatalogArtwork {
   artworkId: String
   availability: String
+
+  """
+  Edition sets associated with this catalog artwork.
+  """
+  catalogEditionSets: [CatalogEditionSet]
   createdAt(
     format: String
 
@@ -7834,6 +7860,7 @@ type CatalogArtwork {
   priceCurrency: String
   priceListed: Money
   privateNotes: String
+  syncedMedium: String
   updatedAt(
     format: String
 
@@ -7876,6 +7903,48 @@ type CatalogArtworkDocument {
     """
     timezone: String
   ): String
+}
+
+type CatalogEditionSet {
+  availability: String
+  createdAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  editionSetId: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  priceCurrency: String
+  priceListed: Money
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+}
+
+"""
+Fields that can be synced from catalog artwork (OS) to CMS.
+"""
+enum CatalogSyncableField {
+  AVAILABILITY
+  MEDIUM
+  PRICE
 }
 
 type CausalityLotState {
@@ -13450,6 +13519,23 @@ type Conversation implements Node {
   ): CommerceOrderConnectionWithTotalCount
 
   """
+  Partner offers for this conversation's artwork, scoped to the user who initiated the conversation (from_id).
+  """
+  partnerOffersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    Filter by offer type(s). Gravity defaults to bulk offers when omitted.
+    """
+    offerType: [PartnerOfferTypeEnum]
+    page: Int
+    size: Int
+  ): PartnerOfferConnection
+
+  """
   A connection of orders for artworks in this conversation from the partner's perspective.
   """
   partnerOrdersConnection(
@@ -14569,7 +14655,7 @@ input CreateInstagramPostInput {
   instagramAccountId: String!
 
   """
-  Slides for the Instagram post. Each slide references an artwork and a custom image. The order determines the carousel position.
+  Slides for the Instagram post. Each slide requires an s3Key and an optional artworkId for custom image-only slides. The order determines the carousel position.
   """
   slides: [InstagramPostSlideInput!]!
 }
@@ -14623,15 +14709,15 @@ type CreateMailchimpCampaignFailure {
 
 input CreateMailchimpCampaignInput {
   """
-  Artwork IDs to associate with the campaign (mutually exclusive with partnerShowId; used to render content unless htmlContent is provided)
+  Artwork IDs to associate with the campaign for tracking (mutually exclusive with partnerShowId)
   """
   artworkIds: [String!]
   clientMutationId: String
 
   """
-  Pre-rendered HTML body for the campaign. When provided, supersedes the formatter's output but does not preclude tracking via artworkIds or partnerShowId
+  Pre-rendered HTML body for the campaign
   """
-  htmlContent: String
+  htmlContent: String!
 
   """
   The Mailchimp list/audience ID to send the campaign to
@@ -14644,7 +14730,7 @@ input CreateMailchimpCampaignInput {
   mailchimpAccountId: String!
 
   """
-  Partner show ID to associate with the campaign (mutually exclusive with artworkIds; used to render content unless htmlContent is provided)
+  Partner show ID to associate with the campaign for tracking (mutually exclusive with artworkIds)
   """
   partnerShowId: String
 
@@ -20014,6 +20100,77 @@ type GravityMutationError {
   type: String
 }
 
+type GuidedTourChecklist {
+  completedCount: Int!
+  items: [GuidedTourChecklistItem!]!
+  totalCount: Int!
+}
+
+type GuidedTourChecklistItem {
+  key: String!
+  showMeHowTour: GuidedTourTour
+  state: GuidedTourChecklistItemState!
+  title: String!
+}
+
+enum GuidedTourChecklistItemState {
+  COMPLETE
+  INCOMPLETE
+}
+
+enum GuidedTourContext {
+  CATALOG_OS
+}
+
+enum GuidedTourEventType {
+  CHECKLIST_ITEM_COMPLETED
+  STEP_VIEWED
+  TOUR_COMPLETED
+  TOUR_DISMISSED
+  TOUR_STARTED
+}
+
+enum GuidedTourState {
+  COMPLETED
+  DISMISSED
+  IN_PROGRESS
+  NOT_STARTED
+}
+
+"""
+A user's guided tour state for a context, server-driven.
+"""
+type GuidedTourStateView {
+  """
+  The single step to render now, or null when no required tour is active.
+  """
+  activeStep: GuidedTourStep
+  activeTour: GuidedTourTour
+  checklist: GuidedTourChecklist!
+  context: GuidedTourContext!
+}
+
+type GuidedTourStep {
+  anchorKey: String!
+  body: String
+  completesItemKey: String
+  ctaLabel: String
+  index: Int!
+  key: String!
+  placement: String!
+  title: String
+  total: Int!
+}
+
+"""
+An ordered sequence of steps and the user's state in it.
+"""
+type GuidedTourTour {
+  key: String!
+  state: GuidedTourState
+  steps: [GuidedTourStep!]!
+}
+
 """
 A Hero Unit
 """
@@ -21960,12 +22117,12 @@ A slide in an Instagram carousel post. The order of slides in the array determin
 """
 input InstagramPostSlideInput {
   """
-  The ID of the artwork for this slide
+  The ID of the artwork for this slide (optional for custom image-only slides)
   """
-  artworkId: String!
+  artworkId: String
 
   """
-  S3 object key for this slide's custom image
+  S3 object key for this slide's image (required)
   """
   s3Key: String!
 }
@@ -23392,12 +23549,12 @@ type Me implements Node {
     @deprecated(
       reason: "emailConfirmed is going to be removed, use isEmailConfirmed instead"
     )
+  followsAndSaves: FollowsAndSaves
 
   """
-  Frequency of marketing emails.
+  The logged-in user's guided tour state for a given context.
   """
-  emailFrequency: String @deprecated(reason: "This field is no longer used.")
-  followsAndSaves: FollowsAndSaves
+  guidedTour(context: GuidedTourContext!): GuidedTourStateView
   hasCreditCards: Boolean
   hasPassword: Boolean!
   hasPriceRange: Boolean!
@@ -23716,6 +23873,11 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
+
+    """
+    Filter by offer type(s). Gravity defaults to all a users partner offers when omitted.
+    """
+    offerType: [PartnerOfferTypeEnum]
     page: Int
     size: Int
     sort: PartnerOfferToCollectorSorts
@@ -25154,7 +25316,7 @@ type Mutation {
   ): CreateInvoicePaymentPayload
 
   """
-  Create a Mailchimp campaign draft for a partner
+  Create a Mailchimp campaign draft for a partner from pre-rendered HTML
   """
   createMailchimpCampaign(
     input: CreateMailchimpCampaignInput!
@@ -25763,6 +25925,13 @@ type Mutation {
   recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
 
   """
+  Record a guided tour event for the logged-in user and return the refreshed state.
+  """
+  recordGuidedTourEvent(
+    input: RecordGuidedTourEventInput!
+  ): RecordGuidedTourEventPayload
+
+  """
   Refresh the access token for a connected Instagram account
   """
   refreshInstagramAccount(
@@ -26054,6 +26223,13 @@ type Mutation {
   updateCatalogArtwork(
     input: UpdateCatalogArtworkInput!
   ): UpdateCatalogArtworkPayload
+
+  """
+  Updates a catalog edition set. Requires partner or partner support permissions.
+  """
+  updateCatalogEditionSet(
+    input: UpdateCatalogEditionSetInput!
+  ): UpdateCatalogEditionSetPayload
 
   """
   Update a collection
@@ -28034,9 +28210,9 @@ type Partner implements Node {
   distinguishRepresentedArtists: Boolean
 
   """
-  Whether auto-sync of variable fields to marketplaces is enabled. Defaults to false.
+  Whether auto-sync of variable fields to marketplaces is enabled. Defaults to true.
   """
-  distributionSyncEnabled: Boolean
+  distributionSyncEnabled: Boolean!
 
   """
   Return partner documents if current user has CMS access.
@@ -29724,6 +29900,7 @@ enum PartnerOfferSorts {
 
 enum PartnerOfferSourceEnum {
   ABANDONED_ORDER
+  CONVERSATION
   SAVE
 }
 
@@ -29800,6 +29977,11 @@ enum PartnerOfferToCollectorSorts {
   CREATED_AT_DESC
   END_AT_ASC
   END_AT_DESC
+}
+
+enum PartnerOfferTypeEnum {
+  BULK
+  PERSONALIZED
 }
 
 """
@@ -33106,6 +33288,34 @@ type RecordArtworkViewPayload {
   clientMutationId: String
 }
 
+type RecordGuidedTourEventFailure {
+  mutationError: GravityMutationError!
+}
+
+input RecordGuidedTourEventInput {
+  clientMutationId: String
+  context: GuidedTourContext!
+  itemKey: String
+  reason: String
+  stepPosition: Int
+  tourKey: String
+  type: GuidedTourEventType!
+}
+
+type RecordGuidedTourEventPayload {
+  clientMutationId: String
+  recordGuidedTourEventOrError: RecordGuidedTourEventResponseOrError!
+}
+
+union RecordGuidedTourEventResponseOrError =
+    RecordGuidedTourEventFailure
+  | RecordGuidedTourEventSuccess
+
+type RecordGuidedTourEventSuccess {
+  guidedTour: GuidedTourStateView!
+  me: Me!
+}
+
 type RefreshInstagramAccountFailure {
   mutationError: GravityMutationError
 }
@@ -36040,6 +36250,16 @@ input SyncCatalogToArtworkMutationInput {
   """
   artworkID: String!
   clientMutationId: String
+
+  """
+  Edition set ID. When provided, syncs the catalog edition set to the edition set instead of the artwork.
+  """
+  editionSetID: String
+
+  """
+  Specific fields to sync. Omit to sync all.
+  """
+  fields: [CatalogSyncableField]
 }
 
 type SyncCatalogToArtworkMutationPayload {
@@ -37231,6 +37451,46 @@ type UpdateCatalogArtworkSuccess {
   catalogArtwork: CatalogArtwork
 }
 
+type UpdateCatalogEditionSetFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateCatalogEditionSetInput {
+  """
+  Availability of the edition set.
+  """
+  availability: String
+  clientMutationId: String
+
+  """
+  The ID of the edition set.
+  """
+  editionSetID: String!
+
+  """
+  Price currency (ISO 4217).
+  """
+  priceCurrency: String
+
+  """
+  Price in minor currency units (e.g., cents).
+  """
+  priceMinor: Int
+}
+
+type UpdateCatalogEditionSetPayload {
+  catalogEditionSetOrError: UpdateCatalogEditionSetResponseOrError
+  clientMutationId: String
+}
+
+union UpdateCatalogEditionSetResponseOrError =
+    UpdateCatalogEditionSetFailure
+  | UpdateCatalogEditionSetSuccess
+
+type UpdateCatalogEditionSetSuccess {
+  catalogEditionSet: CatalogEditionSet
+}
+
 type UpdateCollectionFailure {
   mutationError: GravityMutationError
 }
@@ -37676,11 +37936,6 @@ input UpdateMyProfileInput {
   The given email of the user.
   """
   email: String
-
-  """
-  Frequency of marketing emails.
-  """
-  emailFrequency: String @deprecated(reason: "This field is no longer used.")
 
   """
   Gender.
@@ -42641,7 +42896,9 @@ input createPartnerOfferMutationInput {
   artwork_id: String!
   clientMutationId: String
   discount_percentage: Int!
+  impulse_conversation_id: String
   note: String
+  user_id: String
 }
 
 type createPartnerOfferMutationPayload {

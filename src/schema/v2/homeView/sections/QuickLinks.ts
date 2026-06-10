@@ -76,8 +76,8 @@ export const QUICK_LINKS: Array<NavigationPill> = [
   },
   {
     title: "Paintings",
-    href: "/collection/paintings",
-    ownerType: OwnerType.collection,
+    href: "/gene/painting",
+    ownerType: OwnerType.gene,
     icon: "ArtworkIcon",
   },
   {

@@ -57,7 +57,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { COUNTRIES, LocationType } from "schema/v2/location"
+import { LocationType } from "schema/v2/location"
 import {
   CollectionsConnectionType,
   CollectionSorts,
@@ -81,7 +81,10 @@ import { date } from "../fields/date"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
-import { PartnerOfferType } from "../partnerOffer"
+import {
+  PartnerOfferConnectionType,
+  PartnerOfferTypeEnumType,
+} from "../partnerOffer"
 import FormattedNumber from "../types/formatted_number"
 import { ArtworkCompletenessChecklistItemType } from "./artworkCompletenessChecklistItem"
 import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
@@ -102,6 +105,7 @@ import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
+  getDomesticShippingRegionName,
   isEligibleForOnPlatformTransaction,
   isEligibleToCreateAlert,
   isEmbeddedVideo,
@@ -906,6 +910,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Whether a user can make an offer on the work through inquiry",
         resolve: ({ offerable_from_inquiry }) => offerable_from_inquiry,
       },
+      isPartnerOfferable: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Whether a partner can send an offer for this work",
+        resolve: ({ partner_offerable }) => !!partner_offerable,
+      },
       isBiddable: {
         type: GraphQLBoolean,
         description:
@@ -1349,12 +1358,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       partnerOffersConnection: {
-        type: connectionWithCursorInfo({
-          nodeType: PartnerOfferType,
-        }).connectionType,
+        type: PartnerOfferConnectionType,
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
+          userID: {
+            type: GraphQLString,
+            description:
+              "Only return offers targeting this user (e.g. a personalized offer from a conversation).",
+          },
+          offerType: {
+            type: new GraphQLList(PartnerOfferTypeEnumType),
+            description:
+              "Filter by offer type(s). Gravity defaults to bulk offers when omitted.",
+          },
           sort: {
             type: new GraphQLEnumType({
               name: "PartnerOfferSorts",
@@ -1391,6 +1408,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             artwork_id: artwork.id,
+            user_id: args.userID,
+            offer_type: args.offerType,
             sort: args.sort,
           })
 
@@ -1607,20 +1626,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           let domesticLine = ""
           let internationalLine = "Contact gallery"
 
-          const fullCountryName = artwork.shipping_origin
-            ? COUNTRIES[
-                artwork.shipping_origin[artwork.shipping_origin.length - 1]
-              ]
-            : "country"
-          const withingCountry = artwork.eu_shipping_origin
-            ? "European Union"
-            : fullCountryName
+          const shipsWithin = getDomesticShippingRegionName(
+            artwork.shipping_origin,
+            artwork.eu_shipping_origin,
+            "country"
+          )
 
           // domestic related
           if (artwork.process_with_artsy_shipping_domestic) {
             domesticLine = "Calculated in checkout"
           } else if (artwork.domestic_shipping_fee_cents === 0) {
-            domesticLine = `Free within ${withingCountry}`
+            domesticLine = `Free within ${shipsWithin}`
           } else if (artwork.domestic_shipping_fee_cents > 0) {
             const formattedPrice = amount(
               ({ domestic_shipping_fee_cents }) =>
@@ -1629,7 +1645,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               precision: 0,
               symbol: symbolFromCurrencyCode(artwork.price_currency),
             })
-            domesticLine = `${formattedPrice} within ${withingCountry}`
+            domesticLine = `${formattedPrice} within ${shipsWithin}`
           }
 
           // international related
@@ -1657,6 +1673,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Minimal location information describing from where artwork will be shipped.",
         resolve: (artwork) => {
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+        },
+      },
+      shippingOriginRegion: {
+        type: GraphQLString,
+        description:
+          "Display name of the shipping origin country or region (e.g., 'United Kingdom', 'European Union'). Returns empty string if shipping origin is not set.",
+        resolve: (artwork) => {
+          return getDomesticShippingRegionName(
+            artwork.shipping_origin,
+            artwork.eu_shipping_origin
+          )
         },
       },
       submissionId: {
