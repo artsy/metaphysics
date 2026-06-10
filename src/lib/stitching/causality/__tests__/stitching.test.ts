@@ -127,6 +127,29 @@ describe("causality/stitching", () => {
         })
       })
 
+      it("forwards pagination args to causality alongside the userId", async () => {
+        const { resolvers } = await useCausalityStitching()
+
+        const info = {
+          mergeInfo: {
+            delegateToSchema: jest.fn(() => Promise.resolve({ edges: [] })),
+          },
+        }
+
+        await resolvers.Me.auctionsLotStandingConnection.resolve(
+          { internalID: "user-id" },
+          { first: 2, after: "cursor" },
+          { saleArtworkRootLoader: jest.fn() },
+          info
+        )
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: { first: 2, after: "cursor", userId: "user-id" },
+          })
+        )
+      })
+
       describe("when sale artworks are missing", () => {
         let info
         let auctionsLotStandingConnection

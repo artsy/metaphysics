@@ -99,19 +99,21 @@ export const causalityStitchingEnvironment = ({
           selectionSet: `{ internalID }`,
           // The function to handle getting the lot standings correctly, we
           // use the root query `_unused_auctionsLotStandingConnection` to grab
-          // the data from the local causality schema. Other args from the field
-          // (eg first, after, last, before) are forwarded automatically, so we only
-          // need the userId.
+          // the data from the local causality schema. Unlike graphql-tools v5,
+          // v10 builds the delegated field's arguments from `args` alone —
+          // outer field args (eg first, after, last, before) are no longer
+          // forwarded automatically, so spread them in alongside the userId.
           // `await`/async (was a `.then(...)` chain): in
           // `@graphql-tools/delegate` v10 `delegateToSchema` returns
           // `MaybePromise<unknown>` — synchronous executions return the value
           // directly, blowing up `.then` with "is not a function".
-          resolve: async (parent, _args, context, info) => {
+          resolve: async (parent, args, context, info) => {
             const lotStandingsConnection = await delegateToSchema({
               schema: causalitySchema,
               operation: OperationTypeNode.QUERY,
               fieldName: "_unused_auctionsLotStandingConnection",
               args: {
+                ...args,
                 userId: parent.internalID,
               },
               context,
