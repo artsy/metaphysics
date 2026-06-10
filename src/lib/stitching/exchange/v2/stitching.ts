@@ -2,6 +2,7 @@ import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
 import type { AsyncExecutor } from "@graphql-tools/utils"
 import { WrapQuery } from "@graphql-tools/wrap"
 import {
+  execute,
   GraphQLError,
   GraphQLSchema,
   Kind,
@@ -974,9 +975,10 @@ export const exchangeStitchingEnvironment = ({
         commerceOrderResult: {
           resolve: async (_source, args, context, info) => {
             // Create a custom executor that handles errors from Exchange
-            const customExecutor: AsyncExecutor = async (params) => {
+            const customExecutor: AsyncExecutor = async (
+              params
+            ): Promise<any> => {
               const { document, variables, context: execContext } = params
-              const { execute } = require("graphql")
 
               const result = await execute({
                 schema: exchangeSchema,

@@ -1,5 +1,5 @@
 import type { ExecutionRequest, Executor } from "@graphql-tools/utils"
-import { DocumentNode, print, visit } from "graphql/index"
+import { DocumentNode, print, visit } from "graphql"
 import config from "../../config"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import { ResolverContext } from "types/graphql"
