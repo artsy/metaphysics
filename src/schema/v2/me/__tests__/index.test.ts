@@ -888,6 +888,36 @@ describe("me/index", () => {
         },
       })
     })
+
+    it("filters by offer type when offerType is provided", async () => {
+      const meLoader = () => Promise.resolve({})
+      const mePartnerOffersLoader = jest.fn(() =>
+        Promise.resolve({
+          body: [],
+          headers: { "x-total-count": "0" },
+        })
+      )
+      const query = gql`
+        query {
+          me {
+            partnerOffersConnection(offerType: [PERSONALIZED], first: 10) {
+              totalCount
+            }
+          }
+        }
+      `
+      await runAuthenticatedQuery(query, {
+        meLoader,
+        mePartnerOffersLoader,
+      })
+
+      expect(mePartnerOffersLoader).toHaveBeenCalledWith({
+        page: 1,
+        size: 10,
+        total_count: true,
+        offer_type: ["personalized"],
+      })
+    })
   })
 })
 
