@@ -53,7 +53,7 @@ async function updateSchemaFile({
         let prettierArgs = ""
         if (dest.endsWith(".json")) {
           const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
-          const schema = buildSchema(sdl, { commentDescriptions: true })
+          const schema = buildSchema(sdl)
           const gql = graphqlSync({ schema, source: introspectionQuery })
           writeFileSync(repoDest, JSON.stringify(gql, null, 2))
         } else {
