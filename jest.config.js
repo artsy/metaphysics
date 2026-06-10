@@ -15,7 +15,5 @@ module.exports = {
   transform: {
     "^.+\\.(js|ts|mjs)$": require.resolve("babel-jest"),
   },
-  transformIgnorePatterns: [
-    "/node_modules/(?!(apollo-upload-client|extract-files)/)",
-  ],
+  transformIgnorePatterns: ["/node_modules/(?!(extract-files)/)"],
 }
