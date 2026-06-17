@@ -2377,6 +2377,69 @@ describe("Me", () => {
       })
     })
 
+    describe("lineItems partnerOfferId", () => {
+      it("exposes partnerOfferId on lineItems when present", async () => {
+        const localOrderJson = {
+          ...baseOrderJson,
+          line_items: [
+            {
+              ...baseOrderJson.line_items[0],
+              partner_offer_id: "partner-offer-123",
+            },
+          ],
+        }
+
+        const result = await runAuthenticatedQuery(
+          gql`
+            query {
+              me {
+                order(id: "order-id") {
+                  lineItems {
+                    partnerOfferId
+                  }
+                }
+              }
+            }
+          `,
+          {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+          }
+        )
+
+        expect(result.me.order.lineItems[0].partnerOfferId).toEqual(
+          "partner-offer-123"
+        )
+      })
+
+      it("returns null for partnerOfferId on lineItems when absent", async () => {
+        const localOrderJson = {
+          ...baseOrderJson,
+          line_items: [{ ...baseOrderJson.line_items[0] }],
+        }
+
+        const result = await runAuthenticatedQuery(
+          gql`
+            query {
+              me {
+                order(id: "order-id") {
+                  lineItems {
+                    partnerOfferId
+                  }
+                }
+              }
+            }
+          `,
+          {
+            meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+            meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+          }
+        )
+
+        expect(result.me.order.lineItems[0].partnerOfferId).toBeNull()
+      })
+    })
+
     describe("fulfillmentOptions shippingQuoteId", () => {
       const shippingQuoteIdQuery = gql`
         query {
