@@ -96,6 +96,7 @@ export interface OrderJSON {
     edition_set_id?: string
     id: string
     list_price_cents: number
+    partner_offer_id?: string
     quantity: number
     shipping_total_cents?: number
     tax_cents?: number
