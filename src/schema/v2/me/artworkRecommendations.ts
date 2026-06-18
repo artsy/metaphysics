@@ -3,6 +3,7 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
@@ -15,6 +16,19 @@ const MAX_ARTWORKS = 50
 // WTYL canary: route to the Gravity REST endpoint (live) instead of Vortex
 // GraphQL (legacy daily-batch). Flipped per-user in the Unleash admin UI.
 const GRAVITY_RAIL_FLAG = "onyx_artwork-recommendations-gravity"
+
+// Gravity-backed rail ships in eigen 9.11.0+. Checked before the flag so older
+// eigen builds (and non-eigen clients like web) never enter the rollout bucket.
+const MINIMUM_EIGEN_VERSION = { major: 9, minor: 11, patch: 0 }
+
+const isEligibleClient = (context: ResolverContext): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+
+  return (
+    !!actualEigenVersion &&
+    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION)
+  )
+}
 
 const getArtworkIdsFromVortex = async (
   userId: string | undefined,
@@ -105,6 +119,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
     const useGravity =
       !!artworkRecommendationsLoader &&
       !xImpersonateUserID &&
+      isEligibleClient(context) &&
       isFeatureFlagEnabled(GRAVITY_RAIL_FLAG, { userId })
 
     // Fetching artwork IDs from the selected recommendation backend.
