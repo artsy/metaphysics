@@ -151,6 +151,7 @@ describe("artworkRecommendations", () => {
         artworkRecommendationsLoader,
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
+        userAgent: "Artsy-Mobile/9.11.0",
         authenticatedLoaders: {
           vortexGraphqlLoader,
         },
@@ -202,6 +203,7 @@ describe("artworkRecommendations", () => {
         artworkRecommendationsLoader,
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
+        userAgent: "Artsy-Mobile/9.11.0",
         authenticatedLoaders: {
           vortexGraphqlLoader,
         },
@@ -237,6 +239,7 @@ describe("artworkRecommendations", () => {
         artworkRecommendationsLoader,
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
+        userAgent: "Artsy-Mobile/9.11.0",
         authenticatedLoaders: {
           vortexGraphqlLoader,
         },
@@ -250,6 +253,55 @@ describe("artworkRecommendations", () => {
       )
       expect(vortexGraphqlLoader).not.toHaveBeenCalled()
       expect(artworksLoader).not.toHaveBeenCalled()
+    })
+
+    it("stays on the Vortex path for non-eigen clients (e.g. web)", async () => {
+      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const artworkRecommendationsLoader = jest.fn()
+      const artworksLoader = jest.fn(async () => artworksResponse)
+
+      const context: any = {
+        artworksLoader,
+        artworkRecommendationsLoader,
+        meLoader: () => Promise.resolve({}),
+        userID: "gravity-user-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexGraphqlLoader: null,
+        },
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexGraphqlLoader).toHaveBeenCalled()
+    })
+
+    it("stays on the Vortex path for eigen versions below 9.11.0", async () => {
+      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const artworkRecommendationsLoader = jest.fn()
+      const artworksLoader = jest.fn(async () => artworksResponse)
+
+      const context: any = {
+        artworksLoader,
+        artworkRecommendationsLoader,
+        meLoader: () => Promise.resolve({}),
+        userID: "gravity-user-id",
+        userAgent: "Artsy-Mobile/9.10.0",
+        authenticatedLoaders: {
+          vortexGraphqlLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexGraphqlLoader: null,
+        },
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexGraphqlLoader).toHaveBeenCalled()
     })
 
     it("stays on the Vortex path for impersonated/app requests", async () => {
