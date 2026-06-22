@@ -159,6 +159,24 @@ describe("Meta", () => {
         })
       })
 
+      describe("with a null title", () => {
+        const context = {
+          artworkLoader: () =>
+            Promise.resolve({
+              ...artworkData,
+              title: null,
+            }),
+        }
+
+        it("defaults to 'Untitled'", async () => {
+          const data = await runQuery(query, context as any)
+
+          expect(data.artwork.meta.title).toBe(
+            "Untitled (1975) by Hans Hartung - For Sale | Artsy"
+          )
+        })
+      })
+
       describe("with a long title", () => {
         const context = {
           artworkLoader: () =>

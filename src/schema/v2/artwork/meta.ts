@@ -18,10 +18,13 @@ const isInquireAboutAvailability = (saleMessage) =>
   saleMessage == "Inquire about availability"
 
 const titleWithDate = ({ title, date }) =>
-  join(" ", [title, date ? `(${date})` : undefined])
+  join(" ", [title || "Untitled", date ? `(${date})` : undefined])
 
 const titleWithDateV2 = ({ title, date }) =>
-  join(" ", [truncate(title, TITLE_MAX_LENGTH), date ? `(${date})` : undefined])
+  join(" ", [
+    truncate(title || "Untitled", TITLE_MAX_LENGTH),
+    date ? `(${date})` : undefined,
+  ])
 
 export const artistNames = (artwork) =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
