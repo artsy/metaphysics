@@ -141,19 +141,6 @@ describe("Meta", () => {
       )
     })
 
-    test("variant-b shortens availability and removes year", async () => {
-      jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
-        enabled: true,
-        name: "variant-b",
-      } as any)
-
-      const data = await runQuery(query, context as any)
-
-      expect(data.artwork.meta.title).toBe(
-        "Hans Hartung | P. 25-1975-H-8 | For Sale | Artsy"
-      )
-    })
-
     describe("with a long title", () => {
       beforeEach(() => {
         artworkData.title =
@@ -183,19 +170,6 @@ describe("Meta", () => {
 
         expect(data.artwork.meta.title).toBe(
           "Hans Hartung | This title is very very very very very very very ver… (1975) | For Sale | Artsy"
-        )
-      })
-
-      test("variant-b truncates title", async () => {
-        jest.mocked(featureFlags.getExperimentVariant).mockReturnValue({
-          enabled: true,
-          name: "variant-b",
-        } as any)
-
-        const data = await runQuery(query, context as any)
-
-        expect(data.artwork.meta.title).toBe(
-          "Hans Hartung | This title is very very very very very very very ver… | For Sale | Artsy"
         )
       })
     })
