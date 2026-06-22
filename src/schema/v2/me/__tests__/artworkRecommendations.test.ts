@@ -147,7 +147,7 @@ describe("artworkRecommendations", () => {
       // Eligible clients are bucketed into the refresh experiment by default.
       mockGetExperimentVariant.mockReturnValue({
         enabled: true,
-        name: "experiment",
+        name: "variant",
       })
     })
 
@@ -321,7 +321,7 @@ describe("artworkRecommendations", () => {
       expect(vortexGraphqlLoader).toHaveBeenCalled()
     })
 
-    it("stays on the Vortex path when the experiment variant is a non-experiment name", async () => {
+    it("stays on the Vortex path for the control variant", async () => {
       mockGetExperimentVariant.mockReturnValue({
         enabled: true,
         name: "control",

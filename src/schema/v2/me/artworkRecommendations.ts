@@ -21,8 +21,10 @@ const GRAVITY_RAIL_FLAG = "onyx_artwork-recommendations-gravity"
 // eigen builds (and non-eigen clients like web) never enter the rollout bucket.
 const MINIMUM_EIGEN_VERSION = { major: 9, minor: 11, patch: 0 }
 
-// Eigen refresh experiment: clients bucketed into the "experiment" variant are
-// eligible regardless of version, so the rollout can target the experiment cohort.
+// Eigen refresh experiment: the front-end flag that controls the rollout split
+// and unlocks experiment tracking in eigen. Only clients bucketed into the
+// "variant" cohort (vs "control") get the Gravity rail, matching eigen's check
+// in useEnableLiveHomeRecommendations.
 const REFRESH_EIGEN_FLAG = "onyx_artwork-recommendations-refresh-eigen"
 
 const isInRefreshExperiment = (context: ResolverContext): boolean => {
@@ -30,7 +32,7 @@ const isInRefreshExperiment = (context: ResolverContext): boolean => {
     userId: context.userID,
   })
 
-  return !!variant && variant.enabled && variant.name === "experiment"
+  return !!variant && variant.enabled && variant.name === "variant"
 }
 
 const isEligibleClient = (context: ResolverContext): boolean => {
