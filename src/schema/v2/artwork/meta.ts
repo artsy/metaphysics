@@ -34,7 +34,7 @@ const forSaleIndication = (artwork) =>
 const forSaleIndicationV2 = (artwork) =>
   artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
     ? "For Sale"
-    : "Art & Prints"
+    : undefined
 
 const dimensions = (artwork) => artwork.dimensions[artwork.metric]
 
@@ -117,24 +117,17 @@ export default Meta
  *
  * ```
  * control   ➡︎ Mevlana Lipp | Cups (2021) | Available for Sale | Artsy
- * variant-a ➡︎ Mevlana Lipp | Cups (2021) | For Sale | Artsy
- * variant-b ➡︎ Mevlana Lipp | Cups | For Sale | Artsy
+ * variant-a ➡︎ Cups (2021) by Mevlana Lipp - For Sale | Artsy
  * ```
  */
 function generateTitle(artwork, variant) {
   switch (variant) {
     case "variant-a":
       return join(" | ", [
-        artistNames(artwork),
-        titleWithDateV2(artwork),
-        forSaleIndicationV2(artwork),
-        "Artsy",
-      ])
-    case "variant-b":
-      return join(" | ", [
-        artistNames(artwork),
-        truncate(artwork.title, TITLE_MAX_LENGTH), // omits date
-        forSaleIndicationV2(artwork),
+        join(" - ", [
+          join(" by ", [titleWithDateV2(artwork), artistNames(artwork)]),
+          forSaleIndicationV2(artwork),
+        ]),
         "Artsy",
       ])
     default:
