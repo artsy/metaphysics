@@ -3,7 +3,6 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
-  GraphQLBoolean,
   GraphQLInputObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -20,11 +19,6 @@ const PartnerConversionMetadataType = new GraphQLInputObjectType({
     saleSlug: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Sale slug for the auction",
-    },
-    excludeFromMarketing: {
-      type: GraphQLBoolean,
-      defaultValue: false,
-      description: "Whether to exclude from marketing",
     },
   }),
 })
@@ -96,11 +90,6 @@ export const CreatePartnerArtworkImportMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "ID of the partner location",
     },
-    conversionType: {
-      type: GraphQLString,
-      defaultValue: "auction",
-      description: "Type of conversion: 'standard' or 'auction'",
-    },
     partnerListID: {
       type: GraphQLString,
       description: "ID of the partner list to add artworks to",
@@ -129,11 +118,9 @@ export const CreatePartnerArtworkImportMutation = mutationWithClientMutationId<
       s3_key: args.s3Key,
       file_name: args.fileName,
       location_id: args.locationID,
-      conversion_type: args.conversionType,
       partner_list_id: args.partnerListID,
       conversion_metadata: {
         sale_slug: args.conversionMetadata.saleSlug,
-        exclude_from_marketing: args.conversionMetadata.excludeFromMarketing,
       },
     }
 
