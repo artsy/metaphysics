@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
@@ -21,11 +21,26 @@ const GRAVITY_RAIL_FLAG = "onyx_artwork-recommendations-gravity"
 // eigen builds (and non-eigen clients like web) never enter the rollout bucket.
 const MINIMUM_EIGEN_VERSION = { major: 9, minor: 11, patch: 0 }
 
+// Eigen refresh experiment: the front-end flag that controls the rollout split
+// and unlocks experiment tracking in eigen. Only clients bucketed into the
+// "variant" cohort (vs "control") get the Gravity rail, matching eigen's check
+// in useEnableLiveHomeRecommendations.
+const REFRESH_EIGEN_FLAG = "onyx_artwork-recommendations-refresh-eigen"
+
+const isInRefreshExperiment = (context: ResolverContext): boolean => {
+  const variant = getExperimentVariant(REFRESH_EIGEN_FLAG, {
+    userId: context.userID,
+  })
+
+  return !!variant && variant.enabled && variant.name === "variant"
+}
+
 const isEligibleClient = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
 
   return (
     !!actualEigenVersion &&
+    isInRefreshExperiment(context) &&
     isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION)
   )
 }
