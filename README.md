@@ -141,6 +141,7 @@ If any of these queries fail, it's probable that you misconfigured your
 - [Adding a GraphQL micro-service to Metaphysics](docs/adding_a_new_graphql_microservice.md)
 - [Adding a rest micro-service to Metaphysics](docs/adding_a_new_rest_microservice.md)
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
+- [Canary deployments](docs/canary-deployments.md)
 - [GraphQL Schema Design][]
 
 [graphql schema design]: https://github.com/artsy/README/blob/main/playbooks/graphql-schema-design.md
