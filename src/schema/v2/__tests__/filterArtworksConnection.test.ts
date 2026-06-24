@@ -943,6 +943,82 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("filter by variant", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    it("passes variant to Gravity when provided", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { variant: "hybrid", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "hybrid",
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass variant to Gravity when omitted", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+      }
+
+      const query = gql`
+        {
+          artworksConnection(input: { first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      const lastCallArgs = mockFilterArtworksLoader.mock.calls.at(-1)?.[0]
+      expect(lastCallArgs).not.toHaveProperty("variant")
+    })
+  })
+
   describe("CMS request filtering", () => {
     describe("simple CMS requests", () => {
       it("uses partnerArtworksAllLoader for simple CMS requests", async () => {
