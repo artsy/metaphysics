@@ -463,6 +463,10 @@ const ArtworkImportRowType = new GraphQLObjectType({
               resolve: ({ CertificateOfAuthenticity }) =>
                 CertificateOfAuthenticity,
             },
+            privateNotes: {
+              type: GraphQLString,
+              resolve: ({ PrivateNotes }) => PrivateNotes,
+            },
             signature: {
               type: new GraphQLList(GraphQLString),
               resolve: ({ Signature }) => Signature,
