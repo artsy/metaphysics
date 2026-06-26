@@ -943,6 +943,309 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("filter by variant", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    it("passes variant to Gravity when provided", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { variant: "hybrid", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "hybrid",
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass variant to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          variant: expect.anything(),
+        })
+      )
+    })
+  })
+
+  describe("hybrid search tuning args", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    it("passes the hybrid args to Gravity when variant is hybrid", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              variant: "hybrid"
+              hybridNeuralK: 50
+              hybridWeights: [0.3, 0.7]
+              hybridPaginationDepth: 500
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "hybrid",
+          hybrid_neural_k: 50,
+          hybrid_weights: [0.3, 0.7],
+          hybrid_pagination_depth: 500,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass any hybrid args to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { variant: "hybrid", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_neural_k: expect.anything(),
+        })
+      )
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_weights: expect.anything(),
+        })
+      )
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_pagination_depth: expect.anything(),
+        })
+      )
+    })
+
+    it("throws when a hybrid arg is provided without variant: hybrid", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { hybridNeuralK: 50, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    })
+
+    it("throws when a hybrid arg is provided with a non-hybrid variant", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: { variant: "keyword", hybridWeights: [0.5, 0.5], first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    })
+
+    it("throws when hybridNeuralK is out of range", async () => {
+      const tooLow = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridNeuralK: 0, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooLow, context)).rejects.toThrow(
+        "`hybridNeuralK` must be between 1 and 200."
+      )
+
+      const tooHigh = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridNeuralK: 201, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooHigh, context)).rejects.toThrow(
+        "`hybridNeuralK` must be between 1 and 200."
+      )
+    })
+
+    it("throws when hybridPaginationDepth is out of range", async () => {
+      const tooLow = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridPaginationDepth: 0, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooLow, context)).rejects.toThrow(
+        "`hybridPaginationDepth` must be between 1 and 10000."
+      )
+
+      const tooHigh = gql`
+        {
+          artworksConnection(
+            input: {
+              variant: "hybrid"
+              hybridPaginationDepth: 10001
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooHigh, context)).rejects.toThrow(
+        "`hybridPaginationDepth` must be between 1 and 10000."
+      )
+    })
+
+    it("throws when hybridWeights does not contain exactly two floats", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridWeights: [0.5], first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`hybridWeights` must contain exactly two floats."
+      )
+    })
+  })
+
   describe("CMS request filtering", () => {
     describe("simple CMS requests", () => {
       it("uses partnerArtworksAllLoader for simple CMS requests", async () => {
