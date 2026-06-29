@@ -209,4 +209,53 @@ describe("ArtworkImport", () => {
       },
     })
   })
+
+  it("fetches certificate of authenticity and private notes from transformed data", async () => {
+    const artworkImportLoader = jest.fn().mockReturnValue({
+      id: "artwork-import-1",
+      file_name: "import.csv",
+    })
+
+    const artworkImportRowsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          id: "row1",
+          transformed_data: {
+            CertificateOfAuthenticity: "gallery",
+            PrivateNotes: "VIP collector, hold until Friday",
+          },
+        },
+      ],
+      headers: { "x-total-count": "1" },
+    })
+
+    const query = gql`
+      query {
+        artworkImport(id: "artwork-import-1") {
+          rowsConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                transformedData {
+                  certificateOfAuthenticity
+                  privateNotes
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = { artworkImportLoader, artworkImportRowsLoader }
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result.artworkImport.rowsConnection.edges[0].node).toEqual({
+      internalID: "row1",
+      transformedData: {
+        certificateOfAuthenticity: "gallery",
+        privateNotes: "VIP collector, hold until Friday",
+      },
+    })
+  })
 })
