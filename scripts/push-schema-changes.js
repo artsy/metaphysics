@@ -88,12 +88,6 @@ async function updateSchemaFile({
  * update .circleci/config.yml `push-schema-changes` job parallelism count to match
  */
 const supportedRepos = {
-  "artsy-mcp": {
-    skipInstall: true,
-    skipRelay: true,
-    skipPrettier: true,
-    destinations: ["apps/artsy-mcp/data/schema.graphql"],
-  },
   eigen: {
     body: `${defaultBody} #nochangelog`,
     skipDeprecatedEngineCheck: true,

@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLInt,
@@ -280,6 +281,26 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   viewingRoomID: {
     type: GraphQLID,
   },
+  variant: {
+    type: GraphQLString,
+    description:
+      "Search strategy. 'hybrid' blends semantic (meaning-based) results into the keyword search. Requires a keyword; team-only.",
+  },
+  hybridNeuralK: {
+    type: GraphQLInt,
+    description:
+      "Hybrid only: how many candidates the semantic arm retrieves. Higher = wider semantic net.",
+  },
+  hybridWeights: {
+    type: new GraphQLList(new GraphQLNonNull(GraphQLFloat)),
+    description:
+      "Hybrid only: [lexical, neural] balance when blending scores, e.g. [0.5,0.5] equal, [0.3,0.7] favors semantic.",
+  },
+  hybridPaginationDepth: {
+    type: GraphQLInt,
+    description:
+      "Hybrid only: results each arm contributes to the blend; must be ≥ from + page size. Caps pagination depth.",
+  },
   signed: {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
@@ -516,6 +537,10 @@ const convertFilterArgs = ({
   showID,
   sizes,
   tagID,
+  variant,
+  hybridNeuralK,
+  hybridWeights,
+  hybridPaginationDepth,
   viewingRoomID,
   visibilityLevel,
   ..._options
@@ -562,6 +587,10 @@ const convertFilterArgs = ({
     sale_id: saleID,
     sizes: sizes,
     tag_id: tagID,
+    variant: variant,
+    hybrid_neural_k: hybridNeuralK,
+    hybrid_weights: hybridWeights,
+    hybrid_pagination_depth: hybridPaginationDepth,
     viewing_room_id: viewingRoomID,
     visibility_level: visibilityLevel,
     ..._options,
@@ -607,6 +636,10 @@ const filterArtworksConnectionTypeFactory = (
       include_all_json,
       visibility_level,
       price_range,
+      variant,
+      hybrid_neural_k,
+      hybrid_weights,
+      hybrid_pagination_depth,
       aggregations: aggregationOptions = [],
     } = options
 
@@ -618,6 +651,36 @@ const filterArtworksConnectionTypeFactory = (
     // inc-223
     if (price_range === "*-1") {
       throw new Error("Invalid input")
+    }
+
+    // Hybrid search tuning args only apply when `variant` is "hybrid".
+    const hybridArgsProvided =
+      hybrid_neural_k != null ||
+      hybrid_weights != null ||
+      hybrid_pagination_depth != null
+
+    if (hybridArgsProvided && variant !== "hybrid") {
+      throw new Error(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    }
+
+    if (
+      hybrid_neural_k != null &&
+      (hybrid_neural_k < 1 || hybrid_neural_k > 200)
+    ) {
+      throw new Error("`hybridNeuralK` must be between 1 and 200.")
+    }
+
+    if (
+      hybrid_pagination_depth != null &&
+      (hybrid_pagination_depth < 1 || hybrid_pagination_depth > 10000)
+    ) {
+      throw new Error("`hybridPaginationDepth` must be between 1 and 10000.")
+    }
+
+    if (hybrid_weights != null && hybrid_weights.length !== 2) {
+      throw new Error("`hybridWeights` must contain exactly two floats.")
     }
 
     const requestedPersonalizedAggregation = aggregationOptions.includes(

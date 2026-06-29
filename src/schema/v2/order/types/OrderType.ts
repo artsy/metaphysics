@@ -201,6 +201,10 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
     },
+    partnerOfferId: {
+      type: GraphQLString,
+      resolve: ({ partner_offer_id }) => partner_offer_id,
+    },
   }),
 })
 
