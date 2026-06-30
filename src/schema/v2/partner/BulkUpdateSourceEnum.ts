@@ -9,6 +9,6 @@ export const BulkUpdateSourceEnum = new GraphQLEnumType({
     PARTNER_ARTIST_ARTWORKS_LIST: { value: "partner_artist_artworks_list" },
     SHOW_ARTWORKS_LIST: { value: "show_artworks_list" },
     PARTNER_LIST: { value: "os_list" },
-    OS_INVENTORY: { value: "os_inventory" },
+    INVENTORY: { value: "os_inventory" },
   },
 })
