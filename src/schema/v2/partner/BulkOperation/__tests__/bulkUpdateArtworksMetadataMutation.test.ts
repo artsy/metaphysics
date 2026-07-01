@@ -175,7 +175,7 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
     expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
       "partner123",
       {
-        source: "partner_list",
+        source: "os_list",
         metadata: {
           category: "Painting",
         },
