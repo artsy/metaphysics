@@ -129,8 +129,9 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     const userId = userID || xImpersonateUserID
 
-    // The Gravity endpoint serves the authenticated `current_user` and has no
-    // `user_id` param, so impersonated/app requests stay on the Vortex path.
+    // The Gravity endpoint accepts a `user_id` param for trusted apps (see the
+    // NWFY rail in artworksForUser), but WTYL hasn't wired impersonation through
+    // it, so impersonated/app requests still stay on the Vortex path.
     const useGravity =
       !!artworkRecommendationsLoader &&
       !xImpersonateUserID &&

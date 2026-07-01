@@ -1,3 +1,4 @@
+import config from "config"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable } from "relay-cursor-paging"
@@ -6,11 +7,37 @@ import { ResolverContext } from "types/graphql"
 // Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
 const MAX_ARTWORKS = 50
 
+// Gravity-backed NWFY rail: source IDs from the live Gravity REST endpoint
+const getNewForYouArtworkIDsFromGravity = async (
+  args: CursorPageable,
+  context: ResolverContext,
+  userId?: string
+): Promise<string[]> => {
+  const { artworkRecommendationsLoader } = context
+
+  try {
+    const { artwork_ids } = await artworkRecommendationsLoader!({
+      rail: "nwfy",
+      size: MAX_ARTWORKS,
+      ...(userId && { user_id: userId }),
+      // Vortex sent maxWorksPerArtist; the nwfy rail is version_c and takes
+      // max_per_artist (version is implicit in the rail).
+      ...(args.maxWorksPerArtist && { max_per_artist: args.maxWorksPerArtist }),
+    })
+
+    return artwork_ids ?? []
+  } catch (err) {
+    if (err.statusCode === 404) return []
+    throw err
+  }
+}
+
 export const getNewForYouArtworkIDs = async (
   args: CursorPageable,
   context: ResolverContext
 ): Promise<string[]> => {
   const {
+    artworkRecommendationsLoader,
     authenticatedLoaders: {
       vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
       auctionLotRecommendationsLoader: auctionLotRecommendationsAuthenticatedLoader,
@@ -45,10 +72,18 @@ export const getNewForYouArtworkIDs = async (
 
     return data.map((recommendation) => recommendation.artwork_id)
   }
-  if (!vortexGraphQLAuthenticatedLoader)
-    throw new Error("Authentication failed: User is not authenticated.")
 
   const userID = args.userId || xImpersonateUserID
+
+  const useGravity =
+    config.ENABLE_NEW_WORKS_FOR_YOU_GRAVITY && !!artworkRecommendationsLoader
+
+  if (useGravity) {
+    return getNewForYouArtworkIDsFromGravity(args, context, userID)
+  }
+
+  if (!vortexGraphQLAuthenticatedLoader)
+    throw new Error("Authentication failed: User is not authenticated.")
 
   const userIdArgument = userID ? `userId: "${userID}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""

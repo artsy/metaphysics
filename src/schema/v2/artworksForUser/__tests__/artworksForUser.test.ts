@@ -1,3 +1,4 @@
+import config from "config"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
@@ -240,6 +241,41 @@ describe("artworksForUser", () => {
           "hasPreviousPage": false,
         }
       `)
+    })
+  })
+
+  describe("with the Gravity NWFY rail enabled", () => {
+    beforeEach(() => {
+      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true
+    })
+
+    afterEach(() => {
+      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false
+    })
+
+    it("sources ids from the Gravity rail and composes the connection (skipping Vortex)", async () => {
+      const query = buildQuery({ first: 2, includeBackfill: true })
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["g1", "g2"],
+      }))
+      const newForYouArtworks = [{ id: "g1" }, { id: "g2" }]
+      const context = buildContext({ newForYouArtworks })
+      context.artworkRecommendationsLoader = artworkRecommendationsLoader
+
+      const { artworksForUser } = await runAuthenticatedQuery(query, context)
+
+      expect(artworkRecommendationsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ rail: "nwfy", user_id: "abc123" })
+      )
+      expect(
+        context.authenticatedLoaders.vortexGraphqlLoader
+      ).not.toHaveBeenCalled()
+      // Downstream (artwork fetch → connection) is the shared path, unchanged.
+      expect(context.artworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ ids: ["g1", "g2"], availability: "for sale" })
+      )
+      expect(extractNodes(artworksForUser).length).toEqual(2)
+      expect(artworksForUser.totalCount).toBe(2)
     })
   })
 
