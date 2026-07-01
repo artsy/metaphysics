@@ -1266,7 +1266,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       location: {
         type: LocationType,
         resolve: ({ location }) => location,
-        description: "Represents partner's location",
+        description: "Represents partner's location (authorized users only)",
+      },
+      publicLocation: {
+        type: LocationType,
+        resolve: ({ public_location }) => public_location,
+        description:
+          "Represents partner's public-facing location (a subset of the full location)",
       },
       manufacturer: markdown(),
       medium: {
