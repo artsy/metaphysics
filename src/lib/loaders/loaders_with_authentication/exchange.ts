@@ -116,6 +116,39 @@ export const exchangeLoaders = (accessToken, opts) => {
     }
   )
 
+  const meOfferAcceptLoader = exchangeLoader<
+    any,
+    { orderID: string; offerID: string }
+  >(
+    ({ orderID, offerID }) => `me/orders/${orderID}/offers/${offerID}/accept`,
+    {},
+    {
+      method: "POST",
+    }
+  )
+
+  const meOfferRejectLoader = exchangeLoader<
+    any,
+    { orderID: string; offerID: string }
+  >(
+    ({ orderID, offerID }) => `me/orders/${orderID}/offers/${offerID}/reject`,
+    {},
+    {
+      method: "POST",
+    }
+  )
+
+  const meOfferSubmitLoader = exchangeLoader<
+    any,
+    { orderID: string; offerID: string }
+  >(
+    ({ orderID, offerID }) => `me/orders/${orderID}/offers/${offerID}/submit`,
+    {},
+    {
+      method: "POST",
+    }
+  )
+
   const meOrderBankAccountBalanceCheckLoader = exchangeLoader(
     (id) => `me/orders/${id}/bank_account_balance_check`
   )
@@ -184,6 +217,9 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOrderUnsetPaymentMethodLoader,
     meOfferCreateLoader,
     meOfferUpdateLoader,
+    meOfferAcceptLoader,
+    meOfferRejectLoader,
+    meOfferSubmitLoader,
     stripeConfirmationTokenLoader,
     partnerOrdersLoader,
     partnerOrderLoader,
