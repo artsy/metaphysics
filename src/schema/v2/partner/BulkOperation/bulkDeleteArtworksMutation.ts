@@ -110,9 +110,9 @@ const BulkDeleteArtworksMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkDeleteArtworksMutationFailureType
+      return BulkDeleteArtworksMutationFailureType.name
     }
-    return BulkDeleteArtworksMutationSuccessType
+    return BulkDeleteArtworksMutationSuccessType.name
   },
 })
 
