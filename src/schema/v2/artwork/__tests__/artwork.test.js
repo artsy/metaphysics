@@ -132,6 +132,67 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#publicLocation", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          publicLocation {
+            internalID
+            city
+            state
+            country
+            postalCode
+          }
+        }
+      }
+    `
+
+    it("returns the artwork's public location", async () => {
+      artwork = {
+        ...artwork,
+        public_location: {
+          id: "5a1b2c3d4e5f60001234abcd",
+          city: "New York",
+          state: "NY",
+          country: "US",
+          postal_code: "10013",
+        },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          publicLocation: {
+            internalID: "5a1b2c3d4e5f60001234abcd",
+            city: "New York",
+            state: "NY",
+            country: "US",
+            postalCode: "10013",
+          },
+        },
+      })
+    })
+
+    it("returns null when there is no public location", async () => {
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          publicLocation: null,
+        },
+      })
+    })
+  })
+
   describe("#importSource", () => {
     const query = `
       {

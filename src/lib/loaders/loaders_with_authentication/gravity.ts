@@ -1544,6 +1544,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deletePartnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/delete_artworks`,
+      {},
+      { method: "PUT" }
+    ),
     bulkUpdateMetadataPreviewLoader: gravityLoader(
       (id) => `partner/${id}/bulk_operations/update_metadata/preview`
     ),
