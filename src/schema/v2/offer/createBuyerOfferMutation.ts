@@ -12,6 +12,7 @@ interface Input {
   orderID: string
   amountMinor: number
   note?: string
+  respondsToID?: string
 }
 
 export const createBuyerOfferMutation = mutationWithClientMutationId<
@@ -34,6 +35,10 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Optional note for the offer.",
     },
+    respondsToID: {
+      type: GraphQLID,
+      description: "Offer id this counteroffer responds to.",
+    },
   },
   outputFields: {
     offerOrError: {
@@ -51,6 +56,7 @@ export const createBuyerOfferMutation = mutationWithClientMutationId<
       const exchangeInputFields = {
         amount_cents: input.amountMinor,
         note: input.note,
+        responds_to_id: input.respondsToID,
       }
 
       const payload = Object.fromEntries(

@@ -18687,6 +18687,12 @@ type Mutation {
     input: BulkUpdateArtworksMetadataMutationInput!
   ): BulkUpdateArtworksMetadataMutationPayload
 
+  # Accept a seller's offer on an order
+  buyerAcceptOffer(input: buyerAcceptOfferInput!): buyerAcceptOfferPayload
+
+  # Decline a seller's offer on an order
+  buyerRejectOffer(input: buyerRejectOfferInput!): buyerRejectOfferPayload
+
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
     # Parameters for AddInitialOfferToOrder
@@ -19583,6 +19589,9 @@ type Mutation {
   startIdentityVerification(
     input: startIdentityVerificationMutationInput!
   ): startIdentityVerificationMutationPayload
+
+  # Submit a pending buyer offer
+  submitBuyerOffer(input: submitBuyerOfferInput!): submitBuyerOfferPayload
 
   # Create an artwork inquiry request
   submitInquiryRequestMutation(
@@ -32067,6 +32076,39 @@ enum addressType {
   TEMPORARY
 }
 
+input buyerAcceptOfferInput {
+  clientMutationId: String
+
+  # Offer id to accept.
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
+}
+
+type buyerAcceptOfferPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
+}
+
+input buyerRejectOfferInput {
+  clientMutationId: String
+
+  # Offer id to decline.
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
+
+  # Optional reason for declining the offer.
+  rejectReason: String
+}
+
+type buyerRejectOfferPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
+}
+
 enum contactType {
   ADMIN
   PARTNER
@@ -32111,6 +32153,9 @@ input createBuyerOfferInput {
 
   # Order id.
   orderID: ID!
+
+  # Offer id this counteroffer responds to.
+  respondsToID: ID
 }
 
 type createBuyerOfferPayload {
@@ -32483,6 +32528,21 @@ input startIdentityVerificationMutationInput {
 type startIdentityVerificationMutationPayload {
   clientMutationId: String
   startIdentityVerificationResponseOrError: StartIdentityVerificationResponseOrError
+}
+
+input submitBuyerOfferInput {
+  clientMutationId: String
+
+  # Offer id to submit.
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
+}
+
+type submitBuyerOfferPayload {
+  clientMutationId: String
+  offerOrError: OfferMutationResponse
 }
 
 input submitOrderInput {
