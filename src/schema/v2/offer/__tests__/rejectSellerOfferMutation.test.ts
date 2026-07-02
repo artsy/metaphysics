@@ -110,7 +110,11 @@ describe("rejectSellerOfferMutation", () => {
   })
 
   it("returns a generic error when the loader fails", async () => {
-    const result = await runAuthenticatedQuery(mockMutation, {})
+    context.meOfferRejectLoader = jest
+      .fn()
+      .mockRejectedValue(new Error("Something went wrong"))
+
+    const result = await runAuthenticatedQuery(mockMutation, context)
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({

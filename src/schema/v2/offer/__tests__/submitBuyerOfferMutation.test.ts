@@ -40,13 +40,6 @@ describe("submitBuyerOfferMutation", () => {
         tax_total_cents: 0,
         created_at: "2024-01-01T00:00:00.000Z",
       }),
-      meOrderLoader: jest.fn().mockResolvedValue({
-        id: "order-id",
-        mode: "offer",
-        state: "submitted",
-        code: "order-code",
-        currency_code: "USD",
-      }),
     }
   })
 
@@ -95,7 +88,11 @@ describe("submitBuyerOfferMutation", () => {
   })
 
   it("returns a generic error when the loader fails", async () => {
-    const result = await runAuthenticatedQuery(mockMutation, {})
+    context.meOfferSubmitLoader = jest
+      .fn()
+      .mockRejectedValue(new Error("Something went wrong"))
+
+    const result = await runAuthenticatedQuery(mockMutation, context)
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
