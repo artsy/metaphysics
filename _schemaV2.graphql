@@ -18581,6 +18581,9 @@ type Mutation {
     input: AcceptPartnerAgreementInput!
   ): AcceptPartnerAgreementPayload
 
+  # Accept a seller's offer on an order
+  acceptSellerOffer(input: acceptSellerOfferInput!): acceptSellerOfferPayload
+
   # Updates a Task on the logged in User
   ackTask(input: AckTaskMutationInput!): AckTaskMutationPayload
 
@@ -18686,12 +18689,6 @@ type Mutation {
   bulkUpdateArtworksMetadata(
     input: BulkUpdateArtworksMetadataMutationInput!
   ): BulkUpdateArtworksMetadataMutationPayload
-
-  # Accept a seller's offer on an order
-  buyerAcceptOffer(input: buyerAcceptOfferInput!): buyerAcceptOfferPayload
-
-  # Decline a seller's offer on an order
-  buyerRejectOffer(input: buyerRejectOfferInput!): buyerRejectOfferPayload
 
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
@@ -19472,6 +19469,9 @@ type Mutation {
   refreshInstagramAccount(
     input: RefreshInstagramAccountInput!
   ): RefreshInstagramAccountPayload
+
+  # Decline a seller's offer on an order
+  rejectSellerOffer(input: rejectSellerOfferInput!): rejectSellerOfferPayload
 
   # Removes an artwork from a partner list.
   removeArtworkFromPartnerList(
@@ -32020,6 +32020,21 @@ type YearRange {
   startAt: Int
 }
 
+input acceptSellerOfferInput {
+  clientMutationId: String
+
+  # Offer id to accept.
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
+}
+
+type acceptSellerOfferPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
+}
+
 type addOrderedSetItemFailure {
   mutationError: GravityMutationError
 }
@@ -32074,39 +32089,6 @@ enum addressType {
   BUSINESS
   OTHER
   TEMPORARY
-}
-
-input buyerAcceptOfferInput {
-  clientMutationId: String
-
-  # Offer id to accept.
-  offerID: ID!
-
-  # Order id.
-  orderID: ID!
-}
-
-type buyerAcceptOfferPayload {
-  clientMutationId: String
-  orderOrError: OrderMutationResponse
-}
-
-input buyerRejectOfferInput {
-  clientMutationId: String
-
-  # Offer id to decline.
-  offerID: ID!
-
-  # Order id.
-  orderID: ID!
-
-  # Optional reason for declining the offer.
-  rejectReason: String
-}
-
-type buyerRejectOfferPayload {
-  clientMutationId: String
-  orderOrError: OrderMutationResponse
 }
 
 enum contactType {
@@ -32474,6 +32456,24 @@ type purchases {
 
   # Total number of private sales
   totalPrivateSaleCount: Int!
+}
+
+input rejectSellerOfferInput {
+  clientMutationId: String
+
+  # Offer id to decline.
+  offerID: ID!
+
+  # Order id.
+  orderID: ID!
+
+  # Optional reason for declining the offer.
+  rejectReason: String
+}
+
+type rejectSellerOfferPayload {
+  clientMutationId: String
+  orderOrError: OrderMutationResponse
 }
 
 input setOrderFulfillmentOptionInput {

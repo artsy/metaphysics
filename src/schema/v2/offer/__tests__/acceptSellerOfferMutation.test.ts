@@ -3,7 +3,7 @@ import { baseOrderJson } from "../../order/__tests__/support"
 
 const mockMutation = `
   mutation {
-    buyerRejectOffer(input: {
+    acceptSellerOffer(input: {
       orderID: "order-id",
       offerID: "offer-id"
     }) {
@@ -12,6 +12,11 @@ const mockMutation = `
           mutationError {
             message
             code
+          }
+        }
+        ...on OrderMutationActionRequired {
+          actionData {
+            clientSecret
           }
         }
         ...on OrderMutationSuccess {
@@ -26,10 +31,10 @@ const mockMutation = `
 
 let context
 
-describe("buyerRejectOfferMutation", () => {
+describe("acceptSellerOfferMutation", () => {
   beforeEach(() => {
     context = {
-      meOfferRejectLoader: jest.fn().mockResolvedValue({
+      meOfferAcceptLoader: jest.fn().mockResolvedValue({
         ...baseOrderJson,
         id: "order-id",
         mode: "offer",
@@ -37,12 +42,12 @@ describe("buyerRejectOfferMutation", () => {
     }
   })
 
-  it("declines a seller's offer and returns the order", async () => {
+  it("accepts a seller's offer and returns the order", async () => {
     const result = await runAuthenticatedQuery(mockMutation, context)
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
-      buyerRejectOffer: {
+      acceptSellerOffer: {
         orderOrError: {
           order: {
             internalID: "order-id",
@@ -51,46 +56,18 @@ describe("buyerRejectOfferMutation", () => {
       },
     })
 
-    expect(context.meOfferRejectLoader).toHaveBeenCalledWith(
-      { orderID: "order-id", offerID: "offer-id" },
-      {}
-    )
-  })
-
-  it("forwards rejectReason as reject_reason", async () => {
-    const mutation = `
-      mutation {
-        buyerRejectOffer(input: {
-          orderID: "order-id",
-          offerID: "offer-id",
-          rejectReason: "buyer_rejected"
-        }) {
-          orderOrError {
-            ...on OrderMutationSuccess {
-              order {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const result = await runAuthenticatedQuery(mutation, context)
-
-    expect(result.errors).toBeUndefined()
-    expect(context.meOfferRejectLoader).toHaveBeenCalledWith(
-      { orderID: "order-id", offerID: "offer-id" },
-      { reject_reason: "buyer_rejected" }
-    )
+    expect(context.meOfferAcceptLoader).toHaveBeenCalledWith({
+      orderID: "order-id",
+      offerID: "offer-id",
+    })
   })
 
   it("returns a 422 exchange error", async () => {
-    context.meOfferRejectLoader = jest.fn().mockRejectedValue({
+    context.meOfferAcceptLoader = jest.fn().mockRejectedValue({
       statusCode: 422,
       body: {
-        message: "cannot_reject_offer",
-        code: "cannot_reject_offer",
+        message: "offer_total_not_defined",
+        code: "offer_total_not_defined",
       },
     })
 
@@ -98,11 +75,34 @@ describe("buyerRejectOfferMutation", () => {
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
-      buyerRejectOffer: {
+      acceptSellerOffer: {
         orderOrError: {
           mutationError: {
-            message: "cannot_reject_offer",
-            code: "cannot_reject_offer",
+            message: "offer_total_not_defined",
+            code: "offer_total_not_defined",
+          },
+        },
+      },
+    })
+  })
+
+  it("returns an action-required response when payment requires action", async () => {
+    context.meOfferAcceptLoader = jest.fn().mockRejectedValue({
+      statusCode: 422,
+      body: {
+        code: "payment_requires_action",
+        action_data: { client_secret: "cs_1" },
+      },
+    })
+
+    const result = await runAuthenticatedQuery(mockMutation, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(result).toEqual({
+      acceptSellerOffer: {
+        orderOrError: {
+          actionData: {
+            clientSecret: "cs_1",
           },
         },
       },
@@ -114,7 +114,7 @@ describe("buyerRejectOfferMutation", () => {
 
     expect(result.errors).toBeUndefined()
     expect(result).toEqual({
-      buyerRejectOffer: {
+      acceptSellerOffer: {
         orderOrError: {
           mutationError: {
             message: "An error occurred",
