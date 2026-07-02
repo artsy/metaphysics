@@ -48,7 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   name: "AckTaskResponseOrError",
   types: [SuccessType, ErrorType],
   resolveType: (data) =>
-    data._type === "GravityMutationError" ? ErrorType : SuccessType,
+    data._type === "GravityMutationError" ? ErrorType.name : SuccessType.name,
 })
 
 export const ackTaskMutation = mutationWithClientMutationId<
