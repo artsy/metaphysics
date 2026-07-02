@@ -165,6 +165,7 @@ import { artworksForUser } from "./artworksForUser"
 import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
+import { bulkDeleteArtworksMutation } from "./partner/BulkOperation/bulkDeleteArtworksMutation"
 import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
 import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreementMutation"
 import { Agreement } from "./agreement"
@@ -613,6 +614,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToPartnerList: bulkAddArtworksToPartnerListMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
+      bulkDeleteArtworks: bulkDeleteArtworksMutation,
       bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
