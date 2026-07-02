@@ -53,8 +53,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: DD_TRACER_SERVICE_NAME
-          value: metaphysics-canary
         - name: STATSD_HOST
           valueFrom:
             fieldRef:
@@ -176,6 +174,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: DD_TRACER_SERVICE_NAME
+          value: metaphysics-canary
         - name: STATSD_HOST
           valueFrom:
             fieldRef:
