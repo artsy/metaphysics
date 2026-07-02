@@ -51,9 +51,7 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     entities: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
-      ),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: "List of entities relevant to the insight.",
     },
     count: {

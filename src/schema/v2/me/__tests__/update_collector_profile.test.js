@@ -192,7 +192,7 @@ describe("UpdateCollectorProfile", () => {
     await expect(
       runAuthenticatedQuery(mutation, context)
     ).rejects.toMatchInlineSnapshot(
-      `[GraphQLError: Missing Update Collector Profile Loader. Check your access token.]`
+      "[Error: Missing Update Collector Profile Loader. Check your access token.]"
     )
   })
 })

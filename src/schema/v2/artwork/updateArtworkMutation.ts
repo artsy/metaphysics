@@ -87,7 +87,7 @@ interface UpdateArtworkMutationInputProps {
   framedMetric?: string
   framedWidth?: string
   height?: string
-  id: string
+  id?: string
   imageS3Locations?: S3LocationInput[]
   inventoryCount?: number
   inventoryId?: string
@@ -354,9 +354,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
-    const getGravityArgs = (
-      inputArgs: Partial<UpdateArtworkMutationInputProps>
-    ) => {
+    const getGravityArgs = (inputArgs: UpdateArtworkMutationInputProps) => {
       return {
         additional_information: inputArgs.additionalInformation,
         artists: inputArgs.artistIds,
@@ -431,7 +429,7 @@ export const updateArtworkMutation = mutationWithClientMutationId<
         })
       }
 
-      if (editionSets && editionSets.length > 0) {
+      if (editionSets?.length > 0) {
         await Promise.all(
           editionSets.map((editionSet) => {
             if (editionSet.id) {

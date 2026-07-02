@@ -48,7 +48,8 @@ if (schemaPath.endsWith("json")) {
   )
 } else {
   console.log(`Dumping SDL to ${schemaPath}`)
-  const schemaText = printSchema(schema)
+  // commentDescriptions means it uses # instead of the ugly """
+  const schemaText = printSchema(schema, { commentDescriptions: true })
   const prettySchema = prettier.format(schemaText, { parser: "graphql" })
 
   // Save user readable type system shorthand of schema

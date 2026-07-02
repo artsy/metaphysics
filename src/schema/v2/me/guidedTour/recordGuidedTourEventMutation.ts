@@ -48,7 +48,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   name: "RecordGuidedTourEventResponseOrError",
   types: [SuccessType, FailureType],
   resolveType: (data) =>
-    data._type === "GravityMutationError" ? FailureType.name : SuccessType.name,
+    data._type === "GravityMutationError" ? FailureType : SuccessType,
 })
 
 export const recordGuidedTourEventMutation = mutationWithClientMutationId<

@@ -66,7 +66,6 @@ interface Input {
     provenance?: string
     published?: boolean
     signature?: string
-    signatureTypes?: string[]
     title?: string
     width?: string
   }
@@ -85,7 +84,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
   fields: {
     artistIds: {
-      type: new GraphQLList(GraphQLString),
+      type: GraphQLList(GraphQLString),
       description: "The artist IDs to be assigned",
     },
     artsyListing: {
@@ -115,7 +114,7 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       description: "The category (medium type) to be assigned",
     },
     dates: {
-      type: new GraphQLList(GraphQLInt),
+      type: GraphQLList(GraphQLInt),
       description: "Array of dates as numbers to be assigned",
     },
     editionSetsCount: {
@@ -267,7 +266,7 @@ const BulkUpdateArtworksMetadataResponseType = new GraphQLObjectType<
   name: "BulkUpdateArtworksMetadataResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: new GraphQLList(GraphQLString) },
+    ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
@@ -310,9 +309,9 @@ const BulkUpdateArtworksMetadataMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkUpdateArtworksMetadataMutationFailureType.name
+      return BulkUpdateArtworksMetadataMutationFailureType
     }
-    return BulkUpdateArtworksMetadataMutationSuccessType.name
+    return BulkUpdateArtworksMetadataMutationSuccessType
   },
 })
 

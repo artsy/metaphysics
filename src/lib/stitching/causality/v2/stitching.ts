@@ -1,5 +1,5 @@
-import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
-import { GraphQLSchema, OperationTypeNode } from "graphql"
+import { GraphQLSchema } from "graphql"
+import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import gql from "lib/gql"
 import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
 
@@ -7,7 +7,7 @@ export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
 }: {
-  causalitySchema: GraphQLSchema
+  causalitySchema: GraphQLSchemaWithTransforms
   localSchema: GraphQLSchema
 }) => {
   return {
@@ -41,15 +41,17 @@ export const causalityStitchingEnvironment = ({
     resolvers: {
       AuctionsLotStanding: {
         saleArtwork: {
-          selectionSet: `{
-            lotState {
-              internalID
+          fragment: gql`
+            fragment AuctionsLotStandingSaleArtwork on AuctionsLotStanding {
+              lotState {
+                internalID
+              }
             }
-          }`,
+          `,
           resolve: (parent, _args, context, info) => {
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: localSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "saleArtwork",
               args: { id: parent.lotState.internalID },
               context,
@@ -60,30 +62,47 @@ export const causalityStitchingEnvironment = ({
       },
       AuctionsLotState: {
         floorSellingPrice: {
-          selectionSet: `{ internalID floorSellingPriceCents }`,
+          fragment: gql`
+            ... on AuctionsLotState {
+              internalID
+              floorSellingPriceCents
+            }
+          `,
           resolve: resolveLotCentsFieldToMoney("floorSellingPriceCents"),
         },
         sellingPrice: {
-          selectionSet: `{ internalID sellingPriceCents }`,
+          fragment: gql`
+            ... on AuctionsLotState {
+              internalID
+              sellingPriceCents
+            }
+          `,
           resolve: resolveLotCentsFieldToMoney("sellingPriceCents"),
         },
         onlineAskingPrice: {
-          selectionSet: `{ internalID onlineAskingPriceCents }`,
+          fragment: gql`
+            ... on AuctionsLotState {
+              internalID
+              onlineAskingPriceCents
+            }
+          `,
           resolve: resolveLotCentsFieldToMoney("onlineAskingPriceCents"),
         },
       },
       Lot: {
         lot: {
-          selectionSet: `{
-            saleArtwork {
-              internalID
+          fragment: gql`
+            ... on Lot {
+              saleArtwork {
+                internalID
+              }
             }
-          }`,
+          `,
 
           resolve: (parent, _args, context, info) => {
-            return delegateToSchema({
+            return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "_unused_auctionsLot",
               args: { id: parent.saleArtwork.internalID },
               context,
@@ -96,62 +115,63 @@ export const causalityStitchingEnvironment = ({
         auctionsLotStandingConnection: {
           // The required query to get access to the object, e.g. we have to
           // request `id` on a Me in order to access the user's lot standings
-          selectionSet: `{ internalID }`,
+          fragment: gql`
+            fragment MeLotStandings on Me {
+              internalID
+            }
+          `,
           // The function to handle getting the lot standings correctly, we
           // use the root query `_unused_auctionsLotStandingConnection` to grab
-          // the data from the local causality schema. Unlike graphql-tools v5,
-          // v10 builds the delegated field's arguments from `args` alone —
-          // outer field args (eg first, after, last, before) are no longer
-          // forwarded automatically, so spread them in alongside the userId.
-          // `await`/async (was a `.then(...)` chain): in
-          // `@graphql-tools/delegate` v10 `delegateToSchema` returns
-          // `MaybePromise<unknown>` — synchronous executions return the value
-          // directly, blowing up `.then` with "is not a function".
-          resolve: async (parent, args, context, info) => {
-            const lotStandingsConnection = await delegateToSchema({
-              schema: causalitySchema,
-              operation: OperationTypeNode.QUERY,
-              fieldName: "_unused_auctionsLotStandingConnection",
-              args: {
-                ...args,
-                userId: parent.internalID,
-              },
-              context,
-              info,
-            })
-            const promisedSaleArtworks = lotStandingsConnection.edges.map(
-              ({ node: { lot } }) => {
-                return context
-                  .saleArtworkRootLoader(lot.internalID)
-                  .catch(() => null)
-              }
-            )
-
-            const availableSaleArtworks = (
-              await Promise.all(promisedSaleArtworks)
-            ).filter((sa) => sa !== null)
-
-            // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
-            const availableEdges = lotStandingsConnection.edges.reduce(
-              (acc: any, edge: any) => {
-                const saleArtwork = availableSaleArtworks.find(
-                  (sa: any) => sa._id === edge.node.lot.internalID
+          // the data from the local causality schema. Other args from the field
+          // (eg first, after, last, before) are forwarded automatically, so we only
+          // need the userId.
+          resolve: (parent, _args, context, info) => {
+            return info.mergeInfo
+              .delegateToSchema({
+                schema: causalitySchema,
+                operation: "query",
+                fieldName: "_unused_auctionsLotStandingConnection",
+                args: {
+                  userId: parent.internalID,
+                },
+                context,
+                info,
+              })
+              .then(async (lotStandingsConnection) => {
+                const promisedSaleArtworks = lotStandingsConnection.edges.map(
+                  ({ node: { lot } }) => {
+                    return context
+                      .saleArtworkRootLoader(lot.internalID)
+                      .catch(() => null)
+                  }
                 )
-                if (saleArtwork) {
-                  return [
-                    ...acc,
-                    { ...edge, node: { ...edge.node, saleArtwork } },
-                  ]
-                } else {
-                  return acc
+
+                const availableSaleArtworks = (
+                  await Promise.all(promisedSaleArtworks)
+                ).filter((sa) => sa !== null)
+
+                // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
+                const availableEdges = lotStandingsConnection.edges.reduce(
+                  (acc: any, edge: any) => {
+                    const saleArtwork = availableSaleArtworks.find(
+                      (sa: any) => sa._id === edge.node.lot.internalID
+                    )
+                    if (saleArtwork) {
+                      return [
+                        ...acc,
+                        { ...edge, node: { ...edge.node, saleArtwork } },
+                      ]
+                    } else {
+                      return acc
+                    }
+                  },
+                  []
+                )
+                return {
+                  ...lotStandingsConnection,
+                  edges: availableEdges,
                 }
-              },
-              []
-            )
-            return {
-              ...lotStandingsConnection,
-              edges: availableEdges,
-            }
+              })
           },
         },
       },

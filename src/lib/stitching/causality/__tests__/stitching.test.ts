@@ -1,6 +1,6 @@
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
 import { graphql } from "graphql"
-import { addMocksToSchema } from "@graphql-tools/mock"
+import { addMockFunctionsToSchema } from "graphql-tools"
 import { useCausalityStitching } from "./testingUtils"
 import gql from "lib/gql"
 import v2Schema from "schema/v2/schema"
@@ -32,7 +32,7 @@ describe("causality/stitching", () => {
         }
       `
 
-      const mockedSchema = addMocksToSchema({
+      addMockFunctionsToSchema({
         schema: allMergedSchemas,
         mocks: {
           Query: () => ({
@@ -53,13 +53,9 @@ describe("causality/stitching", () => {
         },
       })
 
-      const result = await graphql({
-        schema: mockedSchema,
-        source: query,
-        contextValue: {
-          accessToken: null,
-          userID: null,
-        },
+      const result = await graphql(allMergedSchemas, query, {
+        accessToken: null,
+        userID: null,
       })
 
       expect(result).toEqual({
@@ -95,7 +91,7 @@ describe("causality/stitching", () => {
           }
         `
 
-        const mockedSchema = addMocksToSchema({
+        addMockFunctionsToSchema({
           schema: allMergedSchemas,
           mocks: {
             Query: () => ({
@@ -108,10 +104,7 @@ describe("causality/stitching", () => {
           },
         })
 
-        const result = await graphql({
-          schema: mockedSchema,
-          source: query,
-        })
+        const result = await graphql(allMergedSchemas, query, {}, {})
 
         expect(result).toEqual({
           data: {
@@ -125,29 +118,6 @@ describe("causality/stitching", () => {
             },
           },
         })
-      })
-
-      it("forwards pagination args to causality alongside the userId", async () => {
-        const { resolvers } = await useCausalityStitching()
-
-        const info = {
-          mergeInfo: {
-            delegateToSchema: jest.fn(() => Promise.resolve({ edges: [] })),
-          },
-        }
-
-        await resolvers.Me.auctionsLotStandingConnection.resolve(
-          { internalID: "user-id" },
-          { first: 2, after: "cursor" },
-          { saleArtworkRootLoader: jest.fn() },
-          info
-        )
-
-        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
-          expect.objectContaining({
-            args: { first: 2, after: "cursor", userId: "user-id" },
-          })
-        )
       })
 
       describe("when sale artworks are missing", () => {
