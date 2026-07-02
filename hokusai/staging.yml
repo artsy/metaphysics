@@ -53,6 +53,129 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: DD_TRACER_SERVICE_NAME
+          value: metaphysics-canary
+        - name: STATSD_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: NODE_OPTIONS
+          value: --max_old_space_size=768
+        - name: DD_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['app.kubernetes.io/version']
+        envFrom:
+        - configMapRef:
+            name: secrets-config
+        - configMapRef:
+            name: metaphysics-environment
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
+        imagePullPolicy: Always
+        ports:
+        - name: mp-http
+          containerPort: 3000
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            memory: 1Gi
+        readinessProbe:
+          httpGet:
+            port: mp-http
+            path: /health
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: https
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sh
+              - -c
+              - sleep 10
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: '1'
+      serviceAccountName: metaphysics
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: tier
+                operator: In
+                values:
+                - foreground
+      volumes:
+      - name: secrets
+        emptyDir: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metaphysics-web-canary
+  namespace: default
+  labels:
+    app: metaphysics
+    layer: application
+    component: web-canary
+    app.kubernetes.io/version: staging
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: metaphysics
+      layer: application
+      component: web-canary
+  template:
+    metadata:
+      labels:
+        app: metaphysics
+        layer: application
+        component: web-canary
+        app.kubernetes.io/version: staging
+      name: metaphysics-web-canary
+    spec:
+      initContainers:
+      - name: setenv
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/fortress:staging
+        imagePullPolicy: Always
+        command:
+        - python
+        - src/load/load.py
+        - kubernetes
+        - staging
+        - metaphysics
+        envFrom:
+        - configMapRef:
+            name: secrets-config
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+      containers:
+      - name: metaphysics-web-canary
+        env:
+        - name: PORT
+          value: '3000'
+        - name: DD_TRACER_HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         - name: STATSD_HOST
           valueFrom:
             fieldRef:
@@ -138,6 +261,28 @@ spec:
         target:
           type: Utilization
           averageUtilization: 80
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: metaphysics-web-canary
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: metaphysics-web-canary
+  minReplicas: 2
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
 ---
 apiVersion: v1
 kind: Service
@@ -159,6 +304,29 @@ spec:
     layer: application
     component: web
   type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: metaphysics
+    layer: application
+    component: web-canary
+  name: metaphysics-web-canary-internal
+  namespace: default
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+    name: mp-http
+    targetPort: mp-http
+  selector:
+    app: metaphysics
+    layer: application
+    component: web-canary
+  type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -199,3 +367,47 @@ spec:
             name: metaphysics-web-internal
             port:
               name: mp-http
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: metaphysics-2025-canary
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ externalIngressAllowSourceIP|join(',') }}
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
+spec:
+  ingressClassName: external-nginx
+  rules:
+  - host: metaphysics-staging.artsy.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: metaphysics-web-canary-internal
+            port:
+              name: mp-http
+  - host: metaphysics-cdn-staging.artsy.net # routes to Cloudflare worker
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: metaphysics-web-canary-internal
+            port:
+              name: mp-http
+  - host: metaphysics-staging-alt.artsy.net # preserve this legacy worker hostname until traffic fully migrates away
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: metaphysics-web-canary-internal
+            port:
+              name: mp-http
+
