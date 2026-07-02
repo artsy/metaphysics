@@ -11,7 +11,7 @@ import { compact } from "lodash"
 import { isEligibleForNWFYExperiment } from "../sections/NewWorksForYou"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
-  type: GraphQLNonNull(GraphQLList(ClientFeatureFlagType)),
+  type: new GraphQLNonNull(new GraphQLList(ClientFeatureFlagType)),
   description: "Currently running A/B tests for home view content",
   resolve: (_parent, _args, context, _info) => {
     const experiments = CURRENTLY_RUNNING_EXPERIMENTS.map(

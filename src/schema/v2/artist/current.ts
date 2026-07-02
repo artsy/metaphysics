@@ -16,7 +16,8 @@ import { ResolverContext } from "types/graphql"
 const UnderlyingCurrentEventType = new GraphQLUnionType({
   name: "UnderlyingCurrentEvent",
   types: [ShowType, SaleType],
-  resolveType: ({ __type }) => __type,
+  resolveType: ({ __type }) =>
+    typeof __type === "string" ? __type : __type?.name,
 })
 
 const CurrentEventType = new GraphQLObjectType<any, ResolverContext>({
