@@ -131,7 +131,7 @@ const moduleContext: HomePageArtworkModuleResolvers<ContextSource> = {
   },
 }
 
-const HomePageArtworkModuleContextType = new GraphQLUnionType({
+const HomePageArtworkModuleContextType = new GraphQLUnionType<ContextSource>({
   name: "HomePageArtworkModuleContext",
   types: [
     FairType,
@@ -142,7 +142,7 @@ const HomePageArtworkModuleContextType = new GraphQLUnionType({
     HomePageFollowedArtistArtworkModuleType,
     HomePageRelatedArtistArtworkModuleType,
   ],
-  resolveType: ({ context_type }, _context, _info) => context_type?.name,
+  resolveType: ({ context_type }, _context, _info) => context_type,
 })
 
 const Context: GraphQLFieldConfig<

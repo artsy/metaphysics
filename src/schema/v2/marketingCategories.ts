@@ -13,13 +13,13 @@ const MarketingCollectionCategory = new GraphQLObjectType<any, ResolverContext>(
     name: "MarketingCollectionCategory",
     fields: {
       collections: {
-        type: new GraphQLNonNull(
-          new GraphQLList(new GraphQLNonNull(MarketingCollectionType))
+        type: GraphQLNonNull(
+          new GraphQLList(GraphQLNonNull(MarketingCollectionType))
         ),
         resolve: ({ collections }) => collections,
       },
       name: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLNonNull(GraphQLString),
         resolve: ({ name }) => name,
       },
     },
@@ -27,8 +27,8 @@ const MarketingCollectionCategory = new GraphQLObjectType<any, ResolverContext>(
 )
 
 export const MarketingCategories: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(MarketingCollectionCategory))
+  type: GraphQLNonNull(
+    GraphQLList(GraphQLNonNull(MarketingCollectionCategory))
   ),
   description: "Marketing Categories",
   resolve: async (_root, _args, { marketingCategoriesLoader }) => {

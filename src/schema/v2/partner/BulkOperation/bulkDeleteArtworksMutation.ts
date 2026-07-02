@@ -67,7 +67,7 @@ const BulkDeleteArtworksResponseType = new GraphQLObjectType<
   name: "BulkDeleteArtworksResponse",
   fields: () => ({
     count: { type: GraphQLInt },
-    ids: { type: new GraphQLList(GraphQLString) },
+    ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
@@ -110,9 +110,9 @@ const BulkDeleteArtworksMutationType = new GraphQLUnionType({
   ],
   resolveType: (object) => {
     if (object.mutationError || object._type === "GravityMutationError") {
-      return BulkDeleteArtworksMutationFailureType.name
+      return BulkDeleteArtworksMutationFailureType
     }
-    return BulkDeleteArtworksMutationSuccessType.name
+    return BulkDeleteArtworksMutationSuccessType
   },
 })
 

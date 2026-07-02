@@ -125,11 +125,11 @@ const ConversationItemType = new GraphQLUnionType({
   resolveType: ({ __typename }) => {
     switch (__typename) {
       case "Artwork":
-        return ArtworkType.name
+        return ArtworkType
       case "PartnerShow":
-        return ShowType.name
+        return ShowType
       default:
-        return undefined
+        return null
     }
   },
 })
@@ -184,11 +184,11 @@ const MessageOrConversationEventType = new GraphQLUnionType({
   resolveType: ({ type }) => {
     switch (type) {
       case "message_detail":
-        return MessageType.name
+        return MessageType
       case "conversation_event":
-        return ConversationEventType.name
+        return ConversationEventType
       default:
-        return undefined
+        return null
     }
   },
 })

@@ -1,8 +1,6 @@
-import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { amount } from "schema/v2/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
-import { OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
 
@@ -75,34 +73,61 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   resolvers: {
     AnalyticsPricingContext: {
       appliedFiltersDisplay: {
-        selectionSet: `{
-          appliedFilters {
-            dimension
-            category
+        fragment: gql`
+          ... on AnalyticsPricingContext {
+            appliedFilters{
+              dimension
+              category
+            }
           }
-        }`,
+          ... on Artwork { artistNames }
+        `,
         resolve: (parent, _args, _context, _info) =>
           filtersDescription(parent.appliedFilters, parent.artistNames),
       },
     },
     AnalyticsHistogramBin: {
       minPrice: {
-        selectionSet: `{ minPriceCents }`,
+        fragment: gql`
+          ... on AnalyticsHistogramBin {
+            minPriceCents
+          }
+        `,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.minPriceCents).resolve({}, args),
       },
       maxPrice: {
-        selectionSet: `{ maxPriceCents }`,
+        fragment: gql`
+          ... on AnalyticsHistogramBin {
+            maxPriceCents
+          }
+        `,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.maxPriceCents).resolve({}, args),
       },
     },
     Artwork: {
       pricingContext: {
-        selectionSet: `{
-          sizeScore
-          editionSets {
+        fragment: gql`
+          ... on Artwork {
             sizeScore
+            editionSets {
+              sizeScore
+              listPrice {
+                __typename
+                ... on PriceRange {
+                  minPrice {
+                    minor
+                  }
+                  maxPrice {
+                    minor
+                  }
+                }
+                ... on Money {
+                  minor
+                }
+              }
+            }
             listPrice {
               __typename
               ... on PriceRange {
@@ -117,35 +142,21 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
                 minor
               }
             }
-          }
-          listPrice {
-            __typename
-            ... on PriceRange {
-              minPrice {
-                minor
-              }
-              maxPrice {
-                minor
-              }
+            artist {
+              internalID
+              disablePriceContext
             }
-            ... on Money {
-              minor
+            category
+            isForSale
+            isPriceHidden
+            isInAuction
+            priceCurrency
+            pricingContextArtists: artists(shallow: true) {
+              internalID
             }
+            artistNames
           }
-          artist {
-            internalID
-            disablePriceContext
-          }
-          category
-          isForSale
-          isPriceHidden
-          isInAuction
-          priceCurrency
-          pricingContextArtists: artists(shallow: true) {
-            internalID
-          }
-          artistNames
-        }`,
+        `,
         resolve: async (source, _, context, info) => {
           const {
             artist,
@@ -165,7 +176,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const edition = sortBy(
             [
               { sizeScore: mainSizeScore, listPrice },
-              ...(Array.isArray(editionSets) ? editionSets : []),
+              ...(editionSets || []),
             ].filter((e) => e.sizeScore),
             getMaxPrice
           ).pop() as any
@@ -213,9 +224,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
 
           try {
-            const vortexContext = await delegateToSchema({
+            const vortexContext = await info.mergeInfo.delegateToSchema({
               schema: vortexSchema,
-              operation: OperationTypeNode.QUERY,
+              operation: "query",
               fieldName: "analyticsPricingContext",
               args,
               context,
@@ -236,14 +247,15 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     Partner: {
       analytics: {
-        selectionSet: `{
+        fragment: gql`... on Partner {
           internalID
         }`,
+
         resolve: async (source, _, context, info) => {
           const args = { partnerId: source.internalID }
-          return await delegateToSchema({
+          return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
-            operation: OperationTypeNode.QUERY,
+            operation: "query",
             fieldName: "analyticsPartnerStats",
             args,
             context,
@@ -254,14 +266,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     User: {
       analytics: {
-        selectionSet: `{
+        fragment: gql`... on User {
           internalID
         }`,
         resolve: async (source, _, context, info) => {
           const args = { userId: source.internalID }
-          return await delegateToSchema({
+          return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
-            operation: OperationTypeNode.QUERY,
+            operation: "query",
             fieldName: "analyticsUserStats",
             args,
             context,
@@ -272,41 +284,48 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     AnalyticsPartnerSalesStats: {
       total: {
-        selectionSet: `{ totalCents }`,
+        fragment: gql`
+          ... on AnalyticsPartnerSalesStats {
+            totalCents
+          }
+        `,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsPartnerSalesTimeSeriesStats: {
       total: {
-        selectionSet: `{ totalCents }`,
+        fragment: gql`
+          ... on AnalyticsPartnerSalesTimeSeriesStats {
+            totalCents
+          }
+        `,
         resolve: (parent, args, _context, _info) =>
           amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsRankedStats: {
       entity: {
-        selectionSet: `{
-          rankedEntity {
-            __typename
-            ... on AnalyticsArtwork {
-              entityId
-            }
-            ... on AnalyticsShow {
-              entityId
-            }
-            ... on AnalyticsArtist {
-              entityId
-            }
-            ... on AnalyticsViewingRoom {
-              entityId
+        fragment: gql`
+          ... on AnalyticsRankedStats {
+            rankedEntity {
+              __typename
+              ... on AnalyticsArtwork {
+                entityId
+              }
+              ... on AnalyticsShow {
+                entityId
+              }
+              ... on AnalyticsArtist {
+                entityId
+              }
+              ... on AnalyticsViewingRoom {
+                entityId
+              }
             }
           }
-        }`,
-        // `await`/async (was a `.then(...)` chain): see comment in
-        // `causality/v2/stitching.ts` — v10 `delegateToSchema` returns
-        // `MaybePromise<unknown>` and the sync path lacks `.then`.
-        resolve: async (parent, _args, context, info) => {
+        `,
+        resolve: (parent, _args, context, info) => {
           const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
           const typenameWithoutPrefix = removeVortexPrefix(typename)
@@ -316,18 +335,22 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
 
-          const response = await delegateToSchema({
-            schema: localSchema,
-            operation: OperationTypeNode.QUERY,
-            fieldName,
-            args: {
-              id,
-            },
-            context,
-            info,
-          })
-          response.__typename = removeVortexPrefix(typename)
-          return response
+          return info.mergeInfo
+            .delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName,
+              args: {
+                id,
+              },
+              context,
+              info,
+              transforms: vortexSchema.transforms,
+            })
+            .then((response) => {
+              response.__typename = removeVortexPrefix(typename)
+              return response
+            })
         },
       },
     },

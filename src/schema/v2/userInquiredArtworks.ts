@@ -1,7 +1,11 @@
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { GraphQLString, GraphQLFieldConfigMap, GraphQLBoolean } from "graphql"
-import { Thunk } from "types/graphql"
+import {
+  GraphQLString,
+  Thunk,
+  GraphQLFieldConfigMap,
+  GraphQLBoolean,
+} from "graphql"
 import { IDFields } from "./object_identification"
 import { ArtworkType } from "./artwork"
 import { date } from "./fields/date"
