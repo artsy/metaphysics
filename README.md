@@ -95,7 +95,7 @@ For `GraphQL Endpoint`, set it to `http://localhost:3000/v2`.
 
 Getting docs for the schema on MP in your playground of choice (Postman, Insomnia, Altair, etc) is called introspection.
 
-Introspection is available by default when developing.
+Introspection is available most easily when running in development mode. If you comment out `INTROSPECT_TOKEN` in your `.env.shared` file, introspection will be enabled by default when running locally.
 
 Introspection on staging and production are for internal use only, so artsy devs can use it to make development for MP clients (eigen, force, etc) easier, but it is and should not be used by any of the clients or anyone else.
 
