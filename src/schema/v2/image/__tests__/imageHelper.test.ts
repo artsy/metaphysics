@@ -309,11 +309,11 @@ describe("imageHelper", () => {
       expect(hasProcessingFailed(freshImage)).toBe(false)
     })
 
-    it("treats a fully processed logo (only square_brand_kit) as done — not still processing, not failed", () => {
+    it("treats a fully processed logo (only logo_brand_kit) as done — not still processing, not failed", () => {
       const successImage = {
         ...brandKitImage,
         image_url: "https://example.com/logo/:version.jpg",
-        image_versions: ["square_brand_kit"],
+        image_versions: ["logo_brand_kit"],
         gemini_token_updated_at: new Date().toISOString(),
       }
 
@@ -337,14 +337,14 @@ describe("imageHelper", () => {
     it("does not require artwork versions to consider a brand-kit logo complete", () => {
       const image = {
         ...brandKitImage,
-        image_versions: ["square_brand_kit"],
+        image_versions: ["logo_brand_kit"],
       }
 
       expect(hasMissingImageVersion(image)).toBe(false)
     })
 
     it("falls back to artwork expectations when gemini_template_key is absent", () => {
-      const image = { image_versions: ["square_brand_kit"] }
+      const image = { image_versions: ["logo_brand_kit"] }
 
       expect(hasMissingImageVersion(image)).toBe(true)
     })
