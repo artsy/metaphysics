@@ -396,6 +396,9 @@ import {
 } from "./order"
 import { createBuyerOfferMutation } from "./offer/createBuyerOfferMutation"
 import { updateBuyerOfferMutation } from "./offer/updateBuyerOfferMutation"
+import { acceptSellerOfferMutation } from "./offer/acceptSellerOfferMutation"
+import { rejectSellerOfferMutation } from "./offer/rejectSellerOfferMutation"
+import { submitBuyerOfferMutation } from "./offer/submitBuyerOfferMutation"
 import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
@@ -604,6 +607,9 @@ export default new GraphQLSchema({
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       createBuyerOffer: createBuyerOfferMutation,
       updateBuyerOffer: updateBuyerOfferMutation,
+      acceptSellerOffer: acceptSellerOfferMutation,
+      rejectSellerOffer: rejectSellerOfferMutation,
+      submitBuyerOffer: submitBuyerOfferMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
