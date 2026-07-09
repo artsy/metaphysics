@@ -399,7 +399,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ externalIngressAllowSourceIP|join(',') }}
     nginx.ingress.kubernetes.io/canary: "true"
-    nginx.ingress.kubernetes.io/canary-weight: "20"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
 spec:
   ingressClassName: external-nginx
   rules:
