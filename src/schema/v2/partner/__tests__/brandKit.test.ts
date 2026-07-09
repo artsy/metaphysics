@@ -198,10 +198,10 @@ describe("Partner brandKit field", () => {
             gemini_token_updated_at: recentTime,
             image_url: "https://d7hftxdivxxvm.cloudfront.net/abc/:version.jpg",
             image_urls: {
-              square_brand_kit:
-                "https://d7hftxdivxxvm.cloudfront.net/abc/square_brand_kit.jpg",
+              logo_brand_kit:
+                "https://d7hftxdivxxvm.cloudfront.net/abc/logo_brand_kit.jpg",
             },
-            image_versions: ["square_brand_kit"],
+            image_versions: ["logo_brand_kit"],
             original_width: 1200,
             original_height: 800,
             aspect_ratio: 1.5,
@@ -214,7 +214,7 @@ describe("Partner brandKit field", () => {
         geminiToken: "tok-xyz",
         geminiTokenUpdatedAt: recentTime,
         imageURL: "https://d7hftxdivxxvm.cloudfront.net/abc/:version.jpg",
-        imageVersions: ["square_brand_kit"],
+        imageVersions: ["logo_brand_kit"],
         originalWidth: 1200,
         originalHeight: 800,
         aspectRatio: 1.5,
