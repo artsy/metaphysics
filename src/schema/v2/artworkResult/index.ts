@@ -69,13 +69,13 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const ArtworkResultType = new GraphQLUnionType<any, ResolverContext>({
+const ArtworkResultType = new GraphQLUnionType({
   name: "ArtworkResult",
   types: [ArtworkErrorType, ArtworkType],
   resolveType: ({ requestError }) => {
-    if (_.isEmpty(requestError)) return ArtworkType
+    if (_.isEmpty(requestError)) return ArtworkType.name
 
-    return ArtworkErrorType
+    return ArtworkErrorType.name
   },
 })
 
