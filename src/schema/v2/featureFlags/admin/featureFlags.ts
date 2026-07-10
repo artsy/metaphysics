@@ -8,11 +8,87 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import GraphQLJSON from "graphql-type-json"
 import { merge, sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
 import { GlobalIDField } from "../../object_identification"
+
+const FeatureFlagConstraintType = new GraphQLObjectType({
+  name: "FeatureFlagConstraint",
+  fields: {
+    contextName: {
+      type: GraphQLString,
+    },
+    operator: {
+      type: GraphQLString,
+    },
+    values: {
+      type: new GraphQLList(GraphQLString),
+    },
+    value: {
+      type: GraphQLString,
+    },
+    inverted: {
+      type: GraphQLBoolean,
+    },
+    caseInsensitive: {
+      type: GraphQLBoolean,
+    },
+  },
+})
+
+const FeatureFlagSegmentType = new GraphQLObjectType({
+  name: "FeatureFlagSegment",
+  fields: {
+    id: {
+      type: GraphQLInt,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    description: {
+      type: GraphQLString,
+    },
+    constraints: {
+      type: new GraphQLList(FeatureFlagConstraintType),
+    },
+  },
+})
+
+const FeatureFlagStrategyType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FeatureFlagStrategy",
+  fields: {
+    name: {
+      type: GraphQLString,
+    },
+    constraints: {
+      type: new GraphQLList(FeatureFlagConstraintType),
+    },
+    parameters: {
+      type: GraphQLJSON,
+    },
+    segments: {
+      description:
+        "Constraints applied to this strategy via a reusable, named Unleash segment (as opposed to inline constraints)",
+      type: new GraphQLList(FeatureFlagSegmentType),
+      resolve: async (
+        { segments: segmentIDs },
+        _args,
+        { adminSegmentsLoader }
+      ) => {
+        if (!adminSegmentsLoader || !segmentIDs?.length) {
+          return []
+        }
+
+        const { segments } = await adminSegmentsLoader()
+
+        return segments.filter((segment) => segmentIDs.includes(segment.id))
+      },
+    },
+  },
+})
 
 /**
  * An admin representation of an Unleash feature flag, used by Forque
@@ -37,6 +113,9 @@ export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
               },
               enabled: {
                 type: new GraphQLNonNull(GraphQLBoolean),
+              },
+              strategies: {
+                type: new GraphQLList(FeatureFlagStrategyType),
               },
             },
           })
