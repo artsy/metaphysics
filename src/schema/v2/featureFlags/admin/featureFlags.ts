@@ -10,12 +10,16 @@ import {
 } from "graphql"
 import GraphQLJSON from "graphql-type-json"
 import { merge, sortBy } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
 import { GlobalIDField } from "../../object_identification"
+import { paginationResolver } from "../../fields/pagination"
+import { PartnerConnectionType } from "../../partner/partners"
 
-const FeatureFlagConstraintType = new GraphQLObjectType({
+const FeatureFlagConstraintType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlagConstraint",
   fields: {
     contextName: {
@@ -35,6 +39,37 @@ const FeatureFlagConstraintType = new GraphQLObjectType({
     },
     caseInsensitive: {
       type: GraphQLBoolean,
+    },
+    partnerConnection: {
+      description:
+        "The Partners referenced by this constraint's values, resolved when contextName is `partnerId`",
+      type: PartnerConnectionType,
+      args: pageable({}),
+      resolve: async ({ contextName, values }, args, { partnersLoader }) => {
+        if (contextName !== "partnerId" || !values?.length) {
+          return null
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body, headers } = await partnersLoader({
+          id: values,
+          page,
+          size,
+          total_count: true,
+        })
+
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
     },
   },
 })

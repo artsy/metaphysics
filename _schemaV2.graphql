@@ -19036,6 +19036,16 @@ type FeatureFlagConstraint {
   contextName: String
   inverted: Boolean
   operator: String
+
+  """
+  The Partners referenced by this constraint's values, resolved when contextName is `partnerId`
+  """
+  partnerConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PartnerConnection
   value: String
   values: [String]
 }
