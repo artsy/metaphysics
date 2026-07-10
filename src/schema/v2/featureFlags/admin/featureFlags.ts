@@ -74,11 +74,12 @@ const FeatureFlagConstraintType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const FeatureFlagSegmentType = new GraphQLObjectType({
+const FeatureFlagSegmentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlagSegment",
   fields: {
-    id: {
+    internalID: {
       type: GraphQLInt,
+      resolve: ({ id }) => id,
     },
     name: {
       type: GraphQLString,
@@ -117,7 +118,7 @@ const FeatureFlagStrategyType = new GraphQLObjectType<any, ResolverContext>({
           return []
         }
 
-        const { segments } = await adminSegmentsLoader()
+        const { segments = [] } = await adminSegmentsLoader()
 
         return segments.filter((segment) => segmentIDs.includes(segment.id))
       },

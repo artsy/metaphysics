@@ -19059,7 +19059,7 @@ type FeatureFlagEnvironments {
 type FeatureFlagSegment {
   constraints: [FeatureFlagConstraint]
   description: String
-  id: Int
+  internalID: Int
   name: String
 }
 

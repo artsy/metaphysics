@@ -149,3 +149,96 @@ describe("FeatureFlagConstraint.partnerConnection", () => {
     })
   })
 })
+
+describe("FeatureFlagStrategy.segments", () => {
+  let context
+
+  const featureFlagWithSegments = (segmentIDs) => ({
+    name: "my-flag",
+    description: null,
+    type: "RELEASE",
+    stale: false,
+    impressionData: false,
+    createdAt: "2024-01-01",
+    lastSeenAt: null,
+    project: "default",
+    variants: [],
+    environments: [
+      {
+        name: "production",
+        enabled: true,
+        strategies: [
+          {
+            name: "flexibleRollout",
+            parameters: {},
+            segments: segmentIDs,
+            constraints: [],
+          },
+        ],
+      },
+    ],
+  })
+
+  const query = gql`
+    {
+      admin {
+        featureFlag(id: "my-flag") {
+          environments {
+            strategies {
+              segments {
+                internalID
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  beforeEach(() => {
+    context = {
+      adminSegmentsLoader: () =>
+        Promise.resolve({
+          segments: [
+            { id: 1, name: "Segment One", description: null, constraints: [] },
+            { id: 2, name: "Segment Two", description: null, constraints: [] },
+          ],
+        }),
+    }
+  })
+
+  it("returns only the segments referenced by the strategy's segment ids", async () => {
+    context.adminFeatureFlagLoader = () =>
+      Promise.resolve(featureFlagWithSegments([2]))
+
+    const data = await runQuery(query, context)
+
+    expect(
+      data.admin.featureFlag.environments[0].strategies[0].segments
+    ).toEqual([{ internalID: 2, name: "Segment Two" }])
+  })
+
+  it("returns an empty list when the strategy has no segment ids", async () => {
+    context.adminFeatureFlagLoader = () =>
+      Promise.resolve(featureFlagWithSegments([]))
+
+    const data = await runQuery(query, context)
+
+    expect(
+      data.admin.featureFlag.environments[0].strategies[0].segments
+    ).toEqual([])
+  })
+
+  it("returns an empty list when adminSegmentsLoader is unavailable", async () => {
+    delete context.adminSegmentsLoader
+    context.adminFeatureFlagLoader = () =>
+      Promise.resolve(featureFlagWithSegments([1]))
+
+    const data = await runQuery(query, context)
+
+    expect(
+      data.admin.featureFlag.environments[0].strategies[0].segments
+    ).toEqual([])
+  })
+})
