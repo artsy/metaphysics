@@ -4,6 +4,7 @@ import "./lib/loadenv"
 
 const {
   ARTICLE_REQUEST_THROTTLE_MS,
+  ARTNET_NEWS_API_BASE,
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT,
   CACHE_COMPRESSION_DISABLED,
   CACHE_DISABLED,
@@ -128,6 +129,8 @@ function IntWithDefault(value: any | undefined, defaultValue: number): number {
 
 export default {
   ARTICLE_REQUEST_THROTTLE_MS: Number(ARTICLE_REQUEST_THROTTLE_MS) || 600000,
+  ARTNET_NEWS_API_BASE:
+    ARTNET_NEWS_API_BASE || "https://news.artnet.com/api/artnet/v2",
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT:
     Number(BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) ||
     Number.MAX_SAFE_INTEGER,

@@ -5,6 +5,7 @@
 export const HomeViewSectionTypeNames = {
   HomeViewSectionActivity: "HomeViewSectionActivity",
   HomeViewSectionArticles: "HomeViewSectionArticles",
+  HomeViewSectionArtnetNews: "HomeViewSectionArtnetNews",
   HomeViewSectionArtists: "HomeViewSectionArtists",
   HomeViewSectionArtworks: "HomeViewSectionArtworks",
   HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",

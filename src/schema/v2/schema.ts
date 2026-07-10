@@ -5,6 +5,7 @@ import { ResolverContext } from "types/graphql"
 import Article from "./article"
 import Articles from "./articles"
 import ArticlesConnection from "./articlesConnection"
+import { ArtnetNewsArticle, ArtnetNewsArticlesConnection } from "./artnetNews"
 import Artist from "./artist"
 import Artists, { artistsConnection } from "./artists"
 import { CuratedTrendingArtists } from "./artists/curatedTrending"
@@ -462,6 +463,8 @@ const rootFields = {
   artistsConnection,
   artistSeries: ArtistSeries,
   artistSeriesConnection: ArtistSeriesConnection,
+  artnetNewsArticle: ArtnetNewsArticle,
+  artnetNewsArticlesConnection: ArtnetNewsArticlesConnection,
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkDuplicatePair,

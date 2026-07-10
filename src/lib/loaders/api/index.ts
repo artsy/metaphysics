@@ -1,5 +1,6 @@
 import config from "config"
 
+import artnetNews from "lib/apis/artnetNews"
 import delta from "lib/apis/delta"
 import diffusion from "lib/apis/diffusion"
 import exchange from "lib/apis/exchange"
@@ -47,6 +48,20 @@ export interface DataLoaderKey {
 
 export default (opts) => ({
   // Unauthenticated loaders
+
+  /**
+   * The artnet News loaders produced by this factory _will_ cache all responses to memcache.
+   *
+   * Do **not** use it for authenticated requests!
+   */
+  artnetNewsLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    artnetNews,
+    "artnet-news",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
 
   /**
    * The Delta loaders produced by this factory _will_ cache all responses to memcache.

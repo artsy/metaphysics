@@ -4,6 +4,7 @@ import { FeatureFlag } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { ArtnetNews } from "./ArtnetNews"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { Auctions } from "./Auctions"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
@@ -56,6 +57,7 @@ export type HomeViewSection = {
 }
 
 const sections: HomeViewSection[] = [
+  ArtnetNews,
   AuctionLotsForYou,
   Auctions,
   BasedOnYourRecentSaves,

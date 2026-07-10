@@ -1,3 +1,4 @@
+import artnetNewsLoaders from "./artnetNews"
 import { convectionLoaders } from "./convection"
 import deltaLoaders from "./delta"
 import diffusionLoaders from "./diffusion"
@@ -11,6 +12,7 @@ import vortexLoaders from "./vortex"
 import { impulseLoadersWithAppToken } from "./impulse"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
+  ...artnetNewsLoaders(opts),
   ...convectionLoaders(opts),
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),

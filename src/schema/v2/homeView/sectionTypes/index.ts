@@ -2,6 +2,7 @@ import { GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { HomeViewActivitySectionType } from "./Activity"
 import { HomeViewArticlesSectionType } from "./Articles"
+import { HomeViewArtnetNewsSectionType } from "./ArtnetNews"
 import { HomeViewArtistsSectionType } from "./Artists"
 import { HomeViewArtworksSectionType } from "./Artworks"
 import { HomeViewAuctionResultsSectionType } from "./AuctionResults"
@@ -19,6 +20,7 @@ import { HomeViewNavigationPillsSectionType } from "./NavigationPills"
 export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewActivitySectionType,
   HomeViewArticlesSectionType,
+  HomeViewArtnetNewsSectionType,
   HomeViewArtistsSectionType,
   HomeViewArtworksSectionType,
   HomeViewAuctionResultsSectionType,

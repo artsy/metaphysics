@@ -146,6 +146,14 @@ describe("homeView", () => {
               },
               {
                 "node": {
+                  "__typename": "HomeViewSectionArtnetNews",
+                  "component": {
+                    "title": "artnet News",
+                  },
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtists",
                   "component": {
                     "title": "Trending Artists",
@@ -329,6 +337,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArticles",
                   "component": {
                     "title": "News",
+                  },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionArtnetNews",
+                  "component": {
+                    "title": "artnet News",
                   },
                 },
               },
