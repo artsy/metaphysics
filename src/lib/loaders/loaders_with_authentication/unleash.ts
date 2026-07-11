@@ -91,5 +91,6 @@ export const unleashLoaders = (accessToken, opts) => {
     ),
     adminProjectsLoader: unleashLoader("projects"),
     adminProjectLoader: unleashLoader((id) => `projects/${id}`),
+    adminSegmentsLoader: unleashLoader("segments"),
   }
 }
