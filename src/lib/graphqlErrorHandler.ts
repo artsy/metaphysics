@@ -30,6 +30,20 @@ export const flattenErrors = (error: GraphQLError) => {
     : [error]
 }
 
+// graphql-tools' stitching/delegation layer can re-wrap an already-located
+// GraphQLError in another GraphQLError as it crosses subschema boundaries,
+// nesting `originalError` one level deeper each time. Walk the chain to find
+// the underlying HTTPError instead of assuming it's one level down.
+const deepestOriginalError = (
+  e: Error | GraphQLError
+): Error | GraphQLError => {
+  let current = e
+  while (current && (current as GraphQLError).originalError) {
+    current = (current as GraphQLError).originalError as Error | GraphQLError
+  }
+  return current
+}
+
 export const statusCodeForError = (e) => {
   // Check for server-side errors during stitching downstream.
   // `e.originalError` is of `ServerError` type.
@@ -46,9 +60,11 @@ export const statusCodeForError = (e) => {
   const matchedCode: string | undefined = (matchedStatus || []).slice(-1)[0]
   const alternateStitchedStatusCode = matchedCode && parseInt(matchedCode)
 
+  const deepestError = deepestOriginalError(e)
+
   return (
     stitchedStatusCode ||
-    (e.originalError instanceof HTTPError && e.originalError.statusCode) ||
+    (deepestError instanceof HTTPError && deepestError.statusCode) ||
     alternateStitchedStatusCode
   )
 }
