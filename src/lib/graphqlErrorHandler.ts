@@ -30,13 +30,15 @@ export const flattenErrors = (error: GraphQLError) => {
     : [error]
 }
 
-// graphql-tools' stitching/delegation layer can re-wrap an already-located
-// GraphQLError in another GraphQLError as it crosses subschema boundaries,
-// nesting `originalError` one level deeper each time. Walk the chain to find
-// the underlying HTTPError instead of assuming it's one level down.
-const deepestOriginalError = (
-  e: Error | GraphQLError
-): Error | GraphQLError => {
+// An error can be wrapped in several nested `GraphQLError`s before it reaches
+// us: `graphql-middleware` (e.g. our @timeout middleware) wraps every resolver,
+// and graphql 16 re-locates the error at each execution layer it crosses,
+// nesting `originalError` one level deeper each time. (This reproduces even for
+// a plain local resolver, so it is not specific to stitching.) Walk the chain
+// to the underlying error instead of assuming it's exactly one level down.
+export const deepestOriginalError = (
+  e?: Error | GraphQLError | null
+): Error | GraphQLError | null | undefined => {
   let current = e
   while (current && (current as GraphQLError).originalError) {
     current = (current as GraphQLError).originalError as Error | GraphQLError
@@ -110,7 +112,7 @@ const reportErrorToSentry = (
   const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${encodedQuery}`
 
   Sentry.captureException(
-    error.originalError || error,
+    deepestOriginalError(error) || error,
     Sentry.Handlers.parseRequest(
       {
         tags: { graphql: "exec_error" },
