@@ -8,11 +8,123 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import GraphQLJSON from "graphql-type-json"
 import { merge, sortBy } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
 import { GlobalIDField } from "../../object_identification"
+import { paginationResolver } from "../../fields/pagination"
+import { PartnerConnectionType } from "../../partner/partners"
+
+const FeatureFlagConstraintType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FeatureFlagConstraint",
+  fields: {
+    contextName: {
+      type: GraphQLString,
+    },
+    operator: {
+      type: GraphQLString,
+    },
+    values: {
+      type: new GraphQLList(GraphQLString),
+    },
+    value: {
+      type: GraphQLString,
+    },
+    inverted: {
+      type: GraphQLBoolean,
+    },
+    caseInsensitive: {
+      type: GraphQLBoolean,
+    },
+    partnerConnection: {
+      description:
+        "The Partners referenced by this constraint's values, resolved when contextName is `partnerId`",
+      type: PartnerConnectionType,
+      args: pageable({}),
+      resolve: async ({ contextName, values }, args, { partnersLoader }) => {
+        if (contextName !== "partnerId" || !values?.length) {
+          return null
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body, headers } = await partnersLoader({
+          id: values,
+          page,
+          size,
+          total_count: true,
+        })
+
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
+    },
+  },
+})
+
+const FeatureFlagSegmentType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FeatureFlagSegment",
+  fields: {
+    internalID: {
+      type: GraphQLInt,
+      resolve: ({ id }) => id,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    description: {
+      type: GraphQLString,
+    },
+    constraints: {
+      type: new GraphQLList(FeatureFlagConstraintType),
+    },
+  },
+})
+
+const FeatureFlagStrategyType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FeatureFlagStrategy",
+  fields: {
+    name: {
+      type: GraphQLString,
+    },
+    constraints: {
+      type: new GraphQLList(FeatureFlagConstraintType),
+    },
+    parameters: {
+      type: GraphQLJSON,
+    },
+    segments: {
+      description:
+        "Constraints applied to this strategy via a reusable, named Unleash segment (as opposed to inline constraints)",
+      type: new GraphQLList(FeatureFlagSegmentType),
+      resolve: async (
+        { segments: segmentIDs },
+        _args,
+        { adminSegmentsLoader }
+      ) => {
+        if (!adminSegmentsLoader || !segmentIDs?.length) {
+          return []
+        }
+
+        const { segments = [] } = await adminSegmentsLoader()
+
+        return segments.filter((segment) => segmentIDs.includes(segment.id))
+      },
+    },
+  },
+})
 
 /**
  * An admin representation of an Unleash feature flag, used by Forque
@@ -37,6 +149,9 @@ export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
               },
               enabled: {
                 type: new GraphQLNonNull(GraphQLBoolean),
+              },
+              strategies: {
+                type: new GraphQLList(FeatureFlagStrategyType),
               },
             },
           })
