@@ -473,6 +473,14 @@ const connectionFields = () => {
 const filterArtworksConnectionType = connectionDefinitions({
   name: "FilterArtworks",
   nodeType: ArtworkType,
+  edgeFields: {
+    note: {
+      type: GraphQLString,
+      description:
+        "Curator note for this artwork within a marketing collection, if any. Null on non-marketing-collection connections.",
+      resolve: ({ note }) => note ?? null,
+    },
+  },
   connectionFields: {
     ...connectionFields(),
     id: {
