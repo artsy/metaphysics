@@ -214,7 +214,7 @@ export const MarketingCollectionType = new GraphQLObjectType<
               ]
             )
           )
-          connection.edges = connection.edges.map((edge) => ({
+          connection.edges = (connection.edges ?? []).map((edge) => ({
             ...edge,
             note: notesByArtworkId[edge.node._id] ?? null,
           }))

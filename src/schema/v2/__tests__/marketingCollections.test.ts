@@ -217,6 +217,37 @@ describe("MarketingCollections", () => {
     })
   })
 
+  it("does not crash when only id is selected on artworksConnection", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          artworksConnection(first: 2) {
+            id
+          }
+        }
+      }
+    `
+
+    const payload = {
+      ...marketingCollectionsData[0],
+      artwork_notes: [
+        { artwork_id: "percy-1-id", note: "Chosen for its bold use of color" },
+      ],
+    }
+
+    const context: any = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: () => Promise.resolve({}),
+      },
+      marketingCollectionLoader: () => Promise.resolve(payload),
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data.marketingCollection.artworksConnection.id).toBeTruthy()
+  })
+
   it("returns curated marketing collections", async () => {
     const query = gql`
       {
