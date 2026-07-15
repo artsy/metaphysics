@@ -35,6 +35,7 @@ export const collectorProfileBaseFields: GraphQLFieldConfigMap<
   any,
   ResolverContext
 > = {
+  internalID: InternalIDFields.internalID,
   confirmedBuyerAt: dateFormatter(
     ({ confirmed_buyer_at }) => confirmed_buyer_at
   ),
@@ -50,6 +51,7 @@ export const collectorProfileBaseFields: GraphQLFieldConfigMap<
     type: GraphQLBoolean,
     resolve: ({ identity_verified }) => identity_verified,
   },
+  location: { type: myLocationType },
 }
 
 export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
@@ -207,7 +209,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         })
       },
     },
-    location: { type: myLocationType },
+    location: collectorProfileBaseFields.location,
     artsyUserSince: dateFormatter(({ artsy_user_since }) => artsy_user_since),
     ownerID: {
       type: new GraphQLNonNull(GraphQLID),

@@ -27565,21 +27565,16 @@ type OfferableActivityCollector {
   icon: Image
 
   """
-  The collector profile's internal ID.
+  A type-specific ID likely used as a database ID.
   """
-  internalID: String
+  internalID: ID!
   isIdentityVerified: Boolean
-  location: OfferableActivityCollectorLocation
+  location: MyLocation
 
   """
   The ways this collector engaged with the artwork (e.g. saved it and/or abandoned an order).
   """
   sources: [PartnerOfferSourceEnum]
-}
-
-type OfferableActivityCollectorLocation {
-  city: String
-  country: String
 }
 
 type OpeningHoursArray {

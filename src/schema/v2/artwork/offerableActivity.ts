@@ -1,23 +1,7 @@
-import {
-  GraphQLInt,
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { collectorProfileBaseFields } from "schema/v2/CollectorProfile/collectorProfile"
 import { PartnerOfferSourceEnumType } from "../partnerOffer"
-
-const OfferableActivityCollectorLocationType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "OfferableActivityCollectorLocation",
-  fields: {
-    city: { type: GraphQLString },
-    country: { type: GraphQLString },
-  },
-})
 
 const OfferableActivityCollectorType = new GraphQLObjectType<
   any,
@@ -27,19 +11,7 @@ const OfferableActivityCollectorType = new GraphQLObjectType<
   description:
     "A collector with eligible offerable activity on the artwork, and how they engaged with it.",
   fields: {
-    internalID: {
-      type: GraphQLString,
-      description: "The collector profile's internal ID.",
-      resolve: ({ id }) => id,
-    },
-    // firstNameLastInitial, isIdentityVerified, confirmedBuyerAt and icon are
-    // derived from the collector profile payload, so we reuse the shared field
-    // configs to stay in sync with the CollectorProfile type.
     ...collectorProfileBaseFields,
-    location: {
-      type: OfferableActivityCollectorLocationType,
-      resolve: ({ location }) => location,
-    },
     sources: {
       type: new GraphQLList(PartnerOfferSourceEnumType),
       description:
