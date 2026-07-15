@@ -5386,6 +5386,72 @@ describe("Artwork type", () => {
         })
       })
     })
+
+    it("returns the collector details with eligible offerable activities", () => {
+      const collectorsQuery = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            offerableActivity {
+              totalCount
+              collectors {
+                internalID
+                firstNameLastInitial
+                isIdentityVerified
+                confirmedBuyerAt(format: "YYYY")
+                icon {
+                  internalID
+                }
+                location {
+                  city
+                  country
+                }
+                sources
+              }
+            }
+          }
+        }
+      `
+
+      const partnerArtworkOfferableActivityLoader = jest.fn(() =>
+        Promise.resolve({
+          headers: { "x-total-count": 1 },
+          body: [
+            {
+              id: "collector-profile-1",
+              first_name_last_initial: "Jane D.",
+              identity_verified: true,
+              confirmed_buyer_at: "2022-01-01T00:00:00.000Z",
+              icon: { id: "icon-1", image_url: "http://example.com/icon.jpg" },
+              location: { city: "New York", country: "US" },
+              sources: ["Save", "Abandoned Order"],
+            },
+          ],
+        })
+      )
+      context.partnerArtworkOfferableActivityLoader = partnerArtworkOfferableActivityLoader
+      artwork.partner = { id: "123" }
+
+      return runQuery(collectorsQuery, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            offerableActivity: {
+              totalCount: 1,
+              collectors: [
+                {
+                  internalID: "collector-profile-1",
+                  firstNameLastInitial: "Jane D.",
+                  isIdentityVerified: true,
+                  confirmedBuyerAt: "2022",
+                  icon: { internalID: "icon-1" },
+                  location: { city: "New York", country: "US" },
+                  sources: ["SAVE", "ABANDONED_ORDER"],
+                },
+              ],
+            },
+          },
+        })
+      })
+    })
   })
 
   describe("#listedArtworksConnection", () => {

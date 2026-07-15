@@ -78,6 +78,7 @@ import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { ArtistSeriesConnectionType } from "../artistSeries"
 import { date } from "../fields/date"
+import { OfferableActivityType } from "./offerableActivity"
 import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
@@ -2311,7 +2312,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       lastOfferableActivityAt: date(),
       offerableActivity: {
         description: "Count of collectors with eligible offerable activities.",
-        type: offerableActivityType,
+        type: OfferableActivityType,
         resolve: async (
           { id, partner },
           {},
@@ -2322,14 +2323,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (_.isEmpty(partner)) return null
 
-          const { headers } = await partnerArtworkOfferableActivityLoader({
-            artworkId: id,
-            id: partner.id,
-          })
+          const { body, headers } = await partnerArtworkOfferableActivityLoader(
+            {
+              artworkId: id,
+              id: partner.id,
+            }
+          )
 
           const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
 
-          return { totalCount }
+          return { totalCount, collectors: body }
         },
       },
       catalogArtwork: {
@@ -2415,16 +2418,6 @@ export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
-})
-
-const offerableActivityType = new GraphQLObjectType<any, ResolverContext>({
-  name: "OfferableActivity",
-  fields: {
-    totalCount: {
-      type: GraphQLInt,
-      description: "Count of collectors with eligible offerable activities.",
-    },
-  },
 })
 
 export default Artwork
