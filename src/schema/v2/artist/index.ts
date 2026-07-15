@@ -49,6 +49,7 @@ import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
 import ArtistHighlights from "./highlights"
 import { ArtistInsights } from "./insights"
+import { InstagramMedia } from "./artistInstagramMedia"
 import Meta from "./meta"
 import { Related } from "./related"
 import {
@@ -826,6 +827,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       initials: initials("name"),
       insights: ArtistInsights,
+      instagramMedia: InstagramMedia,
       isConsignable: {
         type: GraphQLBoolean,
         resolve: ({ consignable }) => consignable,
