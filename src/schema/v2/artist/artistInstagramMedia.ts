@@ -41,7 +41,7 @@ export const InstagramMedia: GraphQLFieldConfig<any, ResolverContext> = {
   },
   resolve: async ({ id }, { first }, { artistInstagramMediaLoader }) => {
     const body = await artistInstagramMediaLoader(id)
-    const media = Array.isArray(body) ? body : []
+    return typeof first === "number" ? media.slice(0, Math.max(0, first)) : media
 
     return typeof first === "number" ? media.slice(0, first) : media
   },
