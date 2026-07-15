@@ -27552,7 +27552,7 @@ type OfferableActivity {
 """
 A collector with eligible offerable activity on the artwork, and how they engaged with it.
 """
-type OfferableActivityCollector implements Node {
+type OfferableActivityCollector {
   confirmedBuyerAt(
     format: String
 

@@ -1,7 +1,6 @@
 import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { collectorProfileBaseFields } from "schema/v2/CollectorProfile/collectorProfile"
-import { NodeInterface } from "../object_identification"
 import { PartnerOfferSourceEnumType } from "../partnerOffer"
 
 const OfferableActivityCollectorType = new GraphQLObjectType<
@@ -11,7 +10,6 @@ const OfferableActivityCollectorType = new GraphQLObjectType<
   name: "OfferableActivityCollector",
   description:
     "A collector with eligible offerable activity on the artwork, and how they engaged with it.",
-  interfaces: [NodeInterface],
   fields: {
     ...collectorProfileBaseFields,
     sources: {
