@@ -27552,7 +27552,7 @@ type OfferableActivity {
 """
 A collector with eligible offerable activity on the artwork, and how they engaged with it.
 """
-type OfferableActivityCollector {
+type OfferableActivityCollector implements Node {
   confirmedBuyerAt(
     format: String
 
@@ -27563,6 +27563,11 @@ type OfferableActivityCollector {
   ): String
   firstNameLastInitial: String
   icon: Image
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
 
   """
   A type-specific ID likely used as a database ID.

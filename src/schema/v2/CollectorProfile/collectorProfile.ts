@@ -35,7 +35,7 @@ export const collectorProfileBaseFields: GraphQLFieldConfigMap<
   any,
   ResolverContext
 > = {
-  internalID: InternalIDFields.internalID,
+  ...InternalIDFields,
   confirmedBuyerAt: dateFormatter(
     ({ confirmed_buyer_at }) => confirmed_buyer_at
   ),
@@ -61,7 +61,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
   const { CollectedArtistsConnection } = require("./collectedArtists")
 
   return {
-    ...InternalIDFields,
     ...collectorProfileBaseFields,
     collectorLevel: {
       type: GraphQLInt,
