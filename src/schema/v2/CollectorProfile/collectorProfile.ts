@@ -62,6 +62,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
 
   return {
     ...InternalIDFields,
+    ...collectorProfileBaseFields,
     collectorLevel: {
       type: GraphQLInt,
       resolve: ({ collector_level }) => collector_level,
@@ -74,7 +75,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
       type: GraphQLString,
       resolve: ({ company_website }) => company_website,
     },
-    confirmedBuyerAt: collectorProfileBaseFields.confirmedBuyerAt,
     email: { type: GraphQLString },
     institutionalAffiliations: {
       type: GraphQLString,
@@ -84,7 +84,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
     loyaltyApplicantAt: date,
     name: { type: GraphQLString },
     initials: initials("name"),
-    firstNameLastInitial: collectorProfileBaseFields.firstNameLastInitial,
     partnerEngagement: {
       type: PartnerEngagementType,
       description:
@@ -209,7 +208,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         })
       },
     },
-    location: collectorProfileBaseFields.location,
     artsyUserSince: dateFormatter(({ artsy_user_since }) => artsy_user_since),
     ownerID: {
       type: new GraphQLNonNull(GraphQLID),
@@ -222,7 +220,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         return userByIDLoader(id)
       },
     },
-    icon: collectorProfileBaseFields.icon,
     bio: {
       type: GraphQLString,
     },
@@ -258,7 +255,6 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         "identityVerified is going to be removed, use isIdentityVerified instead",
       resolve: ({ identity_verified }) => identity_verified,
     },
-    isIdentityVerified: collectorProfileBaseFields.isIdentityVerified,
     isActiveInquirer: {
       type: GraphQLBoolean,
       resolve: ({ artwork_inquiry_requests_count }) =>
