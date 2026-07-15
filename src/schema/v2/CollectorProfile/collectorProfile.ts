@@ -31,6 +31,27 @@ import { PartnerEngagementType } from "./partnerEngagement"
 import { CollectorSummaryAttributeType } from "./types/CollectorSummaryAttribute"
 import { selectCollectorAttributes } from "./helpers/selectCollectorAttributes"
 
+export const collectorProfileBaseFields: GraphQLFieldConfigMap<
+  any,
+  ResolverContext
+> = {
+  confirmedBuyerAt: dateFormatter(
+    ({ confirmed_buyer_at }) => confirmed_buyer_at
+  ),
+  firstNameLastInitial: {
+    type: GraphQLString,
+    resolve: ({ first_name_last_initial }) => first_name_last_initial,
+  },
+  icon: {
+    type: Image.type,
+    resolve: ({ icon }) => normalizeImageData(icon),
+  },
+  isIdentityVerified: {
+    type: GraphQLBoolean,
+    resolve: ({ identity_verified }) => identity_verified,
+  },
+}
+
 export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
   any,
   ResolverContext
@@ -51,7 +72,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
       type: GraphQLString,
       resolve: ({ company_website }) => company_website,
     },
-    confirmedBuyerAt: date,
+    confirmedBuyerAt: collectorProfileBaseFields.confirmedBuyerAt,
     email: { type: GraphQLString },
     institutionalAffiliations: {
       type: GraphQLString,
@@ -61,10 +82,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
     loyaltyApplicantAt: date,
     name: { type: GraphQLString },
     initials: initials("name"),
-    firstNameLastInitial: {
-      type: GraphQLString,
-      resolve: ({ first_name_last_initial }) => first_name_last_initial,
-    },
+    firstNameLastInitial: collectorProfileBaseFields.firstNameLastInitial,
     partnerEngagement: {
       type: PartnerEngagementType,
       description:
@@ -202,10 +220,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         return userByIDLoader(id)
       },
     },
-    icon: {
-      type: Image.type,
-      resolve: ({ icon }) => normalizeImageData(icon),
-    },
+    icon: collectorProfileBaseFields.icon,
     bio: {
       type: GraphQLString,
     },
@@ -241,10 +256,7 @@ export const CollectorProfileFields: Thunk<GraphQLFieldConfigMap<
         "identityVerified is going to be removed, use isIdentityVerified instead",
       resolve: ({ identity_verified }) => identity_verified,
     },
-    isIdentityVerified: {
-      type: GraphQLBoolean,
-      resolve: ({ identity_verified }) => identity_verified,
-    },
+    isIdentityVerified: collectorProfileBaseFields.isIdentityVerified,
     isActiveInquirer: {
       type: GraphQLBoolean,
       resolve: ({ artwork_inquiry_requests_count }) =>

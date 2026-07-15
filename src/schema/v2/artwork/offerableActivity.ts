@@ -1,13 +1,11 @@
 import {
-  GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import Image, { normalizeImageData } from "schema/v2/image"
-import { date } from "../fields/date"
+import { collectorProfileBaseFields } from "schema/v2/CollectorProfile/collectorProfile"
 import { PartnerOfferSourceEnumType } from "../partnerOffer"
 
 const OfferableActivityCollectorLocationType = new GraphQLObjectType<
@@ -34,19 +32,10 @@ const OfferableActivityCollectorType = new GraphQLObjectType<
       description: "The collector profile's internal ID.",
       resolve: ({ id }) => id,
     },
-    firstNameLastInitial: {
-      type: GraphQLString,
-      resolve: ({ first_name_last_initial }) => first_name_last_initial,
-    },
-    isIdentityVerified: {
-      type: GraphQLBoolean,
-      resolve: ({ identity_verified }) => identity_verified,
-    },
-    confirmedBuyerAt: date(({ confirmed_buyer_at }) => confirmed_buyer_at),
-    icon: {
-      type: Image.type,
-      resolve: ({ icon }) => normalizeImageData(icon),
-    },
+    // firstNameLastInitial, isIdentityVerified, confirmedBuyerAt and icon are
+    // derived from the collector profile payload, so we reuse the shared field
+    // configs to stay in sync with the CollectorProfile type.
+    ...collectorProfileBaseFields,
     location: {
       type: OfferableActivityCollectorLocationType,
       resolve: ({ location }) => location,
