@@ -25,7 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use camelCase for variables, PascalCase for types/interfaces
 - Avoid any when possible, but allowed when necessary
 - Unused variables should be prefixed with `_`
-- Jest for testing with descriptive test names
+- Jest for testing with descriptive test names — see [docs/testing.md](docs/testing.md) for query helpers and conventions
 - GraphQL queries use the `gql` tag from lib/gql
 - Organize imports logically (internal vs external)
 - Follow React best practices for component structure
