@@ -55,6 +55,9 @@ export default (opts) => {
     artistArtworksLoader: gravityLoader((id) => `artist/${id}/artworks`),
     artistCareerHighlightsLoader: gravityLoader("artist_career_highlights"),
     artistGenesLoader: gravityLoader((id) => `artist/${id}/genome/genes`),
+    artistInstagramMediaLoader: gravityLoader(
+      (id) => `artist/${id}/instagram_media`
+    ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
