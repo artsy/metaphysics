@@ -1,49 +1,48 @@
-import { graphql, GraphQLObjectType, GraphQLSchema } from "graphql"
-import { ArticleSectionEmbed } from "../ArticleSectionEmbed"
+import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
 
-const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: "Query",
-    fields: {
-      embed: { type: ArticleSectionEmbed },
-    },
-  }),
-})
+const query = gql`
+  {
+    article(id: "example") {
+      sections {
+        ... on ArticleSectionEmbed {
+          height
+          mobileHeight
+        }
+      }
+    }
+  }
+`
 
-const run = (embed: Record<string, unknown>) =>
-  graphql({
-    schema,
-    source: `{ embed { height mobileHeight } }`,
-    rootValue: { embed },
-  })
+const runWithEmbed = (embed: Record<string, unknown>) => {
+  const articleLoader = jest.fn(() =>
+    Promise.resolve({ sections: [{ type: "embed", ...embed }] })
+  )
+  return runQuery(query, { articleLoader })
+}
 
 describe("ArticleSectionEmbed", () => {
   it("coerces empty-string heights to null instead of throwing", async () => {
-    const result = await run({ type: "embed", height: "", mobile_height: "" })
+    const { article } = await runWithEmbed({ height: "", mobile_height: "" })
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data?.embed).toEqual({ height: null, mobileHeight: null })
+    expect(article.sections).toEqual([{ height: null, mobileHeight: null }])
   })
 
   it("coerces non-numeric heights to null", async () => {
-    const result = await run({
-      type: "embed",
+    const { article } = await runWithEmbed({
       height: "abc",
       mobile_height: "12px",
     })
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data?.embed).toEqual({ height: null, mobileHeight: null })
+    expect(article.sections).toEqual([{ height: null, mobileHeight: null }])
   })
 
   it("passes through valid integer heights (including numeric strings)", async () => {
-    const result = await run({
-      type: "embed",
+    const { article } = await runWithEmbed({
       height: 480,
       mobile_height: "300",
     })
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data?.embed).toEqual({ height: 480, mobileHeight: 300 })
+    expect(article.sections).toEqual([{ height: 480, mobileHeight: 300 }])
   })
 })
