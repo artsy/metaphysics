@@ -17,7 +17,7 @@ const OfferableActivityCollectorType = new GraphQLObjectType<
     sources: {
       type: new GraphQLList(PartnerOfferSourceEnumType),
       description:
-        "The ways this collector engaged with the artwork (e.g. saved it and/or abandoned an order).",
+        "The way this collector engaged with the artwork (e.g. saved it and/or abandoned an order).",
       resolve: ({ sources }) => sources,
     },
   },

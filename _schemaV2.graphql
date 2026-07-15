@@ -27577,7 +27577,7 @@ type OfferableActivityCollector implements Node {
   location: MyLocation
 
   """
-  The ways this collector engaged with the artwork (e.g. saved it and/or abandoned an order).
+  The way this collector engaged with the artwork (e.g. saved it and/or abandoned an order).
   """
   sources: [PartnerOfferSourceEnum]
 }
