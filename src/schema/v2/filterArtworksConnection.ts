@@ -985,12 +985,15 @@ const selectsEdgeNote = (info: GraphQLResolveInfo): boolean => {
  * connection.
  */
 // TEST-DATA STUB samples — see the STUB_CURATOR_NOTES block below. Throwaway.
+// Deliberately spans a range of lengths (short one-liners through a ~300-word
+// note) so the clients can be tested against both compact and long descriptions.
 const STUB_CURATOR_NOTE_SAMPLES = [
   "A standout work — chosen for its bold, confident use of color.",
   "Included for the way it reframes a familiar subject.",
-  "One of the curator’s favorites in this collection.",
-  "A quietly ambitious piece worth spending time with.",
-  "Selected for its striking composition and scale.",
+  "One of the curator’s favorites in this collection — a quietly ambitious piece that rewards a second look, both for its composition and for the restraint of its palette.",
+  "Selected for its striking composition and scale. It holds a room without shouting, and it pairs unexpectedly well with both historical and contemporary works — a rare quality that made it an easy inclusion here.",
+  // ~300-word sample for testing long descriptions.
+  "This work anchors the entire collection, and it rewards the kind of slow looking that a curated selection is meant to encourage. The artist arrived at this composition after years of returning to the same motif, and you can feel that accumulated attention in every decision on the surface — the way the horizon sits slightly higher than expected, the almost architectural balance of the negative space, the restraint of a palette that never reaches for easy drama. We chose it not because it is the loudest work here, but because it quietly reorganizes everything around it; hang it beside the other pieces and they suddenly read as a conversation rather than a group. There is also a biographical thread worth knowing: this was made during a period of significant transition for the artist, when a move to a new city and an unfamiliar quality of light forced a rethinking of long-held habits. That tension between mastery and uncertainty is, for us, the heart of the piece. Collectors often respond first to its scale and presence, but the details are where it earns a place on the wall for decades — the layered underpainting that surfaces only in raking light, the deliberate roughness at the edges that keeps the image from feeling precious. It sits comfortably alongside both historical and contemporary works, which is rare, and it shifts in mood with the time of day. If you are building a collection with a point of view rather than simply accumulating names, this is the sort of acquisition that becomes a reference point — the work you return to when deciding what else belongs. We think it will reward you, and whoever you share your walls with, for a very long time.",
 ]
 
 const stampCuratorNotes = async ({
