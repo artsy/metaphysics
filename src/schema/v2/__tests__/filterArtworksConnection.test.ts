@@ -1886,5 +1886,45 @@ describe("artworksConnection", () => {
         { note: null, node: { slug: "percy-1" } },
       ])
     })
+
+    it("does not look the collection up when `note` is not selected", async () => {
+      const marketingCollectionLoader = jest.fn(() =>
+        Promise.resolve({
+          artwork_notes: [{ artwork_id: "percy-1-id", note: "unused" }],
+        })
+      )
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [{ _id: "percy-1-id", id: "percy-1", title: "Percy's Ship", artists: [] }],
+              aggregations: { total: { value: 1 } },
+            }),
+        },
+        marketingCollectionLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            marketingCollectionID: "curators-picks"
+            first: 1
+            aggregations: [TOTAL]
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([{ node: { slug: "percy-1" } }])
+      expect(marketingCollectionLoader).not.toHaveBeenCalled()
+    })
   })
 })
