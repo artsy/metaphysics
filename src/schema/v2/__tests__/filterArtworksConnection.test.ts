@@ -1801,4 +1801,90 @@ describe("artworksConnection", () => {
       expect(artworksConnection.counts.total).toEqual(3)
     })
   })
+
+  describe("curator notes on marketing-collection-scoped connections", () => {
+    it("stamps notes onto edges by looking the collection up by id/slug", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [
+                { _id: "percy-1-id", id: "percy-1", title: "Percy's Ship", artists: [] },
+                { _id: "fiby-2-id", id: "fiby-2", title: "Fiby's Ship", artists: [] },
+              ],
+              aggregations: { total: { value: 2 } },
+            }),
+        },
+        marketingCollectionLoader: () =>
+          Promise.resolve({
+            slug: "curators-picks",
+            artwork_notes: [
+              { artwork_id: "percy-1-id", note: "Chosen for its bold use of color" },
+            ],
+          }),
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            marketingCollectionID: "curators-picks"
+            first: 2
+            aggregations: [TOTAL]
+          ) {
+            edges {
+              note
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { note: "Chosen for its bold use of color", node: { slug: "percy-1" } },
+        { note: null, node: { slug: "fiby-2" } },
+      ])
+    })
+
+    it("does not fail the connection when the collection lookup errors", async () => {
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [{ _id: "percy-1-id", id: "percy-1", title: "Percy's Ship", artists: [] }],
+              aggregations: { total: { value: 1 } },
+            }),
+        },
+        marketingCollectionLoader: () => Promise.reject(new Error("boom")),
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            marketingCollectionID: "curators-picks"
+            first: 1
+            aggregations: [TOTAL]
+          ) {
+            edges {
+              note
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { note: null, node: { slug: "percy-1" } },
+      ])
+    })
+  })
 })

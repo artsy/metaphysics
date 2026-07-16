@@ -195,32 +195,10 @@ export const MarketingCollectionType = new GraphQLObjectType<
       ...MarketingCollectionFields,
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
-      artworksConnection: {
-        ...artworksConnectionField,
-        resolve: async (root, args, ctx, info) => {
-          const connection = await artworksConnectionField.resolve(
-            root,
-            args,
-            ctx,
-            info
-          )
-          const notesByArtworkId = Object.fromEntries(
-            (
-              root.artwork_notes ?? []
-            ).map(
-              ({ artwork_id, note }: { artwork_id: string; note: string }) => [
-                artwork_id,
-                note,
-              ]
-            )
-          )
-          connection.edges = (connection.edges ?? []).map((edge) => ({
-            ...edge,
-            note: notesByArtworkId[edge.node._id] ?? null,
-          }))
-          return connection
-        },
-      },
+      // Curator notes are stamped onto the edges by the shared filterArtworks
+      // resolver, which reads them from `root.artwork_notes` for a
+      // MarketingCollection root (no extra fetch).
+      artworksConnection: artworksConnectionField,
     }
   },
 })

@@ -621,6 +621,7 @@ const filterArtworksConnectionTypeFactory = (
       },
       filterArtworksUncachedLoader,
       isCMSRequest,
+      marketingCollectionLoader,
       partnerArtworksAllLoader,
       partnerListArtworksLoader,
     } = ctx
@@ -877,6 +878,16 @@ const filterArtworksConnectionTypeFactory = (
       gravityOptions.size
     )
 
+    // Stamp curator notes onto edges for marketing-collection-scoped connections
+    // (the collection page, the `MarketingCollection.artworksConnection` field, and
+    // marketing-collection-backed rails such as `Viewer.artworksConnection`).
+    await stampCuratorNotes({
+      connection,
+      root,
+      marketingCollectionID: gravityOptions.marketing_collection_id,
+      marketingCollectionLoader,
+    })
+
     return Object.assign(
       {
         pageCursors: createPageCursors(
@@ -890,6 +901,57 @@ const filterArtworksConnectionTypeFactory = (
     )
   },
 })
+
+/**
+ * The curator's note lives on the `marketing_collection_artworks` join record in
+ * Gravity and is surfaced per-edge (see the `note` edge field above). It is only
+ * populated for marketing-collection-scoped connections.
+ *
+ * When the connection is resolved from a `MarketingCollection` root, the notes are
+ * already present on `root.artwork_notes` (no extra fetch). For connections that are
+ * merely *filtered* by a marketing collection (e.g. `Viewer.artworksConnection(
+ * marketingCollectionID:)` behind the home rails), we look the collection up by id/slug
+ * to read its notes. Notes are non-essential, so a failed lookup never fails the
+ * connection.
+ */
+const stampCuratorNotes = async ({
+  connection,
+  root,
+  marketingCollectionID,
+  marketingCollectionLoader,
+}: {
+  connection: { edges?: any[] }
+  root: any
+  marketingCollectionID?: string
+  marketingCollectionLoader?: (id: string) => Promise<any>
+}): Promise<void> => {
+  if (!connection?.edges?.length) return
+
+  let artworkNotes = root?.artwork_notes
+
+  if (!artworkNotes && marketingCollectionID && marketingCollectionLoader) {
+    try {
+      const collection = await marketingCollectionLoader(marketingCollectionID)
+      artworkNotes = collection?.artwork_notes
+    } catch (_error) {
+      artworkNotes = undefined
+    }
+  }
+
+  if (!artworkNotes?.length) return
+
+  const notesByArtworkId: Record<string, string> = Object.fromEntries(
+    artworkNotes.map(({ artwork_id, note }: { artwork_id: string; note: string }) => [
+      artwork_id,
+      note,
+    ])
+  )
+
+  connection.edges = connection.edges.map((edge) => ({
+    ...edge,
+    note: edge?.node?._id ? notesByArtworkId[edge.node._id] ?? null : null,
+  }))
+}
 
 // Support passing in your own primary key
 // so that you can nest this function into another.
