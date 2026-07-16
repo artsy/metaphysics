@@ -217,6 +217,51 @@ describe("MarketingCollections", () => {
     })
   })
 
+  it("does not re-fetch the collection when the root carries no notes", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          artworksConnection(first: 1) {
+            edges {
+              note
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    // A (non-curated) collection whose payload omits `artwork_notes` entirely.
+    const payload = { ...marketingCollectionsData[0] }
+
+    const marketingCollectionLoader = jest.fn(() => Promise.resolve(payload))
+
+    const context: any = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: () =>
+          Promise.resolve({
+            hits: [{ _id: "percy-1-id", id: "percy-1", title: "Percy's Ship", artists: [] }],
+            aggregations: { total: { value: 1 } },
+          }),
+      },
+      marketingCollectionLoader,
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      marketingCollection: {
+        artworksConnection: { edges: [{ note: null, node: { slug: "percy-1" } }] },
+      },
+    })
+    // Only the collection-field resolution should hit the loader — no extra
+    // note lookup, since the root is authoritative.
+    expect(marketingCollectionLoader).toHaveBeenCalledTimes(1)
+  })
+
   it("does not crash when only id is selected on artworksConnection", async () => {
     const query = gql`
       {
