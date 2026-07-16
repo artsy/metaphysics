@@ -912,18 +912,6 @@ const filterArtworksConnectionTypeFactory = (
 })
 
 /**
- * The curator's note lives on the `marketing_collection_artworks` join record in
- * Gravity and is surfaced per-edge (see the `note` edge field above). It is only
- * populated for marketing-collection-scoped connections.
- *
- * When the connection is resolved from a `MarketingCollection` root, the notes are
- * already present on `root.artwork_notes` (no extra fetch). For connections that are
- * merely *filtered* by a marketing collection (e.g. `Viewer.artworksConnection(
- * marketingCollectionID:)` behind the home rails), we look the collection up by id/slug
- * to read its notes. Notes are non-essential, so a failed lookup never fails the
- * connection.
- */
-/**
  * Returns true when the query selected `edges { note }` on this connection.
  *
  * The generic `hasFieldSelection` helper can't answer this — `note` sits under
@@ -984,6 +972,18 @@ const selectsEdgeNote = (info: GraphQLResolveInfo): boolean => {
   )
 }
 
+/**
+ * The curator's note lives on the `marketing_collection_artworks` join record in
+ * Gravity and is surfaced per-edge (see the `note` edge field above). It is only
+ * populated for marketing-collection-scoped connections.
+ *
+ * When the connection is resolved from a `MarketingCollection` root, the notes are
+ * already present on `root.artwork_notes` (no extra fetch). For connections that are
+ * merely *filtered* by a marketing collection (e.g. `Viewer.artworksConnection(
+ * marketingCollectionID:)` behind the home rails), we look the collection up by id/slug
+ * to read its notes. Notes are non-essential, so a failed lookup never fails the
+ * connection.
+ */
 const stampCuratorNotes = async ({
   connection,
   root,
