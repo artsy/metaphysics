@@ -999,7 +999,21 @@ const stampCuratorNotes = async ({
 
   let artworkNotes = root?.artwork_notes
 
-  if (!artworkNotes && marketingCollectionID && marketingCollectionLoader) {
+  // When the connection is resolved from the marketing collection itself, `root` is
+  // that collection and its `artwork_notes` are authoritative — a missing/undefined
+  // field means "no notes", not "not loaded", so we must not re-fetch it (Gravity
+  // omits the field for non-curated collections). Only connections that are merely
+  // *filtered* by a collection (rails, where `root` is not the collection) fall back
+  // to a lookup.
+  const rootIsMarketingCollection =
+    root?.id != null && root.id === marketingCollectionID
+
+  if (
+    artworkNotes == null &&
+    !rootIsMarketingCollection &&
+    marketingCollectionID &&
+    marketingCollectionLoader
+  ) {
     try {
       const collection = await marketingCollectionLoader(marketingCollectionID)
       artworkNotes = collection?.artwork_notes
