@@ -984,6 +984,15 @@ const selectsEdgeNote = (info: GraphQLResolveInfo): boolean => {
  * to read its notes. Notes are non-essential, so a failed lookup never fails the
  * connection.
  */
+// TEST-DATA STUB samples — see the STUB_CURATOR_NOTES block below. Throwaway.
+const STUB_CURATOR_NOTE_SAMPLES = [
+  "A standout work — chosen for its bold, confident use of color.",
+  "Included for the way it reframes a familiar subject.",
+  "One of the curator’s favorites in this collection.",
+  "A quietly ambitious piece worth spending time with.",
+  "Selected for its striking composition and scale.",
+]
+
 const stampCuratorNotes = async ({
   connection,
   root,
@@ -1020,6 +1029,27 @@ const stampCuratorNotes = async ({
     } catch (_error) {
       artworkNotes = undefined
     }
+  }
+
+  // TEST-DATA STUB (opt-in via STUB_CURATOR_NOTES=true, off by default): before
+  // Gravity ships real curator notes, synthesize a sample note on ~1 in 4 works of
+  // any marketing-collection connection so the eigen/force UIs can be exercised
+  // end-to-end. This is throwaway scaffolding and must not be enabled in production.
+  if (
+    (!artworkNotes || artworkNotes.length === 0) &&
+    marketingCollectionID &&
+    process.env.STUB_CURATOR_NOTES === "true"
+  ) {
+    connection.edges = connection.edges.map((edge, index) => ({
+      ...edge,
+      note:
+        index % 4 === 0 && edge?.node?._id
+          ? STUB_CURATOR_NOTE_SAMPLES[
+              Math.floor(index / 4) % STUB_CURATOR_NOTE_SAMPLES.length
+            ]
+          : edge?.note ?? null,
+    }))
+    return
   }
 
   if (!artworkNotes?.length) return
