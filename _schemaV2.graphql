@@ -2722,6 +2722,16 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   ): [ArtistInsight!]!
 
   """
+  Instagram media for display on an artist page.
+  """
+  instagramMedia(
+    """
+    The number of media items to return.
+    """
+    first: Int
+  ): [ArtistInstagramMedia]
+
+  """
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
@@ -3063,6 +3073,13 @@ type ArtistInsightsCount {
   groupShowCount: Int!
   reviewedCount: Int!
   soloShowCount: Int!
+}
+
+type ArtistInstagramMedia {
+  caption: String
+  image: Image
+  internalID: String
+  permalink: String
 }
 
 type ArtistMeta {
@@ -31586,6 +31603,26 @@ type Query {
     )
 
   """
+  A connection of artworks matching an uploaded query image, using a pure vector (neural) image search.
+  """
+  artworksByImageConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    S3 bucket of the uploaded query image.
+    """
+    s3Bucket: String!
+
+    """
+    S3 key of the uploaded query image.
+    """
+    s3Key: String!
+  ): ArtworkConnection
+
+  """
   Artworks Elastic Search results
   """
   artworksConnection(
@@ -41344,6 +41381,26 @@ type Viewer {
     @deprecated(
       reason: "This is only for use in resolving stitched queries, not for first-class client use!"
     )
+
+  """
+  A connection of artworks matching an uploaded query image, using a pure vector (neural) image search.
+  """
+  artworksByImageConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    S3 bucket of the uploaded query image.
+    """
+    s3Bucket: String!
+
+    """
+    S3 key of the uploaded query image.
+    """
+    s3Key: String!
+  ): ArtworkConnection
 
   """
   Artworks Elastic Search results

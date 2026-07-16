@@ -162,6 +162,7 @@ import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMuta
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworksForUser } from "./artworksForUser"
+import { artworksByImageConnection } from "./artworksByImageConnection"
 import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
@@ -470,6 +471,7 @@ const rootFields = {
   artworkImport: ArtworkImport,
   artworkResult: ArtworkResult,
   artworks: Artworks,
+  artworksByImageConnection,
   artworksConnection: filterArtworksConnection(),
   artworksForUser,
   auctionResult: AuctionResult,

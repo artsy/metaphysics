@@ -55,6 +55,9 @@ export default (opts) => {
     artistArtworksLoader: gravityLoader((id) => `artist/${id}/artworks`),
     artistCareerHighlightsLoader: gravityLoader("artist_career_highlights"),
     artistGenesLoader: gravityLoader((id) => `artist/${id}/genome/genes`),
+    artistInstagramMediaLoader: gravityLoader(
+      (id) => `artist/${id}/instagram_media`
+    ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
@@ -74,6 +77,11 @@ export default (opts) => {
     >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
+    artworksByImageLoader: gravityLoader(
+      "filter/artworks_by_image",
+      {},
+      { headers: true }
+    ),
     authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
     collectionArtworksLoader: gravityLoader(
