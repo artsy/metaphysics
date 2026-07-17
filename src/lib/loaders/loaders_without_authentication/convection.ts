@@ -6,9 +6,7 @@ export const convectionLoaders = (_opts) => {
     _args?: Record<string, unknown>
   ): Promise<never> => {
     return Promise.reject(
-      new GraphQLError(
-        "Artwork submissions are not accepted at this time."
-      )
+      new GraphQLError("Artwork submissions are not accepted at this time.")
     )
   }
 
