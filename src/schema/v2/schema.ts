@@ -161,6 +161,7 @@ import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionS
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
+import { artworkFilterSuggestions } from "./artworkFilterSuggestions"
 import { artworksForUser } from "./artworksForUser"
 import { artworksByImageConnection } from "./artworksByImageConnection"
 import { authenticationStatus } from "./authenticationStatus"
@@ -467,6 +468,7 @@ const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkDuplicatePair,
   artworkDuplicatePairsConnection,
+  artworkFilterSuggestions,
   artworkMediums: ArtworkMediums,
   artworkImport: ArtworkImport,
   artworkResult: ArtworkResult,
