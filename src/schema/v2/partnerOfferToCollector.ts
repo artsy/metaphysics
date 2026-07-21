@@ -4,12 +4,17 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 import { PartnerOfferSourceEnumType } from "./partnerOffer"
+
+// Buyer states that indicate the collector has committed to a purchase created
+// from a partner offer. Kept in sync with the clients' previous logic.
+const PURCHASED_BUYER_STATES = ["SUBMITTED", "APPROVED", "COMPLETED"]
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
   any,
@@ -32,6 +37,27 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
     isAvailable: {
       type: GraphQLBoolean,
       resolve: ({ available }) => available,
+    },
+    isPurchased: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "Whether the collector already has an order created from this partner offer in a purchased buyer state (submitted, approved, or completed).",
+      resolve: async ({ id, artwork_id }, _args, { meOrdersLoader }) => {
+        if (!meOrdersLoader || !id) {
+          return false
+        }
+
+        const { body: orders } = await meOrdersLoader({
+          artwork_id,
+          buyer_state: PURCHASED_BUYER_STATES.join(","),
+        })
+
+        return (orders ?? []).some((order) =>
+          (order.line_items ?? []).some(
+            (lineItem) => lineItem?.partner_offer_id === id
+          )
+        )
+      },
     },
     note: {
       type: GraphQLString,

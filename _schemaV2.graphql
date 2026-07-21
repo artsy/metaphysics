@@ -30337,6 +30337,11 @@ type PartnerOfferToCollector implements Node {
   internalID: ID!
   isActive: Boolean
   isAvailable: Boolean
+
+  """
+  Whether the collector already has an order created from this partner offer in a purchased buyer state (submitted, approved, or completed).
+  """
+  isPurchased: Boolean!
   note: String
   partnerId: String
   priceWithDiscount: Money
