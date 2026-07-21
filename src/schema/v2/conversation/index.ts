@@ -41,6 +41,10 @@ import {
   PartnerOfferConnectionType,
   PartnerOfferTypeEnumType,
 } from "../partnerOffer"
+import {
+  PartnerOfferToCollectorConnectionType,
+  stampPartnerOfferPurchases,
+} from "../partnerOfferToCollector"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -339,6 +343,59 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             user_id: from_id,
             offer_type: args.offerType,
           })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
+        },
+      },
+      collectorPartnerOffersConnection: {
+        description:
+          "The current (collector) user's partner offers for this conversation's artwork.",
+        type: PartnerOfferToCollectorConnectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          offerType: {
+            type: new GraphQLList(PartnerOfferTypeEnumType),
+            description:
+              "Filter by offer type(s). Gravity defaults to all of the user's partner offers when omitted.",
+          },
+        }),
+        resolve: async (
+          { items },
+          args,
+          { mePartnerOffersLoader, meOrdersLoader }
+        ) => {
+          if (!mePartnerOffersLoader)
+            throw new Error("You need to be signed in to perform this action")
+
+          // Assume a conversation only has one item
+          const artwork = items?.find((item) => item.item_type === "Artwork")
+          if (!artwork) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body, headers } = await mePartnerOffersLoader({
+            total_count: true,
+            page,
+            size,
+            artwork_id: artwork.properties.id,
+            offer_type: args.offerType,
+          })
+
+          // Resolve `isPurchased` for the whole page in one Exchange request
+          // rather than one per offer node.
+          await stampPartnerOfferPurchases(body, meOrdersLoader)
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
