@@ -152,6 +152,102 @@ describe("MarketingCollections", () => {
     `)
   })
 
+  it("returns curator notes on artworksConnection edges for a curated marketing collection", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          artworksConnection(first: 2) {
+            edges {
+              note
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const payload = {
+      ...marketingCollectionsData[0],
+      artwork_notes: [
+        { artwork_id: "percy-1-id", note: "Chosen for its bold use of color" },
+      ],
+    }
+
+    const context: any = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: () =>
+          Promise.resolve({
+            hits: [
+              {
+                _id: "percy-1-id",
+                id: "percy-1",
+                title: "Percy's Ship",
+                artists: [],
+              },
+              {
+                _id: "fiby-2-id",
+                id: "fiby-2",
+                title: "Fibi's Ship",
+                artists: [],
+              },
+            ],
+            aggregations: { total: { value: 999 } },
+          }),
+      },
+      marketingCollectionLoader: () => Promise.resolve(payload),
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      marketingCollection: {
+        artworksConnection: {
+          edges: [
+            {
+              note: "Chosen for its bold use of color",
+              node: { slug: "percy-1" },
+            },
+            { note: null, node: { slug: "fiby-2" } },
+          ],
+        },
+      },
+    })
+  })
+
+  it("does not crash when only id is selected on artworksConnection", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          artworksConnection(first: 2) {
+            id
+          }
+        }
+      }
+    `
+
+    const payload = {
+      ...marketingCollectionsData[0],
+      artwork_notes: [
+        { artwork_id: "percy-1-id", note: "Chosen for its bold use of color" },
+      ],
+    }
+
+    const context: any = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: () => Promise.resolve({}),
+      },
+      marketingCollectionLoader: () => Promise.resolve(payload),
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data.marketingCollection.artworksConnection.id).toBeTruthy()
+  })
+
   it("returns curated marketing collections", async () => {
     const query = gql`
       {

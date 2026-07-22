@@ -19374,6 +19374,11 @@ type FilterArtworksEdge implements ArtworkEdgeInterface {
   The item at the end of the edge
   """
   node: Artwork
+
+  """
+  Curator note for this artwork within a marketing collection, if any. Null on non-marketing-collection connections.
+  """
+  note: String
 }
 
 input FilterArtworksInput {
