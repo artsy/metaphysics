@@ -34,23 +34,29 @@ export const stampPartnerOfferPurchases = async (
   const ids = offers.map((offer) => offer.id).filter(Boolean)
   if (ids.length === 0) return offers
 
-  const { body: orders } = await meOrdersLoader({
-    partner_offer_ids: ids.join(","),
-    buyer_state: PURCHASED_BUYER_STATES.join(","),
-    size: ids.length,
-  })
+  try {
+    const { body: orders } = await meOrdersLoader({
+      partner_offer_ids: ids.join(","),
+      buyer_state: PURCHASED_BUYER_STATES.join(","),
+      size: ids.length,
+    })
 
-  const purchasedIds = new Set(
-    (orders ?? []).flatMap((order) =>
-      (order.line_items ?? [])
-        .map((lineItem) => lineItem?.partner_offer_id)
-        .filter(Boolean)
+    const purchasedIds = new Set(
+      (orders ?? []).flatMap((order) =>
+        (order.line_items ?? [])
+          .map((lineItem) => lineItem?.partner_offer_id)
+          .filter(Boolean)
+      )
     )
-  )
 
-  offers.forEach((offer) => {
-    offer._isPurchased = offer.id ? purchasedIds.has(offer.id) : false
-  })
+    offers.forEach((offer) => {
+      offer._isPurchased = offer.id ? purchasedIds.has(offer.id) : false
+    })
+  } catch (error) {
+    offers.forEach((offer) => {
+      offer._isPurchased = false
+    })
+  }
 
   return offers
 }

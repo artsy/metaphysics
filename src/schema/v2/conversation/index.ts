@@ -45,6 +45,7 @@ import {
   PartnerOfferToCollectorConnectionType,
   stampPartnerOfferPurchases,
 } from "../partnerOfferToCollector"
+import { isFieldRequested } from "lib/isFieldRequested"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -372,7 +373,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { items },
           args,
-          { mePartnerOffersLoader, meOrdersLoader }
+          { mePartnerOffersLoader, meOrdersLoader },
+          resolveInfo
         ) => {
           if (!mePartnerOffersLoader)
             throw new Error("You need to be signed in to perform this action")
@@ -393,9 +395,9 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             offer_type: args.offerType,
           })
 
-          // Resolve `isPurchased` for the whole page in one Exchange request
-          // rather than one per offer node.
-          await stampPartnerOfferPurchases(body, meOrdersLoader)
+          if (isFieldRequested("edges.node.isPurchased", resolveInfo)) {
+            await stampPartnerOfferPurchases(body, meOrdersLoader)
+          }
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

@@ -34,11 +34,16 @@ describe("PartnerOfferToCollector", () => {
     }
   `
 
-  describe("isPurchased (fallback)", () => {
-    it("is true when Exchange returns a purchased-state order for the offer", async () => {
+  describe("isPurchased", () => {
+    it("batches the lookup into one Exchange request when selected", async () => {
       const meOrdersLoader = jest.fn(() =>
         Promise.resolve({
-          body: [{ id: "order-1" }],
+          body: [
+            {
+              buyer_state: "APPROVED",
+              line_items: [{ partner_offer_id: "partner-offer-1" }],
+            },
+          ],
           headers: {},
         })
       )
@@ -49,9 +54,11 @@ describe("PartnerOfferToCollector", () => {
         meOrdersLoader,
       })
 
+      expect(meOrdersLoader).toHaveBeenCalledTimes(1)
       expect(meOrdersLoader).toHaveBeenCalledWith({
         partner_offer_ids: "partner-offer-1",
         buyer_state: "SUBMITTED,APPROVED,COMPLETED",
+        size: 1,
       })
 
       expect(
@@ -59,8 +66,17 @@ describe("PartnerOfferToCollector", () => {
       ).toBe(true)
     })
 
-    it("is false when Exchange returns no orders for the offer", async () => {
-      const meOrdersLoader = () => Promise.resolve({ body: [], headers: {} })
+    it("is false when no order references the offer", async () => {
+      const meOrdersLoader = () =>
+        Promise.resolve({
+          body: [
+            {
+              buyer_state: "APPROVED",
+              line_items: [{ partner_offer_id: "some-other-offer" }],
+            },
+          ],
+          headers: {},
+        })
 
       const response = await runAuthenticatedQuery(query, {
         meLoader: () => Promise.resolve({}),
@@ -73,7 +89,7 @@ describe("PartnerOfferToCollector", () => {
       ).toBe(false)
     })
 
-    it("is false when the orders loader rejects", async () => {
+    it("is false (and does not fail the connection) when the orders loader rejects", async () => {
       const meOrdersLoader = () => Promise.reject(new Error("Exchange down"))
 
       const response = await runAuthenticatedQuery(query, {
@@ -85,6 +101,32 @@ describe("PartnerOfferToCollector", () => {
       expect(
         response.me.partnerOffersConnection.edges[0].node.isPurchased
       ).toBe(false)
+    })
+
+    it("does not query Exchange when isPurchased is not selected", async () => {
+      const meOrdersLoader = jest.fn()
+
+      const queryWithoutIsPurchased = gql`
+        query {
+          me {
+            partnerOffersConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(queryWithoutIsPurchased, {
+        meLoader: () => Promise.resolve({}),
+        mePartnerOffersLoader,
+        meOrdersLoader,
+      })
+
+      expect(meOrdersLoader).not.toHaveBeenCalled()
     })
   })
 })
