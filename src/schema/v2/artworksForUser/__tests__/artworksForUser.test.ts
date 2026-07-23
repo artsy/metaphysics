@@ -1,7 +1,13 @@
-import config from "config"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => false),
+}))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 const buildQuery = (args: any = {}) => {
   const first = args.first || 10
@@ -246,11 +252,12 @@ describe("artworksForUser", () => {
 
   describe("with the Gravity NWFY rail enabled", () => {
     beforeEach(() => {
-      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
     })
 
     afterEach(() => {
-      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
     })
 
     it("sources ids from the Gravity rail and composes the connection (skipping Vortex)", async () => {

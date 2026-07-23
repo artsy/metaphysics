@@ -1,11 +1,13 @@
-import config from "config"
 import gql from "lib/gql"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 
 // Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
 const MAX_ARTWORKS = 50
+
+const NWFY_GRAVITY_RAIL_FLAG = "onyx_nwfy-gravity"
 
 // Gravity-backed NWFY rail: source IDs from the live Gravity REST endpoint
 const getNewForYouArtworkIDsFromGravity = async (
@@ -75,8 +77,15 @@ export const getNewForYouArtworkIDs = async (
 
   const userID = args.userId || xImpersonateUserID
 
+  // Gravity is the version_c rail; email campaigns (Braze, via
+  // xImpersonateUserID) stay on Vortex. Bucket on the authenticated user so
+  // per-user rollout applies to the logged-in flow, mirroring WTYL.
   const useGravity =
-    config.ENABLE_NEW_WORKS_FOR_YOU_GRAVITY && !!artworkRecommendationsLoader
+    !!artworkRecommendationsLoader &&
+    !xImpersonateUserID &&
+    isFeatureFlagEnabled(NWFY_GRAVITY_RAIL_FLAG, {
+      userId: userID || context.userID,
+    })
 
   if (useGravity) {
     return getNewForYouArtworkIDsFromGravity(args, context, userID)
