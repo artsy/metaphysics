@@ -65,23 +65,34 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       (artworkId) => !args.excludeArtworkIds.includes(artworkId)
     )
 
-    const slicedArtworkIds = filteredArtworkIds.slice(offset, offset + size)
-
+    // Hydrate before paginating: Gravity silently drops stale ids, so slicing
+    // the id window first would let backfill fill a mid-page gap.
     const newForYouArtworks = await getNewForYouArtworks(
       {
-        ids: slicedArtworkIds,
+        ids: filteredArtworkIds,
         marketable: args.marketable,
         excludeDislikedArtworks: args.excludeDislikedArtworks,
       },
-      gravityArgs,
       context
     )
 
+    // Assumes the id source returned the full set (nwfy/Vortex). onlyAtAuction
+    // pre-paginates via its own loader, so it's page-1-correct only there —
+    // pre-existing behavior, unchanged here.
+    const recsCount = newForYouArtworks.length
+    const pageRecs = newForYouArtworks.slice(offset, offset + size)
+
+    // Connection is the virtual concat [...recs, ...backfill]; offset the
+    // backfill window past the recs so pages draw disjoint slices. This relies
+    // on recsCount staying stable across a client's page requests — if a rec
+    // goes stale mid-pagination the offset shifts and a boundary backfill item
+    // can repeat or skip, which is inherent to recommendation instability.
     const {
       artworks: backfillArtworks,
       totalCount: backfillArtworksTotalCount,
     } = await getBackfillArtworks({
       size: size || 0,
+      offset: Math.max(0, offset - recsCount),
       includeBackfill: args.includeBackfill,
       context,
       marketingCollectionId: args.backfillMarketingCollectionID,
@@ -89,13 +100,12 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       excludeDislikedArtworks: args.excludeDislikedArtworks,
     })
 
-    const artworks = uniqBy(
-      newForYouArtworks.concat(backfillArtworks),
-      "id"
-    ).slice(0, size)
+    const artworks = uniqBy(pageRecs.concat(backfillArtworks), "id").slice(
+      0,
+      size
+    )
 
-    const totalCount =
-      filteredArtworkIds.length + (backfillArtworksTotalCount ?? 0)
+    const totalCount = recsCount + (backfillArtworksTotalCount ?? 0)
 
     return {
       totalCount,
