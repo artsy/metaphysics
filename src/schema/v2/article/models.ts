@@ -163,7 +163,7 @@ export const ArticleFeatureSection = new GraphQLObjectType({
 
 export const ArticleHero = new GraphQLUnionType({
   name: "ArticleHero",
-  types: [ArticleFeatureSection],
+  types: [ArticleFeatureSection, ArticleImageSection],
 })
 
 export const ARTICLE_LAYOUTS = {
