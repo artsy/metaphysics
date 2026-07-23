@@ -3,7 +3,7 @@ import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { Request } from "../../node_modules/@types/express"
 import config from "config"
-import { GraphQLError, GraphQLFormattedError } from "graphql/error"
+import { GraphQLError } from "graphql/error"
 import { HTTPError } from "./HTTPError"
 import * as Sentry from "@sentry/node"
 
@@ -129,32 +129,34 @@ const reportErrorToSentry = (
   )
 }
 
-type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
+export type GraphQLErrorHandler = (topLevelError: GraphQLError) => GraphQLError
 
-export type GraphQLErrorHandler = (
-  topLevelError: GraphQLError
-) => WriteablePartial<GraphQLFormattedError>
-
+// Yoga (see `getResponseInitByRespectingErrors` in
+// `graphql-yoga/cjs/error.js`) decides the HTTP status code by inspecting
+// `error.extensions.http.status` on each *actual* `GraphQLError` instance in
+// the response, and falls back to 500 for any error that fails
+// `isOriginalGraphQLError` (i.e. isn't a real `GraphQLError`, or wraps a
+// non-`GraphQLError` `originalError`) while `data` hasn't been produced yet
+// (bad variables, parse errors, etc). So this formatter must:
+//   1. keep returning the same `GraphQLError` instance (never a plain
+//      object copy) so Yoga's classification keeps working, and
+//   2. write the resolved status to `extensions.http.status`, the key Yoga
+//      actually reads.
+//
+// `extensions.httpStatusCodes` is kept for backwards compatibility with any
+// existing consumers of the raw GraphQL response; it isn't read by Yoga.
 export const formattedGraphQLError = (
   topLevelError: GraphQLError,
   flattenedErrors?: ReadonlyArray<GraphQLError>
-) => {
-  const result: WriteablePartial<GraphQLFormattedError> = {
-    message: topLevelError.message,
-  }
-  if (topLevelError.locations) {
-    result.locations = topLevelError.locations
-  }
-
-  if (topLevelError.path) {
-    result.path = topLevelError.path
+): GraphQLError => {
+  const extensions: { [key: string]: any } = {
+    ...(topLevelError.extensions ?? {}),
   }
 
   const includeStackTrace = !config.PRODUCTION_ENV
   if (includeStackTrace) {
-    // TODO: Is the stack still being included in the response or should this
-    //       move to extensions?
-    ;(result as any).stack = topLevelError.stack?.split("\n")
+    // Never leak this in production: only exposed for local/staging debugging.
+    extensions.stack = topLevelError.stack?.split("\n")
   }
 
   const httpStatusCodes: number[] = []
@@ -168,10 +170,37 @@ export const formattedGraphQLError = (
     }
   })
   if (httpStatusCodes.length > 0) {
-    result.extensions = { httpStatusCodes }
+    extensions.httpStatusCodes = httpStatusCodes
+
+    // Only force a specific, meaningful status (404, 401, 403, other 4xx...)
+    // onto the response via `extensions.http.status` — the key Yoga reads.
+    // A plain 5xx from an upstream hiccup is deliberately left alone here:
+    // when the field is nullable and other data resolved fine, Yoga already
+    // returns 200 with the error in `errors` (graceful partial failure);
+    // forcing every upstream 500 onto the whole response's status would
+    // turn ordinary partial failures into hard 500s and make the very SLO
+    // problem this fix is for worse, not better. Yoga's own fallback still
+    // returns 500 when an error is genuinely unclassified and there's no
+    // `data` at all.
+    //
+    // Yoga only understands a single status per error; the first flattened
+    // error's status wins, matching the historical ordering of
+    // `httpStatusCodes`.
+    const primaryStatusCode = httpStatusCodes.find((code) => code < 500)
+    if (primaryStatusCode) {
+      extensions.http = { status: primaryStatusCode }
+    }
   }
 
-  return result
+  // `extensions` is typed `readonly` on `GraphQLError`, so mutate the object
+  // in place rather than reassigning the property — this preserves the
+  // `GraphQLError` instance itself (see the note above), which is the whole
+  // point of this function.
+  if (Object.keys(extensions).length > 0) {
+    Object.assign(topLevelError.extensions, extensions)
+  }
+
+  return topLevelError
 }
 
 export const graphqlErrorHandler = (
