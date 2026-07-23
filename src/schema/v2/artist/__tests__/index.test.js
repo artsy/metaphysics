@@ -1161,4 +1161,74 @@ describe("Artist type", () => {
       )
     })
   })
+
+  describe("notableArtworks", () => {
+    // A saved-artwork (or artist-index) record can outlive the artwork it
+    // points to, e.g. when the underlying artwork is later deleted or
+    // unlisted. Gravity then hands back a partial record that's missing
+    // `id` (the slug) — this reproduces that shape.
+    const partialArtwork = { _id: "artwork-partial" }
+    const completeArtwork = { id: "andy-warhol-skull", _id: "artwork-1" }
+
+    it("filters out partial/malformed artwork nodes instead of throwing", () => {
+      artist.cover_artwork_id = "cover-artwork-id"
+
+      context.artistArtworksLoader = jest
+        .fn()
+        .mockResolvedValue([completeArtwork, partialArtwork])
+      context.unauthenticatedLoaders = {
+        artworkLoader: jest
+          .fn()
+          .mockResolvedValue({ id: "cover-artwork", _id: "cover-artwork-id" }),
+      }
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            notableArtworks(size: 5) {
+              slug
+              internalID
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artist.notableArtworks).toEqual([
+          { slug: "cover-artwork", internalID: "cover-artwork-id" },
+          { slug: "andy-warhol-skull", internalID: "artwork-1" },
+        ])
+      })
+    })
+
+    it("drops the cover artwork entirely if it comes back partial", () => {
+      artist.cover_artwork_id = "cover-artwork-id"
+
+      context.artistArtworksLoader = jest
+        .fn()
+        .mockResolvedValue([completeArtwork])
+      context.unauthenticatedLoaders = {
+        artworkLoader: jest
+          .fn()
+          .mockResolvedValue({ _id: "cover-artwork-id" }), // missing `id`
+      }
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            notableArtworks(size: 5) {
+              slug
+              internalID
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artist.notableArtworks).toEqual([
+          { slug: "andy-warhol-skull", internalID: "artwork-1" },
+        ])
+      })
+    })
+  })
 })
