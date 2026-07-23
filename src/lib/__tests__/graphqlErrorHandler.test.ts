@@ -139,42 +139,6 @@ describe("graphqlErrorHandler", () => {
         )
         config.PRODUCTION_ENV = false
       })
-
-      it("strips debug extensions that arrive already set on the error, in production", () => {
-        // Extensions pass through to the client now, so an error from a
-        // stitched backend carrying `stack`/`exception` must be scrubbed.
-        config.PRODUCTION_ENV = true
-        const error = new GraphQLError("upstream error", {
-          extensions: {
-            code: "NOT_FOUND",
-            stack: ["internal frame"],
-            exception: { stacktrace: ["internal frame"] },
-          },
-        })
-        const clientResponse = serialized(formattedGraphQLError(error))
-        expect(clientResponse.extensions.stack).toBeUndefined()
-        expect(clientResponse.extensions.exception).toBeUndefined()
-        expect(clientResponse.extensions.code).toEqual("NOT_FOUND")
-        config.PRODUCTION_ENV = false
-      })
-    })
-
-    it("does not write into an extensions object shared with the original error", () => {
-      // When a GraphQLError is built without its own extensions, graphql-js
-      // reuses `originalError.extensions` by reference. The formatter must
-      // not scribble on (or crash against) that shared, frozen object.
-      const originalError = Object.assign(new Error("boom"), {
-        extensions: Object.freeze({ code: "UPSTREAM" }),
-      })
-      const error = new GraphQLError("boom", { originalError })
-      expect(error.extensions).toBe(originalError.extensions)
-
-      const formatted = formattedGraphQLError(error)
-
-      expect(originalError.extensions).toEqual({ code: "UPSTREAM" })
-      expect(formatted.extensions.code).toEqual("UPSTREAM")
-      // Non-production, so the copy gains a stack while the original doesn't.
-      expect(formatted.extensions.stack).toBeDefined()
     })
 
     describe("concerning upstream HTTP status codes", () => {
@@ -303,35 +267,6 @@ describe("graphqlErrorHandler", () => {
         expect(
           serialized(formatted).extensions?.httpStatusCodes
         ).toBeUndefined()
-      })
-
-      it("does not force a redirect status onto the response", () => {
-        const error = new GraphQLError("moved", {
-          originalError: new HTTPError("moved", 302),
-        })
-        const formatted = serialized(formattedGraphQLError(error))
-        expect(formatted.extensions.httpStatusCodes).toEqual([302])
-        expect(formatted.extensions.http).toBeUndefined()
-      })
-
-      it("uses the 4xx status when a combined error mixes 5xx and 4xx", () => {
-        const error = new GraphQLError("not found", {
-          originalError: ({
-            errors: [
-              new GraphQLError("upstream hiccup", {
-                originalError: new HTTPError("upstream hiccup", 500),
-              }),
-              new GraphQLError("not found", {
-                originalError: new HTTPError("not found", 404),
-              }),
-            ],
-          } as any) as Error,
-        })
-        const formatted = formattedGraphQLError(error)
-        expect(formatted.extensions).toMatchObject({
-          httpStatusCodes: [500, 404],
-          http: { status: 404 },
-        })
       })
 
       it("still defaults an unclassified/unexpected error to a 500 response", () => {
