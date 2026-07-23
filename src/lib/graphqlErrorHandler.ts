@@ -131,20 +131,10 @@ const reportErrorToSentry = (
 
 export type GraphQLErrorHandler = (topLevelError: GraphQLError) => GraphQLError
 
-// Yoga (see `getResponseInitByRespectingErrors` in
-// `graphql-yoga/cjs/error.js`) decides the HTTP status code by inspecting
-// `error.extensions.http.status` on each *actual* `GraphQLError` instance in
-// the response, and falls back to 500 for any error that fails
-// `isOriginalGraphQLError` (i.e. isn't a real `GraphQLError`, or wraps a
-// non-`GraphQLError` `originalError`) while `data` hasn't been produced yet
-// (bad variables, parse errors, etc). So this formatter must:
-//   1. keep returning the same `GraphQLError` instance (never a plain
-//      object copy) so Yoga's classification keeps working, and
-//   2. write the resolved status to `extensions.http.status`, the key Yoga
-//      actually reads.
-//
-// `extensions.httpStatusCodes` is kept for backwards compatibility with any
-// existing consumers of the raw GraphQL response; it isn't read by Yoga.
+// Must return the same `GraphQLError` instance (not a plain object copy) so
+// Yoga's expected/unexpected error classification keeps working, and must
+// write the status to `extensions.http.status`, the key Yoga reads (not
+// `extensions.httpStatusCodes`, kept below for existing consumers).
 export const formattedGraphQLError = (
   topLevelError: GraphQLError,
   flattenedErrors?: ReadonlyArray<GraphQLError>
@@ -155,15 +145,11 @@ export const formattedGraphQLError = (
 
   const includeStackTrace = !config.PRODUCTION_ENV
   if (includeStackTrace) {
-    // Never leak this in production: only exposed for local/staging debugging.
     extensions.stack = topLevelError.stack?.split("\n")
   }
 
   const httpStatusCodes: number[] = []
   ;(flattenedErrors || flattenErrors(topLevelError)).forEach((e) => {
-    // Check for server-side errors during stitching downstream.
-    // `e.originalError` is of `ServerError` type.
-    // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
     const statusCode = statusCodeForError(e)
     if (statusCode) {
       httpStatusCodes.push(statusCode)
@@ -172,30 +158,18 @@ export const formattedGraphQLError = (
   if (httpStatusCodes.length > 0) {
     extensions.httpStatusCodes = httpStatusCodes
 
-    // Only force a specific, meaningful status (404, 401, 403, other 4xx...)
-    // onto the response via `extensions.http.status` — the key Yoga reads.
-    // A plain 5xx from an upstream hiccup is deliberately left alone here:
-    // when the field is nullable and other data resolved fine, Yoga already
-    // returns 200 with the error in `errors` (graceful partial failure);
-    // forcing every upstream 500 onto the whole response's status would
-    // turn ordinary partial failures into hard 500s and make the very SLO
-    // problem this fix is for worse, not better. Yoga's own fallback still
-    // returns 500 when an error is genuinely unclassified and there's no
-    // `data` at all.
-    //
-    // Yoga only understands a single status per error; the first flattened
-    // error's status wins, matching the historical ordering of
-    // `httpStatusCodes`.
+    // A plain 5xx from an upstream hiccup is deliberately left off the
+    // response status: Yoga already returns 200 + errors when other data
+    // resolved, and forcing every upstream 500 onto the response would
+    // recreate the SLO problem this fix is for.
     const primaryStatusCode = httpStatusCodes.find((code) => code < 500)
     if (primaryStatusCode) {
       extensions.http = { status: primaryStatusCode }
     }
   }
 
-  // `extensions` is typed `readonly` on `GraphQLError`, so mutate the object
-  // in place rather than reassigning the property — this preserves the
-  // `GraphQLError` instance itself (see the note above), which is the whole
-  // point of this function.
+  // `extensions` is typed `readonly`, so mutate in place rather than
+  // reassign — this keeps the same `GraphQLError` instance.
   if (Object.keys(extensions).length > 0) {
     Object.assign(topLevelError.extensions, extensions)
   }

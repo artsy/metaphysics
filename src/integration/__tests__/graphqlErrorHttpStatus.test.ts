@@ -3,11 +3,8 @@ import fetch from "lib/apis/fetch"
 import config from "config"
 const mockFetch = fetch as jest.Mock
 
-// End-to-end coverage for PHIRE-3303: expected client-input/not-found errors
-// must come back as their real HTTP status, not a forced 500. These tests go
-// through the actual Yoga instance (`src/index.ts`), not just
-// `formattedGraphQLError` in isolation, so they also catch a regression in
-// how Yoga classifies/masks errors.
+// PHIRE-3303: end-to-end coverage through the real Yoga instance, so a
+// regression in Yoga's error classification/masking shows up here too.
 describe("GraphQL error responses carry the correct HTTP status", () => {
   const request = require("supertest")
   const app = require("../../index").default

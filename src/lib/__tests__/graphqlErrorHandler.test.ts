@@ -8,10 +8,8 @@ import { GraphQLError } from "graphql"
 import {
   getResponseInitByRespectingErrors,
   isOriginalGraphQLError,
-  // `graphql-yoga`'s package.json `exports` map doesn't expose this
-  // subpath publicly, so reach it via a relative file path instead of the
-  // package name (this is genuinely the exact logic Yoga uses to decide
-  // the HTTP status for a GraphQL response — see PHIRE-3303).
+  // Not exported via graphql-yoga's package.json `exports` map; this is the
+  // exact logic Yoga uses to pick the response status (PHIRE-3303).
 } from "../../../node_modules/graphql-yoga/cjs/error"
 import config from "config"
 
@@ -23,9 +21,7 @@ type ServerError = {
   statusCode: number
 }
 
-// What the client actually receives: `GraphQLError#toJSON()` only serializes
-// `message`/`locations`/`path`/`extensions`, dropping anything else stashed
-// on the instance.
+// `GraphQLError#toJSON()` only serializes message/locations/path/extensions.
 const serialized = (error: GraphQLError) => JSON.parse(JSON.stringify(error))
 
 describe("graphqlErrorHandler", () => {
