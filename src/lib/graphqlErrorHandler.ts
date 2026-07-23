@@ -131,39 +131,41 @@ const reportErrorToSentry = (
 
 export type GraphQLErrorHandler = (topLevelError: GraphQLError) => GraphQLError
 
-// Yoga (see `getResponseInitByRespectingErrors` in
-// `graphql-yoga/cjs/error.js`) decides the HTTP status code by inspecting
-// `error.extensions.http.status` on each *actual* `GraphQLError` instance in
-// the response, and falls back to 500 for any error that fails
-// `isOriginalGraphQLError` (i.e. isn't a real `GraphQLError`, or wraps a
-// non-`GraphQLError` `originalError`) while `data` hasn't been produced yet
-// (bad variables, parse errors, etc). So this formatter must:
-//   1. keep returning the same `GraphQLError` instance (never a plain
-//      object copy) so Yoga's classification keeps working, and
+// Yoga picks the response's HTTP status in `getResponseInitByRespectingErrors`
+// (`graphql-yoga/cjs/error.js`). It reads `extensions.http.status` from each
+// error, but only when the error is a real `GraphQLError` instance. An error
+// that fails `isOriginalGraphQLError` (not a `GraphQLError`, or wrapping a
+// non-`GraphQLError` original) forces a 500 whenever no `data` was produced,
+// which is what happens with bad variables and parse errors. So this
+// formatter must:
+//   1. return the same `GraphQLError` instance, never a plain object copy,
+//      so Yoga's classification keeps working, and
 //   2. write the resolved status to `extensions.http.status`, the key Yoga
-//      actually reads.
+//      reads.
 //
-// `extensions.httpStatusCodes` is kept for backwards compatibility with any
-// existing consumers of the raw GraphQL response; it isn't read by Yoga.
+// `extensions.httpStatusCodes` stays for consumers of the raw GraphQL
+// response; Yoga does not read it.
 export const formattedGraphQLError = (
   topLevelError: GraphQLError,
   flattenedErrors?: ReadonlyArray<GraphQLError>
 ): GraphQLError => {
   const extensions: { [key: string]: any } = {
-    ...(topLevelError.extensions ?? {}),
+    ...topLevelError.extensions,
   }
 
-  const includeStackTrace = !config.PRODUCTION_ENV
-  if (includeStackTrace) {
-    // Never leak this in production: only exposed for local/staging debugging.
+  if (config.PRODUCTION_ENV) {
+    // Extensions now flow through to the client, and an error from a
+    // stitched backend can arrive with debug details already in place.
+    // Strip the conventional debug keys so production clients never see
+    // them.
+    delete extensions.stack
+    delete extensions.exception
+  } else {
     extensions.stack = topLevelError.stack?.split("\n")
   }
 
   const httpStatusCodes: number[] = []
   ;(flattenedErrors || flattenErrors(topLevelError)).forEach((e) => {
-    // Check for server-side errors during stitching downstream.
-    // `e.originalError` is of `ServerError` type.
-    // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
     const statusCode = statusCodeForError(e)
     if (statusCode) {
       httpStatusCodes.push(statusCode)
@@ -172,33 +174,28 @@ export const formattedGraphQLError = (
   if (httpStatusCodes.length > 0) {
     extensions.httpStatusCodes = httpStatusCodes
 
-    // Only force a specific, meaningful status (404, 401, 403, other 4xx...)
-    // onto the response via `extensions.http.status` — the key Yoga reads.
-    // A plain 5xx from an upstream hiccup is deliberately left alone here:
-    // when the field is nullable and other data resolved fine, Yoga already
-    // returns 200 with the error in `errors` (graceful partial failure);
-    // forcing every upstream 500 onto the whole response's status would
-    // turn ordinary partial failures into hard 500s and make the very SLO
-    // problem this fix is for worse, not better. Yoga's own fallback still
-    // returns 500 when an error is genuinely unclassified and there's no
-    // `data` at all.
-    //
-    // Yoga only understands a single status per error; the first flattened
-    // error's status wins, matching the historical ordering of
-    // `httpStatusCodes`.
-    const primaryStatusCode = httpStatusCodes.find((code) => code < 500)
-    if (primaryStatusCode) {
-      extensions.http = { status: primaryStatusCode }
+    // Only a client error (4xx) becomes the response status. An upstream
+    // 5xx is left alone: when other fields resolved, Yoga returns 200 with
+    // the error under `errors` (partial failure), and it still returns 500
+    // when an unexpected error occurs before any `data` exists. Forcing
+    // every upstream 5xx onto the whole response would turn partial
+    // failures into hard 500s, the very problem this fixes. Non-error codes
+    // (2xx/3xx, which `statusCodeForError` can produce via its regex and
+    // stitched-response paths) must not become the response status either.
+    const clientErrorStatus = httpStatusCodes.find(
+      (code) => code >= 400 && code < 500
+    )
+    if (clientErrorStatus) {
+      extensions.http = { status: clientErrorStatus }
     }
   }
 
-  // `extensions` is typed `readonly` on `GraphQLError`, so mutate the object
-  // in place rather than reassigning the property — this preserves the
-  // `GraphQLError` instance itself (see the note above), which is the whole
-  // point of this function.
-  if (Object.keys(extensions).length > 0) {
-    Object.assign(topLevelError.extensions, extensions)
-  }
+  // `extensions` is readonly only in TypeScript's typings; the underlying
+  // property is plain and writable. Assign a fresh object rather than
+  // mutating in place: when a `GraphQLError` is constructed without its own
+  // extensions, graphql-js reuses `originalError.extensions` by reference,
+  // and that shared (possibly frozen) object must stay untouched.
+  ;(topLevelError as any).extensions = extensions
 
   return topLevelError
 }
