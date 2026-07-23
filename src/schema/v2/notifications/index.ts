@@ -157,16 +157,12 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
               id: slicedObjectIds,
             })
 
-            // Some referenced show ids may be stale (deleted) and come
-            // back missing from the batch response; skip those entries.
-            images = compact(shows).map(
-              ({ image_versions, image_url }: any) => {
-                return normalizeImageData({
-                  image_versions,
-                  image_url,
-                })
-              }
-            )
+            images = shows.map(({ image_versions, image_url }) => {
+              return normalizeImageData({
+                image_versions,
+                image_url,
+              })
+            })
             break
           }
           default: {

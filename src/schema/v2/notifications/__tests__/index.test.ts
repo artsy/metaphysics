@@ -355,29 +355,6 @@ describe("Notification#previewImages", () => {
       )
     ).rejects.toThrow("Internal Server Error")
   })
-
-  it("omits a show missing from the batch showsLoader response instead of throwing", async () => {
-    const showsLoader = jest.fn(() =>
-      Promise.resolve([
-        // The show for "missing-show" is absent, e.g. because it was
-        // deleted, leaving only the still-present show in the response.
-        {
-          image_url: "https://example.com/present-show.jpg:version",
-          image_versions: ["normalized"],
-        },
-      ])
-    )
-
-    const data = await runPreviewImagesQuery(
-      "PartnerShowOpenedActivity",
-      ["present-show", "missing-show"],
-      { showsLoader }
-    )
-
-    const node = data.notificationsConnection.edges[0].node
-    expect(node.previewImages).toHaveLength(1)
-    expect(node.previewImages[0].url).toContain("present-show")
-  })
 })
 
 const notificationFeedItem = {
