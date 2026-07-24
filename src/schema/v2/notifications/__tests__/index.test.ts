@@ -275,6 +275,88 @@ describe("notificationsConnection", () => {
   })
 })
 
+describe("Notification#previewImages", () => {
+  const query = gql`
+    {
+      notificationsConnection(first: 1) {
+        edges {
+          node {
+            previewImages {
+              url
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const runPreviewImagesQuery = (
+    activityType: string,
+    objectIds: string[],
+    loaders: Record<string, any>
+  ) => {
+    const notificationsFeedLoader = () =>
+      Promise.resolve({
+        feed: [
+          {
+            ...notificationFeedItem,
+            activity_type: activityType,
+            object_ids: objectIds,
+          },
+        ],
+        total: 1,
+        total_unread: 1,
+        total_unseen: 1,
+      })
+
+    return runAuthenticatedQuery(query, {
+      notificationsFeedLoader,
+      ...loaders,
+    })
+  }
+
+  it("omits a viewing room that has since been deleted (404) instead of throwing", async () => {
+    const viewingRoomLoader = jest.fn((id) => {
+      if (id === "missing-viewing-room") {
+        const error: any = new Error("Not Found")
+        error.statusCode = 404
+        return Promise.reject(error)
+      }
+
+      return Promise.resolve({
+        image_url: `https://example.com/${id}.jpg:version`,
+        image_versions: ["normalized"],
+      })
+    })
+
+    const data = await runPreviewImagesQuery(
+      "ViewingRoomPublishedActivity",
+      ["present-viewing-room", "missing-viewing-room"],
+      { viewingRoomLoader }
+    )
+
+    const node = data.notificationsConnection.edges[0].node
+    expect(node.previewImages).toHaveLength(1)
+    expect(node.previewImages[0].url).toContain("present-viewing-room")
+  })
+
+  it("re-throws a genuine (non-404) viewing room loader failure", async () => {
+    const viewingRoomLoader = jest.fn(() => {
+      const error: any = new Error("Internal Server Error")
+      error.statusCode = 500
+      return Promise.reject(error)
+    })
+
+    await expect(
+      runPreviewImagesQuery(
+        "ViewingRoomPublishedActivity",
+        ["some-viewing-room"],
+        { viewingRoomLoader }
+      )
+    ).rejects.toThrow("Internal Server Error")
+  })
+})
+
 const notificationFeedItem = {
   id: "6303f205b54941000843419a",
   actors: "Works by Damien Hirst",

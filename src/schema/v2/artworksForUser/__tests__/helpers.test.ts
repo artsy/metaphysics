@@ -1,10 +1,16 @@
-import config from "config"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { HTTPError } from "lib/HTTPError"
 import {
   getBackfillArtworks,
   getNewForYouArtworkIDs,
   getNewForYouArtworks,
 } from "../helpers"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => false),
+}))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 const mockLoaderFactory = (affinities) => {
   const edges = affinities.map((affinity) => {
@@ -60,11 +66,12 @@ describe("getNewForYouArtworkIDs", () => {
 
   describe("when the Gravity NWFY rail is enabled", () => {
     beforeEach(() => {
-      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
     })
 
     afterEach(() => {
-      ;(config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
     })
 
     it("sources IDs from the Gravity nwfy rail and skips Vortex", async () => {
@@ -125,7 +132,7 @@ describe("getNewForYouArtworkIDs", () => {
       ).rejects.toThrow("Internal Server Error")
     })
 
-    it("routes header-impersonated requests (Braze) to Gravity with a user_id", async () => {
+    it("keeps email-campaign requests (Braze, impersonated) on Vortex", async () => {
       const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
       const artworkRecommendationsLoader = jest.fn(async () => ({
         artwork_ids: ["imp-1", "imp-2"],
@@ -134,7 +141,7 @@ describe("getNewForYouArtworkIDs", () => {
         artworkRecommendationsLoader,
         xImpersonateUserID: "braze-user-id",
         authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -142,13 +149,9 @@ describe("getNewForYouArtworkIDs", () => {
         context
       )
 
-      expect(artworkRecommendationsLoader).toHaveBeenCalledWith({
-        rail: "nwfy",
-        size: 50,
-        user_id: "braze-user-id",
-      })
-      expect(vortexLoader).not.toHaveBeenCalled()
-      expect(artworkIds).toEqual(["imp-1", "imp-2"])
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexLoader).toHaveBeenCalled()
+      expect(artworkIds).toEqual(["banksy"])
     })
 
     it("routes explicit userId-arg requests to Gravity with a user_id", async () => {
@@ -172,8 +175,45 @@ describe("getNewForYouArtworkIDs", () => {
         size: 50,
         user_id: "app-user-id",
       })
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_nwfy-gravity",
+        {
+          userId: "app-user-id",
+        }
+      )
       expect(vortexLoader).not.toHaveBeenCalled()
       expect(artworkIds).toEqual(["app-1"])
+    })
+
+    it("buckets the feature flag on the authenticated user for logged-in requests", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["a1"],
+      }))
+      const context = {
+        artworkRecommendationsLoader,
+        userID: "logged-in-user",
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_nwfy-gravity",
+        {
+          userId: "logged-in-user",
+        }
+      )
+      expect(artworkRecommendationsLoader).toHaveBeenCalledWith({
+        rail: "nwfy",
+        size: 50,
+      })
+      expect(vortexLoader).not.toHaveBeenCalled()
+      expect(artworkIds).toEqual(["a1"])
     })
 
     it("stays on the auction path for onlyAtAuction requests", async () => {
