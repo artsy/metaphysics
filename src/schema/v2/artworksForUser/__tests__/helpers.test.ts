@@ -207,41 +207,31 @@ describe("getNewForYouArtworkIDs", () => {
 describe("getNewForYouArtworks", () => {
   it("returns an empty array with empty artwork ids", async () => {
     const artworkIds = []
-    const gravityArgs = {}
     const context = {} as any
 
-    const artworks = await getNewForYouArtworks(
-      { ids: artworkIds },
-      gravityArgs,
-      context
-    )
+    const artworks = await getNewForYouArtworks({ ids: artworkIds }, context)
     expect(artworks).toEqual([])
   })
 
   it("returns artworks for those artwork ids", async () => {
     const artworkIds = ["banksy"]
-    const gravityArgs = {}
     const mockArtworksLoader = jest.fn(() => [{}])
     const context = {
       artworksLoader: mockArtworksLoader,
     } as any
 
-    const artworks = await getNewForYouArtworks(
-      { ids: artworkIds },
-      gravityArgs,
-      context
-    )
+    const artworks = await getNewForYouArtworks({ ids: artworkIds }, context)
     expect(artworks.length).toEqual(1)
     expect(mockArtworksLoader).toBeCalledWith({
       availability: "for sale",
       exclude_disliked_artworks: false,
       ids: artworkIds,
+      size: artworkIds.length,
     })
   })
 
   it("passes exclude_disliked_artworks parameter to Gravity artworksLoader", async () => {
     const artworkIds = ["banksy"]
-    const gravityArgs = {}
     const mockArtworksLoader = jest.fn(() => [{}])
     const context = {
       artworksLoader: mockArtworksLoader,
@@ -249,13 +239,13 @@ describe("getNewForYouArtworks", () => {
 
     await getNewForYouArtworks(
       { ids: artworkIds, excludeDislikedArtworks: true },
-      gravityArgs,
       context
     )
     expect(mockArtworksLoader).toBeCalledWith({
       availability: "for sale",
       exclude_disliked_artworks: true,
       ids: artworkIds,
+      size: artworkIds.length,
     })
   })
 })

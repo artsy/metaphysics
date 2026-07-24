@@ -314,4 +314,170 @@ describe("artworksForUser", () => {
       expect(response.artworksForUser.totalCount).toBe(2)
     })
   })
+
+  // Loaders that model Gravity: the /artworks batch loader silently drops ids
+  // that don't hydrate, and honors the ids it's actually given.
+  const buildFaithfulContext = ({
+    recIds,
+    deadIds = [],
+    titles = {},
+    backfillItems = [],
+  }: {
+    recIds: string[]
+    deadIds?: string[]
+    titles?: Record<string, string>
+    backfillItems?: Array<{ id: string; title: string }>
+  }) => {
+    const artworksLoader = jest.fn(async ({ ids }: { ids: string[] }) =>
+      ids
+        .filter((id) => !deadIds.includes(id))
+        .map((id) => ({ id, _id: id, title: titles[id] || id }))
+    )
+
+    return {
+      artworkRecommendationsLoader: jest.fn(async () => ({
+        artwork_ids: recIds,
+      })),
+      artworksLoader,
+      setsLoader: jest.fn(async () => ({ body: [{ id: "backfill-set" }] })),
+      setItemsLoader: jest.fn(async () => ({
+        body: backfillItems.map((item) => ({ ...item, _id: item.id })),
+      })),
+      userID: "vortex-user-id",
+      authenticatedLoaders: { vortexGraphqlLoader: null },
+      unauthenticatedLoaders: { vortexGraphqlLoader: null },
+    } as any
+  }
+
+  const buildPaginatedQuery = ({
+    first,
+    after,
+  }: {
+    first: number
+    after?: string
+  }) => gql`
+    {
+      artworksForUser(
+        first: ${first}
+        ${after ? `after: "${after}"` : ""}
+        includeBackfill: true
+        userId: "abc123"
+        excludeDislikedArtworks: true
+      ) {
+        totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            internalID
+            title
+          }
+        }
+      }
+    }
+  `
+
+  describe("when a rec id in the page window does not hydrate", () => {
+    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
+    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+
+    it("does not splice backfill in before real recs a larger page would show", async () => {
+      // r2 is stale and won't hydrate; a first: 5 window [r0..r4] loses it,
+      // yet r5 is a real rec that should fill the slot before any backfill.
+      const context = buildFaithfulContext({
+        recIds: ["r0", "r1", "r2", "r3", "r4", "r5"],
+        deadIds: ["r2"],
+        titles: {
+          r0: "Rec 0",
+          r1: "Rec 1",
+          r3: "Rec 3",
+          r4: "Rec 4",
+          r5: "Rec 5",
+        },
+        backfillItems: [{ id: "b0", title: "BACKFILL" }],
+      })
+
+      const { artworksForUser } = await runAuthenticatedQuery(
+        buildPaginatedQuery({ first: 5 }),
+        context
+      )
+
+      const titles = extractNodes(artworksForUser).map((n: any) => n.title)
+
+      expect(titles).not.toContain("BACKFILL")
+      expect(titles).toEqual(["Rec 0", "Rec 1", "Rec 3", "Rec 4", "Rec 5"])
+    })
+  })
+
+  describe("when paginating across multiple pages with backfill", () => {
+    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
+    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+
+    it("never returns the same backfill artwork on more than one page", async () => {
+      // 1 real rec, 4 backfill items, paging by 2: page 2 must continue the
+      // backfill window instead of restarting it from the top.
+      const backfillItems = [
+        { id: "b0", title: "Backfill 0" },
+        { id: "b1", title: "Backfill 1" },
+        { id: "b2", title: "Backfill 2" },
+        { id: "b3", title: "Backfill 3" },
+      ]
+      const context = buildFaithfulContext({
+        recIds: ["r0"],
+        titles: { r0: "Rec 0" },
+        backfillItems,
+      })
+
+      const page1 = await runAuthenticatedQuery(
+        buildPaginatedQuery({ first: 2 }),
+        context
+      )
+      const page1Ids = extractNodes(page1.artworksForUser).map(
+        (n: any) => n.internalID
+      )
+
+      const page2 = await runAuthenticatedQuery(
+        buildPaginatedQuery({
+          first: 2,
+          after: page1.artworksForUser.pageInfo.endCursor,
+        }),
+        context
+      )
+      const page2Ids = extractNodes(page2.artworksForUser).map(
+        (n: any) => n.internalID
+      )
+
+      // Real rec first, then the backfill window advances by page size.
+      expect(page1Ids).toEqual(["r0", "b0"])
+      expect(page2Ids).toEqual(["b1", "b2"])
+    })
+  })
+
+  describe("totalCount when some rec ids do not hydrate", () => {
+    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
+    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+
+    it("counts surviving recs, not the raw recommendation ids", async () => {
+      // 3 recommended ids, 1 stale; 2 backfill items. totalCount must reflect
+      // the 2 recs that hydrate (+ backfill), not the 3 ids Gravity returned.
+      const context = buildFaithfulContext({
+        recIds: ["r0", "r1", "r2"],
+        deadIds: ["r1"],
+        titles: { r0: "Rec 0", r2: "Rec 2" },
+        backfillItems: [
+          { id: "b0", title: "Backfill 0" },
+          { id: "b1", title: "Backfill 1" },
+        ],
+      })
+
+      const { artworksForUser } = await runAuthenticatedQuery(
+        buildPaginatedQuery({ first: 10 }),
+        context
+      )
+
+      expect(artworksForUser.totalCount).toBe(4)
+    })
+  })
 })
