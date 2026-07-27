@@ -387,8 +387,14 @@ describe("artworksForUser", () => {
   `
 
   describe("when a rec id in the page window does not hydrate", () => {
-    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
-    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+    beforeEach(() => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+    })
+
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+    })
 
     it("does not splice backfill in before real recs a larger page would show", async () => {
       // r2 is stale and won't hydrate; a first: 5 window [r0..r4] loses it,
@@ -419,8 +425,14 @@ describe("artworksForUser", () => {
   })
 
   describe("when paginating across multiple pages with backfill", () => {
-    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
-    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+    beforeEach(() => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+    })
+
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+    })
 
     it("never returns the same backfill artwork on more than one page", async () => {
       // 1 real rec, 4 backfill items, paging by 2: page 2 must continue the
@@ -463,8 +475,14 @@ describe("artworksForUser", () => {
   })
 
   describe("totalCount when some rec ids do not hydrate", () => {
-    beforeEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = true))
-    afterEach(() => ((config as any).ENABLE_NEW_WORKS_FOR_YOU_GRAVITY = false))
+    beforeEach(() => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+    })
+
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+    })
 
     it("counts surviving recs, not the raw recommendation ids", async () => {
       // 3 recommended ids, 1 stale; 2 backfill items. totalCount must reflect
