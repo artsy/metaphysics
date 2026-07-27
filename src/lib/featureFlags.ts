@@ -13,6 +13,7 @@ const FEATURE_FLAGS_LIST = [
   "diamond_artwork-title-experiment",
   "onyx_artwork-recommendations-gravity",
   "onyx_artwork-recommendations-refresh-eigen",
+  "onyx_nwfy-gravity",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
