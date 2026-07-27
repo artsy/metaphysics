@@ -137,20 +137,18 @@ export const getNewForYouArtworks = async (
     marketable,
     excludeDislikedArtworks = false,
   }: { ids: string[]; marketable?: boolean; excludeDislikedArtworks?: boolean },
-  gravityArgs,
   context: ResolverContext
 ): Promise<any[]> => {
   if (ids.length === 0) return []
 
-  const { size, offset } = gravityArgs
   const { artworksLoader } = context
 
+  // Fetch the whole set; the resolver paginates the recs that actually hydrate.
   const artworkParams = {
     availability: "for sale",
     exclude_disliked_artworks: excludeDislikedArtworks,
     ids: ids,
-    offset,
-    size,
+    size: ids.length,
   }
 
   if (marketable) {
@@ -164,6 +162,7 @@ export const getNewForYouArtworks = async (
 
 export const getBackfillArtworks = async ({
   size,
+  offset = 0,
   includeBackfill,
   context,
   marketingCollectionId,
@@ -171,6 +170,7 @@ export const getBackfillArtworks = async ({
   excludeDislikedArtworks = false,
 }: {
   size: number
+  offset?: number
   includeBackfill: boolean
   context: ResolverContext
   marketingCollectionId?: string
@@ -202,6 +202,8 @@ export const getBackfillArtworks = async ({
       : filterArtworksUnauthenticatedLoader
 
   if (filterArtworksLoader && (onlyAtAuction || marketingCollectionId)) {
+    // Reports `hits.length` as the total, so not safely paginatable past page
+    // 1; offset is deliberately not threaded here (only the set path below).
     const { hits } = await filterArtworksLoader({
       exclude_disliked_artworks: excludeDislikedArtworks,
       size: size,
@@ -226,7 +228,7 @@ export const getBackfillArtworks = async ({
   })
 
   return {
-    artworks: (itemsBody || []).slice(0, size),
+    artworks: (itemsBody || []).slice(offset, offset + size),
     totalCount: itemsBody?.length,
   }
 }
