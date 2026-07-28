@@ -5,9 +5,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(() => false),
+  getExperimentVariant: jest.fn(() => ({ enabled: true, name: "variant" })),
 }))
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+
+const ELIGIBLE_USER_AGENT = "Artsy-Mobile/9.14.0"
 
 const buildQuery = (args: any = {}) => {
   const first = args.first || 10
@@ -54,6 +57,7 @@ const buildContext = (responses: any = {}) => {
     setsLoader: mockSetsLoader,
     setItemsLoader: mockSetItemsLoader,
     userID: "vortex-user-id",
+    userAgent: ELIGIBLE_USER_AGENT,
     authenticatedLoaders: {
       vortexGraphqlLoader: mockVortexGraphqlLoader,
     },
@@ -351,6 +355,7 @@ describe("artworksForUser", () => {
         body: backfillItems.map((item) => ({ ...item, _id: item.id })),
       })),
       userID: "vortex-user-id",
+      userAgent: ELIGIBLE_USER_AGENT,
       authenticatedLoaders: { vortexGraphqlLoader: null },
       unauthenticatedLoaders: { vortexGraphqlLoader: null },
     } as any

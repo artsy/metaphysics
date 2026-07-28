@@ -40,8 +40,8 @@ const isEligibleClient = (context: ResolverContext): boolean => {
 
   return (
     !!actualEigenVersion &&
-    isInRefreshExperiment(context) &&
-    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION)
+    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION) &&
+    isInRefreshExperiment(context)
   )
 }
 

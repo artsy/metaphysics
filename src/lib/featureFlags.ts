@@ -14,6 +14,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_artwork-recommendations-gravity",
   "onyx_artwork-recommendations-refresh-eigen",
   "onyx_nwfy-gravity",
+  "onyx_nwfy-refresh-eigen",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
