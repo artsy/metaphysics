@@ -1,28 +1,9 @@
 /* eslint-disable promise/always-return */
-import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-jest.mock("lib/featureFlags", () => ({
-  isFeatureFlagEnabled: jest.fn(() => false),
-  getExperimentVariant: jest.fn(() => ({ enabled: false, name: "control" })),
-}))
-
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
-const mockGetExperimentVariant = getExperimentVariant as jest.Mock
-
 describe("artworkRecommendations", () => {
-  afterEach(() => {
-    mockIsFeatureFlagEnabled.mockReset()
-    mockIsFeatureFlagEnabled.mockReturnValue(false)
-    mockGetExperimentVariant.mockReset()
-    mockGetExperimentVariant.mockReturnValue({
-      enabled: false,
-      name: "control",
-    })
-  })
-
   const query = gql`
     {
       me {
@@ -141,16 +122,56 @@ describe("artworkRecommendations", () => {
     expect(artworksLoader).not.toHaveBeenCalled()
   })
 
-  describe("when the WTYL Gravity recs flag is on", () => {
-    beforeEach(() => {
-      mockIsFeatureFlagEnabled.mockReturnValue(true)
-      // Eligible clients are bucketed into the refresh experiment by default.
-      mockGetExperimentVariant.mockReturnValue({
-        enabled: true,
-        name: "variant",
-      })
-    })
+  it("doesn't fetch artworks when the requested page is past the end", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+    const artworksLoader = jest.fn(async () => artworksResponse)
 
+    const context: any = {
+      artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
+    }
+
+    const {
+      me: { artworkRecommendations },
+    } = await runAuthenticatedQuery(
+      gql`
+        {
+          me {
+            artworkRecommendations(first: 2, page: 5) {
+              totalCount
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    // Vortex returns 4 IDs, but page 5 starts past the end, so there are no
+    // IDs to look up. Calling artworksLoader with an empty `ids` array would
+    // drop the param and return an unfiltered page of artworks from Gravity.
+    expect(artworksLoader).not.toHaveBeenCalled()
+
+    expect(artworkRecommendations).toMatchInlineSnapshot(`
+      {
+        "edges": [],
+        "totalCount": 4,
+      }
+    `)
+  })
+
+  describe("Gravity vs Vortex routing", () => {
     it("fetches IDs from the Gravity REST endpoint with the same response shape", async () => {
       const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
       const artworkRecommendationsLoader = jest.fn(async () => ({
@@ -291,66 +312,6 @@ describe("artworkRecommendations", () => {
       expect(vortexGraphqlLoader).toHaveBeenCalled()
     })
 
-    it("stays on the Vortex path when not bucketed into the refresh experiment", async () => {
-      mockGetExperimentVariant.mockReturnValue({
-        enabled: false,
-        name: "control",
-      })
-
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
-      const artworkRecommendationsLoader = jest.fn()
-      const artworksLoader = jest.fn(async () => artworksResponse)
-
-      const context: any = {
-        artworksLoader,
-        artworkRecommendationsLoader,
-        meLoader: () => Promise.resolve({}),
-        userID: "gravity-user-id",
-        userAgent: "Artsy-Mobile/9.11.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
-      }
-
-      await runAuthenticatedQuery(query, context)
-
-      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
-      expect(vortexGraphqlLoader).toHaveBeenCalled()
-    })
-
-    it("stays on the Vortex path for the control variant", async () => {
-      mockGetExperimentVariant.mockReturnValue({
-        enabled: true,
-        name: "control",
-      })
-
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
-      const artworkRecommendationsLoader = jest.fn()
-      const artworksLoader = jest.fn(async () => artworksResponse)
-
-      const context: any = {
-        artworksLoader,
-        artworkRecommendationsLoader,
-        meLoader: () => Promise.resolve({}),
-        userID: "gravity-user-id",
-        userAgent: "Artsy-Mobile/9.11.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
-      }
-
-      await runAuthenticatedQuery(query, context)
-
-      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
-      expect(vortexGraphqlLoader).toHaveBeenCalled()
-    })
-
     it("stays on the Vortex path for eigen versions below 9.11.0", async () => {
       const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
       const artworkRecommendationsLoader = jest.fn()
@@ -385,6 +346,7 @@ describe("artworkRecommendations", () => {
         artworksLoader,
         artworkRecommendationsLoader,
         meLoader: () => Promise.resolve({}),
+        userAgent: "Artsy-Mobile/9.11.0",
         xImpersonateUserID: "impersonated-user-id",
         authenticatedLoaders: {
           vortexGraphqlLoader,
