@@ -212,6 +212,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description: "When true, will only return exact keyword match",
   },
+  keywordTypoTolerance: {
+    type: GraphQLBoolean,
+    description:
+      "When true and a `keyword` search returns no results, retries once with typo tolerance. Ignored with `keywordMatchExact`.",
+  },
   locationCities: {
     type: new GraphQLList(GraphQLString),
   },
@@ -523,6 +528,7 @@ const convertFilterArgs = ({
   includeUnpublished,
   inquireableOnly,
   keywordMatchExact,
+  keywordTypoTolerance,
   locationCities,
   locationId,
   majorPeriods,
@@ -573,6 +579,7 @@ const convertFilterArgs = ({
     include_unpublished: includeUnpublished,
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
+    keyword_typo_tolerance: keywordTypoTolerance,
     location_cities: locationCities,
     location_id: locationId,
     major_periods: majorPeriods,
