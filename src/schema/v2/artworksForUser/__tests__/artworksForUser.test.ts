@@ -5,7 +5,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(() => false),
-  getExperimentVariant: jest.fn(() => ({ enabled: true, name: "variant" })),
+  getExperimentVariant: jest.fn(() => ({ enabled: true, name: "experiment" })),
 }))
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
