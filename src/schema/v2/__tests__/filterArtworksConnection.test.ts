@@ -1015,6 +1015,89 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("keyword typo tolerance", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    beforeEach(() => {
+      mockFilterArtworksLoader.mockClear()
+    })
+
+    it("passes keywordTypoTolerance: true to Gravity", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              keyword: "kaes-toys"
+              keywordTypoTolerance: true
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          keyword: "kaes-toys",
+          keyword_typo_tolerance: true,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass keywordTypoTolerance to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { keyword: "kaws", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          keyword_typo_tolerance: expect.anything(),
+        })
+      )
+    })
+  })
+
   describe("hybrid search tuning args", () => {
     const mockFilterArtworksLoader = jest.fn((_args) => {
       return Promise.resolve({

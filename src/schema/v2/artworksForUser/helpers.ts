@@ -1,6 +1,7 @@
 import gql from "lib/gql"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 
@@ -8,6 +9,29 @@ import { ResolverContext } from "types/graphql"
 const MAX_ARTWORKS = 50
 
 const NWFY_GRAVITY_RAIL_FLAG = "onyx_nwfy-gravity"
+
+// Gravity-backed NWFY rail ships in eigen 9.14.0+.
+const MINIMUM_EIGEN_VERSION = { major: 9, minor: 14, patch: 0 }
+
+const REFRESH_EIGEN_FLAG = "onyx_nwfy-refresh-eigen"
+
+const isInRefreshExperiment = (context: ResolverContext): boolean => {
+  const variant = getExperimentVariant(REFRESH_EIGEN_FLAG, {
+    userId: context.userID,
+  })
+
+  return !!variant && variant.enabled && variant.name === "experiment"
+}
+
+const isEligibleClient = (context: ResolverContext): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+
+  return (
+    !!actualEigenVersion &&
+    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION) &&
+    isInRefreshExperiment(context)
+  )
+}
 
 // Gravity-backed NWFY rail: source IDs from the live Gravity REST endpoint
 const getNewForYouArtworkIDsFromGravity = async (
@@ -83,6 +107,7 @@ export const getNewForYouArtworkIDs = async (
   const useGravity =
     !!artworkRecommendationsLoader &&
     !xImpersonateUserID &&
+    isEligibleClient(context) &&
     isFeatureFlagEnabled(NWFY_GRAVITY_RAIL_FLAG, {
       userId: userID || context.userID,
     })
