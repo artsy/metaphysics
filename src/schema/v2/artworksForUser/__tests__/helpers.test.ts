@@ -73,7 +73,7 @@ describe("getNewForYouArtworkIDs", () => {
       mockIsFeatureFlagEnabled.mockReturnValue(true)
       mockGetExperimentVariant.mockReturnValue({
         enabled: true,
-        name: "variant",
+        name: "experiment",
       })
     })
 

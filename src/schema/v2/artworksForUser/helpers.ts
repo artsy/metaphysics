@@ -20,7 +20,7 @@ const isInRefreshExperiment = (context: ResolverContext): boolean => {
     userId: context.userID,
   })
 
-  return !!variant && variant.enabled && variant.name === "variant"
+  return !!variant && variant.enabled && variant.name === "experiment"
 }
 
 const isEligibleClient = (context: ResolverContext): boolean => {
