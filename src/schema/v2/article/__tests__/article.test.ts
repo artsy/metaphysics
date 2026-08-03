@@ -159,6 +159,64 @@ describe("Article", () => {
     })
   })
 
+  describe("hero", () => {
+    const heroQuery = gql`
+      {
+        article(id: "example") {
+          hero {
+            __typename
+            ... on ArticleImageSection {
+              caption
+              layout
+            }
+            ... on ArticleFeatureSection {
+              title
+            }
+          }
+        }
+      }
+    `
+
+    it("resolves an image-type hero section without throwing", async () => {
+      const articleLoader = jest.fn(() =>
+        Promise.resolve({
+          hero_section: {
+            type: "image",
+            url: "https://example.com/image.jpg",
+            caption: "A caption",
+            layout: "overflow_fillwidth",
+          },
+        })
+      )
+
+      const { article } = await runQuery(heroQuery, { articleLoader })
+
+      expect(article.hero).toEqual({
+        __typename: "ArticleImageSection",
+        caption: "A caption",
+        layout: "overflow_fillwidth",
+      })
+    })
+
+    it("resolves a feature-type hero section", async () => {
+      const articleLoader = jest.fn(() =>
+        Promise.resolve({
+          hero_section: {
+            type: "basic",
+            title: "A feature title",
+          },
+        })
+      )
+
+      const { article } = await runQuery(heroQuery, { articleLoader })
+
+      expect(article.hero).toEqual({
+        __typename: "ArticleFeatureSection",
+        title: "A feature title",
+      })
+    })
+  })
+
   describe("outline", () => {
     const outlineQuery = gql`
       {
