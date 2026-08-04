@@ -1,6 +1,5 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
@@ -13,35 +12,17 @@ import { ResolverContext } from "types/graphql"
 // backend and is related to how we implement the Connection in this resolver.
 const MAX_ARTWORKS = 50
 
-// WTYL canary: route to the Gravity REST endpoint (live) instead of Vortex
-// GraphQL (legacy daily-batch). Flipped per-user in the Unleash admin UI.
-const GRAVITY_RAIL_FLAG = "onyx_artwork-recommendations-gravity"
-
-// Gravity-backed rail ships in eigen 9.11.0+. Checked before the flag so older
-// eigen builds (and non-eigen clients like web) never enter the rollout bucket.
+// WTYL: the Gravity-backed rail (the winning variant, now the default) ships in
+// eigen 9.11.0+, so older eigen builds and non-eigen clients (like web) stay on
+// the Vortex path.
 const MINIMUM_EIGEN_VERSION = { major: 9, minor: 11, patch: 0 }
-
-// Eigen refresh experiment: the front-end flag that controls the rollout split
-// and unlocks experiment tracking in eigen. Only clients bucketed into the
-// "variant" cohort (vs "control") get the Gravity rail, matching eigen's check
-// in useEnableLiveHomeRecommendations.
-const REFRESH_EIGEN_FLAG = "onyx_artwork-recommendations-refresh-eigen"
-
-const isInRefreshExperiment = (context: ResolverContext): boolean => {
-  const variant = getExperimentVariant(REFRESH_EIGEN_FLAG, {
-    userId: context.userID,
-  })
-
-  return !!variant && variant.enabled && variant.name === "variant"
-}
 
 const isEligibleClient = (context: ResolverContext): boolean => {
   const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
 
   return (
     !!actualEigenVersion &&
-    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION) &&
-    isInRefreshExperiment(context)
+    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION)
   )
 }
 
@@ -130,26 +111,23 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
     const userId = userID || xImpersonateUserID
 
     // The Gravity endpoint accepts a `user_id` param for trusted apps (see the
-    // NWFY rail in artworksForUser), but WTYL hasn't wired impersonation through
-    // it, so impersonated/app requests still stay on the Vortex path.
+    // NWFY rail in artworksForUser), but impersonation isn't wired through it,
+    // so impersonated/app requests still stay on the Vortex path.
     const useGravity =
       !!artworkRecommendationsLoader &&
       !xImpersonateUserID &&
-      isEligibleClient(context) &&
-      isFeatureFlagEnabled(GRAVITY_RAIL_FLAG, { userId })
+      isEligibleClient(context)
 
     // Fetching artwork IDs from the selected recommendation backend.
     const artworkIds = useGravity
       ? await getArtworkIdsFromGravity(context)
       : await getArtworkIdsFromVortex(userId, context)
 
-    const pageArtworkIDs = artworkIds?.slice(offset, offset + size)
+    const pageArtworkIDs = artworkIds.slice(offset, offset + size)
 
     // Fetching artwork details from Gravity
-    const artworks = artworkIds?.length
-      ? await artworksLoader({
-          ids: pageArtworkIDs,
-        })
+    const artworks = pageArtworkIDs.length
+      ? await artworksLoader({ ids: pageArtworkIDs })
       : []
 
     const totalCount = artworkIds.length
