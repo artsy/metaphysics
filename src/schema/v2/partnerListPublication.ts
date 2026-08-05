@@ -1,0 +1,97 @@
+import { camelCase } from "lodash"
+import { GraphQLBoolean, GraphQLObjectType, GraphQLString } from "graphql"
+import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "./object_identification"
+import { date } from "./fields/date"
+
+// Single source of truth for the 8 keys Gravity's
+// VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
+// stored). Both ArtworkFieldVisibilityType below (read) and
+// ArtworkFieldVisibilityInputType (write, in
+// publishPartnerListPublicationMutation) are generated from this list. Keep
+// it in sync with Gravity's PartnerListPublicationsEndpoint.
+export const ARTWORK_FIELD_VISIBILITY_KEYS = [
+  "artist_name",
+  "artwork_title",
+  "year",
+  "medium",
+  "dimensions",
+  "price",
+  "availability",
+  "edition_info",
+] as const
+
+// Gravity stores each value as either a real boolean or the literal string
+// "true"/"false" (an untyped Grape Hash param isn't coerced for nested keys —
+// see PartnerListPublicationArtwork#field_visible? on the Gravity side, which
+// casts the same way via ActiveModel::Type::Boolean). Plain JS truthiness
+// would treat the string "false" as visible, so cast explicitly here too.
+const castVisibility = (value: unknown): boolean | null => {
+  if (value === undefined || value === null) return null
+  if (typeof value === "boolean") return value
+  return String(value).toLowerCase() === "true"
+}
+
+export const ArtworkFieldVisibilityType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArtworkFieldVisibility",
+  fields: () =>
+    Object.fromEntries(
+      ARTWORK_FIELD_VISIBILITY_KEYS.map((key) => [
+        camelCase(key),
+        {
+          type: GraphQLBoolean,
+          resolve: (visibility: Record<string, unknown>) =>
+            castVisibility(visibility[key]),
+        },
+      ])
+    ),
+})
+
+export const PartnerListPublicationType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "PartnerListPublication",
+  fields: () => ({
+    ...InternalIDFields,
+    partnerListID: {
+      type: GraphQLString,
+      resolve: ({ partner_list_id }) => partner_list_id,
+    },
+    published: {
+      type: GraphQLBoolean,
+    },
+    publishedAt: date(({ published_at }) => published_at),
+    lastPublishedAt: date(({ last_published_at }) => last_published_at),
+    description: {
+      type: GraphQLString,
+    },
+    slug: {
+      type: GraphQLString,
+    },
+    href: {
+      type: GraphQLString,
+      description: "Public-facing path for this private viewing room.",
+      resolve: ({ slug }) => (slug ? `/private-viewing-room/${slug}` : null),
+    },
+    artworkFieldVisibility: {
+      type: ArtworkFieldVisibilityType,
+      description:
+        "Per-field visibility toggles for artworks in the room. Any key the gallery hasn't set is null.",
+      resolve: ({ artwork_field_visibility }) => artwork_field_visibility,
+    },
+    applyBrand: {
+      type: GraphQLBoolean,
+      resolve: ({ apply_brand }) => apply_brand,
+    },
+    passwordProtected: {
+      type: GraphQLBoolean,
+      resolve: ({ password_protected }) => password_protected,
+    },
+    createdAt: date(),
+    updatedAt: date(),
+  }),
+})

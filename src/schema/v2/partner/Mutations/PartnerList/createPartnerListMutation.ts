@@ -66,7 +66,8 @@ export const createPartnerListMutation = mutationWithClientMutationId<
     },
     listType: {
       type: PartnerListTypeEnum,
-      description: "The type of list (show, fair, or other).",
+      description:
+        "The type of list (show, fair, private_viewing_room, or other).",
     },
     startAt: {
       type: GraphQLString,
