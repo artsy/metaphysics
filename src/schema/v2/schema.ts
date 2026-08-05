@@ -322,6 +322,9 @@ import { bulkDeleteArtworksFromPartnerListMutation } from "./partner/Mutations/P
 import { moveArtworksBetweenPartnerListsMutation } from "./partner/Mutations/PartnerList/moveArtworksBetweenPartnerListsMutation"
 import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/PartnerList/updatePartnerListArtworkPositionMutation"
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
+import { publishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/publishPartnerListPublicationMutation"
+import { unpublishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/unpublishPartnerListPublicationMutation"
+import { authenticatePrivateViewingRoomMutation } from "./privateViewingRoom/mutations/authenticatePrivateViewingRoomMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
@@ -342,6 +345,7 @@ import { PrincipalFieldDirective } from "directives/principalField/principalFiel
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
 import { ViewingRoom } from "./viewingRoom"
+import { PrivateViewingRoom } from "./privateViewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
@@ -556,6 +560,7 @@ const rootFields = {
   partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
   phoneNumber: PhoneNumber,
   previewSavedSearch: PreviewSavedSearchField,
+  privateViewingRoom: PrivateViewingRoom,
   profile: Profile,
   profilesConnection: Profiles,
   purchase: Purchase,
@@ -684,6 +689,9 @@ export default new GraphQLSchema({
       deleteBrandKit: deleteBrandKitMutation,
       updateBrandKitLogo: updateBrandKitLogoMutation,
       deleteBrandKitLogo: deleteBrandKitLogoMutation,
+      publishPartnerListPublication: publishPartnerListPublicationMutation,
+      unpublishPartnerListPublication: unpublishPartnerListPublicationMutation,
+      authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
