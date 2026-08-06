@@ -5,7 +5,7 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
   const mutation = gql`
     mutation {
       authenticatePrivateViewingRoom(
-        input: { slug: "some-gallery-for-anna", password: "letmein" }
+        input: { slug: "some-gallery-for-anna", passcode: "letmein" }
       ) {
         privateViewingRoomOrError {
           __typename
@@ -27,14 +27,15 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
     }
   `
 
-  it("returns the room contents on a correct password", async () => {
+  it("returns the room contents on a correct passcode", async () => {
     const context = {
       // Gravity's authenticate endpoint reuses room_json as-is and never
-      // includes a `password_required` key (unlike the plain GET) — omitted
+      // includes a `passcode_required` key (unlike the plain GET) — omitted
       // here deliberately to match the real response shape. There's no
       // corresponding field to assert on either: PrivateViewingRoomContentsType
-      // (this mutation's success payload) doesn't expose passwordRequired at
-      // all, since reaching Success already means the password check passed.
+      // (this mutation's success payload) doesn't expose passcodeRequired at
+      // all, since reaching Success already means the passcode check passed.
+      // Gravity also never includes the plaintext passcode itself here.
       authenticatePrivateViewingRoomLoader: jest.fn().mockResolvedValue({
         gallery_name: "Isabel Croxatto Galeria",
         artworks: [{ artwork_id: "artwork-1" }],
@@ -45,7 +46,7 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
 
     expect(
       context.authenticatePrivateViewingRoomLoader
-    ).toHaveBeenCalledWith("some-gallery-for-anna", { password: "letmein" })
+    ).toHaveBeenCalledWith("some-gallery-for-anna", { passcode: "letmein" })
 
     expect(result).toEqual({
       authenticatePrivateViewingRoom: {
@@ -60,11 +61,11 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
     })
   })
 
-  it("returns a mutation error on an incorrect password", async () => {
+  it("returns a mutation error on an incorrect passcode", async () => {
     const context = {
       authenticatePrivateViewingRoomLoader: jest
         .fn()
-        .mockRejectedValue({ body: { error: "Incorrect Password" } }),
+        .mockRejectedValue({ body: { error: "Incorrect Passcode" } }),
     }
 
     const result = await runQuery(mutation, context)
@@ -74,7 +75,7 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
         privateViewingRoomOrError: {
           __typename: "AuthenticatePrivateViewingRoomFailure",
           mutationError: {
-            message: "Incorrect Password",
+            message: "Incorrect Passcode",
           },
         },
       },

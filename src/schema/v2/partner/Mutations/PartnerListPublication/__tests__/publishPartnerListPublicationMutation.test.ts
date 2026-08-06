@@ -20,7 +20,7 @@ describe("PublishPartnerListPublicationMutation", () => {
               published
               description
               applyBrand
-              passwordProtected
+              passcodeProtected
             }
           }
           ... on PublishPartnerListPublicationFailure {
@@ -41,7 +41,7 @@ describe("PublishPartnerListPublicationMutation", () => {
         published: true,
         description: "For Anna",
         apply_brand: true,
-        password_protected: false,
+        passcode_protected: false,
       }),
     }
 
@@ -68,7 +68,7 @@ describe("PublishPartnerListPublicationMutation", () => {
             published: true,
             description: "For Anna",
             applyBrand: true,
-            passwordProtected: false,
+            passcodeProtected: false,
           },
         },
       },
@@ -104,17 +104,18 @@ describe("PublishPartnerListPublicationMutation", () => {
     ).rejects.toThrow("You need to be signed in to perform this action")
   })
 
-  it("sets a password", async () => {
-    const withPassword = gql`
+  it("sets a passcode", async () => {
+    const withPasscode = gql`
       mutation {
         publishPartnerListPublication(
-          input: { partnerListID: "list-abc", password: "letmein" }
+          input: { partnerListID: "list-abc", passcode: "letmein" }
         ) {
           partnerListPublicationOrError {
             __typename
             ... on PublishPartnerListPublicationSuccess {
               partnerListPublication {
-                passwordProtected
+                passcodeProtected
+                passcode
               }
             }
           }
@@ -124,37 +125,42 @@ describe("PublishPartnerListPublicationMutation", () => {
     const context = {
       publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
         id: "pub-1",
-        password_protected: true,
+        passcode_protected: true,
+        passcode: "letmein",
       }),
     }
 
-    const result = await runAuthenticatedQuery(withPassword, context)
+    const result = await runAuthenticatedQuery(withPasscode, context)
 
     expect(
       context.publishPartnerListPublicationLoader
-    ).toHaveBeenCalledWith("list-abc", { password: "letmein" })
+    ).toHaveBeenCalledWith("list-abc", { passcode: "letmein" })
     expect(
       result.publishPartnerListPublication.partnerListPublicationOrError
-        .partnerListPublication.passwordProtected
+        .partnerListPublication.passcodeProtected
     ).toBe(true)
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication.passcode
+    ).toBe("letmein")
   })
 
-  it("passes an empty string through when clearing a password", async () => {
-    // Regression guard: `password: ""` must reach the loader as "" (not be
-    // dropped), since that's what signals "clear the password" — the query
+  it("passes an empty string through when clearing a passcode", async () => {
+    // Regression guard: `passcode: ""` must reach the loader as "" (not be
+    // dropped), since that's what signals "clear the passcode" — the query
     // string round trip further down in lib/apis/fetch.ts is what turns it
     // into a `null` on the wire, which is out of scope for this mutation to
     // guard against; this test only proves the mutation itself forwards it.
-    const clearPassword = gql`
+    const clearPasscode = gql`
       mutation {
         publishPartnerListPublication(
-          input: { partnerListID: "list-abc", password: "" }
+          input: { partnerListID: "list-abc", passcode: "" }
         ) {
           partnerListPublicationOrError {
             __typename
             ... on PublishPartnerListPublicationSuccess {
               partnerListPublication {
-                passwordProtected
+                passcodeProtected
               }
             }
           }
@@ -164,15 +170,15 @@ describe("PublishPartnerListPublicationMutation", () => {
     const context = {
       publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
         id: "pub-1",
-        password_protected: false,
+        passcode_protected: false,
       }),
     }
 
-    await runAuthenticatedQuery(clearPassword, context)
+    await runAuthenticatedQuery(clearPasscode, context)
 
     expect(
       context.publishPartnerListPublicationLoader
-    ).toHaveBeenCalledWith("list-abc", { password: "" })
+    ).toHaveBeenCalledWith("list-abc", { passcode: "" })
   })
 
   it("omits artwork_field_visibility entirely when not provided", async () => {

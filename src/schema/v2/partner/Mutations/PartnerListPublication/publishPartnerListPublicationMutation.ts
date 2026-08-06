@@ -33,7 +33,7 @@ const ArtworkFieldVisibilityInputType = new GraphQLInputObjectType({
 
 interface PublishPartnerListPublicationMutationInputProps {
   partnerListID: string
-  password?: string
+  passcode?: string
   description?: string
   applyBrand?: boolean
   artworkFieldVisibility?: Record<string, boolean>
@@ -79,10 +79,10 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the partner list to publish as a viewing room.",
     },
-    password: {
+    passcode: {
       type: GraphQLString,
       description:
-        "Password to gate the room. Pass an empty string to clear a previously set password.",
+        "Passcode to gate the room. Pass an empty string to clear a previously set passcode.",
     },
     description: {
       type: GraphQLString,
@@ -108,7 +108,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
   mutateAndGetPayload: async (
     {
       partnerListID,
-      password,
+      passcode,
       description,
       applyBrand,
       artworkFieldVisibility,
@@ -121,13 +121,13 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
 
     const gravityArgs: Record<string, unknown> = {}
 
-    // password: "" is intentional here, not a bug — it's how a client clears
-    // a previously-set password. The loader layer's query-string round trip
+    // passcode: "" is intentional here, not a bug — it's how a client clears
+    // a previously-set passcode. The loader layer's query-string round trip
     // (lib/apis/fetch.ts `constructUrlAndParams`) rewrites an empty string to
-    // `null` before it reaches Gravity, and Gravity's own `password=` setter
-    // treats `nil` (via `new_password.presence`) as "clear the digest" — so
-    // an empty string here and an explicit `null` arrive at the same place.
-    if (password !== undefined) gravityArgs.password = password
+    // `null` before it reaches Gravity, and Gravity's own `passcode=` setter
+    // treats `nil` (via `new_passcode.presence`) as "clear it" — so an empty
+    // string here and an explicit `null` arrive at the same place.
+    if (passcode !== undefined) gravityArgs.passcode = passcode
     if (description !== undefined) gravityArgs.description = description
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
     if (artworkFieldVisibility !== undefined) {

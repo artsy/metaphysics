@@ -22,7 +22,7 @@ describe("PrivateViewingRoomArtwork.price", () => {
   it("formats the pinned price as Money", async () => {
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
-        password_required: false,
+        passcode_required: false,
         artworks: [
           {
             artwork_id: "artwork-1",
@@ -50,7 +50,7 @@ describe("PrivateViewingRoomArtwork.price", () => {
   it("returns null price when there is no pinned price", async () => {
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
-        password_required: false,
+        passcode_required: false,
         artworks: [{ artwork_id: "artwork-1" }],
       }),
     }
@@ -63,7 +63,7 @@ describe("PrivateViewingRoomArtwork.price", () => {
   it("returns null price when there's a pinned price but no currency", async () => {
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
-        password_required: false,
+        passcode_required: false,
         artworks: [{ artwork_id: "artwork-1", price_cents: 500000 }],
       }),
     }
@@ -79,7 +79,7 @@ describe("PrivateViewingRoomArtwork.price", () => {
     // divided by 100, which is only correct for currencies like USD.
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
-        password_required: false,
+        passcode_required: false,
         artworks: [
           {
             artwork_id: "artwork-1",

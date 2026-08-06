@@ -5,7 +5,7 @@ describe("PrivateViewingRoom", () => {
   const query = gql`
     {
       privateViewingRoom(slug: "some-gallery-for-anna") {
-        passwordRequired
+        passcodeRequired
         galleryName
         description
         applyBrand
@@ -21,11 +21,11 @@ describe("PrivateViewingRoom", () => {
     }
   `
 
-  it("returns password_required: true without room contents", async () => {
+  it("returns passcode_required: true without room contents", async () => {
     const context = {
       privateViewingRoomLoader: jest
         .fn()
-        .mockResolvedValue({ password_required: true }),
+        .mockResolvedValue({ passcode_required: true }),
     }
 
     const result = await runQuery(query, context)
@@ -34,7 +34,7 @@ describe("PrivateViewingRoom", () => {
       "some-gallery-for-anna"
     )
     expect(result.privateViewingRoom).toEqual({
-      passwordRequired: true,
+      passcodeRequired: true,
       galleryName: null,
       description: null,
       applyBrand: null,
@@ -43,10 +43,10 @@ describe("PrivateViewingRoom", () => {
     })
   })
 
-  it("returns room contents when no password is required", async () => {
+  it("returns room contents when no passcode is required", async () => {
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
-        password_required: false,
+        passcode_required: false,
         gallery_name: "Isabel Croxatto Galeria",
         description: "For Anna",
         apply_brand: true,
@@ -64,7 +64,7 @@ describe("PrivateViewingRoom", () => {
     const result = await runQuery(query, context)
 
     expect(result.privateViewingRoom).toEqual({
-      passwordRequired: false,
+      passcodeRequired: false,
       galleryName: "Isabel Croxatto Galeria",
       description: "For Anna",
       applyBrand: true,
@@ -101,8 +101,8 @@ describe("PrivateViewingRoom", () => {
     await expect(runQuery(query, context)).rejects.toThrow()
   })
 
-  it("coerces a missing password_required to false rather than nulling the whole room", async () => {
-    // Regression guard: passwordRequired is Boolean!, so if Gravity's GET
+  it("coerces a missing passcode_required to false rather than nulling the whole room", async () => {
+    // Regression guard: passcodeRequired is Boolean!, so if Gravity's GET
     // ever omitted this key on either branch, a bare pass-through would
     // violate the non-null constraint and null out the entire
     // privateViewingRoom field — losing gallery name/artworks along with it.
@@ -115,7 +115,7 @@ describe("PrivateViewingRoom", () => {
 
     const result = await runQuery(query, context)
 
-    expect(result.privateViewingRoom.passwordRequired).toBe(false)
+    expect(result.privateViewingRoom.passcodeRequired).toBe(false)
     expect(result.privateViewingRoom.galleryName).toEqual(
       "Isabel Croxatto Galeria"
     )
