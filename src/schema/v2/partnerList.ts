@@ -15,12 +15,14 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "./fields/pagination"
+import { PartnerListPublicationType } from "./partnerListPublication"
 
 export const PartnerListTypeEnum = new GraphQLEnumType({
   name: "PartnerListTypeEnum",
   values: {
     SHOW: { value: "show" },
     FAIR: { value: "fair" },
+    PRIVATE_VIEWING_ROOM: { value: "private_viewing_room" },
     OTHER: { value: "other" },
   },
 })
@@ -99,6 +101,40 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
             args,
             resolveNode: (node) => node.artwork,
           })
+        },
+      },
+      publication: {
+        type: PartnerListPublicationType,
+        description:
+          "The private viewing room publication for this list, if one exists (only applies to private_viewing_room lists). Not resolvable through partnerListsConnection.",
+        resolve: async (
+          { id, _fromConnection },
+          _args,
+          { partnerListPublicationLoader }
+        ) => {
+          if (!partnerListPublicationLoader) return null
+
+          // A PartnerList has at most one publication (Gravity enforces
+          // uniqueness on partner_list_id), and there's no Gravity endpoint to
+          // fetch publications for many lists at once — resolving this per
+          // node in partnerListsConnection would be an N+1 (one Gravity call
+          // per row on every page). There's no product need to list
+          // publications in bulk, so instead of batching, this field simply
+          // refuses to resolve when reached that way — see
+          // Partner.partnerListsConnection's resolver, the only place
+          // `_fromConnection` gets set. Every other access path (the single
+          // `partnerList(id:)` lookup, and every PartnerList mutation
+          // payload) is unflagged and resolves normally — inverted this way
+          // on purpose so new single-list return sites don't have to
+          // remember to opt in.
+          if (_fromConnection) return null
+
+          try {
+            return await partnerListPublicationLoader(id)
+          } catch (error) {
+            if (error?.statusCode === 404) return null
+            throw error
+          }
         },
       },
     }
