@@ -26,7 +26,7 @@
 
 import { basename } from "path"
 import _ from "lodash"
-import { fromGlobalId, toGlobalId } from "graphql-relay"
+import { fromGlobalId as relayFromGlobalId, toGlobalId } from "graphql-relay"
 import {
   GraphQLNonNull,
   GraphQLID,
@@ -109,6 +109,14 @@ Object.defineProperty(SupportedTypes, "typeModules", {
 
 const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 
+// Some clients base64-encode global IDs with a MIME-style encoder that
+// wraps long output with an embedded newline. Valid base64 output never
+// contains line breaks as data which breaks the identification so we strip
+// them out before decoding them.
+export function fromGlobalId(globalID: string) {
+  return relayFromGlobalId(globalID.replace(/[\r\n]+/g, ""))
+}
+
 function argumentsForChild(type, id) {
   const isFilterType =
     type === "FilterArtworks" || type === "filterArtworksConnection"
@@ -161,13 +169,7 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
   resolve: (_root, { id: globalID }, context, rootValue) => {
-    // Some clients base64-encode global IDs with a MIME-style encoder that
-    // wraps long output with an embedded newline. Valid base64 output never
-    // contains line breaks as data which breaks the identification so we strip
-    // them out before decoding them.
-    const { type: typeName, id } = fromGlobalId(
-      globalID.replace(/[\r\n]+/g, "")
-    )
+    const { type: typeName, id } = fromGlobalId(globalID)
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {

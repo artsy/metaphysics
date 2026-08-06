@@ -1,6 +1,7 @@
 /* eslint-disable promise/always-return */
 import _ from "lodash"
 import { toGlobalId } from "graphql-relay"
+import { fromGlobalId } from "schema/v2/object_identification"
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Object Identification", () => {
@@ -401,8 +402,16 @@ describe("Object Identification", () => {
       })
     })
   })
-  describe("concerning malformed global ids", () => {
-    it("resolves a node whose global ID was wrapped by a MIME-style encoder", () => {
+  describe("fromGlobalId", () => {
+    it("decodes a global id unchanged", () => {
+      const globalId = toGlobalId("SaleArtwork", "foo-bar")
+      expect(fromGlobalId(globalId)).toEqual({
+        type: "SaleArtwork",
+        id: "foo-bar",
+      })
+    })
+
+    it("recovers a global id wrapped by a MIME-style base64 encoder", () => {
       const saleArtworkID = "0195ca6c-4f0a-7c1f-9b3e-1d2e3f4a5b6c"
       const globalId = toGlobalId("SaleArtwork", saleArtworkID)
       // Confirms this id is actually long enough to cross the 60-character
@@ -412,31 +421,17 @@ describe("Object Identification", () => {
       // Splice in a newline the way Ruby's `Base64.encode64` would.
       const wrapped = globalId.slice(0, 60) + "\n" + globalId.slice(60)
 
-      const context = {
-        saleArtworkRootLoader: sinon
-          .stub()
-          .withArgs(saleArtworkID)
-          .returns(Promise.resolve({ id: saleArtworkID, _id: saleArtworkID })),
-      }
-
-      const query = `
-        query($id: ID!) {
-          node(id: $id) {
-            __typename
-            ... on SaleArtwork {
-              internalID
-            }
-          }
-        }
-      `
-      return runQuery(query, context, { id: wrapped }).then((data) => {
-        expect(data).toEqual({
-          node: {
-            __typename: "SaleArtwork",
-            internalID: saleArtworkID,
-          },
-        })
+      expect(fromGlobalId(wrapped)).toEqual({
+        type: "SaleArtwork",
+        id: saleArtworkID,
       })
+    })
+
+    it("does not strip a stray space, so it fails instead of decoding to a wrong id", () => {
+      const globalId = toGlobalId("SaleArtwork", "foo-bar")
+      const corrupted = globalId.slice(0, 5) + " " + globalId.slice(5)
+
+      expect(fromGlobalId(corrupted)).toEqual({ type: "", id: "" })
     })
   })
 })
