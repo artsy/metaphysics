@@ -162,11 +162,17 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
   resolve: (_root, { id: globalID }, context, rootValue) => {
     // Some clients base64-encode global IDs with a MIME-style encoder that
-    // wraps long output with embedded newlines (e.g. Ruby's `Base64.encode64`
-    // for IDs long enough to cross the 60-character wrap threshold, such as
-    // UUID-shaped ids). Valid base64 output never contains whitespace as
-    // data, so stripping it before decoding recovers otherwise-malformed ids.
-    const { type: typeName, id } = fromGlobalId(globalID.replace(/\s+/g, ""))
+    // wraps long output with an embedded newline every 76 or 60 characters
+    // (e.g. Ruby's `Base64.encode64`, for IDs long enough to cross that
+    // threshold, such as UUID-shaped ids). Valid base64 output never
+    // contains line breaks as data, so stripping them before decoding
+    // recovers otherwise-malformed ids. Scoped to `\r`/`\n` specifically
+    // (not all whitespace) so a stray space — the classic signature of a
+    // `+` mangled by URL form-decoding — still fails loudly instead of
+    // silently decoding to a plausible-but-wrong id.
+    const { type: typeName, id } = fromGlobalId(
+      globalID.replace(/[\r\n]+/g, "")
+    )
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {

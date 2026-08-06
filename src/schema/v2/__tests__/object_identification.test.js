@@ -401,4 +401,42 @@ describe("Object Identification", () => {
       })
     })
   })
+  describe("concerning malformed global ids", () => {
+    it("resolves a node whose global ID was wrapped by a MIME-style encoder", () => {
+      const saleArtworkID = "0195ca6c-4f0a-7c1f-9b3e-1d2e3f4a5b6c"
+      const globalId = toGlobalId("SaleArtwork", saleArtworkID)
+      // Confirms this id is actually long enough to cross the 60-character
+      // MIME wrap boundary the test is exercising.
+      expect(globalId.length).toBeGreaterThan(60)
+
+      // Splice in a newline the way Ruby's `Base64.encode64` would.
+      const wrapped = globalId.slice(0, 60) + "\n" + globalId.slice(60)
+
+      const context = {
+        saleArtworkRootLoader: sinon
+          .stub()
+          .withArgs(saleArtworkID)
+          .returns(Promise.resolve({ id: saleArtworkID, _id: saleArtworkID })),
+      }
+
+      const query = `
+        query($id: ID!) {
+          node(id: $id) {
+            __typename
+            ... on SaleArtwork {
+              internalID
+            }
+          }
+        }
+      `
+      return runQuery(query, context, { id: wrapped }).then((data) => {
+        expect(data).toEqual({
+          node: {
+            __typename: "SaleArtwork",
+            internalID: saleArtworkID,
+          },
+        })
+      })
+    })
+  })
 })
