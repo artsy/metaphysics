@@ -532,11 +532,19 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               path: sale.id,
             }).then((body) => connectionFromArray(body, {}))
           } else {
+            // Always ask Gravity for an accurate total_count to drive the
+            // pagination math. The denormalized `sale.eligible_sale_artworks_count`
+            // fallback can drift above the number of artworks actually
+            // returnable (e.g. lots withdrawn/unpublished mid-sale), which pins
+            // `hasNextPage` to `true` past the real end of the connection and
+            // breaks cursor pagination for exhaustive consumers. When filtering
+            // by `ids` the count comes from the response body, so it's not needed.
             const gravityArgs = {
               size,
               offset,
               ids,
-              ...(status && { status, total_count: true }),
+              ...(!ids && { total_count: true }),
+              ...(status && { status }),
             }
             return saleArtworksLoader(sale.id, gravityArgs).then(
               ({ body, headers }) => {
