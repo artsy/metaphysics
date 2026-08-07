@@ -18,7 +18,12 @@ import { PrivateViewingRoomArtworkType } from "./privateViewingRoomArtwork"
 const contentFields = () => ({
   galleryName: {
     type: GraphQLString,
+    description:
+      "The gallery's name, omitted when the gallery has chosen to hide it (show_gallery_name).",
     resolve: ({ gallery_name }) => gallery_name,
+  },
+  heading: {
+    type: GraphQLString,
   },
   description: {
     type: GraphQLString,
