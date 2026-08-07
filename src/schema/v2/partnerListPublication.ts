@@ -87,9 +87,13 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: ({ apply_brand }) => apply_brand,
     },
-    passwordProtected: {
+    passcodeProtected: {
       type: GraphQLBoolean,
-      resolve: ({ password_protected }) => password_protected,
+      resolve: ({ passcode_protected }) => passcode_protected,
+    },
+    passcode: {
+      type: GraphQLString,
+      description: "Plain-text passcode gating this room, if one is set.",
     },
     createdAt: date(),
     updatedAt: date(),

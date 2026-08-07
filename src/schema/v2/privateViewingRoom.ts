@@ -12,7 +12,7 @@ import { PrivateViewingRoomArtworkType } from "./privateViewingRoomArtwork"
 
 // Shared by PrivateViewingRoomType and PrivateViewingRoomContentsType — every
 // field Gravity's room_json actually returns, regardless of whether it's
-// reached via the plain GET (password_required: false branch) or via a
+// reached via the plain GET (passcode_required: false branch) or via a
 // successful authenticate. Kept as one field map so the two types can't
 // silently drift apart.
 const contentFields = () => ({
@@ -41,10 +41,10 @@ const contentFields = () => ({
 // endpoint (PartnerListPublication + PartnerListPublicationArtwork). Distinct
 // from the pre-existing, unrelated `ViewingRoom` type/model in this schema.
 //
-// Used only by the `privateViewingRoom` query below, where `passwordRequired`
+// Used only by the `privateViewingRoom` query below, where `passcodeRequired`
 // has one clear meaning: whether the room is gated at all. Gravity's GET
-// endpoint returns just `{password_required: true}` (no content fields) when
-// it's gated and unauthenticated, or `{password_required: false, ...content}`
+// endpoint returns just `{passcode_required: true}` (no content fields) when
+// it's gated and unauthenticated, or `{passcode_required: false, ...content}`
 // otherwise — so every content field here is nullable.
 export const PrivateViewingRoomType = new GraphQLObjectType<
   any,
@@ -52,25 +52,27 @@ export const PrivateViewingRoomType = new GraphQLObjectType<
 >({
   name: "PrivateViewingRoom",
   fields: () => ({
-    passwordRequired: {
+    passcodeRequired: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: "Whether this room requires a password to view.",
+      description: "Whether this room requires a passcode to view.",
       // Coerced rather than passed straight through: if Gravity's GET ever
       // omitted this key on either branch, a bare `undefined` would violate
       // Boolean! and null the entire privateViewingRoom field — losing
       // gallery name/description/artworks along with it, not just this flag.
-      resolve: ({ password_required }) => !!password_required,
+      resolve: ({ passcode_required }) => !!passcode_required,
     },
     ...contentFields(),
   }),
 })
 
 // Returned by authenticatePrivateViewingRoomMutation on success. Deliberately
-// has no `passwordRequired` field: reaching a Success payload only ever
+// has no `passcodeRequired` field: reaching a Success payload only ever
 // happens after Gravity's authenticate endpoint has already confirmed the
-// password, so the field would always be `false` there and add nothing —
+// passcode, so the field would always be `false` there and add nothing —
 // see the PrivateViewingRoomType doc comment above for the query's version,
-// which does carry real signal.
+// which does carry real signal. Note this content is also never given a
+// plain-text passcode field — Gravity's authenticate endpoint doesn't return
+// one, matching the public/anonymous path's no-leak guarantee.
 export const PrivateViewingRoomContentsType = new GraphQLObjectType<
   any,
   ResolverContext
@@ -82,7 +84,7 @@ export const PrivateViewingRoomContentsType = new GraphQLObjectType<
 export const PrivateViewingRoom: GraphQLFieldConfig<void, ResolverContext> = {
   type: PrivateViewingRoomType,
   description:
-    "Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a password is required; artwork/gallery data is omitted until authenticated via the authenticatePrivateViewingRoom mutation.",
+    "Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; artwork/gallery data is omitted until authenticated via the authenticatePrivateViewingRoom mutation.",
   args: {
     slug: {
       type: new GraphQLNonNull(GraphQLString),

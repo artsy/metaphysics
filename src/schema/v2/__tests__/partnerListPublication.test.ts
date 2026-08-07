@@ -9,7 +9,8 @@ describe("PartnerList.publication", () => {
           publication {
             internalID
             published
-            passwordProtected
+            passcodeProtected
+            passcode
             slug
             href
             description
@@ -27,7 +28,8 @@ describe("PartnerList.publication", () => {
         id: "pub-1",
         partner_list_id: "list-abc",
         published: true,
-        password_protected: false,
+        passcode_protected: true,
+        passcode: "letmein",
         slug: "some-gallery-for-anna",
         description: "For Anna",
       }),
@@ -41,7 +43,8 @@ describe("PartnerList.publication", () => {
     expect(result.partner.partnerList.publication).toEqual({
       internalID: "pub-1",
       published: true,
-      passwordProtected: false,
+      passcodeProtected: true,
+      passcode: "letmein",
       slug: "some-gallery-for-anna",
       href: "/private-viewing-room/some-gallery-for-anna",
       description: "For Anna",

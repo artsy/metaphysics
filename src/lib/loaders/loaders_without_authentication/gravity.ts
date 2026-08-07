@@ -379,7 +379,7 @@ export default (opts) => {
     viewingRoomsLoader: gravityLoader("viewing_rooms", {}, { headers: true }),
 
     // Private Viewing Room Loaders
-    // Uncached: publish state (and password_required) can flip between requests,
+    // Uncached: publish state (and passcode_required) can flip between requests,
     // and gravityLoader would otherwise cache a stale 404/response shape.
     privateViewingRoomLoader: gravityUncachedLoader(
       (slug) => `private_viewing_room/${slug}`
