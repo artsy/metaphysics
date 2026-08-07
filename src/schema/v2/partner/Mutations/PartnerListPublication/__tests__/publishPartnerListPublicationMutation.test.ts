@@ -181,6 +181,105 @@ describe("PublishPartnerListPublicationMutation", () => {
     ).toHaveBeenCalledWith("list-abc", { passcode: "" })
   })
 
+  it("sets heading and showGalleryName", async () => {
+    const withHeadingAndGalleryName = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            heading: "For Anna"
+            showGalleryName: false
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                heading
+                showGalleryName
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        heading: "For Anna",
+        show_gallery_name: false,
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(
+      withHeadingAndGalleryName,
+      context
+    )
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        heading: "For Anna",
+        show_gallery_name: false,
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({ heading: "For Anna", showGalleryName: false })
+  })
+
+  it("accepts location and certificateOfAuthenticity visibility keys", async () => {
+    const withNewVisibilityKeys = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            artworkFieldVisibility: {
+              location: true
+              certificateOfAuthenticity: true
+            }
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                artworkFieldVisibility {
+                  location
+                  certificateOfAuthenticity
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        artwork_field_visibility: {
+          location: true,
+          certificate_of_authenticity: true,
+        },
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(withNewVisibilityKeys, context)
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        artwork_field_visibility: {
+          location: true,
+          certificate_of_authenticity: true,
+        },
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication.artworkFieldVisibility
+    ).toEqual({ location: true, certificateOfAuthenticity: true })
+  })
+
   it("omits artwork_field_visibility entirely when not provided", async () => {
     const withoutVisibility = gql`
       mutation {
