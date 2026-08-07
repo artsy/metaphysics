@@ -35,7 +35,9 @@ interface PublishPartnerListPublicationMutationInputProps {
   partnerListID: string
   passcode?: string
   description?: string
+  heading?: string
   applyBrand?: boolean
+  showGalleryName?: boolean
   artworkFieldVisibility?: Record<string, boolean>
 }
 
@@ -88,9 +90,17 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: GraphQLString,
       description: "Plain-text description shown on the published room.",
     },
+    heading: {
+      type: GraphQLString,
+      description: "Optional heading shown on the published room.",
+    },
     applyBrand: {
       type: GraphQLBoolean,
       description: "Whether to apply the gallery's brand kit to the room.",
+    },
+    showGalleryName: {
+      type: GraphQLBoolean,
+      description: "Whether to show the gallery name on the public page.",
     },
     artworkFieldVisibility: {
       type: ArtworkFieldVisibilityInputType,
@@ -110,7 +120,9 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       partnerListID,
       passcode,
       description,
+      heading,
       applyBrand,
+      showGalleryName,
       artworkFieldVisibility,
     },
     { publishPartnerListPublicationLoader }
@@ -129,7 +141,10 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     // string here and an explicit `null` arrive at the same place.
     if (passcode !== undefined) gravityArgs.passcode = passcode
     if (description !== undefined) gravityArgs.description = description
+    if (heading !== undefined) gravityArgs.heading = heading
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
+    if (showGalleryName !== undefined)
+      gravityArgs.show_gallery_name = showGalleryName
     if (artworkFieldVisibility !== undefined) {
       const visibility: Record<string, boolean> = {}
 

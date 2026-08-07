@@ -99,3 +99,58 @@ describe("PrivateViewingRoomArtwork.price", () => {
     )
   })
 })
+
+describe("PrivateViewingRoomArtwork.location / coa fields", () => {
+  const query = gql`
+    {
+      privateViewingRoom(slug: "some-gallery-for-anna") {
+        artworks {
+          location
+          coaByGallery
+          coaByAuthenticatingBody
+        }
+      }
+    }
+  `
+
+  it("returns the pinned location and coa fields when visible", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [
+          {
+            artwork_id: "artwork-1",
+            location: "Buffalo, Indiana, US, 38203",
+            coa_by_gallery: true,
+            coa_by_authenticating_body: false,
+          },
+        ],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.artworks[0]).toEqual({
+      location: "Buffalo, Indiana, US, 38203",
+      coaByGallery: true,
+      coaByAuthenticatingBody: false,
+    })
+  })
+
+  it("returns null for location/coa fields when not visible", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [{ artwork_id: "artwork-1" }],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.artworks[0]).toEqual({
+      location: null,
+      coaByGallery: null,
+      coaByAuthenticatingBody: null,
+    })
+  })
+})
