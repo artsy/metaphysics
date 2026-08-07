@@ -14,6 +14,8 @@ describe("PartnerList.publication", () => {
             slug
             href
             description
+            heading
+            showGalleryName
           }
         }
       }
@@ -32,6 +34,8 @@ describe("PartnerList.publication", () => {
         passcode: "letmein",
         slug: "some-gallery-for-anna",
         description: "For Anna",
+        heading: "For Anna",
+        show_gallery_name: false,
       }),
     }
 
@@ -48,6 +52,8 @@ describe("PartnerList.publication", () => {
       slug: "some-gallery-for-anna",
       href: "/private-viewing-room/some-gallery-for-anna",
       description: "For Anna",
+      heading: "For Anna",
+      showGalleryName: false,
     })
   })
 
