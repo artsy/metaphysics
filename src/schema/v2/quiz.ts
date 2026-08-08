@@ -5,7 +5,7 @@ import { quizArtworkConnection } from "./quizArtworkConnection"
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
 import { ArtworkType } from "./artwork"
-import { flatten, take } from "lodash"
+import { compact, flatten, take } from "lodash"
 
 export const QuizType = new GraphQLObjectType<any, ResolverContext>({
   name: "Quiz",
@@ -29,7 +29,12 @@ export const QuizType = new GraphQLObjectType<any, ResolverContext>({
             })
           )
 
-          return artworks.filter(({ is_saved }) => is_saved)
+          // A saved-artwork record can outlive the artwork it points to (e.g.
+          // the artwork was later deleted or unlisted). Gravity then hands
+          // back a partial record with `is_saved: true` but no `id` (the
+          // slug), which would crash the non-null `Artwork.slug` field.
+          // Drop those incomplete nodes rather than crash the whole list.
+          return artworks.filter(({ is_saved, id }) => is_saved && id)
         } catch (error) {
           return []
         }
@@ -53,7 +58,12 @@ export const QuizType = new GraphQLObjectType<any, ResolverContext>({
             })
           )
 
-          const savedArtworks = artworks.filter(({ is_saved }) => is_saved)
+          // See the comment in `savedArtworks` above: a saved-artwork record
+          // can point at an artwork that no longer exists, in which case
+          // Gravity returns a partial record with no `id` (slug).
+          const savedArtworks = artworks.filter(
+            ({ is_saved, id }) => is_saved && id
+          )
 
           if (savedArtworks.length === 0) return []
 
@@ -73,9 +83,17 @@ export const QuizType = new GraphQLObjectType<any, ResolverContext>({
           const filtered = recommendedArtworks
             .filter((artworks) => artworks.length > 0)
             .map((artworks) => {
-              if (savedArtworks.length === 1) return artworks
-              if (savedArtworks.length <= 3) return take(artworks, 8)
-              return take(artworks, 4)
+              // Related-artwork results can likewise include a stale entry
+              // for an artwork that's since been deleted/unlisted and is
+              // missing its `id` (slug). Drop those before slicing/nulling
+              // the non-null `Artwork.slug` field for the whole list.
+              const completeArtworks = compact(artworks).filter(
+                (artwork: any) => artwork.id
+              )
+
+              if (savedArtworks.length === 1) return completeArtworks
+              if (savedArtworks.length <= 3) return take(completeArtworks, 8)
+              return take(completeArtworks, 4)
             })
 
           return flatten(filtered)

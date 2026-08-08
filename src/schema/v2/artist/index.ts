@@ -918,14 +918,24 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             }).catch(() => []),
           ])
 
-          const remaining = iconicArtworks.filter(
-            (artwork) => artwork.id !== coverArtwork?.id
+          // Gravity can hand back a partial/malformed artwork document (e.g.
+          // for an artwork that's been deleted or unlisted but hasn't been
+          // removed from the artist's index yet). Such a document is missing
+          // `id` (the slug), which would otherwise crash the non-null
+          // `Artwork.slug` field and null out this entire list. Drop those
+          // incomplete nodes instead of crashing.
+          const validCoverArtwork =
+            coverArtwork && coverArtwork.id ? coverArtwork : null
+
+          const remaining = compact(iconicArtworks).filter(
+            (artwork: any) =>
+              artwork.id && artwork.id !== validCoverArtwork?.id
           )
 
-          return [...(coverArtwork ? [coverArtwork] : []), ...remaining].slice(
-            0,
-            size
-          )
+          return [
+            ...(validCoverArtwork ? [validCoverArtwork] : []),
+            ...remaining,
+          ].slice(0, size)
         },
       },
       first: { type: GraphQLString },
