@@ -7,6 +7,7 @@ describe("PrivateViewingRoom", () => {
       privateViewingRoom(slug: "some-gallery-for-anna") {
         passcodeRequired
         galleryName
+        heading
         description
         applyBrand
         brandKit {
@@ -36,6 +37,7 @@ describe("PrivateViewingRoom", () => {
     expect(result.privateViewingRoom).toEqual({
       passcodeRequired: true,
       galleryName: null,
+      heading: null,
       description: null,
       applyBrand: null,
       brandKit: null,
@@ -48,6 +50,7 @@ describe("PrivateViewingRoom", () => {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({
         passcode_required: false,
         gallery_name: "Isabel Croxatto Galeria",
+        heading: "For Anna",
         description: "For Anna",
         apply_brand: true,
         brand_kit: { text_color: "#111111" },
@@ -66,6 +69,7 @@ describe("PrivateViewingRoom", () => {
     expect(result.privateViewingRoom).toEqual({
       passcodeRequired: false,
       galleryName: "Isabel Croxatto Galeria",
+      heading: "For Anna",
       description: "For Anna",
       applyBrand: true,
       brandKit: { textColor: "#111111" },
@@ -77,6 +81,19 @@ describe("PrivateViewingRoom", () => {
         },
       ],
     })
+  })
+
+  it("omits galleryName when the gallery has chosen to hide it", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.galleryName).toBeNull()
   })
 
   it("returns null for an unknown or unpublished slug instead of a GraphQL error", async () => {

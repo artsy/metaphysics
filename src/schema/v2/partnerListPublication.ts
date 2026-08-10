@@ -4,7 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
 
-// Single source of truth for the 8 keys Gravity's
+// Single source of truth for the 10 keys Gravity's
 // VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
 // stored). Both ArtworkFieldVisibilityType below (read) and
 // ArtworkFieldVisibilityInputType (write, in
@@ -19,6 +19,8 @@ export const ARTWORK_FIELD_VISIBILITY_KEYS = [
   "price",
   "availability",
   "edition_info",
+  "location",
+  "certificate_of_authenticity",
 ] as const
 
 // Gravity stores each value as either a real boolean or the literal string
@@ -68,6 +70,15 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     lastPublishedAt: date(({ last_published_at }) => last_published_at),
     description: {
       type: GraphQLString,
+    },
+    heading: {
+      type: GraphQLString,
+      description: "Optional heading shown on the published room.",
+    },
+    showGalleryName: {
+      type: GraphQLBoolean,
+      description: "Whether the gallery name is shown on the public page.",
+      resolve: ({ show_gallery_name }) => show_gallery_name,
     },
     slug: {
       type: GraphQLString,

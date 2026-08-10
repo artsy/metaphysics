@@ -1,4 +1,9 @@
-import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   Money,
@@ -75,6 +80,19 @@ export const PrivateViewingRoomArtworkType = new GraphQLObjectType<
     editionInfo: {
       type: GraphQLString,
       resolve: ({ edition_info }) => edition_info,
+    },
+    location: {
+      type: GraphQLString,
+      description:
+        "The artwork's public location (city/state/country/postal code), pinned as of the room's last publish.",
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+      resolve: ({ coa_by_gallery }) => coa_by_gallery,
+    },
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+      resolve: ({ coa_by_authenticating_body }) => coa_by_authenticating_body,
     },
   }),
 })
