@@ -180,17 +180,47 @@ export const MarketingCollectionType = new GraphQLObjectType<
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
-    return {
-      ...MarketingCollectionFields,
-      relatedCollections: RelatedCollections,
-      linkedCollections: LinkedCollections,
-      artworksConnection: filterArtworksConnectionWithParams((args) => {
+
+    const artworksConnectionField = filterArtworksConnectionWithParams(
+      (args) => {
         const filterArtworksArgs = {
           marketing_collection_id: args.id,
           partner_id: args.partner_id,
         }
         return filterArtworksArgs
-      }),
+      }
+    )
+
+    return {
+      ...MarketingCollectionFields,
+      relatedCollections: RelatedCollections,
+      linkedCollections: LinkedCollections,
+      artworksConnection: {
+        ...artworksConnectionField,
+        resolve: async (root, args, ctx, info) => {
+          const connection = await artworksConnectionField.resolve(
+            root,
+            args,
+            ctx,
+            info
+          )
+          const notesByArtworkId = Object.fromEntries(
+            (
+              root.artwork_notes ?? []
+            ).map(
+              ({ artwork_id, note }: { artwork_id: string; note: string }) => [
+                artwork_id,
+                note,
+              ]
+            )
+          )
+          connection.edges = (connection.edges ?? []).map((edge) => ({
+            ...edge,
+            note: notesByArtworkId[edge.node._id] ?? null,
+          }))
+          return connection
+        },
+      },
     }
   },
 })
