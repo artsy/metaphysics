@@ -280,6 +280,74 @@ describe("PublishPartnerListPublicationMutation", () => {
     ).toEqual({ location: true, certificateOfAuthenticity: true })
   })
 
+  it("accepts the 4 per-edition-set visibility keys (Gravity PR #20428)", async () => {
+    const withEditionVisibilityKeys = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            artworkFieldVisibility: {
+              editionPrice: true
+              editionAvailability: true
+              editionSize: false
+              editionInventoryCount: false
+            }
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                artworkFieldVisibility {
+                  editionPrice
+                  editionAvailability
+                  editionSize
+                  editionInventoryCount
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        artwork_field_visibility: {
+          edition_price: true,
+          edition_availability: true,
+          edition_size: false,
+          edition_inventory_count: false,
+        },
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(
+      withEditionVisibilityKeys,
+      context
+    )
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        artwork_field_visibility: {
+          edition_price: true,
+          edition_availability: true,
+          edition_size: false,
+          edition_inventory_count: false,
+        },
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication.artworkFieldVisibility
+    ).toEqual({
+      editionPrice: true,
+      editionAvailability: true,
+      editionSize: false,
+      editionInventoryCount: false,
+    })
+  })
+
   it("omits artwork_field_visibility entirely when not provided", async () => {
     const withoutVisibility = gql`
       mutation {

@@ -4,12 +4,18 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
 
-// Single source of truth for the 10 keys Gravity's
+// Single source of truth for the 13 keys Gravity's
 // VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
 // stored). Both ArtworkFieldVisibilityType below (read) and
 // ArtworkFieldVisibilityInputType (write, in
 // publishPartnerListPublicationMutation) are generated from this list. Keep
 // it in sync with Gravity's PartnerListPublicationsEndpoint.
+//
+// `edition_info` (Gravity PR #20428) was replaced by 4 per-edition-set toggles
+// — edition_price, edition_availability, edition_size, edition_inventory_count
+// — since edition_info is no longer a single display string but an array of
+// per-edition-set snapshots, each gated independently. See
+// PrivateViewingRoomArtworkType's editionInfo field for the read-side shape.
 export const ARTWORK_FIELD_VISIBILITY_KEYS = [
   "artist_name",
   "artwork_title",
@@ -18,9 +24,12 @@ export const ARTWORK_FIELD_VISIBILITY_KEYS = [
   "dimensions",
   "price",
   "availability",
-  "edition_info",
   "location",
   "certificate_of_authenticity",
+  "edition_price",
+  "edition_availability",
+  "edition_size",
+  "edition_inventory_count",
 ] as const
 
 // Gravity stores each value as either a real boolean or the literal string
