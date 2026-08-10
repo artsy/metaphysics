@@ -100,6 +100,136 @@ describe("PrivateViewingRoomArtwork.price", () => {
   })
 })
 
+describe("PrivateViewingRoomArtwork.editionInfo", () => {
+  const query = gql`
+    {
+      privateViewingRoom(slug: "some-gallery-for-anna") {
+        artworks {
+          editionInfo {
+            editionSetID
+            priceCents
+            priceCurrency
+            price {
+              minor
+              major
+              currencyCode
+              display
+            }
+            availability
+            editionSize
+            inventoryCount
+          }
+        }
+      }
+    }
+  `
+
+  it("returns one entry per edition set, each with its own pinned data", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [
+          {
+            artwork_id: "artwork-1",
+            edition_info: [
+              {
+                edition_set_id: "edition-set-a",
+                price_cents: 100000,
+                price_currency: "USD",
+                availability: "for sale",
+                edition_size: "10",
+                inventory_count: 3,
+              },
+              {
+                edition_set_id: "edition-set-b",
+                price_cents: 200000,
+                price_currency: "USD",
+                availability: "sold",
+                edition_size: "25",
+                inventory_count: 7,
+              },
+            ],
+          },
+        ],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.artworks[0].editionInfo).toEqual([
+      {
+        editionSetID: "edition-set-a",
+        priceCents: 100000,
+        priceCurrency: "USD",
+        price: {
+          minor: 100000,
+          major: 1000,
+          currencyCode: "USD",
+          display: "US$1,000",
+        },
+        availability: "for sale",
+        editionSize: "10",
+        inventoryCount: 3,
+      },
+      {
+        editionSetID: "edition-set-b",
+        priceCents: 200000,
+        priceCurrency: "USD",
+        price: {
+          minor: 200000,
+          major: 2000,
+          currencyCode: "USD",
+          display: "US$2,000",
+        },
+        availability: "sold",
+        editionSize: "25",
+        inventoryCount: 7,
+      },
+    ])
+  })
+
+  it("returns an empty list when the artwork has no edition sets", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [{ artwork_id: "artwork-1", edition_info: [] }],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.artworks[0].editionInfo).toEqual([])
+  })
+
+  it("returns null price/availability/size/inventory on an entry when those sub-fields aren't visible, but keeps editionSetID", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: false,
+        artworks: [
+          {
+            artwork_id: "artwork-1",
+            edition_info: [{ edition_set_id: "edition-set-a" }],
+          },
+        ],
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom.artworks[0].editionInfo).toEqual([
+      {
+        editionSetID: "edition-set-a",
+        priceCents: null,
+        priceCurrency: null,
+        price: null,
+        availability: null,
+        editionSize: null,
+        inventoryCount: null,
+      },
+    ])
+  })
+})
+
 describe("PrivateViewingRoomArtwork.location / coa fields", () => {
   const query = gql`
     {
