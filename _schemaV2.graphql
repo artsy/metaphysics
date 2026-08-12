@@ -30468,6 +30468,11 @@ type PartnerListPublication {
   Per-field visibility toggles for artworks in the room. Any key the gallery hasn't set is null.
   """
   artworkFieldVisibility: ArtworkFieldVisibility
+
+  """
+  Number of artworks currently snapshotted into this publication.
+  """
+  artworksCount: Int!
   createdAt(
     format: String
 

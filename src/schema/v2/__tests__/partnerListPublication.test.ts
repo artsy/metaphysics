@@ -16,6 +16,7 @@ describe("PartnerList.publication", () => {
             description
             heading
             showGalleryName
+            artworksCount
           }
         }
       }
@@ -36,6 +37,7 @@ describe("PartnerList.publication", () => {
         description: "For Anna",
         heading: "For Anna",
         show_gallery_name: false,
+        artworks_count: 3,
       }),
     }
 
@@ -54,6 +56,7 @@ describe("PartnerList.publication", () => {
       description: "For Anna",
       heading: "For Anna",
       showGalleryName: false,
+      artworksCount: 3,
     })
   })
 
