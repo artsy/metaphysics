@@ -1,5 +1,11 @@
 import { camelCase } from "lodash"
-import { GraphQLBoolean, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
@@ -88,6 +94,12 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLBoolean,
       description: "Whether the gallery name is shown on the public page.",
       resolve: ({ show_gallery_name }) => show_gallery_name,
+    },
+    artworksCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        "Number of artworks currently snapshotted into this publication.",
+      resolve: ({ artworks_count }) => artworks_count,
     },
     slug: {
       type: GraphQLString,
