@@ -655,10 +655,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       coverArtwork: {
         type: ArtworkType,
         resolve: async (
-          { id, cover_artwork_id },
+          artist,
           _options,
           { artistArtworksLoader, unauthenticatedLoaders: { artworkLoader } }
         ) => {
+          const { id, cover_artwork_id, _coverArtwork } = artist
+
+          // Resolvers that return many artists at once (see searchDropdown)
+          // fetch cover artworks in a single batched call and stash the result
+          // here, since resolving this field per artist means one Gravity call
+          // per node. Absent that, fall through to the single-artist path.
+          if (_coverArtwork !== undefined) return _coverArtwork
+
           const staticArtworkID = `${id}-coverArtwork`
 
           if (cover_artwork_id) {
