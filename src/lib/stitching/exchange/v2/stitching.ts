@@ -13,6 +13,7 @@ import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 const orderTotals = [
   "itemsTotal",
@@ -935,7 +936,13 @@ export const exchangeStitchingEnvironment = ({
 
             const { orderOrError } = submitOrderWithOffer
 
+            const inquiryCreationHandledByGravity = isFeatureFlagEnabled(
+              "topaz_remove-inquiry-creation-from-order-mutation",
+              { userId: context.userID }
+            )
+
             if (
+              inquiryCreationHandledByGravity ||
               orderOrError.error ||
               !orderOrError.order ||
               orderOrError.order.source === "inquiry" ||
