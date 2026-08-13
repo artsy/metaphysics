@@ -298,6 +298,68 @@ describe("Sale type", () => {
       expect(data).toMatchSnapshot()
     })
 
+    it("requests an accurate total_count from gravity", async () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            saleArtworksConnection(first: 10) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+      const saleArtworksLoaderMock = jest.fn().mockResolvedValue({
+        body: fill(Array(10), { id: "some-id" }),
+        headers: {},
+      })
+
+      await runAuthenticatedQuery(query, {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: saleArtworksLoaderMock,
+      })
+
+      expect(saleArtworksLoaderMock.mock.calls[0][1].total_count).toBe(true)
+    })
+
+    it("computes hasNextPage from the returnable count, not the stale eligible counter, at the tail", async () => {
+      // eligible_sale_artworks_count is stale/inflated (200) while gravity
+      // reports the true returnable count via x-total-count (199). Paging past
+      // the last artwork must return hasNextPage: false rather than looping.
+      sale.eligible_sale_artworks_count = 200
+      const after = Buffer.from("arrayconnection:198").toString("base64")
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            saleArtworksConnection(first: 100, after: "${after}") {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: jest.fn().mockResolvedValue({
+          body: [],
+          headers: { "x-total-count": "199" },
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+      expect(data.sale.saleArtworksConnection.edges).toEqual([])
+      expect(data.sale.saleArtworksConnection.pageInfo.hasNextPage).toBe(false)
+    })
+
     it("accepts the internalIDs argument", async () => {
       const query = `
         {

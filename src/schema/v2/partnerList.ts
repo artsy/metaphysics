@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLInt,
   GraphQLNonNull,
@@ -74,6 +75,25 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
       distributedAt: date(({ distributed_at }) => distributed_at),
       createdAt: date(),
       updatedAt: date(),
+      // published/passcodeProtected read from the `partner_list_publication`
+      // key Gravity inlines on every PartnerList response (index, show,
+      // mutation payloads) — unlike `publication` below, this never issues a
+      // separate `partner_list/:id/publication` call, so it's safe to resolve
+      // per node inside partnerListsConnection with no N+1.
+      published: {
+        type: GraphQLBoolean,
+        description:
+          "Whether this list's private viewing room publication is live. Null if no publication exists yet.",
+        resolve: ({ partner_list_publication }) =>
+          partner_list_publication?.published ?? null,
+      },
+      passcodeProtected: {
+        type: GraphQLBoolean,
+        description:
+          "Whether this list's private viewing room publication is gated by a passcode. Null if no publication exists yet.",
+        resolve: ({ partner_list_publication }) =>
+          partner_list_publication?.passcode_protected ?? null,
+      },
       artworksConnection: {
         type: PartnerListArtworkConnection.connectionType,
         args: pageable({}),

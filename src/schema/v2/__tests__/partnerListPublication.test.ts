@@ -16,6 +16,7 @@ describe("PartnerList.publication", () => {
             description
             heading
             showGalleryName
+            artworksCount
           }
         }
       }
@@ -36,6 +37,7 @@ describe("PartnerList.publication", () => {
         description: "For Anna",
         heading: "For Anna",
         show_gallery_name: false,
+        artworks_count: 3,
       }),
     }
 
@@ -54,6 +56,7 @@ describe("PartnerList.publication", () => {
       description: "For Anna",
       heading: "For Anna",
       showGalleryName: false,
+      artworksCount: 3,
     })
   })
 
@@ -164,5 +167,96 @@ describe("PartnerList.publication", () => {
     expect(
       result.updatePartnerList.partnerListOrError.partnerList.publication
     ).toEqual({ slug: "some-gallery-for-anna" })
+  })
+})
+
+describe("PartnerList.published / PartnerList.passcodeProtected", () => {
+  it("reads inline from partner_list_publication on partnerListsConnection, with no per-node Gravity call", async () => {
+    const query = gql`
+      {
+        partner(id: "gallery-1") {
+          partnerListsConnection(first: 2) {
+            edges {
+              node {
+                internalID
+                published
+                passcodeProtected
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListsLoader: jest.fn().mockResolvedValue({
+        body: [
+          {
+            id: "list-published",
+            partner_list_publication: {
+              published: true,
+              passcode_protected: false,
+            },
+          },
+          { id: "list-unpublished", partner_list_publication: null },
+        ],
+        headers: { "x-total-count": "2" },
+      }),
+      // Batched inline on the index response — must not trigger a
+      // per-node lookup the way PartnerList.publication does.
+      partnerListPublicationLoader: jest
+        .fn()
+        .mockRejectedValue(new Error("should not be called")),
+    }
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(context.partnerListPublicationLoader).not.toHaveBeenCalled()
+    expect(
+      result.partner.partnerListsConnection.edges.map((edge) => edge.node)
+    ).toEqual([
+      {
+        internalID: "list-published",
+        published: true,
+        passcodeProtected: false,
+      },
+      {
+        internalID: "list-unpublished",
+        published: null,
+        passcodeProtected: null,
+      },
+    ])
+  })
+
+  it("also resolves on a single partnerList lookup, from the same inline key", async () => {
+    const query = gql`
+      {
+        partner(id: "gallery-1") {
+          partnerList(id: "list-abc") {
+            published
+            passcodeProtected
+          }
+        }
+      }
+    `
+
+    const context = {
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListLoader: jest.fn().mockResolvedValue({
+        id: "list-abc",
+        partner_list_publication: {
+          published: false,
+          passcode_protected: true,
+        },
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result.partner.partnerList).toEqual({
+      published: false,
+      passcodeProtected: true,
+    })
   })
 })
