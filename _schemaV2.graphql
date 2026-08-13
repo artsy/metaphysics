@@ -1030,59 +1030,6 @@ type AnalyticsArtwork {
 }
 
 """
-Artwork Recommendation
-"""
-type AnalyticsArtworkRecommendation {
-  """
-  Artwork ID
-  """
-  artworkId: ID!
-
-  """
-  Calculated score
-  """
-  score: Float!
-}
-
-"""
-The connection type for ArtworkRecommendation.
-"""
-type AnalyticsArtworkRecommendationConnection {
-  """
-  A list of edges.
-  """
-  edges: [AnalyticsArtworkRecommendationEdge]
-
-  """
-  A list of nodes.
-  """
-  nodes: [AnalyticsArtworkRecommendation]
-  pageCursors: PageCursors
-
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: AnalyticsPageInfo!
-  totalCount: Int
-  totalPages: Int
-}
-
-"""
-An edge in a connection.
-"""
-type AnalyticsArtworkRecommendationEdge {
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-
-  """
-  The item at the end of the edge.
-  """
-  node: AnalyticsArtworkRecommendation
-}
-
-"""
 Publish artwork Series Stats
 """
 type AnalyticsArtworksPublishedStats {
@@ -1413,19 +1360,9 @@ type AnalyticsPartnerStats {
   """
   Time series data on number of artworks published
   """
-  artworkPublished(
-    period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsPartnerStatsArtworksPublished
-
-  """
-  Time series data on number of artworks published
-  """
   artworksPublished(
     period: AnalyticsQueryPeriodEnum!
   ): AnalyticsArtworksPublishedStats
-    @deprecated(
-      reason: "Use artworkPublished for refactored time series bucket code"
-    )
 
   """
   Audience stats
@@ -1468,13 +1405,7 @@ type AnalyticsPartnerStats {
   """
   Different types of partner pageviews
   """
-  pageview(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerStatsPageviews
-
-  """
-  Different types of partner pageviews
-  """
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
-    @deprecated(reason: "Use pageview for refactored time series bucket code")
   partnerId: String!
 
   """
@@ -1508,94 +1439,6 @@ type AnalyticsPartnerStats {
   Sales stats
   """
   sales(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerSalesStats
-
-  """
-  Top artworks ranked by views
-  """
-  topArtworks(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-  ): AnalyticsRankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
-
-  """
-  Number of unique visitors
-  """
-  uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
-    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
-}
-
-"""
-Publish artwork Series Stats
-"""
-type AnalyticsPartnerStatsArtworksPublished {
-  partnerId: String!
-  percentageChanged: Int!
-  period: AnalyticsQueryPeriodEnum!
-
-  """
-  Partner artworks published count time series
-  """
-  timeSeries(
-    cumulative: Boolean = false
-  ): [AnalyticsPartnerStatsArtworksPublishedTimeSeries!]!
-  totalCount: Int!
-}
-
-"""
-Artworks published time series data of a partner
-"""
-type AnalyticsPartnerStatsArtworksPublishedTimeSeries {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
-}
-
-"""
-Stats for pageviews of partner content
-"""
-type AnalyticsPartnerStatsPageviews {
-  artworkViews: Int!
-  galleryViews: Int!
-  partnerId: String!
-  percentageChanged: Int!
-  period: AnalyticsQueryPeriodEnum!
-  showViews: Int!
-
-  """
-  Pageviews time series
-  """
-  timeSeries(
-    cumulative: Boolean = false
-  ): [AnalyticsPartnerStatsPageviewsTimeSeries!]
-  totalCount: Int!
-  uniqueVisitors: Int!
-}
-
-"""
-Pageviews time series data of a partner
-"""
-type AnalyticsPartnerStatsPageviewsTimeSeries {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
 }
 
 """
@@ -31491,32 +31334,6 @@ type Query {
   ): AnalyticsArtistSparklineConnection
 
   """
-  Get all recommended artworks for the current user.
-  """
-  analyticsArtworkRecommendations(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    userId: String
-  ): AnalyticsArtworkRecommendationConnection
-
-  """
   Get price insights for a market for each calendar year sorted by year asc.
   """
   analyticsCalendarYearMarketPriceInsights(
@@ -31539,16 +31356,6 @@ type Query {
   Last updated timestamp
   """
   analyticsLastUpdatedAt: AnalyticsDateTime
-
-  """
-  Find PartnerStats
-  """
-  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
-
-  """
-  Query UserStats
-  """
-  analyticsUserStats(userId: String!): AnalyticsUserStats
 
   """
   An Article
