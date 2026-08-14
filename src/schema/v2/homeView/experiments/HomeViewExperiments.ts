@@ -8,7 +8,6 @@ import { ResolverContext } from "types/graphql"
 import { CURRENTLY_RUNNING_EXPERIMENTS } from "./experiments"
 import { ClientFeatureFlagType } from "schema/v2/featureFlags/client/featureFlags"
 import { compact } from "lodash"
-import { isEligibleForNWFYExperiment } from "../sections/NewWorksForYou"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(new GraphQLList(ClientFeatureFlagType)),
@@ -16,13 +15,6 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: (_parent, _args, context, _info) => {
     const experiments = CURRENTLY_RUNNING_EXPERIMENTS.map(
       (name: FeatureFlag) => {
-        if (
-          name === "onyx_nwfy-artworks-card-test" &&
-          !isEligibleForNWFYExperiment(context)
-        ) {
-          return null
-        }
-
         const flag = getFeatureFlag(name)
         const variant = getExperimentVariant(name, { userId: context.userID })
 

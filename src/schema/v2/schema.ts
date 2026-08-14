@@ -132,6 +132,7 @@ import { SaleArtworksConnectionField } from "./sale_artworks"
 import { SalesConnectionField } from "./sales"
 import { Search } from "./search"
 import { SearchableItem } from "./SearchableItem"
+import { SearchDropdown } from "./searchDropdown"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
 import Show from "./show"
 import ShippingPreset from "./shippingPreset"
@@ -572,6 +573,7 @@ const rootFields = {
   saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
+  searchDropdown: SearchDropdown,
   shortcut,
   show: Show,
   shippingPreset: ShippingPreset,
