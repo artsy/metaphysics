@@ -16,7 +16,6 @@ import { MailchimpCampaignType } from "./mailchimpCampaign"
 interface Input {
   mailchimpAccountId: string
   artworkIds?: string[]
-  partnerShowId?: string
   htmlContent: string
   subjectLine: string
   previewText?: string
@@ -75,13 +74,7 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
     },
     artworkIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
-      description:
-        "Artwork IDs to associate with the campaign for tracking (mutually exclusive with partnerShowId)",
-    },
-    partnerShowId: {
-      type: GraphQLString,
-      description:
-        "Partner show ID to associate with the campaign for tracking (mutually exclusive with artworkIds)",
+      description: "Artwork IDs to associate with the campaign for tracking",
     },
     subjectLine: {
       type: new GraphQLNonNull(GraphQLString),
@@ -107,7 +100,6 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
     {
       mailchimpAccountId,
       artworkIds,
-      partnerShowId,
       htmlContent,
       subjectLine,
       previewText,
@@ -119,17 +111,10 @@ export const createMailchimpCampaignMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    if (artworkIds && partnerShowId) {
-      throw new Error(
-        'The "artworkIds" and "partnerShowId" arguments are mutually exclusive.'
-      )
-    }
-
     try {
       return await createMailchimpCampaignLoader({
         mailchimp_account_id: mailchimpAccountId,
         artwork_ids: artworkIds,
-        partner_show_id: partnerShowId,
         html_content: htmlContent,
         subject_line: subjectLine,
         preview_text: previewText,
