@@ -14,6 +14,8 @@ import { ArtworkType } from "schema/v2/artwork"
 import { isFieldRequested } from "lib/isFieldRequested"
 import { TrendingWindow, trendingWindowFor } from "./trendingData"
 
+// Values are the periods Vortex publishes, so one passes straight through as a
+// request param.
 const TrendingSearchPeriodEnum = new GraphQLEnumType({
   name: "TrendingSearchPeriod",
   description: "The rolling window a trending ranking was computed over.",
@@ -118,10 +120,6 @@ const TrendingSearchesType = new GraphQLObjectType<
     label: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    asOf: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ asOf }) => asOf,
-    },
     artists: {
       // Nullable so a Gravity failure nulls this rail rather than the query.
       type: new GraphQLList(new GraphQLNonNull(TrendingSearchArtistType)),
@@ -171,11 +169,13 @@ const SearchDropdownType = new GraphQLObjectType<void, ResolverContext>({
   name: "SearchDropdown",
   fields: () => ({
     trending: {
-      type: new GraphQLNonNull(TrendingSearchesType),
+      // Nullable so a Vortex failure nulls this field rather than the query.
+      type: TrendingSearchesType,
       args: {
         period: { type: TrendingSearchPeriodEnum, defaultValue: "1d" },
       },
-      resolve: (_parent, { period }) => trendingWindowFor(period),
+      resolve: (_parent, { period }, context) =>
+        trendingWindowFor(period, context),
     },
   }),
 })
