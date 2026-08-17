@@ -31870,23 +31870,6 @@ type Query {
   analyticsUserStats(userId: String!): AnalyticsUserStats
 
   """
-  Fetch a user's artworks from a third-party source (e.g. Artnet), for ArtOS.
-      Only for use by trusted internal clients. Authorization values should be
-      sent via headers.
-  """
-  artOSDownstreamArtworks(
-    """
-    Page number.
-    """
-    page: Int
-
-    """
-    Number of artworks per page.
-    """
-    pageSize: Int
-  ): JSON
-
-  """
   An Article
   """
   article(
@@ -41777,23 +41760,6 @@ type Viewer {
     id: ID!
   ): Agreement
   ai: AI
-
-  """
-  Fetch a user's artworks from a third-party source (e.g. Artnet), for ArtOS.
-      Only for use by trusted internal clients. Authorization values should be
-      sent via headers.
-  """
-  artOSDownstreamArtworks(
-    """
-    Page number.
-    """
-    page: Int
-
-    """
-    Number of artworks per page.
-    """
-    pageSize: Int
-  ): JSON
 
   """
   An Article

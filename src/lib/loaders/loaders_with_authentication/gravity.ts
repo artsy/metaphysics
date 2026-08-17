@@ -10,7 +10,6 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    artOSDownstreamArtworksLoader: gravityLoader("art_os_downstream_artworks"),
     addArtworkToPartnerShowLoader: gravityLoader<
       any,
       { showId: string; artworkId: string; partnerId: string }
