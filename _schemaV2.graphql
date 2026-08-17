@@ -31870,6 +31870,31 @@ type Query {
   analyticsUserStats(userId: String!): AnalyticsUserStats
 
   """
+  Fetch a user's artworks from a third-party source (e.g. Artnet), downstream of Gravity via ArtOS. Only for use by trusted internal clients.
+  """
+  artOSDownstreamArtworks(
+    """
+    Page number.
+    """
+    page: Int
+
+    """
+    Number of artworks per page.
+    """
+    pageSize: Int
+
+    """
+    Bearer token for the third-party source, if required by it.
+    """
+    token: String
+
+    """
+    User ID, if the source scopes artworks by user.
+    """
+    userID: String
+  ): JSON
+
+  """
   An Article
   """
   article(
@@ -41760,6 +41785,31 @@ type Viewer {
     id: ID!
   ): Agreement
   ai: AI
+
+  """
+  Fetch a user's artworks from a third-party source (e.g. Artnet), downstream of Gravity via ArtOS. Only for use by trusted internal clients.
+  """
+  artOSDownstreamArtworks(
+    """
+    Page number.
+    """
+    page: Int
+
+    """
+    Number of artworks per page.
+    """
+    pageSize: Int
+
+    """
+    Bearer token for the third-party source, if required by it.
+    """
+    token: String
+
+    """
+    User ID, if the source scopes artworks by user.
+    """
+    userID: String
+  ): JSON
 
   """
   An Article

@@ -71,6 +71,7 @@ export default (opts) => {
       {},
       { headers: true }
     ),
+    artOSDownstreamArtworksLoader: gravityLoader("art_os_downstream_artworks"),
     artworkImageLoader: gravityLoader<
       any,
       { artwork_id: string; image_id: string }

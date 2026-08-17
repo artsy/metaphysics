@@ -274,6 +274,11 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     const isCMSRequest = req.headers["x-cms-request"] === "true"
     const ipAddress = requestIPAddress(req)
 
+    // Headers to be threaded through to downstream services
+    // and used to authenticate with Artnet services.
+    const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
+    const xArtnetUserID = req.headers["x-artnet-token"] as string | undefined
+
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
 
@@ -295,6 +300,8 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       xOriginalSessionID,
       isMutation: !!req.body?.query?.includes("mutation"),
       xImpersonateUserID,
+      xArtnetToken,
+      xArtnetUserID
     })
 
     const context: YogaInternalContext = {
