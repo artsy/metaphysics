@@ -303,7 +303,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       isMutation: !!req.body?.query?.includes("mutation"),
       xImpersonateUserID,
       xArtnetToken,
-      xArtnetUserID
+      xArtnetUserID,
     })
 
     const context: YogaInternalContext = {

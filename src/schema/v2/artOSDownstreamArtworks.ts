@@ -8,7 +8,9 @@ export const ArtOSDownstreamArtworks: GraphQLFieldConfig<
 > = {
   type: GraphQLJSON,
   description:
-    "Fetch a user's artworks from a third-party source (e.g. Artnet), downstream of Gravity via ArtOS. Only for use by trusted internal clients. Requires the X-Artnet-Token and X-Artnet-User-Id headers.",
+    `Fetch a user's artworks from a third-party source (e.g. Artnet), for ArtOS.
+    Only for use by trusted internal clients. Authorization values should be
+    sent via headers.`,
   args: {
     page: {
       type: GraphQLInt,
