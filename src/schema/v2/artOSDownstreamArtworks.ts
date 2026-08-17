@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt, GraphQLString } from "graphql"
+import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import GraphQLJSON from "graphql-type-json"
 import { ResolverContext } from "types/graphql"
 
@@ -8,17 +8,8 @@ export const ArtOSDownstreamArtworks: GraphQLFieldConfig<
 > = {
   type: GraphQLJSON,
   description:
-    "Fetch a user's artworks from a third-party source (e.g. Artnet), downstream of Gravity via ArtOS. Only for use by trusted internal clients.",
+    "Fetch a user's artworks from a third-party source (e.g. Artnet), downstream of Gravity via ArtOS. Only for use by trusted internal clients. Requires the X-Artnet-Token and X-Artnet-User-Id headers.",
   args: {
-    userID: {
-      type: GraphQLString,
-      description: "User ID, if the source scopes artworks by user.",
-    },
-    token: {
-      type: GraphQLString,
-      description:
-        "Bearer token for the third-party source, if required by it.",
-    },
     page: {
       type: GraphQLInt,
       description: "Page number.",
@@ -30,12 +21,12 @@ export const ArtOSDownstreamArtworks: GraphQLFieldConfig<
   },
   resolve: (
     _root,
-    { userID, token, page, pageSize },
+    { page, pageSize },
     { artOSDownstreamArtworksLoader }
   ) => {
+    if (!artOSDownstreamArtworksLoader) return null
+
     return artOSDownstreamArtworksLoader({
-      user_id: userID,
-      token,
       page,
       page_size: pageSize,
     })

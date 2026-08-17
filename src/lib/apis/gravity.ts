@@ -35,8 +35,12 @@ export default function gravity(
   }
 
   // Headers needed for Artnet API Authorization
-  if (fetchOptions.xArtnetToken ) assign(headers, fetchOptions.xArtnetToken)
-  if (fetchOptions.xArtnetUserID ) assign(headers, fetchOptions.xArtnetUserID)
+  if (fetchOptions.xArtnetToken) {
+    assign(headers, { "X-ARTNET-TOKEN": fetchOptions.xArtnetToken })
+  }
+  if (fetchOptions.xArtnetUserID) {
+    assign(headers, { "X-ARTNET-USER-ID": fetchOptions.xArtnetUserID })
+  }
 
   return fetch(
     urljoin(
