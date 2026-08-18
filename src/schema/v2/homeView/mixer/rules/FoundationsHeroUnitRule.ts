@@ -8,9 +8,10 @@ import { QuickLinks } from "../../sections/QuickLinks"
 import { FoundationsHeroUnit } from "../../sections/FoundationsHeroUnit"
 
 /**
- * Pins the FoundationsHeroUnit section directly below the first available
- * anchor section (NewWorksForYou, else LatestActivity, else Tasks, else
- * QuickLinks), overriding any prior repositioning (e.g. AuctionEngagementRule).
+ * Ensures FoundationsHeroUnit ends up directly below the top anchor section
+ * (NewWorksForYou, else LatestActivity, else Tasks, else QuickLinks), even
+ * after AuctionEngagementRule has repositioned AuctionLotsForYou into the
+ * same slot.
  *
  * Temporary - remove after the Foundations 2026 ends.
  */

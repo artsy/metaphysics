@@ -14,12 +14,8 @@ export const FoundationsHeroUnit: HomeViewSection = {
   requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (_parent, _args, context) => {
-    const loader = context.authenticatedHeroUnitLoader ?? context.heroUnitLoader
-
-    if (!loader) return emptyConnection
-
     try {
-      const { body } = await loader(FOUNDATIONS_HERO_UNIT_ID)
+      const { body } = await context.heroUnitLoader(FOUNDATIONS_HERO_UNIT_ID)
 
       if (!body) return emptyConnection
 
