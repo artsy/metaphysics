@@ -28,7 +28,6 @@ import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
-import { FoundationsHeroUnitRule } from "../mixer/rules/FoundationsHeroUnitRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 
 const SECTIONS: HomeViewSection[] = [
@@ -67,7 +66,6 @@ export async function getSections(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new AuctionEngagementRule(),
-    new FoundationsHeroUnitRule(),
   ])
 
   return await mixer.mix(SECTIONS, context)
