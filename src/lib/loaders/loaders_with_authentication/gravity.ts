@@ -1929,5 +1929,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+
+    // Partner List Publication Loaders (Private Viewing Rooms)
+    partnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication`
+    ),
+    publishPartnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication`,
+      {},
+      { method: "POST" }
+    ),
+    unpublishPartnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/unpublish`,
+      {},
+      { method: "POST" }
+    ),
   }
 }

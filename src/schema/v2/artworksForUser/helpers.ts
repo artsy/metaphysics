@@ -1,11 +1,37 @@
-import config from "config"
 import gql from "lib/gql"
+import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 
 // Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
 const MAX_ARTWORKS = 50
+
+const NWFY_GRAVITY_RAIL_FLAG = "onyx_nwfy-gravity"
+
+// Gravity-backed NWFY rail ships in eigen 9.14.0+.
+const MINIMUM_EIGEN_VERSION = { major: 9, minor: 14, patch: 0 }
+
+const REFRESH_EIGEN_FLAG = "onyx_nwfy-refresh-eigen"
+
+const isInRefreshExperiment = (context: ResolverContext): boolean => {
+  const variant = getExperimentVariant(REFRESH_EIGEN_FLAG, {
+    userId: context.userID,
+  })
+
+  return !!variant && variant.enabled && variant.name === "experiment"
+}
+
+const isEligibleClient = (context: ResolverContext): boolean => {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+
+  return (
+    !!actualEigenVersion &&
+    isAtLeastVersion(actualEigenVersion, MINIMUM_EIGEN_VERSION) &&
+    isInRefreshExperiment(context)
+  )
+}
 
 // Gravity-backed NWFY rail: source IDs from the live Gravity REST endpoint
 const getNewForYouArtworkIDsFromGravity = async (
@@ -75,8 +101,16 @@ export const getNewForYouArtworkIDs = async (
 
   const userID = args.userId || xImpersonateUserID
 
+  // Gravity is the version_c rail; email campaigns (Braze, via
+  // xImpersonateUserID) stay on Vortex. Bucket on the authenticated user so
+  // per-user rollout applies to the logged-in flow, mirroring WTYL.
   const useGravity =
-    config.ENABLE_NEW_WORKS_FOR_YOU_GRAVITY && !!artworkRecommendationsLoader
+    !!artworkRecommendationsLoader &&
+    !xImpersonateUserID &&
+    isEligibleClient(context) &&
+    isFeatureFlagEnabled(NWFY_GRAVITY_RAIL_FLAG, {
+      userId: userID || context.userID,
+    })
 
   if (useGravity) {
     return getNewForYouArtworkIDsFromGravity(args, context, userID)
@@ -128,20 +162,18 @@ export const getNewForYouArtworks = async (
     marketable,
     excludeDislikedArtworks = false,
   }: { ids: string[]; marketable?: boolean; excludeDislikedArtworks?: boolean },
-  gravityArgs,
   context: ResolverContext
 ): Promise<any[]> => {
   if (ids.length === 0) return []
 
-  const { size, offset } = gravityArgs
   const { artworksLoader } = context
 
+  // Fetch the whole set; the resolver paginates the recs that actually hydrate.
   const artworkParams = {
     availability: "for sale",
     exclude_disliked_artworks: excludeDislikedArtworks,
     ids: ids,
-    offset,
-    size,
+    size: ids.length,
   }
 
   if (marketable) {
@@ -155,6 +187,7 @@ export const getNewForYouArtworks = async (
 
 export const getBackfillArtworks = async ({
   size,
+  offset = 0,
   includeBackfill,
   context,
   marketingCollectionId,
@@ -162,6 +195,7 @@ export const getBackfillArtworks = async ({
   excludeDislikedArtworks = false,
 }: {
   size: number
+  offset?: number
   includeBackfill: boolean
   context: ResolverContext
   marketingCollectionId?: string
@@ -193,6 +227,8 @@ export const getBackfillArtworks = async ({
       : filterArtworksUnauthenticatedLoader
 
   if (filterArtworksLoader && (onlyAtAuction || marketingCollectionId)) {
+    // Reports `hits.length` as the total, so not safely paginatable past page
+    // 1; offset is deliberately not threaded here (only the set path below).
     const { hits } = await filterArtworksLoader({
       exclude_disliked_artworks: excludeDislikedArtworks,
       size: size,
@@ -217,7 +253,7 @@ export const getBackfillArtworks = async ({
   })
 
   return {
-    artworks: (itemsBody || []).slice(0, size),
+    artworks: (itemsBody || []).slice(offset, offset + size),
     totalCount: itemsBody?.length,
   }
 }

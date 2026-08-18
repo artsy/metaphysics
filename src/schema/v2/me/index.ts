@@ -48,7 +48,9 @@ import { PartnerOfferTypeEnumType } from "../partnerOffer"
 import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
+  stampPartnerOfferPurchases,
 } from "../partnerOfferToCollector"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { PhoneNumber, resolvePhoneNumber } from "../phoneNumber"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 import { quiz } from "../quiz"
@@ -527,7 +529,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         size: { type: GraphQLInt },
         sort: { type: PartnerOfferToCollectorSortsType },
       }),
-      resolve: async (_me, args, { mePartnerOffersLoader }) => {
+      resolve: async (
+        _me,
+        args,
+        { mePartnerOffersLoader, meOrdersLoader },
+        resolveInfo
+      ) => {
         if (!mePartnerOffersLoader)
           throw new Error("You need to be signed in to perform this action")
 
@@ -551,6 +558,10 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         const { body, headers } = await mePartnerOffersLoader(gravityArgs)
+
+        if (isFieldRequested("edges.node.isPurchased", resolveInfo)) {
+          await stampPartnerOfferPurchases(body, meOrdersLoader)
+        }
 
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

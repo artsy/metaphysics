@@ -536,7 +536,8 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               size,
               offset,
               ids,
-              ...(status && { status, total_count: true }),
+              ...(!ids && { total_count: true }),
+              ...(status && { status }),
             }
             return saleArtworksLoader(sale.id, gravityArgs).then(
               ({ body, headers }) => {

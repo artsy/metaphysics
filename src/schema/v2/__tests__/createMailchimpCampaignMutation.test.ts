@@ -59,7 +59,6 @@ describe("createMailchimpCampaign", () => {
       subject_line: "New Artworks from Acme Gallery",
       list_id: "list-1",
       artwork_ids: undefined,
-      partner_show_id: undefined,
       html_content: "<html><body>Partner-authored content</body></html>",
       preview_text: undefined,
     })
@@ -111,71 +110,9 @@ describe("createMailchimpCampaign", () => {
         subject_line: "Custom Campaign",
         list_id: "list-1",
         artwork_ids: ["artwork-1", "artwork-2"],
-        partner_show_id: undefined,
         html_content: "<html><body>Partner-authored content</body></html>",
         preview_text: undefined,
       })
-    })
-  })
-
-  describe("with partnerShowId for tracking", () => {
-    const mutationWithShow = `
-      mutation {
-        createMailchimpCampaign(input: {
-          mailchimpAccountId: "mc-account-1"
-          subjectLine: "Gallery Show"
-          listId: "list-1"
-          htmlContent: "<html><body>Partner-authored content</body></html>"
-          partnerShowId: "show-1"
-        }) {
-          mailchimpCampaignOrError {
-            __typename
-          }
-        }
-      }
-    `
-
-    it("passes correct args to Gravity", async () => {
-      await runAuthenticatedQuery(mutationWithShow, context)
-
-      expect(
-        context.createMailchimpCampaignLoader as jest.Mock
-      ).toHaveBeenCalledWith({
-        mailchimp_account_id: "mc-account-1",
-        subject_line: "Gallery Show",
-        list_id: "list-1",
-        artwork_ids: undefined,
-        partner_show_id: "show-1",
-        html_content: "<html><body>Partner-authored content</body></html>",
-        preview_text: undefined,
-      })
-    })
-  })
-
-  describe("mutually exclusive fields", () => {
-    const mutationWithBoth = `
-      mutation {
-        createMailchimpCampaign(input: {
-          mailchimpAccountId: "mc-account-1"
-          subjectLine: "Test"
-          listId: "list-1"
-          htmlContent: "<html><body>Partner-authored content</body></html>"
-          artworkIds: ["artwork-1"]
-          partnerShowId: "show-1"
-        }) {
-          mailchimpCampaignOrError {
-            __typename
-          }
-        }
-      }
-    `
-
-    it("throws when both artworkIds and partnerShowId are provided", async () => {
-      await expect(
-        runAuthenticatedQuery(mutationWithBoth, context)
-      ).rejects.toThrow(
-        'The "artworkIds" and "partnerShowId" arguments are mutually exclusive.'
-      )
     })
   })
 

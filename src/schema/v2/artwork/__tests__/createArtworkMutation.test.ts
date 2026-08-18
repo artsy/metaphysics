@@ -346,4 +346,67 @@ describe("CreateArtworkMutation", () => {
       )
     })
   })
+
+  describe("createdSurface field", () => {
+    it("passes created_surface to the loader when provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      const createdSurfaceMutation = gql`
+        mutation {
+          createArtwork(
+            input: {
+              partnerId: "partner123"
+              artistIds: ["artist123"]
+              createdSurface: OS
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(createdSurfaceMutation, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          created_surface: "OS",
+        })
+      )
+    })
+
+    it("does not pass created_surface when not provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutationWithoutImage, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          created_surface: expect.anything(),
+        })
+      )
+    })
+  })
 })

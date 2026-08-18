@@ -59,11 +59,6 @@ export const MailchimpCampaignType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
     },
-    partnerShowId: {
-      type: GraphQLString,
-      description: "The partner show associated with this campaign, if any",
-      resolve: ({ partner_show_id }) => partner_show_id,
-    },
     webId: {
       type: GraphQLString,
       description: "The Mailchimp web ID for linking to the campaign",
