@@ -252,6 +252,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetImportLoader: gravityLoader(
+      "artnet_import",
+      {},
+      { method: "POST" }
+    ),
     createArtworkImportLoader: gravityLoader(
       "artwork_import",
       {},
