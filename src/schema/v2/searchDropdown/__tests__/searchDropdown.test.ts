@@ -1,11 +1,26 @@
 import { graphql } from "graphql"
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import trendingSearches from "data/trendingSearches.json"
-import { trendingWindowFor } from "../trendingData"
 
-const windowFor = (period: string) =>
-  trendingSearches.windows.find((window) => window.period === period)!
+const ARTIST_IDS = Array.from(
+  { length: 10 },
+  (_, index) => `artist-${index + 1}`
+)
+const ARTWORK_IDS = Array.from(
+  { length: 8 },
+  (_, index) => `artwork-${index + 1}`
+)
+
+const rail = (entityIDs: string[]) =>
+  entityIDs.map((entity_id, index) => ({ entity_id, rank: index + 1 }))
+
+const window = ({ artists = ARTIST_IDS, artworks = ARTWORK_IDS } = {}) => ({
+  data: {
+    period: "1d",
+    artists: rail(artists),
+    artworks: rail(artworks),
+  },
+})
 
 describe("searchDropdown", () => {
   // Responses come back reversed, so ordering assertions can't pass by luck.
@@ -29,11 +44,28 @@ describe("searchDropdown", () => {
     )
   )
 
-  const context = { artistsLoader, artworksLoader }
+  const trendingSearchesLoader = jest.fn((_params: any) =>
+    Promise.resolve(window())
+  )
+
+  const contextWith = (
+    { unauthenticatedLoaders = {}, ...overrides } = {} as any
+  ) => ({
+    artistsLoader,
+    artworksLoader,
+    ...overrides,
+    unauthenticatedLoaders: {
+      trendingSearchesLoader,
+      ...unauthenticatedLoaders,
+    },
+  })
+
+  const context = contextWith()
 
   beforeEach(() => {
     artistsLoader.mockClear()
     artworksLoader.mockClear()
+    trendingSearchesLoader.mockClear()
   })
 
   describe("trending", () => {
@@ -44,7 +76,6 @@ describe("searchDropdown", () => {
             trending {
               period
               label
-              asOf
             }
           }
         }
@@ -55,11 +86,12 @@ describe("searchDropdown", () => {
       expect(searchDropdown.trending).toEqual({
         period: "ONE_DAY",
         label: "Today",
-        asOf: trendingSearches.asOf,
       })
+
+      expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "1d" })
     })
 
-    it("returns the requested window", async () => {
+    it("asks Vortex for the requested window", async () => {
       const query = gql`
         {
           searchDropdown {
@@ -75,6 +107,39 @@ describe("searchDropdown", () => {
 
       expect(searchDropdown.trending.period).toEqual("THIRTY_DAYS")
       expect(searchDropdown.trending.label).toEqual("Past 30 Days")
+      expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "30d" })
+    })
+
+    it("serves a signed in visitor the same rails as a logged out one", async () => {
+      const query = gql`
+        {
+          searchDropdown {
+            trending {
+              artists {
+                internalID
+              }
+            }
+          }
+        }
+      `
+
+      // The ranking isn't personalized, so it reads through the unauthenticated
+      // loaders either way — present for every request, with or without a user.
+      const loggedOut = await runQuery(
+        query,
+        contextWith({ authenticatedLoaders: {} })
+      )
+      const signedIn = await runQuery(
+        query,
+        contextWith({ authenticatedLoaders: { meLoader: jest.fn() } })
+      )
+
+      expect(loggedOut).toEqual(signedIn)
+      expect(
+        loggedOut.searchDropdown.trending.artists.map(
+          ({ internalID }) => internalID
+        )
+      ).toEqual(ARTIST_IDS)
     })
 
     it("only admits periods the enum knows about", async () => {
@@ -90,13 +155,69 @@ describe("searchDropdown", () => {
 
       // Rejected by validation, before any resolver runs.
       await expect(runQuery(query, context)).rejects.toThrow()
+      expect(trendingSearchesLoader).not.toHaveBeenCalled()
     })
 
-    it("throws if the enum and the fixture drift apart", () => {
-      // Unreachable through the schema, so test the lookup directly.
-      expect(() => trendingWindowFor("90d")).toThrow(
-        "No trending data for period: 90d"
+    it("reports empty rails when Vortex has no ranking", async () => {
+      const emptyLoader = jest.fn(() =>
+        Promise.resolve(window({ artists: [], artworks: [] }))
       )
+
+      const { searchDropdown } = await runQuery(
+        gql`
+          {
+            searchDropdown {
+              trending {
+                artists {
+                  rank
+                }
+                artworks {
+                  rank
+                }
+              }
+            }
+          }
+        `,
+        contextWith({
+          unauthenticatedLoaders: { trendingSearchesLoader: emptyLoader },
+        })
+      )
+
+      expect(searchDropdown.trending).toEqual({
+        artists: [],
+        artworks: [],
+      })
+      // Nothing to hydrate, so Gravity is never called.
+      expect(artistsLoader).not.toHaveBeenCalled()
+      expect(artworksLoader).not.toHaveBeenCalled()
+    })
+
+    it("nulls trending rather than the query when Vortex fails", async () => {
+      const { schema } = require("schema/v2")
+
+      const result = await graphql({
+        schema,
+        source: gql`
+          {
+            searchDropdown {
+              trending {
+                period
+              }
+            }
+          }
+        `,
+        contextValue: contextWith({
+          unauthenticatedLoaders: {
+            trendingSearchesLoader: jest.fn(() =>
+              Promise.reject(new Error("Vortex is down"))
+            ),
+          },
+          requestIDs: { requestID: "123456789", xForwardedFor: "123.456.789" },
+        }),
+      })
+
+      expect(result.errors?.[0].message).toEqual("Vortex is down")
+      expect((result.data as any).searchDropdown.trending).toBeNull()
     })
   })
 
@@ -130,17 +251,21 @@ describe("searchDropdown", () => {
       expect(artistsLoader).toHaveBeenCalledTimes(1)
       expect(artworksLoader).toHaveBeenCalledTimes(1)
 
-      const { artistIDs, artworkIDs } = windowFor("7d")
-
       // size is explicit so Gravity's default page can't truncate the rail.
       expect(artistsLoader).toHaveBeenCalledWith({
-        ids: artistIDs,
-        size: artistIDs.length,
+        ids: ARTIST_IDS,
+        size: ARTIST_IDS.length,
       })
       expect(artworksLoader).toHaveBeenCalledWith({
-        ids: artworkIDs,
-        size: artworkIDs.length,
+        ids: ARTWORK_IDS,
+        size: ARTWORK_IDS.length,
       })
+    })
+
+    it("fetches both rails in one Vortex call", async () => {
+      await runQuery(query, context)
+
+      expect(trendingSearchesLoader).toHaveBeenCalledTimes(1)
     })
 
     it("preserves rank order regardless of the order Gravity returns", async () => {
@@ -149,10 +274,10 @@ describe("searchDropdown", () => {
       } = await runQuery(query, context)
 
       expect(trending.artists.map(({ internalID }) => internalID)).toEqual(
-        windowFor("7d").artistIDs
+        ARTIST_IDS
       )
       expect(trending.artworks.map(({ internalID }) => internalID)).toEqual(
-        windowFor("7d").artworkIDs
+        ARTWORK_IDS
       )
     })
 
@@ -170,7 +295,7 @@ describe("searchDropdown", () => {
     })
 
     it("drops entries Gravity did not return rather than leaving holes", async () => {
-      const [dropped, ...kept] = windowFor("7d").artistIDs
+      const [dropped, ...kept] = ARTIST_IDS
 
       const partialLoader = jest.fn(({ ids }) =>
         Promise.resolve({
@@ -181,7 +306,7 @@ describe("searchDropdown", () => {
 
       const {
         searchDropdown: { trending },
-      } = await runQuery(query, { ...context, artistsLoader: partialLoader })
+      } = await runQuery(query, contextWith({ artistsLoader: partialLoader }))
 
       expect(trending.artists).toHaveLength(kept.length)
       expect(
@@ -195,16 +320,16 @@ describe("searchDropdown", () => {
       )
     })
 
-    it("ranks entries by their position in the fixture", async () => {
+    it("ranks entries by the order Vortex published", async () => {
       const {
         searchDropdown: { trending },
       } = await runQuery(query, context)
 
       expect(trending.artists.map(({ rank }) => rank)).toEqual(
-        windowFor("7d").artistIDs.map((_, index) => index + 1)
+        ARTIST_IDS.map((_, index) => index + 1)
       )
       expect(trending.artworks.map(({ rank }) => rank)).toEqual(
-        windowFor("7d").artworkIDs.map((_, index) => index + 1)
+        ARTWORK_IDS.map((_, index) => index + 1)
       )
     })
 
@@ -215,13 +340,12 @@ describe("searchDropdown", () => {
       const result = await graphql({
         schema,
         source: query,
-        contextValue: {
-          ...context,
+        contextValue: contextWith({
           artistsLoader: jest.fn(() =>
             Promise.reject(new Error("Gravity is down"))
           ),
           requestIDs: { requestID: "123456789", xForwardedFor: "123.456.789" },
-        },
+        }),
       })
 
       expect(result.errors?.[0].message).toEqual("Gravity is down")
@@ -295,17 +419,15 @@ describe("searchDropdown", () => {
 
       const {
         searchDropdown: { trending },
-      } = await runQuery(coverQuery, {
-        ...context,
-        unauthenticatedLoaders: { artworkLoader },
-      })
+      } = await runQuery(
+        coverQuery,
+        contextWith({ unauthenticatedLoaders: { artworkLoader } })
+      )
 
       // The per-artist path this batching exists to avoid.
       expect(artworkLoader).not.toHaveBeenCalled()
 
-      const coverIDs = windowFor("7d")
-        .artistIDs.slice(0, 3)
-        .map((id) => `cover-${id}`)
+      const coverIDs = ARTIST_IDS.slice(0, 3).map((id) => `cover-${id}`)
 
       expect(artworksLoader).toHaveBeenCalledWith({
         ids: coverIDs,
@@ -348,11 +470,13 @@ describe("searchDropdown", () => {
 
       const {
         searchDropdown: { trending },
-      } = await runQuery(coverQuery, {
-        ...context,
-        artworksLoader: emptyArtworksLoader,
-        unauthenticatedLoaders: { artworkLoader },
-      })
+      } = await runQuery(
+        coverQuery,
+        contextWith({
+          artworksLoader: emptyArtworksLoader,
+          unauthenticatedLoaders: { artworkLoader },
+        })
+      )
 
       expect(artworkLoader).toHaveBeenCalledTimes(3)
       trending.artists.forEach(({ artist }) => {
@@ -370,11 +494,13 @@ describe("searchDropdown", () => {
 
       const {
         searchDropdown: { trending },
-      } = await runQuery(coverQuery, {
-        ...context,
-        artworksLoader: failingArtworksLoader,
-        unauthenticatedLoaders: { artworkLoader },
-      })
+      } = await runQuery(
+        coverQuery,
+        contextWith({
+          artworksLoader: failingArtworksLoader,
+          unauthenticatedLoaders: { artworkLoader },
+        })
+      )
 
       // Images are secondary — the artists themselves already loaded.
       expect(trending.artists).toHaveLength(3)

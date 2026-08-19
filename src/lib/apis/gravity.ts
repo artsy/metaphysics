@@ -34,6 +34,14 @@ export default function gravity(
     assign(headers, { "X-IMPERSONATE-USER-ID": xImpersonateUserID })
   }
 
+  // Headers needed for Artnet API Authorization
+  if (fetchOptions.xArtnetToken) {
+    assign(headers, { "X-ARTNET-TOKEN": fetchOptions.xArtnetToken })
+  }
+  if (fetchOptions.xArtnetUserID) {
+    assign(headers, { "X-ARTNET-USER-ID": fetchOptions.xArtnetUserID })
+  }
+
   return fetch(
     urljoin(
       resolveBlueGreen(

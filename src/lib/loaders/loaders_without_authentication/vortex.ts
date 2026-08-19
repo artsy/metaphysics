@@ -28,5 +28,10 @@ export default (opts) => {
       {},
       { requestThrottleMs: 86400000 } // 1 day throttle
     ),
+    trendingSearchesLoader: vortexLoader(
+      "trending_searches",
+      {},
+      { requestThrottleMs: 3600000 } // 1 hour throttle
+    ),
   }
 }
