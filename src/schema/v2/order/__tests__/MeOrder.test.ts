@@ -1,6 +1,8 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { HTTPError } from "lib/HTTPError"
+import { deepestOriginalError } from "lib/graphqlErrorHandler"
 import { baseArtwork, baseOrderJson } from "./support"
 
 let context
@@ -2479,6 +2481,117 @@ describe("Me", () => {
           { type: "DOMESTIC_FLAT", shippingQuoteId: "quote-abc-123" },
           { type: "PICKUP", shippingQuoteId: null },
         ])
+      })
+    })
+
+    describe("when the order is not found", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "missing-order-id") {
+              internalID
+            }
+          }
+        }
+      `
+
+      it("throws a classified 404 HTTPError instead of the raw Exchange rejection", async () => {
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockRejectedValue({
+            statusCode: 404,
+            body: {
+              type: "validation",
+              code: "not_found",
+              data: {
+                message: 'Couldn\'t find Order with [WHERE "orders"."id" = $1]',
+              },
+            },
+          }),
+        }
+
+        const error = await runAuthenticatedQuery(query, context).catch(
+          (e) => e
+        )
+        const originalError = deepestOriginalError(error) as HTTPError
+
+        expect(originalError).toBeInstanceOf(HTTPError)
+        expect(originalError.statusCode).toEqual(404)
+        expect(originalError.message).toEqual("Order Not Found")
+      })
+
+      it("still handles a not-found body that arrives as a JSON string", async () => {
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockRejectedValue({
+            statusCode: 404,
+            body: JSON.stringify({
+              type: "validation",
+              code: "not_found",
+              data: { message: "Couldn't find Order" },
+            }),
+          }),
+        }
+
+        const error = await runAuthenticatedQuery(query, context).catch(
+          (e) => e
+        )
+        const originalError = deepestOriginalError(error) as HTTPError
+
+        expect(originalError).toBeInstanceOf(HTTPError)
+        expect(originalError.statusCode).toEqual(404)
+      })
+
+      it("lets a genuine unexpected error propagate unchanged", async () => {
+        const upstreamError = Object.assign(new Error("Exchange is down"), {
+          statusCode: 500,
+          body: { type: "error", code: "internal_error" },
+        })
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockRejectedValue(upstreamError),
+        }
+
+        const error = await runAuthenticatedQuery(query, context).catch(
+          (e) => e
+        )
+        const originalError = deepestOriginalError(
+          error
+        ) as typeof upstreamError
+
+        expect(originalError).not.toBeInstanceOf(HTTPError)
+        expect(originalError.message).toEqual("Exchange is down")
+        expect(originalError.statusCode).toEqual(500)
+      })
+
+      it("propagates other validation error codes without reclassifying them", async () => {
+        const upstreamError = Object.assign(
+          new Error("Order is in an invalid state"),
+          {
+            statusCode: 422,
+            body: {
+              type: "validation",
+              code: "invalid_state",
+              data: { message: "Order is in an invalid state" },
+            },
+          }
+        )
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockRejectedValue(upstreamError),
+        }
+
+        const error = await runAuthenticatedQuery(query, context).catch(
+          (e) => e
+        )
+        const originalError = deepestOriginalError(
+          error
+        ) as typeof upstreamError
+
+        expect(originalError).not.toBeInstanceOf(HTTPError)
+        expect(originalError.body.code).toEqual("invalid_state")
       })
     })
   })
