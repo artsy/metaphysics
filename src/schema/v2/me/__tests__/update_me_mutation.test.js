@@ -263,6 +263,39 @@ describe("UpdateMeMutation", () => {
     expect(mockUpdateCollectorProfileIconLoader).not.toHaveBeenCalled()
   })
 
+  it("passes agreedToReceiveEmails through to the loader as snake_case", async () => {
+    const mutation = gql`
+      mutation {
+        updateMyUserProfile(input: { agreedToReceiveEmails: true }) {
+          me {
+            internalID
+          }
+        }
+      }
+    `
+
+    const mockUpdateMeLoader = jest.fn().mockReturnValue(
+      Promise.resolve({
+        id: "106",
+      })
+    )
+
+    const context = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "106",
+        }),
+      updateMeLoader: mockUpdateMeLoader,
+      updateCollectorProfileIconLoader: jest.fn(),
+    }
+
+    await runAuthenticatedQuery(mutation, context)
+
+    expect(mockUpdateMeLoader).toHaveBeenCalledWith({
+      agreed_to_receive_emails: true,
+    })
+  })
+
   it("updates phone number and returns correct region code", async () => {
     const mutation = gql`
       mutation {
