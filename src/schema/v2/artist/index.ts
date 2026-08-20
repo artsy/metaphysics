@@ -835,6 +835,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       initials: initials("name"),
       insights: ArtistInsights,
+      instagramHandle: {
+        type: GraphQLString,
+        description: "Artist's Instagram handle, without a leading @",
+        resolve: ({ instagram_handle }) => instagram_handle,
+      },
       instagramMedia: InstagramMedia,
       isConsignable: {
         type: GraphQLBoolean,
