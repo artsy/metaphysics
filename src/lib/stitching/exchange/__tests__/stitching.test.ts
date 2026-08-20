@@ -8,6 +8,7 @@ import {
 } from "./testingUtils"
 import schema from "schema/v2/schema"
 import { addMocksToSchema } from "@graphql-tools/mock"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 it("extends the Order objects", async () => {
   const mergedSchema = await getExchangeMergedSchema()
@@ -505,6 +506,24 @@ describe("submitOfferOrderWithConversation", () => {
       message: "test note",
       order_id: "order-id",
     })
+  })
+
+  it("does not call submitArtworkInquiryRequestLoader when Gravity handles inquiry creation", async () => {
+    ;(isFeatureFlagEnabled as jest.Mock).mockReturnValue(true)
+
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(result).toEqual(validOrderResult)
+    expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
   })
 
   it("does not call submitArtworkInquiryRequestLoader given inquiry offer", async () => {
