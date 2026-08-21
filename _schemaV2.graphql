@@ -66,6 +66,10 @@ type AIAgentToolResult {
 }
 
 type AIAgentTurnComplete {
+  """
+  Artworks referenced in the answer, for rendering as cards.
+  """
+  artworks: [Artwork!]
   message: String
   stopReason: String!
   toolCallCount: Int!

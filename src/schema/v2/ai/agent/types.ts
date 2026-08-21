@@ -10,6 +10,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import Artwork from "schema/v2/artwork/index"
 
 export const AIAgentRoleType = new GraphQLEnumType({
   name: "AIAgentRole",
@@ -70,6 +71,11 @@ export interface AIAgentToolResultPayload {
 export interface AIAgentTurnCompletePayload {
   __typename: "AIAgentTurnComplete"
   message: string | null
+  // Raw Gravity artwork hashes (from artworksLoader), not a bespoke shape --
+  // resolved server-side from the model's artworkIDs so display data is
+  // loader-verified rather than model-transcribed. Same shape ArtworkType's
+  // own resolvers expect elsewhere in the schema.
+  artworks: any[] | null
   stopReason: string
   toolCallCount: number
 }
@@ -123,6 +129,10 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
   name: "AIAgentTurnComplete",
   fields: {
     message: { type: GraphQLString },
+    artworks: {
+      type: new GraphQLList(new GraphQLNonNull(Artwork.type)),
+      description: "Artworks referenced in the answer, for rendering as cards.",
+    },
     stopReason: { type: new GraphQLNonNull(GraphQLString) },
     toolCallCount: { type: new GraphQLNonNull(GraphQLInt) },
   },

@@ -59,23 +59,26 @@ function stepsWithOffset<T>(steps: T[]): T[] {
   return [steps[0], ...steps]
 }
 
-function fakeContext(): ResolverContext {
+function fakeContext(
+  overrides: { artworksLoader?: jest.Mock } = {}
+): ResolverContext {
   return ({
     userID: "user-42",
     accessToken: "token",
     aiPromptTemplatesLoader: jest.fn().mockResolvedValue({ body: [] }),
+    artworksLoader: overrides.artworksLoader ?? jest.fn().mockResolvedValue([]),
   } as unknown) as ResolverContext
 }
 
-async function collectEvents(input: {
-  conversationID: string
-  message: string
-}) {
+async function collectEvents(
+  input: { conversationID: string; message: string },
+  context: ResolverContext = fakeContext()
+) {
   const events: any[] = []
   for await (const event of runTurn(
     input,
     ({} as unknown) as GraphQLSchema,
-    fakeContext()
+    context
   )) {
     events.push(event)
   }
@@ -87,18 +90,28 @@ describe("runTurn", () => {
     jest.clearAllMocks()
   })
 
-  it("maps a two-step turn (tool-call step, then a final text step) to AIAgentEvents", async () => {
+  it("maps a two-step turn (tool-call step, then a final structured-output step) to AIAgentEvents", async () => {
     // Each element of `doStream` is one API round trip ("step"); a
     // finishReason of "tool-calls" doesn't end the loop — the AI SDK runs
-    // the tool's `execute` and calls the model again automatically.
+    // the tool's `execute` and calls the model again automatically. The
+    // final step's text is JSON matching AgentOutputSchema (not prose) —
+    // that's how structured output actually renders on the wire; runTurn
+    // reconstructs incremental prose deltas from it (see the next test).
+    // The model supplies only `artworkIDs`; runTurn resolves them to real
+    // Artwork nodes via artworksLoader, so the payload's `artworks` reflects
+    // whatever the loader returns, not what the model claimed.
+    const finalJson = JSON.stringify({
+      message: "Found Andy Warhol.",
+      artworkIDs: ["andy-warhol-flowers"],
+    })
+    const artworksLoader = jest.fn().mockResolvedValue([
+      { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
+    ])
     mockModel = new MockLanguageModelV3({
       doStream: stepsWithOffset([
         {
           stream: convertArrayToReadableStream([
             { type: "stream-start", warnings: [] },
-            { type: "text-start", id: "1" },
-            { type: "text-delta", id: "1", delta: "Looking that up…" },
-            { type: "text-end", id: "1" },
             {
               type: "tool-call",
               toolCallId: "call-1",
@@ -118,7 +131,7 @@ describe("runTurn", () => {
           stream: convertArrayToReadableStream([
             { type: "stream-start", warnings: [] },
             { type: "text-start", id: "2" },
-            { type: "text-delta", id: "2", delta: "Found Andy Warhol." },
+            { type: "text-delta", id: "2", delta: finalJson },
             { type: "text-end", id: "2" },
             {
               type: "finish",
@@ -130,28 +143,98 @@ describe("runTurn", () => {
       ]),
     })
 
-    const events = await collectEvents({
-      conversationID: "c1",
-      message: "Find Warhol",
-    })
+    const events = await collectEvents(
+      { conversationID: "c1", message: "Find Warhol" },
+      fakeContext({ artworksLoader })
+    )
 
     expect(events.map((e) => e.__typename)).toEqual([
-      "AIAgentTextDelta",
       "AIAgentToolCall",
       "AIAgentToolResult",
       "AIAgentTextDelta",
       "AIAgentTurnComplete",
     ])
-    expect(events[0]).toMatchObject({ text: "Looking that up…" })
-    expect(events[1]).toMatchObject({ toolName: "query_artsy" })
-    expect(events[2]).toMatchObject({ toolName: "query_artsy", ok: true })
-    expect(events[3]).toMatchObject({ text: "Found Andy Warhol." })
-    expect(events[4]).toMatchObject({
+    expect(events[0]).toMatchObject({ toolName: "query_artsy" })
+    expect(events[1]).toMatchObject({ toolName: "query_artsy", ok: true })
+    expect(events[2]).toMatchObject({ text: "Found Andy Warhol." })
+    expect(events[3]).toMatchObject({
       stopReason: "stop",
       toolCallCount: 1,
       message: "Found Andy Warhol.",
+      artworks: [{ _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" }],
     })
+    expect(artworksLoader).toHaveBeenCalledWith({ ids: ["andy-warhol-flowers"] })
     expect(mockModel.doStreamCalls).toHaveLength(2)
+  })
+
+  it("reconstructs incremental prose deltas from chunked structured-output JSON", async () => {
+    // Real streaming delivers the final JSON in many small text-delta
+    // chunks, not one shot — split mid-field-name and mid-string-value to
+    // exercise `parsePartialJson`'s partial-buffer handling for real.
+    const chunks = [
+      '{"mess',
+      'age":"Hello ',
+      'there',
+      '!","artworkIDs":[]}',
+    ]
+    mockModel = new MockLanguageModelV3({
+      doStream: {
+        stream: convertArrayToReadableStream([
+          { type: "stream-start", warnings: [] },
+          { type: "text-start", id: "1" },
+          ...chunks.map((delta) => ({
+            type: "text-delta" as const,
+            id: "1",
+            delta,
+          })),
+          { type: "text-end", id: "1" },
+          {
+            type: "finish",
+            finishReason: { unified: "stop", raw: "end_turn" },
+            usage: FAKE_USAGE,
+          },
+        ]),
+      },
+    })
+
+    const events = await collectEvents({
+      conversationID: "c1",
+      message: "Hi",
+    })
+
+    const deltas = events.filter((e) => e.__typename === "AIAgentTextDelta")
+    expect(deltas.map((d) => d.text).join("")).toBe("Hello there!")
+    const complete = events.find((e) => e.__typename === "AIAgentTurnComplete")
+    expect(complete).toMatchObject({ message: "Hello there!", artworks: [] })
+  })
+
+  it("emits no text-delta for a chunk that never resolves to parseable JSON", async () => {
+    // Defensive case: if a step's text isn't valid/partial JSON at all (e.g.
+    // stray non-JSON content), parsePartialJson fails and nothing is yielded
+    // — this must never throw.
+    mockModel = new MockLanguageModelV3({
+      doStream: {
+        stream: convertArrayToReadableStream([
+          { type: "stream-start", warnings: [] },
+          { type: "text-start", id: "1" },
+          { type: "text-delta", id: "1", delta: "not json at all" },
+          { type: "text-end", id: "1" },
+          {
+            type: "finish",
+            finishReason: { unified: "stop", raw: "end_turn" },
+            usage: FAKE_USAGE,
+          },
+        ]),
+      },
+    })
+
+    const events = await collectEvents({
+      conversationID: "c1",
+      message: "Hi",
+    })
+
+    expect(events.map((e) => e.__typename)).toEqual(["AIAgentTurnComplete"])
+    expect(events[0]).toMatchObject({ message: null, artworks: null })
   })
 
   it("does not throw when a tool result is an error — surfaces as ok:false", async () => {
@@ -187,7 +270,10 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: "I couldn't complete that search.",
+              delta: JSON.stringify({
+                message: "I couldn't complete that search.",
+                artworkIDs: [],
+              }),
             },
             { type: "text-end", id: "1" },
             {
@@ -242,7 +328,11 @@ describe("runTurn", () => {
         stream: convertArrayToReadableStream([
           { type: "stream-start", warnings: [] },
           { type: "text-start", id: "1" },
-          { type: "text-delta", id: "1", delta: "Hello!" },
+          {
+            type: "text-delta",
+            id: "1",
+            delta: JSON.stringify({ message: "Hello!", artworkIDs: [] }),
+          },
           { type: "text-end", id: "1" },
           {
             type: "finish",
@@ -266,6 +356,7 @@ describe("runTurn", () => {
       stopReason: "stop",
       toolCallCount: 0,
       message: "Hello!",
+      artworks: [],
     })
   })
 

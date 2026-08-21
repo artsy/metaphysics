@@ -41,7 +41,12 @@ const QUERY = `
       ... on AIAgentTextDelta { text }
       ... on AIAgentToolCall { toolName summary }
       ... on AIAgentToolResult { toolName ok summary }
-      ... on AIAgentTurnComplete { message stopReason toolCallCount }
+      ... on AIAgentTurnComplete {
+        message
+        stopReason
+        toolCallCount
+        artworks { internalID slug title artistNames saleMessage }
+      }
     }
   }
 `
@@ -169,6 +174,17 @@ async function sendTurn(
           break
         case "AIAgentTurnComplete":
           assistantText = event.message
+          // A terminal has no card UI, so artworks render as a compact list
+          // here; a web/mobile client would use the same `artworks` field
+          // to render image cards instead of parsing them out of `message`.
+          if (event.artworks?.length) {
+            process.stdout.write(`\n${dim("Artworks:")}\n`)
+            for (const artwork of event.artworks) {
+              const price = artwork.saleMessage ? ` — ${artwork.saleMessage}` : ""
+              const artist = artwork.artistNames ? `${artwork.artistNames}, ` : ""
+              process.stdout.write(dim(`  • ${artist}${artwork.title}${price}\n`))
+            }
+          }
           process.stdout.write(
             `\n${dim(`(stopReason: ${event.stopReason}, ${event.toolCallCount} tool call(s))`)}\n`
           )
