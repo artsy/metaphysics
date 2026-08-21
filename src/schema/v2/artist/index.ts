@@ -439,6 +439,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             limit: 1,
           }).then((articles) => first(articles.results)),
       },
+      editorialFeature: {
+        type: Article.type,
+        description:
+          "The most recent published editorial article featuring this artist",
+        resolve: ({ _id }, _options, { articlesLoader }) =>
+          articlesLoader({
+            published: true,
+            artist_id: _id,
+            sort: "-published_at",
+            limit: 1,
+          }).then((articles) => first(articles.results)),
+      },
       biographyBlurb: {
         args: {
           partnerBio: {

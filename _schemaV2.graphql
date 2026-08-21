@@ -2503,6 +2503,11 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   duplicates: [Artist]
 
   """
+  The most recent published editorial article featuring this artist
+  """
+  editorialFeature: Article
+
+  """
   Custom-sorted list of shows for an artist, in order of significance.
   """
   exhibitionHighlights(
