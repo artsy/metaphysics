@@ -14,6 +14,11 @@ import { BodyAndHeaders } from "lib/loaders"
  * - `x-user-id` header set in your graphiql client
  */
 
+// Checks truthiness through an opaque function boundary rather than an inline
+// condition, so TS doesn't narrow the argument's declared type to "always
+// defined" and flag the call site as dead code.
+const isPresent = (value: unknown): boolean => Boolean(value)
+
 interface LotStandingResponse {
   isHighestBidder: boolean
   lot: {
@@ -102,14 +107,22 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     active: Array<MyBid>
     closed: Array<MyBid>
   } | null> => {
+    // saleArtworksLoader/saleArtworksAllLoader/salesLoaderWithHeaders/saleLoader
+    // are also registered in the unauthenticated loader set, so ResolverContext
+    // types their merged value as unconditionally defined — TS 5.9 (correctly,
+    // for that type) reports a direct truthiness check on them as always-true.
+    // Checking via `isPresent` instead of inline `&&` preserves the original
+    // runtime guard exactly (still returns null if any loader is actually
+    // missing, which some tests construct a context without) without asserting
+    // to the compiler that these can't be undefined.
     if (
       !(
         causalityGraphQLLoader &&
         meLoader &&
-        saleArtworksLoader &&
-        saleArtworksAllLoader &&
-        salesLoaderWithHeaders &&
-        saleLoader &&
+        isPresent(saleArtworksLoader) &&
+        isPresent(saleArtworksAllLoader) &&
+        isPresent(salesLoaderWithHeaders) &&
+        isPresent(saleLoader) &&
         lotStandingLoader
       )
     ) {

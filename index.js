@@ -51,7 +51,17 @@ if (enableAsyncStackTraces) {
 // express.
 const app = require("express")()
 
-app.use(compression())
+// `compressible` has no special case for `text/event-stream` (it falls
+// through to the general `^text/` rule and returns true), so without this
+// filter zlib would buffer the AI agent subscription's SSE stream and defeat
+// incremental delivery.
+app.use(
+  compression({
+    filter: (req, res) =>
+      res.getHeader("Content-Type") !== "text/event-stream" &&
+      compression.filter(req, res),
+  })
+)
 
 xapp.on("error", (err) => {
   error(

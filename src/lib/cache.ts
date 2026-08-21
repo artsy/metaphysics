@@ -110,7 +110,7 @@ function _get<T>(key) {
         if (CACHE_COMPRESSION_DISABLED) {
           resolve(JSON.parse(data.toString()))
         } else {
-          zlib.inflate(Buffer.from(data, "base64"), (er, inflatedData) => {
+          zlib.inflate(Uint8Array.from(Buffer.from(data, "base64")), (er, inflatedData) => {
             if (er) {
               reject(er)
             } else {
