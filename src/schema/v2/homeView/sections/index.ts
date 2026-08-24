@@ -12,7 +12,6 @@ import { ExploreByCategory } from "./ExploreByCategory"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { GalleriesNearYou } from "./GalleriesNearYou"
 import { HeroUnits } from "./HeroUnits"
-import { FoundationsHeroUnit } from "./FoundationsHeroUnit"
 import { LatestActivity } from "./LatestActivity"
 import { LatestArticles } from "./LatestArticles"
 import { LatestAuctionResults } from "./LatestAuctionResults"
@@ -64,7 +63,6 @@ const sections: HomeViewSection[] = [
   DiscoverSomethingNew,
   ExploreByCategory,
   FeaturedFairs,
-  FoundationsHeroUnit,
   GalleriesNearYou,
   HeroUnits,
   InfiniteDiscovery,
