@@ -18,8 +18,6 @@ export function delegateToSchema<TContext = Record<string, unknown>>(
     | undefined
   const legacy = info?.mergeInfo?.delegateToSchema
   if (typeof legacy === "function") {
-    // TContext is generic here but delegateToSchema's own signature is fixed
-    // to Record<string, any> — safe to widen at the call boundary.
     return legacy(options as IDelegateToSchemaOptions<Record<string, any>>)
   }
 
