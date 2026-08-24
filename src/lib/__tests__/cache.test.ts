@@ -16,9 +16,7 @@ function parseCacheResponse(data, cacheCompressionDisabled) {
   if (cacheCompressionDisabled) {
     return JSON.parse(data)
   } else {
-    return JSON.parse(
-      zlib.inflateSync(Uint8Array.from(Buffer.from(data, "base64"))).toString()
-    )
+    return JSON.parse(zlib.inflateSync(Buffer.from(data, "base64")).toString())
   }
 }
 
