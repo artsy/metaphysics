@@ -18,7 +18,7 @@ export function delegateToSchema<TContext = Record<string, unknown>>(
     | undefined
   const legacy = info?.mergeInfo?.delegateToSchema
   if (typeof legacy === "function") {
-    return legacy(options)
+    return legacy(options as IDelegateToSchemaOptions<Record<string, any>>)
   }
 
   // @graphql-tools/delegate v10+ tries to reuse the caller's argument AST when
@@ -43,5 +43,7 @@ export function delegateToSchema<TContext = Record<string, unknown>>(
     options = { ...options, info: { ...info, fieldNodes: newFieldNodes } }
   }
 
-  return realDelegateToSchema(options)
+  return realDelegateToSchema(
+    options as IDelegateToSchemaOptions<Record<string, any>>
+  )
 }

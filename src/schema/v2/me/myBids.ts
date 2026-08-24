@@ -9,6 +9,13 @@ import { SaleArtworkType } from "../sale_artwork"
 import { BodyAndHeaders } from "lib/loaders"
 
 /**
+ * Checks truthiness through an opaque function boundary rather than an inline
+ * condition, so TS doesn't flag a check on an always-defined type as dead code.
+ * Narrows, so it works on genuinely-optional values too.
+ */
+const isPresent = <T>(value: T): value is NonNullable<T> => Boolean(value)
+
+/**
  * Reader take note! To work on this section of the codebase one needs things:
  * - CAUSALITY_TOKEN, set in .env. This can be grabbed via hokusai
  * - `x-user-id` header set in your graphiql client
@@ -103,14 +110,21 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     closed: Array<MyBid>
   } | null> => {
     if (
+      // saleArtworks/saleArtworksAll/salesWithHeaders/sale loaders are also
+      // registered in the *unauthenticated* loader set, so ResolverContext
+      // types them as unconditionally defined and TS 5.9 (correctly, for that
+      // type) reports a direct truthiness check on them as always-true. Going
+      // through `isPresent` preserves the original runtime guard exactly — this
+      // still returns null if a loader is actually missing, which some tests
+      // and homeView callers construct a partial context without.
       !(
-        causalityGraphQLLoader &&
-        meLoader &&
-        saleArtworksLoader &&
-        saleArtworksAllLoader &&
-        salesLoaderWithHeaders &&
-        saleLoader &&
-        lotStandingLoader
+        isPresent(causalityGraphQLLoader) &&
+        isPresent(meLoader) &&
+        isPresent(saleArtworksLoader) &&
+        isPresent(saleArtworksAllLoader) &&
+        isPresent(salesLoaderWithHeaders) &&
+        isPresent(saleLoader) &&
+        isPresent(lotStandingLoader)
       )
     ) {
       return null
