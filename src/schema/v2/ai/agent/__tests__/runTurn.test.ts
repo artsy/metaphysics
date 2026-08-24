@@ -41,10 +41,24 @@ jest.mock("../tools", () => {
   }
 })
 
+// Per-user rate limiting is unit-tested in lib/__tests__/rateLimitByUser.test.ts;
+// here we only need to control its verdict. Note the real limiter degrades open
+// under the test memcached mock (which has no `incr`/`add`), so without this the
+// other tests in this file would be unaffected anyway.
+const mockRateLimitByUser = jest.fn()
+jest.mock("lib/rateLimitByUser", () => ({
+  rateLimitByUser: (...args: any[]) => mockRateLimitByUser(...args),
+}))
+
 import { runTurn } from "../runTurn"
 
 const FAKE_USAGE = {
-  inputTokens: { total: 10, noCache: 10, cacheRead: undefined, cacheWrite: undefined },
+  inputTokens: {
+    total: 10,
+    noCache: 10,
+    cacheRead: undefined,
+    cacheWrite: undefined,
+  },
   outputTokens: { total: 10, text: 10, reasoning: undefined },
   totalTokens: 20,
 }
@@ -88,6 +102,7 @@ async function collectEvents(
 describe("runTurn", () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
   })
 
   it("maps a two-step turn (tool-call step, then a final structured-output step) to AIAgentEvents", async () => {
@@ -104,9 +119,11 @@ describe("runTurn", () => {
       message: "Found Andy Warhol.",
       artworkIDs: ["andy-warhol-flowers"],
     })
-    const artworksLoader = jest.fn().mockResolvedValue([
-      { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
-    ])
+    const artworksLoader = jest
+      .fn()
+      .mockResolvedValue([
+        { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
+      ])
     mockModel = new MockLanguageModelV3({
       doStream: stepsWithOffset([
         {
@@ -117,7 +134,8 @@ describe("runTurn", () => {
               toolCallId: "call-1",
               toolName: "query_artsy",
               input: JSON.stringify({
-                query: '{ artistsConnection(term: "Warhol", first: 5) { edges { node { name } } } }',
+                query:
+                  '{ artistsConnection(term: "Warhol", first: 5) { edges { node { name } } } }',
               }),
             },
             {
@@ -161,9 +179,13 @@ describe("runTurn", () => {
       stopReason: "stop",
       toolCallCount: 1,
       message: "Found Andy Warhol.",
-      artworks: [{ _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" }],
+      artworks: [
+        { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
+      ],
     })
-    expect(artworksLoader).toHaveBeenCalledWith({ ids: ["andy-warhol-flowers"] })
+    expect(artworksLoader).toHaveBeenCalledWith({
+      ids: ["andy-warhol-flowers"],
+    })
     expect(mockModel.doStreamCalls).toHaveLength(2)
   })
 
@@ -171,12 +193,7 @@ describe("runTurn", () => {
     // Real streaming delivers the final JSON in many small text-delta
     // chunks, not one shot — split mid-field-name and mid-string-value to
     // exercise `parsePartialJson`'s partial-buffer handling for real.
-    const chunks = [
-      '{"mess',
-      'age":"Hello ',
-      'there',
-      '!","artworkIDs":[]}',
-    ]
+    const chunks = ['{"mess', 'age":"Hello ', "there", '!","artworkIDs":[]}']
     mockModel = new MockLanguageModelV3({
       doStream: {
         stream: convertArrayToReadableStream([
@@ -253,7 +270,8 @@ describe("runTurn", () => {
               toolCallId: "call-1",
               toolName: "query_artsy",
               input: JSON.stringify({
-                query: "{ artworksConnection(first: 5) { edges { node { title } } } }",
+                query:
+                  "{ artworksConnection(first: 5) { edges { node { title } } } }",
               }),
             },
             {
@@ -375,7 +393,8 @@ describe("runTurn", () => {
           toolCallId: "call-1",
           toolName: "query_artsy",
           input: JSON.stringify({
-            query: '{ artistsConnection(term: "Warhol", first: 5) { edges { node { name } } } }',
+            query:
+              '{ artistsConnection(term: "Warhol", first: 5) { edges { node { name } } } }',
           }),
         },
         {
@@ -428,5 +447,57 @@ describe("runTurn", () => {
 
     const signal = mockModel.doStreamCalls[0].abortSignal
     expect(signal?.aborted).toBe(true)
+  })
+  describe("per-user rate limiting", () => {
+    it("checks the limit against the calling user before any model call", async () => {
+      mockModel = new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+          ]),
+        },
+      })
+
+      await collectEvents({ conversationID: "c1", message: "Hi" })
+
+      expect(mockRateLimitByUser).toHaveBeenCalledWith(
+        expect.objectContaining({ scope: "ai_agent_turn", userID: "user-42" })
+      )
+    })
+
+    it("yields a single rate_limited event and never calls the model", async () => {
+      mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 31 })
+      mockModel = new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+          ]),
+        },
+      })
+
+      const events = await collectEvents({
+        conversationID: "c1",
+        message: "Hi",
+      })
+
+      expect(events).toEqual([
+        {
+          __typename: "AIAgentTurnComplete",
+          message: null,
+          artworks: null,
+          stopReason: "rate_limited",
+          toolCallCount: 0,
+        },
+      ])
+      expect(mockModel.doStreamCalls).toHaveLength(0)
+      expect(mockToolExecute).not.toHaveBeenCalled()
+    })
+
+    it("does not load the system prompt when rate limited", async () => {
+      mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 31 })
+      const context = fakeContext()
+      await collectEvents({ conversationID: "c1", message: "Hi" }, context)
+      expect(context.aiPromptTemplatesLoader).not.toHaveBeenCalled()
+    })
   })
 })

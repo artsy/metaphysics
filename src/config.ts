@@ -5,6 +5,8 @@ import "./lib/loadenv"
 const {
   AI_AGENT_MAX_ITERATIONS,
   AI_AGENT_MODEL,
+  AI_AGENT_RATE_LIMIT_MAX,
+  AI_AGENT_RATE_LIMIT_WINDOW_MS,
   AI_AGENT_TURN_TIMEOUT_MS,
   ANTHROPIC_API_KEY,
   ARTICLE_REQUEST_THROTTLE_MS,
@@ -132,6 +134,9 @@ function IntWithDefault(value: any | undefined, defaultValue: number): number {
 export default {
   AI_AGENT_MAX_ITERATIONS: Number(AI_AGENT_MAX_ITERATIONS) || 6,
   AI_AGENT_MODEL: AI_AGENT_MODEL || "claude-sonnet-5",
+  AI_AGENT_RATE_LIMIT_MAX: Number(AI_AGENT_RATE_LIMIT_MAX) || 30,
+  AI_AGENT_RATE_LIMIT_WINDOW_MS:
+    Number(AI_AGENT_RATE_LIMIT_WINDOW_MS) || 60 * 60 * 1000,
   AI_AGENT_TURN_TIMEOUT_MS: Number(AI_AGENT_TURN_TIMEOUT_MS) || 60000,
   // Deliberately not in `mustHave` — the AI agent field is feature-flagged and
   // should not prevent boot when unset.

@@ -10,6 +10,7 @@ import * as Sentry from "@sentry/node"
 import config from "config"
 import { z } from "zod"
 import { anthropicProvider } from "lib/apis/anthropic"
+import { rateLimitByUser } from "lib/rateLimitByUser"
 import { ResolverContext } from "types/graphql"
 import { buildAgentTools, summarizeToolCall, AIAgentToolRunResult } from "./tools"
 import {
@@ -164,6 +165,28 @@ export async function* runTurn(
   schema: GraphQLSchema,
   context: ResolverContext
 ): AsyncGenerator<AIAgentEventPayload> {
+  // Before any model spend: one turn can be several Anthropic calls, and the
+  // IP-based limiter doesn't cover this field (see lib/rateLimitByUser).
+  // Enforced here rather than in `subscribe` because that must stay
+  // synchronous, and this needs a memcached round-trip.
+  const { allowed } = await rateLimitByUser({
+    scope: "ai_agent_turn",
+    userID: context.userID as string,
+    max: config.AI_AGENT_RATE_LIMIT_MAX,
+    windowSeconds: Math.ceil(config.AI_AGENT_RATE_LIMIT_WINDOW_MS / 1000),
+  })
+  if (!allowed) {
+    const payload: AIAgentTurnCompletePayload = {
+      __typename: "AIAgentTurnComplete",
+      message: null,
+      artworks: null,
+      stopReason: "rate_limited",
+      toolCallCount: 0,
+    }
+    yield payload
+    return
+  }
+
   const provider = anthropicProvider()
   const abortController = new AbortController()
   const timeout = setTimeout(
