@@ -1,10 +1,5 @@
-import {
-  streamText,
-  stepCountIs,
-  parsePartialJson,
-  Output,
-  type ModelMessage,
-} from "ai"
+import { streamText, stepCountIs, parsePartialJson, Output } from "ai"
+import type { ModelMessage } from "ai"
 import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
@@ -12,7 +7,11 @@ import { z } from "zod"
 import { anthropicProvider } from "lib/apis/anthropic"
 import { rateLimitByUser } from "lib/rateLimitByUser"
 import { ResolverContext } from "types/graphql"
-import { buildAgentTools, summarizeToolCall, AIAgentToolRunResult } from "./tools"
+import {
+  buildAgentTools,
+  summarizeToolCall,
+  AIAgentToolRunResult,
+} from "./tools"
 import {
   AIAgentEventPayload,
   AIAgentTextDeltaPayload,
@@ -252,7 +251,10 @@ export async function* runTurn(
           const parsed = await parsePartialJson(jsonBuffer)
           const message = (parsed.value as { message?: unknown } | undefined)
             ?.message
-          if (typeof message === "string" && message.length > sentMessageLength) {
+          if (
+            typeof message === "string" &&
+            message.length > sentMessageLength
+          ) {
             const payload: AIAgentTextDeltaPayload = {
               __typename: "AIAgentTextDelta",
               text: message.slice(sentMessageLength),

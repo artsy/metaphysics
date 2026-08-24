@@ -1,4 +1,5 @@
-import { createAnthropic, type AnthropicProvider } from "@ai-sdk/anthropic"
+import { createAnthropic } from "@ai-sdk/anthropic"
+import type { AnthropicProvider } from "@ai-sdk/anthropic"
 import config from "config"
 
 /**

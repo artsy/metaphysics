@@ -1,5 +1,4 @@
 import config from "config"
-import { client as sharedClient } from "./cache"
 import { error } from "./loggers"
 
 /**
@@ -34,6 +33,24 @@ interface CounterClient {
 type Callback = (err: unknown, result?: number | boolean) => void
 
 const ALLOW_UNKNOWN: RateLimitResult = { allowed: true, count: null }
+
+/**
+ * Resolved lazily, on first use, rather than imported at module scope.
+ * `lib/cache` builds its memcached, dd-trace and statsd clients as import-time
+ * side effects, and those hold open sockets. A top-level import here would pull
+ * them into the import graph of every consumer — including `schema/v2`, and so
+ * `scripts/dump-schema.ts`, which has no `process.exit()` and would therefore
+ * hang forever waiting for the event loop to drain (breaking `yarn dump:staging`
+ * and the pre-commit hook).
+ */
+let sharedClient: CounterClient | undefined
+function getSharedClient(): CounterClient {
+  if (!sharedClient) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    sharedClient = require("./cache").client as CounterClient
+  }
+  return sharedClient
+}
 
 function withTimeout<T>(
   operation: (cb: Callback) => void,
@@ -75,7 +92,7 @@ export async function rateLimitByUser({
   userID,
   max,
   windowSeconds,
-  client = sharedClient as CounterClient,
+  client,
   timeoutMs = config.CACHE_RETRIEVAL_TIMEOUT_MS,
 }: {
   scope: string
@@ -92,7 +109,9 @@ export async function rateLimitByUser({
     return ALLOW_UNKNOWN
   }
   if (max <= 0) return ALLOW_UNKNOWN
-  if (typeof client.incr !== "function" || typeof client.add !== "function") {
+
+  const counter = client ?? getSharedClient()
+  if (typeof counter.incr !== "function" || typeof counter.add !== "function") {
     return ALLOW_UNKNOWN
   }
 
@@ -103,7 +122,7 @@ export async function rateLimitByUser({
     // `add` (which no-ops if a concurrent request seeded it first) and then
     // re-`incr` to pick up that request's count too.
     const incremented = await withTimeout<number | boolean>(
-      (cb) => client.incr!(key, 1, cb),
+      (cb) => counter.incr!(key, 1, cb),
       timeoutMs
     )
 
@@ -113,7 +132,7 @@ export async function rateLimitByUser({
 
     if (incremented === false) {
       const added = await withTimeout<number | boolean>(
-        (cb) => client.add!(key, 1, windowSeconds, cb),
+        (cb) => counter.add!(key, 1, windowSeconds, cb),
         timeoutMs
       )
       if (added === null) return ALLOW_UNKNOWN
@@ -121,7 +140,7 @@ export async function rateLimitByUser({
 
       // Lost the race to seed the key — count this call against the winner's.
       const retried = await withTimeout<number | boolean>(
-        (cb) => client.incr!(key, 1, cb),
+        (cb) => counter.incr!(key, 1, cb),
         timeoutMs
       )
       return typeof retried === "number"

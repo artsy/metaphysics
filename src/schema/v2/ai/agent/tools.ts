@@ -1,4 +1,5 @@
-import { jsonSchema, tool, type JSONSchema7, type Tool } from "ai"
+import { jsonSchema, tool } from "ai"
+import type { JSONSchema7, Tool } from "ai"
 import {
   DocumentNode,
   execute,
@@ -9,7 +10,8 @@ import {
   visit,
 } from "graphql"
 import depthLimit from "graphql-depth-limit"
-import { filterSchema, pruneSchema, type RootFieldFilter } from "@graphql-tools/utils"
+import { filterSchema, pruneSchema } from "@graphql-tools/utils"
+import type { RootFieldFilter } from "@graphql-tools/utils"
 import { ResolverContext } from "types/graphql"
 
 /**
