@@ -40,7 +40,7 @@ const detectId = ({ pathname, search }: URL, provider: Provider): string => {
   switch (provider) {
     case "youtube":
       return search === ""
-        ? pathname.split("/").pop()
+        ? (pathname.split("/").pop() as string)
         : parse(search.slice(1)).v
     case "vimeo":
       return pathname.split("/").pop() as string
