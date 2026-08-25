@@ -441,13 +441,22 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       latestArticle: {
         type: Article.type,
-        description: "The most recent published article featuring this artist",
-        resolve: ({ _id }, _options, { articlesLoader }) =>
+        description:
+          "The most recent published article featuring this artist, optionally limited to those published since a given date.",
+        args: {
+          publishedSince: {
+            type: GraphQLString,
+            description:
+              "Only return articles published since this ISO 8601 date.",
+          },
+        },
+        resolve: ({ _id }, { publishedSince }, { articlesLoader }) =>
           articlesLoader({
             published: true,
             artist_id: _id,
             sort: "-published_at",
             limit: 1,
+            ...(publishedSince && { published_since: publishedSince }),
           }).then((articles) => first(articles.results)),
       },
       biographyBlurb: {
