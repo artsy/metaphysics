@@ -21,7 +21,6 @@ describe("getSections", () => {
           "home-view-section-tasks",
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
-          "home-view-section-foundations-hero-unit",
           "home-view-section-recently-viewed-artworks",
           "home-view-section-infinite-discovery",
           "home-view-section-discover-something-new",
@@ -59,7 +58,6 @@ describe("getSections", () => {
 
       expect(sectionIds).toMatchInlineSnapshot(`
         [
-          "home-view-section-foundations-hero-unit",
           "home-view-section-infinite-discovery",
           "home-view-section-discover-something-new",
           "home-view-section-curators-picks-emerging",
@@ -100,7 +98,6 @@ describe("getSections", () => {
             "home-view-section-latest-activity",
             "home-view-section-new-works-for-you",
             "home-view-section-auction-lots-for-you",
-            "home-view-section-foundations-hero-unit",
             "home-view-section-recently-viewed-artworks",
             "home-view-section-infinite-discovery",
             "home-view-section-discover-something-new",
@@ -147,7 +144,6 @@ describe("getSections", () => {
             "home-view-section-tasks",
             "home-view-section-latest-activity",
             "home-view-section-new-works-for-you",
-            "home-view-section-foundations-hero-unit",
             "home-view-section-recently-viewed-artworks",
             "home-view-section-infinite-discovery",
             "home-view-section-discover-something-new",
