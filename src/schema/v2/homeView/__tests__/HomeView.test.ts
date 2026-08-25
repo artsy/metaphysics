@@ -72,12 +72,6 @@ describe("homeView", () => {
             "edges": [
               {
                 "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
-                },
-              },
-              {
-                "node": {
                   "__typename": "HomeViewSectionCard",
                   "card": {
                     "title": "Discover Daily",
@@ -222,12 +216,6 @@ describe("homeView", () => {
                   "component": {
                     "title": "New Works for You",
                   },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
                 },
               },
               {

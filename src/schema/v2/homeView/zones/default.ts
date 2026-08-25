@@ -10,7 +10,6 @@ import { ExploreByCategory } from "../sections/ExploreByCategory"
 import { FeaturedFairs } from "../sections/FeaturedFairs"
 import { GalleriesNearYou } from "../sections/GalleriesNearYou"
 import { HeroUnits } from "../sections/HeroUnits"
-import { FoundationsHeroUnit } from "../sections/FoundationsHeroUnit"
 import { LatestActivity } from "../sections/LatestActivity"
 import { LatestArticles } from "../sections/LatestArticles"
 import { LatestAuctionResults } from "../sections/LatestAuctionResults"
@@ -35,7 +34,6 @@ const SECTIONS: HomeViewSection[] = [
   Tasks,
   LatestActivity,
   NewWorksForYou,
-  FoundationsHeroUnit,
   RecentlyViewedArtworks,
   InfiniteDiscovery,
   DiscoverSomethingNew,
