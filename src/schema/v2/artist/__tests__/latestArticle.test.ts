@@ -14,12 +14,12 @@ const ARTICLE_FIXTURE = {
   published_at: "2024-01-15T00:00:00.000Z",
 }
 
-describe("Artist#editorialFeature", () => {
+describe("Artist#latestArticle", () => {
   it("returns the most recent published article featuring the artist", async () => {
     const query = gql`
       {
         artist(id: "gerhard-richter") {
-          editorialFeature {
+          latestArticle {
             slug
             title
           }
@@ -34,7 +34,7 @@ describe("Artist#editorialFeature", () => {
 
     const { artist } = await runQuery(query, { artistLoader, articlesLoader })
 
-    expect(artist.editorialFeature).toEqual({
+    expect(artist.latestArticle).toEqual({
       slug: "some-article",
       title: "Gerhard Richter at the MoMA",
     })
@@ -51,7 +51,7 @@ describe("Artist#editorialFeature", () => {
     const query = gql`
       {
         artist(id: "gerhard-richter") {
-          editorialFeature {
+          latestArticle {
             slug
           }
         }
@@ -63,10 +63,10 @@ describe("Artist#editorialFeature", () => {
 
     const { artist } = await runQuery(query, { artistLoader, articlesLoader })
 
-    expect(artist.editorialFeature).toBeNull()
+    expect(artist.latestArticle).toBeNull()
   })
 
-  it("does not call articlesLoader when editorialFeature is not requested", async () => {
+  it("does not call articlesLoader when latestArticle is not requested", async () => {
     const query = gql`
       {
         artist(id: "gerhard-richter") {

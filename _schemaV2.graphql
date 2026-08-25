@@ -2503,11 +2503,6 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   duplicates: [Artist]
 
   """
-  The most recent published editorial article featuring this artist
-  """
-  editorialFeature: Article
-
-  """
   Custom-sorted list of shows for an artist, in order of significance.
   """
   exhibitionHighlights(
@@ -2770,6 +2765,11 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   isPublic: Boolean!
   isShareable: Boolean
   last: String
+
+  """
+  The most recent published article featuring this artist
+  """
+  latestArticle: Article
   location: String
   marketingCollections(
     after: String
