@@ -295,7 +295,7 @@ export async function* runTurn(
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
             ok: false,
-            summary: String(part.error),
+            summary: "The query could not be run.",
           }
           yield payload
           break

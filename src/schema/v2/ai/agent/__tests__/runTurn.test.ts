@@ -1,4 +1,5 @@
 import { GraphQLSchema } from "graphql"
+import * as Sentry from "@sentry/node"
 import { MockLanguageModelV3, convertArrayToReadableStream } from "ai/test"
 import type { LanguageModelV3StreamResult } from "@ai-sdk/provider"
 import config from "config"
@@ -315,6 +316,87 @@ describe("runTurn", () => {
     const complete = events.find((e) => e.__typename === "AIAgentTurnComplete")
     expect(complete).toMatchObject({ stopReason: "stop" })
     expect(mockModel.doStreamCalls).toHaveLength(2)
+  })
+
+  it("keeps SDK-internal tool errors out of the client-facing summary", async () => {
+    // `tool-error` fires when the SDK throws around the tool rather than the
+    // tool returning { ok: false } -- here, an input that doesn't parse.
+    // Whatever it carries (SDK internals, the model's raw input) must not
+    // reach `summary`, which is a client-facing GraphQL field.
+    const captureException = jest
+      .spyOn(Sentry, "captureException")
+      .mockImplementation(() => "test-event-id")
+    mockToolExecute.mockRejectedValueOnce(
+      new Error("AI_ToolExecutionError: /internal/path leaked ABC-SECRET-123")
+    )
+    mockModel = new MockLanguageModelV3({
+      doStream: stepsWithOffset([
+        {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            {
+              type: "tool-call",
+              toolCallId: "call-1",
+              toolName: "query_artsy",
+              input: JSON.stringify({ query: '{ artist(id: "x") { name } }' }),
+            },
+            {
+              type: "finish",
+              finishReason: { unified: "tool-calls", raw: "tool_use" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+        {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            {
+              type: "text-delta",
+              id: "1",
+              delta: JSON.stringify({
+                message: "I couldn't run that query.",
+                artworkIDs: [],
+              }),
+            },
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      ]),
+    })
+
+    const events = await collectEvents({
+      conversationID: "c1",
+      message: "Find artworks",
+    })
+
+    const toolResult = events.find((e) => e.__typename === "AIAgentToolResult")
+    expect(toolResult).toMatchObject({
+      ok: false,
+      summary: "The query could not be run.",
+    })
+    expect(toolResult.summary).not.toMatch(/SECRET|internal\/path|AI_Tool/)
+
+    // The real error is still reported -- sanitising the client's copy must
+    // not cost us the diagnosis.
+    expect(captureException).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("ABC-SECRET-123"),
+      })
+    )
+
+    // A failed tool call is not a failed turn: the model still answers.
+    expect(events[events.length - 1]).toMatchObject({
+      __typename: "AIAgentTurnComplete",
+      stopReason: "stop",
+    })
+
+    captureException.mockRestore()
   })
 
   it("terminates with a non-throwing AIAgentTurnComplete when the stream itself errors", async () => {
