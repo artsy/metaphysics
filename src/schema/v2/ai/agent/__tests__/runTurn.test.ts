@@ -318,6 +318,92 @@ describe("runTurn", () => {
     expect(mockModel.doStreamCalls).toHaveLength(2)
   })
 
+  describe("artwork cards", () => {
+    // One text-only step whose structured output cites `artworkIDs`.
+    const modelCiting = (artworkIDs: string[]) =>
+      new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            {
+              type: "text-delta",
+              id: "1",
+              delta: JSON.stringify({ message: "Here you go.", artworkIDs }),
+            },
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+
+    const cardsFor = async (artworkIDs: string[], gravityReturns: any[]) => {
+      mockModel = modelCiting(artworkIDs)
+      const artworksLoader = jest.fn().mockResolvedValue(gravityReturns)
+      const events = await collectEvents(
+        { conversationID: "c1", message: "Find artworks" },
+        fakeContext({ artworksLoader })
+      )
+      const complete = events.find(
+        (e) => e.__typename === "AIAgentTurnComplete"
+      )
+      return complete.artworks
+    }
+
+    it("renders cards in the model's order, not Gravity's", async () => {
+      // Gravity's /artworks?ids[]= doesn't promise to echo the request order.
+      const artworks = await cardsFor(
+        ["id-c", "id-a", "id-b"],
+        [
+          { _id: "id-a", id: "slug-a" },
+          { _id: "id-b", id: "slug-b" },
+          { _id: "id-c", id: "slug-c" },
+        ]
+      )
+
+      expect(artworks.map((a) => a._id)).toEqual(["id-c", "id-a", "id-b"])
+    })
+
+    it("matches a citation by slug, which AgentOutputSchema also allows", async () => {
+      const artworks = await cardsFor(
+        ["slug-b", "id-a"],
+        [
+          { _id: "id-a", id: "slug-a" },
+          { _id: "id-b", id: "slug-b" },
+        ]
+      )
+
+      expect(artworks.map((a) => a._id)).toEqual(["id-b", "id-a"])
+    })
+
+    it("leaves no hole for an id Gravity drops (deleted, unpublished, hallucinated)", async () => {
+      const artworks = await cardsFor(
+        ["id-a", "id-missing", "id-b"],
+        [
+          { _id: "id-a", id: "slug-a" },
+          { _id: "id-b", id: "slug-b" },
+        ]
+      )
+
+      expect(artworks).toHaveLength(2)
+      expect(artworks).not.toContain(undefined)
+      expect(artworks.map((a) => a._id)).toEqual(["id-a", "id-b"])
+    })
+
+    it("renders one card per work, however many times the model cites it", async () => {
+      const artworks = await cardsFor(
+        ["id-a", "slug-a", "id-a"],
+        [{ _id: "id-a", id: "slug-a" }]
+      )
+
+      expect(artworks).toHaveLength(1)
+    })
+  })
+
   it("keeps SDK-internal tool errors out of the client-facing summary", async () => {
     // `tool-error` fires when the SDK throws around the tool rather than the
     // tool returning { ok: false } -- here, an input that doesn't parse.

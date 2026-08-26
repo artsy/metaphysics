@@ -110,13 +110,48 @@ const AgentOutputSchema = z.object({
     ),
 })
 
+/**
+ * Gravity's /artworks?ids[]= neither guarantees response order nor returns a
+ * placeholder for an id it can't resolve, so what comes back is a set, not a
+ * sequence -- see recentlySoldArtworks, which re-joins on `_id` for the same
+ * reason. Restore the model's ordering, which is the only relevance signal the
+ * cards carry, and index on both `_id` and `id` because AgentOutputSchema lets
+ * the model cite either an internalID or a slug.
+ *
+ * Ids that resolve to nothing (deleted, unpublished, or hallucinated) just
+ * don't get a card: per AgentOutputSchema the model supplies identifiers and
+ * never display data, so a bad one fails as a missing card, never a wrong one.
+ */
+function orderArtworksByCitedIDs(artworks: any[], citedIDs: string[]) {
+  const byIdentifier = new Map<string, any>()
+  artworks.forEach((artwork) => {
+    if (artwork?._id) byIdentifier.set(artwork._id, artwork)
+    if (artwork?.id) byIdentifier.set(artwork.id, artwork)
+  })
+
+  const ordered: any[] = []
+  // Deduped on the resolved artwork rather than the id, which also collapses a
+  // work the model happened to cite twice, once by internalID and once by slug.
+  const seen = new Set<any>()
+  citedIDs.forEach((id) => {
+    const artwork = byIdentifier.get(id)
+    if (!artwork || seen.has(artwork)) return
+    seen.add(artwork)
+    ordered.push(artwork)
+  })
+
+  return ordered
+}
+
 async function resolveArtworks(
   ids: string[],
   context: ResolverContext
 ): Promise<unknown[]> {
   if (ids.length === 0) return []
+  const citedIDs = ids.slice(0, MAX_ARTWORK_IDS)
   try {
-    return await context.artworksLoader({ ids: ids.slice(0, MAX_ARTWORK_IDS) })
+    const artworks = await context.artworksLoader({ ids: citedIDs })
+    return orderArtworksByCitedIDs(artworks, citedIDs)
   } catch (error) {
     Sentry.captureException(error)
     return []
