@@ -184,6 +184,125 @@ describe("runQueryArtsyTool", () => {
   })
 })
 
+describe("introspection", () => {
+  const context = ({} as unknown) as ResolverContext
+
+  it("allows `__type`, which the system prompt tells the model to use", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ __type(name: "Artwork") { fields { name type { name kind } } } }`,
+      },
+      schema,
+      context
+    )
+
+    expect(result.ok).toBe(true)
+    const data = JSON.parse(result.content)
+    expect(data.__type.fields.length).toBeGreaterThan(0)
+  })
+
+  it("rejects `__schema`, which would return the entire type map", async () => {
+    const result = await runQueryArtsyTool(
+      { query: `{ __schema { types { name fields { name } } } }` },
+      schema,
+      context
+    )
+
+    expect(result.ok).toBe(false)
+    expect(result.content).toMatch(/`__schema` is not available/)
+  })
+
+  it("points the model at the affordance that does work", async () => {
+    const result = await runQueryArtsyTool(
+      { query: `{ __schema { queryType { name } } }` },
+      schema,
+      context
+    )
+
+    expect(result.content).toMatch(/__type\(name: "TypeName"\)/)
+  })
+
+  it("catches `__schema` behind an alias or a fragment", async () => {
+    const aliased = await runQueryArtsyTool(
+      { query: `{ s: __schema { types { name } } }` },
+      schema,
+      context
+    )
+    const fragmented = await runQueryArtsyTool(
+      {
+        query: `{ ...F } fragment F on Query { __schema { types { name } } }`,
+      },
+      schema,
+      context
+    )
+
+    expect(aliased.ok).toBe(false)
+    expect(fragmented.ok).toBe(false)
+  })
+})
+
+describe("tool result size cap", () => {
+  // Depth, page size and complexity all price the *shape* of a query; none of
+  // them can see how many bytes the resolvers actually return.
+  const contextReturning = (name: string) =>
+    (({
+      artistLoader: jest.fn().mockResolvedValue({
+        _id: "4d8b92b34eb68a1b2c000452",
+        id: "andy-warhol",
+        name,
+      }),
+    } as unknown) as ResolverContext)
+
+  const query = `{ artist(id: "andy-warhol") { name } }`
+
+  it("passes a normal-sized result through untouched, as parseable JSON", async () => {
+    const result = await runQueryArtsyTool(
+      { query },
+      schema,
+      contextReturning("Andy Warhol")
+    )
+
+    expect(result.ok).toBe(true)
+    expect(JSON.parse(result.content)).toEqual({
+      artist: { name: "Andy Warhol" },
+    })
+  })
+
+  it("truncates a result that would otherwise flood the model's context", async () => {
+    const result = await runQueryArtsyTool(
+      { query },
+      schema,
+      contextReturning("x".repeat(200_000))
+    )
+
+    // Still a success -- the data is usable, just incomplete.
+    expect(result.ok).toBe(true)
+    expect(Buffer.byteLength(result.content, "utf8")).toBeLessThan(50_000)
+  })
+
+  it("tells the model the result is incomplete and how to narrow it", async () => {
+    const result = await runQueryArtsyTool(
+      { query },
+      schema,
+      contextReturning("x".repeat(200_000))
+    )
+
+    expect(result.content).toMatch(/\[Truncated:/)
+    expect(result.content).toMatch(/fewer fields, or a smaller `first`/)
+  })
+
+  it("does not split a multi-byte character at the cut point", async () => {
+    const result = await runQueryArtsyTool(
+      { query },
+      schema,
+      // 3 bytes per character, so the cap lands mid-character.
+      contextReturning("世".repeat(100_000))
+    )
+
+    expect(result.content).not.toMatch(/\uFFFD/)
+  })
+})
+
 describe("summarizeToolCall", () => {
   it("extracts the root field being queried", () => {
     expect(

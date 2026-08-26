@@ -12,6 +12,7 @@ import {
   validate,
   visit,
 } from "graphql"
+import type { ValidationRule } from "graphql"
 import depthLimit from "graphql-depth-limit"
 import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
 import type { ComplexityEstimator } from "graphql-query-complexity"
@@ -84,6 +85,58 @@ const PAGE_SIZE_ARGS = new Set(["first", "last", "size"])
  * once per outer node. This budget bounds the product.
  */
 const MAX_QUERY_COMPLEXITY = 300
+
+/**
+ * `__type` is the introspection entry point worth having: one type at a time,
+ * a few KB, and what the system prompt already tells the model to reach for.
+ * `__schema` returns the entire type map — measured at 179 KB for field names
+ * alone and 685 KB with args and descriptions, i.e. most of the model's
+ * context window spent in a single tool call. Reject it at validation with a
+ * pointer to `__type`, so the model redirects instead of burning a step
+ * discovering the limit.
+ */
+const noFullSchemaIntrospection: ValidationRule = (context) => ({
+  Field(node) {
+    if (node.name.value !== "__schema") return
+    context.reportError(
+      new GraphQLError(
+        "`__schema` is not available — it returns the entire type map. " +
+          'Introspect one type at a time with `__type(name: "TypeName")`.',
+        { nodes: node }
+      )
+    )
+  },
+})
+
+/**
+ * Backstop for everything the validation rules can't price: a query can pass
+ * the depth, page-size and complexity caps and still serialize to something
+ * enormous (long biographies, a wide `__type`, a full page of verbose nodes).
+ * Sized to clear the introspection shape the system prompt recommends (~17 KB
+ * for `__type` on Artwork with field types) and a full 20-node page, while
+ * bounding one tool call at ~12k tokens.
+ */
+const MAX_TOOL_RESULT_BYTES = 48_000
+
+function serializeToolResult(data: unknown): string {
+  const content = JSON.stringify(data)
+  const buffer = Buffer.from(content, "utf8")
+  if (buffer.byteLength <= MAX_TOOL_RESULT_BYTES) return content
+
+  // Cutting mid-value leaves invalid JSON, hence the trailing note: the model
+  // has to know the data is incomplete rather than read it as the whole result
+  // set. The replace() drops a partial multi-byte character at the boundary.
+  const truncated = buffer
+    .subarray(0, MAX_TOOL_RESULT_BYTES)
+    .toString("utf8")
+    .replace(/\uFFFD+$/, "")
+
+  return (
+    `${truncated}\n\n[Truncated: the result exceeded ${MAX_TOOL_RESULT_BYTES} ` +
+    "bytes and is cut off mid-value. Re-run requesting fewer fields, or a " +
+    "smaller `first`, for a complete result.]"
+  )
+}
 
 /**
  * Multiplies a paginated field's children by its page size, which is what makes
@@ -219,6 +272,7 @@ export async function runQueryArtsyTool(
   const validationErrors = validate(narrowSchema, document, [
     ...specifiedRules,
     depthLimit(MAX_QUERY_DEPTH),
+    noFullSchemaIntrospection,
   ])
   if (validationErrors.length > 0) {
     return {
@@ -267,7 +321,7 @@ export async function runQueryArtsyTool(
     return { ok: false, content: sanitizeExecutionErrors(result.errors) }
   }
 
-  return { ok: true, content: JSON.stringify(result.data) }
+  return { ok: true, content: serializeToolResult(result.data) }
 }
 
 /**
@@ -289,7 +343,8 @@ export function buildAgentTools(
         "artworksConnection, artistsConnection, artist, artwork, " +
         "showsConnection, matchConnection. Use GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
-        "discover the fields and args available on any type. Always " +
+        "discover the fields and args available on any type — one type at a " +
+        "time, as `__schema` is not available. Always " +
         "request `internalID` and `slug` for anything you might reference " +
         `again. \`first\`/\`last\`/\`size\` are capped at ${MAX_PAGE_SIZE}. ` +
         "Never pass mode: INTERNAL_AUTOSUGGEST to matchConnection — it " +
