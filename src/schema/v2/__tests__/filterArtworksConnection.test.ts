@@ -1709,6 +1709,98 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("collector signal filters", () => {
+    const buildContext = () => {
+      const filterArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          hits: [{ id: "artwork1", title: "Artwork 1" }],
+          aggregations: { total: { value: 1 } },
+        })
+      )
+
+      return {
+        filterArtworksLoader,
+        context: {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: { filterArtworksLoader },
+        },
+      }
+    }
+
+    const queryWithInput = (input) => gql`
+        {
+          artworksConnection(input: { ${input} aggregations: [TOTAL], first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+    it("translates curatorsPick into marketing_collection_id", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          marketing_collection_id: "curators-picks-emerging-artists",
+        })
+      )
+    })
+
+    it("does not leak curators_pick through to the loader", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ curators_pick: expect.anything() })
+      )
+    })
+
+    it("passes increased_interest_signal to the loader", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("increasedInterest: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ increased_interest_signal: true })
+      )
+    })
+
+    it("passes both signals independently", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(
+        queryWithInput("curatorsPick: true, increasedInterest: true"),
+        context
+      )
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          marketing_collection_id: "curators-picks-emerging-artists",
+          increased_interest_signal: true,
+        })
+      )
+    })
+
+    it("omits both when not provided", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput(""), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          marketing_collection_id: expect.anything(),
+          increased_interest_signal: expect.anything(),
+        })
+      )
+    })
+  })
+
   describe(`completenessTier filter`, () => {
     let context
 

@@ -252,9 +252,11 @@ const getActivePartnerOffer = async (artwork, ctx) => {
   return partnerOffers.body?.find((po) => po.active)
 }
 
-const getIsCuratorsPick = async (artwork, ctx) => {
-  const CURATED_COLLECTION_SLUGS = ["curators-picks-emerging-artists"]
+export const CURATORS_PICK_COLLECTION_SLUG = "curators-picks-emerging-artists"
 
+const CURATED_COLLECTION_SLUGS = [CURATORS_PICK_COLLECTION_SLUG]
+
+const getIsCuratorsPick = async (artwork, ctx) => {
   const checks = await Promise.all(
     CURATED_COLLECTION_SLUGS.map(async (slug) => {
       const collection = await ctx.marketingCollectionLoader(slug)
