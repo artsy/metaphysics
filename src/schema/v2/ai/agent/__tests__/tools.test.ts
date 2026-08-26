@@ -100,7 +100,9 @@ describe("runQueryArtsyTool", () => {
     const context = ({ artworkLoader } as unknown) as ResolverContext
 
     const result = await runQueryArtsyTool(
-      { query: '{ artwork(id: "some-artwork") { attributionClass { name } } }' },
+      {
+        query: '{ artwork(id: "some-artwork") { attributionClass { name } } }',
+      },
       schema,
       context
     )
@@ -142,7 +144,10 @@ describe("runQueryArtsyTool", () => {
 
   it("rejects a page-size argument over the max, whether literal or via variables", async () => {
     const literal = await runQueryArtsyTool(
-      { query: '{ artistsConnection(term: "warhol", first: 500) { totalCount } }' },
+      {
+        query:
+          '{ artistsConnection(term: "warhol", first: 500) { totalCount } }',
+      },
       schema,
       {} as ResolverContext
     )
@@ -152,7 +157,7 @@ describe("runQueryArtsyTool", () => {
     const viaVariable = await runQueryArtsyTool(
       {
         query:
-          "query($first: Int!) { artistsConnection(term: \"warhol\", first: $first) { totalCount } }",
+          'query($first: Int!) { artistsConnection(term: "warhol", first: $first) { totalCount } }',
         variables: { first: 500 },
       },
       schema,
@@ -188,5 +193,137 @@ describe("summarizeToolCall", () => {
   it("falls back to a generic label when the root field can't be identified", () => {
     expect(summarizeToolCall({ query: "not graphql" })).toBe("Querying Artsy…")
     expect(summarizeToolCall({})).toBe("Querying Artsy…")
+  })
+})
+
+describe("query complexity budget", () => {
+  // These assertions are all about *validation*, which runs before execution,
+  // so no loaders are needed — an empty context is enough.
+  const context = ({} as unknown) as ResolverContext
+
+  // Depth (8) and page size (20) are per-level caps; cost is their product.
+  const NESTED_CONNECTIONS = `{
+    artworksConnection(keyword: "a", first: 20) {
+      edges { node { artist {
+        artworksConnection(first: 20) { edges { node { title } } }
+      } } }
+    }
+  }`
+
+  it("rejects a nested connection that passes both the depth and page-size caps", async () => {
+    const result = await runQueryArtsyTool(
+      { query: NESTED_CONNECTIONS },
+      schema,
+      context
+    )
+    expect(result.ok).toBe(false)
+    expect(result.content).toMatch(/too expensive/i)
+    // Proves it is the complexity rule rejecting it, not depth or page size.
+    expect(result.content).not.toMatch(
+      /maximum operation depth|Page size too large/i
+    )
+  })
+
+  it("explains how to make the query cheaper", async () => {
+    const result = await runQueryArtsyTool(
+      { query: NESTED_CONNECTIONS },
+      schema,
+      context
+    )
+    expect(result.content).toMatch(
+      /Reduce `first`, or split this into separate queries/
+    )
+  })
+
+  it("allows the same shape at a smaller page size", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(keyword: "a", first: 5) { edges { node { artist { artworksConnection(first: 5) { edges { node { title } } } } } } } }`,
+      },
+      schema,
+      context
+    )
+    expect(result.content).not.toMatch(/too expensive/i)
+  })
+
+  it.each([
+    [
+      "match artist",
+      `{ matchConnection(term: "banksy", entities: [ARTIST], first: 1) { edges { node { ... on Artist { internalID slug name } } } } }`,
+    ],
+    [
+      "artist details",
+      `{ artist(id: "banksy") { internalID slug name birthday nationality biographyBlurb { text } } }`,
+    ],
+    [
+      "artworks by artist",
+      `{ artworksConnection(artistIDs: ["a"], priceRange: "1-2", first: 20) { edges { node { internalID slug title artistNames saleMessage } } } }`,
+    ],
+    [
+      "shows",
+      `{ showsConnection(term: "London", status: RUNNING, first: 20) { edges { node { internalID slug name startAt endAt } } } }`,
+    ],
+  ])("stays within budget for the %s recipe", async (_name, query) => {
+    const result = await runQueryArtsyTool({ query }, schema, context)
+    expect(result.content).not.toMatch(/too expensive/i)
+  })
+
+  // Scalars are free, so a wide-but-flat selection (one upstream call) must not
+  // be penalised like a nested one.
+  it("does not penalise a wide but flat selection", async () => {
+    const wide = [
+      "internalID",
+      "slug",
+      "title",
+      "artistNames",
+      "saleMessage",
+      "href",
+      "date",
+      "medium",
+      "category",
+      "isSaved",
+      "published",
+      "availability",
+      "priceCurrency",
+      "imageRights",
+      "provenance",
+      "exhibitionHistory",
+      "literature",
+      "signature",
+      "additionalInformation",
+    ].join(" ")
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(keyword: "a", first: 20) { edges { node { ${wide} } } } }`,
+      },
+      schema,
+      context
+    )
+    expect(result.content).not.toMatch(/too expensive/i)
+  })
+
+  it("counts page sizes passed as variables, not just literals", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `query ($n: Int) { artworksConnection(keyword: "a", first: $n) { edges { node { artist { artworksConnection(first: $n) { edges { node { title } } } } } } } }`,
+        variables: { n: 20 },
+      },
+      schema,
+      context
+    )
+    expect(result.ok).toBe(false)
+    expect(result.content).toMatch(/too expensive/i)
+  })
+
+  it("reports a validation error, not a complexity crash, for an unknown field", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(keyword: "a", first: 2) { edges { node { notAField } } } }`,
+      },
+      schema,
+      context
+    )
+    expect(result.ok).toBe(false)
+    expect(result.content).toMatch(/Cannot query field/i)
   })
 })

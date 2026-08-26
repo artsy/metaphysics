@@ -8258,6 +8258,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-query-complexity@npm:2.0.0":
+  version: 2.0.0
+  resolution: "graphql-query-complexity@npm:2.0.0"
+  dependencies:
+    lodash.get: "npm:^4.4.2"
+  peerDependencies:
+    graphql: ^16.6.0 || ^17.0.0
+  checksum: 10c0/928e8c466a6b58461507be263806fdd652ace0105046f9584ee2a88a6db27e648d05ae4042ebb24e92926fec3052e7cbe32b3a448494d5c0a90b0e3f8b9deb71
+  languageName: node
+  linkType: hard
+
 "graphql-relay@npm:^0.10.2":
   version: 0.10.2
   resolution: "graphql-relay@npm:0.10.2"
@@ -10422,6 +10433,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.get@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "lodash.get@npm:4.4.2"
+  checksum: 10c0/48f40d471a1654397ed41685495acb31498d5ed696185ac8973daef424a749ca0c7871bf7b665d5c14f5cc479394479e0307e781f61d5573831769593411be6e
+  languageName: node
+  linkType: hard
+
 "lodash.includes@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.includes@npm:4.3.0"
@@ -10882,6 +10900,7 @@ __metadata:
     graphql-depth-limit: "npm:1.1.0"
     graphql-middleware: "npm:^6.1.35"
     graphql-parse-resolve-info: "npm:^4.14.1"
+    graphql-query-complexity: "npm:2.0.0"
     graphql-relay: "npm:^0.10.2"
     graphql-type-json: "npm:^0.3.2"
     graphql-yoga: "npm:5.21.0"

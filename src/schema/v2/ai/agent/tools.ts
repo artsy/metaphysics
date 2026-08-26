@@ -3,13 +3,18 @@ import type { JSONSchema7, Tool } from "ai"
 import {
   DocumentNode,
   execute,
+  getNamedType,
+  GraphQLError,
   GraphQLSchema,
+  isLeafType,
   parse,
   specifiedRules,
   validate,
   visit,
 } from "graphql"
 import depthLimit from "graphql-depth-limit"
+import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
+import type { ComplexityEstimator } from "graphql-query-complexity"
 import { filterSchema, pruneSchema } from "@graphql-tools/utils"
 import type { RootFieldFilter } from "@graphql-tools/utils"
 import { ResolverContext } from "types/graphql"
@@ -64,6 +69,48 @@ function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
 const MAX_QUERY_DEPTH = 8
 const MAX_PAGE_SIZE = 20
 const PAGE_SIZE_ARGS = new Set(["first", "last", "size"])
+
+/**
+ * Depth and page-size caps bound each *level* independently, but upstream cost
+ * is the *product* across levels: `artworksConnection(first: 20)` nesting an
+ * `artist { artworksConnection(first: 20) }` passes both caps while fanning out
+ * to ~400 nodes and ~40 Gravity calls, because the inner connection resolves
+ * once per outer node. This budget bounds the product.
+ */
+const MAX_QUERY_COMPLEXITY = 300
+
+/**
+ * Multiplies a paginated field's children by its page size, which is what makes
+ * nesting expensive. Returns undefined (deferring to the next estimator) for
+ * fields without a page-size argument.
+ */
+const paginationEstimator: ComplexityEstimator = ({
+  args,
+  childComplexity,
+}) => {
+  const pageSize = [args.first, args.last, args.size].find(
+    (value) => typeof value === "number" && value > 0
+  )
+  if (pageSize === undefined) return undefined
+  return childComplexity * pageSize + 1
+}
+
+/**
+ * Scalars and enums are free: they come back on a body we already fetched, so
+ * asking for 25 of them costs the same one REST call as asking for 5. Charging
+ * for them would make a cheap-but-wide selection score higher than a genuinely
+ * expensive nested one.
+ */
+const leafFieldEstimator: ComplexityEstimator = ({ field }) => {
+  if (field?.type && isLeafType(getNamedType(field.type))) return 0
+  return undefined
+}
+
+const COMPLEXITY_ESTIMATORS = [
+  paginationEstimator,
+  leafFieldEstimator,
+  simpleEstimator({ defaultComplexity: 1 }),
+]
 
 function findOversizedPageArg(
   document: DocumentNode,
@@ -145,6 +192,29 @@ export async function runQueryArtsyTool(
   const oversizedPageArg = findOversizedPageArg(document, variableValues)
   if (oversizedPageArg) {
     return { ok: false, content: `Page size too large — ${oversizedPageArg}` }
+  }
+
+  // Run as its own pass, after the standard rules have confirmed the document
+  // is well-formed: the complexity visitor resolves field types as it walks,
+  // and would throw rather than report an error on an unknown field.
+  const complexityErrors = validate(narrowSchema, document, [
+    createComplexityRule({
+      maximumComplexity: MAX_QUERY_COMPLEXITY,
+      variables: variableValues,
+      estimators: COMPLEXITY_ESTIMATORS,
+      createError: (max, actual) =>
+        new GraphQLError(
+          `Query is too expensive (cost ${actual}, max ${max}). Nesting a ` +
+            `paginated field inside another multiplies cost by the outer page ` +
+            `size. Reduce \`first\`, or split this into separate queries.`
+        ),
+    }),
+  ])
+  if (complexityErrors.length > 0) {
+    return {
+      ok: false,
+      content: complexityErrors.map((error) => error.message).join("; "),
+    }
   }
 
   const result = await execute({

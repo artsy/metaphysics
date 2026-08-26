@@ -79,6 +79,7 @@
     "graphql-depth-limit": "1.1.0",
     "graphql-middleware": "^6.1.35",
     "graphql-parse-resolve-info": "^4.14.1",
+    "graphql-query-complexity": "2.0.0",
     "graphql-relay": "^0.10.2",
     "graphql-type-json": "^0.3.2",
     "graphql-yoga": "5.21.0",
