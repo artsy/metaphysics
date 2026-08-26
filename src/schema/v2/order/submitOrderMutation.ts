@@ -12,6 +12,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { handleExchangeError } from "./exchangeErrorHandling"
 import { getOfferMessage } from "./utils/getOfferMessage"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 interface Input {
   id: string
@@ -68,9 +69,15 @@ export const submitOrderMutation = mutationWithClientMutationId<
       }
       const submittedOrder = await meOrderSubmitLoader(input.id, payload)
 
+      const inquiryCreationHandledByGravity = isFeatureFlagEnabled(
+        "topaz_remove-inquiry-creation-from-order-mutation",
+        { userId: context.userID }
+      )
+
       // If this offer is not from inquiry page and is not held for review,
       // create an inquiry. Reviewed offers processed after review passed event.
       if (
+        !inquiryCreationHandledByGravity &&
         submittedOrder.mode === "offer" &&
         submittedOrder.source !== "inquiry" &&
         submittedOrder.state !== "in_review" &&
