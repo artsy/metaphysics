@@ -427,6 +427,7 @@ import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
+import { AIAgentTurn } from "./ai/agent"
 import { Video } from "./video/video"
 import { VideosConnection } from "./video/videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
@@ -885,6 +886,12 @@ export default new GraphQLSchema({
     fields: {
       ...rootFields,
       viewer: Viewer,
+    },
+  }),
+  subscription: new GraphQLObjectType<any, ResolverContext>({
+    name: "Subscription",
+    fields: {
+      aiAgentTurn: AIAgentTurn,
     },
   }),
   // These are for orphaned types which are types which should be in the schema,
