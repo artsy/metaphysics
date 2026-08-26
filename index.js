@@ -57,9 +57,14 @@ const app = require("express")()
 // incremental delivery.
 app.use(
   compression({
-    filter: (req, res) =>
-      res.getHeader("Content-Type") !== "text/event-stream" &&
-      compression.filter(req, res),
+    filter: (req, res) => {
+      const contentType = res.getHeader("Content-Type")
+      const isEventStream =
+        typeof contentType === "string" &&
+        contentType.startsWith("text/event-stream")
+
+      return !isEventStream && compression.filter(req, res)
+    },
   })
 )
 
