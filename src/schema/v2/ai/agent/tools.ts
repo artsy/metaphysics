@@ -17,6 +17,12 @@ import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
 import type { ComplexityEstimator } from "graphql-query-complexity"
 import { filterSchema, pruneSchema } from "@graphql-tools/utils"
 import type { RootFieldFilter } from "@graphql-tools/utils"
+import * as Sentry from "@sentry/node"
+import {
+  flattenErrors,
+  shouldReportError,
+  statusCodeForError,
+} from "lib/graphqlErrorHandler"
 import { ResolverContext } from "types/graphql"
 
 /**
@@ -140,6 +146,39 @@ function findOversizedPageArg(
   return violation
 }
 
+/**
+ * Never pass the upstream text through. Reduce each error to a category
+ * derived from its HTTP status, which keeps the signal the model needs to adapt
+ * (retry vs. give up vs. ask for something else) while leaking nothing. The
+ * field path is included because it's from the query the model itself wrote.
+ */
+function describeExecutionError(error: GraphQLError): string {
+  const status = flattenErrors(error)
+    .map((flattened) => statusCodeForError(flattened))
+    .find((code) => typeof code === "number")
+  const path = error.path?.length ? ` at \`${error.path.join(".")}\`` : ""
+
+  if (status === 404) return `No record found${path}`
+  if (status === 401 || status === 403) return `Not authorized to read${path}`
+  if (status === 429) {
+    return `Upstream rate limit reached${path} — wait before retrying`
+  }
+  if (typeof status === "number" && status >= 500) {
+    return `Upstream service error${path} — the data source is unavailable`
+  }
+  return `Could not resolve${path}`
+}
+
+function sanitizeExecutionErrors(errors: readonly GraphQLError[]): string {
+  const categories = new Set<string>()
+  errors.forEach((error) => {
+    // Keep the real, unredacted error for us — only the model's copy is reduced.
+    if (shouldReportError(error)) Sentry.captureException(error)
+    categories.add(describeExecutionError(error))
+  })
+  return Array.from(categories).join("; ")
+}
+
 export interface AIAgentToolRunResult {
   ok: boolean
   content: string
@@ -225,10 +264,7 @@ export async function runQueryArtsyTool(
   })
 
   if (result.errors?.length) {
-    return {
-      ok: false,
-      content: result.errors.map((error) => error.message).join("; "),
-    }
+    return { ok: false, content: sanitizeExecutionErrors(result.errors) }
   }
 
   return { ok: true, content: JSON.stringify(result.data) }

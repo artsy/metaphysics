@@ -1,6 +1,7 @@
 import { schema } from "schema/v2"
 import { ResolverContext } from "types/graphql"
 import { buildAgentTools, runQueryArtsyTool, summarizeToolCall } from "../tools"
+import { HTTPError } from "lib/HTTPError"
 
 describe("buildAgentTools", () => {
   it("exposes exactly one tool, query_artsy", () => {
@@ -325,5 +326,59 @@ describe("query complexity budget", () => {
     )
     expect(result.ok).toBe(false)
     expect(result.content).toMatch(/Cannot query field/i)
+  })
+})
+
+describe("upstream error sanitisation", () => {
+  // lib/apis/fetch.ts builds messages as `<uri.href> - <body>`, so a raw
+  // passthrough hands the model an internal URL — including its query string.
+  const LEAKY =
+    'https://stagingapi.artsy.net/api/v1/artist/foo?access_token=SECRET&size=20 - {"error":"Not Found"}'
+
+  const runWithFailure = (error: Error) =>
+    runQueryArtsyTool(
+      { query: `{ artist(id: "foo") { internalID name } }` },
+      schema,
+      ({
+        artistLoader: jest.fn().mockRejectedValue(error),
+      } as unknown) as ResolverContext
+    )
+
+  it("does not leak the upstream host, path or query string to the model", async () => {
+    const result = await runWithFailure(new HTTPError(LEAKY, 404))
+    expect(result.ok).toBe(false)
+    expect(result.content).not.toMatch(/stagingapi|artsy\.net|api\/v1/)
+    expect(result.content).not.toMatch(/access_token|SECRET/)
+    expect(result.content).not.toContain(LEAKY)
+  })
+
+  it("still tells the model what kind of failure it was, and where", async () => {
+    const result = await runWithFailure(new HTTPError(LEAKY, 404))
+    expect(result.content).toBe("No record found at `artist`")
+  })
+
+  it.each([
+    [401, "Not authorized to read at `artist`"],
+    [403, "Not authorized to read at `artist`"],
+    [429, "Upstream rate limit reached at `artist` — wait before retrying"],
+    [
+      500,
+      "Upstream service error at `artist` — the data source is unavailable",
+    ],
+    [
+      503,
+      "Upstream service error at `artist` — the data source is unavailable",
+    ],
+  ])("maps status %i to a safe category", async (status, expected) => {
+    const result = await runWithFailure(new HTTPError(LEAKY, status as number))
+    expect(result.content).toBe(expected)
+  })
+
+  it("falls back to a generic category for a non-HTTP error", async () => {
+    const result = await runWithFailure(
+      new Error("connect ECONNREFUSED 10.0.1.5:6379")
+    )
+    expect(result.content).toBe("Could not resolve at `artist`")
+    expect(result.content).not.toMatch(/ECONNREFUSED|10\.0\.1\.5/)
   })
 })
