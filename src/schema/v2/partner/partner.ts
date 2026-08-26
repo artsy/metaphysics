@@ -131,17 +131,9 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "If true return both published and unpublished artworks, requires auth",
   },
-  missingPriorityMetadata: {
-    type: GraphQLBoolean,
-    description: "Return artworks that are missing priority metadata",
-  },
   partnerOfferable: {
     type: GraphQLBoolean,
     description: "Only return artworks that are partner-offerable",
-  },
-  publishedWithin: {
-    type: GraphQLInt,
-    description: "Return artworks published less than x seconds ago.",
   },
   shallow: {
     type: GraphQLBoolean,
@@ -680,11 +672,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             include_non_artsy_listed?: boolean
-            missing_priority_metadata?: boolean
             partner_offerable?: boolean
             page: number
             published?: boolean
-            published_within?: number
             size: number
             sort: string
             total_count: boolean
@@ -693,12 +683,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
-            missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
             partner_offerable: args.partnerOfferable,
             page,
             published: true,
-            published_within: args.publishedWithin,
             size,
             sort: args.sort,
             total_count: true,

@@ -12,6 +12,7 @@ const FEATURE_FLAGS_LIST = [
   "diamond_artwork-title-experiment",
   "onyx_nwfy-gravity",
   "onyx_nwfy-refresh-eigen",
+  "topaz_remove-inquiry-creation-from-order-mutation",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
