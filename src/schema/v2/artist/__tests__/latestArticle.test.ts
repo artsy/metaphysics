@@ -39,12 +39,14 @@ describe("Artist#latestArticle", () => {
       title: "Gerhard Richter at the MoMA",
     })
 
-    expect(articlesLoader).toBeCalledWith({
-      published: true,
-      artist_id: "artist-id",
-      sort: "-published_at",
-      limit: 1,
-    })
+    expect(articlesLoader).toBeCalledWith(
+      expect.objectContaining({
+        published: true,
+        artist_id: "artist-id",
+        sort: "-published_at",
+        limit: 1,
+      })
+    )
   })
 
   it("returns null when no articles feature the artist", async () => {
@@ -81,5 +83,49 @@ describe("Artist#latestArticle", () => {
     await runQuery(query, { artistLoader, articlesLoader })
 
     expect(articlesLoader).not.toHaveBeenCalled()
+  })
+
+  it("passes publishedSince as published_since to articlesLoader", async () => {
+    const query = gql`
+      {
+        artist(id: "gerhard-richter") {
+          latestArticle(publishedSince: "2024-01-01") {
+            slug
+          }
+        }
+      }
+    `
+
+    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
+    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+
+    await runQuery(query, { artistLoader, articlesLoader })
+
+    expect(articlesLoader).toBeCalledWith(
+      expect.objectContaining({
+        published_since: "2024-01-01",
+      })
+    )
+  })
+
+  it("does not pass published_since when publishedSince is not provided", async () => {
+    const query = gql`
+      {
+        artist(id: "gerhard-richter") {
+          latestArticle {
+            slug
+          }
+        }
+      }
+    `
+
+    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
+    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+
+    await runQuery(query, { artistLoader, articlesLoader })
+
+    expect(articlesLoader).toBeCalledWith(
+      expect.not.objectContaining({ published_since: expect.anything() })
+    )
   })
 })
