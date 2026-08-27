@@ -3,6 +3,12 @@ import chalk from "chalk"
 import "./lib/loadenv"
 
 const {
+  AI_AGENT_MAX_ITERATIONS,
+  AI_AGENT_MODEL,
+  AI_AGENT_RATE_LIMIT_MAX,
+  AI_AGENT_RATE_LIMIT_WINDOW_MS,
+  AI_AGENT_TURN_TIMEOUT_MS,
+  ANTHROPIC_API_KEY,
   ARTICLE_REQUEST_THROTTLE_MS,
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT,
   CACHE_COMPRESSION_DISABLED,
@@ -126,6 +132,15 @@ function IntWithDefault(value: any | undefined, defaultValue: number): number {
 }
 
 export default {
+  AI_AGENT_MAX_ITERATIONS: Number(AI_AGENT_MAX_ITERATIONS) || 6,
+  AI_AGENT_MODEL: AI_AGENT_MODEL || "claude-sonnet-5",
+  AI_AGENT_RATE_LIMIT_MAX: Number(AI_AGENT_RATE_LIMIT_MAX) || 30,
+  AI_AGENT_RATE_LIMIT_WINDOW_MS:
+    Number(AI_AGENT_RATE_LIMIT_WINDOW_MS) || 60 * 60 * 1000,
+  AI_AGENT_TURN_TIMEOUT_MS: Number(AI_AGENT_TURN_TIMEOUT_MS) || 60000,
+  // Deliberately not in `mustHave` — the AI agent field is feature-flagged and
+  // should not prevent boot when unset.
+  ANTHROPIC_API_KEY,
   ARTICLE_REQUEST_THROTTLE_MS: Number(ARTICLE_REQUEST_THROTTLE_MS) || 600000,
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT:
     Number(BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) ||

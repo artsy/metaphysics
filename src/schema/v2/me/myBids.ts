@@ -109,14 +109,15 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     active: Array<MyBid>
     closed: Array<MyBid>
   } | null> => {
+    // saleArtworksLoader/saleArtworksAllLoader/salesLoaderWithHeaders/saleLoader
+    // are also registered in the unauthenticated loader set, so ResolverContext
+    // types their merged value as unconditionally defined — TS 5.9 (correctly,
+    // for that type) reports a direct truthiness check on them as always-true.
+    // Checking via `isPresent` instead of inline `&&` preserves the original
+    // runtime guard exactly (still returns null if any loader is actually
+    // missing, which some tests construct a context without) without asserting
+    // to the compiler that these can't be undefined.
     if (
-      // saleArtworks/saleArtworksAll/salesWithHeaders/sale loaders are also
-      // registered in the *unauthenticated* loader set, so ResolverContext
-      // types them as unconditionally defined and TS 5.9 (correctly, for that
-      // type) reports a direct truthiness check on them as always-true. Going
-      // through `isPresent` preserves the original runtime guard exactly — this
-      // still returns null if a loader is actually missing, which some tests
-      // and homeView callers construct a partial context without.
       !(
         isPresent(causalityGraphQLLoader) &&
         isPresent(meLoader) &&
