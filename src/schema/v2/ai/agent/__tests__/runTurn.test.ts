@@ -85,6 +85,12 @@ function fakeContext(
   } as unknown) as ResolverContext
 }
 
+// Real Gravity internalIDs are 24-char hex; that shape is what routes a cited
+// id to the batch endpoint rather than the per-slug fallback.
+const ID_A = "5f5a5b5c5d5e5f6061626364"
+const ID_B = "6a6b6c6d6e6f707172737475"
+const ID_C = "7b7c7d7e7f80818283848586"
+
 async function collectEvents(
   input: { conversationID: string; message: string },
   context: ResolverContext = fakeContext()
@@ -118,12 +124,12 @@ describe("runTurn", () => {
     // whatever the loader returns, not what the model claimed.
     const finalJson = JSON.stringify({
       message: "Found Andy Warhol.",
-      artworkIDs: ["andy-warhol-flowers"],
+      artworkIDs: [ID_A],
     })
     const artworksLoader = jest
       .fn()
       .mockResolvedValue([
-        { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
+        { _id: ID_A, id: "andy-warhol-flowers", title: "Flowers" },
       ])
     mockModel = new MockLanguageModelV3({
       doStream: stepsWithOffset([
@@ -180,13 +186,9 @@ describe("runTurn", () => {
       stopReason: "stop",
       toolCallCount: 1,
       message: "Found Andy Warhol.",
-      artworks: [
-        { _id: "abc123", id: "andy-warhol-flowers", title: "Flowers" },
-      ],
+      artworks: [{ _id: ID_A, id: "andy-warhol-flowers", title: "Flowers" }],
     })
-    expect(artworksLoader).toHaveBeenCalledWith({
-      ids: ["andy-warhol-flowers"],
-    })
+    expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A] })
     expect(mockModel.doStreamCalls).toHaveLength(2)
   })
 
@@ -341,9 +343,11 @@ describe("runTurn", () => {
         },
       })
 
-    const cardsFor = async (artworkIDs: string[], gravityReturns: any[]) => {
+    // `batch` is what /artworks?ids[]= returns: internalID matches only, in
+    // Gravity's own order.
+    const cardsFor = async (artworkIDs: string[], batch: any[] = []) => {
       mockModel = modelCiting(artworkIDs)
-      const artworksLoader = jest.fn().mockResolvedValue(gravityReturns)
+      const artworksLoader = jest.fn().mockResolvedValue(batch)
       const events = await collectEvents(
         { conversationID: "c1", message: "Find artworks" },
         fakeContext({ artworksLoader })
@@ -351,53 +355,63 @@ describe("runTurn", () => {
       const complete = events.find(
         (e) => e.__typename === "AIAgentTurnComplete"
       )
-      return complete.artworks
+      return { artworks: complete.artworks, artworksLoader }
     }
 
     it("renders cards in the model's order, not Gravity's", async () => {
       // Gravity's /artworks?ids[]= doesn't promise to echo the request order.
-      const artworks = await cardsFor(
-        ["id-c", "id-a", "id-b"],
+      const { artworks } = await cardsFor(
+        [ID_C, ID_A, ID_B],
         [
-          { _id: "id-a", id: "slug-a" },
-          { _id: "id-b", id: "slug-b" },
-          { _id: "id-c", id: "slug-c" },
+          { _id: ID_A, id: "slug-a" },
+          { _id: ID_B, id: "slug-b" },
+          { _id: ID_C, id: "slug-c" },
         ]
       )
 
-      expect(artworks.map((a) => a._id)).toEqual(["id-c", "id-a", "id-b"])
+      expect(artworks.map((a) => a._id)).toEqual([ID_C, ID_A, ID_B])
     })
 
-    it("matches a citation by slug, which AgentOutputSchema also allows", async () => {
-      const artworks = await cardsFor(
-        ["slug-b", "id-a"],
-        [
-          { _id: "id-a", id: "slug-a" },
-          { _id: "id-b", id: "slug-b" },
-        ]
+    it("never asks Gravity for a citation that isn't an internalID", async () => {
+      // The batch endpoint matches on internalID only, so a slug would come
+      // back empty; sending it would just waste the lookup.
+      const { artworks, artworksLoader } = await cardsFor(
+        ["andy-warhol-flowers", ID_A],
+        [{ _id: ID_A, id: "slug-a" }]
       )
 
-      expect(artworks.map((a) => a._id)).toEqual(["id-b", "id-a"])
+      expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A] })
+      expect(artworks.map((a) => a._id)).toEqual([ID_A])
+    })
+
+    it("skips Gravity entirely when no citation is an internalID", async () => {
+      const { artworks, artworksLoader } = await cardsFor([
+        "andy-warhol-flowers",
+        "Happy Birthday",
+      ])
+
+      expect(artworksLoader).not.toHaveBeenCalled()
+      expect(artworks).toEqual([])
     })
 
     it("leaves no hole for an id Gravity drops (deleted, unpublished, hallucinated)", async () => {
-      const artworks = await cardsFor(
-        ["id-a", "id-missing", "id-b"],
+      const { artworks } = await cardsFor(
+        [ID_A, ID_C, ID_B],
         [
-          { _id: "id-a", id: "slug-a" },
-          { _id: "id-b", id: "slug-b" },
+          { _id: ID_A, id: "slug-a" },
+          { _id: ID_B, id: "slug-b" },
         ]
       )
 
       expect(artworks).toHaveLength(2)
       expect(artworks).not.toContain(undefined)
-      expect(artworks.map((a) => a._id)).toEqual(["id-a", "id-b"])
+      expect(artworks.map((a) => a._id)).toEqual([ID_A, ID_B])
     })
 
     it("renders one card per work, however many times the model cites it", async () => {
-      const artworks = await cardsFor(
-        ["id-a", "slug-a", "id-a"],
-        [{ _id: "id-a", id: "slug-a" }]
+      const { artworks } = await cardsFor(
+        [ID_A, ID_A, ID_A],
+        [{ _id: ID_A, id: "slug-a" }]
       )
 
       expect(artworks).toHaveLength(1)
