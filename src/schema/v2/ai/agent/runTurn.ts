@@ -6,6 +6,7 @@ import config from "config"
 import { z } from "zod"
 import { anthropicProvider } from "lib/apis/anthropic"
 import { rateLimitByUser } from "lib/rateLimitByUser"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import {
   buildAgentTools,
@@ -26,13 +27,24 @@ and fairs using the provided tools. Only state facts returned by a tool call —
 never invent artist names, prices, or availability. If a tool call fails or
 returns nothing useful, say so plainly rather than guessing.
 
-When your answer references specific artworks, populate \`artworkIDs\` with their
-exact internalID or slug from the tool results — never invented. The client
-renders those as image cards, so do NOT list, number, or describe the individual
-artworks in \`message\` — that would duplicate the cards. Keep \`message\` to one or
-two sentences that frame the result set: what you searched for and what filters
-you applied. Mention an individual work only when the user asked about that one
-specific work.
+\`artworkIDs\` and \`message\` are two halves of one answer: \`artworkIDs\` *is* the
+result set — the client renders each id as an image card — and \`message\` is the
+one or two sentences framing it: what you searched for and what filters you
+applied.
+
+So whenever a tool call surfaced artworks that answer the question, populate
+\`artworkIDs\` with their exact \`internalID\` from those results — the
+24-character hex id, copied verbatim. It must be the \`internalID\` and nothing
+else: a slug, a title, or an invented id renders no card at all, so always
+select \`internalID\` on any artwork you might cite. Do NOT list, number, or describe the individual artworks in
+\`message\`; the cards already show them. That deliberate omission is not a
+reason to leave \`artworkIDs\` empty — a \`message\` that describes having found
+works, paired with an empty \`artworkIDs\`, renders as text with no images, which
+is a broken answer.
+
+Leave \`artworkIDs\` empty only when you found no artworks, or the question isn't
+about artworks at all. Mention an individual work in \`message\` only when the
+user asked about that one specific work.
 
 ## Workflow
 
@@ -104,9 +116,13 @@ const AgentOutputSchema = z.object({
   artworkIDs: z
     .array(z.string())
     .describe(
-      "internalID or slug of each artwork referenced in the answer, copied " +
-        "exactly from query_artsy tool results. Empty if the answer doesn't " +
-        "reference specific artworks."
+      "The 24-character hex `internalID` of every artwork this answer is " +
+        "based on, copied exactly from query_artsy tool results. Must be the " +
+        "internalID -- a slug or title renders nothing. These become image " +
+        "cards and are the only way the user sees the works, so populate " +
+        "this whenever a tool call surfaced artworks that answer the " +
+        "question -- `message` deliberately does not name them. Empty only " +
+        "when no artworks were found, or the question isn't about artworks."
     ),
 })
 
@@ -115,33 +131,35 @@ const AgentOutputSchema = z.object({
  * placeholder for an id it can't resolve, so what comes back is a set, not a
  * sequence -- see recentlySoldArtworks, which re-joins on `_id` for the same
  * reason. Restore the model's ordering, which is the only relevance signal the
- * cards carry, and index on both `_id` and `id` because AgentOutputSchema lets
- * the model cite either an internalID or a slug.
+ * cards carry.
  *
  * Ids that resolve to nothing (deleted, unpublished, or hallucinated) just
  * don't get a card: per AgentOutputSchema the model supplies identifiers and
  * never display data, so a bad one fails as a missing card, never a wrong one.
  */
 function orderArtworksByCitedIDs(artworks: any[], citedIDs: string[]) {
-  const byIdentifier = new Map<string, any>()
+  const byInternalID = new Map<string, any>()
   artworks.forEach((artwork) => {
-    if (artwork?._id) byIdentifier.set(artwork._id, artwork)
-    if (artwork?.id) byIdentifier.set(artwork.id, artwork)
+    if (artwork?._id) byInternalID.set(artwork._id, artwork)
   })
 
   const ordered: any[] = []
-  // Deduped on the resolved artwork rather than the id, which also collapses a
-  // work the model happened to cite twice, once by internalID and once by slug.
-  const seen = new Set<any>()
+  const seen = new Set<string>()
   citedIDs.forEach((id) => {
-    const artwork = byIdentifier.get(id)
-    if (!artwork || seen.has(artwork)) return
-    seen.add(artwork)
+    const artwork = byInternalID.get(id)
+    // `seen` guards the model citing the same work twice.
+    if (!artwork || seen.has(id)) return
+    seen.add(id)
     ordered.push(artwork)
   })
 
   return ordered
 }
+
+/**
+ * Gravity's batch endpoint (/artworks?ids[]=) matches on internalID only
+ */
+const INTERNAL_ID = /^[0-9a-f]{24}$/i
 
 async function resolveArtworks(
   ids: string[],
@@ -149,9 +167,24 @@ async function resolveArtworks(
 ): Promise<unknown[]> {
   if (ids.length === 0) return []
   const citedIDs = ids.slice(0, MAX_ARTWORK_IDS)
+  const internalIDs = citedIDs.filter((id) => INTERNAL_ID.test(id))
+
+  // Logged rather than passed through: a non-internalID citation resolves to
+  // nothing, and a card that never renders is invisible from the outside --
+  // which is how a slug-citing answer previously read as a working turn with
+  // an empty `artworks`. If this line stays quiet, the prompt is holding.
+  if (internalIDs.length < citedIDs.length) {
+    const dropped = citedIDs.filter((id) => !INTERNAL_ID.test(id))
+    warn(
+      `[aiAgentTurn] dropped ${dropped.length} of ${citedIDs.length} artwork ` +
+        `citation(s), not internalIDs: ${JSON.stringify(dropped.slice(0, 3))}`
+    )
+  }
+  if (internalIDs.length === 0) return []
+
   try {
-    const artworks = await context.artworksLoader({ ids: citedIDs })
-    return orderArtworksByCitedIDs(artworks, citedIDs)
+    const artworks = await context.artworksLoader({ ids: internalIDs })
+    return orderArtworksByCitedIDs(artworks, internalIDs)
   } catch (error) {
     Sentry.captureException(error)
     return []
