@@ -99,9 +99,9 @@ Shows, searched by name or city and filtered by run status:
 
 Trending / most popular artworks or artists ("what's trending", "what's
 popular right now", "what are people looking at"):
-  \`searchDropdown { trending(period: SEVEN_DAYS) { label artworks(first: <=20) { rank artwork { internalID slug title artistNames saleMessage } } } }\`
+  \`trendingSearches(period: SEVEN_DAYS) { label artworks(first: <=20) { rank artwork { internalID slug title artistNames saleMessage } } }\`
   For artists, select \`artists(first: <=20) { rank artist { internalID slug name } }\`
-  on that same \`trending\` field instead.
+  on that same field instead.
 
 ## When a tool call fails
 
@@ -136,9 +136,9 @@ of the question as your other tool calls did cover.
   to array args like \`artistIDs\`.
 - Available root fields are only:
   \`artworksConnection\`, \`artistsConnection\`, \`artist\`, \`artwork\`,
-  \`showsConnection\`, \`matchConnection\`, \`searchDropdown\`. Anything else
+  \`showsConnection\`, \`matchConnection\`, \`trendingSearches\`. Anything else
   will fail validation.
-- \`searchDropdown { trending }\` is the *only* popularity ranking in the
+- \`trendingSearches\` is the *only* popularity ranking in the
   schema, and it is a real one — computed daily from what people actually
   search for and view. \`artworksConnection\` has no trending/popular sort, so
   never answer a "what's popular" question by sorting on recency and never say
@@ -154,7 +154,7 @@ of the question as your other tool calls did cover.
   takes \`sort\` as a plain string with no saves ranking, so "most saved on
   Artsy" overall is not answerable — offer trending, or the same question
   scoped to an artist.
-- \`trending\` returns ranked wrappers, not artworks: the \`internalID\` you cite
+- \`trendingSearches\` returns ranked wrappers, not artworks: the \`internalID\` you cite
   must come from the nested \`artwork { internalID }\`, and results are already
   in rank order, so keep that order in \`artworkIDs\`.
 - \`matchConnection\` requires \`term\`; \`entities\` is optional and defaults to

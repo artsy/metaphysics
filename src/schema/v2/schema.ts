@@ -132,7 +132,7 @@ import { SaleArtworksConnectionField } from "./sale_artworks"
 import { SalesConnectionField } from "./sales"
 import { Search } from "./search"
 import { SearchableItem } from "./SearchableItem"
-import { SearchDropdown } from "./searchDropdown"
+import { SearchDropdown, TrendingSearches } from "./searchDropdown"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
 import Show from "./show"
 import ShippingPreset from "./shippingPreset"
@@ -584,6 +584,7 @@ const rootFields = {
   system: System,
   tag: TagField,
   targetSupply: TargetSupply,
+  trendingSearches: TrendingSearches,
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,

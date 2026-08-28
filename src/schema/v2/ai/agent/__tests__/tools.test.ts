@@ -147,13 +147,11 @@ describe("runQueryArtsyTool", () => {
       {
         query: `
           {
-            searchDropdown {
-              trending(period: SEVEN_DAYS) {
-                label
-                artworks(first: 20) {
-                  rank
-                  artwork { internalID slug title }
-                }
+            trendingSearches(period: SEVEN_DAYS) {
+              label
+              artworks(first: 20) {
+                rank
+                artwork { internalID slug title }
               }
             }
           }
@@ -164,7 +162,7 @@ describe("runQueryArtsyTool", () => {
     )
 
     expect(result.ok).toBe(true)
-    const { artworks } = JSON.parse(result.content).searchDropdown.trending
+    const { artworks } = JSON.parse(result.content).trendingSearches
     expect(artworks).toEqual([
       {
         rank: 1,
@@ -372,13 +370,12 @@ describe("summarizeToolCall", () => {
     ).toBe("Querying Artsy: artist…")
   })
 
-  it("labels a trending query by searchDropdown, not the artwork nested in it", () => {
+  it("labels a trending query by trendingSearches, not the artwork nested in it", () => {
     expect(
       summarizeToolCall({
-        query:
-          "{ searchDropdown { trending { artworks { artwork { slug } } } } }",
+        query: "{ trendingSearches { artworks { artwork { slug } } } }",
       })
-    ).toBe("Querying Artsy: searchDropdown…")
+    ).toBe("Querying Artsy: trendingSearches…")
   })
 
   it("falls back to a generic label when the root field can't be identified", () => {
