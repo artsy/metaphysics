@@ -283,6 +283,29 @@ export const resolveMinorAndCurrencyFieldsToMoney = async (
   }
 }
 
+/**
+ * Money field factory for a source object with a minor-units field and a
+ * `price_currency` field. Returns null when either is missing.
+ */
+export const moneyFieldFromMinor = <
+  TSource extends { price_currency: string | null }
+>(
+  minorKey: keyof TSource
+) => ({
+  type: Money,
+  resolve: (source: TSource, args, context, info) => {
+    const minor = (source[minorKey] as unknown) as number | null
+    const currencyCode = source.price_currency
+    if (minor == null || currencyCode == null) return null
+    return resolveMinorAndCurrencyFieldsToMoney(
+      { minor, currencyCode },
+      args,
+      context,
+      info
+    )
+  },
+})
+
 export const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
     const { internalID, [centsField]: cents } = parent
