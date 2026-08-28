@@ -123,6 +123,68 @@ describe("runQueryArtsyTool", () => {
     expect(result.ok).toBe(false)
   })
 
+  it("runs the trending recipe, through the depth and complexity caps", async () => {
+    const trendingSearchesLoader = jest.fn().mockResolvedValue({
+      data: {
+        artists: [{ entity_id: "4d8b92b34eb68a1b2c000452" }],
+        artworks: [
+          { entity_id: "5d3d7e6a1b8e4a0f2c1a2b3c" },
+          { entity_id: "5d3d7e6a1b8e4a0f2c1a2b3d" },
+        ],
+      },
+    })
+    const artworksLoader = jest.fn().mockResolvedValue([
+      // Returned out of rank order, as Gravity's batch endpoint may.
+      { _id: "5d3d7e6a1b8e4a0f2c1a2b3d", id: "second", title: "Second" },
+      { _id: "5d3d7e6a1b8e4a0f2c1a2b3c", id: "first", title: "First" },
+    ])
+    const context = ({
+      artworksLoader,
+      unauthenticatedLoaders: { trendingSearchesLoader },
+    } as unknown) as ResolverContext
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `
+          {
+            searchDropdown {
+              trending(period: SEVEN_DAYS) {
+                label
+                artworks(first: 20) {
+                  rank
+                  artwork { internalID slug title }
+                }
+              }
+            }
+          }
+        `,
+      },
+      schema,
+      context
+    )
+
+    expect(result.ok).toBe(true)
+    const { artworks } = JSON.parse(result.content).searchDropdown.trending
+    expect(artworks).toEqual([
+      {
+        rank: 1,
+        artwork: {
+          internalID: "5d3d7e6a1b8e4a0f2c1a2b3c",
+          slug: "first",
+          title: "First",
+        },
+      },
+      {
+        rank: 2,
+        artwork: {
+          internalID: "5d3d7e6a1b8e4a0f2c1a2b3d",
+          slug: "second",
+          title: "Second",
+        },
+      },
+    ])
+  })
+
   it("rejects a query that exceeds the depth limit", async () => {
     // Artist -> artworksConnection -> node -> artist -> artworksConnection
     // -> node -> artist -> ... nested well past MAX_QUERY_DEPTH.
@@ -308,6 +370,15 @@ describe("summarizeToolCall", () => {
     expect(
       summarizeToolCall({ query: '{ artist(id: "andy-warhol") { name } }' })
     ).toBe("Querying Artsy: artist…")
+  })
+
+  it("labels a trending query by searchDropdown, not the artwork nested in it", () => {
+    expect(
+      summarizeToolCall({
+        query:
+          "{ searchDropdown { trending { artworks { artwork { slug } } } } }",
+      })
+    ).toBe("Querying Artsy: searchDropdown…")
   })
 
   it("falls back to a generic label when the root field can't be identified", () => {

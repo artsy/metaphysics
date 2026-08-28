@@ -46,6 +46,7 @@ const ALLOWED_ROOT_FIELDS = new Set([
   "artwork",
   "showsConnection",
   "matchConnection",
+  "searchDropdown",
 ])
 
 const rootFieldFilter: RootFieldFilter = (operation, rootFieldName) =>
@@ -341,7 +342,8 @@ export function buildAgentTools(
         "Run a read-only GraphQL query to search and look up artists, " +
         "artworks, shows, and fairs. Available root fields: " +
         "artworksConnection, artistsConnection, artist, artwork, " +
-        "showsConnection, matchConnection. Use GraphQL introspection (e.g. " +
+        "showsConnection, matchConnection, searchDropdown (the last one for " +
+        "trending/most-popular rankings). Use GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
         "discover the fields and args available on any type — one type at a " +
         "time, as `__schema` is not available. Always " +
@@ -378,7 +380,7 @@ export function summarizeToolCall(input: unknown): string {
   if (typeof query !== "string") return "Querying Artsy…"
 
   const match = query.match(
-    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection)\b/
+    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|searchDropdown)\b/
   )
   return match ? `Querying Artsy: ${match[1]}…` : "Querying Artsy…"
 }
