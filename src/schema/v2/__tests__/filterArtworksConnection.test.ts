@@ -1761,6 +1761,53 @@ describe("artworksConnection", () => {
       )
     })
 
+    it("strips curators_pick when explicitly false", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: false"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ curators_pick: expect.anything() })
+      )
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          marketing_collection_id: expect.anything(),
+        })
+      )
+    })
+
+    it("leaves a client-provided marketingCollectionID alone when curatorsPick is false", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(
+        queryWithInput(
+          'curatorsPick: false, marketingCollectionID: "trending"'
+        ),
+        context
+      )
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ marketing_collection_id: "trending" })
+      )
+    })
+
+    it("errors rather than overwriting a client-provided marketingCollectionID", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await expect(
+        runQuery(
+          queryWithInput(
+            'curatorsPick: true, marketingCollectionID: "trending"'
+          ),
+          context
+        )
+      ).rejects.toThrow(
+        "`curatorsPick` cannot be combined with `marketingCollectionID`"
+      )
+
+      expect(filterArtworksLoader).not.toHaveBeenCalled()
+    })
+
     it("passes increased_interest_signal to the loader", async () => {
       const { filterArtworksLoader, context } = buildContext()
 

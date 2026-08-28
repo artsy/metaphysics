@@ -582,7 +582,7 @@ type Alert {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -2561,7 +2561,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -3216,7 +3216,7 @@ type ArtistPartnerEdge {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -3478,7 +3478,7 @@ type ArtistSeries implements Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -4939,7 +4939,7 @@ type ArtworkFilterNode {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -18354,7 +18354,7 @@ interface EntityWithFilterArtworksConnectionInterface {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -18839,7 +18839,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -19644,7 +19644,7 @@ input FilterArtworksInput {
   completenessTier: [String]
 
   """
-  When true, will only return artworks carrying the Curators' Pick collector signal.
+  When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
   """
   curatorsPick: Boolean
   dimensionRange: String
@@ -20450,7 +20450,7 @@ type Gene implements Node & Searchable {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -23617,7 +23617,7 @@ type MarketingCollection implements Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -29019,7 +29019,7 @@ type Partner implements Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -29599,7 +29599,7 @@ type PartnerArtist {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -29908,7 +29908,7 @@ type PartnerArtistEdge {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -32296,7 +32296,7 @@ type Query {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -32916,7 +32916,7 @@ type Query {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -36725,7 +36725,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -37602,7 +37602,7 @@ type Tag implements Node {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -42237,7 +42237,7 @@ type Viewer {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String
@@ -42646,7 +42646,7 @@ type Viewer {
     completenessTier: [String]
 
     """
-    When true, will only return artworks carrying the Curators' Pick collector signal.
+    When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.
     """
     curatorsPick: Boolean
     dimensionRange: String

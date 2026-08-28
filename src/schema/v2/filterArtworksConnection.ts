@@ -157,7 +157,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   curatorsPick: {
     type: GraphQLBoolean,
     description:
-      "When true, will only return artworks carrying the Curators' Pick collector signal.",
+      "When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.",
   },
   dimensionRange: {
     type: GraphQLString,
@@ -577,8 +577,6 @@ const convertFilterArgs = ({
     attribution_class: attributionClass,
     certificate_of_authenticity: certificateOfAuthenticity,
     completeness_tier: completenessTier,
-    // Translated into `marketing_collection_id` by the resolver; Gravity has no
-    // `curators_pick` param of its own.
     curators_pick: curatorsPick,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
@@ -650,8 +648,16 @@ const filterArtworksConnectionTypeFactory = (
       ...argsProvidedInInput,
     }
 
-    if (options.curators_pick) {
-      delete options.curators_pick
+    const curatorsPick = options.curators_pick
+    delete options.curators_pick
+
+    if (curatorsPick) {
+      if (options.marketing_collection_id) {
+        throw new Error(
+          "`curatorsPick` cannot be combined with `marketingCollectionID` — both resolve to the same Gravity filter."
+        )
+      }
+
       options.marketing_collection_id = CURATORS_PICK_COLLECTION_SLUG
     }
 
