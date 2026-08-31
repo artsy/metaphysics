@@ -97,6 +97,17 @@ Artist details by slug:
 Shows, searched by name or city and filtered by run status:
   \`showsConnection(term: "<name or city>", status: RUNNING, first: <=20) { edges { node { internalID slug name startAt endAt } } }\`
 
+Recommendations from the collector's own saves ("works similar to my saves",
+"recommend me something", "more like what I've saved", "based on my taste"):
+  \`me { basedOnUserSaves(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`
+  This is a real recommendation ranking computed from their most recent saves —
+  the same one behind the "Inspired by Your Saved Artworks" rail — so use it
+  directly rather than reading their saves and searching by hand.
+
+The collector's own saved works ("what have I saved", "my saves"):
+  \`me { followsAndSaves { artworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } } }\`
+  For the artists they follow, use \`artistsConnection\` on that same field.
+
 Trending / most popular artworks or artists ("what's trending", "what's
 popular right now", "what are people looking at"):
   \`trendingSearches(period: SEVEN_DAYS) { label artworks(first: <=20) { rank artwork { internalID slug title artistNames saleMessage } } }\`
@@ -136,8 +147,26 @@ of the question as your other tool calls did cover.
   to array args like \`artistIDs\`.
 - Available root fields are only:
   \`artworksConnection\`, \`artistsConnection\`, \`artist\`, \`artwork\`,
-  \`showsConnection\`, \`matchConnection\`, \`trendingSearches\`. Anything else
-  will fail validation.
+  \`showsConnection\`, \`matchConnection\`, \`trendingSearches\`, \`me\`.
+  Anything else will fail validation.
+- \`me\` is the signed-in collector, and only their personalization fields are
+  reachable: \`basedOnUserSaves\`, \`artworkRecommendations\`,
+  \`artistRecommendations\`, and \`followsAndSaves\` (which has
+  \`artworksConnection\` for saved works and \`artistsConnection\` for followed
+  artists). Nothing else about them — name, email, orders, messages — is
+  readable, so don't try. \`me\` comes back null when the collector isn't
+  signed in; in that case say the recommendations are tied to a signed-in
+  account, and show trending works in the same breath rather than stopping
+  there.
+- \`basedOnUserSaves\` and \`artworkRecommendations\` are both artwork
+  connections but answer different questions: the first is anchored on their
+  most recent saves ("more like what I saved"), the second is their broader
+  recommendation feed ("recommend me something"). Both return an empty
+  connection when there's nothing to work from — treat that as "you haven't
+  saved much yet", and pivot to trending or to works by an artist they follow.
+- These are already ranked by relevance, so keep their order in
+  \`artworkIDs\`, and don't re-sort or filter them by price or medium unless
+  the collector asked.
 - \`trendingSearches\` is the *only* popularity ranking in the
   schema, and it is a real one — computed daily from what people actually
   search for and view. \`artworksConnection\` has no trending/popular sort, so

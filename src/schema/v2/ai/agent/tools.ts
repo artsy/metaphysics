@@ -17,7 +17,7 @@ import depthLimit from "graphql-depth-limit"
 import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
 import type { ComplexityEstimator } from "graphql-query-complexity"
 import { filterSchema, pruneSchema } from "@graphql-tools/utils"
-import type { RootFieldFilter } from "@graphql-tools/utils"
+import type { FieldFilter, RootFieldFilter } from "@graphql-tools/utils"
 import * as Sentry from "@sentry/node"
 import {
   flattenErrors,
@@ -47,10 +47,44 @@ const ALLOWED_ROOT_FIELDS = new Set([
   "showsConnection",
   "matchConnection",
   "trendingSearches",
+  "me",
 ])
 
 const rootFieldFilter: RootFieldFilter = (operation, rootFieldName) =>
   operation === "Query" && ALLOWED_ROOT_FIELDS.has(rootFieldName)
+
+/**
+ * `me` is the exception to the comment above: for every other root field,
+ * gating the entry point is enough, because what hangs off it is public
+ * catalogue data. `Me` is the signed-in collector's own record, and almost
+ * all of it is personal — orders, credit cards, bank accounts, conversations,
+ * addresses, identity verification, inquiries. Metaphysics' resolvers do
+ * authorize those (they return this user's data, not someone else's), which
+ * is exactly the problem: a model-authored query would be *correctly*
+ * authorized to read the user's payment details into the model's context.
+ *
+ * So `Me` is the one type whose fields are allowlisted too, down to the
+ * personalization connections that answer "what should I look at next" —
+ * they return artworks and artists, the same shape the rest of the tool
+ * already returns. `id` is not optional here: `Me` implements `Node`, so
+ * dropping it would leave the filtered schema invalid.
+ */
+const ALLOWED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
+  Me: new Set([
+    "id",
+    "internalID",
+    "basedOnUserSaves",
+    "artworkRecommendations",
+    "artistRecommendations",
+    "followsAndSaves",
+  ]),
+  FollowsAndSaves: new Set(["artworksConnection", "artistsConnection"]),
+}
+
+const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
+  const allowed = ALLOWED_FIELDS_BY_TYPE[typeName]
+  return !allowed || allowed.has(fieldName)
+}
 
 // Memoized rather than rebuilt per request — pruning a schema isn't free,
 // and `schema` is the same instance across requests except on a dev
@@ -63,7 +97,11 @@ function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
     return cachedNarrowSchema
   }
 
-  const filtered = filterSchema({ schema: realSchema, rootFieldFilter })
+  const filtered = filterSchema({
+    schema: realSchema,
+    rootFieldFilter,
+    objectFieldFilter,
+  })
   const pruned = pruneSchema(filtered)
 
   cachedRealSchema = realSchema
@@ -342,8 +380,11 @@ export function buildAgentTools(
         "Run a read-only GraphQL query to search and look up artists, " +
         "artworks, shows, and fairs. Available root fields: " +
         "artworksConnection, artistsConnection, artist, artwork, " +
-        "showsConnection, matchConnection, trendingSearches (the last one for " +
-        "trending/most-popular rankings). Use GraphQL introspection (e.g. " +
+        "showsConnection, matchConnection, trendingSearches (for " +
+        "trending/most-popular rankings), and me (the signed-in collector's " +
+        "own saves, follows and recommendations — `me` is null when signed " +
+        "out, and only its personalization fields are reachable). Use " +
+        "GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
         "discover the fields and args available on any type — one type at a " +
         "time, as `__schema` is not available. Always " +
@@ -380,7 +421,7 @@ export function summarizeToolCall(input: unknown): string {
   if (typeof query !== "string") return "Querying Artsy…"
 
   const match = query.match(
-    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|trendingSearches)\b/
+    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|trendingSearches|basedOnUserSaves|artworkRecommendations|artistRecommendations|followsAndSaves)\b/
   )
   return match ? `Querying Artsy: ${match[1]}…` : "Querying Artsy…"
 }

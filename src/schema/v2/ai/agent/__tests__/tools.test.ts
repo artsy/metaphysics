@@ -113,9 +113,9 @@ describe("runQueryArtsyTool", () => {
     expect(data.artwork.attributionClass).toMatchObject({ name: "Unique" })
   })
 
-  it("rejects a disallowed root field (e.g. me)", async () => {
+  it("rejects a disallowed root field (e.g. sale)", async () => {
     const result = await runQueryArtsyTool(
-      { query: "{ me { name } }" },
+      { query: '{ sale(id: "some-sale") { name } }' },
       schema,
       {} as ResolverContext
     )
@@ -241,6 +241,141 @@ describe("runQueryArtsyTool", () => {
     expect(result.ok).toBe(false)
     expect(typeof result.content).toBe("string")
     expect(result.content.length).toBeGreaterThan(0)
+  })
+})
+
+describe("the Me field allowlist", () => {
+  // `me` is the one root field whose *fields* are gated too: it resolves the
+  // signed-in collector's own record, so root-field filtering alone would put
+  // their orders, messages and payment details inside a model-authored query.
+  it("reaches the personalization connections", async () => {
+    const meLoader = jest.fn()
+    const savedArtworksLoader = jest.fn().mockResolvedValue({
+      body: [{ _id: "5d8b92b34eb68a1b2c000111" }],
+    })
+    const similarArtworksLoader = jest.fn().mockResolvedValue([
+      {
+        _id: "5d8b92b34eb68a1b2c000222",
+        id: "similar-work",
+        title: "Similar Work",
+      },
+    ])
+    const context = ({
+      userID: "user-42",
+      meLoader,
+      savedArtworksLoader,
+      similarArtworksLoader,
+    } as unknown) as ResolverContext
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `
+          {
+            me {
+              basedOnUserSaves(first: 5) {
+                edges { node { internalID slug title } }
+              }
+            }
+          }
+        `,
+      },
+      schema,
+      context
+    )
+
+    expect(result.ok).toBe(true)
+    const data = JSON.parse(result.content)
+    expect(data.me.basedOnUserSaves.edges).toEqual([
+      {
+        node: {
+          internalID: "5d8b92b34eb68a1b2c000222",
+          slug: "similar-work",
+          title: "Similar Work",
+        },
+      },
+    ])
+    // Anchored on the collector's most recent saves, per basedOnUserSaves.
+    expect(savedArtworksLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-42", sort: "-position" })
+    )
+    expect(similarArtworksLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ artwork_id: ["5d8b92b34eb68a1b2c000111"] })
+    )
+  })
+
+  it("reaches the collector's own saved works and followed artists", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `
+          {
+            me {
+              followsAndSaves {
+                artworksConnection(first: 5) { edges { node { internalID } } }
+                artistsConnection(first: 5) { edges { node { internalID } } }
+              }
+            }
+          }
+        `,
+      },
+      schema,
+      ({ userID: "user-42" } as unknown) as ResolverContext
+    )
+
+    // No loaders on the context, so this stops at resolution rather than
+    // returning data — the point is that it passed *validation*.
+    expect(result.content).not.toMatch(/Cannot query field/i)
+  })
+
+  it("hides the rest of the collector's record, including their identity", async () => {
+    const privateFields = [
+      "name",
+      "email",
+      "phone",
+      "creditCards { internalID }",
+      "bankAccounts(first: 1) { edges { node { internalID } } }",
+      "conversationsConnection(first: 1) { edges { node { internalID } } }",
+      "addressConnection(first: 1) { edges { node { internalID } } }",
+      "identityVerification { internalID }",
+    ]
+
+    for (const field of privateFields) {
+      const result = await runQueryArtsyTool(
+        { query: `{ me { ${field} } }` },
+        schema,
+        {} as ResolverContext
+      )
+
+      expect(result.ok).toBe(false)
+      expect(result.content).toMatch(/Cannot query field/i)
+    }
+  })
+
+  it("keeps `id`, so the filtered Me still satisfies the Node interface", async () => {
+    // Dropping it would leave `Me implements Node` without `id` — an invalid
+    // schema, which would break every query, not just this one.
+    const result = await runQueryArtsyTool(
+      { query: "{ me { id } }" },
+      schema,
+      {} as ResolverContext
+    )
+
+    expect(result.content).not.toMatch(/Cannot query field/i)
+  })
+
+  it("leaves field access on other types alone", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      _id: "4d8b92b34eb68a1b2c000452",
+      id: "andy-warhol",
+      name: "Andy Warhol",
+    })
+
+    const result = await runQueryArtsyTool(
+      { query: '{ artist(id: "andy-warhol") { name birthday nationality } }' },
+      schema,
+      ({ artistLoader } as unknown) as ResolverContext
+    )
+
+    expect(result.ok).toBe(true)
   })
 })
 
@@ -378,6 +513,24 @@ describe("summarizeToolCall", () => {
     ).toBe("Querying Artsy: trendingSearches…")
   })
 
+  it("labels a personalized query by its field, not by the `me` wrapping it", () => {
+    expect(
+      summarizeToolCall({
+        query:
+          "{ me { basedOnUserSaves(first: 10) { edges { node { slug } } } } }",
+      })
+    ).toBe("Querying Artsy: basedOnUserSaves…")
+
+    // The outer field wins over the `artworksConnection` nested inside it,
+    // because the match is on the earliest position, not the listed order.
+    expect(
+      summarizeToolCall({
+        query:
+          "{ me { followsAndSaves { artworksConnection(first: 10) { edges { node { slug } } } } } }",
+      })
+    ).toBe("Querying Artsy: followsAndSaves…")
+  })
+
   it("falls back to a generic label when the root field can't be identified", () => {
     expect(summarizeToolCall({ query: "not graphql" })).toBe("Querying Artsy…")
     expect(summarizeToolCall({})).toBe("Querying Artsy…")
@@ -450,6 +603,14 @@ describe("query complexity budget", () => {
     [
       "shows",
       `{ showsConnection(term: "London", status: RUNNING, first: 20) { edges { node { internalID slug name startAt endAt } } } }`,
+    ],
+    [
+      "based on saves",
+      `{ me { basedOnUserSaves(first: 20) { edges { node { internalID slug title artistNames saleMessage } } } } }`,
+    ],
+    [
+      "own saves",
+      `{ me { followsAndSaves { artworksConnection(first: 20) { edges { node { internalID slug title artistNames saleMessage } } } } } }`,
     ],
   ])("stays within budget for the %s recipe", async (_name, query) => {
     const result = await runQueryArtsyTool({ query }, schema, context)
