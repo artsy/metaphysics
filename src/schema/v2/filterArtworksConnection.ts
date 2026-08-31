@@ -36,6 +36,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 import { deprecate } from "lib/deprecation"
+import { CURATORS_PICK_COLLECTION_SLUG } from "schema/v2/artwork/collectorSignals"
 import { keys, map, omit } from "lodash"
 import {
   ArtworksAggregation,
@@ -153,6 +154,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   colors: {
     type: new GraphQLList(GraphQLString),
   },
+  curatorsPick: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.",
+  },
   dimensionRange: {
     type: GraphQLString,
   },
@@ -201,6 +207,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   includeUnpublished: {
     type: GraphQLBoolean,
+  },
+  increasedInterest: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return artworks carrying the Increased Interest collector signal.",
   },
   inquireableOnly: {
     type: GraphQLBoolean,
@@ -514,6 +525,7 @@ const convertFilterArgs = ({
   attributionClass,
   certificateOfAuthenticity,
   completenessTier,
+  curatorsPick,
   dimensionRange,
   excludeArtworkIDs,
   extraAggregationGeneIDs,
@@ -526,6 +538,7 @@ const convertFilterArgs = ({
   includeMediumFilterInAggregation,
   includeNonArtsyListed,
   includeUnpublished,
+  increasedInterest,
   inquireableOnly,
   keywordMatchExact,
   keywordTypoTolerance,
@@ -564,6 +577,7 @@ const convertFilterArgs = ({
     attribution_class: attributionClass,
     certificate_of_authenticity: certificateOfAuthenticity,
     completeness_tier: completenessTier,
+    curators_pick: curatorsPick,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
     extra_aggregation_gene_ids: extraAggregationGeneIDs,
@@ -577,6 +591,7 @@ const convertFilterArgs = ({
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
     include_non_artsy_listed: includeNonArtsyListed,
     include_unpublished: includeUnpublished,
+    increased_interest_signal: increasedInterest,
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
     keyword_typo_tolerance: keywordTypoTolerance,
@@ -631,6 +646,19 @@ const filterArtworksConnectionTypeFactory = (
     const options: any = {
       ...argsProvidedAtRoot,
       ...argsProvidedInInput,
+    }
+
+    const curatorsPick = options.curators_pick
+    delete options.curators_pick
+
+    if (curatorsPick) {
+      if (options.marketing_collection_id) {
+        throw new Error(
+          "`curatorsPick` cannot be combined with `marketingCollectionID` — both resolve to the same Gravity filter."
+        )
+      }
+
+      options.marketing_collection_id = CURATORS_PICK_COLLECTION_SLUG
     }
 
     const {

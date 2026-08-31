@@ -165,18 +165,22 @@ const TrendingSearchesType = new GraphQLObjectType<
   }),
 })
 
+const trendingSearchesField: GraphQLFieldConfig<any, ResolverContext> = {
+  // Nullable so a Vortex failure nulls this field rather than the query.
+  type: TrendingSearchesType,
+  description:
+    "Artists and artworks trending on Artsy over a rolling window, ranked by " +
+    "search and view activity.",
+  args: {
+    period: { type: TrendingSearchPeriodEnum, defaultValue: "1d" },
+  },
+  resolve: (_parent, { period }, context) => trendingWindowFor(period, context),
+}
+
 const SearchDropdownType = new GraphQLObjectType<void, ResolverContext>({
   name: "SearchDropdown",
   fields: () => ({
-    trending: {
-      // Nullable so a Vortex failure nulls this field rather than the query.
-      type: TrendingSearchesType,
-      args: {
-        period: { type: TrendingSearchPeriodEnum, defaultValue: "1d" },
-      },
-      resolve: (_parent, { period }, context) =>
-        trendingWindowFor(period, context),
-    },
+    trending: trendingSearchesField,
   }),
 })
 
@@ -184,3 +188,5 @@ export const SearchDropdown: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLNonNull(SearchDropdownType),
   resolve: () => ({}),
 }
+
+export const TrendingSearches = trendingSearchesField
