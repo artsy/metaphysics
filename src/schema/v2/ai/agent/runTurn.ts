@@ -324,20 +324,9 @@ async function loadSystemPrompt(context: ResolverContext): Promise<string> {
   }
 }
 
-/**
- * The client owns and replays history, and per AgentOutputSchema an answer's
- * `message` deliberately never names the works it showed -- the cards do that.
- * Replayed as prose alone, then, a prior turn reads as an answer about works
- * that have since vanished: "the second one", "cheaper ones like those", "show
- * me more" have nothing left to resolve against, so the model either re-derives
- * the search from the user's words or answers about nothing.
- *
- * So fold the ids the client actually rendered back into the assistant turn, in
- * card order, which is what makes an ordinal reference land. Ids are
- * re-validated rather than trusted: they come back from the client, and only
- * the internalID form resolves to a card (see resolveArtworks), so anything
- * else is context the model cannot act on.
- */
+// An answer's `message` never names the works it showed, so without this a
+// follow-up like "the second one" has nothing to resolve against. Capped then
+// filtered, matching resolveArtworks.
 function annotateWithShownArtworks(
   content: string,
   artworkIDs: readonly string[]
