@@ -444,6 +444,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistLatestArticle",
           fields: {
             href: { type: GraphQLString },
+            id: {
+              type: GraphQLString,
+              resolve: () => null,
+              deprecationReason: "Use href instead",
+            },
           },
         }),
         description:
