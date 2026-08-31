@@ -448,6 +448,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         }),
         description:
           "The most recent editorial article featuring this artist, published in the last 12 months. ",
+        args: {
+          publishedSince: {
+            type: GraphQLString,
+            deprecationReason: "Filtering is deprecated",
+          },
+        },
         resolve: ({ latest_article_href, latest_article_published_at }) => {
           if (!latest_article_href || !latest_article_published_at) return null
 
