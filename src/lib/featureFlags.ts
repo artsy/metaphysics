@@ -9,7 +9,6 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * @see https://tools.artsy.net/feature-flags
  */
 const FEATURE_FLAGS_LIST = [
-  "diamond_artwork-title-experiment",
   "onyx_ai_agent-turn",
   "onyx_nwfy-gravity",
   "onyx_nwfy-refresh-eigen",
