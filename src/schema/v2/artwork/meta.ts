@@ -9,9 +9,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { getExperimentVariant } from "lib/featureFlags"
 
-const EXPERIMENT_NAME = "diamond_artwork-title-experiment"
 const TITLE_MAX_LENGTH = 52 // p95
 
 const isInquireAboutAvailability = (saleMessage) =>
@@ -20,7 +18,7 @@ const isInquireAboutAvailability = (saleMessage) =>
 const titleWithDate = ({ title, date }) =>
   join(" ", [title || "Untitled", date ? `(${date})` : undefined])
 
-const titleWithDateV2 = ({ title, date }) =>
+const truncatedTitleWithDate = ({ title, date }) =>
   join(" ", [
     truncate(title || "Untitled", TITLE_MAX_LENGTH),
     date ? `(${date})` : undefined,
@@ -30,11 +28,6 @@ export const artistNames = (artwork) =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
 const forSaleIndication = (artwork) =>
-  artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
-    ? "Available for Sale"
-    : undefined
-
-const forSaleIndicationV2 = (artwork) =>
   artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
     ? "For Sale"
     : undefined
@@ -95,14 +88,17 @@ const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: {
       type: GraphQLString,
-      resolve: (artwork) => {
-        const variant = getExperimentVariant(EXPERIMENT_NAME, {
-          artworkId: artwork._id,
-        })
-        const variantName =
-          variant && variant.enabled ? variant.name : undefined
-        return generateTitle(artwork, variantName)
-      },
+      resolve: (artwork) =>
+        join(" | ", [
+          join(" - ", [
+            join(" by ", [
+              truncatedTitleWithDate(artwork),
+              artistNames(artwork),
+            ]),
+            forSaleIndication(artwork),
+          ]),
+          "Artsy",
+        ]),
     },
   },
 })
@@ -113,32 +109,3 @@ const Meta: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export default Meta
-
-/**
- * Generates a title for the artwork based on its properties and the
- * experiment variant, resulting in different formats/lengths.
- *
- * ```
- * control   ➡︎ Mevlana Lipp | Cups (2021) | Available for Sale | Artsy
- * variant-a ➡︎ Cups (2021) by Mevlana Lipp - For Sale | Artsy
- * ```
- */
-function generateTitle(artwork, variant) {
-  switch (variant) {
-    case "variant-a":
-      return join(" | ", [
-        join(" - ", [
-          join(" by ", [titleWithDateV2(artwork), artistNames(artwork)]),
-          forSaleIndicationV2(artwork),
-        ]),
-        "Artsy",
-      ])
-    default:
-      return join(" | ", [
-        artistNames(artwork),
-        titleWithDate(artwork),
-        forSaleIndication(artwork),
-        "Artsy",
-      ])
-  }
-}
