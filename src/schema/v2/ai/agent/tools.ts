@@ -76,7 +76,6 @@ const rootFieldFilter: RootFieldFilter = (operation, rootFieldName) =>
 const ALLOWED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
   Me: new Set([
     "id",
-    "internalID",
     "basedOnUserSaves",
     "artworkRecommendations",
     "artistRecommendations",

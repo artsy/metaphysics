@@ -335,6 +335,7 @@ describe("the Me field allowlist", () => {
 
   it("hides the rest of the collector's record, including their identity", async () => {
     const privateFields = [
+      "internalID",
       "name",
       "email",
       "phone",
