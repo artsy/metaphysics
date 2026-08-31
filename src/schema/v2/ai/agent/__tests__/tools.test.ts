@@ -402,6 +402,29 @@ describe("the Me field allowlist", () => {
     )
   })
 
+  it("keeps the never-throws contract when the allowlist stops matching", () => {
+    // The guard above throws, but `runQueryArtsyTool` is documented never to
+    // -- a caller adding a second call site shouldn't have to know that
+    // building the narrowed schema is the one step that can reject.
+    const renamed = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE]: (type) =>
+        type.name === "FollowsAndSaves"
+          ? new GraphQLObjectType({ ...type.toConfig(), name: "FollowsSaves" })
+          : type,
+    })
+
+    return expect(
+      runQueryArtsyTool(
+        {
+          query:
+            "{ me { basedOnUserSaves(first: 1) { edges { node { internalID } } } } }",
+        },
+        renamed,
+        {} as ResolverContext
+      )
+    ).resolves.toEqual({ ok: false, content: "The query could not be run." })
+  })
+
   it("keeps `id`, so the filtered Me still satisfies the Node interface", async () => {
     // Dropping it would leave `Me implements Node` without `id` — an invalid
     // schema, which would break every query, not just this one.

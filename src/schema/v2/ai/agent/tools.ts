@@ -313,7 +313,8 @@ export interface AIAgentToolRunResult {
 /**
  * Runs one model-authored query against the schema, restricted to
  * `ALLOWED_ROOT_FIELDS`. Never throws — every failure mode (bad syntax,
- * validation, execution errors) becomes `{ ok: false, content }`.
+ * validation, execution errors, and a field allowlist that no longer matches
+ * the schema) becomes `{ ok: false, content }`.
  */
 export async function runQueryArtsyTool(
   input: unknown,
@@ -329,7 +330,18 @@ export async function runQueryArtsyTool(
     return { ok: false, content: "A non-empty `query` string is required." }
   }
 
-  const narrowSchema = narrowSchemaFor(schema)
+  let narrowSchema: GraphQLSchema
+  try {
+    narrowSchema = narrowSchemaFor(schema)
+  } catch (error) {
+    // `assertFieldAllowlistsResolve` rejected the schema, so there is no
+    // safely-narrowed one to run against and the tool is unavailable for this
+    // turn. Reported rather than surfaced: the message names internal types,
+    // and like the upstream errors below it describes our own configuration,
+    // which the model has no use for and no way to act on.
+    Sentry.captureException(error)
+    return { ok: false, content: "The query could not be run." }
+  }
 
   let document: DocumentNode
   try {
