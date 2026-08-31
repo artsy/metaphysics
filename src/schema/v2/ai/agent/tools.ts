@@ -86,16 +86,47 @@ const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
   return !allowed || allowed.has(fieldName)
 }
 
+/**
+ * The one way the allowlist above fails *open*: it keys on a type's name, so
+ * renaming `Me` or `FollowsAndSaves` upstream stops the lookup matching, and
+ * `objectFieldFilter` then waves through every field on the type it was
+ * written to restrict. Nothing about a rename looks like a privacy change at
+ * the call site, and the gate it disables lives in a different directory.
+ *
+ * So resolve the names against the real schema while narrowing it, and refuse
+ * to build the schema if one has gone missing. Failing here costs the agent
+ * its `query_artsy` tool — it surfaces as a tool error and a Sentry report —
+ * which is the right trade against silently widening what a model-authored
+ * query can read about the signed-in collector.
+ *
+ * Only missing *types* throw. A missing field name fails closed on its own
+ * (the field just stays unreachable), so it isn't worth taking the tool down.
+ */
+function assertFieldAllowlistsResolve(schema: GraphQLSchema): void {
+  const missing = Object.keys(ALLOWED_FIELDS_BY_TYPE).filter(
+    (typeName) => !schema.getType(typeName)
+  )
+  if (missing.length === 0) return
+
+  throw new Error(
+    `AI agent field allowlist names unknown type(s): ${missing.join(", ")}. ` +
+      "They were most likely renamed — update ALLOWED_FIELDS_BY_TYPE to match, " +
+      "or every field on them becomes readable by a model-authored query."
+  )
+}
+
 // Memoized rather than rebuilt per request — pruning a schema isn't free,
 // and `schema` is the same instance across requests except on a dev
 // hot-reload.
 let cachedRealSchema: GraphQLSchema | undefined
 let cachedNarrowSchema: GraphQLSchema | undefined
 
-function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
+export function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
   if (cachedRealSchema === realSchema && cachedNarrowSchema) {
     return cachedNarrowSchema
   }
+
+  assertFieldAllowlistsResolve(realSchema)
 
   const filtered = filterSchema({
     schema: realSchema,

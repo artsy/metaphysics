@@ -1,6 +1,13 @@
 import { schema } from "schema/v2"
 import { ResolverContext } from "types/graphql"
-import { buildAgentTools, runQueryArtsyTool, summarizeToolCall } from "../tools"
+import {
+  buildAgentTools,
+  narrowSchemaFor,
+  runQueryArtsyTool,
+  summarizeToolCall,
+} from "../tools"
+import { mapSchema, MapperKind } from "@graphql-tools/utils"
+import { GraphQLObjectType } from "graphql"
 import { HTTPError } from "lib/HTTPError"
 
 describe("buildAgentTools", () => {
@@ -348,6 +355,50 @@ describe("the Me field allowlist", () => {
       expect(result.ok).toBe(false)
       expect(result.content).toMatch(/Cannot query field/i)
     }
+  })
+
+  it("blocks the follows connections it doesn't allowlist", async () => {
+    // `followsAndSaves` is allowlisted down to two of its eight connections.
+    // Without this, a rename of the inline `FollowsAndSaves` type would make
+    // all of the collector's follows reachable again and nothing would fail.
+    const blocked = [
+      "showsConnection",
+      "fairsConnection",
+      "galleriesConnection",
+      "genesConnection",
+      "profilesConnection",
+      "bundledArtworksByArtistConnection",
+    ]
+
+    for (const field of blocked) {
+      const result = await runQueryArtsyTool(
+        {
+          query: `{ me { followsAndSaves { ${field}(first: 1) { edges { node { internalID } } } } } }`,
+        },
+        schema,
+        {} as ResolverContext
+      )
+
+      expect(result.ok).toBe(false)
+      expect(result.content).toMatch(/Cannot query field/i)
+    }
+  })
+
+  it("refuses to build the narrowed schema if an allowlisted type is renamed", () => {
+    // The allowlist keys on a type name, which is the one way it fails open.
+    // Every other test in this file exercises the same guard implicitly --
+    // rename `Me` and they all go red on this message rather than quietly
+    // passing against an unrestricted `Me`.
+    const renamed = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE]: (type) =>
+        type.name === "FollowsAndSaves"
+          ? new GraphQLObjectType({ ...type.toConfig(), name: "FollowsSaves" })
+          : type,
+    })
+
+    expect(() => narrowSchemaFor(renamed)).toThrow(
+      /unknown type\(s\).*FollowsAndSaves/s
+    )
   })
 
   it("keeps `id`, so the filtered Me still satisfies the Node interface", async () => {
