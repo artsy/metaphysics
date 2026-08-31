@@ -37,6 +37,10 @@ import { ResolverContext } from "types/graphql"
  * (an unauthorized/unauthenticated caller gets null, not a leak), so this
  * only needs to gate *which entry points* are reachable at all, not which
  * fields within them.
+ *
+ * `Me` is the exception — its fields are allowlisted too, because there
+ * resolver-level auth is what creates the problem rather than solving it.
+ * See ALLOWED_FIELDS_BY_TYPE below.
  */
 
 const ALLOWED_ROOT_FIELDS = new Set([
