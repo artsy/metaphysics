@@ -25,6 +25,9 @@ export const AIAgentMessageInputType = new GraphQLInputObjectType({
   fields: {
     role: { type: new GraphQLNonNull(AIAgentRoleType) },
     content: { type: new GraphQLNonNull(GraphQLString) },
+    artworkIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+    },
   },
 })
 
@@ -33,7 +36,8 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
   fields: {
     conversationID: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Client-generated; identifies which conversation a turn belongs to.",
+      description:
+        "Client-generated; identifies which conversation a turn belongs to.",
     },
     message: {
       type: new GraphQLNonNull(GraphQLString),
@@ -105,7 +109,7 @@ const AIAgentToolCallType = new GraphQLObjectType<
     toolName: { type: new GraphQLNonNull(GraphQLString) },
     summary: {
       type: GraphQLString,
-      description: "Human-readable label, e.g. \"Searching artists…\".",
+      description: 'Human-readable label, e.g. "Searching artists…".',
     },
   },
 })

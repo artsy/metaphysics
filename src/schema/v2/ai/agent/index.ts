@@ -9,9 +9,15 @@ import { AIAgentEventType, AIAgentTurnInputType } from "./types"
 const MAX_HISTORY_MESSAGES = 40
 const MAX_HISTORY_BYTES = 100_000
 
+interface AIAgentHistoryEntry {
+  role: string
+  content: string
+  artworkIDs?: string[] | null
+}
+
 function assertInputWithinLimits(input: {
   message: string
-  history?: Array<{ role: string; content: string }> | null
+  history?: Array<AIAgentHistoryEntry> | null
 }) {
   const history = input.history ?? []
   if (history.length > MAX_HISTORY_MESSAGES) {
@@ -23,7 +29,13 @@ function assertInputWithinLimits(input: {
   const totalBytes =
     Buffer.byteLength(input.message, "utf8") +
     history.reduce(
-      (sum, entry) => sum + Buffer.byteLength(entry.content ?? "", "utf8"),
+      (sum, entry) =>
+        sum +
+        Buffer.byteLength(entry.content ?? "", "utf8") +
+        (entry.artworkIDs ?? []).reduce(
+          (bytes, id) => bytes + Buffer.byteLength(id ?? "", "utf8"),
+          0
+        ),
       0
     )
   if (totalBytes > MAX_HISTORY_BYTES) {
@@ -62,7 +74,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
     const input = args.input as {
       conversationID: string
       message: string
-      history?: Array<{ role: string; content: string }> | null
+      history?: Array<AIAgentHistoryEntry> | null
     }
 
     assertInputWithinLimits(input)

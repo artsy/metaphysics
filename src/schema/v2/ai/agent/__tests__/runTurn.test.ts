@@ -92,7 +92,15 @@ const ID_B = "6a6b6c6d6e6f707172737475"
 const ID_C = "7b7c7d7e7f80818283848586"
 
 async function collectEvents(
-  input: { conversationID: string; message: string },
+  input: {
+    conversationID: string
+    message: string
+    history?: Array<{
+      role: string
+      content: string
+      artworkIDs?: string[] | null
+    }>
+  },
   context: ResolverContext = fakeContext()
 ) {
   const events: any[] = []
@@ -630,6 +638,139 @@ describe("runTurn", () => {
     const signal = mockModel.doStreamCalls[0].abortSignal
     expect(signal?.aborted).toBe(true)
   })
+  describe("replayed history", () => {
+    // What the provider actually receives: the system prompt, then one entry
+    // per conversation message, each with its content as an array of parts.
+    const conversationSentToModel = () =>
+      mockModel.doStreamCalls[0].prompt
+        .filter((entry: any) => entry.role !== "system")
+        .map((entry: any) => ({
+          role: entry.role,
+          text: Array.isArray(entry.content)
+            ? entry.content.map((part: any) => part.text ?? "").join("")
+            : entry.content,
+        }))
+
+    beforeEach(() => {
+      mockModel = new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            {
+              type: "text-delta",
+              id: "1",
+              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+            },
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+    })
+
+    it("folds the cards a prior answer showed back into that assistant turn, in display order", async () => {
+      // The prose never names the works (the cards do), so this note is the
+      // only thing an ordinal follow-up like "the second one" can resolve
+      // against.
+      await collectEvents({
+        conversationID: "c1",
+        message: "How much is the second one?",
+        history: [
+          { role: "user", content: "Show me Warhol prints" },
+          {
+            role: "assistant",
+            content: "Here are a few.",
+            artworkIDs: [ID_A, ID_B],
+          },
+        ],
+      })
+
+      const conversation = conversationSentToModel()
+      expect(conversation).toHaveLength(3)
+      expect(conversation[1].role).toBe("assistant")
+      expect(conversation[1].text).toContain("Here are a few.")
+      expect(conversation[1].text).toContain(`1. ${ID_A} 2. ${ID_B}`)
+      expect(conversation[2]).toMatchObject({
+        role: "user",
+        text: "How much is the second one?",
+      })
+    })
+
+    it("leaves an assistant turn untouched when the client replays no ids", async () => {
+      await collectEvents({
+        conversationID: "c1",
+        message: "And in blue?",
+        history: [
+          { role: "user", content: "Tell me about Banksy" },
+          { role: "assistant", content: "He is a street artist." },
+        ],
+      })
+
+      expect(conversationSentToModel()[1]).toEqual({
+        role: "assistant",
+        text: "He is a street artist.",
+      })
+    })
+
+    it("ignores ids replayed on a user turn, which never rendered cards", async () => {
+      await collectEvents({
+        conversationID: "c1",
+        message: "And cheaper?",
+        history: [
+          { role: "user", content: "Show me Warhol", artworkIDs: [ID_A] },
+        ],
+      })
+
+      expect(conversationSentToModel()[0]).toEqual({
+        role: "user",
+        text: "Show me Warhol",
+      })
+    })
+
+    it("drops a replayed id that isn't an internalID", async () => {
+      // Same reasoning as the citation path: only the 24-char hex form ever
+      // resolved to a card, so anything else is context the model can't act on.
+      await collectEvents({
+        conversationID: "c1",
+        message: "The first one?",
+        history: [
+          {
+            role: "assistant",
+            content: "Here you go.",
+            artworkIDs: ["andy-warhol-flowers", ID_A],
+          },
+        ],
+      })
+
+      const text = conversationSentToModel()[0].text
+      expect(text).toContain(`1. ${ID_A}`)
+      expect(text).not.toContain("andy-warhol-flowers")
+    })
+
+    it("caps a replayed turn at the number of cards that can be shown", async () => {
+      const manyIDs = Array.from({ length: 25 }, (_, index) =>
+        index.toString(16).padStart(24, "0")
+      )
+
+      await collectEvents({
+        conversationID: "c1",
+        message: "More like these",
+        history: [
+          { role: "assistant", content: "Here you go.", artworkIDs: manyIDs },
+        ],
+      })
+
+      const text = conversationSentToModel()[0].text
+      expect(text).toContain(`20. ${manyIDs[19]}`)
+      expect(text).not.toContain(manyIDs[20])
+    })
+  })
+
   describe("per-user rate limiting", () => {
     it("checks the limit against the calling user before any model call", async () => {
       mockModel = new MockLanguageModelV3({

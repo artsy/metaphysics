@@ -27,12 +27,7 @@ function callSubscribe(
   schema: GraphQLSchema = ({} as unknown) as GraphQLSchema
 ) {
   const info = ({ schema } as unknown) as GraphQLResolveInfo
-  return (AIAgentTurn.subscribe as any)(
-    undefined,
-    { input },
-    context,
-    info
-  )
+  return (AIAgentTurn.subscribe as any)(undefined, { input }, context, info)
 }
 
 describe("AIAgentTurn", () => {
@@ -114,6 +109,25 @@ describe("AIAgentTurn", () => {
 
   it("rejects an oversized history", () => {
     const history = [{ role: "user", content: "x".repeat(200_000) }]
+
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c1", message: "hi", history },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/too large/)
+  })
+
+  it("counts replayed artwork ids against the byte cap", () => {
+    // They are client-supplied and reach the model like any other content, so
+    // a history that is small in prose but enormous in ids must not slip past.
+    const history = [
+      {
+        role: "assistant",
+        content: "Here you go.",
+        artworkIDs: Array.from({ length: 5000 }, () => "x".repeat(24)),
+      },
+    ]
 
     expect(() =>
       callSubscribe(

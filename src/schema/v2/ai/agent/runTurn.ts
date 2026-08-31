@@ -81,6 +81,25 @@ a type this turn and aren't sure of its fields, introspect it once first:
 \`{ __type(name: "Artwork") { fields { name type { name kind ofType { name kind } } } } }\`.
 One introspection is cheaper than a retry loop.
 
+## Follow-ups
+
+A prior answer of yours may end with a bracketed note listing the ids of the
+cards it showed, in the order the collector sees them. That note is ours: they
+did not write it and cannot see it, so never quote it back or mention an id to
+them. It is the only record of what they are currently looking at, so read it
+before deciding what a follow-up refers to.
+
+"The second one", "the Warhol", "that one" resolve against that order. To say
+anything about one of those works, look it up
+(\`artwork(id: "<internalID>") { title artistNames saleMessage }\`) and cite its
+id again, so its card renders alongside the answer.
+
+A refinement — "cheaper", "only paintings", "something larger", "what about
+prints" — means re-running your previous search with that one constraint added,
+not starting over from a bare keyword. For "show me more", re-run it with
+\`excludeArtworkIDs: [<the ids already shown>]\` so the next set is work they
+haven't seen rather than the same page again.
+
 ## Recipes
 
 Artworks by a named artist, with price/size filters:
@@ -304,14 +323,55 @@ async function loadSystemPrompt(context: ResolverContext): Promise<string> {
   }
 }
 
+/**
+ * The client owns and replays history, and per AgentOutputSchema an answer's
+ * `message` deliberately never names the works it showed -- the cards do that.
+ * Replayed as prose alone, then, a prior turn reads as an answer about works
+ * that have since vanished: "the second one", "cheaper ones like those", "show
+ * me more" have nothing left to resolve against, so the model either re-derives
+ * the search from the user's words or answers about nothing.
+ *
+ * So fold the ids the client actually rendered back into the assistant turn, in
+ * card order, which is what makes an ordinal reference land. Ids are
+ * re-validated rather than trusted: they come back from the client, and only
+ * the internalID form resolves to a card (see resolveArtworks), so anything
+ * else is context the model cannot act on.
+ */
+function annotateWithShownArtworks(
+  content: string,
+  artworkIDs: readonly string[]
+): string {
+  const shown = artworkIDs
+    .filter((id) => INTERNAL_ID.test(id))
+    .slice(0, MAX_ARTWORK_IDS)
+  if (shown.length === 0) return content
+
+  const note =
+    "[Cards shown to the collector with this answer, in display order: " +
+    `${shown.map((id, index) => `${index + 1}. ${id}`).join(" ")} — they see ` +
+    "images, not these ids.]"
+
+  return content.length > 0 ? `${content}\n\n${note}` : note
+}
+
 function buildMessages(
-  history: Array<{ role: string; content: string }> | null | undefined,
+  history:
+    | Array<{ role: string; content: string; artworkIDs?: string[] | null }>
+    | null
+    | undefined,
   message: string
 ): ModelMessage[] {
-  const priorMessages: ModelMessage[] = (history ?? []).map((entry) => ({
-    role: entry.role as "user" | "assistant",
-    content: entry.content,
-  }))
+  const priorMessages: ModelMessage[] = (history ?? []).map((entry) =>
+    entry.role === "assistant"
+      ? {
+          role: "assistant",
+          content: annotateWithShownArtworks(
+            entry.content,
+            entry.artworkIDs ?? []
+          ),
+        }
+      : { role: "user", content: entry.content }
+  )
 
   return [...priorMessages, { role: "user", content: message }]
 }
