@@ -342,8 +342,8 @@ function annotateWithShownArtworks(
   artworkIDs: readonly string[]
 ): string {
   const shown = artworkIDs
-    .filter((id) => INTERNAL_ID.test(id))
     .slice(0, MAX_ARTWORK_IDS)
+    .filter((id) => INTERNAL_ID.test(id))
   if (shown.length === 0) return content
 
   const note =
