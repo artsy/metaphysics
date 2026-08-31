@@ -17,7 +17,7 @@ import depthLimit from "graphql-depth-limit"
 import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
 import type { ComplexityEstimator } from "graphql-query-complexity"
 import { filterSchema, pruneSchema } from "@graphql-tools/utils"
-import type { RootFieldFilter } from "@graphql-tools/utils"
+import type { FieldFilter, RootFieldFilter } from "@graphql-tools/utils"
 import * as Sentry from "@sentry/node"
 import {
   flattenErrors,
@@ -37,6 +37,10 @@ import { ResolverContext } from "types/graphql"
  * (an unauthorized/unauthenticated caller gets null, not a leak), so this
  * only needs to gate *which entry points* are reachable at all, not which
  * fields within them.
+ *
+ * `Me` is the exception — its fields are allowlisted too, because there
+ * resolver-level auth is what creates the problem rather than solving it.
+ * See ALLOWED_FIELDS_BY_TYPE below.
  */
 
 const ALLOWED_ROOT_FIELDS = new Set([
@@ -47,10 +51,72 @@ const ALLOWED_ROOT_FIELDS = new Set([
   "showsConnection",
   "matchConnection",
   "trendingSearches",
+  "me",
 ])
 
 const rootFieldFilter: RootFieldFilter = (operation, rootFieldName) =>
   operation === "Query" && ALLOWED_ROOT_FIELDS.has(rootFieldName)
+
+/**
+ * `me` is the exception to the comment above: for every other root field,
+ * gating the entry point is enough, because what hangs off it is public
+ * catalogue data. `Me` is the signed-in collector's own record, and almost
+ * all of it is personal — orders, credit cards, bank accounts, conversations,
+ * addresses, identity verification, inquiries. Metaphysics' resolvers do
+ * authorize those (they return this user's data, not someone else's), which
+ * is exactly the problem: a model-authored query would be *correctly*
+ * authorized to read the user's payment details into the model's context.
+ *
+ * So `Me` is the one type whose fields are allowlisted too, down to the
+ * personalization connections that answer "what should I look at next" —
+ * they return artworks and artists, the same shape the rest of the tool
+ * already returns. `id` is not optional here: `Me` implements `Node`, so
+ * dropping it would leave the filtered schema invalid.
+ */
+const ALLOWED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
+  Me: new Set([
+    "id",
+    "basedOnUserSaves",
+    "artworkRecommendations",
+    "artistRecommendations",
+    "followsAndSaves",
+  ]),
+  FollowsAndSaves: new Set(["artworksConnection", "artistsConnection"]),
+}
+
+const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
+  const allowed = ALLOWED_FIELDS_BY_TYPE[typeName]
+  return !allowed || allowed.has(fieldName)
+}
+
+/**
+ * The one way the allowlist above fails *open*: it keys on a type's name, so
+ * renaming `Me` or `FollowsAndSaves` upstream stops the lookup matching, and
+ * `objectFieldFilter` then waves through every field on the type it was
+ * written to restrict. Nothing about a rename looks like a privacy change at
+ * the call site, and the gate it disables lives in a different directory.
+ *
+ * So resolve the names against the real schema while narrowing it, and refuse
+ * to build the schema if one has gone missing. Failing here costs the agent
+ * its `query_artsy` tool — it surfaces as a tool error and a Sentry report —
+ * which is the right trade against silently widening what a model-authored
+ * query can read about the signed-in collector.
+ *
+ * Only missing *types* throw. A missing field name fails closed on its own
+ * (the field just stays unreachable), so it isn't worth taking the tool down.
+ */
+function assertFieldAllowlistsResolve(schema: GraphQLSchema): void {
+  const missing = Object.keys(ALLOWED_FIELDS_BY_TYPE).filter(
+    (typeName) => !schema.getType(typeName)
+  )
+  if (missing.length === 0) return
+
+  throw new Error(
+    `AI agent field allowlist names unknown type(s): ${missing.join(", ")}. ` +
+      "They were most likely renamed — update ALLOWED_FIELDS_BY_TYPE to match, " +
+      "or every field on them becomes readable by a model-authored query."
+  )
+}
 
 // Memoized rather than rebuilt per request — pruning a schema isn't free,
 // and `schema` is the same instance across requests except on a dev
@@ -58,12 +124,18 @@ const rootFieldFilter: RootFieldFilter = (operation, rootFieldName) =>
 let cachedRealSchema: GraphQLSchema | undefined
 let cachedNarrowSchema: GraphQLSchema | undefined
 
-function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
+export function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
   if (cachedRealSchema === realSchema && cachedNarrowSchema) {
     return cachedNarrowSchema
   }
 
-  const filtered = filterSchema({ schema: realSchema, rootFieldFilter })
+  assertFieldAllowlistsResolve(realSchema)
+
+  const filtered = filterSchema({
+    schema: realSchema,
+    rootFieldFilter,
+    objectFieldFilter,
+  })
   const pruned = pruneSchema(filtered)
 
   cachedRealSchema = realSchema
@@ -241,7 +313,8 @@ export interface AIAgentToolRunResult {
 /**
  * Runs one model-authored query against the schema, restricted to
  * `ALLOWED_ROOT_FIELDS`. Never throws — every failure mode (bad syntax,
- * validation, execution errors) becomes `{ ok: false, content }`.
+ * validation, execution errors, and a field allowlist that no longer matches
+ * the schema) becomes `{ ok: false, content }`.
  */
 export async function runQueryArtsyTool(
   input: unknown,
@@ -257,7 +330,18 @@ export async function runQueryArtsyTool(
     return { ok: false, content: "A non-empty `query` string is required." }
   }
 
-  const narrowSchema = narrowSchemaFor(schema)
+  let narrowSchema: GraphQLSchema
+  try {
+    narrowSchema = narrowSchemaFor(schema)
+  } catch (error) {
+    // `assertFieldAllowlistsResolve` rejected the schema, so there is no
+    // safely-narrowed one to run against and the tool is unavailable for this
+    // turn. Reported rather than surfaced: the message names internal types,
+    // and like the upstream errors below it describes our own configuration,
+    // which the model has no use for and no way to act on.
+    Sentry.captureException(error)
+    return { ok: false, content: "The query could not be run." }
+  }
 
   let document: DocumentNode
   try {
@@ -342,8 +426,11 @@ export function buildAgentTools(
         "Run a read-only GraphQL query to search and look up artists, " +
         "artworks, shows, and fairs. Available root fields: " +
         "artworksConnection, artistsConnection, artist, artwork, " +
-        "showsConnection, matchConnection, trendingSearches (the last one for " +
-        "trending/most-popular rankings). Use GraphQL introspection (e.g. " +
+        "showsConnection, matchConnection, trendingSearches (for " +
+        "trending/most-popular rankings), and me (the signed-in collector's " +
+        "own saves, follows and recommendations — `me` is null when signed " +
+        "out, and only its personalization fields are reachable). Use " +
+        "GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
         "discover the fields and args available on any type — one type at a " +
         "time, as `__schema` is not available. Always " +
@@ -380,7 +467,7 @@ export function summarizeToolCall(input: unknown): string {
   if (typeof query !== "string") return "Querying Artsy…"
 
   const match = query.match(
-    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|trendingSearches)\b/
+    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|trendingSearches|basedOnUserSaves|artworkRecommendations|artistRecommendations|followsAndSaves)\b/
   )
   return match ? `Querying Artsy: ${match[1]}…` : "Querying Artsy…"
 }
