@@ -30,6 +30,17 @@ const query = gql`
   }
 `
 
+const legacyQueryWithId = gql`
+  {
+    artist(id: "gerhard-richter") {
+      latestArticle {
+        href
+        id
+      }
+    }
+  }
+`
+
 describe("Artist#latestArticle", () => {
   it("returns href when article was published within the last year", async () => {
     const artistLoader = jest.fn().mockResolvedValue({
@@ -75,6 +86,18 @@ describe("Artist#latestArticle", () => {
     const { artist } = await runQuery(query, { artistLoader })
 
     expect(artist.latestArticle).toBeNull()
+  })
+
+  it("returns null for the deprecated id field (backwards compat for old cached clients)", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      ...ARTIST_FIXTURE,
+      latest_article_href: "/article/gerhard-richter-moma",
+      latest_article_published_at: RECENT_DATE,
+    })
+
+    const { artist } = await runQuery(legacyQueryWithId, { artistLoader })
+
+    expect(artist.latestArticle.id).toBeNull()
   })
 
   it("returns null when the article is just over a year old", async () => {
