@@ -440,24 +440,29 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }).then((articles) => first(articles.results)),
       },
       latestArticle: {
-        type: Article.type,
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "ArtistLatestArticle",
+          fields: {
+            href: { type: GraphQLString },
+          },
+        }),
         description:
-          "The most recent published article featuring this artist, optionally limited to those published since a given date.",
+          "The most recent editorial article featuring this artist, published in the last 12 months. ",
         args: {
           publishedSince: {
             type: GraphQLString,
-            description:
-              "Only return articles published since this ISO 8601 date.",
+            deprecationReason: "Filtering is deprecated",
           },
         },
-        resolve: ({ _id }, { publishedSince }, { articlesLoader }) =>
-          articlesLoader({
-            published: true,
-            artist_id: _id,
-            sort: "-published_at",
-            limit: 1,
-            ...(publishedSince && { published_since: publishedSince }),
-          }).then((articles) => first(articles.results)),
+        resolve: ({ latest_article_href, latest_article_published_at }) => {
+          if (!latest_article_href || !latest_article_published_at) return null
+
+          const oneYearAgo = new Date()
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+          if (new Date(latest_article_published_at) < oneYearAgo) return null
+
+          return { href: latest_article_href }
+        },
       },
       biographyBlurb: {
         args: {

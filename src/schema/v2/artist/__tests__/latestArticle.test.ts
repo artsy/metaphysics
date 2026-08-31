@@ -7,125 +7,85 @@ const ARTIST_FIXTURE = {
   name: "Gerhard Richter",
 }
 
-const ARTICLE_FIXTURE = {
-  id: "some-article-id",
-  slug: "some-article",
-  title: "Gerhard Richter at the MoMA",
-  published_at: "2024-01-15T00:00:00.000Z",
-}
+const recentDate = new Date()
+recentDate.setMonth(recentDate.getMonth() - 1)
+const RECENT_DATE = recentDate.toISOString()
+
+const exactlyOneYearAgo = new Date()
+exactlyOneYearAgo.setFullYear(exactlyOneYearAgo.getFullYear() - 1)
+exactlyOneYearAgo.setDate(exactlyOneYearAgo.getDate() - 1)
+const JUST_EXPIRED_DATE = exactlyOneYearAgo.toISOString()
+
+const oldDate = new Date()
+oldDate.setFullYear(oldDate.getFullYear() - 2)
+const OLD_DATE = oldDate.toISOString()
+
+const query = gql`
+  {
+    artist(id: "gerhard-richter") {
+      latestArticle {
+        href
+      }
+    }
+  }
+`
 
 describe("Artist#latestArticle", () => {
-  it("returns the most recent published article featuring the artist", async () => {
-    const query = gql`
-      {
-        artist(id: "gerhard-richter") {
-          latestArticle {
-            slug
-            title
-          }
-        }
-      }
-    `
-
-    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
-    const articlesLoader = jest.fn().mockResolvedValue({
-      results: [ARTICLE_FIXTURE],
+  it("returns href when article was published within the last year", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      ...ARTIST_FIXTURE,
+      latest_article_href: "/article/gerhard-richter-moma",
+      latest_article_published_at: RECENT_DATE,
     })
 
-    const { artist } = await runQuery(query, { artistLoader, articlesLoader })
+    const { artist } = await runQuery(query, { artistLoader })
 
     expect(artist.latestArticle).toEqual({
-      slug: "some-article",
-      title: "Gerhard Richter at the MoMA",
+      href: "/article/gerhard-richter-moma",
     })
-
-    expect(articlesLoader).toBeCalledWith(
-      expect.objectContaining({
-        published: true,
-        artist_id: "artist-id",
-        sort: "-published_at",
-        limit: 1,
-      })
-    )
   })
 
-  it("returns null when no articles feature the artist", async () => {
-    const query = gql`
-      {
-        artist(id: "gerhard-richter") {
-          latestArticle {
-            slug
-          }
-        }
-      }
-    `
-
+  it("returns null when no article is stored", async () => {
     const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
-    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
 
-    const { artist } = await runQuery(query, { artistLoader, articlesLoader })
+    const { artist } = await runQuery(query, { artistLoader })
 
     expect(artist.latestArticle).toBeNull()
   })
 
-  it("does not call articlesLoader when latestArticle is not requested", async () => {
-    const query = gql`
-      {
-        artist(id: "gerhard-richter") {
-          name
-        }
-      }
-    `
+  it("returns null when latest_article_href is missing but published_at is present", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      ...ARTIST_FIXTURE,
+      latest_article_href: null,
+      latest_article_published_at: RECENT_DATE,
+    })
 
-    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
-    const articlesLoader = jest.fn()
+    const { artist } = await runQuery(query, { artistLoader })
 
-    await runQuery(query, { artistLoader, articlesLoader })
-
-    expect(articlesLoader).not.toHaveBeenCalled()
+    expect(artist.latestArticle).toBeNull()
   })
 
-  it("passes publishedSince as published_since to articlesLoader", async () => {
-    const query = gql`
-      {
-        artist(id: "gerhard-richter") {
-          latestArticle(publishedSince: "2024-01-01") {
-            slug
-          }
-        }
-      }
-    `
+  it("returns null when the article was published more than a year ago", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      ...ARTIST_FIXTURE,
+      latest_article_href: "/article/old-article",
+      latest_article_published_at: OLD_DATE,
+    })
 
-    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
-    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+    const { artist } = await runQuery(query, { artistLoader })
 
-    await runQuery(query, { artistLoader, articlesLoader })
-
-    expect(articlesLoader).toBeCalledWith(
-      expect.objectContaining({
-        published_since: "2024-01-01",
-      })
-    )
+    expect(artist.latestArticle).toBeNull()
   })
 
-  it("does not pass published_since when publishedSince is not provided", async () => {
-    const query = gql`
-      {
-        artist(id: "gerhard-richter") {
-          latestArticle {
-            slug
-          }
-        }
-      }
-    `
+  it("returns null when the article is just over a year old", async () => {
+    const artistLoader = jest.fn().mockResolvedValue({
+      ...ARTIST_FIXTURE,
+      latest_article_href: "/article/just-expired",
+      latest_article_published_at: JUST_EXPIRED_DATE,
+    })
 
-    const artistLoader = jest.fn().mockResolvedValue(ARTIST_FIXTURE)
-    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+    const { artist } = await runQuery(query, { artistLoader })
 
-    await runQuery(query, { artistLoader, articlesLoader })
-
-    expect(articlesLoader).toBeCalledWith(
-      expect.not.objectContaining({ published_since: expect.anything() })
-    )
+    expect(artist.latestArticle).toBeNull()
   })
 })
