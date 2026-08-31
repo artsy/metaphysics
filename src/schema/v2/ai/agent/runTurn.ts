@@ -15,6 +15,7 @@ import {
 } from "./tools"
 import {
   AIAgentEventPayload,
+  AIAgentHistoryEntry,
   AIAgentTextDeltaPayload,
   AIAgentToolCallPayload,
   AIAgentToolResultPayload,
@@ -355,10 +356,7 @@ function annotateWithShownArtworks(
 }
 
 function buildMessages(
-  history:
-    | Array<{ role: string; content: string; artworkIDs?: string[] | null }>
-    | null
-    | undefined,
+  history: AIAgentHistoryEntry[] | null | undefined,
   message: string
 ): ModelMessage[] {
   const priorMessages: ModelMessage[] = (history ?? []).map((entry) =>
@@ -384,7 +382,11 @@ function buildMessages(
  * live SSE stream mid-flight.
  */
 export async function* runTurn(
-  input: { conversationID: string; message: string; history?: any },
+  input: {
+    conversationID: string
+    message: string
+    history?: AIAgentHistoryEntry[] | null
+  },
   schema: GraphQLSchema,
   context: ResolverContext
 ): AsyncGenerator<AIAgentEventPayload> {

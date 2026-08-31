@@ -3,17 +3,15 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { runTurn } from "./runTurn"
-import { AIAgentEventType, AIAgentTurnInputType } from "./types"
+import {
+  AIAgentEventType,
+  AIAgentHistoryEntry,
+  AIAgentTurnInputType,
+} from "./types"
 
 // Guardrail: reject a client-supplied history before it ever reaches the model.
 const MAX_HISTORY_MESSAGES = 40
 const MAX_HISTORY_BYTES = 100_000
-
-interface AIAgentHistoryEntry {
-  role: string
-  content: string
-  artworkIDs?: string[] | null
-}
 
 function assertInputWithinLimits(input: {
   message: string

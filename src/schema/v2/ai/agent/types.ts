@@ -31,6 +31,12 @@ export const AIAgentMessageInputType = new GraphQLInputObjectType({
   },
 })
 
+export interface AIAgentHistoryEntry {
+  role: string
+  content: string
+  artworkIDs?: string[] | null
+}
+
 export const AIAgentTurnInputType = new GraphQLInputObjectType({
   name: "AIAgentTurnInput",
   fields: {
