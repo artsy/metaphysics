@@ -15,6 +15,7 @@ import {
 } from "./tools"
 import {
   AIAgentEventPayload,
+  AIAgentHistoryEntry,
   AIAgentTextDeltaPayload,
   AIAgentToolCallPayload,
   AIAgentToolResultPayload,
@@ -80,6 +81,25 @@ Prefer a small number of well-formed queries over guessing. If you haven't used
 a type this turn and aren't sure of its fields, introspect it once first:
 \`{ __type(name: "Artwork") { fields { name type { name kind ofType { name kind } } } } }\`.
 One introspection is cheaper than a retry loop.
+
+## Follow-ups
+
+A prior answer of yours may end with a bracketed note listing the ids of the
+cards it showed, in the order the collector sees them. That note is ours: they
+did not write it and cannot see it, so never quote it back or mention an id to
+them. It is the only record of what they are currently looking at, so read it
+before deciding what a follow-up refers to.
+
+"The second one", "the Warhol", "that one" resolve against that order. To say
+anything about one of those works, look it up
+(\`artwork(id: "<internalID>") { title artistNames saleMessage }\`) and cite its
+id again, so its card renders alongside the answer.
+
+A refinement — "cheaper", "only paintings", "something larger", "what about
+prints" — means re-running your previous search with that one constraint added,
+not starting over from a bare keyword. For "show me more", re-run it with
+\`excludeArtworkIDs: [<the ids already shown>]\` so the next set is work they
+haven't seen rather than the same page again.
 
 ## Recipes
 
@@ -304,14 +324,41 @@ async function loadSystemPrompt(context: ResolverContext): Promise<string> {
   }
 }
 
+// An answer's `message` never names the works it showed, so without this a
+// follow-up like "the second one" has nothing to resolve against. Capped then
+// filtered, matching resolveArtworks.
+function annotateWithShownArtworks(
+  content: string,
+  artworkIDs: readonly string[]
+): string {
+  const shown = artworkIDs
+    .slice(0, MAX_ARTWORK_IDS)
+    .filter((id) => INTERNAL_ID.test(id))
+  if (shown.length === 0) return content
+
+  const note =
+    "[Cards shown to the collector with this answer, in display order: " +
+    `${shown.map((id, index) => `${index + 1}. ${id}`).join(" ")} — they see ` +
+    "images, not these ids.]"
+
+  return content.length > 0 ? `${content}\n\n${note}` : note
+}
+
 function buildMessages(
-  history: Array<{ role: string; content: string }> | null | undefined,
+  history: AIAgentHistoryEntry[] | null | undefined,
   message: string
 ): ModelMessage[] {
-  const priorMessages: ModelMessage[] = (history ?? []).map((entry) => ({
-    role: entry.role as "user" | "assistant",
-    content: entry.content,
-  }))
+  const priorMessages: ModelMessage[] = (history ?? []).map((entry) =>
+    entry.role === "assistant"
+      ? {
+          role: "assistant",
+          content: annotateWithShownArtworks(
+            entry.content,
+            entry.artworkIDs ?? []
+          ),
+        }
+      : { role: "user", content: entry.content }
+  )
 
   return [...priorMessages, { role: "user", content: message }]
 }
@@ -324,7 +371,11 @@ function buildMessages(
  * live SSE stream mid-flight.
  */
 export async function* runTurn(
-  input: { conversationID: string; message: string; history?: any },
+  input: {
+    conversationID: string
+    message: string
+    history?: AIAgentHistoryEntry[] | null
+  },
   schema: GraphQLSchema,
   context: ResolverContext
 ): AsyncGenerator<AIAgentEventPayload> {
