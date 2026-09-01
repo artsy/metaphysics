@@ -1513,6 +1513,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    generateArtworkDescriptionLoader: gravityLoader(
+      (id) => `artwork/${id}/generate_description`,
+      {},
+      { method: "POST" }
+    ),
     updateCollectionLoader: gravityLoader(
       (id) => `collection/${id}`,
       {},

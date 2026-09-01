@@ -20,6 +20,8 @@ interface Input {
   fontFamily?: string
   fontWeight?: string
   fontStyle?: string
+  writingLanguage?: string
+  writingSample?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -91,6 +93,15 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Font style",
     },
+    writingLanguage: {
+      type: GraphQLString,
+      description: "Language used for generated artwork descriptions",
+    },
+    writingSample: {
+      type: GraphQLString,
+      description:
+        "Writing sample used to match tone in generated descriptions",
+    },
   },
   outputFields: {
     brandKitOrError: {
@@ -108,6 +119,8 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
       fontFamily,
       fontWeight,
       fontStyle,
+      writingLanguage,
+      writingSample,
     },
     { updateBrandKitLoader }
   ) => {
@@ -123,6 +136,8 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
         font_family: fontFamily,
         font_weight: fontWeight,
         font_style: fontStyle,
+        writing_language: writingLanguage,
+        writing_sample: writingSample,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)
