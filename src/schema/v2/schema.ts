@@ -156,6 +156,8 @@ import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtnetImportMutation } from "./artnet/artnetImportMutation"
+import { ArtnetImport } from "./artnet/artnetImport"
+import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -471,6 +473,7 @@ const rootFields = {
   artistsConnection,
   artistSeries: ArtistSeries,
   artistSeriesConnection: ArtistSeriesConnection,
+  artnetImport: ArtnetImport,
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkDuplicatePair,
@@ -644,6 +647,7 @@ export default new GraphQLSchema({
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
       createArtnetImport: createArtnetImportMutation,
+      createArtnetImportArtistAssignment: CreateArtnetImportArtistAssignmentMutation,
       createArtwork: createArtworkMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
