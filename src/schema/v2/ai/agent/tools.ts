@@ -48,6 +48,14 @@ const ALLOWED_ROOT_FIELDS = new Set([
   "artistsConnection",
   "artist",
   "artwork",
+  "artistSeries",
+  "artistSeriesConnection",
+  "gene",
+  "genes",
+  "marketingCollection",
+  "marketingCollections",
+  "fair",
+  "fairs",
   "showsConnection",
   "matchConnection",
   "trendingSearches",
@@ -424,12 +432,19 @@ export function buildAgentTools(
     query_artsy: tool({
       description:
         "Run a read-only GraphQL query to search and look up artists, " +
-        "artworks, shows, and fairs. Available root fields: " +
+        "artworks, shows and fairs. Available root fields: " +
         "artworksConnection, artistsConnection, artist, artwork, " +
-        "showsConnection, matchConnection, trendingSearches (for " +
-        "trending/most-popular rankings), and me (the signed-in collector's " +
-        "own saves, follows and recommendations — `me` is null when signed " +
-        "out, and only its personalization fields are reachable). Use " +
+        "artistSeries, artistSeriesConnection, gene, genes (styles and " +
+        "movements), marketingCollection, marketingCollections (curated " +
+        "collections), fair, fairs, showsConnection, matchConnection, " +
+        "trendingSearches (for trending/most-popular rankings), and me (the " +
+        "signed-in collector's own saves, follows and recommendations — " +
+        "`me` is null when signed out, and only its personalization fields " +
+        "are reachable). Auctions are reachable as " +
+        "artworksConnection(atAuction: true), not as a sale root field. " +
+        "Note gene, artistSeries and fair expose their works as " +
+        "`filterArtworksConnection`, while marketingCollection uses " +
+        "`artworksConnection`. Use " +
         "GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
         "discover the fields and args available on any type — one type at a " +
@@ -467,7 +482,7 @@ export function summarizeToolCall(input: unknown): string {
   if (typeof query !== "string") return "Querying Artsy…"
 
   const match = query.match(
-    /\b(artworksConnection|artistsConnection|artist|artwork|showsConnection|matchConnection|trendingSearches|basedOnUserSaves|artworkRecommendations|artistRecommendations|followsAndSaves)\b/
+    /\b(artworksConnection|artistsConnection|artistSeriesConnection|artistSeries|artist|artwork|marketingCollections|marketingCollection|genes|gene|fairs|fair|showsConnection|matchConnection|trendingSearches|basedOnUserSaves|artworkRecommendations|artistRecommendations|followsAndSaves)\b/
   )
   return match ? `Querying Artsy: ${match[1]}…` : "Querying Artsy…"
 }
