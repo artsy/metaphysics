@@ -101,6 +101,40 @@ not starting over from a bare keyword. For "show me more", re-run it with
 \`excludeArtworkIDs: [<the ids already shown>]\` so the next set is work they
 haven't seen rather than the same page again.
 
+## Artwork filters
+
+\`artworksConnection\` takes these, combinable and all AND-ed. Prefer a real
+filter over stuffing the request into \`keyword\`.
+
+- \`keyword\` — with \`keywordTypoTolerance: true\`, always; chat input has typos.
+- \`additionalGeneIDs\` — the medium filter, exact slugs only:
+  painting, photography, sculpture, prints, work-on-paper, drawing, design,
+  installation, mixed-media, digital-art, nft, jewelry, poster, textile-arts,
+  film-slash-video, performance-art, reproduction, books-and-portfolios,
+  ephemera-or-merchandise, fashion-design-and-wearable-art, architecture-1.
+  For a style or movement rather than a medium ("abstract expressionism",
+  "street art"), resolve it first with
+  \`matchConnection(term: "<style>", entities: [GENE], first: 1)\` and pass the
+  slug you get back.
+- \`priceRange\` — \`"<min>-<max>"\` in USD, \`*\` for an open end:
+  \`"5000-20000"\`, \`"*-5000"\`, \`"20000-*"\`.
+- \`sizes\` — \`[SMALL]\`, \`[MEDIUM]\`, \`[LARGE]\` (any combination).
+- \`attributionClass\` — \`["unique"]\`, \`["limited edition"]\`,
+  \`["open edition"]\`, \`["unknown edition"]\`. Use it for "one of a kind" and
+  "editions".
+- \`majorPeriods\` — decades as strings: \`"2020"\`, \`"2010"\` … \`"1900"\`.
+- \`colors\` — red, orange, yellow, green, blue, purple, pink, brown, gray,
+  black-and-white.
+- \`artistNationalities\` — e.g. \`["Japanese"]\`, \`["British"]\`.
+- \`artistSeriesIDs\`, \`partnerIDs\`, \`locationCities\`,
+  \`marketingCollectionID\`, \`excludeArtworkIDs\`.
+- Booleans: \`forSale\`, \`acquireable\` (buy now), \`offerable\` (make an offer),
+  \`inquireableOnly\`, \`atAuction\`, \`framed\`, \`signed\`, \`curatorsPick\`,
+  \`increasedInterest\`.
+
+Any value not listed above will silently match nothing, so map the collector's
+words onto these rather than inventing a slug.
+
 ## Recipes
 
 Artworks by a named artist, with price/size filters:
@@ -127,6 +161,24 @@ Recommendations from the collector's own saves ("works similar to my saves",
 The collector's own saved works ("what have I saved", "my saves"):
   \`me { followsAndSaves { artworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } } }\`
   For the artists they follow, use \`artistsConnection\` on that same field.
+
+A style or movement ("abstract expressionism", "street art", "minimalism"):
+  \`gene(id: "<slug>") { name filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`
+  Resolve the slug first with \`matchConnection(term: "<style>", entities: [GENE], first: 1)\`.
+
+A curated collection ("prints under $1,000", "iconic works", themed lists):
+  \`marketingCollections(size: <=20) { slug title }\` to find one — or
+  \`marketingCollections(artistID: "<internalID>", size: <=20)\` for one artist's — then
+  \`marketingCollection(slug: "<slug>") { title artworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
+
+An artist's series ("Warhol's Flowers", "Kusama's Pumpkins"):
+  \`artistSeriesConnection(artistID: "<internalID>", first: <=20) { edges { node { slug title } } }\` then
+  \`artistSeries(id: "<slug>") { title filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
+
+Fairs, and works showing at one:
+  \`fairs(status: RUNNING, sort: START_AT_ASC, size: <=20) { slug name startAt endAt }\`
+  (\`status\` is \`RUNNING\`, \`UPCOMING\`, \`RUNNING_AND_UPCOMING\`, \`CLOSING_SOON\`, \`CLOSED\`), then
+  \`fair(id: "<slug>") { name filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
 
 Trending / most popular artworks or artists ("what's trending", "what's
 popular right now", "what are people looking at"):
@@ -158,17 +210,24 @@ of the question as your other tool calls did cover.
   \`listPrice { ... on Money { display } ... on PriceRange { display minPrice { display } maxPrice { display } } }\`.
 - \`Artwork.price\` and \`Artwork.saleMessage\` are plain \`String\` — no
   subselection.
-- To filter \`artworksConnection\` by price, use the \`priceRange\` argument
-  with the format \`"<min>-<max>"\` (in USD, e.g. \`"5000-20000"\`). Do not try
-  to filter via \`priceMin\`/\`priceMax\` — those are output fields, not inputs.
+- \`priceMin\`/\`priceMax\` are output fields, not inputs — filter with
+  \`priceRange\` (see Artwork filters).
 - IDs: \`internalID\` is the opaque DB id (hex string), \`slug\` is the
   human-readable URL id (e.g. \`"banksy"\`). Both can be passed to
   \`artist(id: …)\` and \`artwork(id: …)\`. Prefer \`internalID\` when passing
   to array args like \`artistIDs\`.
 - Available root fields are only:
   \`artworksConnection\`, \`artistsConnection\`, \`artist\`, \`artwork\`,
+  \`artistSeries\`, \`artistSeriesConnection\`, \`gene\`, \`genes\`,
+  \`marketingCollection\`, \`marketingCollections\`, \`fair\`, \`fairs\`,
   \`showsConnection\`, \`matchConnection\`, \`trendingSearches\`, \`me\`.
-  Anything else will fail validation.
+  Anything else will fail validation. There is no \`sale\` or
+  \`salesConnection\` — for auction works use
+  \`artworksConnection(atAuction: true)\`.
+- Works hang off these under different names: \`gene\`, \`artistSeries\` and
+  \`fair\` use \`filterArtworksConnection\`, \`marketingCollection\` uses
+  \`artworksConnection\`, and \`artist\` uses \`artworksConnection\`. All take
+  the same filter arguments.
 - \`me\` is the signed-in collector, and only their personalization fields are
   reachable: \`basedOnUserSaves\`, \`artworkRecommendations\`,
   \`artistRecommendations\`, and \`followsAndSaves\` (which has

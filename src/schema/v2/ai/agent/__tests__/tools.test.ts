@@ -7,7 +7,7 @@ import {
   summarizeToolCall,
 } from "../tools"
 import { mapSchema, MapperKind } from "@graphql-tools/utils"
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, parse, specifiedRules, validate } from "graphql"
 import { HTTPError } from "lib/HTTPError"
 
 describe("buildAgentTools", () => {
@@ -248,6 +248,87 @@ describe("runQueryArtsyTool", () => {
     expect(result.ok).toBe(false)
     expect(typeof result.content).toBe("string")
     expect(result.content.length).toBeGreaterThan(0)
+  })
+})
+
+describe("the root field allowlist", () => {
+  const rootFieldNames = () => {
+    const queryType = narrowSchemaFor(schema).getQueryType()
+    return Object.keys(queryType!.getFields()).sort()
+  }
+
+  it("exposes exactly the entry points the prompt documents", () => {
+    expect(rootFieldNames()).toEqual([
+      "artist",
+      "artistSeries",
+      "artistSeriesConnection",
+      "artistsConnection",
+      "artwork",
+      "artworksConnection",
+      "fair",
+      "fairs",
+      "gene",
+      "genes",
+      "marketingCollection",
+      "marketingCollections",
+      "matchConnection",
+      "me",
+      "showsConnection",
+      "trendingSearches",
+    ])
+  })
+
+  // Auction data hangs off Sale/SaleArtwork through meBiddersLoader and
+  // lotStandingLoader -- the collector's own bidding, which is what the Me
+  // allowlist exists to keep out of model context.
+  it("keeps auctions out, reachable only as artworksConnection(atAuction:)", () => {
+    expect(rootFieldNames()).not.toContain("sale")
+    expect(rootFieldNames()).not.toContain("salesConnection")
+    expect(rootFieldNames()).not.toContain("saleArtworksConnection")
+  })
+
+  // Each of these hangs its works off a differently-named connection, which
+  // the prompt spells out; a rename upstream should fail here, not in a
+  // retry loop at runtime.
+  describe("the recipes the prompt gives for them", () => {
+    const validationErrors = (query: string) =>
+      validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
+        (error) => error.message
+      )
+
+    it.each([
+      [
+        "gene",
+        '{ gene(id: "abstract-expressionism") { name filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "artistSeries",
+        '{ artistSeries(id: "andy-warhol-flowers") { title filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "fair",
+        '{ fair(id: "art-basel-2026") { name filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "marketingCollection",
+        '{ marketingCollection(slug: "prints-under-1000") { title artworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "artistSeriesConnection",
+        '{ artistSeriesConnection(artistID: "4d8b92b34eb68a1b2c000452", first: 5) { edges { node { slug title } } } }',
+      ],
+      [
+        "fairs",
+        "{ fairs(status: RUNNING, sort: START_AT_ASC, size: 5) { slug name startAt endAt } }",
+      ],
+      ["genes", '{ genes(slugs: ["minimalism"]) { name slug } }'],
+      [
+        "marketingCollections",
+        "{ marketingCollections(size: 5) { slug title } }",
+      ],
+    ])("validates the %s recipe", (_name, query) => {
+      expect(validationErrors(query)).toEqual([])
+    })
   })
 })
 
@@ -604,6 +685,20 @@ describe("summarizeToolCall", () => {
           "{ me { followsAndSaves { artworksConnection(first: 10) { edges { node { slug } } } } } }",
       })
     ).toBe("Querying Artsy: followsAndSaves…")
+  })
+
+  it("labels the entry point, not the connection nested under it", () => {
+    expect(
+      summarizeToolCall({
+        query:
+          '{ gene(id: "minimalism") { filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      })
+    ).toBe("Querying Artsy: gene…")
+    expect(
+      summarizeToolCall({
+        query: '{ fair(id: "art-basel-2026") { name } }',
+      })
+    ).toBe("Querying Artsy: fair…")
   })
 
   it("falls back to a generic label when the root field can't be identified", () => {
