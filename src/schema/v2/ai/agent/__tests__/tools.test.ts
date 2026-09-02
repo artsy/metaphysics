@@ -21,6 +21,29 @@ describe("buildAgentTools", () => {
     expect(tools.query_artsy.description).toContain("artworksConnection")
     expect(tools.query_artsy.description).toContain("introspection")
   })
+
+  it("recommends no field the narrowed schema has removed", () => {
+    const { description } = buildAgentTools(
+      schema,
+      {} as ResolverContext
+    ).query_artsy
+    const artwork = narrowSchemaFor(schema).getType("Artwork") as
+      | GraphQLObjectType
+      | undefined
+
+    const denied = [
+      "priceMin",
+      "priceMax",
+      "listPrice",
+      "pricePaid",
+      "costMinor",
+    ]
+
+    denied.forEach((field) => {
+      expect(artwork!.getFields()[field]).toBeUndefined()
+      expect(description).not.toContain(field)
+    })
+  })
 })
 
 describe("runQueryArtsyTool", () => {
@@ -329,6 +352,97 @@ describe("the root field allowlist", () => {
     ])("validates the %s recipe", (_name, query) => {
       expect(validationErrors(query)).toEqual([])
     })
+  })
+})
+
+describe("the price field denylist", () => {
+  const validationErrors = (query: string) =>
+    validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
+      (error) => error.message
+    )
+
+  it.each([
+    "priceMin { minor }",
+    "priceMax { minor }",
+    "listPrice { __typename }",
+    "price",
+    "priceCurrency",
+    "priceDisplay",
+    "priceListed { minor }",
+    "priceListedDisplay",
+    "pricePaid { minor }",
+    "costMinor",
+    "costCurrencyCode",
+    "displayPriceRange",
+    "internalDisplayPrice",
+  ])("makes Artwork.%s unaskable", (selection) => {
+    expect(
+      validationErrors(`{ artwork(id: "piotre-box-3") { ${selection} } }`).join(
+        " "
+      )
+    ).toMatch(/Cannot query field/)
+  })
+
+  it("closes the same hole on edition sets", () => {
+    expect(
+      validationErrors(
+        '{ artwork(id: "piotre-box-3") { editionSets { priceMin { minor } } } }'
+      ).join(" ")
+    ).toMatch(/Cannot query field/)
+  })
+
+  it("keeps saleMessage, which is what the artwork page itself shows", async () => {
+    const artworkLoader = jest.fn().mockResolvedValue({
+      _id: "5f5a5b5c5d5e5f6061626364",
+      id: "piotre-box-3",
+      price_hidden: true,
+      price_min: 8500,
+      price_currency: "USD",
+      sale_message: "Contact for price",
+    })
+
+    const result = await runQueryArtsyTool(
+      {
+        query:
+          '{ artwork(id: "piotre-box-3") { saleMessage isPriceHidden isAcquireable } }',
+      },
+      schema,
+      ({ artworkLoader } as unknown) as ResolverContext
+    )
+
+    expect(result.ok).toBe(true)
+    expect(JSON.parse(result.content).artwork).toMatchObject({
+      saleMessage: "Contact for price",
+      isPriceHidden: true,
+    })
+  })
+
+  // Arguments, not fields -- filterSchema only removes output fields, so
+  // denying the figures costs the agent no filtering or ordering.
+  it.each([
+    'priceRange: "*-5000"',
+    'sort: "-has_price,prices"',
+    'sort: "-has_price,-prices"',
+    'priceRange: "5000-20000", sort: "-has_price,prices"',
+  ])("still allows artworksConnection(%s)", (args) => {
+    expect(
+      validationErrors(
+        `{ artworksConnection(artistIDs: ["x"], forSale: true, ${args}, first: 5) { edges { node { internalID saleMessage } } } }`
+      )
+    ).toEqual([])
+  })
+
+  it("refuses to build the narrowed schema if a denylisted type is renamed", () => {
+    const renamed = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE]: (type) =>
+        type.name === "EditionSet"
+          ? new GraphQLObjectType({ ...type.toConfig(), name: "EditionSetV2" })
+          : type,
+    })
+
+    expect(() => narrowSchemaFor(renamed)).toThrow(
+      /unknown type\(s\).*EditionSet/s
+    )
   })
 })
 
