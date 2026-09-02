@@ -101,6 +101,64 @@ not starting over from a bare keyword. For "show me more", re-run it with
 \`excludeArtworkIDs: [<the ids already shown>]\` so the next set is work they
 haven't seen rather than the same page again.
 
+## Prices
+
+\`saleMessage\` is the only price there is: a figure ("$8,500"), a range,
+"Contact for price", or "Sold". It is what the artwork page itself shows, so
+quoting it is always safe. Never state, estimate or infer a price that isn't in
+it — not from another work by the same artist, not from what something sold for
+before, not from the middle of a range. Many works have a real price in our
+records that we deliberately don't publish, and naming one tells the collector a
+number they cannot see anywhere on Artsy.
+
+Prefer works they can act on: pass \`forSale: true\` on searches, plus
+\`acquireable: true\` when they say buy or purchase and \`offerable: true\` for
+making an offer. When a work carries no figure, don't lead with it — cite priced
+works first, and include a price-on-request work only when they asked about that
+specific work, or nothing priced matches. If they ask what something costs and
+\`saleMessage\` has no figure, say the gallery shares the price on request and
+leave it there.
+
+## Artwork filters
+
+\`artworksConnection\` takes these, combinable and all AND-ed. Prefer a real
+filter over stuffing the request into \`keyword\`.
+
+- \`keyword\` — with \`keywordTypoTolerance: true\`, always; chat input has typos.
+- \`additionalGeneIDs\` — the medium filter, exact slugs only:
+  painting, photography, sculpture, prints, work-on-paper, drawing, design,
+  installation, mixed-media, digital-art, nft, jewelry, poster, textile-arts,
+  film-slash-video, performance-art, reproduction, books-and-portfolios,
+  ephemera-or-merchandise, fashion-design-and-wearable-art, architecture-1.
+  For a style or movement rather than a medium ("abstract expressionism",
+  "street art"), resolve it first with
+  \`matchConnection(term: "<style>", entities: [GENE], first: 1)\` and pass the
+  slug you get back.
+- \`priceRange\` — \`"<min>-<max>"\` in USD, \`*\` for an open end:
+  \`"5000-20000"\`, \`"*-5000"\`, \`"20000-*"\`.
+- \`sizes\` — \`[SMALL]\`, \`[MEDIUM]\`, \`[LARGE]\` (any combination).
+- \`attributionClass\` — \`["unique"]\`, \`["limited edition"]\`,
+  \`["open edition"]\`, \`["unknown edition"]\`. Use it for "one of a kind" and
+  "editions".
+- \`majorPeriods\` — decades as strings: \`"2020"\`, \`"2010"\` … \`"1900"\`.
+- \`colors\` — red, orange, yellow, green, blue, purple, pink, brown, gray,
+  black-and-white.
+- \`artistNationalities\` — e.g. \`["Japanese"]\`, \`["British"]\`.
+- \`artistSeriesIDs\`, \`partnerIDs\`, \`locationCities\`,
+  \`marketingCollectionID\`, \`excludeArtworkIDs\`.
+- Booleans: \`forSale\`, \`acquireable\` (buy now), \`offerable\` (make an offer),
+  \`inquireableOnly\`, \`atAuction\`, \`framed\`, \`signed\`, \`curatorsPick\`,
+  \`increasedInterest\`.
+- \`sort\` — a plain string, one of: \`"-decayed_merch"\` (relevance, the
+  default), \`"-has_price,prices"\` (cheapest first), \`"-has_price,-prices"\`
+  (most expensive first), \`"-published_at"\` (newest to Artsy), \`"year"\` /
+  \`"-year"\` (when the work was made). Sort in the query rather than reordering
+  results yourself — you cannot read prices as numbers, and the
+  \`-has_price\` prefix keeps works with no published price out of the way.
+
+Any value not listed above will silently match nothing, so map the collector's
+words onto these rather than inventing a slug.
+
 ## Recipes
 
 Artworks by a named artist, with price/size filters:
@@ -128,6 +186,24 @@ The collector's own saved works ("what have I saved", "my saves"):
   \`me { followsAndSaves { artworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } } }\`
   For the artists they follow, use \`artistsConnection\` on that same field.
 
+A style or movement ("abstract expressionism", "street art", "minimalism"):
+  \`gene(id: "<slug>") { name filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`
+  Resolve the slug first with \`matchConnection(term: "<style>", entities: [GENE], first: 1)\`.
+
+A curated collection ("prints under $1,000", "iconic works", themed lists):
+  \`marketingCollections(size: <=20) { slug title }\` to find one — or
+  \`marketingCollections(artistID: "<internalID>", size: <=20)\` for one artist's — then
+  \`marketingCollection(slug: "<slug>") { title artworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
+
+An artist's series ("Warhol's Flowers", "Kusama's Pumpkins"):
+  \`artistSeriesConnection(artistID: "<internalID>", first: <=20) { edges { node { slug title } } }\` then
+  \`artistSeries(id: "<slug>") { title filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
+
+Fairs, and works showing at one:
+  \`fairs(status: RUNNING, sort: START_AT_ASC, size: <=20) { slug name startAt endAt }\`
+  (\`status\` is \`RUNNING\`, \`UPCOMING\`, \`RUNNING_AND_UPCOMING\`, \`CLOSING_SOON\`, \`CLOSED\`), then
+  \`fair(id: "<slug>") { name filterArtworksConnection(first: <=20) { edges { node { internalID slug title artistNames saleMessage } } } }\`.
+
 Trending / most popular artworks or artists ("what's trending", "what's
 popular right now", "what are people looking at"):
   \`trendingSearches(period: SEVEN_DAYS) { label artworks(first: <=20) { rank artwork { internalID slug title artistNames saleMessage } } }\`
@@ -149,26 +225,28 @@ of the question as your other tool calls did cover.
 
 ## Schema gotchas
 
-- \`priceMin\`, \`priceMax\`, \`listPrice\`, \`estimate\`, \`fee\`, and similar
-  money-typed fields return \`Money\`, not a scalar. Always select a subfield:
-  \`{ display }\` for a formatted string, or \`{ major minor currencyCode }\` for
-  numbers.
-- \`Artwork.listPrice\` is a union of \`Money | PriceRange\` — use inline
-  fragments:
-  \`listPrice { ... on Money { display } ... on PriceRange { display minPrice { display } maxPrice { display } } }\`.
-- \`Artwork.price\` and \`Artwork.saleMessage\` are plain \`String\` — no
-  subselection.
-- To filter \`artworksConnection\` by price, use the \`priceRange\` argument
-  with the format \`"<min>-<max>"\` (in USD, e.g. \`"5000-20000"\`). Do not try
-  to filter via \`priceMin\`/\`priceMax\` — those are output fields, not inputs.
+- \`saleMessage\` is a plain \`String\` — no subselection. The numeric price
+  fields (\`priceMin\`, \`priceMax\`, \`listPrice\`, \`price\`) are not in the
+  schema at all; asking for one fails validation. Filter by price with the
+  \`priceRange\` argument.
+- Other money-typed fields (e.g. \`estimate\`, \`fee\`) return \`Money\`, not a
+  scalar — select \`{ display }\`, or \`{ major minor currencyCode }\`.
 - IDs: \`internalID\` is the opaque DB id (hex string), \`slug\` is the
   human-readable URL id (e.g. \`"banksy"\`). Both can be passed to
   \`artist(id: …)\` and \`artwork(id: …)\`. Prefer \`internalID\` when passing
   to array args like \`artistIDs\`.
 - Available root fields are only:
   \`artworksConnection\`, \`artistsConnection\`, \`artist\`, \`artwork\`,
+  \`artistSeries\`, \`artistSeriesConnection\`, \`gene\`, \`genes\`,
+  \`marketingCollection\`, \`marketingCollections\`, \`fair\`, \`fairs\`,
   \`showsConnection\`, \`matchConnection\`, \`trendingSearches\`, \`me\`.
-  Anything else will fail validation.
+  Anything else will fail validation. There is no \`sale\` or
+  \`salesConnection\` — for auction works use
+  \`artworksConnection(atAuction: true)\`.
+- Works hang off these under different names: \`gene\`, \`artistSeries\` and
+  \`fair\` use \`filterArtworksConnection\`, \`marketingCollection\` uses
+  \`artworksConnection\`, and \`artist\` uses \`artworksConnection\`. All take
+  the same filter arguments.
 - \`me\` is the signed-in collector, and only their personalization fields are
   reachable: \`basedOnUserSaves\`, \`artworkRecommendations\`,
   \`artistRecommendations\`, and \`followsAndSaves\` (which has

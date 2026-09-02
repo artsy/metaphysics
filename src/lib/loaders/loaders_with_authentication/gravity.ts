@@ -257,6 +257,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
+    artnetImportUnmatchedArtistNamesLoader: gravityLoader(
+      (id) => `artnet_import/${id}/unmatched_artist_names`
+    ),
+    artnetImportCreateArtistAssignmentLoader: gravityLoader(
+      (id) => `artnet_import/${id}/artist_assignments`,
+      {},
+      { method: "POST" }
+    ),
     createArtworkImportLoader: gravityLoader(
       "artwork_import",
       {},

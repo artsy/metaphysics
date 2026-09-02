@@ -7,7 +7,7 @@ import {
   summarizeToolCall,
 } from "../tools"
 import { mapSchema, MapperKind } from "@graphql-tools/utils"
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, parse, specifiedRules, validate } from "graphql"
 import { HTTPError } from "lib/HTTPError"
 
 describe("buildAgentTools", () => {
@@ -20,6 +20,29 @@ describe("buildAgentTools", () => {
     const tools = buildAgentTools(schema, {} as ResolverContext)
     expect(tools.query_artsy.description).toContain("artworksConnection")
     expect(tools.query_artsy.description).toContain("introspection")
+  })
+
+  it("recommends no field the narrowed schema has removed", () => {
+    const { description } = buildAgentTools(
+      schema,
+      {} as ResolverContext
+    ).query_artsy
+    const artwork = narrowSchemaFor(schema).getType("Artwork") as
+      | GraphQLObjectType
+      | undefined
+
+    const denied = [
+      "priceMin",
+      "priceMax",
+      "listPrice",
+      "pricePaid",
+      "costMinor",
+    ]
+
+    denied.forEach((field) => {
+      expect(artwork!.getFields()[field]).toBeUndefined()
+      expect(description).not.toContain(field)
+    })
   })
 })
 
@@ -248,6 +271,178 @@ describe("runQueryArtsyTool", () => {
     expect(result.ok).toBe(false)
     expect(typeof result.content).toBe("string")
     expect(result.content.length).toBeGreaterThan(0)
+  })
+})
+
+describe("the root field allowlist", () => {
+  const rootFieldNames = () => {
+    const queryType = narrowSchemaFor(schema).getQueryType()
+    return Object.keys(queryType!.getFields()).sort()
+  }
+
+  it("exposes exactly the entry points the prompt documents", () => {
+    expect(rootFieldNames()).toEqual([
+      "artist",
+      "artistSeries",
+      "artistSeriesConnection",
+      "artistsConnection",
+      "artwork",
+      "artworksConnection",
+      "fair",
+      "fairs",
+      "gene",
+      "genes",
+      "marketingCollection",
+      "marketingCollections",
+      "matchConnection",
+      "me",
+      "showsConnection",
+      "trendingSearches",
+    ])
+  })
+
+  // Auction data hangs off Sale/SaleArtwork through meBiddersLoader and
+  // lotStandingLoader -- the collector's own bidding, which is what the Me
+  // allowlist exists to keep out of model context.
+  it("keeps auctions out, reachable only as artworksConnection(atAuction:)", () => {
+    expect(rootFieldNames()).not.toContain("sale")
+    expect(rootFieldNames()).not.toContain("salesConnection")
+    expect(rootFieldNames()).not.toContain("saleArtworksConnection")
+  })
+
+  // Each of these hangs its works off a differently-named connection, which
+  // the prompt spells out; a rename upstream should fail here, not in a
+  // retry loop at runtime.
+  describe("the recipes the prompt gives for them", () => {
+    const validationErrors = (query: string) =>
+      validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
+        (error) => error.message
+      )
+
+    it.each([
+      [
+        "gene",
+        '{ gene(id: "abstract-expressionism") { name filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "artistSeries",
+        '{ artistSeries(id: "andy-warhol-flowers") { title filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "fair",
+        '{ fair(id: "art-basel-2026") { name filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "marketingCollection",
+        '{ marketingCollection(slug: "prints-under-1000") { title artworksConnection(first: 5) { edges { node { internalID } } } } }',
+      ],
+      [
+        "artistSeriesConnection",
+        '{ artistSeriesConnection(artistID: "4d8b92b34eb68a1b2c000452", first: 5) { edges { node { slug title } } } }',
+      ],
+      [
+        "fairs",
+        "{ fairs(status: RUNNING, sort: START_AT_ASC, size: 5) { slug name startAt endAt } }",
+      ],
+      ["genes", '{ genes(slugs: ["minimalism"]) { name slug } }'],
+      [
+        "marketingCollections",
+        "{ marketingCollections(size: 5) { slug title } }",
+      ],
+    ])("validates the %s recipe", (_name, query) => {
+      expect(validationErrors(query)).toEqual([])
+    })
+  })
+})
+
+describe("the price field denylist", () => {
+  const validationErrors = (query: string) =>
+    validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
+      (error) => error.message
+    )
+
+  it.each([
+    "priceMin { minor }",
+    "priceMax { minor }",
+    "listPrice { __typename }",
+    "price",
+    "priceCurrency",
+    "priceDisplay",
+    "priceListed { minor }",
+    "priceListedDisplay",
+    "pricePaid { minor }",
+    "costMinor",
+    "costCurrencyCode",
+    "displayPriceRange",
+    "internalDisplayPrice",
+  ])("makes Artwork.%s unaskable", (selection) => {
+    expect(
+      validationErrors(`{ artwork(id: "piotre-box-3") { ${selection} } }`).join(
+        " "
+      )
+    ).toMatch(/Cannot query field/)
+  })
+
+  it("closes the same hole on edition sets", () => {
+    expect(
+      validationErrors(
+        '{ artwork(id: "piotre-box-3") { editionSets { priceMin { minor } } } }'
+      ).join(" ")
+    ).toMatch(/Cannot query field/)
+  })
+
+  it("keeps saleMessage, which is what the artwork page itself shows", async () => {
+    const artworkLoader = jest.fn().mockResolvedValue({
+      _id: "5f5a5b5c5d5e5f6061626364",
+      id: "piotre-box-3",
+      price_hidden: true,
+      price_min: 8500,
+      price_currency: "USD",
+      sale_message: "Contact for price",
+    })
+
+    const result = await runQueryArtsyTool(
+      {
+        query:
+          '{ artwork(id: "piotre-box-3") { saleMessage isPriceHidden isAcquireable } }',
+      },
+      schema,
+      ({ artworkLoader } as unknown) as ResolverContext
+    )
+
+    expect(result.ok).toBe(true)
+    expect(JSON.parse(result.content).artwork).toMatchObject({
+      saleMessage: "Contact for price",
+      isPriceHidden: true,
+    })
+  })
+
+  // Arguments, not fields -- filterSchema only removes output fields, so
+  // denying the figures costs the agent no filtering or ordering.
+  it.each([
+    'priceRange: "*-5000"',
+    'sort: "-has_price,prices"',
+    'sort: "-has_price,-prices"',
+    'priceRange: "5000-20000", sort: "-has_price,prices"',
+  ])("still allows artworksConnection(%s)", (args) => {
+    expect(
+      validationErrors(
+        `{ artworksConnection(artistIDs: ["x"], forSale: true, ${args}, first: 5) { edges { node { internalID saleMessage } } } }`
+      )
+    ).toEqual([])
+  })
+
+  it("refuses to build the narrowed schema if a denylisted type is renamed", () => {
+    const renamed = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE]: (type) =>
+        type.name === "EditionSet"
+          ? new GraphQLObjectType({ ...type.toConfig(), name: "EditionSetV2" })
+          : type,
+    })
+
+    expect(() => narrowSchemaFor(renamed)).toThrow(
+      /unknown type\(s\).*EditionSet/s
+    )
   })
 })
 
@@ -604,6 +799,20 @@ describe("summarizeToolCall", () => {
           "{ me { followsAndSaves { artworksConnection(first: 10) { edges { node { slug } } } } } }",
       })
     ).toBe("Querying Artsy: followsAndSaves…")
+  })
+
+  it("labels the entry point, not the connection nested under it", () => {
+    expect(
+      summarizeToolCall({
+        query:
+          '{ gene(id: "minimalism") { filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
+      })
+    ).toBe("Querying Artsy: gene…")
+    expect(
+      summarizeToolCall({
+        query: '{ fair(id: "art-basel-2026") { name } }',
+      })
+    ).toBe("Querying Artsy: fair…")
   })
 
   it("falls back to a generic label when the root field can't be identified", () => {
