@@ -21,6 +21,29 @@ describe("buildAgentTools", () => {
     expect(tools.query_artsy.description).toContain("artworksConnection")
     expect(tools.query_artsy.description).toContain("introspection")
   })
+
+  it("recommends no field the narrowed schema has removed", () => {
+    const { description } = buildAgentTools(
+      schema,
+      {} as ResolverContext
+    ).query_artsy
+    const artwork = narrowSchemaFor(schema).getType("Artwork") as
+      | GraphQLObjectType
+      | undefined
+
+    const denied = [
+      "priceMin",
+      "priceMax",
+      "listPrice",
+      "pricePaid",
+      "costMinor",
+    ]
+
+    denied.forEach((field) => {
+      expect(artwork!.getFields()[field]).toBeUndefined()
+      expect(description).not.toContain(field)
+    })
+  })
 })
 
 describe("runQueryArtsyTool", () => {
@@ -333,52 +356,78 @@ describe("the root field allowlist", () => {
 })
 
 describe("the price field denylist", () => {
-  // Gravity returns a real number for works the site shows as "Contact for
-  // price", and nothing in the read path checks `price_hidden` -- so the only
-  // way the agent can't quote one is for the field not to exist.
   const validationErrors = (query: string) =>
     validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
       (error) => error.message
     )
 
   it.each([
-    "priceMin { display }",
-    "priceMax { display }",
+    "priceMin { minor }",
+    "priceMax { minor }",
     "listPrice { __typename }",
     "price",
     "priceCurrency",
     "priceDisplay",
-    "priceListed { display }",
+    "priceListed { minor }",
     "priceListedDisplay",
-    "pricePaid { display }",
+    "pricePaid { minor }",
+    "costMinor",
+    "costCurrencyCode",
     "displayPriceRange",
     "internalDisplayPrice",
   ])("makes Artwork.%s unaskable", (selection) => {
-    const errors = validationErrors(
-      `{ artwork(id: "piotre-box-3") { ${selection} } }`
-    )
-    expect(errors.join(" ")).toMatch(/Cannot query field/)
+    expect(
+      validationErrors(`{ artwork(id: "piotre-box-3") { ${selection} } }`).join(
+        " "
+      )
+    ).toMatch(/Cannot query field/)
   })
 
   it("closes the same hole on edition sets", () => {
-    const errors = validationErrors(
-      '{ artwork(id: "piotre-box-3") { editionSets { priceMin { display } } } }'
+    expect(
+      validationErrors(
+        '{ artwork(id: "piotre-box-3") { editionSets { priceMin { minor } } } }'
+      ).join(" ")
+    ).toMatch(/Cannot query field/)
+  })
+
+  it("keeps saleMessage, which is what the artwork page itself shows", async () => {
+    const artworkLoader = jest.fn().mockResolvedValue({
+      _id: "5f5a5b5c5d5e5f6061626364",
+      id: "piotre-box-3",
+      price_hidden: true,
+      price_min: 8500,
+      price_currency: "USD",
+      sale_message: "Contact for price",
+    })
+
+    const result = await runQueryArtsyTool(
+      {
+        query:
+          '{ artwork(id: "piotre-box-3") { saleMessage isPriceHidden isAcquireable } }',
+      },
+      schema,
+      ({ artworkLoader } as unknown) as ResolverContext
     )
-    expect(errors.join(" ")).toMatch(/Cannot query field/)
+
+    expect(result.ok).toBe(true)
+    expect(JSON.parse(result.content).artwork).toMatchObject({
+      saleMessage: "Contact for price",
+      isPriceHidden: true,
+    })
   })
 
-  it("leaves the display-safe fields the prompt relies on", () => {
+  // Arguments, not fields -- filterSchema only removes output fields, so
+  // denying the figures costs the agent no filtering or ordering.
+  it.each([
+    'priceRange: "*-5000"',
+    'sort: "-has_price,prices"',
+    'sort: "-has_price,-prices"',
+    'priceRange: "5000-20000", sort: "-has_price,prices"',
+  ])("still allows artworksConnection(%s)", (args) => {
     expect(
       validationErrors(
-        '{ artwork(id: "piotre-box-3") { saleMessage isPriceHidden isAcquireable editionSets { saleMessage isPriceHidden } } }'
-      )
-    ).toEqual([])
-  })
-
-  it("still allows filtering by price, which reveals no figure", () => {
-    expect(
-      validationErrors(
-        '{ artworksConnection(artistIDs: ["x"], priceRange: "*-5000", forSale: true, first: 5) { edges { node { internalID saleMessage } } } }'
+        `{ artworksConnection(artistIDs: ["x"], forSale: true, ${args}, first: 5) { edges { node { internalID saleMessage } } } }`
       )
     ).toEqual([])
   })

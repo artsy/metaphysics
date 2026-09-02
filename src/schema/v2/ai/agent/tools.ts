@@ -92,8 +92,14 @@ const ALLOWED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
   FollowsAndSaves: new Set(["artworksConnection", "artistsConnection"]),
 }
 
+// Gravity returns a real figure for works whose price Artsy withholds
+// (`isPriceHidden`) and no read resolver checks it, so reading one of these
+// puts a number in the agent's context that the collector cannot see anywhere.
+// `saleMessage` stays: it is the string every artwork card on Artsy renders.
 const DENIED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
   Artwork: new Set([
+    "costCurrencyCode",
+    "costMinor",
     "displayPriceRange",
     "internalDisplayPrice",
     "listPrice",
@@ -116,8 +122,8 @@ const DENIED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
     "priceMax",
     "priceMin",
   ]),
-  // Artwork and EditionSet both implement Sellable, which declares four of
-  // these -- drop them there too or neither type satisfies the interface.
+  // Both implement Sellable, which declares four of these -- drop them there
+  // too or neither type satisfies the interface.
   Sellable: new Set([
     "displayPriceRange",
     "internalDisplayPrice",
@@ -493,10 +499,13 @@ export function buildAgentTools(
         "request `internalID` and `slug` for anything you might reference " +
         `again. \`first\`/\`last\`/\`size\` are capped at ${MAX_PAGE_SIZE}. ` +
         "Never pass mode: INTERNAL_AUTOSUGGEST to matchConnection — it " +
-        "requires a signed-in session and will error. Price/estimate/fee " +
-        "fields (e.g. priceMin, priceMax, listPrice) are typed `Money`, not " +
-        "a scalar — select a subfield, usually `display` for a formatted " +
-        "string or `major`/`minor` for a number.",
+        "requires a signed-in session and will error. `saleMessage` is the " +
+        "only price an artwork exposes and it is a plain String — the " +
+        "numeric price fields are not in the schema; filter by price with " +
+        "the `priceRange` argument. Other money-typed fields (e.g. " +
+        "`estimate`, `fee`) return `Money`, not a scalar — select a " +
+        "subfield, usually `display` for a formatted string or " +
+        "`major`/`minor` for a number.",
       inputSchema: jsonSchema({
         type: "object",
         properties: {
