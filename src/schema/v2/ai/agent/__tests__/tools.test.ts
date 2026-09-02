@@ -332,6 +332,71 @@ describe("the root field allowlist", () => {
   })
 })
 
+describe("the price field denylist", () => {
+  // Gravity returns a real number for works the site shows as "Contact for
+  // price", and nothing in the read path checks `price_hidden` -- so the only
+  // way the agent can't quote one is for the field not to exist.
+  const validationErrors = (query: string) =>
+    validate(narrowSchemaFor(schema), parse(query), [...specifiedRules]).map(
+      (error) => error.message
+    )
+
+  it.each([
+    "priceMin { display }",
+    "priceMax { display }",
+    "listPrice { __typename }",
+    "price",
+    "priceCurrency",
+    "priceDisplay",
+    "priceListed { display }",
+    "priceListedDisplay",
+    "pricePaid { display }",
+    "displayPriceRange",
+    "internalDisplayPrice",
+  ])("makes Artwork.%s unaskable", (selection) => {
+    const errors = validationErrors(
+      `{ artwork(id: "piotre-box-3") { ${selection} } }`
+    )
+    expect(errors.join(" ")).toMatch(/Cannot query field/)
+  })
+
+  it("closes the same hole on edition sets", () => {
+    const errors = validationErrors(
+      '{ artwork(id: "piotre-box-3") { editionSets { priceMin { display } } } }'
+    )
+    expect(errors.join(" ")).toMatch(/Cannot query field/)
+  })
+
+  it("leaves the display-safe fields the prompt relies on", () => {
+    expect(
+      validationErrors(
+        '{ artwork(id: "piotre-box-3") { saleMessage isPriceHidden isAcquireable editionSets { saleMessage isPriceHidden } } }'
+      )
+    ).toEqual([])
+  })
+
+  it("still allows filtering by price, which reveals no figure", () => {
+    expect(
+      validationErrors(
+        '{ artworksConnection(artistIDs: ["x"], priceRange: "*-5000", forSale: true, first: 5) { edges { node { internalID saleMessage } } } }'
+      )
+    ).toEqual([])
+  })
+
+  it("refuses to build the narrowed schema if a denylisted type is renamed", () => {
+    const renamed = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE]: (type) =>
+        type.name === "EditionSet"
+          ? new GraphQLObjectType({ ...type.toConfig(), name: "EditionSetV2" })
+          : type,
+    })
+
+    expect(() => narrowSchemaFor(renamed)).toThrow(
+      /unknown type\(s\).*EditionSet/s
+    )
+  })
+})
+
 describe("the Me field allowlist", () => {
   // `me` is the one root field whose *fields* are gated too: it resolves the
   // signed-in collector's own record, so root-field filtering alone would put

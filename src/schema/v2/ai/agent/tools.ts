@@ -92,10 +92,48 @@ const ALLOWED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
   FollowsAndSaves: new Set(["artworksConnection", "artistsConnection"]),
 }
 
+const DENIED_FIELDS_BY_TYPE: Record<string, Set<string>> = {
+  Artwork: new Set([
+    "displayPriceRange",
+    "internalDisplayPrice",
+    "listPrice",
+    "price",
+    "priceCurrency",
+    "priceDisplay",
+    "priceListed",
+    "priceListedDisplay",
+    "priceMax",
+    "priceMin",
+    "pricePaid",
+  ]),
+  EditionSet: new Set([
+    "displayPriceRange",
+    "internalDisplayPrice",
+    "listPrice",
+    "price",
+    "priceDisplay",
+    "priceListed",
+    "priceMax",
+    "priceMin",
+  ]),
+  // Artwork and EditionSet both implement Sellable, which declares four of
+  // these -- drop them there too or neither type satisfies the interface.
+  Sellable: new Set([
+    "displayPriceRange",
+    "internalDisplayPrice",
+    "listPrice",
+    "priceListed",
+  ]),
+}
+
 const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
+  if (DENIED_FIELDS_BY_TYPE[typeName]?.has(fieldName)) return false
   const allowed = ALLOWED_FIELDS_BY_TYPE[typeName]
   return !allowed || allowed.has(fieldName)
 }
+
+const interfaceFieldFilter: FieldFilter = (typeName, fieldName) =>
+  !DENIED_FIELDS_BY_TYPE[typeName]?.has(fieldName)
 
 /**
  * The one way the allowlist above fails *open*: it keys on a type's name, so
@@ -114,15 +152,17 @@ const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
  * (the field just stays unreachable), so it isn't worth taking the tool down.
  */
 function assertFieldAllowlistsResolve(schema: GraphQLSchema): void {
-  const missing = Object.keys(ALLOWED_FIELDS_BY_TYPE).filter(
-    (typeName) => !schema.getType(typeName)
-  )
+  const missing = [
+    ...Object.keys(ALLOWED_FIELDS_BY_TYPE),
+    ...Object.keys(DENIED_FIELDS_BY_TYPE),
+  ].filter((typeName) => !schema.getType(typeName))
   if (missing.length === 0) return
 
   throw new Error(
-    `AI agent field allowlist names unknown type(s): ${missing.join(", ")}. ` +
-      "They were most likely renamed — update ALLOWED_FIELDS_BY_TYPE to match, " +
-      "or every field on them becomes readable by a model-authored query."
+    `AI agent field lists name unknown type(s): ${missing.join(", ")}. ` +
+      "They were most likely renamed — update ALLOWED_FIELDS_BY_TYPE / " +
+      "DENIED_FIELDS_BY_TYPE to match, or every field on them becomes " +
+      "readable by a model-authored query."
   )
 }
 
@@ -143,6 +183,7 @@ export function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
     schema: realSchema,
     rootFieldFilter,
     objectFieldFilter,
+    interfaceFieldFilter,
   })
   const pruned = pruneSchema(filtered)
 

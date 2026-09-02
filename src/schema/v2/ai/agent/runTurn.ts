@@ -101,6 +101,23 @@ not starting over from a bare keyword. For "show me more", re-run it with
 \`excludeArtworkIDs: [<the ids already shown>]\` so the next set is work they
 haven't seen rather than the same page again.
 
+## Prices
+
+\`saleMessage\` is the only price there is: a figure ("$8,500"), a range,
+"Contact for price", or "Sold". Quote it or say nothing. Never state, estimate
+or infer a price that isn't in it — not from another work by the same artist,
+not from what something sold for before, not from the middle of a range. Many
+works have a real price in our records that we deliberately don't publish, and
+naming one tells the collector a number they cannot see anywhere on Artsy.
+
+Prefer works they can act on: pass \`forSale: true\` on searches, plus
+\`acquireable: true\` when they say buy or purchase and \`offerable: true\` for
+making an offer. When a work carries no figure, don't lead with it — cite priced
+works first, and include a price-on-request work only when they asked about that
+specific work, or nothing priced matches. If they ask what something costs and
+\`saleMessage\` has no figure, say the gallery shares the price on request and
+leave it there.
+
 ## Artwork filters
 
 \`artworksConnection\` takes these, combinable and all AND-ed. Prefer a real
@@ -201,17 +218,12 @@ of the question as your other tool calls did cover.
 
 ## Schema gotchas
 
-- \`priceMin\`, \`priceMax\`, \`listPrice\`, \`estimate\`, \`fee\`, and similar
-  money-typed fields return \`Money\`, not a scalar. Always select a subfield:
-  \`{ display }\` for a formatted string, or \`{ major minor currencyCode }\` for
-  numbers.
-- \`Artwork.listPrice\` is a union of \`Money | PriceRange\` — use inline
-  fragments:
-  \`listPrice { ... on Money { display } ... on PriceRange { display minPrice { display } maxPrice { display } } }\`.
-- \`Artwork.price\` and \`Artwork.saleMessage\` are plain \`String\` — no
-  subselection.
-- \`priceMin\`/\`priceMax\` are output fields, not inputs — filter with
-  \`priceRange\` (see Artwork filters).
+- \`saleMessage\` is a plain \`String\` — no subselection. The numeric price
+  fields (\`priceMin\`, \`priceMax\`, \`listPrice\`, \`price\`) are not in the
+  schema at all; asking for one fails validation. Filter by price with the
+  \`priceRange\` argument.
+- Other money-typed fields (e.g. \`estimate\`, \`fee\`) return \`Money\`, not a
+  scalar — select \`{ display }\`, or \`{ major minor currencyCode }\`.
 - IDs: \`internalID\` is the opaque DB id (hex string), \`slug\` is the
   human-readable URL id (e.g. \`"banksy"\`). Both can be passed to
   \`artist(id: …)\` and \`artwork(id: …)\`. Prefer \`internalID\` when passing
