@@ -15741,7 +15741,7 @@ input CreatePartnerArtworkImportInput {
   """
   Name of the partner file
   """
-  fileName: String
+  fileName: String!
 
   """
   ID of the partner location
@@ -15779,8 +15779,10 @@ union CreatePartnerArtworkImportResponseOrError =
   | CreatePartnerArtworkImportSuccess
 
 type CreatePartnerArtworkImportSuccess {
-  artworkImport: ArtworkImport
-  conversionSummary: PartnerConversionSummary
+  """
+  Whether the partner conversion job was enqueued
+  """
+  queued: Boolean
 }
 
 type CreatePartnerArtworksExportFailure {
@@ -30571,12 +30573,6 @@ input PartnerConversionMetadataInput {
   Name of the partner conversion template to use
   """
   templateName: String
-}
-
-type PartnerConversionSummary {
-  originalRowsCount: String
-  partnerTemplateType: String
-  transformedRowsCount: String
 }
 
 type PartnerCounts {

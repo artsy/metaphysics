@@ -1,5 +1,6 @@
 import {
   GraphQLString,
+  GraphQLBoolean,
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLNonNull,
@@ -11,7 +12,6 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkImportType } from "../artworkImport"
 
 const PartnerConversionMetadataType = new GraphQLInputObjectType({
   name: "PartnerConversionMetadataInput",
@@ -29,22 +29,16 @@ const PartnerConversionMetadataType = new GraphQLInputObjectType({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerArtworkImportSuccess",
-  isTypeOf: (data) => !!data.id && !data._type,
+  isTypeOf: (data) => data.queued === true,
   fields: () => ({
-    artworkImport: {
-      type: ArtworkImportType,
-      resolve: (result) => result,
-    },
-    conversionSummary: {
-      type: new GraphQLObjectType({
-        name: "PartnerConversionSummary",
-        fields: {
-          partnerTemplateType: { type: GraphQLString },
-          originalRowsCount: { type: GraphQLString },
-          transformedRowsCount: { type: GraphQLString },
-        },
-      }),
-      resolve: (result) => result.conversion_summary,
+    // The conversion runs asynchronously in Gravity via
+    // ConvertPartnerSpreadsheetWorker. This endpoint only confirms the job
+    // was enqueued; completion/failure is broadcast over the PartnersChannel
+    // websocket rather than returned here.
+    queued: {
+      type: GraphQLBoolean,
+      description: "Whether the partner conversion job was enqueued",
+      resolve: (result) => result.queued,
     },
   }),
 })
@@ -87,7 +81,7 @@ export const CreatePartnerArtworkImportMutation = mutationWithClientMutationId<
       description: "S3 key of the partner file",
     },
     fileName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "Name of the partner file",
     },
     locationID: {
