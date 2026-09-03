@@ -4263,13 +4263,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qs@npm:6.5.1":
-  version: 6.5.1
-  resolution: "@types/qs@npm:6.5.1"
-  checksum: 10c0/9f057699a559d9f41bef4987e8599bab3dcd126f4b69f008d7cbe9bae5f4e4546eae7ba2278b4e3afe9c434caa9974ccecb4d8531786f04b8be57ac3c1dceded
-  languageName: node
-  linkType: hard
-
 "@types/range-parser@npm:*":
   version: 1.2.7
   resolution: "@types/range-parser@npm:1.2.7"
@@ -10875,7 +10868,6 @@ __metadata:
     "@types/lodash": "npm:4.14.86"
     "@types/node": "npm:22.20.1"
     "@types/node-fetch": "npm:2.1.7"
-    "@types/qs": "npm:6.5.1"
     "@types/request": "npm:2.0.8"
     "@typescript-eslint/eslint-plugin": "npm:4.8.1"
     "@typescript-eslint/parser": "npm:4.8.1"
@@ -10938,7 +10930,6 @@ __metadata:
     postinstall-prepare: "npm:1.0.1"
     prettier: "npm:2.0.5"
     proportional-scale: "npm:4.0.0"
-    qs: "npm:6.16.0"
     rate-limit-memcached: "npm:0.6.0"
     react-relay-network-modern: "npm:4.7.7"
     relay-cursor-paging: "npm:0.2.0"
@@ -12510,7 +12501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.13.0, qs@npm:^6.10.1, qs@npm:^6.5.1":
+"qs@npm:6.13.0":
   version: 6.13.0
   resolution: "qs@npm:6.13.0"
   dependencies:
@@ -12519,7 +12510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.16.0":
+"qs@npm:^6.10.1, qs@npm:^6.5.1":
   version: 6.16.0
   resolution: "qs@npm:6.16.0"
   dependencies:
