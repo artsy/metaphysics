@@ -29,7 +29,7 @@ const PartnerConversionMetadataType = new GraphQLInputObjectType({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreatePartnerArtworkImportSuccess",
-  isTypeOf: (data) => data.queued === true,
+  isTypeOf: (data) => data.queued !== undefined,
   fields: () => ({
     // The conversion runs asynchronously in Gravity via
     // ConvertPartnerSpreadsheetWorker. This endpoint only confirms the job
