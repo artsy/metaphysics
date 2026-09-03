@@ -22,6 +22,21 @@ describe("buildAgentTools", () => {
     expect(tools.query_artsy.description).toContain("introspection")
   })
 
+  it("documents the hybrid (semantic) search args, which the schema still takes", () => {
+    const { description } = buildAgentTools(
+      schema,
+      {} as ResolverContext
+    ).query_artsy
+    const args = (
+      narrowSchemaFor(schema).getQueryType()!.getFields().artworksConnection
+        .args ?? []
+    ).map((arg) => arg.name)
+
+    expect(description).toContain('variant: "hybrid"')
+    expect(description).toContain("hybridWeights")
+    expect(args).toEqual(expect.arrayContaining(["variant", "hybridWeights"]))
+  })
+
   it("recommends no field the narrowed schema has removed", () => {
     const { description } = buildAgentTools(
       schema,

@@ -489,6 +489,11 @@ export function buildAgentTools(
         "`me` is null when signed out, and only its personalization fields " +
         "are reachable). Auctions are reachable as " +
         "artworksConnection(atAuction: true), not as a sale root field. " +
+        "For a descriptive request (a mood, a palette, a room) rather than a " +
+        "named artist or work, pass the collector's own words as `keyword` " +
+        'and add `variant: "hybrid", hybridWeights: [0.3, 0.7]` to blend ' +
+        "semantic search into the keyword one; if that call fails, re-run it " +
+        "once without those two arguments. " +
         "Note gene, artistSeries and fair expose their works as " +
         "`filterArtworksConnection`, while marketingCollection uses " +
         "`artworksConnection`. Use " +

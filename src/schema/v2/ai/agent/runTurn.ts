@@ -125,6 +125,16 @@ leave it there.
 filter over stuffing the request into \`keyword\`.
 
 - \`keyword\` — with \`keywordTypoTolerance: true\`, always; chat input has typos.
+- \`variant: "hybrid"\` with \`hybridWeights: [0.3, 0.7]\` — semantic search,
+  blended into the keyword one. Turn it on whenever the collector describes
+  rather than names: a mood, a palette, a room, a scene ("something calming in
+  blue for a bedroom"). Pass their own words as the \`keyword\` — hybrid needs
+  one, and the description *is* the query — and keep the other filters, which
+  still apply. Leave it off when they named an artist, series or collection:
+  keyword is already exact there and blending only loosens it. Leave \`sort\`
+  off too, since sorting replaces the blended relevance. If a hybrid search
+  errors, re-run it once without \`variant\` and \`hybridWeights\` before
+  concluding anything.
 - \`additionalGeneIDs\` — the medium filter, exact slugs only:
   painting, photography, sculpture, prints, work-on-paper, drawing, design,
   installation, mixed-media, digital-art, nft, jewelry, poster, textile-arts,
