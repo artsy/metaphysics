@@ -15,7 +15,10 @@ import { handleExchangeError } from "./exchangeErrorHandling"
 interface Input {
   id: string
   type?: string
-  fulfillmentOption?: { type: string; amount?: { minor?: number | null; currencyCode?: string | null } | null }
+  fulfillmentOption?: {
+    type: string
+    amount?: { minor?: number | null; currencyCode?: string | null } | null
+  }
 }
 
 // Similar to `FulfillmentOptionTypeEnum` but for input: Expects an all-caps

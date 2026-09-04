@@ -62,6 +62,7 @@ describe("BatchArtworkImportImagesMutation", () => {
             row_id: "row-1",
           },
         ],
+        partner_conversion: false,
       }
     )
 
@@ -120,6 +121,7 @@ describe("BatchArtworkImportImagesMutation", () => {
             s3_bucket: "newBucket",
           },
         ],
+        partner_conversion: false,
       }
     )
 
