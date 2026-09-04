@@ -8,7 +8,7 @@ import {
   GraphQLResolveInfo,
   GraphQLString,
 } from "graphql"
-import uuid from "uuid/v5"
+import { v5 as uuid } from "uuid"
 import { ResolverContext } from "types/graphql"
 import { markdown } from "../fields/markdown"
 import { toGlobalId } from "graphql-relay"
@@ -39,7 +39,7 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
             // for the original use case of a video url associated directly
             // with an artwork via a field on the artwork model,
             // we derive the global id from that player url
-            return uuid(parent.playerUrl, uuid.URL)
+            return uuid(parent.playerUrl!, uuid.URL)
           }
 
           // if Video… a conventional Relay global id,
