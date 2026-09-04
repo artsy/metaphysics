@@ -10,7 +10,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ImageType } from "../image"
-import uuid from "uuid/v5"
+import { v5 as uuid } from "uuid"
 import { extractEmbed, isEmbed } from "./lib/extractEmbed"
 import { isMedia } from "./lib/isMedia"
 import { SlugAndInternalIDFields } from "../object_identification"
