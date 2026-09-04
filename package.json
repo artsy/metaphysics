@@ -40,6 +40,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "resolutions": {
+    "qs": "6.16.0",
     "string-width": "4.2.3"
   },
   "dependencies": {
