@@ -164,6 +164,7 @@ import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMuta
 import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionSetMutation"
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
+import { generateArtworkDescriptionMutation } from "./artwork/generateArtworkDescriptionMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworkFilterSuggestions } from "./artworkFilterSuggestions"
 import { artworksForUser } from "./artworksForUser"
@@ -826,6 +827,7 @@ export default new GraphQLSchema({
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
+      generateArtworkDescription: generateArtworkDescriptionMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
