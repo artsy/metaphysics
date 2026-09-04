@@ -3,8 +3,8 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLObjectType,
-  Thunk,
 } from "graphql"
+import { Thunk } from "types/graphql"
 import { ResolverContext } from "types/graphql"
 import { CollectorProfileFields } from "schema/v2/CollectorProfile/collectorProfile"
 

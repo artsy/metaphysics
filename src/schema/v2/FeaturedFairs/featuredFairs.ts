@@ -10,7 +10,7 @@ import Fair from "../fair"
 export const FeaturedFairs: GraphQLFieldConfig<void, ResolverContext> = {
   description:
     "A list of currently running featured fairs, backfilled with past fairs. Fairs are sorted by start date in descending order.",
-  type: GraphQLList(Fair.type),
+  type: new GraphQLList(Fair.type),
   args: {
     includeBackfill: { type: GraphQLBoolean, defaultValue: true },
     size: { type: GraphQLInt },

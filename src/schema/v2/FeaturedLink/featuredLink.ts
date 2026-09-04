@@ -24,18 +24,10 @@ export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLUnionType({
         name: "FeaturedLinkEntity",
         types: [ArtistType, PartnerType, GeneType],
-        resolveType: ({ __typename }) => {
-          switch (__typename) {
-            case "Artist":
-              return ArtistType
-            case "Partner":
-              return PartnerType
-            case "Gene":
-              return GeneType
-            default:
-              return null
-          }
-        },
+        // graphql-js@16 dropped support for returning `GraphQLObjectType`
+        // from `resolveType`; the type name is the new contract. The
+        // resolve below already tags the parent with `__typename`.
+        resolveType: ({ __typename }) => __typename ?? undefined,
       }),
       resolve: async (
         { href },

@@ -75,10 +75,10 @@ const CommerceOptInReportMutationType = new GraphQLUnionType({
   types: [CommerceOptInReportSuccesssType, CommerceOptInReportFailureType],
   resolveType: (object) => {
     if (object._type == "GravityMutationError") {
-      return CommerceOptInReportFailureType
+      return CommerceOptInReportFailureType.name
     }
 
-    return CommerceOptInReportSuccesssType
+    return CommerceOptInReportSuccesssType.name
   },
 })
 

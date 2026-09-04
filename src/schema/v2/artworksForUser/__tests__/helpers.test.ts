@@ -1,8 +1,20 @@
+import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
+import { HTTPError } from "lib/HTTPError"
 import {
   getBackfillArtworks,
   getNewForYouArtworkIDs,
   getNewForYouArtworks,
 } from "../helpers"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => false),
+  getExperimentVariant: jest.fn(() => ({ enabled: false, name: "control" })),
+}))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+const mockGetExperimentVariant = getExperimentVariant as jest.Mock
+
+const ELIGIBLE_USER_AGENT = "Artsy-Mobile/9.14.0"
 
 const mockLoaderFactory = (affinities) => {
   const edges = affinities.map((affinity) => {
@@ -36,46 +48,315 @@ describe("getNewForYouArtworkIDs", () => {
 
     expect(artworkIds).toEqual(["banksy"])
   })
+
+  it("stays on Vortex when the Gravity rail flag is off, even if the loader exists", async () => {
+    const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+    const artworkRecommendationsLoader = jest.fn()
+    const context = {
+      artworkRecommendationsLoader,
+      authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+      unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+    } as any
+
+    const artworkIds = await getNewForYouArtworkIDs(
+      { excludeArtworkIds: [] },
+      context
+    )
+
+    expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+    expect(vortexLoader).toHaveBeenCalled()
+    expect(artworkIds).toEqual(["banksy"])
+  })
+
+  describe("when the Gravity NWFY rail is enabled", () => {
+    beforeEach(() => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+      mockGetExperimentVariant.mockReturnValue({
+        enabled: true,
+        name: "experiment",
+      })
+    })
+
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReset()
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+      mockGetExperimentVariant.mockReset()
+      mockGetExperimentVariant.mockReturnValue({
+        enabled: false,
+        name: "control",
+      })
+    })
+
+    it("sources IDs from the Gravity nwfy rail and skips Vortex", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["a1", "a2"],
+      }))
+      const context = {
+        artworkRecommendationsLoader,
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [], maxWorksPerArtist: 3 },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).toHaveBeenCalledWith({
+        rail: "nwfy",
+        size: 50,
+        max_per_artist: 3,
+      })
+      expect(vortexLoader).not.toHaveBeenCalled()
+      expect(artworkIds).toEqual(["a1", "a2"])
+    })
+
+    it("treats a Gravity 404 as no recommendations (falls through to backfill)", async () => {
+      const artworkRecommendationsLoader = jest.fn(async () => {
+        throw new HTTPError("Not Found", 404)
+      })
+      const context = {
+        artworkRecommendationsLoader,
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => jest.fn() },
+        unauthenticatedLoaders: { vortexGraphqlLoader: jest.fn() },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(artworkIds).toEqual([])
+    })
+
+    it("propagates a non-404 Gravity error", async () => {
+      const artworkRecommendationsLoader = jest.fn(async () => {
+        throw new HTTPError("Internal Server Error", 500)
+      })
+      const context = {
+        artworkRecommendationsLoader,
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => jest.fn() },
+        unauthenticatedLoaders: { vortexGraphqlLoader: jest.fn() },
+      } as any
+
+      await expect(
+        getNewForYouArtworkIDs({ excludeArtworkIds: [] }, context)
+      ).rejects.toThrow("Internal Server Error")
+    })
+
+    it("keeps email-campaign requests (Braze, impersonated) on Vortex", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["imp-1", "imp-2"],
+      }))
+      const context = {
+        artworkRecommendationsLoader,
+        xImpersonateUserID: "braze-user-id",
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexLoader).toHaveBeenCalled()
+      expect(artworkIds).toEqual(["banksy"])
+    })
+
+    it("routes explicit userId-arg requests to Gravity with a user_id", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["app-1"],
+      }))
+      const context = {
+        artworkRecommendationsLoader,
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [], userId: "app-user-id" },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).toHaveBeenCalledWith({
+        rail: "nwfy",
+        size: 50,
+        user_id: "app-user-id",
+      })
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_nwfy-gravity",
+        {
+          userId: "app-user-id",
+        }
+      )
+      expect(vortexLoader).not.toHaveBeenCalled()
+      expect(artworkIds).toEqual(["app-1"])
+    })
+
+    it("buckets the feature flag on the authenticated user for logged-in requests", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn(async () => ({
+        artwork_ids: ["a1"],
+      }))
+      const context = {
+        artworkRecommendationsLoader,
+        userID: "logged-in-user",
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_nwfy-gravity",
+        {
+          userId: "logged-in-user",
+        }
+      )
+      expect(artworkRecommendationsLoader).toHaveBeenCalledWith({
+        rail: "nwfy",
+        size: 50,
+      })
+      expect(vortexLoader).not.toHaveBeenCalled()
+      expect(artworkIds).toEqual(["a1"])
+    })
+
+    it("stays on Vortex for non-eigen clients (e.g. web)", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn()
+      const context = {
+        artworkRecommendationsLoader,
+        userID: "logged-in-user",
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexLoader).toHaveBeenCalled()
+      expect(artworkIds).toEqual(["banksy"])
+    })
+
+    it("stays on Vortex for eigen versions below 9.14.0", async () => {
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn()
+      const context = {
+        artworkRecommendationsLoader,
+        userID: "logged-in-user",
+        userAgent: "Artsy-Mobile/9.13.0",
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexLoader).toHaveBeenCalled()
+      expect(artworkIds).toEqual(["banksy"])
+    })
+
+    it("stays on Vortex for the control variant", async () => {
+      mockGetExperimentVariant.mockReturnValue({
+        enabled: true,
+        name: "control",
+      })
+
+      const vortexLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+      const artworkRecommendationsLoader = jest.fn()
+      const context = {
+        artworkRecommendationsLoader,
+        userID: "logged-in-user",
+        userAgent: ELIGIBLE_USER_AGENT,
+        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [] },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(vortexLoader).toHaveBeenCalled()
+      expect(artworkIds).toEqual(["banksy"])
+    })
+
+    it("stays on the auction path for onlyAtAuction requests", async () => {
+      const auctionLoader = jest.fn(async () => ({
+        data: [{ artwork_id: "lot-1" }],
+      }))
+      const artworkRecommendationsLoader = jest.fn()
+      const context = {
+        artworkRecommendationsLoader,
+        authenticatedLoaders: {
+          vortexGraphqlLoader: () => jest.fn(),
+          auctionLotRecommendationsLoader: auctionLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexGraphqlLoader: jest.fn(),
+          auctionLotRecommendationsLoader: auctionLoader,
+        },
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [], onlyAtAuction: true },
+        context
+      )
+
+      expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
+      expect(artworkIds).toEqual(["lot-1"])
+    })
+  })
 })
 
 describe("getNewForYouArtworks", () => {
   it("returns an empty array with empty artwork ids", async () => {
     const artworkIds = []
-    const gravityArgs = {}
     const context = {} as any
 
-    const artworks = await getNewForYouArtworks(
-      { ids: artworkIds },
-      gravityArgs,
-      context
-    )
+    const artworks = await getNewForYouArtworks({ ids: artworkIds }, context)
     expect(artworks).toEqual([])
   })
 
   it("returns artworks for those artwork ids", async () => {
     const artworkIds = ["banksy"]
-    const gravityArgs = {}
     const mockArtworksLoader = jest.fn(() => [{}])
     const context = {
       artworksLoader: mockArtworksLoader,
     } as any
 
-    const artworks = await getNewForYouArtworks(
-      { ids: artworkIds },
-      gravityArgs,
-      context
-    )
+    const artworks = await getNewForYouArtworks({ ids: artworkIds }, context)
     expect(artworks.length).toEqual(1)
     expect(mockArtworksLoader).toBeCalledWith({
       availability: "for sale",
       exclude_disliked_artworks: false,
       ids: artworkIds,
+      size: artworkIds.length,
     })
   })
 
   it("passes exclude_disliked_artworks parameter to Gravity artworksLoader", async () => {
     const artworkIds = ["banksy"]
-    const gravityArgs = {}
     const mockArtworksLoader = jest.fn(() => [{}])
     const context = {
       artworksLoader: mockArtworksLoader,
@@ -83,13 +364,13 @@ describe("getNewForYouArtworks", () => {
 
     await getNewForYouArtworks(
       { ids: artworkIds, excludeDislikedArtworks: true },
-      gravityArgs,
       context
     )
     expect(mockArtworksLoader).toBeCalledWith({
       availability: "for sale",
       exclude_disliked_artworks: true,
       ids: artworkIds,
+      size: artworkIds.length,
     })
   })
 })

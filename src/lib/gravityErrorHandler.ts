@@ -62,7 +62,7 @@ export const GravityMutationErrorType = new GraphQLObjectType<
       type: GraphQLString,
     },
     fieldErrors: {
-      type: GraphQLList(FieldErrorResultsType),
+      type: new GraphQLList(FieldErrorResultsType),
     },
     statusCode: {
       type: GraphQLInt,

@@ -132,6 +132,67 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#publicLocation", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          publicLocation {
+            internalID
+            city
+            state
+            country
+            postalCode
+          }
+        }
+      }
+    `
+
+    it("returns the artwork's public location", async () => {
+      artwork = {
+        ...artwork,
+        public_location: {
+          id: "5a1b2c3d4e5f60001234abcd",
+          city: "New York",
+          state: "NY",
+          country: "US",
+          postal_code: "10013",
+        },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          publicLocation: {
+            internalID: "5a1b2c3d4e5f60001234abcd",
+            city: "New York",
+            state: "NY",
+            country: "US",
+            postalCode: "10013",
+          },
+        },
+      })
+    })
+
+    it("returns null when there is no public location", async () => {
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          publicLocation: null,
+        },
+      })
+    })
+  })
+
   describe("#importSource", () => {
     const query = `
       {
@@ -479,6 +540,30 @@ describe("Artwork type", () => {
           artwork: {
             slug: "richard-prince-untitled-portrait",
             isOfferableFromInquiry: true,
+          },
+        })
+      })
+    })
+  })
+
+  describe("#isPartnerOfferable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          isPartnerOfferable
+        }
+      }
+    `
+
+    it("will return the value of partner_offerable", () => {
+      artwork.partner_offerable = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            isPartnerOfferable: true,
           },
         })
       })
@@ -2850,7 +2935,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: £10 within United Kingdom [U.K.] \nInternational: £210",
+              "Domestic: £10 within United Kingdom \nInternational: £210",
           },
         })
       })
@@ -2892,7 +2977,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo:
-              "Domestic: Free within United Kingdom [U.K.] \nInternational: Free",
+              "Domestic: Free within United Kingdom \nInternational: Free",
           },
         })
       })
@@ -3619,6 +3704,64 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingOrigin: "Kharkov, Ukraine",
+          },
+        })
+      })
+    })
+  })
+
+  describe("#shippingOriginRegion", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingOriginRegion
+        }
+      }
+    `
+
+    it("returns empty string when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "",
+          },
+        })
+      })
+    })
+
+    it("returns the country display name when shipping_origin is present", () => {
+      artwork.shipping_origin = ["New York", "NY", "US"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "United States",
+          },
+        })
+      })
+    })
+
+    it("returns 'European Union' when eu_shipping_origin is true", () => {
+      artwork.shipping_origin = ["Paris", "FR"]
+      artwork.eu_shipping_origin = true
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "European Union",
+          },
+        })
+      })
+    })
+
+    it("returns the country name when eu_shipping_origin is false", () => {
+      artwork.shipping_origin = ["London", "GB"]
+      artwork.eu_shipping_origin = false
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOriginRegion: "United Kingdom",
           },
         })
       })
@@ -5238,6 +5381,72 @@ describe("Artwork type", () => {
           artwork: {
             offerableActivity: {
               totalCount: 3,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns the collector details with eligible offerable activities", () => {
+      const collectorsQuery = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            offerableActivity {
+              totalCount
+              collectors {
+                internalID
+                firstNameLastInitial
+                isIdentityVerified
+                confirmedBuyerAt(format: "YYYY")
+                icon {
+                  internalID
+                }
+                location {
+                  city
+                  country
+                }
+                sources
+              }
+            }
+          }
+        }
+      `
+
+      const partnerArtworkOfferableActivityLoader = jest.fn(() =>
+        Promise.resolve({
+          headers: { "x-total-count": 1 },
+          body: [
+            {
+              id: "collector-profile-1",
+              first_name_last_initial: "Jane D.",
+              identity_verified: true,
+              confirmed_buyer_at: "2022-01-01T00:00:00.000Z",
+              icon: { id: "icon-1", image_url: "http://example.com/icon.jpg" },
+              location: { city: "New York", country: "US" },
+              sources: ["Save", "Abandoned Order"],
+            },
+          ],
+        })
+      )
+      context.partnerArtworkOfferableActivityLoader = partnerArtworkOfferableActivityLoader
+      artwork.partner = { id: "123" }
+
+      return runQuery(collectorsQuery, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            offerableActivity: {
+              totalCount: 1,
+              collectors: [
+                {
+                  internalID: "collector-profile-1",
+                  firstNameLastInitial: "Jane D.",
+                  isIdentityVerified: true,
+                  confirmedBuyerAt: "2022",
+                  icon: { internalID: "icon-1" },
+                  location: { city: "New York", country: "US" },
+                  sources: ["SAVE", "ABANDONED_ORDER"],
+                },
+              ],
             },
           },
         })

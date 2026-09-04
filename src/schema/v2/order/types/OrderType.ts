@@ -108,7 +108,7 @@ const SellerType = new GraphQLUnionType({
   name: "SellerType",
   types: () => [PartnerType],
   resolveType: () => {
-    return PartnerType
+    return PartnerType.name
   },
 })
 
@@ -198,8 +198,12 @@ const LineItemType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     quantity: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }) => quantity,
+    },
+    partnerOfferId: {
+      type: GraphQLString,
+      resolve: ({ partner_offer_id }) => partner_offer_id,
     },
   }),
 })

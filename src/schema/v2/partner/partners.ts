@@ -21,6 +21,10 @@ import { ResolverContext } from "types/graphql"
 
 const DISTANCE_FALLBACK_SORT = "-created_at"
 
+export const PartnerConnectionType = connectionWithCursorInfo({
+  nodeType: PartnerType,
+}).connectionType
+
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
   description: "A list of Partners",
@@ -190,7 +194,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionWithCursorInfo({ nodeType: PartnerType }).connectionType,
+  type: PartnerConnectionType,
   description: "A list of Partners",
   args: pageable({
     ids: {

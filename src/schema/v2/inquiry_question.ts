@@ -7,7 +7,7 @@ export const InquiryQuestionType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     question: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })

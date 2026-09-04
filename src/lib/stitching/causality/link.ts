@@ -1,53 +1,32 @@
-import { createHttpLink } from "apollo-link-http"
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
 import config from "config"
 import fetch from "node-fetch"
 import urljoin from "url-join"
 
-import { middlewareLink } from "../lib/middlewareLink"
-import { responseLoggerLink } from "../logLinkMiddleware"
-import { setContext } from "apollo-link-context"
-import { ResolverContext } from "types/graphql"
+import { getResolverContext, withResponseLogging } from "../logLinkMiddleware"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import { causalityJwt } from "schema/v2/system/causality_jwt"
 
 const { CAUSALITY_API_BASE } = config
 
-export const createCausalityLink = () => {
-  const httpLink = createHttpLink({
-    // node-fetch's Request conflicts with the global Fetch Request type pulled
-    // in via graphql-yoga. The runtime is unaffected.
-    fetch: fetch as any,
-    uri: urljoin(CAUSALITY_API_BASE, "graphql"),
-  })
-
-  const authMiddleware = setContext(
-    (_request, { graphqlContext }: { graphqlContext: ResolverContext }) => {
-      const meLoader = graphqlContext && graphqlContext.meLoader
-      const headers = {
-        ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
-      }
-      // If a user is present get their ID (via meLoader) and make a causality Jwt with it
-      if (meLoader) {
-        return meLoader().then(({ id }) => {
-          const token = causalityJwt({
-            userId: id,
-            role: "observer",
-            saleId: null,
-            bidderId: null,
-          })
-          return {
-            headers: Object.assign(headers, {
-              Authorization: `Bearer ${token}`,
-            }),
-          }
-        })
-      }
-      return { headers }
+export const createCausalityExecutor = () =>
+  withResponseLogging("Causality", async (request) => {
+    const ctx = getResolverContext(request)
+    const headers: Record<string, string> = {
+      ...(ctx && requestIDHeaders(ctx.requestIDs)),
     }
-  )
-
-  return middlewareLink
-    .concat(responseLoggerLink("Causality"))
-    .concat(authMiddleware)
-    .concat(httpLink)
-}
+    if (ctx?.meLoader) {
+      const { id } = await ctx.meLoader()
+      headers.Authorization = `Bearer ${causalityJwt({
+        userId: id,
+        role: "observer",
+        saleId: null,
+        bidderId: null,
+      })}`
+    }
+    return buildHTTPExecutor({
+      endpoint: urljoin(CAUSALITY_API_BASE, "graphql"),
+      fetch: fetch as any,
+      headers,
+    })(request)
+  })

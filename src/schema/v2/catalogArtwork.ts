@@ -9,6 +9,8 @@ import { InternalIDFields } from "./object_identification"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 import { date } from "./fields/date"
 import { CatalogArtworkDocumentType } from "./catalogArtworkDocument"
+import { CatalogEditionSetType } from "./catalogEditionSet"
+import { ArtnetArtworkType } from "./artnet/artnetArtwork"
 
 export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "CatalogArtwork",
@@ -20,6 +22,10 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
     },
     medium: {
       type: GraphQLString,
+    },
+    syncedMedium: {
+      type: GraphQLString,
+      resolve: ({ synced_medium }) => synced_medium,
     },
     availability: { type: GraphQLString },
     priceCurrency: {
@@ -62,6 +68,16 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
         })
         return body
       },
+    },
+    catalogEditionSets: {
+      type: new GraphQLList(CatalogEditionSetType),
+      description: "Edition sets associated with this catalog artwork.",
+      resolve: ({ catalog_edition_sets }) => catalog_edition_sets ?? [],
+    },
+    artnetArtwork: {
+      type: ArtnetArtworkType,
+      description: "Artnet record of this catalog artwork.",
+      resolve: ({ artnet_artwork }) => artnet_artwork,
     },
   },
 })

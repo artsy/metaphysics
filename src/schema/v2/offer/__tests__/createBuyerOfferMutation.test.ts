@@ -137,6 +137,37 @@ describe("createBuyerOfferMutation", () => {
     )
   })
 
+  it("forwards respondsToID as responds_to_id for a counteroffer", async () => {
+    const query = `
+      mutation {
+        createBuyerOffer(input: {
+          orderID: "order-id",
+          amountMinor: 85000,
+          respondsToID: "responds-to-offer-id"
+        }) {
+          offerOrError {
+            ...on OfferMutationSuccess {
+              offer {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result.errors).toBeUndefined()
+    expect(context.meOfferCreateLoader).toHaveBeenCalledWith(
+      { orderID: "order-id" },
+      {
+        amount_cents: 85000,
+        responds_to_id: "responds-to-offer-id",
+      }
+    )
+  })
+
   it("returns an error when the loader fails", async () => {
     context.meOfferCreateLoader = jest.fn().mockRejectedValue({
       statusCode: 422,

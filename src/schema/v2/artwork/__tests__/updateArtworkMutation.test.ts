@@ -968,6 +968,7 @@ describe("UpdateArtworkMutation", () => {
         updateArtworkLoader,
         updateArtworkEditionSetLoader,
         createArtworkEditionSetLoader,
+        deleteArtworkEditionSetLoader: jest.fn(),
       }
 
       await runAuthenticatedQuery(convertMutation, context)
@@ -1033,6 +1034,7 @@ describe("UpdateArtworkMutation", () => {
         updateArtworkLoader,
         updateArtworkEditionSetLoader,
         createArtworkEditionSetLoader,
+        deleteArtworkEditionSetLoader: jest.fn(),
       }
 
       await runAuthenticatedQuery(updateMutation, context)
@@ -1040,6 +1042,60 @@ describe("UpdateArtworkMutation", () => {
       expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
       expect(updateArtworkEditionSetLoader).toHaveBeenCalledWith(
         { artworkId: "25", editionSetId: "set-1" },
+        expect.objectContaining({ edition_size: "15" })
+      )
+    })
+
+    it("deletes edition sets when id and delete: true are provided", async () => {
+      const createArtworkEditionSetLoader = jest.fn()
+      const updateArtworkEditionSetLoader = jest.fn()
+      const deleteArtworkEditionSetLoader = jest.fn().mockResolvedValue({})
+      const updateArtworkLoader = jest.fn().mockResolvedValue({
+        id: "25",
+        _id: "25",
+      })
+
+      const deleteMutation = gql`
+        mutation {
+          updateArtwork(
+            input: {
+              id: "25"
+              editionSets: [
+                { id: "set-1", delete: true }
+                { id: "set-2", editionSize: "15" }
+              ]
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on updateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        updateArtworkLoader,
+        updateArtworkEditionSetLoader,
+        createArtworkEditionSetLoader,
+        deleteArtworkEditionSetLoader,
+      }
+
+      await runAuthenticatedQuery(deleteMutation, context)
+
+      expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
+      expect(deleteArtworkEditionSetLoader).toHaveBeenCalledTimes(1)
+      expect(deleteArtworkEditionSetLoader).toHaveBeenCalledWith({
+        artworkId: "25",
+        editionSetId: "set-1",
+      })
+      expect(updateArtworkEditionSetLoader).toHaveBeenCalledTimes(1)
+      expect(updateArtworkEditionSetLoader).toHaveBeenCalledWith(
+        { artworkId: "25", editionSetId: "set-2" },
         expect.objectContaining({ edition_size: "15" })
       )
     })

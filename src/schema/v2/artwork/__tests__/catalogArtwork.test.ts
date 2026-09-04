@@ -107,6 +107,95 @@ describe("Artwork.catalogArtwork", () => {
     })
   })
 
+  it("returns catalog edition sets with priceListed", async () => {
+    const query = gql`
+      {
+        artwork(id: "some-artwork") {
+          catalogArtwork {
+            catalogEditionSets {
+              internalID
+              editionSetId
+              availability
+              priceCurrency
+              priceListed {
+                major
+                minor
+                currencyCode
+                display
+              }
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithCatalogArtwork({
+        id: "catalog-artwork-id",
+        catalog_edition_sets: [
+          {
+            id: "edition-set-1",
+            edition_set_id: "gravity-edition-set-1",
+            price_minor: 150000,
+            price_currency: "USD",
+            availability: "for sale",
+            created_at: "2024-01-15T10:30:00Z",
+            updated_at: "2024-06-20T14:45:00Z",
+          },
+        ],
+      }),
+    })
+
+    expect(data).toEqual({
+      artwork: {
+        catalogArtwork: {
+          catalogEditionSets: [
+            {
+              internalID: "edition-set-1",
+              editionSetId: "gravity-edition-set-1",
+              availability: "for sale",
+              priceCurrency: "USD",
+              priceListed: {
+                major: 1500,
+                minor: 150000,
+                currencyCode: "USD",
+                display: "US$1,500",
+              },
+              createdAt: "2024-01-15T10:30:00Z",
+              updatedAt: "2024-06-20T14:45:00Z",
+            },
+          ],
+        },
+      },
+    })
+  })
+
+  it("returns an empty list when catalog_edition_sets is not present", async () => {
+    const query = gql`
+      {
+        artwork(id: "some-artwork") {
+          catalogArtwork {
+            catalogEditionSets {
+              internalID
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithCatalogArtwork({
+        id: "catalog-artwork-id",
+      }),
+    })
+
+    expect(data).toEqual({
+      artwork: { catalogArtwork: { catalogEditionSets: [] } },
+    })
+  })
+
   it("returns createdAt and updatedAt dates", async () => {
     const query = gql`
       {

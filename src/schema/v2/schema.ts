@@ -132,6 +132,7 @@ import { SaleArtworksConnectionField } from "./sale_artworks"
 import { SalesConnectionField } from "./sales"
 import { Search } from "./search"
 import { SearchableItem } from "./SearchableItem"
+import { SearchDropdown, TrendingSearches } from "./searchDropdown"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
 import Show from "./show"
 import ShippingPreset from "./shippingPreset"
@@ -154,15 +155,23 @@ import { channel } from "./article/channel"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
+import { createArtnetImportMutation } from "./artnet/artnetImportMutation"
+import { ArtnetImport } from "./artnet/artnetImport"
+import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
+import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionSetMutation"
+import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
+import { artworkFilterSuggestions } from "./artworkFilterSuggestions"
 import { artworksForUser } from "./artworksForUser"
+import { artworksByImageConnection } from "./artworksByImageConnection"
 import { authenticationStatus } from "./authenticationStatus"
 import { BankAccount } from "./bank_account"
 import { bulkUpdateArtworksMetadataMutation } from "./partner/BulkOperation/bulkUpdateArtworksMetadataMutation"
+import { bulkDeleteArtworksMutation } from "./partner/BulkOperation/bulkDeleteArtworksMutation"
 import { artsyShippingOptInMutation } from "./partner/ArtsyShippingOptIn/artsyShippingOptInMutation"
 import { acceptPartnerAgreementMutation } from "./partner/acceptPartnerAgreementMutation"
 import { Agreement } from "./agreement"
@@ -202,6 +211,7 @@ import { confirmPasswordMutation } from "./me/confirmPasswordMutation"
 import { createImageMutation } from "./me/createImageMutation"
 import { transferMyCollectionMutation } from "./me/transferMyCollectionMutation"
 import { recordArtworkViewMutation } from "./me/recordArtworkViewMutation"
+import { recordGuidedTourEventMutation } from "./me/guidedTour/recordGuidedTourEventMutation"
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
@@ -316,6 +326,9 @@ import { bulkDeleteArtworksFromPartnerListMutation } from "./partner/Mutations/P
 import { moveArtworksBetweenPartnerListsMutation } from "./partner/Mutations/PartnerList/moveArtworksBetweenPartnerListsMutation"
 import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/PartnerList/updatePartnerListArtworkPositionMutation"
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
+import { publishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/publishPartnerListPublicationMutation"
+import { unpublishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/unpublishPartnerListPublicationMutation"
+import { authenticatePrivateViewingRoomMutation } from "./privateViewingRoom/mutations/authenticatePrivateViewingRoomMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
 import { deleteShippingPresetMutation } from "./ShippingPreset/deleteShippingPresetMutation"
@@ -336,6 +349,7 @@ import { PrincipalFieldDirective } from "directives/principalField/principalFiel
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
 import { ViewingRoom } from "./viewingRoom"
+import { PrivateViewingRoom } from "./privateViewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
@@ -392,6 +406,9 @@ import {
 } from "./order"
 import { createBuyerOfferMutation } from "./offer/createBuyerOfferMutation"
 import { updateBuyerOfferMutation } from "./offer/updateBuyerOfferMutation"
+import { acceptSellerOfferMutation } from "./offer/acceptSellerOfferMutation"
+import { rejectSellerOfferMutation } from "./offer/rejectSellerOfferMutation"
+import { submitBuyerOfferMutation } from "./offer/submitBuyerOfferMutation"
 import { CreatePartnerContactMutation } from "./partner/Settings/createPartnerContactMutation"
 import { CreatePartnerLocationMutation } from "./partner/Settings/createPartnerLocationMutation"
 import { UpdatePartnerContactMutation } from "./partner/Settings/updatePartnerContactMutation"
@@ -412,6 +429,7 @@ import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
+import { AIAgentTurn } from "./ai/agent"
 import { Video } from "./video/video"
 import { VideosConnection } from "./video/videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
@@ -455,14 +473,17 @@ const rootFields = {
   artistsConnection,
   artistSeries: ArtistSeries,
   artistSeriesConnection: ArtistSeriesConnection,
+  artnetImport: ArtnetImport,
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkDuplicatePair,
   artworkDuplicatePairsConnection,
+  artworkFilterSuggestions,
   artworkMediums: ArtworkMediums,
   artworkImport: ArtworkImport,
   artworkResult: ArtworkResult,
   artworks: Artworks,
+  artworksByImageConnection,
   artworksConnection: filterArtworksConnection(),
   artworksForUser,
   auctionResult: AuctionResult,
@@ -545,6 +566,7 @@ const rootFields = {
   partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
   phoneNumber: PhoneNumber,
   previewSavedSearch: PreviewSavedSearchField,
+  privateViewingRoom: PrivateViewingRoom,
   profile: Profile,
   profilesConnection: Profiles,
   purchase: Purchase,
@@ -556,6 +578,7 @@ const rootFields = {
   saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
+  searchDropdown: SearchDropdown,
   shortcut,
   show: Show,
   shippingPreset: ShippingPreset,
@@ -564,6 +587,7 @@ const rootFields = {
   system: System,
   tag: TagField,
   targetSupply: TargetSupply,
+  trendingSearches: TrendingSearches,
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
@@ -600,6 +624,9 @@ export default new GraphQLSchema({
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
       createBuyerOffer: createBuyerOfferMutation,
       updateBuyerOffer: updateBuyerOfferMutation,
+      acceptSellerOffer: acceptSellerOfferMutation,
+      rejectSellerOffer: rejectSellerOfferMutation,
+      submitBuyerOffer: submitBuyerOfferMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
@@ -610,6 +637,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkAddArtworksToPartnerList: bulkAddArtworksToPartnerListMutation,
       bulkAddArtworksToShow: bulkAddArtworksToShowMutation,
+      bulkDeleteArtworks: bulkDeleteArtworksMutation,
       bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
@@ -618,6 +646,8 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createArtnetImport: createArtnetImportMutation,
+      createArtnetImportArtistAssignment: CreateArtnetImportArtistAssignmentMutation,
       createArtwork: createArtworkMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
@@ -669,6 +699,9 @@ export default new GraphQLSchema({
       deleteBrandKit: deleteBrandKitMutation,
       updateBrandKitLogo: updateBrandKitLogoMutation,
       deleteBrandKitLogo: deleteBrandKitLogoMutation,
+      publishPartnerListPublication: publishPartnerListPublicationMutation,
+      unpublishPartnerListPublication: unpublishPartnerListPublicationMutation,
+      authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
@@ -765,6 +798,7 @@ export default new GraphQLSchema({
       repositionPartnerArtistArtworks: repositionPartnerArtistArtworksMutation,
       repositionPartnerLocations: repositionPartnerLocationsMutation,
       recordArtworkView: recordArtworkViewMutation,
+      recordGuidedTourEvent: recordGuidedTourEventMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestConditionReport: requestConditionReportMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
@@ -778,6 +812,7 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
       submitOrder: submitOrderMutation,
+      syncCatalogToArtwork: syncCatalogToArtworkMutation,
       transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
@@ -788,6 +823,7 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
+      updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
@@ -855,6 +891,12 @@ export default new GraphQLSchema({
     fields: {
       ...rootFields,
       viewer: Viewer,
+    },
+  }),
+  subscription: new GraphQLObjectType<any, ResolverContext>({
+    name: "Subscription",
+    fields: {
+      aiAgentTurn: AIAgentTurn,
     },
   }),
   // These are for orphaned types which are types which should be in the schema,

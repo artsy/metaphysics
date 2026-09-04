@@ -8,7 +8,6 @@ import {
 import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
-  deriveCurrencyFormatFromAmounts,
 } from "schema/v2/fields/money"
 import { OrderJSON, FulfillmentOptionJson } from "./exchangeJson"
 import { OfferJSON } from "./OfferType"
@@ -93,18 +92,18 @@ const PricingBreakdownLineUnion = new GraphQLUnionType({
   types: () => [ShippingLine, TaxLine, SubtotalLine, TotalLine],
   resolveType: (value) => {
     if (value.__typename === "ShippingLine") {
-      return ShippingLine
+      return ShippingLine.name
     }
     if (value.__typename === "TaxLine") {
-      return TaxLine
+      return TaxLine.name
     }
     if (value.__typename === "SubtotalLine") {
-      return SubtotalLine
+      return SubtotalLine.name
     }
     if (value.__typename === "TotalLine") {
-      return TotalLine
+      return TotalLine.name
     }
-    return null
+    return undefined
   },
 })
 
@@ -135,25 +134,13 @@ export const resolveOrderPricingBreakdownLines = (
     selected_fulfillment_option: selectedFulfillmentOption,
   } = order
 
-  const amounts = [
-    itemsTotalCents,
-    shippingTotalCents,
-    taxTotalCents,
-    buyerTotalCents,
-  ]
-
-  const { format, exact } = deriveCurrencyFormatFromAmounts(
-    currencyCode,
-    amounts
-  )
-
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format,
-        exact,
+        format: "0,0.00",
+        exact: true,
       },
       args,
       context,
@@ -263,25 +250,13 @@ export const resolveOfferPricingBreakdownLines = (
     _selectedFulfillmentOptionType,
   } = offer
 
-  const amounts = [
-    amountCents,
-    shippingTotalCents,
-    taxTotalCents,
-    buyerTotalCents,
-  ]
-
-  const { format, exact } = deriveCurrencyFormatFromAmounts(
-    currencyCode,
-    amounts
-  )
-
   const resolveMoney = (amount: number) => {
     return resolveMinorAndCurrencyFieldsToMoney(
       {
         minor: amount,
         currencyCode,
-        format,
-        exact,
+        format: "0,0.00",
+        exact: true,
       },
       args,
       context,

@@ -107,10 +107,12 @@ describe("HomePageArtistModule", () => {
     })
 
     it("does not return any suggestions", () => {
-      return graphql(schema, query("SUGGESTED")).then((response) => {
-        expect(response.data.homePage.artistModule.results).toBe(null)
-        expect(response.errors.length).toBeGreaterThan(0)
-      })
+      return graphql({ schema, source: query("SUGGESTED") }).then(
+        (response) => {
+          expect(response.data.homePage.artistModule.results).toBe(null)
+          expect(response.errors.length).toBeGreaterThan(0)
+        }
+      )
     })
   })
 })

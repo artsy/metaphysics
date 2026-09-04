@@ -263,7 +263,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       featuredKeywords: {
         type: new GraphQLNonNull(
-          GraphQLList(new GraphQLNonNull(GraphQLString))
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
         resolve: ({ featured_keywords }) => featured_keywords ?? [],
@@ -536,7 +536,8 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               size,
               offset,
               ids,
-              ...(status && { status, total_count: true }),
+              ...(!ids && { total_count: true }),
+              ...(status && { status }),
             }
             return saleArtworksLoader(sale.id, gravityArgs).then(
               ({ body, headers }) => {

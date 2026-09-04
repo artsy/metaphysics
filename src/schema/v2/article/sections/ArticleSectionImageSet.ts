@@ -25,10 +25,10 @@ export const ArticleSectionImageSet = new GraphQLObjectType<
       types: [ArtworkType, ArticleImageSection],
       resolveType: (image) => {
         if (image.type === "image") {
-          return ArticleImageSection
+          return ArticleImageSection.name
         }
 
-        return ArtworkType
+        return ArtworkType.name
       },
     })
 

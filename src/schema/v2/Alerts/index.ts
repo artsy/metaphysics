@@ -60,10 +60,10 @@ const AlertSettingsType = new GraphQLObjectType<
       type: GraphQLString,
     },
     email: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     push: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     details: {
       type: GraphQLString,

@@ -21,6 +21,7 @@ interface UpdatePartnerFlagsMutationInputProps {
   artworksDefaultPartnerLocationId?: string | null
   artworksDefaultWeightMetric?: string | null
   gdprDpaAccepted?: boolean | null
+  distributionSyncEnabled?: boolean | null
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -92,6 +93,11 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       description:
         "Whether the partner has accepted the GDPR DPA. The server will record the acceptance timestamp.",
     },
+    distributionSyncEnabled: {
+      type: GraphQLBoolean,
+      description:
+        "Whether auto-sync of variable fields to marketplaces is enabled. If null, the flag will be unset.",
+    },
   },
   outputFields: {
     partnerOrError: {
@@ -110,6 +116,7 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
       artworksDefaultPartnerLocationId,
       artworksDefaultWeightMetric,
       gdprDpaAccepted,
+      distributionSyncEnabled,
     },
     { updatePartnerFlagsLoader }
   ) => {
@@ -148,6 +155,10 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
 
       if (gdprDpaAccepted !== undefined) {
         flags["gdpr_dpa_accepted"] = gdprDpaAccepted
+      }
+
+      if (distributionSyncEnabled !== undefined) {
+        flags["catalog_distribution_sync_enabled"] = distributionSyncEnabled
       }
 
       const response = await updatePartnerFlagsLoader(id, { flags })

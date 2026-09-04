@@ -54,8 +54,8 @@ const OpeningHoursUnion = new GraphQLUnionType({
   types: [OpeningHoursArray, OpeningHoursText],
   resolveType: (object) => {
     if (object.day_schedules && object.day_schedules.length > 0) {
-      return OpeningHoursArray
-    } else return OpeningHoursText
+      return OpeningHoursArray.name
+    } else return OpeningHoursText.name
   },
 })
 
@@ -279,7 +279,7 @@ export const COUNTRIES = {
   FO: "Faroe Islands",
   FR: "France",
   GA: "Gabon",
-  GB: "United Kingdom [U.K.]",
+  GB: "United Kingdom",
   GD: "Grenada",
   GE: "Georgia",
   GF: "French Guiana",

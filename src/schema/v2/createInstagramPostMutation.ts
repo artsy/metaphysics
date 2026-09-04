@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 import { InstagramPostType } from "./instagramPost"
 
 interface SlideInput {
-  artworkId: string
+  artworkId?: string | null
   s3Key: string
 }
 
@@ -32,12 +32,13 @@ const InstagramPostSlideInput = new GraphQLInputObjectType({
     "A slide in an Instagram carousel post. The order of slides in the array determines their position in the carousel.",
   fields: {
     artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the artwork for this slide",
+      type: GraphQLString,
+      description:
+        "The ID of the artwork for this slide (optional for custom image-only slides)",
     },
     s3Key: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "S3 object key for this slide's custom image",
+      description: "S3 object key for this slide's image (required)",
     },
   },
 })
@@ -93,7 +94,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
         new GraphQLList(new GraphQLNonNull(InstagramPostSlideInput))
       ),
       description:
-        "Slides for the Instagram post. Each slide references an artwork and a custom image. The order determines the carousel position.",
+        "Slides for the Instagram post. Each slide requires an s3Key and an optional artworkId for custom image-only slides. The order determines the carousel position.",
     },
     caption: {
       type: GraphQLString,
@@ -127,7 +128,7 @@ export const createInstagramPostMutation = mutationWithClientMutationId<
       return await createInstagramPostLoader({
         instagram_account_id: instagramAccountId,
         slides: slides.map((slide) => ({
-          artwork_id: slide.artworkId,
+          ...(slide.artworkId && { artwork_id: slide.artworkId }),
           s3_key: slide.s3Key,
         })),
         caption,

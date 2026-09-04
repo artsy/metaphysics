@@ -104,7 +104,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     previewImages: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Image.type))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Image.type))),
       args: {
         size: { type: GraphQLInt },
       },
@@ -119,17 +119,24 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
 
         switch (notification.activity_type) {
           case "ViewingRoomPublishedActivity": {
-            images = await Promise.all(
-              slicedObjectIds.map(async (viewingRoomId) => {
-                const { image_versions, image_url } = await viewingRoomLoader(
-                  viewingRoomId
-                )
+            const viewingRooms = await Promise.all(
+              slicedObjectIds.map((viewingRoomId) =>
+                viewingRoomLoader(viewingRoomId).catch((error) => {
+                  // The viewing room referenced by this notification may
+                  // have since been deleted; skip it instead of failing
+                  // the whole list. Genuine failures still propagate.
+                  if (error?.statusCode === 404) return null
+                  throw error
+                })
+              )
+            )
 
-                return normalizeImageData({
+            images = compact(viewingRooms).map(
+              ({ image_versions, image_url }) =>
+                normalizeImageData({
                   image_versions,
                   image_url,
                 })
-              })
             )
             break
           }

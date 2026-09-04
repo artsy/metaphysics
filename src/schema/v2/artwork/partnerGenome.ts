@@ -22,12 +22,12 @@ export const PartnerGenomeGeneType = new GraphQLObjectType<
   description: "A gene from the partner genome with its associated value",
   fields: {
     name: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: "The name of the gene category",
       resolve: ({ name }) => name,
     },
     geneValue: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: "The value/score for this gene (typically 0-100)",
       resolve: ({ value }) => value,
     },

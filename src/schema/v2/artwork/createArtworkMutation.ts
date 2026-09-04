@@ -13,6 +13,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
+import { ArtworkCreatedSurface } from "./artworkCreatedSurface"
 
 interface CreateArtworkMutationInputProps {
   artistIds: string[]
@@ -20,7 +21,10 @@ interface CreateArtworkMutationInputProps {
   partnerId: string
   imageS3Bucket?: string
   imageS3Key?: string
+  imageS3Buckets?: string[]
+  imageS3Keys?: string[]
   partnerShowId?: string
+  createdSurface?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -97,6 +101,11 @@ export const createArtworkMutation = mutationWithClientMutationId<
       description:
         "The S3 keys for the artwork images. This is a list of object keys.",
     },
+    createdSurface: {
+      type: ArtworkCreatedSurface,
+      description:
+        "The surface the artwork is being created from. Defaults to CMS.",
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -116,6 +125,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
       imageS3Key,
       imageS3Buckets,
       imageS3Keys,
+      createdSurface,
     },
     {
       createArtworkLoader,
@@ -161,6 +171,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
         artsy_listing: artsyListing,
         partner: partnerId,
         sync_to_search: true,
+        created_surface: createdSurface,
       })
 
       // Attach images if provided

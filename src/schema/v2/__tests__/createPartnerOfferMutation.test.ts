@@ -34,6 +34,34 @@ const mutation = gql`
   }
 `
 
+const mutationWithConversation = gql`
+  mutation {
+    createPartnerOffer(
+      input: {
+        artwork_id: "xyz321"
+        discount_percentage: 10
+        note: "hi!"
+        impulse_conversation_id: "conversation_id"
+        user_id: "user_id"
+      }
+    ) {
+      partnerOfferOrError {
+        __typename
+        ... on createPartnerOfferSuccess {
+          partnerOffer {
+            internalID
+          }
+        }
+        ... on createPartnerOfferFailure {
+          mutationError {
+            message
+          }
+        }
+      }
+    }
+  }
+`
+
 describe("Create a partner offer for users", () => {
   describe("when succesfull", () => {
     const partnerOffer = {
@@ -77,6 +105,40 @@ describe("Create a partner offer for users", () => {
             },
           },
         },
+      })
+    })
+
+    it("passes the optional args to the loader", async () => {
+      const createPartnerOfferLoader = jest.fn().mockResolvedValue(partnerOffer)
+
+      await runAuthenticatedQuery(mutation, {
+        ...context,
+        createPartnerOfferLoader,
+      })
+
+      expect(createPartnerOfferLoader).toHaveBeenCalledWith({
+        artwork_id: "xyz321",
+        discount_percentage: 10,
+        note: "hi!",
+        impulse_conversation_id: undefined,
+        user_id: undefined,
+      })
+    })
+
+    it("passes impulse_conversation_id and user_id together to the loader", async () => {
+      const createPartnerOfferLoader = jest.fn().mockResolvedValue(partnerOffer)
+
+      await runAuthenticatedQuery(mutationWithConversation, {
+        ...context,
+        createPartnerOfferLoader,
+      })
+
+      expect(createPartnerOfferLoader).toHaveBeenCalledWith({
+        artwork_id: "xyz321",
+        discount_percentage: 10,
+        note: "hi!",
+        impulse_conversation_id: "conversation_id",
+        user_id: "user_id",
       })
     })
   })

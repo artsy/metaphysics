@@ -14,6 +14,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworksDefaultPartnerLocationId: "location-1"
             artworksDefaultWeightMetric: "kg"
             gdprDpaAccepted: true
+            distributionSyncEnabled: true
           }
         ) {
           partnerOrError {
@@ -44,6 +45,7 @@ describe("UpdatePartnerFlagsMutation", () => {
             artworks_default_partner_location_id: "location-1",
             artworks_default_weight_metric: "kg",
             gdpr_dpa_accepted: true,
+            catalog_distribution_sync_enabled: true,
           })
           return Promise.resolve({
             _id: "partner-id",

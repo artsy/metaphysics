@@ -131,17 +131,9 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "If true return both published and unpublished artworks, requires auth",
   },
-  missingPriorityMetadata: {
-    type: GraphQLBoolean,
-    description: "Return artworks that are missing priority metadata",
-  },
   partnerOfferable: {
     type: GraphQLBoolean,
     description: "Only return artworks that are partner-offerable",
-  },
-  publishedWithin: {
-    type: GraphQLInt,
-    description: "Return artworks published less than x seconds ago.",
   },
   shallow: {
     type: GraphQLBoolean,
@@ -680,11 +672,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             include_non_artsy_listed?: boolean
-            missing_priority_metadata?: boolean
             partner_offerable?: boolean
             page: number
             published?: boolean
-            published_within?: number
             size: number
             sort: string
             total_count: boolean
@@ -693,12 +683,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
-            missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
             partner_offerable: args.partnerOfferable,
             page,
             published: true,
-            published_within: args.publishedWithin,
             size,
             sort: args.sort,
             total_count: true,
@@ -782,6 +770,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.",
           },
+          includeInactive: {
+            type: GraphQLBoolean,
+            description:
+              "Include inactive imports in results. Defaults to false.",
+          },
         },
         resolve: async ({ id }, args, { artworkImportsLoader }) => {
           if (!artworkImportsLoader) return null
@@ -795,6 +788,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             total_count: true,
             partner_id: id,
             ...(args.source && { source: args.source }),
+            ...(args.includeInactive && { include_inactive: true }),
           })
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
@@ -1025,7 +1019,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       featuredKeywords: {
         type: new GraphQLNonNull(
-          GraphQLList(new GraphQLNonNull(GraphQLString))
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
         resolve: ({ featured_keywords }) => featured_keywords ?? [],
@@ -1078,7 +1072,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
       },
       hasVisibleFollowsCount: {
-        type: GraphQLNonNull(GraphQLBoolean),
+        type: new GraphQLNonNull(GraphQLBoolean),
         description: "If the partner has more than 500 follows",
         resolve: async ({ default_profile_id }, _, { profileLoader }) => {
           try {
@@ -1355,6 +1349,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
+      distributionSyncEnabled: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "Whether auto-sync of variable fields to marketplaces is enabled. Defaults to true.",
+        resolve: async ({ _id }, _args, { partnerAllLoader }) => {
+          if (!partnerAllLoader) return true
+          const partner = await partnerAllLoader(_id)
+          return (
+            partner.partner_flags?.catalog_distribution_sync_enabled !== false
+          )
+        },
+      },
       distinguishRepresentedArtists: {
         type: GraphQLBoolean,
         resolve: ({ distinguish_represented_artists }) =>
@@ -1526,12 +1532,25 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const { body, headers } = await partnerListsLoader(gravityArgs)
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+          // Marks every node as reached through this connection —
+          // PartnerListType.publication refuses to resolve when this is set,
+          // since a page of N lists would otherwise fire N Gravity
+          // `partner_list/:id/publication` calls with no batch endpoint to
+          // collapse them into one (see the resolver for the full
+          // explanation). Every other single-list access path (the
+          // `partnerList(id:)` lookup above, and every PartnerList mutation
+          // payload) is unflagged and resolves `publication` normally.
+          const flaggedBody = body.map((list) => ({
+            ...list,
+            _fromConnection: true,
+          }))
+
           return paginationResolver({
             totalCount,
             offset,
             page,
             size,
-            body,
+            body: flaggedBody,
             args,
           })
         },

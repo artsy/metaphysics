@@ -2,9 +2,10 @@
 
 ## Merging Schemas
 
-This is a code-focused version of [GraphQL Stitching 101](http://artsy.github.io/blog/2018/12/11/GraphQL-Stitching/) from the blog.
+This is a code-focused version of [GraphQL Stitching 101](http://artsy.github.io/blog/2018/12/11/GraphQL-Stitching/).
+Examples use `@graphql-tools/*@v10` and `graphql@16` (see PR #7623 for the upgrade context).
 
-Let's pretend we're mapping a GraphQL API called `Three Body` but provides its own objects which want to be exposed via Metaphysics.
+Let's pretend we're mapping a GraphQL API called `Three Body`.
 
 1. Add your ENV Vars:
 
@@ -13,109 +14,130 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
    THREE_BODY_API_BASE="https://threebody-staging.artsy.net/api"
    ```
 
-   These will need to be added to : Your `.env`, `.env.example`, `.env.test` and
-   the live environments, as well as included in `./src/config.ts`
+   Add to `.env`, `.env.example`, `.env.test`, the live environments, and `./src/config.ts`.
 
-1. Export your schema from your API into Metaphysics
+1. Export the remote schema and drop it into `src/data/threebody.graphql`.
 
-   You should already have a `_schema.graphql` file in the root of your API, move that
-   into `src/data` into this repo and rename it to your API name.
+1. Create the executor: `src/lib/stitching/threeBody/link.ts`
 
-1. Create a link: `src/lib/stitching/threeBody/link.ts`
+   Stitching consumes an `AsyncExecutor` from `@graphql-tools/utils`. We build one
+   with `buildHTTPExecutor` from `@graphql-tools/executor-http` and wrap it in the
+   shared `withResponseLogging` helper, which preserves the `LOG_HTTP_LINKS` debug
+   output and strips metaphysics-only directives before delegation.
 
-   This is function which is used to connect Metaphysics to your API,
-
-   ```js
-   import { createHttpLink } from "apollo-link-http"
+   ```ts
+   import { buildHTTPExecutor } from "@graphql-tools/executor-http"
    import config from "config"
+   import { headers as requestIDHeaders } from "lib/requestIDs"
    import fetch from "node-fetch"
    import urljoin from "url-join"
 
-   import { middlewareLink } from "lib/middlewareLink"
-   import { responseLoggerLink } from "../logLinkMiddleware"
+   import {
+     getResolverContext,
+     withResponseLogging,
+   } from "../logLinkMiddleware"
 
-   const { KAWS_API_BASE } = config
+   const { THREE_BODY_API_BASE } = config
 
-   export const createThreeBodyLink = () => {
-     const httpLink = createHttpLink({
-       fetch,
-       uri: urljoin(THREE_BODY_API_BASE, "graphql"),
+   export const createThreeBodyExecutor = () =>
+     withResponseLogging("ThreeBody", async (request) => {
+       const ctx = getResolverContext(request)
+       const headers: Record<string, string> = {
+         ...(ctx && requestIDHeaders(ctx.requestIDs)),
+       }
+       return buildHTTPExecutor({
+         endpoint: urljoin(THREE_BODY_API_BASE, "graphql"),
+         fetch: fetch as any,
+         headers,
+       })(request)
      })
-
-     return middlewareLink
-       .concat(responseLoggerLink("ThreeBody"))
-       .concat(httpLink)
-   }
    ```
 
-   _Note:_ If the new microservice requires gravity JWT authentication, another middleware is required to pass the token coming from client to gravity and get an application token from gravity and pass it to the microservice. Follow Exchange's example [here](https://github.com/artsy/metaphysics/blob/a1a2d507c7ce03c55f44b1165fff51b22446557c/src/lib/stitching/exchange/link.ts#L20-L40) to add a middleware and [here](https://github.com/artsy/metaphysics/blob/bda55ee11a622d9b1a5bd1ac1c2c64cea8888744/src/lib/loaders/loaders_with_authentication/exchange.ts) to add token loader.
+   _Need gravity JWT auth?_ See `src/lib/stitching/exchange/link.ts` for the token-
+   loader + app-token-exchange pattern, and add a token loader under
+   `src/lib/loaders/loaders_with_authentication/`.
 
-1. Create a GraphQL Schema: `src/lib/stitching/threeBody/schema.ts`
+1. Create the schema config: `src/lib/stitching/threeBody/schema.ts`
 
-   This object represents the GraphQL schema, generated from your `threebody.schema`. In
-   order to make your objects fit inside the global namespace. You should prefix both the types, and root fields (e.g. fields on `Query` and `Mutation`.)
+   Export **two** things: a `SubschemaConfig` (consumed by `stitchSchemas` in
+   `mergeSchemas.ts`) and an `executableThreeBodySchema()` (used by any per-service
+   stitching-environment wiring under `threeBody/v2/`). Both are needed — passing a
+   pre-wrapped `GraphQLSchema` directly into `stitchSchemas` causes delegation to
+   silently return `null`, because the embedded executor never fires.
 
-   ```javascript
-   import { createKawsLink } from "./link"
+   ```ts
+   import { readFileSync } from "fs"
    import {
-     makeRemoteExecutableSchema,
-     transformSchema,
+     wrapSchema,
      RenameTypes,
      RenameRootFields,
-   } from "graphql-tools"
-   import { readFileSync } from "fs"
+   } from "@graphql-tools/wrap"
+   import type { SubschemaConfig } from "@graphql-tools/delegate"
+   import { buildSchema } from "graphql"
+   import { createThreeBodyExecutor } from "./link"
 
-   export const executableThreeBodySchema = () => {
-     const threeBodyLink = createThreeBodyLink()
+   export const threeBodySubschemaConfig = (): SubschemaConfig => {
      const threeBodyTypeDefs = readFileSync(
        "src/data/threebody.graphql",
        "utf8"
      )
-
-     // Setup the default Schema
-     const schema = makeRemoteExecutableSchema({
-       schema: threeBodyTypeDefs,
-       link: threeBodyLink,
-     })
-
-     // Return the new modified schema
-     return transformSchema(schema, [
-       new RenameTypes((name) => {
-         return `Document${name}`
-       }),
-       new RenameRootFields(
-         (_operation, name) =>
-           `document${name.charAt(0).toUpperCase() + name.slice(1)}`
-       ),
-     ])
+     return {
+       schema: buildSchema(threeBodyTypeDefs, { assumeValidSDL: true }),
+       executor: createThreeBodyExecutor(),
+       transforms: [
+         new RenameTypes((name) => `ThreeBody${name}`),
+         new RenameRootFields(
+           (_op, name) =>
+             `threeBody${name.charAt(0).toUpperCase() + name.slice(1)}`
+         ),
+       ],
+     }
    }
+
+   export const executableThreeBodySchema = () =>
+     wrapSchema(threeBodySubschemaConfig())
    ```
 
-1. Merge your schema into Metaphysics: `src/lib/stitching/mergeSchemas.ts`
-
-   Roughly, this looks something like:
+1. Wire it into `src/lib/stitching/mergeSchemas.ts`:
 
    ```diff
-   import { executableGravitySchema } from "lib/stitching/gravity/schema"
-   + import { executableThreeBodySchema } from "lib/stitching/threeBody/schema"
+   + import { threeBodySubschemaConfig } from "lib/stitching/threeBody/schema"
 
-   export const incrementalMergeSchemas = (testConfig?: any) => {
-     ...
-     const schemas = [localSchema] as GraphQLSchema[]
-
-     + const threeBodySchema = executableThreeBodySchema()
-     + schemas.push(threeBodySchema)
-
-     ...
-   }
+     export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
+       const subschemas: Array<GraphQLSchema | SubschemaConfig> = [localSchema]
+       ...
+   +   subschemas.push(threeBodySubschemaConfig())
+       ...
+     }
    ```
 
-That's it. That's a fully merged schema, everything that's inside your original `_schema.graphql` will be available as a part of the Metaphysics API.
+   If you need cross-schema resolvers (extensions that stitch ThreeBody fields
+   onto metaphysics types), add a `threeBody/v2/stitching.ts` and wire it through
+   `useStitchingEnvironment`. Resolver configs use **`selectionSet: "{ ... }"`**,
+   not `fragment: "..."` — v10 silently ignores `fragment` and the resolver will
+   receive a `source` with no pre-fetched fields. See `exchange/v2/stitching.ts`
+   for a worked example.
+
+That's it — everything in your `_schema.graphql` is now available via the merged
+metaphysics schema.
 
 ### Debugging
 
-There is an ENV var: `LOG_HTTP_LINKS` which you can turn on which will log to your console the requests made via stitching.
+`LOG_HTTP_LINKS=1` logs the queries and responses going out via stitching.
+
+### Delegating from a metaphysics resolver
+
+To call a remote subschema from a resolver, import the local wrapper:
+
+```ts
+import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
+```
+
+Don't import directly from `@graphql-tools/delegate` — the wrapper preserves the
+legacy `info.mergeInfo.delegateToSchema` entry-point used by tests and patches a
+v10 variable-typing footgun. See `src/lib/stitching/lib/delegateToSchema.ts`.
 
 ### Stitching
 
-If you want to start transforming, or stitching APIs between each other then consult the [post blog](http://artsy.github.io/blog/2018/12/11/GraphQL-Stitching/) - or read the Exchange stitching implementation.
+For cross-schema field extensions, read `exchange/v2/stitching.ts` or the
+[GraphQL Stitching blog post](http://artsy.github.io/blog/2018/12/11/GraphQL-Stitching/).

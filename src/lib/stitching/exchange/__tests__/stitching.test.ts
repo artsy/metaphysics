@@ -1,4 +1,4 @@
-import { graphql } from "graphql"
+import { graphql, OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { getFieldsForTypeFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
@@ -7,7 +7,8 @@ import {
   getExchangeStitchedSchema,
 } from "./testingUtils"
 import schema from "schema/v2/schema"
-import { addMockFunctionsToSchema } from "graphql-tools"
+import { addMocksToSchema } from "@graphql-tools/mock"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 it("extends the Order objects", async () => {
   const mergedSchema = await getExchangeMergedSchema()
@@ -96,10 +97,9 @@ it("resolves price field on CommerceShippingQuote", async () => {
 
 // These are used in all delegate calls, and not useful to the test
 const restOfResolveArgs = {
-  operation: "query",
+  operation: OperationTypeNode.QUERY,
   schema: expect.anything(),
   context: expect.anything(),
-  transforms: expect.anything(),
   info: expect.anything(),
 }
 
@@ -114,7 +114,7 @@ describe("when handling resolver delegation", () => {
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { id: "ARTWORK-ID" },
       fieldName: "artwork",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -124,37 +124,40 @@ describe("when handling resolver delegation", () => {
   it("calls a user or partner when looking up party details", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const { buyerDetails } = resolvers.CommerceBuyOrder
-    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-    info.mergeInfo.delegateToSchema.mockResolvedValue({})
+    const userByIDLoader = jest.fn().mockResolvedValue({ name: "Some User" })
+    const partnerLoader = jest.fn().mockResolvedValue({ name: "Some Partner" })
+    const context = { userByIDLoader, partnerLoader }
 
-    const parentUser = {
-      buyerDetails: { __typename: "CommerceUser", id: "USER-ID" },
-    }
+    const userResult = await buyerDetails.resolve(
+      { buyerDetails: { __typename: "CommerceUser", id: "USER-ID" } },
+      {},
+      context,
+      {}
+    )
 
-    buyerDetails.resolve(parentUser, {}, {}, info)
-
-    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-      args: { id: "USER-ID" },
-      fieldName: "user",
-      ...restOfResolveArgs,
-    })
+    expect(userByIDLoader).toHaveBeenCalledWith("USER-ID")
+    expect(partnerLoader).not.toHaveBeenCalled()
+    expect(userResult).toEqual({ name: "Some User", __typename: "User" })
 
     // Reset and verify what happens when we get a partner's details
     // back from Exchange
-    info.mergeInfo.delegateToSchema.mockReset()
-    info.mergeInfo.delegateToSchema.mockResolvedValue({})
+    userByIDLoader.mockReset()
+    partnerLoader.mockReset()
+    partnerLoader.mockResolvedValue({ name: "Some Partner" })
 
-    const parentPartner = {
-      buyerDetails: { __typename: "CommercePartner", id: "PARTNER-ID" },
-    }
+    const partnerResult = await buyerDetails.resolve(
+      { buyerDetails: { __typename: "CommercePartner", id: "PARTNER-ID" } },
+      {},
+      context,
+      {}
+    )
 
-    buyerDetails.resolve(parentPartner, {}, {}, info)
-
-    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-      args: { id: "PARTNER-ID" },
-      fieldName: "partner",
-      ...restOfResolveArgs,
+    expect(partnerLoader).toHaveBeenCalledWith("PARTNER-ID")
+    expect(userByIDLoader).not.toHaveBeenCalled()
+    expect(partnerResult).toEqual({
+      name: "Some Partner",
+      __typename: "Partner",
     })
   })
 })
@@ -170,7 +173,7 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
 
-    operation: "query",
+    operation: OperationTypeNode.QUERY,
     schema: expect.anything(),
     context: expect.anything(),
     info: expect.anything(),
@@ -187,7 +190,7 @@ it("delegates to the local schema for a CommerceOrder's buyerProfile", async () 
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { userID: "userid" },
     fieldName: "collectorProfile",
-    operation: "query",
+    operation: OperationTypeNode.QUERY,
     schema: expect.anything(),
     context: expect.anything(),
     info: expect.anything(),
@@ -505,6 +508,24 @@ describe("submitOfferOrderWithConversation", () => {
     })
   })
 
+  it("does not call submitArtworkInquiryRequestLoader when Gravity handles inquiry creation", async () => {
+    ;(isFeatureFlagEnabled as jest.Mock).mockReturnValue(true)
+
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(result).toEqual(validOrderResult)
+    expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
+  })
+
   it("does not call submitArtworkInquiryRequestLoader given inquiry offer", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
@@ -646,7 +667,7 @@ describe("Conversation with orders", () => {
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { buyerId: "user-id", impulseConversationId: "conversation-id" },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -672,7 +693,7 @@ describe("Conversation with orders", () => {
         impulseConversationId: "conversation-id",
       },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -699,7 +720,7 @@ describe("Conversation with orders", () => {
         state: "SUBMITTED",
       },
       fieldName: "commerceOrders",
-      operation: "query",
+      operation: OperationTypeNode.QUERY,
       schema: expect.anything(),
       context: expect.anything(),
       info: expect.anything(),
@@ -724,7 +745,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -739,7 +760,7 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: true } },
@@ -760,7 +781,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -774,7 +795,7 @@ describe.skip("resolving a stitched conversation", () => {
         }),
       },
     })
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: false } },
@@ -805,7 +826,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -820,11 +841,10 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(
-      allMergedSchemas,
-      query,
-      {},
-      {
+    const result = await graphql({
+      schema: mockedSchema,
+      source: query,
+      contextValue: {
         conversationLoader: jest.fn(() =>
           Promise.resolve({
             items: [
@@ -837,8 +857,8 @@ describe.skip("resolving a stitched conversation", () => {
             ],
           })
         ),
-      }
-    )
+      },
+    })
 
     expect(result).toEqual({
       data: {
@@ -872,7 +892,7 @@ describe.skip("resolving a stitched conversation", () => {
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
-    addMockFunctionsToSchema({
+    const mockedSchema = addMocksToSchema({
       preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
@@ -887,7 +907,7 @@ describe.skip("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql({ schema: mockedSchema, source: query })
 
     expect(result).toEqual({
       data: {

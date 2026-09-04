@@ -59,7 +59,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0.00", exact: true },
           _args,
           context,
           _info
@@ -100,7 +100,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0.00", exact: true },
           _args,
           context,
           _info
@@ -120,7 +120,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0.00", exact: true },
           _args,
           context,
           _info
@@ -140,7 +140,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
           return null
         }
         return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
+          { minor, currencyCode, format: "0,0.00", exact: true },
           _args,
           context,
           _info

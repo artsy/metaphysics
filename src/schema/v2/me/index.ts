@@ -35,6 +35,7 @@ import {
   resolveAlertFromJSON,
 } from "../Alerts"
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
+import { GuidedTourField } from "./guidedTour"
 import { artworkConnection } from "../artwork"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
@@ -43,10 +44,13 @@ import {
 } from "../identityVerification"
 import Image from "../image"
 import { NotificationType } from "../notifications"
+import { PartnerOfferTypeEnumType } from "../partnerOffer"
 import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
+  stampPartnerOfferPurchases,
 } from "../partnerOfferToCollector"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { PhoneNumber, resolvePhoneNumber } from "../phoneNumber"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 import { quiz } from "../quiz"
@@ -342,12 +346,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     email: {
       type: GraphQLString,
     },
-    emailFrequency: {
-      description: "Frequency of marketing emails.",
-      deprecationReason: "This field is no longer used.",
-      resolve: ({ email_frequency }) => email_frequency,
-      type: GraphQLString,
-    },
     canRequestEmailConfirmation: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether user is allowed to request email confirmation",
@@ -473,7 +471,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     labFeatures: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
       description: "List of lab features for this user",
       resolve: ({ lab_features }) => lab_features || [],
     },
@@ -506,6 +506,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return meNotificationLoader(id)
       },
     },
+    guidedTour: GuidedTourField,
     initials: initials("name"),
     order: MeOrder,
     ordersConnection: MeOrdersConnection,
@@ -519,11 +520,21 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         artworkID: {
           type: GraphQLString,
         },
+        offerType: {
+          type: new GraphQLList(PartnerOfferTypeEnumType),
+          description:
+            "Filter by offer type(s). Gravity defaults to all a users partner offers when omitted.",
+        },
         page: { type: GraphQLInt },
         size: { type: GraphQLInt },
         sort: { type: PartnerOfferToCollectorSortsType },
       }),
-      resolve: async (_me, args, { mePartnerOffersLoader }) => {
+      resolve: async (
+        _me,
+        args,
+        { mePartnerOffersLoader, meOrdersLoader },
+        resolveInfo
+      ) => {
         if (!mePartnerOffersLoader)
           throw new Error("You need to be signed in to perform this action")
 
@@ -542,8 +553,15 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         if (args.artworkID) {
           gravityArgs["artwork_id"] = args.artworkID
         }
+        if (args.offerType) {
+          gravityArgs["offer_type"] = args.offerType
+        }
 
         const { body, headers } = await mePartnerOffersLoader(gravityArgs)
+
+        if (isFieldRequested("edges.node.isPurchased", resolveInfo)) {
+          await stampPartnerOfferPurchases(body, meOrdersLoader)
+        }
 
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

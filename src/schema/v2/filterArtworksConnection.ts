@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLInt,
@@ -35,6 +36,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 import { deprecate } from "lib/deprecation"
+import { CURATORS_PICK_COLLECTION_SLUG } from "schema/v2/artwork/collectorSignals"
 import { keys, map, omit } from "lodash"
 import {
   ArtworksAggregation,
@@ -75,10 +77,10 @@ export const ArtworkFilterAggregations: GraphQLFieldConfig<
   },
 }
 
-export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
+export const ArtworkFilterFacetType = new GraphQLUnionType({
   name: "ArtworkFilterFacet",
   types: [TagType, GeneType],
-  resolveType: ({ context_type }) => context_type,
+  resolveType: ({ context_type }) => context_type?.name,
 })
 
 export const FilterArtworksCounts = {
@@ -114,7 +116,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
   },
   artistNationalities: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   artistSeriesID: {
     type: GraphQLString,
@@ -152,6 +154,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   colors: {
     type: new GraphQLList(GraphQLString),
   },
+  curatorsPick: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return artworks carrying the Curators' Pick collector signal. Cannot be combined with `marketingCollectionID`.",
+  },
   dimensionRange: {
     type: GraphQLString,
   },
@@ -183,7 +190,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   importSources: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   includeAllJSON: {
     type: GraphQLBoolean,
@@ -201,6 +208,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   includeUnpublished: {
     type: GraphQLBoolean,
   },
+  increasedInterest: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return artworks carrying the Increased Interest collector signal.",
+  },
   inquireableOnly: {
     type: GraphQLBoolean,
   },
@@ -210,6 +222,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   keywordMatchExact: {
     type: GraphQLBoolean,
     description: "When true, will only return exact keyword match",
+  },
+  keywordTypoTolerance: {
+    type: GraphQLBoolean,
+    description:
+      "When true and a `keyword` search returns no results, retries once with typo tolerance. Ignored with `keywordMatchExact`.",
   },
   locationCities: {
     type: new GraphQLList(GraphQLString),
@@ -229,7 +246,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLString,
   },
   materialsTerms: {
-    type: GraphQLList(GraphQLString),
+    type: new GraphQLList(GraphQLString),
   },
   medium: {
     type: GraphQLString,
@@ -279,6 +296,26 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   viewingRoomID: {
     type: GraphQLID,
+  },
+  variant: {
+    type: GraphQLString,
+    description:
+      "Search strategy. 'hybrid' blends semantic (meaning-based) results into the keyword search. Requires a keyword; team-only.",
+  },
+  hybridNeuralK: {
+    type: GraphQLInt,
+    description:
+      "Hybrid only: how many candidates the semantic arm retrieves. Higher = wider semantic net.",
+  },
+  hybridWeights: {
+    type: new GraphQLList(new GraphQLNonNull(GraphQLFloat)),
+    description:
+      "Hybrid only: [lexical, neural] balance when blending scores, e.g. [0.5,0.5] equal, [0.3,0.7] favors semantic.",
+  },
+  hybridPaginationDepth: {
+    type: GraphQLInt,
+    description:
+      "Hybrid only: results each arm contributes to the blend; must be ≥ from + page size. Caps pagination depth.",
   },
   signed: {
     type: GraphQLBoolean,
@@ -488,6 +525,7 @@ const convertFilterArgs = ({
   attributionClass,
   certificateOfAuthenticity,
   completenessTier,
+  curatorsPick,
   dimensionRange,
   excludeArtworkIDs,
   extraAggregationGeneIDs,
@@ -500,8 +538,10 @@ const convertFilterArgs = ({
   includeMediumFilterInAggregation,
   includeNonArtsyListed,
   includeUnpublished,
+  increasedInterest,
   inquireableOnly,
   keywordMatchExact,
+  keywordTypoTolerance,
   locationCities,
   locationId,
   majorPeriods,
@@ -516,6 +556,10 @@ const convertFilterArgs = ({
   showID,
   sizes,
   tagID,
+  variant,
+  hybridNeuralK,
+  hybridWeights,
+  hybridPaginationDepth,
   viewingRoomID,
   visibilityLevel,
   ..._options
@@ -533,6 +577,7 @@ const convertFilterArgs = ({
     attribution_class: attributionClass,
     certificate_of_authenticity: certificateOfAuthenticity,
     completeness_tier: completenessTier,
+    curators_pick: curatorsPick,
     dimension_range: dimensionRange,
     exclude_artwork_ids: excludeArtworkIDs,
     extra_aggregation_gene_ids: extraAggregationGeneIDs,
@@ -546,8 +591,10 @@ const convertFilterArgs = ({
     include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
     include_non_artsy_listed: includeNonArtsyListed,
     include_unpublished: includeUnpublished,
+    increased_interest_signal: increasedInterest,
     inquireable_only: inquireableOnly,
     keyword_match_exact: keywordMatchExact,
+    keyword_typo_tolerance: keywordTypoTolerance,
     location_cities: locationCities,
     location_id: locationId,
     major_periods: majorPeriods,
@@ -562,6 +609,10 @@ const convertFilterArgs = ({
     sale_id: saleID,
     sizes: sizes,
     tag_id: tagID,
+    variant: variant,
+    hybrid_neural_k: hybridNeuralK,
+    hybrid_weights: hybridWeights,
+    hybrid_pagination_depth: hybridPaginationDepth,
     viewing_room_id: viewingRoomID,
     visibility_level: visibilityLevel,
     ..._options,
@@ -597,6 +648,19 @@ const filterArtworksConnectionTypeFactory = (
       ...argsProvidedInInput,
     }
 
+    const curatorsPick = options.curators_pick
+    delete options.curators_pick
+
+    if (curatorsPick) {
+      if (options.marketing_collection_id) {
+        throw new Error(
+          "`curatorsPick` cannot be combined with `marketingCollectionID` — both resolve to the same Gravity filter."
+        )
+      }
+
+      options.marketing_collection_id = CURATORS_PICK_COLLECTION_SLUG
+    }
+
     const {
       first,
       last,
@@ -607,6 +671,10 @@ const filterArtworksConnectionTypeFactory = (
       include_all_json,
       visibility_level,
       price_range,
+      variant,
+      hybrid_neural_k,
+      hybrid_weights,
+      hybrid_pagination_depth,
       aggregations: aggregationOptions = [],
     } = options
 
@@ -618,6 +686,36 @@ const filterArtworksConnectionTypeFactory = (
     // inc-223
     if (price_range === "*-1") {
       throw new Error("Invalid input")
+    }
+
+    // Hybrid search tuning args only apply when `variant` is "hybrid".
+    const hybridArgsProvided =
+      hybrid_neural_k != null ||
+      hybrid_weights != null ||
+      hybrid_pagination_depth != null
+
+    if (hybridArgsProvided && variant !== "hybrid") {
+      throw new Error(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    }
+
+    if (
+      hybrid_neural_k != null &&
+      (hybrid_neural_k < 1 || hybrid_neural_k > 200)
+    ) {
+      throw new Error("`hybridNeuralK` must be between 1 and 200.")
+    }
+
+    if (
+      hybrid_pagination_depth != null &&
+      (hybrid_pagination_depth < 1 || hybrid_pagination_depth > 10000)
+    ) {
+      throw new Error("`hybridPaginationDepth` must be between 1 and 10000.")
+    }
+
+    if (hybrid_weights != null && hybrid_weights.length !== 2) {
+      throw new Error("`hybridWeights` must contain exactly two floats.")
     }
 
     const requestedPersonalizedAggregation = aggregationOptions.includes(

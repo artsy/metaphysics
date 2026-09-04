@@ -20,6 +20,26 @@ describe("APIs", () => {
       expect(fetch).toBeCalledWith(url, requestConfig)
     })
 
+    it("forwards Artnet auth headers when present", async () => {
+      await gravity("foo/bar", null, {
+        xArtnetToken: "artnet-token",
+        xArtnetUserID: "artnet-user-1",
+      })
+
+      const url = "https://api.artsy.test/api/v1/foo/bar"
+      const requestConfig = {
+        headers: {
+          "X-XAPP-TOKEN": "secret",
+          "X-ARTNET-TOKEN": "artnet-token",
+          "X-ARTNET-USER-ID": "artnet-user-1",
+        },
+        xArtnetToken: "artnet-token",
+        xArtnetUserID: "artnet-user-1",
+      }
+
+      expect(fetch).toBeCalledWith(url, requestConfig)
+    })
+
     it("resolves when there is a successful JSON response", async () => {
       fetch.mockReturnValueOnce(Promise.resolve({ foo: "bar" }))
 

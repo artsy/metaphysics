@@ -4,25 +4,24 @@ import {
   RenameTypes,
   TransformInterfaceFields,
   TransformObjectFields,
-  makeRemoteExecutableSchema,
-  transformSchema,
-} from "graphql-tools"
-import { createExchangeLink } from "./link"
+  wrapSchema,
+} from "@graphql-tools/wrap"
+import type { SubschemaConfig } from "@graphql-tools/delegate"
+import { buildSchema } from "graphql"
+import { createExchangeExecutor } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
-export const executableExchangeSchema = (transforms) => {
+export const exchangeSubschemaConfig = (transforms): SubschemaConfig => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
-  const exchangeLink = createExchangeLink()
-
-  const schema = makeRemoteExecutableSchema({
-    schema: exchangeSDL,
-    link: exchangeLink,
-  })
-
-  // Return the new modified schema
-  return transformSchema(schema, transforms)
-  // Note that changes in this will need to be
+  return {
+    schema: buildSchema(exchangeSDL, { assumeValidSDL: true }),
+    executor: createExchangeExecutor(),
+    transforms,
+  }
 }
+
+export const executableExchangeSchema = (transforms) =>
+  wrapSchema(exchangeSubschemaConfig(transforms))
 
 export const transformsForExchange = [
   // Apply a prefix to all the typenames

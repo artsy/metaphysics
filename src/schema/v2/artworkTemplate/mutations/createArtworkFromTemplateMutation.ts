@@ -138,7 +138,7 @@ export const CreateArtworkFromTemplateMutation = mutationWithClientMutationId<
       if (buckets.length > 0) {
         await Promise.all(
           buckets.map((bucket, i) =>
-            addImageToArtworkLoader(result._id, {
+            addImageToArtworkLoader!(result._id, {
               source_bucket: bucket,
               source_key: keys[i],
             })

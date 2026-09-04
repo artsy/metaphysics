@@ -133,7 +133,7 @@ spec:
         emptyDir: {}
 
 ---
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: metaphysics-web
@@ -145,7 +145,13 @@ spec:
     name: metaphysics-web
   minReplicas: 10
   maxReplicas: 35
-  targetCPUUtilizationPercentage: 50
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
 ---
 apiVersion: v1
 kind: Service

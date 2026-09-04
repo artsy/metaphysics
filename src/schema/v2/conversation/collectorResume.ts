@@ -12,16 +12,16 @@ export const CollectorResume = new GraphQLObjectType<any, ResolverContext>({
   name: "CollectorResume",
   fields: () => ({
     collectorProfile: {
-      type: GraphQLNonNull(CollectorProfileType),
+      type: new GraphQLNonNull(CollectorProfileType),
       resolve: ({ collectorProfile }) => collectorProfile,
     },
     isCollectorFollowingPartner: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: "The Collector follows the Gallery profile",
       resolve: ({ isCollectorFollowingPartner }) => isCollectorFollowingPartner,
     },
     userId: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description:
         "Collector's ID used to stitch buyerActivity with the Exchange schema",
       resolve: ({ userId }) => userId,
@@ -38,12 +38,12 @@ const CollectorPurchasesType = new GraphQLObjectType<any, ResolverContext>({
   name: "purchases",
   fields: {
     totalAuctionCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: "Total number of auction winning bids",
       resolve: ({ auction }) => auction || 0,
     },
     totalPrivateSaleCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: "Total number of private sales",
       resolve: (data) => data["private sale"] || 0,
     },

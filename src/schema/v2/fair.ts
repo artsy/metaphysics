@@ -163,7 +163,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
       featuredKeywords: {
         type: new GraphQLNonNull(
-          GraphQLList(new GraphQLNonNull(GraphQLString))
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
         resolve: ({ featured_keywords }) => featured_keywords ?? [],
@@ -214,7 +214,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       marketingCollectionSlugs: {
-        type: new GraphQLNonNull(GraphQLList(GraphQLString)),
+        type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         // TODO: We've deprecated the KAWS repository; we should rename this
         // field in Gravity and then update it here.
         resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,

@@ -1,5 +1,8 @@
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { baseArtwork, baseOrderJson } from "./support"
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 const mockMutation = `
   mutation {
@@ -295,6 +298,11 @@ describe("submitOrderMutation", () => {
       context.submitArtworkInquiryRequestLoader = jest
         .fn()
         .mockResolvedValue({})
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+    })
+
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReset()
     })
 
     it("creates an inquiry when submitting an offer order with a note", async () => {
@@ -391,6 +399,34 @@ describe("submitOrderMutation", () => {
         message: "I sent an offer for £750",
         order_id: "order-id",
       })
+    })
+
+    it("does not create inquiry when Gravity handles it", async () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+
+      context.meOrderSubmitLoader = jest.fn().mockResolvedValue({
+        ...baseOrderJson,
+        id: "order-id",
+        source: "artwork_page",
+        mode: "offer",
+        last_submitted_offer: {
+          note: "I love this piece!",
+          amount_cents: 100000,
+          currency_code: "USD",
+        },
+        line_items: [{ artwork_id: "artwork-id" }],
+      })
+
+      const result = await runAuthenticatedQuery(mockMutation, context)
+
+      expect(result.errors).toBeUndefined()
+      expect(
+        mockIsFeatureFlagEnabled
+      ).toHaveBeenCalledWith(
+        "topaz_remove-inquiry-creation-from-order-mutation",
+        { userId: "user-42" }
+      )
+      expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
     })
 
     it("does not create inquiry for buy orders", async () => {

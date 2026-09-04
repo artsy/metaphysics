@@ -11,13 +11,13 @@ export const ArtworkContextType = new GraphQLUnionType({
   resolveType(value, _context, _info) {
     switch (value.context_type) {
       case "Fair":
-        return FairType
+        return FairType.name
       case "Show":
       case "PartnerShow":
-        return ShowType
+        return ShowType.name
       case "Sale":
       case "Auction":
-        return SaleType
+        return SaleType.name
       default:
         throw new Error(`Unknown context type: ${value.context_type}`)
     }

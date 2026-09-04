@@ -33,6 +33,7 @@ import { InternalIDFields, NodeInterface } from "./object_identification"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import { YearRange } from "./types/yearRange"
 import { GraphQLError } from "graphql"
+import { HTTPError } from "lib/HTTPError"
 
 export const AuctionResultSortEnum = new GraphQLEnumType({
   name: "AuctionResultSorts",
@@ -100,6 +101,11 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         // In case we get artist already resolved from the main connection
         if (res.artist) {
           return res.artist
+        }
+
+        // Avoid a guaranteed `GET /artist/undefined` 404 against Gravity.
+        if (!res.artist_id) {
+          return null
         }
 
         const artist = await artistLoader(res.artist_id)
@@ -406,11 +412,21 @@ export const AuctionResult: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { auctionLotLoader }) => {
+  resolve: async (_root, { id }, { auctionLotLoader }) => {
     if (!auctionLotLoader) {
       return null
     }
-    return auctionLotLoader(id)
+
+    const auctionResult = await auctionLotLoader(id)
+
+    // Auction-result rows without an associated artist are not usable as
+    // standalone entities on Artsy (every consumer renders them artist-first),
+    // so treat them as not-found rather than returning an orphan node.
+    if (!auctionResult?.artist_id) {
+      throw new HTTPError(`Auction result "${id}" not found`, 404)
+    }
+
+    return auctionResult
   },
 }
 

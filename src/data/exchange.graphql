@@ -854,6 +854,7 @@ type LineItem {
   listPriceCents: Int!
   order: Order!
   priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
+  partnerOfferId: String
   quantity: Int!
   selectedShippingQuote: ShippingQuote
   shipment: Shipment

@@ -102,6 +102,8 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworkFilterSuggestionsLoader: gravityLoader("artwork_filter_suggestions"),
+    artworkRecommendationsLoader: gravityLoader("artwork_recommendations"),
     artworkImportLoader: gravityLoader((id) => `artwork_import/${id}`),
     artworkImportMatchImagesLoader: gravityLoader(
       (id) => `artwork_import/${id}/match_images`,
@@ -250,6 +252,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetImportLoader: gravityLoader(
+      "artnet_import",
+      {},
+      { method: "POST" }
+    ),
+    artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
+    artnetImportUnmatchedArtistNamesLoader: gravityLoader(
+      (id) => `artnet_import/${id}/unmatched_artist_names`
+    ),
+    artnetImportCreateArtistAssignmentLoader: gravityLoader(
+      (id) => `artnet_import/${id}/artist_assignments`,
+      {},
+      { method: "POST" }
+    ),
     createArtworkImportLoader: gravityLoader(
       "artwork_import",
       {},
@@ -378,6 +394,11 @@ export default (accessToken, userID, opts) => {
     ),
     createCatalogArtworkDocumentLoader: gravityLoader(
       "catalog_artwork_document",
+      {},
+      { method: "POST" }
+    ),
+    syncCatalogToArtworkLoader: gravityLoader(
+      (id) => `catalog_artwork/${id}/sync_to_artwork`,
       {},
       { method: "POST" }
     ),
@@ -973,6 +994,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     mePingLoader: gravityLoader("me/ping"),
+    meGuidedTourLoader: gravityLoader("me/guided_tour"),
+    recordGuidedTourEventLoader: gravityLoader(
+      "me/guided_tour/events",
+      {},
+      { method: "POST" }
+    ),
     meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
     meDismissTaskLoader: gravityLoader(
       (id) => `me/task/${id}/dismiss`,
@@ -1485,6 +1512,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateCatalogEditionSetLoader: gravityLoader(
+      (id) => `catalog_edition_set/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateArtworkLoader: gravityLoader(
       (id) => `artwork/${id}`,
       {},
@@ -1524,6 +1556,11 @@ export default (accessToken, userID, opts) => {
     ),
     updatePartnerArtworksMetadataLoader: gravityLoader(
       (id) => `partner/${id}/bulk_operations/update_metadata`,
+      {},
+      { method: "PUT" }
+    ),
+    deletePartnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/bulk_operations/delete_artworks`,
       {},
       { method: "PUT" }
     ),
@@ -1895,6 +1932,21 @@ export default (accessToken, userID, opts) => {
     ),
     moveArtworksBetweenPartnerListsLoader: gravityLoader(
       (id) => `partner_list/${id}/move`,
+      {},
+      { method: "POST" }
+    ),
+
+    // Partner List Publication Loaders (Private Viewing Rooms)
+    partnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication`
+    ),
+    publishPartnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication`,
+      {},
+      { method: "POST" }
+    ),
+    unpublishPartnerListPublicationLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/unpublish`,
       {},
       { method: "POST" }
     ),

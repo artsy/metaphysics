@@ -943,6 +943,392 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("filter by variant", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    it("passes variant to Gravity when provided", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { variant: "hybrid", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "hybrid",
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass variant to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          variant: expect.anything(),
+        })
+      )
+    })
+  })
+
+  describe("keyword typo tolerance", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    beforeEach(() => {
+      mockFilterArtworksLoader.mockClear()
+    })
+
+    it("passes keywordTypoTolerance: true to Gravity", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              keyword: "kaes-toys"
+              keywordTypoTolerance: true
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          keyword: "kaes-toys",
+          keyword_typo_tolerance: true,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass keywordTypoTolerance to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { keyword: "kaws", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          keyword_typo_tolerance: expect.anything(),
+        })
+      )
+    })
+  })
+
+  describe("hybrid search tuning args", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [
+          {
+            id: "kaws-toys",
+          },
+        ],
+        aggregations: {
+          total: {
+            value: 1,
+          },
+        },
+      })
+    })
+
+    const context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+
+    it("passes the hybrid args to Gravity when variant is hybrid", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              variant: "hybrid"
+              hybridNeuralK: 50
+              hybridWeights: [0.3, 0.7]
+              hybridPaginationDepth: 500
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "hybrid",
+          hybrid_neural_k: 50,
+          hybrid_weights: [0.3, 0.7],
+          hybrid_pagination_depth: 500,
+        })
+      )
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("does not pass any hybrid args to Gravity when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { variant: "hybrid", first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_neural_k: expect.anything(),
+        })
+      )
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_weights: expect.anything(),
+        })
+      )
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          hybrid_pagination_depth: expect.anything(),
+        })
+      )
+    })
+
+    it("throws when a hybrid arg is provided without variant: hybrid", async () => {
+      const query = gql`
+        {
+          artworksConnection(input: { hybridNeuralK: 50, first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    })
+
+    it("throws when a hybrid arg is provided with a non-hybrid variant", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: { variant: "keyword", hybridWeights: [0.5, 0.5], first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        '`hybridNeuralK`, `hybridWeights`, and `hybridPaginationDepth` can only be used when `variant` is "hybrid".'
+      )
+    })
+
+    it("throws when hybridNeuralK is out of range", async () => {
+      const tooLow = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridNeuralK: 0, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooLow, context)).rejects.toThrow(
+        "`hybridNeuralK` must be between 1 and 200."
+      )
+
+      const tooHigh = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridNeuralK: 201, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooHigh, context)).rejects.toThrow(
+        "`hybridNeuralK` must be between 1 and 200."
+      )
+    })
+
+    it("throws when hybridPaginationDepth is out of range", async () => {
+      const tooLow = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridPaginationDepth: 0, first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooLow, context)).rejects.toThrow(
+        "`hybridPaginationDepth` must be between 1 and 10000."
+      )
+
+      const tooHigh = gql`
+        {
+          artworksConnection(
+            input: {
+              variant: "hybrid"
+              hybridPaginationDepth: 10001
+              first: 10
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(tooHigh, context)).rejects.toThrow(
+        "`hybridPaginationDepth` must be between 1 and 10000."
+      )
+    })
+
+    it("throws when hybridWeights does not contain exactly two floats", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: { variant: "hybrid", hybridWeights: [0.5], first: 10 }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`hybridWeights` must contain exactly two floats."
+      )
+    })
+  })
+
   describe("CMS request filtering", () => {
     describe("simple CMS requests", () => {
       it("uses partnerArtworksAllLoader for simple CMS requests", async () => {
@@ -1318,6 +1704,145 @@ describe("artworksConnection", () => {
       expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
         expect.not.objectContaining({
           include_non_artsy_listed: expect.anything(),
+        })
+      )
+    })
+  })
+
+  describe("collector signal filters", () => {
+    const buildContext = () => {
+      const filterArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          hits: [{ id: "artwork1", title: "Artwork 1" }],
+          aggregations: { total: { value: 1 } },
+        })
+      )
+
+      return {
+        filterArtworksLoader,
+        context: {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: { filterArtworksLoader },
+        },
+      }
+    }
+
+    const queryWithInput = (input) => gql`
+        {
+          artworksConnection(input: { ${input} aggregations: [TOTAL], first: 10 }) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+    it("translates curatorsPick into marketing_collection_id", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          marketing_collection_id: "curators-picks-emerging-artists",
+        })
+      )
+    })
+
+    it("does not leak curators_pick through to the loader", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ curators_pick: expect.anything() })
+      )
+    })
+
+    it("strips curators_pick when explicitly false", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("curatorsPick: false"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ curators_pick: expect.anything() })
+      )
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          marketing_collection_id: expect.anything(),
+        })
+      )
+    })
+
+    it("leaves a client-provided marketingCollectionID alone when curatorsPick is false", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(
+        queryWithInput(
+          'curatorsPick: false, marketingCollectionID: "trending"'
+        ),
+        context
+      )
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ marketing_collection_id: "trending" })
+      )
+    })
+
+    it("errors rather than overwriting a client-provided marketingCollectionID", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await expect(
+        runQuery(
+          queryWithInput(
+            'curatorsPick: true, marketingCollectionID: "trending"'
+          ),
+          context
+        )
+      ).rejects.toThrow(
+        "`curatorsPick` cannot be combined with `marketingCollectionID`"
+      )
+
+      expect(filterArtworksLoader).not.toHaveBeenCalled()
+    })
+
+    it("passes increased_interest_signal to the loader", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput("increasedInterest: true"), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ increased_interest_signal: true })
+      )
+    })
+
+    it("passes both signals independently", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(
+        queryWithInput("curatorsPick: true, increasedInterest: true"),
+        context
+      )
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          marketing_collection_id: "curators-picks-emerging-artists",
+          increased_interest_signal: true,
+        })
+      )
+    })
+
+    it("omits both when not provided", async () => {
+      const { filterArtworksLoader, context } = buildContext()
+
+      await runQuery(queryWithInput(""), context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          marketing_collection_id: expect.anything(),
+          increased_interest_signal: expect.anything(),
         })
       )
     })

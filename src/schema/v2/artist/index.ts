@@ -49,6 +49,7 @@ import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
 import ArtistHighlights from "./highlights"
 import { ArtistInsights } from "./insights"
+import { InstagramMedia } from "./artistInstagramMedia"
 import Meta from "./meta"
 import { Related } from "./related"
 import {
@@ -438,6 +439,36 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             limit: 1,
           }).then((articles) => first(articles.results)),
       },
+      latestArticle: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "ArtistLatestArticle",
+          fields: {
+            href: { type: GraphQLString },
+            id: {
+              type: GraphQLString,
+              resolve: () => null,
+              deprecationReason: "Use href instead",
+            },
+          },
+        }),
+        description:
+          "The most recent editorial article featuring this artist, published in the last 12 months. ",
+        args: {
+          publishedSince: {
+            type: GraphQLString,
+            deprecationReason: "Filtering is deprecated",
+          },
+        },
+        resolve: ({ latest_article_href, latest_article_published_at }) => {
+          if (!latest_article_href || !latest_article_published_at) return null
+
+          const oneYearAgo = new Date()
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+          if (new Date(latest_article_published_at) < oneYearAgo) return null
+
+          return { href: latest_article_href }
+        },
+      },
       biographyBlurb: {
         args: {
           partnerBio: {
@@ -654,10 +685,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       coverArtwork: {
         type: ArtworkType,
         resolve: async (
-          { id, cover_artwork_id },
+          artist,
           _options,
           { artistArtworksLoader, unauthenticatedLoaders: { artworkLoader } }
         ) => {
+          const { id, cover_artwork_id, _coverArtwork } = artist
+
+          // Resolvers that return many artists at once (see searchDropdown)
+          // fetch cover artworks in a single batched call and stash the result
+          // here, since resolving this field per artist means one Gravity call
+          // per node. Absent that, fall through to the single-artist path.
+          if (_coverArtwork !== undefined) return _coverArtwork
+
           const staticArtworkID = `${id}-coverArtwork`
 
           if (cover_artwork_id) {
@@ -768,7 +807,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       genes: {
         description: `A list of genes associated with an artist`,
-        type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(GeneType))),
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneType))),
         args: {
           geneFamilyID: {
             type: GraphQLString,
@@ -826,6 +865,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       initials: initials("name"),
       insights: ArtistInsights,
+      instagramHandle: {
+        type: GraphQLString,
+        description: "Artist's Instagram handle, without a leading @",
+        resolve: ({ instagram_handle }) => instagram_handle,
+      },
+      instagramMedia: InstagramMedia,
       isConsignable: {
         type: GraphQLBoolean,
         resolve: ({ consignable }) => consignable,
@@ -869,7 +914,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
           slugs: {
-            type: new GraphQLList(GraphQLNonNull(GraphQLString)),
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
           },
           size: {
             type: GraphQLInt,

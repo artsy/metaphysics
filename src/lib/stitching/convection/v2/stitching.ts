@@ -1,12 +1,10 @@
 import { GraphQLSchema } from "graphql"
 import { amountSDL } from "schema/v2/fields/money"
-import gql from "lib/gql"
-import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import { GraphQLError } from "graphql"
 
 export const consignmentStitchingEnvironment = (
   _localSchema: GraphQLSchema,
-  _convectionSchema: GraphQLSchemaWithTransforms
+  _convectionSchema: GraphQLSchema
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
@@ -35,40 +33,26 @@ export const consignmentStitchingEnvironment = (
   resolvers: {
     ConsignmentSubmission: {
       artist: {
-        fragment: `fragment SubmissionArtist on ConsignmentSubmission { artistId }`,
+        selectionSet: `{ artistId }`,
         resolve: () => null,
       },
       myCollectionArtwork: {
-        fragment: `fragment SubmissionArtwork on ConsignmentSubmission { myCollectionArtworkID }`,
+        selectionSet: `{ myCollectionArtworkID }`,
         resolve: () => null,
       },
       userPhoneNumber: {
-        fragment: gql`
-          fragment ConsignmentSubmissionUserPhoneNumber on ConsignmentSubmission {
-            userPhone
-          }
-        `,
+        selectionSet: `{ userPhone }`,
         resolve: () => null,
       },
     },
 
     ConsignmentOffer: {
       lowEstimateAmount: {
-        fragment: gql`
-          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
-            currency
-            lowEstimateCents
-          }
-        `,
+        selectionSet: `{ currency lowEstimateCents }`,
         resolve: () => null,
       },
       highEstimateAmount: {
-        fragment: gql`
-          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
-            currency
-            highEstimateCents
-          }
-        `,
+        selectionSet: `{ currency highEstimateCents }`,
         resolve: () => null,
       },
     },

@@ -37,6 +37,15 @@ import {
 } from "../fields/pagination"
 import { CollectorResume } from "./collectorResume"
 import { UserInterestConnection } from "../userInterests"
+import {
+  PartnerOfferConnectionType,
+  PartnerOfferTypeEnumType,
+} from "../partnerOffer"
+import {
+  PartnerOfferToCollectorConnectionType,
+  stampPartnerOfferPurchases,
+} from "../partnerOfferToCollector"
+import { isFieldRequested } from "lib/isFieldRequested"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -121,11 +130,11 @@ const ConversationItemType = new GraphQLUnionType({
   resolveType: ({ __typename }) => {
     switch (__typename) {
       case "Artwork":
-        return ArtworkType
+        return ArtworkType.name
       case "PartnerShow":
-        return ShowType
+        return ShowType.name
       default:
-        return null
+        return undefined
     }
   },
 })
@@ -180,11 +189,11 @@ const MessageOrConversationEventType = new GraphQLUnionType({
   resolveType: ({ type }) => {
     switch (type) {
       case "message_detail":
-        return MessageType
+        return MessageType.name
       case "conversation_event":
-        return ConversationEventType
+        return ConversationEventType.name
       default:
-        return null
+        return undefined
     }
   },
 })
@@ -300,6 +309,106 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             name: conversation.from_name,
             email: conversation.from_email,
           }
+        },
+      },
+      partnerOffersConnection: {
+        description:
+          "Partner offers for this conversation's artwork, scoped to the user who initiated the conversation (from_id).",
+        type: PartnerOfferConnectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          offerType: {
+            type: new GraphQLList(PartnerOfferTypeEnumType),
+            description:
+              "Filter by offer type(s). Gravity defaults to bulk offers when omitted.",
+          },
+        }),
+        resolve: async ({ from_id, items }, args, { partnerOffersLoader }) => {
+          if (!partnerOffersLoader)
+            throw new Error("You need to be signed in to perform this action")
+
+          // Assume a conversation only has one item
+          const artwork = items?.find((item) => item.item_type === "Artwork")
+          if (!artwork) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body, headers } = await partnerOffersLoader({
+            total_count: true,
+            page,
+            size,
+            artwork_id: artwork.properties.id,
+            user_id: from_id,
+            offer_type: args.offerType,
+          })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
+        },
+      },
+      collectorPartnerOffersConnection: {
+        description:
+          "The current (collector) user's partner offers for this conversation's artwork.",
+        type: PartnerOfferToCollectorConnectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          offerType: {
+            type: new GraphQLList(PartnerOfferTypeEnumType),
+            description:
+              "Filter by offer type(s). Gravity defaults to all of the user's partner offers when omitted.",
+          },
+        }),
+        resolve: async (
+          { items },
+          args,
+          { mePartnerOffersLoader, meOrdersLoader },
+          resolveInfo
+        ) => {
+          if (!mePartnerOffersLoader)
+            throw new Error("You need to be signed in to perform this action")
+
+          // Assume a conversation only has one item
+          const artwork = items?.find((item) => item.item_type === "Artwork")
+          if (!artwork) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body, headers } = await mePartnerOffersLoader({
+            total_count: true,
+            page,
+            size,
+            artwork_id: artwork.properties.id,
+            offer_type: args.offerType,
+          })
+
+          if (isFieldRequested("edges.node.isPurchased", resolveInfo)) {
+            await stampPartnerOfferPurchases(body, meOrdersLoader)
+          }
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
         },
       },
       collectorResume: {

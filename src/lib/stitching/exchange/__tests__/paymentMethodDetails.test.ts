@@ -142,7 +142,7 @@ describe("paymentMethodDetails", () => {
 const orderFixture = (overrides: Record<string, any> = {}) => {
   return {
     data: {
-      order: {
+      commerceOrder: {
         __typename: "BuyOrder",
         id: "fooid123",
         code: "1",

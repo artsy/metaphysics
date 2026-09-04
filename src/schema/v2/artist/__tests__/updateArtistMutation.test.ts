@@ -50,6 +50,46 @@ describe("updateArtistMutation", () => {
     })
   })
 
+  it("updates the artist's Instagram handle", async () => {
+    const instagramMutation = gql`
+      mutation {
+        updateArtist(input: { id: "3", instagramHandle: "@artsy" }) {
+          artistOrError {
+            ... on UpdateArtistSuccess {
+              artist {
+                instagramHandle
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const mockUpdateArtistLoader = jest.fn(() =>
+      Promise.resolve({
+        id: "foo",
+        instagram_handle: "artsy",
+      })
+    )
+
+    const context = { updateArtistLoader: mockUpdateArtistLoader }
+    const result = await runAuthenticatedQuery(instagramMutation, context)
+
+    expect(mockUpdateArtistLoader).toBeCalledWith("3", {
+      instagram_handle: "@artsy",
+    })
+
+    expect(result).toEqual({
+      updateArtist: {
+        artistOrError: {
+          artist: {
+            instagramHandle: "artsy",
+          },
+        },
+      },
+    })
+  })
+
   it("throws error when data loader is missing", async () => {
     const errorResponse =
       "You need to pass a X-Access-Token header to perform this action"

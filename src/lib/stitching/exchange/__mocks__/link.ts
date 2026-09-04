@@ -1,7 +1,6 @@
-import { createHttpLink } from "apollo-link-http"
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
 import config from "config"
 import urljoin from "url-join"
-import { middlewareLink } from "../../lib/middlewareLink"
 import { Response } from "node-fetch"
 
 const { EXCHANGE_API_BASE } = config
@@ -10,7 +9,7 @@ export const mockFetch = jest.fn(() =>
     new Response(
       JSON.stringify({
         data: {
-          order: {
+          commerceOrder: {
             __typename: "BuyOrder",
             id: "fooid123",
             code: "1",
@@ -88,13 +87,11 @@ export const mockFetch = jest.fn(() =>
   )
 )
 
-export const createExchangeLink = () => {
-  const httpLink = createHttpLink({
+export const createExchangeExecutor = () =>
+  buildHTTPExecutor({
     fetch: mockFetch as any,
-    uri: urljoin(EXCHANGE_API_BASE, "graphql"),
+    endpoint: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
-  return middlewareLink.concat(httpLink)
-}
 
 beforeEach(() => {
   mockFetch.mockClear()

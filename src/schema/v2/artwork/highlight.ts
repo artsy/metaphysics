@@ -8,10 +8,10 @@ export const ArtworkHighlightType = new GraphQLUnionType({
   resolveType(value, _context, _info) {
     switch (value.highlight_type) {
       case "Show":
-        return ShowType
+        return ShowType.name
       case "Sale":
       case "Article":
-        return ArticleType
+        return ArticleType.name
       default:
         throw new Error(`Unknown highlight type: ${value.highlight_type}`)
     }

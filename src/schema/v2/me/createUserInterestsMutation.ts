@@ -50,8 +50,8 @@ const userInterestOrErrorType = new GraphQLUnionType({
   types: [userInterestType, CreateUserInterestFailureType],
   resolveType: (data) =>
     data._type === "GravityMutationError"
-      ? CreateUserInterestFailureType
-      : userInterestType,
+      ? CreateUserInterestFailureType.name
+      : userInterestType.name,
 })
 
 export const createUserInterestsMutation = mutationWithClientMutationId<

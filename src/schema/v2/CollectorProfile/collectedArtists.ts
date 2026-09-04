@@ -1,6 +1,6 @@
-import { GraphQLFieldConfigMap, GraphQLString, Thunk } from "graphql"
+import { GraphQLFieldConfigMap, GraphQLString } from "graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import { ResolverContext } from "types/graphql"
+import { ResolverContext, Thunk } from "types/graphql"
 import { ArtistType } from "../artist"
 
 // Map full category names from Gravity to shorter display names

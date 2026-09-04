@@ -61,7 +61,7 @@ export const EditableLocationFields = new GraphQLInputObjectType({
     },
     coordinates: {
       description: "The optional location coordinates. [lat, lng]",
-      type: GraphQLList(GraphQLNonNull(GraphQLFloat)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLFloat)),
     },
   },
 })
@@ -108,6 +108,12 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateMyProfile",
   description: "Update the current logged in user.",
   inputFields: {
+    agreedToReceiveEmails: {
+      description:
+        "Whether the user consents to receiving marketing emails from Artsy. " +
+        "Sets agreed_to_receive_emails_at in Gravity (idempotent; never cleared).",
+      type: GraphQLBoolean,
+    },
     artworksPerYear: {
       type: GraphQLString,
       description: "Number of artworks purchased per year.",
@@ -129,11 +135,6 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: CurrencyPreference,
     },
     email: { description: "The given email of the user.", type: GraphQLString },
-    emailFrequency: {
-      description: "Frequency of marketing emails.",
-      deprecationReason: "This field is no longer used.",
-      type: GraphQLString,
-    },
     gender: { type: GraphQLString, description: "Gender." },
     industry: {
       type: GraphQLString,

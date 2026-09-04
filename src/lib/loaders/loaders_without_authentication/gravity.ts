@@ -55,6 +55,9 @@ export default (opts) => {
     artistArtworksLoader: gravityLoader((id) => `artist/${id}/artworks`),
     artistCareerHighlightsLoader: gravityLoader("artist_career_highlights"),
     artistGenesLoader: gravityLoader((id) => `artist/${id}/genome/genes`),
+    artistInstagramMediaLoader: gravityLoader(
+      (id) => `artist/${id}/instagram_media`
+    ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
@@ -74,6 +77,11 @@ export default (opts) => {
     >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
+    artworksByImageLoader: gravityLoader(
+      "filter/artworks_by_image",
+      {},
+      { headers: true }
+    ),
     authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
     collectionArtworksLoader: gravityLoader(
@@ -369,5 +377,22 @@ export default (opts) => {
       (id) => `viewing_room/${id}/viewing_room_artworks`
     ),
     viewingRoomsLoader: gravityLoader("viewing_rooms", {}, { headers: true }),
+
+    // Private Viewing Room Loaders
+    // Uncached: publish state (and passcode_required) can flip between requests,
+    // and gravityLoader would otherwise cache a stale 404/response shape.
+    privateViewingRoomLoader: gravityUncachedLoader(
+      (slug) => `private_viewing_room/${slug}`
+    ),
+    // Not gravityUncachedLoader: that factory drops `method` entirely for gravity
+    // (always issues a GET), so a POST here must go through the regular cached
+    // factory instead — it already skips the cache automatically for
+    // POST/PUT/DELETE (see apiOptions.method check in
+    // loader_without_authentication_factory.ts), so nothing is ever cached here.
+    authenticatePrivateViewingRoomLoader: gravityLoader(
+      (slug) => `private_viewing_room/${slug}/authenticate`,
+      {},
+      { method: "POST" }
+    ),
   }
 }
