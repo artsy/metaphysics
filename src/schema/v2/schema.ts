@@ -163,6 +163,7 @@ import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
 import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionSetMutation"
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
+import { duplicateCatalogArtworkMutation } from "./artwork/duplicateCatalogArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworkFilterSuggestions } from "./artworkFilterSuggestions"
@@ -727,6 +728,7 @@ export default new GraphQLSchema({
       deleteConversationMessageTemplate: deleteConversationMessageTemplateMutation,
       detectArtworkDuplicates: detectArtworkDuplicatesMutation,
       dismissArtworkDuplicatePair: dismissArtworkDuplicatePairMutation,
+      duplicateCatalogArtwork: duplicateCatalogArtworkMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       reprocessArtworkImage: ReprocessArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
