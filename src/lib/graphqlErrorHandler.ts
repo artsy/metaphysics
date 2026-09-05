@@ -3,7 +3,7 @@ import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { Request } from "../../node_modules/@types/express"
 import config from "config"
-import { GraphQLError, GraphQLFormattedError } from "graphql/error"
+import { GraphQLError } from "graphql/error"
 import { HTTPError } from "./HTTPError"
 import * as Sentry from "@sentry/node"
 
@@ -129,49 +129,52 @@ const reportErrorToSentry = (
   )
 }
 
-type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
+export type GraphQLErrorHandler = (topLevelError: GraphQLError) => GraphQLError
 
-export type GraphQLErrorHandler = (
-  topLevelError: GraphQLError
-) => WriteablePartial<GraphQLFormattedError>
-
+// Must return the same `GraphQLError` instance (not a plain object copy) so
+// Yoga's expected/unexpected error classification keeps working, and must
+// write the status to `extensions.http.status`, the key Yoga reads (not
+// `extensions.httpStatusCodes`, kept below for existing consumers).
 export const formattedGraphQLError = (
   topLevelError: GraphQLError,
   flattenedErrors?: ReadonlyArray<GraphQLError>
-) => {
-  const result: WriteablePartial<GraphQLFormattedError> = {
-    message: topLevelError.message,
-  }
-  if (topLevelError.locations) {
-    result.locations = topLevelError.locations
-  }
-
-  if (topLevelError.path) {
-    result.path = topLevelError.path
+): GraphQLError => {
+  const extensions: { [key: string]: any } = {
+    ...(topLevelError.extensions ?? {}),
   }
 
   const includeStackTrace = !config.PRODUCTION_ENV
   if (includeStackTrace) {
-    // TODO: Is the stack still being included in the response or should this
-    //       move to extensions?
-    ;(result as any).stack = topLevelError.stack?.split("\n")
+    extensions.stack = topLevelError.stack?.split("\n")
   }
 
   const httpStatusCodes: number[] = []
   ;(flattenedErrors || flattenErrors(topLevelError)).forEach((e) => {
-    // Check for server-side errors during stitching downstream.
-    // `e.originalError` is of `ServerError` type.
-    // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
     const statusCode = statusCodeForError(e)
     if (statusCode) {
       httpStatusCodes.push(statusCode)
     }
   })
   if (httpStatusCodes.length > 0) {
-    result.extensions = { httpStatusCodes }
+    extensions.httpStatusCodes = httpStatusCodes
+
+    // A plain 5xx from an upstream hiccup is deliberately left off the
+    // response status: Yoga already returns 200 + errors when other data
+    // resolved, and forcing every upstream 500 onto the response would
+    // recreate the SLO problem this fix is for.
+    const primaryStatusCode = httpStatusCodes.find((code) => code < 500)
+    if (primaryStatusCode) {
+      extensions.http = { status: primaryStatusCode }
+    }
   }
 
-  return result
+  // `extensions` is typed `readonly`, so mutate in place rather than
+  // reassign — this keeps the same `GraphQLError` instance.
+  if (Object.keys(extensions).length > 0) {
+    Object.assign(topLevelError.extensions, extensions)
+  }
+
+  return topLevelError
 }
 
 export const graphqlErrorHandler = (
