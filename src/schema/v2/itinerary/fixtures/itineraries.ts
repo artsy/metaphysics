@@ -26,6 +26,10 @@
  * `item_type` / `item_id` into an actual node is part 2's job, and it can
  * only resolve entities that actually exist. Slugs are kept instead of
  * placeholder ids because they document what each stop actually points at.
+ *
+ * Unlike `item_id`, `author_id` is a real Gravity user id, not a
+ * placeholder — Casey Lesser's, credited on all three curated guides — so
+ * `author` genuinely resolves against staging rather than returning null.
  */
 import config from "config"
 
@@ -64,11 +68,14 @@ export interface FixtureItinerary {
   name: string
   subtitle: string | null
   description: string | null
-  author_name: string | null
+  // A Mongoid `User` id, resolved to a `User` association on
+  // `ItineraryType`. Null for the common case of a personal itinerary with
+  // no byline.
+  author_id: string | null
   // The owning user's id. Used only for connection-level "is this the
-  // caller's own itinerary" filtering — never exposed on `ItineraryType`
-  // itself (the association there is `authorName`, still under discussion
-  // upstream).
+  // caller's own itinerary" filtering — distinct from `author_id`, which
+  // is who gets byline credit and may differ from (or be absent while)
+  // the owner is set.
   user_id: string | null
   city_slug: string
   is_curated: boolean
@@ -86,7 +93,8 @@ const ITINERARIES: FixtureItinerary[] = [
     subtitle: "Top picks",
     description:
       "Our list of recommendations for the must sees to gallery and museum visits and the hidden gems in between.",
-    author_name: "Casey Lesser",
+    // Casey Lesser's real Gravity user id.
+    author_id: "5227377e9c18db19fd000005",
     user_id: null,
     city_slug: "london-united-kingdom",
     is_curated: true,
@@ -308,7 +316,8 @@ const ITINERARIES: FixtureItinerary[] = [
     subtitle: "Top picks",
     description:
       "A day and a half of galleries, museums, and somewhere decent for lunch.",
-    author_name: "Casey Lesser",
+    // Casey Lesser's real Gravity user id.
+    author_id: "5227377e9c18db19fd000005",
     user_id: null,
     city_slug: "london-united-kingdom",
     is_curated: true,
@@ -658,7 +667,8 @@ const ITINERARIES: FixtureItinerary[] = [
     subtitle: "Top picks",
     description:
       "The landmarks worth the queue, and the rooms nobody tells you about.",
-    author_name: "Casey Lesser",
+    // Casey Lesser's real Gravity user id.
+    author_id: "5227377e9c18db19fd000005",
     user_id: null,
     city_slug: "london-united-kingdom",
     is_curated: true,
@@ -1075,7 +1085,8 @@ const ITINERARIES: FixtureItinerary[] = [
     name: "Sample: Mira's personal itinerary",
     subtitle: null,
     description: "A private itinerary a collector built for a fair trip.",
-    author_name: "Mira Copeland",
+    // A personal itinerary with no editorial byline — the common case.
+    author_id: null,
     // Matches the default `userID` ("user-42") that
     // `schema/v2/test/utils#runAuthenticatedQuery` stubs, so tests can
     // exercise ownership filtering without extra wiring.

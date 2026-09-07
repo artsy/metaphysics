@@ -113,7 +113,7 @@ describe("attachStopItems", () => {
     name: "Test itinerary",
     subtitle: null,
     description: null,
-    author_name: null,
+    author_id: null,
     user_id: null,
     city_slug: "london-united-kingdom",
     is_curated: false,

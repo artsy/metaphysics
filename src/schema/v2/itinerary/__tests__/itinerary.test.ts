@@ -99,7 +99,6 @@ describe("Itinerary", () => {
           slug
           visibility
           shareToken
-          authorName
         }
       }
     `
@@ -109,7 +108,51 @@ describe("Itinerary", () => {
     expect(data.itinerary.slug).toBeNull()
     expect(data.itinerary.visibility).toEqual("UNLISTED")
     expect(data.itinerary.shareToken).toEqual("sh_9f8e7d6c5b4a3f2e1d0c")
-    expect(data.itinerary.authorName).toEqual("Mira Copeland")
+  })
+
+  it("resolves author to null, without calling the loader, when author_id is absent", async () => {
+    const query = `
+      {
+        itinerary(id: "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b") {
+          author {
+            internalID
+          }
+        }
+      }
+    `
+
+    const userByIDLoader = jest.fn()
+
+    const data = await runQuery(query, { userByIDLoader })
+
+    expect(data.itinerary.author).toBeNull()
+    expect(userByIDLoader).not.toHaveBeenCalled()
+  })
+
+  it("resolves author through userByIDLoader when author_id is present", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          author {
+            internalID
+            name
+          }
+        }
+      }
+    `
+
+    const userByIDLoader = jest.fn().mockResolvedValue({
+      id: "5227377e9c18db19fd000005",
+      name: "Casey Lesser",
+    })
+
+    const data = await runQuery(query, { userByIDLoader })
+
+    expect(userByIDLoader).toHaveBeenCalledWith("5227377e9c18db19fd000005")
+    expect(data.itinerary.author).toEqual({
+      internalID: "5227377e9c18db19fd000005",
+      name: "Casey Lesser",
+    })
   })
 
   it("returns null when the fixture doesn't match", async () => {

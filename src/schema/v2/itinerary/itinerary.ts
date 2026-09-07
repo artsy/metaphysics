@@ -11,6 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
+import { UserType } from "schema/v2/user"
 import { FixtureItinerary } from "./fixtures/itineraries"
 import { ItinerarySectionType } from "./itinerarySection"
 
@@ -73,13 +74,20 @@ export const ItineraryType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ description }) => description,
     },
-    // The underlying association is still under discussion — it may
-    // become a `User` association, or it may stay a free-text name. Expose
-    // the raw name for now; don't build `User` resolution until that's
-    // settled.
-    authorName: {
-      type: GraphQLString,
-      resolve: ({ author_name }) => author_name,
+    // Gravity settled the association question: `author_id` is a Mongoid
+    // `User` id, not a free-text name, so a rename on the user's side
+    // tracks automatically instead of going stale in a copied string. The
+    // cost, accepted along with the change: a guest byline by someone
+    // with no Artsy account can no longer be expressed. Most personal
+    // itineraries have no author at all, so a missing `author_id` is the
+    // common case, not an edge one — resolve straight to `null` without
+    // calling the loader.
+    author: {
+      type: UserType,
+      resolve: ({ author_id }, _args, { userByIDLoader }) => {
+        if (!author_id || !userByIDLoader) return null
+        return userByIDLoader(author_id).catch(() => null)
+      },
     },
     citySlug: {
       type: new GraphQLNonNull(GraphQLString),
