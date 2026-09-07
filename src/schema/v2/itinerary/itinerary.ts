@@ -11,7 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
-import { GravityARImageType } from "schema/v2/GravityARImageType"
+import { ImageType } from "schema/v2/image"
 import { FixtureItinerary } from "./fixtures/itineraries"
 import { ItinerarySectionType } from "./itinerarySection"
 
@@ -100,8 +100,15 @@ export const ItineraryType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ share_token }) => share_token,
     },
-    image: {
-      type: GravityARImageType,
+    // `ImageType`, not `GravityARImageType`: this is the type the rest of
+    // the schema uses for images, and it gives clients `resized(width:
+    // height:)` so the client can request the dimensions it actually needs
+    // instead of pulling the full-size hero. This deliberately diverges
+    // from `ViewingRoom`, which uses the thin type for the same kind of
+    // data — don't "fix" it back to match.
+    heroImage: {
+      type: ImageType,
+      resolve: ({ image }) => image,
     },
     publishedAt: date(({ published_at }) => published_at),
     sectionsCount: {

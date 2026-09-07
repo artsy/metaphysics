@@ -59,8 +59,8 @@ export interface FixtureItinerarySection {
 }
 
 export interface FixtureItineraryImage {
-  id: string
-  image_urls: Record<string, string>
+  image_url: string
+  image_versions: string[]
   original_width: number
   original_height: number
 }
@@ -83,9 +83,10 @@ export interface FixtureItinerary {
   published_at: string | null
   // The itinerary's hero image, via Gravity's `HasArImage` concern —
   // `image_url` is a single templated URL string; `image_urls` is a hash of
-  // versioned URLs; `image` is the nested ArImage object (id, image_urls,
-  // original_width, original_height) that `GravityARImageType` resolves
-  // against. Curated guides have one; the personal fixture below
+  // versioned URLs; `image` is the nested ArImage object as `ArImage#as_json`
+  // emits it (image_url, image_urls, image_versions, original_width,
+  // original_height) that `ItineraryType#heroImage` resolves against with
+  // `ImageType`. Curated guides have one; the personal fixture below
   // deliberately has none, to exercise the absent-value path.
   image_url: string | null
   image_urls: Record<string, string> | null
@@ -115,11 +116,9 @@ const ITINERARIES: FixtureItinerary[] = [
       small: "https://files.artsy.net/images/chill_vibes_only_hero_small.jpg",
     },
     image: {
-      id: "chill-vibes-only-image",
-      image_urls: {
-        normalized:
-          "https://files.artsy.net/images/chill_vibes_only_hero_large.jpg",
-      },
+      image_url:
+        "https://d32dm0rphc51dk.cloudfront.net/9f8e7d6c5b4a3f2e1d0c9b8a/:version.jpg",
+      image_versions: ["small", "medium", "large"],
       original_width: 2400,
       original_height: 1350,
     },
@@ -353,11 +352,9 @@ const ITINERARIES: FixtureItinerary[] = [
       small: "https://files.artsy.net/images/36_hours_in_london_hero_small.jpg",
     },
     image: {
-      id: "36-hours-in-london-image",
-      image_urls: {
-        normalized:
-          "https://files.artsy.net/images/36_hours_in_london_hero_large.jpg",
-      },
+      image_url:
+        "https://d32dm0rphc51dk.cloudfront.net/1a2b3c4d5e6f7a8b9c0d1e2f/:version.jpg",
+      image_versions: ["small", "medium", "large"],
       original_width: 2400,
       original_height: 1350,
     },
@@ -722,11 +719,9 @@ const ITINERARIES: FixtureItinerary[] = [
         "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_small.jpg",
     },
     image: {
-      id: "must-sees-and-hidden-gems-image",
-      image_urls: {
-        normalized:
-          "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_large.jpg",
-      },
+      image_url:
+        "https://d32dm0rphc51dk.cloudfront.net/3c4d5e6f7a8b9c0d1e2f3a4b/:version.jpg",
+      image_versions: ["small", "medium", "large"],
       original_width: 2400,
       original_height: 1350,
     },

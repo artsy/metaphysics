@@ -23225,12 +23225,12 @@ type Itinerary {
   authorName: String
   citySlug: String!
   description: String
+  heroImage: Image
 
   """
   A globally unique ID.
   """
   id: ID!
-  image: GravityARImage
 
   """
   The itinerary's UUID

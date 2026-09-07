@@ -13,12 +13,13 @@ describe("Itinerary", () => {
           isCurated
           visibility
           sectionsCount
-          image {
-            imageURLs {
-              normalized
+          heroImage {
+            url
+            resized(width: 400) {
+              url
+              width
+              height
             }
-            width
-            height
           }
           sections {
             title
@@ -46,11 +47,18 @@ describe("Itinerary", () => {
     expect(data.itinerary.isCurated).toEqual(true)
     expect(data.itinerary.visibility).toEqual("PUBLIC")
     expect(data.itinerary.sectionsCount).toEqual(3)
-    expect(data.itinerary.image.imageURLs.normalized).toEqual(
-      "https://files.artsy.net/images/chill_vibes_only_hero_large.jpg"
+    expect(data.itinerary.heroImage.url).toEqual(
+      "https://d32dm0rphc51dk.cloudfront.net/9f8e7d6c5b4a3f2e1d0c9b8a/large.jpg"
     )
-    expect(data.itinerary.image.width).toEqual(2400)
-    expect(data.itinerary.image.height).toEqual(1350)
+    // `resized` proxies through Gemini, which encodes the source URL as a
+    // query param rather than returning it verbatim.
+    expect(data.itinerary.heroImage.resized.url).toContain(
+      encodeURIComponent(
+        "https://d32dm0rphc51dk.cloudfront.net/9f8e7d6c5b4a3f2e1d0c9b8a/large.jpg"
+      )
+    )
+    expect(data.itinerary.heroImage.resized.width).toEqual(400)
+    expect(data.itinerary.heroImage.resized.height).toEqual(225)
     expect(data.itinerary.sections).toHaveLength(3)
     expect(data.itinerary.sections[0].stops).toHaveLength(4)
     // Stop with no item reference (the coffee stop) also has no category
@@ -115,12 +123,8 @@ describe("Itinerary", () => {
           visibility
           shareToken
           authorName
-          image {
-            imageURLs {
-              normalized
-            }
-            width
-            height
+          heroImage {
+            url
           }
         }
       }
@@ -132,7 +136,7 @@ describe("Itinerary", () => {
     expect(data.itinerary.visibility).toEqual("UNLISTED")
     expect(data.itinerary.shareToken).toEqual("sh_9f8e7d6c5b4a3f2e1d0c")
     expect(data.itinerary.authorName).toBeNull()
-    expect(data.itinerary.image).toBeNull()
+    expect(data.itinerary.heroImage).toBeNull()
   })
 
   it("returns null when the fixture doesn't match", async () => {
