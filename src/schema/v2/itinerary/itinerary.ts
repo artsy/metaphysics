@@ -99,6 +99,17 @@ export const ItineraryType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ share_token }) => share_token,
     },
+    // Gravity's itinerary has an ArImage association via `HasArImage`, which
+    // delegates `image_url` (a single templated URL string) and `image_urls`
+    // (a hash of versioned URLs) into the record's JSON. There's no
+    // dimension/version metadata to back the richer `Image` type (used
+    // elsewhere for Gemini-processed images), so this follows the same
+    // bare-string precedent as `FeatureMetaType.image`.
+    heroImageURL: {
+      description: "The itinerary's hero image URL, if any.",
+      type: GraphQLString,
+      resolve: ({ image_url }) => image_url,
+    },
     publishedAt: date(({ published_at }) => published_at),
     sectionsCount: {
       type: new GraphQLNonNull(GraphQLInt),

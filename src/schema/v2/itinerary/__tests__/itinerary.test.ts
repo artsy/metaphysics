@@ -13,6 +13,7 @@ describe("Itinerary", () => {
           isCurated
           visibility
           sectionsCount
+          heroImageURL
           sections {
             title
             position
@@ -39,6 +40,9 @@ describe("Itinerary", () => {
     expect(data.itinerary.isCurated).toEqual(true)
     expect(data.itinerary.visibility).toEqual("PUBLIC")
     expect(data.itinerary.sectionsCount).toEqual(3)
+    expect(data.itinerary.heroImageURL).toEqual(
+      "https://files.artsy.net/images/chill_vibes_only_hero.jpg"
+    )
     expect(data.itinerary.sections).toHaveLength(3)
     expect(data.itinerary.sections[0].stops).toHaveLength(4)
     // Stop with no item reference (the coffee stop) also has no category
@@ -103,6 +107,7 @@ describe("Itinerary", () => {
           visibility
           shareToken
           authorName
+          heroImageURL
         }
       }
     `
@@ -113,6 +118,7 @@ describe("Itinerary", () => {
     expect(data.itinerary.visibility).toEqual("UNLISTED")
     expect(data.itinerary.shareToken).toEqual("sh_9f8e7d6c5b4a3f2e1d0c")
     expect(data.itinerary.authorName).toBeNull()
+    expect(data.itinerary.heroImageURL).toBeNull()
   })
 
   it("returns null when the fixture doesn't match", async () => {

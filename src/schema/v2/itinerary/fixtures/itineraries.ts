@@ -74,6 +74,12 @@ export interface FixtureItinerary {
   is_curated: boolean
   share_token: string | null
   published_at: string | null
+  // The itinerary's hero image, via Gravity's `HasArImage` concern —
+  // `image_url` is a single templated URL string; `image_urls` is a hash of
+  // versioned URLs. Curated guides have one; the personal fixture below
+  // deliberately has neither, to exercise the absent-value path.
+  image_url: string | null
+  image_urls: Record<string, string> | null
   sections_count: number
   sections: FixtureItinerarySection[]
 }
@@ -92,6 +98,12 @@ const ITINERARIES: FixtureItinerary[] = [
     is_curated: true,
     share_token: null,
     published_at: "2026-08-15T09:00:00Z",
+    image_url: "https://files.artsy.net/images/chill_vibes_only_hero.jpg",
+    image_urls: {
+      large: "https://files.artsy.net/images/chill_vibes_only_hero_large.jpg",
+      medium: "https://files.artsy.net/images/chill_vibes_only_hero_medium.jpg",
+      small: "https://files.artsy.net/images/chill_vibes_only_hero_small.jpg",
+    },
     sections_count: 3,
     sections: [
       {
@@ -314,6 +326,13 @@ const ITINERARIES: FixtureItinerary[] = [
     is_curated: true,
     share_token: null,
     published_at: "2026-08-20T09:00:00Z",
+    image_url: "https://files.artsy.net/images/36_hours_in_london_hero.jpg",
+    image_urls: {
+      large: "https://files.artsy.net/images/36_hours_in_london_hero_large.jpg",
+      medium:
+        "https://files.artsy.net/images/36_hours_in_london_hero_medium.jpg",
+      small: "https://files.artsy.net/images/36_hours_in_london_hero_small.jpg",
+    },
     sections_count: 4,
     sections: [
       {
@@ -664,6 +683,16 @@ const ITINERARIES: FixtureItinerary[] = [
     is_curated: true,
     share_token: null,
     published_at: "2026-08-25T09:00:00Z",
+    image_url:
+      "https://files.artsy.net/images/must_sees_and_hidden_gems_hero.jpg",
+    image_urls: {
+      large:
+        "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_large.jpg",
+      medium:
+        "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_medium.jpg",
+      small:
+        "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_small.jpg",
+    },
     sections_count: 5,
     sections: [
       {
@@ -1085,6 +1114,10 @@ const ITINERARIES: FixtureItinerary[] = [
     is_curated: false,
     share_token: "sh_9f8e7d6c5b4a3f2e1d0c",
     published_at: null,
+    // Personal itineraries have no hero image — this record exercises the
+    // absent-value path for `heroImageURL`.
+    image_url: null,
+    image_urls: null,
     sections_count: 2,
     sections: [
       {

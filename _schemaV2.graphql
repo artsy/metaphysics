@@ -23227,6 +23227,11 @@ type Itinerary {
   description: String
 
   """
+  The itinerary's hero image URL, if any.
+  """
+  heroImageURL: String
+
+  """
   A globally unique ID.
   """
   id: ID!
