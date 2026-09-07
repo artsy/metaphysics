@@ -178,6 +178,12 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ postal_code }) => postal_code,
     },
+    neighborhood: {
+      description:
+        "The neighborhood derived from the address by the geocoder, not entered by hand",
+      type: GraphQLString,
+      resolve: ({ neighborhood }) => neighborhood,
+    },
     state: {
       type: GraphQLString,
     },
