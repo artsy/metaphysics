@@ -20420,6 +20420,7 @@ type FollowedShowConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+  totalCount: Int
 }
 
 """
@@ -23188,6 +23189,111 @@ enum InvoiceState {
   READY
 }
 
+type Itinerary {
+  authorName: String
+  citySlug: String!
+  description: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  The itinerary's UUID
+  """
+  internalID: String!
+  isCurated: Boolean!
+  name: String!
+  publishedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  sections: [ItinerarySection!]!
+  sectionsCount: Int!
+  shareToken: String
+
+  """
+  Only published, curated guides have a slug. Null otherwise.
+  """
+  slug: String
+  subtitle: String
+  visibility: ItineraryVisibility!
+}
+
+type ItinerarySection {
+  internalID: String!
+  position: Int!
+  stops: [ItineraryStop!]!
+  stopsCount: Int!
+
+  """
+  An opaque display string for the section, e.g. "Day 1", "Morning", or "Peckham"
+  """
+  title: String
+}
+
+type ItineraryStop {
+  address: String
+  addressOverride: String
+
+  """
+  MUSEUM | GALLERY | SHOW | FAIR
+  """
+  category: String
+  endAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  eventID: String
+  imageURL: String
+  internalID: String!
+  isFreeAdmission: Boolean
+
+  """
+  The Show, Partner, or Fair this stop refers to, if any. A stop without an `item_id` (e.g. a café) resolves to null.
+  """
+  item: ItineraryStopItem
+  latitude: Float
+  longitude: Float
+  note: String
+  position: Int!
+  startAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  The editorial override for this stop's display title
+  """
+  title: String
+
+  """
+  The same raw title-override value as `title`, exposed separately for edit forms
+  """
+  titleOverride: String
+}
+
+union ItineraryStopItem = Fair | Partner | Show
+
+enum ItineraryVisibility {
+  PRIVATE
+  PUBLIC
+  UNLISTED
+}
+
 """
 Represents untyped JSON
 """
@@ -23339,6 +23445,11 @@ type Location {
   """
   internalID: ID!
   name: String
+
+  """
+  The neighborhood derived from the address by the geocoder, not entered by hand
+  """
+  neighborhood: String
 
   """
   Union returning opening hours in formatted structure or a string
@@ -33595,6 +33706,21 @@ type Query {
     partnerId: String!
   ): InstagramPostConnection
   invoice(token: String!): Invoice
+
+  """
+  A City Guide itinerary
+  """
+  itinerary(
+    """
+    The internal ID or slug of the Itinerary
+    """
+    id: String!
+
+    """
+    An optional share token; unused by the fixture, reserved for the Gravity-backed resolver that authorizes access to unlisted guides
+    """
+    shareToken: String
+  ): Itinerary
   job(id: ID!): Job!
   jobs: [Job!]!
 
@@ -37184,6 +37310,11 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   Is the user following this show
   """
   isFollowed: Boolean
+
+  """
+  Is entry to this show free? Null means this is genuinely unknown, not that admission isn't free.
+  """
+  isFreeAdmission: Boolean
 
   """
   Does the show exist soley online
@@ -43338,6 +43469,21 @@ type Viewer {
     partnerId: String!
   ): InstagramPostConnection
   invoice(token: String!): Invoice
+
+  """
+  A City Guide itinerary
+  """
+  itinerary(
+    """
+    The internal ID or slug of the Itinerary
+    """
+    id: String!
+
+    """
+    An optional share token; unused by the fixture, reserved for the Gravity-backed resolver that authorizes access to unlisted guides
+    """
+    shareToken: String
+  ): Itinerary
   job(id: ID!): Job!
   jobs: [Job!]!
 

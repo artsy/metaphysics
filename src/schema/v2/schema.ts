@@ -353,6 +353,7 @@ import { PrivateViewingRoom } from "./privateViewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
+import { Itinerary } from "./itinerary"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -527,6 +528,7 @@ const rootFields = {
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
   invoice: Invoice,
+  itinerary: Itinerary,
   job,
   jobs,
   saleAgreement: SaleAgreement,
