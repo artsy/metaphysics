@@ -41,8 +41,11 @@ describe("Itinerary", () => {
     expect(data.itinerary.sectionsCount).toEqual(3)
     expect(data.itinerary.sections).toHaveLength(3)
     expect(data.itinerary.sections[0].stops).toHaveLength(4)
-    // Stop with no item reference (the coffee stop)
+    // Stop with no item reference (the coffee stop) also has no category
+    expect(data.itinerary.sections[0].stops[0].category).toBeNull()
     expect(data.itinerary.sections[0].stops[0].item).toBeNull()
+    // A stop with a category resolves the enum value
+    expect(data.itinerary.sections[0].stops[1].category).toEqual("SHOW")
   })
 
   it("wires attachStopItems in: a stop's item resolves via the batched loader", async () => {

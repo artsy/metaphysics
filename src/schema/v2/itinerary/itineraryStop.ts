@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFloat,
   GraphQLInt,
   GraphQLNonNull,
@@ -13,6 +14,16 @@ import { ShowType } from "schema/v2/show"
 import { PartnerType } from "schema/v2/partner/partner"
 import { FairType } from "schema/v2/fair"
 import { StopWithResolvedItem } from "./stopItems"
+
+export const ItineraryStopCategory = new GraphQLEnumType({
+  name: "ItineraryStopCategory",
+  values: {
+    MUSEUM: { value: "MUSEUM" },
+    GALLERY: { value: "GALLERY" },
+    SHOW: { value: "SHOW" },
+    FAIR: { value: "FAIR" },
+  },
+})
 
 export const ItineraryStopItem = new GraphQLUnionType({
   name: "ItineraryStopItem",
@@ -86,8 +97,7 @@ export const ItineraryStopType = new GraphQLObjectType<
       resolve: ({ note }) => note,
     },
     category: {
-      description: "MUSEUM | GALLERY | SHOW | FAIR",
-      type: GraphQLString,
+      type: ItineraryStopCategory,
       resolve: ({ category }) => category,
     },
     isFreeAdmission: {

@@ -23272,11 +23272,7 @@ type ItinerarySection {
 type ItineraryStop {
   address: String
   addressOverride: String
-
-  """
-  MUSEUM | GALLERY | SHOW | FAIR
-  """
-  category: String
+  category: ItineraryStopCategory
   endAt(
     format: String
 
@@ -23316,6 +23312,13 @@ type ItineraryStop {
   The same raw title-override value as `title`, exposed separately for edit forms
   """
   titleOverride: String
+}
+
+enum ItineraryStopCategory {
+  FAIR
+  GALLERY
+  MUSEUM
+  SHOW
 }
 
 union ItineraryStopItem = Fair | Partner | Show
