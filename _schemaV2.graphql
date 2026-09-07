@@ -23222,7 +23222,7 @@ type ItinerariesEdge {
 }
 
 type Itinerary {
-  author: User
+  authorName: String
   citySlug: String!
   description: String
 
