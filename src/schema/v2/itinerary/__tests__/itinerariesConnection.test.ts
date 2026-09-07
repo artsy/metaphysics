@@ -13,14 +13,24 @@ const noItemsLoaders = {
   fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
 }
 
-// The fixture has 3 published, curated London guides plus one unlisted
-// personal itinerary owned by "user-42".
-const CURATED_IDS = [
+// The fixture has 8 published, curated guides (3 London, 1 each for New
+// York, Los Angeles, Berlin, Paris, and Hong Kong) plus two unlisted
+// personal itineraries owned by "user-42" (one in New York, one in LA).
+const LONDON_CURATED_IDS = [
   "chill-vibes-only",
   "36-hours-in-london",
   "must-sees-and-hidden-gems",
 ]
+const CURATED_IDS = [
+  ...LONDON_CURATED_IDS,
+  "chelsea-and-the-high-line",
+  "la-arts-district-and-miracle-mile",
+  "berlin-mitte-to-kreuzberg",
+  "paris-marais-to-left-bank",
+  "hong-kong-central-to-west-kowloon",
+]
 const PERSONAL_ID = "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
+const PERSONAL_IDS = [PERSONAL_ID, "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"]
 
 describe("itinerariesConnection (root field)", () => {
   const query = gql`
@@ -39,7 +49,7 @@ describe("itinerariesConnection (root field)", () => {
   it("returns only public itineraries when there is no viewer", async () => {
     const data = await runQuery(query)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(3)
+    expect(data.itinerariesConnection.totalCount).toEqual(8)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     expect(ids.sort()).toEqual(CURATED_IDS.sort())
   })
@@ -47,24 +57,24 @@ describe("itinerariesConnection (root field)", () => {
   it("also includes the viewer's own itinerary, whatever its visibility", async () => {
     const data = await runAuthenticatedQuery(query, noItemsLoaders)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(4)
+    expect(data.itinerariesConnection.totalCount).toEqual(10)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     CURATED_IDS.forEach((id) => expect(ids).toContain(id))
-    expect(ids).toContain(PERSONAL_ID)
+    PERSONAL_IDS.forEach((id) => expect(ids).toContain(id))
   })
 
   // The critical guarantee: a listing must never hand out someone else's
-  // unlisted itinerary. The personal fixture is unlisted and owned by
-  // "user-42" — a *different* authenticated viewer must not see it.
+  // unlisted itinerary. The personal fixtures are unlisted and owned by
+  // "user-42" — a *different* authenticated viewer must not see them.
   it("never returns another user's unlisted itinerary", async () => {
     const data = await runAuthenticatedQuery(query, {
       ...noItemsLoaders,
       userID: "someone-else",
     })
 
-    expect(data.itinerariesConnection.totalCount).toEqual(3)
+    expect(data.itinerariesConnection.totalCount).toEqual(8)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids).not.toContain(PERSONAL_ID)
+    PERSONAL_IDS.forEach((id) => expect(ids).not.toContain(id))
   })
 
   it("filters by isCurated", async () => {
@@ -84,10 +94,9 @@ describe("itinerariesConnection (root field)", () => {
       noItemsLoaders
     )
 
-    expect(data.itinerariesConnection.totalCount).toEqual(1)
-    expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
-      PERSONAL_ID
-    )
+    expect(data.itinerariesConnection.totalCount).toEqual(2)
+    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
+    expect(ids.sort()).toEqual([...PERSONAL_IDS].sort())
   })
 
   it("filters by citySlug", async () => {
@@ -109,7 +118,41 @@ describe("itinerariesConnection (root field)", () => {
 
     expect(data.itinerariesConnection.totalCount).toEqual(3)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids.sort()).toEqual(CURATED_IDS.sort())
+    expect(ids.sort()).toEqual(LONDON_CURATED_IDS.sort())
+  })
+
+  // The regression this fixture change guards against: before curated
+  // guides existed for cities other than London, this returned an empty
+  // page for every other city — the exact "empty screen" bug being fixed.
+  it("returns curated results for a non-London city", async () => {
+    const data = await runQuery(
+      gql`
+        {
+          itinerariesConnection(
+            first: 10
+            citySlug: "paris-france"
+            isCurated: true
+          ) {
+            totalCount
+            edges {
+              node {
+                internalID
+                citySlug
+              }
+            }
+          }
+        }
+      `,
+      {}
+    )
+
+    expect(data.itinerariesConnection.totalCount).toEqual(1)
+    expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
+      "paris-marais-to-left-bank"
+    )
+    expect(data.itinerariesConnection.edges[0].node.citySlug).toEqual(
+      "paris-france"
+    )
   })
 
   it("wires attachStopItems in: a returned itinerary's stop item resolves via the batched loader", async () => {
@@ -175,9 +218,35 @@ describe("Me.itinerariesConnection", () => {
   it("returns only the viewer's own itineraries, whatever their visibility", async () => {
     const data = await runAuthenticatedQuery(query, noItemsLoaders)
 
+    expect(data.me.itinerariesConnection.totalCount).toEqual(2)
+    const ids = data.me.itinerariesConnection.edges.map(
+      (e) => e.node.internalID
+    )
+    expect(ids.sort()).toEqual([...PERSONAL_IDS].sort())
+  })
+
+  it("filters the viewer's own itineraries by citySlug", async () => {
+    const data = await runAuthenticatedQuery(
+      gql`
+        {
+          me {
+            itinerariesConnection(first: 10, citySlug: "los-angeles-ca-usa") {
+              totalCount
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `,
+      noItemsLoaders
+    )
+
     expect(data.me.itinerariesConnection.totalCount).toEqual(1)
     expect(data.me.itinerariesConnection.edges[0].node.internalID).toEqual(
-      PERSONAL_ID
+      "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"
     )
   })
 
