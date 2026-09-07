@@ -2,6 +2,7 @@ import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { fixtureItinerary } from "./fixtures/itineraries"
 import { ItineraryType } from "./itinerary"
+import { attachStopItems } from "./stopItems"
 
 export const Itinerary: GraphQLFieldConfig<void, ResolverContext> = {
   type: ItineraryType,
@@ -20,7 +21,12 @@ export const Itinerary: GraphQLFieldConfig<void, ResolverContext> = {
   },
   // TODO: once Gravity ships itineraries, swap this for the Gravity
   // loader, e.g. `itineraryLoader(id, { share_token: shareToken })`.
-  resolve: (_root, { id }) => fixtureItinerary(id),
+  resolve: async (_root, { id }, context) => {
+    const itinerary = fixtureItinerary(id)
+    if (!itinerary) return null
+
+    return attachStopItems(itinerary, context)
+  },
 }
 
 export default Itinerary

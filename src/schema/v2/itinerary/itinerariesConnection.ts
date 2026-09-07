@@ -13,6 +13,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { FixtureItinerary, fixtureItineraries } from "./fixtures/itineraries"
 import { ItineraryType } from "./itinerary"
+import { attachStopItems } from "./stopItems"
 
 export const ItinerariesConnectionType = connectionWithCursorInfo({
   name: "Itineraries",
@@ -60,7 +61,7 @@ const isListableFor = (
  */
 export const resolveItinerariesConnection = async (
   args: ItinerariesConnectionArgs,
-  _context: ResolverContext,
+  context: ResolverContext,
   options: ItinerariesConnectionOptions = {}
 ) => {
   const all = fixtureItineraries() ?? []
@@ -85,9 +86,9 @@ export const resolveItinerariesConnection = async (
   const totalCount = filtered.length
   const pageItems = filtered.slice(offset, offset + size)
 
-  // TODO(part 2b): call `attachStopItems` on `pageItems` here once the
-  // batched stop-item resolver lands, so `ItineraryStop.item` resolves for
-  // itineraries returned from this connection too.
+  await Promise.all(
+    pageItems.map((itinerary) => attachStopItems(itinerary, context))
+  )
 
   return paginationResolver({
     totalCount,

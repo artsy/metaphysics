@@ -45,6 +45,39 @@ describe("Itinerary", () => {
     expect(data.itinerary.sections[0].stops[1].item).toBeNull()
   })
 
+  it("wires attachStopItems in: a stop's item resolves via the batched loader", async () => {
+    const query = `
+      {
+        itinerary(id: "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f") {
+          sections {
+            stops {
+              item {
+                __typename
+                ... on Partner {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const partnersLoader = jest.fn().mockResolvedValue({
+      body: [{ _id: "000000000000000000000001" }],
+      headers: {},
+    })
+
+    const data = await runQuery(query, { partnersLoader })
+
+    // This would come back null on every stop if the root `itinerary`
+    // field's resolver forgot to call `attachStopItems` before returning.
+    expect(data.itinerary.sections[0].stops[0].item).toEqual({
+      __typename: "Partner",
+      internalID: "000000000000000000000001",
+    })
+  })
+
   it("resolves a fixture itinerary by slug", async () => {
     const query = `
       {

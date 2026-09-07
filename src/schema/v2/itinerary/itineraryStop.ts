@@ -12,7 +12,7 @@ import { date } from "schema/v2/fields/date"
 import { ShowType } from "schema/v2/show"
 import { PartnerType } from "schema/v2/partner/partner"
 import { FairType } from "schema/v2/fair"
-import { FixtureItineraryStop } from "./fixtures/itineraries"
+import { StopWithResolvedItem } from "./stopItems"
 
 export const ItineraryStopItem = new GraphQLUnionType({
   name: "ItineraryStopItem",
@@ -35,7 +35,7 @@ export const ItineraryStopItem = new GraphQLUnionType({
 })
 
 export const ItineraryStopType = new GraphQLObjectType<
-  FixtureItineraryStop,
+  StopWithResolvedItem,
   ResolverContext
 >({
   name: "ItineraryStop",
@@ -103,11 +103,11 @@ export const ItineraryStopType = new GraphQLObjectType<
         "The Show, Partner, or Fair this stop refers to, if any. A stop " +
         "without an `item_id` (e.g. a café) resolves to null.",
       type: ItineraryStopItem,
-      // TODO(part 2): batch-resolve `item_type` / `item_id` into the
-      // referenced Show, Partner, or Fair via dataloaders. Until Gravity
-      // ships real staging ids, and until that resolution exists, this
-      // stays null.
-      resolve: () => null,
+      // Resolved by `attachStopItems`, which every resolver returning an
+      // `Itinerary` must call before returning it (the root `itinerary`
+      // field and both `itinerariesConnection` resolvers). This is a
+      // lookup, not a request -- the batched fetch already happened.
+      resolve: ({ _resolvedItem }) => _resolvedItem ?? null,
     },
   },
 })
