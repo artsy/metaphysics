@@ -121,6 +121,7 @@ describe("attachStopItems", () => {
     published_at: null,
     image_url: null,
     image_urls: null,
+    image: null,
     sections_count: stopsBySection.length,
     sections: stopsBySection.map((stops, index) => ({
       id: `section-${index}`,

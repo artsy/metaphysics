@@ -58,6 +58,13 @@ export interface FixtureItinerarySection {
   stops: FixtureItineraryStop[]
 }
 
+export interface FixtureItineraryImage {
+  id: string
+  image_urls: Record<string, string>
+  original_width: number
+  original_height: number
+}
+
 export interface FixtureItinerary {
   id: string
   slug: string | null
@@ -76,10 +83,13 @@ export interface FixtureItinerary {
   published_at: string | null
   // The itinerary's hero image, via Gravity's `HasArImage` concern —
   // `image_url` is a single templated URL string; `image_urls` is a hash of
-  // versioned URLs. Curated guides have one; the personal fixture below
-  // deliberately has neither, to exercise the absent-value path.
+  // versioned URLs; `image` is the nested ArImage object (id, image_urls,
+  // original_width, original_height) that `GravityARImageType` resolves
+  // against. Curated guides have one; the personal fixture below
+  // deliberately has none, to exercise the absent-value path.
   image_url: string | null
   image_urls: Record<string, string> | null
+  image: FixtureItineraryImage | null
   sections_count: number
   sections: FixtureItinerarySection[]
 }
@@ -103,6 +113,15 @@ const ITINERARIES: FixtureItinerary[] = [
       large: "https://files.artsy.net/images/chill_vibes_only_hero_large.jpg",
       medium: "https://files.artsy.net/images/chill_vibes_only_hero_medium.jpg",
       small: "https://files.artsy.net/images/chill_vibes_only_hero_small.jpg",
+    },
+    image: {
+      id: "chill-vibes-only-image",
+      image_urls: {
+        normalized:
+          "https://files.artsy.net/images/chill_vibes_only_hero_large.jpg",
+      },
+      original_width: 2400,
+      original_height: 1350,
     },
     sections_count: 3,
     sections: [
@@ -332,6 +351,15 @@ const ITINERARIES: FixtureItinerary[] = [
       medium:
         "https://files.artsy.net/images/36_hours_in_london_hero_medium.jpg",
       small: "https://files.artsy.net/images/36_hours_in_london_hero_small.jpg",
+    },
+    image: {
+      id: "36-hours-in-london-image",
+      image_urls: {
+        normalized:
+          "https://files.artsy.net/images/36_hours_in_london_hero_large.jpg",
+      },
+      original_width: 2400,
+      original_height: 1350,
     },
     sections_count: 4,
     sections: [
@@ -692,6 +720,15 @@ const ITINERARIES: FixtureItinerary[] = [
         "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_medium.jpg",
       small:
         "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_small.jpg",
+    },
+    image: {
+      id: "must-sees-and-hidden-gems-image",
+      image_urls: {
+        normalized:
+          "https://files.artsy.net/images/must_sees_and_hidden_gems_hero_large.jpg",
+      },
+      original_width: 2400,
+      original_height: 1350,
     },
     sections_count: 5,
     sections: [
@@ -1115,9 +1152,10 @@ const ITINERARIES: FixtureItinerary[] = [
     share_token: "sh_9f8e7d6c5b4a3f2e1d0c",
     published_at: null,
     // Personal itineraries have no hero image — this record exercises the
-    // absent-value path for `heroImageURL`.
+    // absent-value path for `image`.
     image_url: null,
     image_urls: null,
+    image: null,
     sections_count: 2,
     sections: [
       {
