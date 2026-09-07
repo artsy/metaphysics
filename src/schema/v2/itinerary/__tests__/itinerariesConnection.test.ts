@@ -13,6 +13,15 @@ const noItemsLoaders = {
   fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
 }
 
+// The fixture has 3 published, curated London guides plus one unlisted
+// personal itinerary owned by "user-42".
+const CURATED_IDS = [
+  "chill-vibes-only",
+  "36-hours-in-london",
+  "must-sees-and-hidden-gems",
+]
+const PERSONAL_ID = "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
+
 describe("itinerariesConnection (root field)", () => {
   const query = gql`
     {
@@ -30,34 +39,32 @@ describe("itinerariesConnection (root field)", () => {
   it("returns only public itineraries when there is no viewer", async () => {
     const data = await runQuery(query)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(1)
-    expect(data.itinerariesConnection.edges).toHaveLength(1)
-    expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f"
-    )
+    expect(data.itinerariesConnection.totalCount).toEqual(3)
+    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
+    expect(ids.sort()).toEqual(CURATED_IDS.sort())
   })
 
   it("also includes the viewer's own itinerary, whatever its visibility", async () => {
     const data = await runAuthenticatedQuery(query, noItemsLoaders)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(2)
+    expect(data.itinerariesConnection.totalCount).toEqual(4)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids).toContain("3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f")
-    expect(ids).toContain("7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b")
+    CURATED_IDS.forEach((id) => expect(ids).toContain(id))
+    expect(ids).toContain(PERSONAL_ID)
   })
 
   // The critical guarantee: a listing must never hand out someone else's
-  // unlisted itinerary. Fixture #2 is unlisted and owned by "user-42" — a
-  // *different* authenticated viewer must not see it.
+  // unlisted itinerary. The personal fixture is unlisted and owned by
+  // "user-42" — a *different* authenticated viewer must not see it.
   it("never returns another user's unlisted itinerary", async () => {
     const data = await runAuthenticatedQuery(query, {
       ...noItemsLoaders,
       userID: "someone-else",
     })
 
-    expect(data.itinerariesConnection.totalCount).toEqual(1)
+    expect(data.itinerariesConnection.totalCount).toEqual(3)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids).not.toContain("7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b")
+    expect(ids).not.toContain(PERSONAL_ID)
   })
 
   it("filters by isCurated", async () => {
@@ -79,7 +86,7 @@ describe("itinerariesConnection (root field)", () => {
 
     expect(data.itinerariesConnection.totalCount).toEqual(1)
     expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
+      PERSONAL_ID
     )
   })
 
@@ -87,7 +94,7 @@ describe("itinerariesConnection (root field)", () => {
     const data = await runQuery(
       gql`
         {
-          itinerariesConnection(first: 10, citySlug: "london-uk") {
+          itinerariesConnection(first: 10, citySlug: "london-united-kingdom") {
             totalCount
             edges {
               node {
@@ -100,15 +107,14 @@ describe("itinerariesConnection (root field)", () => {
       {}
     )
 
-    expect(data.itinerariesConnection.totalCount).toEqual(1)
-    expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f"
-    )
+    expect(data.itinerariesConnection.totalCount).toEqual(3)
+    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
+    expect(ids.sort()).toEqual(CURATED_IDS.sort())
   })
 
   it("wires attachStopItems in: a returned itinerary's stop item resolves via the batched loader", async () => {
     const partnersLoader = jest.fn().mockResolvedValue({
-      body: [{ _id: "000000000000000000000001" }],
+      body: [{ _id: "white-cube" }],
       headers: {},
     })
 
@@ -139,13 +145,13 @@ describe("itinerariesConnection (root field)", () => {
       { ...noItemsLoaders, partnersLoader }
     )
 
-    const peckham = data.itinerariesConnection.edges.find(
-      (e) => e.node.internalID === "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f"
+    const mustSees = data.itinerariesConnection.edges.find(
+      (e) => e.node.internalID === "must-sees-and-hidden-gems"
     )
 
-    expect(peckham.node.sections[0].stops[0].item).toEqual({
+    expect(mustSees.node.sections[0].stops[0].item).toEqual({
       __typename: "Partner",
-      internalID: "000000000000000000000001",
+      internalID: "white-cube",
     })
   })
 })
@@ -171,7 +177,7 @@ describe("Me.itinerariesConnection", () => {
 
     expect(data.me.itinerariesConnection.totalCount).toEqual(1)
     expect(data.me.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
+      PERSONAL_ID
     )
   })
 

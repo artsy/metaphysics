@@ -5,7 +5,7 @@ describe("Itinerary", () => {
   it("resolves a fixture itinerary by internal ID", async () => {
     const query = `
       {
-        itinerary(id: "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f") {
+        itinerary(id: "chill-vibes-only") {
           internalID
           slug
           name
@@ -33,22 +33,22 @@ describe("Itinerary", () => {
 
     const data = await runQuery(query)
 
-    expect(data.itinerary.name).toEqual("Sample: A day around Peckham")
-    expect(data.itinerary.slug).toEqual("a-day-around-peckham")
-    expect(data.itinerary.citySlug).toEqual("london-uk")
+    expect(data.itinerary.name).toEqual("Chill Vibes Only")
+    expect(data.itinerary.slug).toEqual("chill-vibes-only")
+    expect(data.itinerary.citySlug).toEqual("london-united-kingdom")
     expect(data.itinerary.isCurated).toEqual(true)
     expect(data.itinerary.visibility).toEqual("PUBLIC")
-    expect(data.itinerary.sectionsCount).toEqual(2)
-    expect(data.itinerary.sections).toHaveLength(2)
-    expect(data.itinerary.sections[0].stops).toHaveLength(2)
-    // Stop with no item reference (the café)
-    expect(data.itinerary.sections[0].stops[1].item).toBeNull()
+    expect(data.itinerary.sectionsCount).toEqual(3)
+    expect(data.itinerary.sections).toHaveLength(3)
+    expect(data.itinerary.sections[0].stops).toHaveLength(4)
+    // Stop with no item reference (the coffee stop)
+    expect(data.itinerary.sections[0].stops[0].item).toBeNull()
   })
 
   it("wires attachStopItems in: a stop's item resolves via the batched loader", async () => {
     const query = `
       {
-        itinerary(id: "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f") {
+        itinerary(id: "must-sees-and-hidden-gems") {
           sections {
             stops {
               item {
@@ -64,7 +64,7 @@ describe("Itinerary", () => {
     `
 
     const partnersLoader = jest.fn().mockResolvedValue({
-      body: [{ _id: "000000000000000000000001" }],
+      body: [{ _id: "white-cube" }],
       headers: {},
     })
 
@@ -74,14 +74,14 @@ describe("Itinerary", () => {
     // field's resolver forgot to call `attachStopItems` before returning.
     expect(data.itinerary.sections[0].stops[0].item).toEqual({
       __typename: "Partner",
-      internalID: "000000000000000000000001",
+      internalID: "white-cube",
     })
   })
 
   it("resolves a fixture itinerary by slug", async () => {
     const query = `
       {
-        itinerary(id: "a-day-around-peckham") {
+        itinerary(id: "chill-vibes-only") {
           internalID
         }
       }
@@ -89,9 +89,7 @@ describe("Itinerary", () => {
 
     const data = await runQuery(query)
 
-    expect(data.itinerary.internalID).toEqual(
-      "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f"
-    )
+    expect(data.itinerary.internalID).toEqual("chill-vibes-only")
   })
 
   it("derives UNLISTED visibility from a share token with no published_at", async () => {
@@ -133,7 +131,7 @@ describe("Itinerary", () => {
 
     const query = `
       {
-        itinerary(id: "3f6e9c2a-1b3d-4e2f-9c3a-1a2b3c4d5e6f") {
+        itinerary(id: "chill-vibes-only") {
           internalID
         }
       }

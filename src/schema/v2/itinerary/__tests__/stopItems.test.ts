@@ -115,7 +115,7 @@ describe("attachStopItems", () => {
     description: null,
     author_name: null,
     user_id: null,
-    city_slug: "london-uk",
+    city_slug: "london-united-kingdom",
     is_curated: false,
     share_token: null,
     published_at: null,
