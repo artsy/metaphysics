@@ -61,6 +61,11 @@ export interface FixtureItinerary {
   subtitle: string | null
   description: string | null
   author_name: string | null
+  // The owning user's id. Used only for connection-level "is this the
+  // caller's own itinerary" filtering — never exposed on `ItineraryType`
+  // itself (the association there is `authorName`, still under discussion
+  // upstream).
+  user_id: string | null
   city_slug: string
   is_curated: boolean
   share_token: string | null
@@ -78,6 +83,7 @@ const ITINERARIES: FixtureItinerary[] = [
     description:
       "A curated sample itinerary through south-east London's gallery cluster.",
     author_name: "Artsy Editorial",
+    user_id: null,
     city_slug: "london-uk",
     is_curated: true,
     share_token: null,
@@ -171,6 +177,10 @@ const ITINERARIES: FixtureItinerary[] = [
     subtitle: null,
     description: "A private itinerary a collector built for a fair trip.",
     author_name: "Mira Copeland",
+    // Matches the default `userID` ("user-42") that
+    // `schema/v2/test/utils#runAuthenticatedQuery` stubs, so tests can
+    // exercise ownership filtering without extra wiring.
+    user_id: "user-42",
     city_slug: "new-york-ny-usa",
     is_curated: false,
     share_token: "sh_9f8e7d6c5b4a3f2e1d0c",
