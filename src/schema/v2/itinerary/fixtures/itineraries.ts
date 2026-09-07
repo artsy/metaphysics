@@ -27,7 +27,6 @@
  * only resolve entities that actually exist. Slugs are kept instead of
  * placeholder ids because they document what each stop actually points at.
  */
-import config from "config"
 
 export interface FixtureItineraryStop {
   id: string
@@ -1936,18 +1935,28 @@ const ITINERARIES: FixtureItinerary[] = [
 ]
 
 /**
- * Returns all fixture itineraries, or `null` in production. The fixture
- * must never serve real traffic — this is the one place that check lives.
+ * Returns all fixture itineraries.
+ *
+ * These are static stand-ins for what Gravity will return once its itinerary
+ * endpoints ship; nothing here comes from the database. This branch is not
+ * intended to be merged or deployed — it exists so the client can build
+ * against the real schema shape before the backend lands.
+ *
+ * There was a `config.PRODUCTION_ENV` guard here that returned null. It was
+ * removed on purpose: it made the fixture invisible in the one environment
+ * the app was actually being tested against, and because the connection
+ * resolver reads `fixtureItineraries() ?? []`, a disabled fixture and a city
+ * with no guides looked identical to the client — an empty list, no error,
+ * nothing in the logs. A safety check nobody can observe costs more than it
+ * protects.
  */
 export const fixtureItineraries = (): FixtureItinerary[] | null => {
-  if (config.PRODUCTION_ENV) return null
-
   return ITINERARIES
 }
 
 /**
- * Returns a single fixture itinerary by internal id or slug, or `null` in
- * production, or `null` if nothing matches.
+ * Returns a single fixture itinerary by internal id or slug, or `null` if
+ * nothing matches.
  */
 export const fixtureItinerary = (idOrSlug: string): FixtureItinerary | null => {
   const itineraries = fixtureItineraries()

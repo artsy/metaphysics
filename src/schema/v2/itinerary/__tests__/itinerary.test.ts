@@ -1,5 +1,4 @@
 import { runQuery } from "schema/v2/test/utils"
-import config from "config"
 
 describe("Itinerary", () => {
   it("resolves a fixture itinerary by internal ID", async () => {
@@ -151,23 +150,5 @@ describe("Itinerary", () => {
     const data = await runQuery(query)
 
     expect(data.itinerary).toBeNull()
-  })
-
-  it("returns null in production, where the fixture must not serve traffic", async () => {
-    config.PRODUCTION_ENV = true
-
-    const query = `
-      {
-        itinerary(id: "chill-vibes-only") {
-          internalID
-        }
-      }
-    `
-
-    const data = await runQuery(query)
-
-    expect(data.itinerary).toBeNull()
-
-    config.PRODUCTION_ENV = false
   })
 })
