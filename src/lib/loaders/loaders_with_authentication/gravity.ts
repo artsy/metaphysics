@@ -408,6 +408,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     createCollectionLoader: gravityLoader("collection", {}, { method: "POST" }),
+    duplicateCatalogArtworkLoader: gravityLoader(
+      (id) => `catalog_artwork/${id}/duplicate`,
+      {},
+      { method: "POST" }
+    ),
     createIdentityVerificationOverrideLoader: gravityLoader(
       (id) => `identity_verification/${id}/override`,
       {},
