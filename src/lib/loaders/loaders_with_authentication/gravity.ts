@@ -271,6 +271,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerArtworkImportLoader: gravityLoader(
+      "artwork_imports/partner_conversion",
+      {},
+      { method: "POST" }
+    ),
+    partnerArtworkImportConversionTemplatesLoader: gravityLoader(
+      "artwork_imports/partner_conversion_templates"
+    ),
     deleteArtworkImportLoader: gravityLoader(
       (id) => `artwork_import/${id}`,
       {},
@@ -408,6 +416,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     createCollectionLoader: gravityLoader("collection", {}, { method: "POST" }),
+    duplicateCatalogArtworkLoader: gravityLoader(
+      (id) => `catalog_artwork/${id}/duplicate`,
+      {},
+      { method: "POST" }
+    ),
     createIdentityVerificationOverrideLoader: gravityLoader(
       (id) => `identity_verification/${id}/override`,
       {},

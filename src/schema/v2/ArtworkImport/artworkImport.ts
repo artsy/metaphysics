@@ -732,7 +732,13 @@ export const ArtworkImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     source: {
       type: GraphQLString,
-      description: "Source of the import: 'bulk_import' or 'multi_add'",
+      description:
+        "Source of the import: 'bulk_import', 'multi_add', or 'partner_conversion'",
+    },
+    originalSaleSlug: {
+      type: GraphQLString,
+      description: "Original sale slug provided during partner conversion",
+      resolve: ({ original_sale_slug }) => original_sale_slug,
     },
     state: {
       type: ArtworkImportStateType,
@@ -824,3 +830,20 @@ export const ArtworkImport: GraphQLFieldConfig<any, ResolverContext> = {
 export const ArtworkImportsConnectionType = connectionWithCursorInfo({
   nodeType: ArtworkImportType,
 }).connectionType
+
+export const PartnerConversionTemplates: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+  description: "All available partner conversion template names",
+  resolve: async (
+    _parent,
+    _args,
+    { partnerArtworkImportConversionTemplatesLoader }
+  ) => {
+    if (!partnerArtworkImportConversionTemplatesLoader) return []
+    const result = await partnerArtworkImportConversionTemplatesLoader({})
+    return result?.templates ?? []
+  },
+}
