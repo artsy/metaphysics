@@ -1,5 +1,5 @@
 import gql from "lib/gql"
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 
 describe("ArtworkImport", () => {
   it("fetches an artwork import by id", async () => {
@@ -257,5 +257,89 @@ describe("ArtworkImport", () => {
         privateNotes: "VIP collector, hold until Friday",
       },
     })
+  })
+
+  it("resolves originalSaleSlug from the partner conversion payload", async () => {
+    const artworkImportLoader = jest.fn().mockReturnValue({
+      id: "artwork-import-1",
+      original_sale_slug: "heritage-auctions-april-2026",
+    })
+
+    const query = gql`
+      query {
+        artworkImport(id: "artwork-import-1") {
+          originalSaleSlug
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, { artworkImportLoader })
+
+    expect(result).toEqual({
+      artworkImport: {
+        originalSaleSlug: "heritage-auctions-april-2026",
+      },
+    })
+  })
+
+  it("returns null for originalSaleSlug when absent", async () => {
+    const artworkImportLoader = jest.fn().mockReturnValue({
+      id: "artwork-import-1",
+    })
+
+    const query = gql`
+      query {
+        artworkImport(id: "artwork-import-1") {
+          originalSaleSlug
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, { artworkImportLoader })
+
+    expect(result.artworkImport.originalSaleSlug).toBeNull()
+  })
+})
+
+describe("partnerConversionTemplates", () => {
+  const query = gql`
+    query {
+      partnerConversionTemplates
+    }
+  `
+
+  it("returns the template names from the loader", async () => {
+    const partnerArtworkImportConversionTemplatesLoader = jest
+      .fn()
+      .mockResolvedValue({ templates: ["standard", "auction"] })
+
+    const result = await runAuthenticatedQuery(query, {
+      partnerArtworkImportConversionTemplatesLoader,
+    })
+
+    expect(partnerArtworkImportConversionTemplatesLoader).toHaveBeenCalledWith(
+      {}
+    )
+    expect(result).toEqual({
+      partnerConversionTemplates: ["standard", "auction"],
+    })
+  })
+
+  it("returns an empty array when the loader response has no templates", async () => {
+    const partnerArtworkImportConversionTemplatesLoader = jest
+      .fn()
+      .mockResolvedValue({})
+
+    const result = await runAuthenticatedQuery(query, {
+      partnerArtworkImportConversionTemplatesLoader,
+    })
+
+    expect(result).toEqual({ partnerConversionTemplates: [] })
+  })
+
+  it("returns an empty array when the loader is absent", async () => {
+    const result = await runQuery(query)
+
+    expect(result).toEqual({ partnerConversionTemplates: [] })
   })
 })

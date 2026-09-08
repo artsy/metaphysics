@@ -385,10 +385,14 @@ import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/u
 import { ViewingRoomConnection } from "./viewingRooms"
 import { Collection } from "./collection"
 import { CreateArtworkImportMutation } from "./ArtworkImport/mutations/createArtworkImportMutation"
+import { CreatePartnerArtworkImportMutation } from "./ArtworkImport/mutations/createPartnerArtworkImportMutation"
 import { DeleteArtworkImportMutation } from "./ArtworkImport/mutations/deleteArtworkImportMutation"
 import { CreateArtworkTemplateMutation } from "./artworkTemplate/mutations/createArtworkTemplateMutation"
 import { CreateArtworkFromTemplateMutation } from "./artworkTemplate/mutations/createArtworkFromTemplateMutation"
-import { ArtworkImport } from "./ArtworkImport/artworkImport"
+import {
+  ArtworkImport,
+  PartnerConversionTemplates,
+} from "./ArtworkImport/artworkImport"
 import { UpdateArtworkImportMutation } from "./ArtworkImport/mutations/updateArtworkImportMutation"
 import { UpdateArtworkImportRowMutation } from "./ArtworkImport/mutations/updateArtworkImportRowMutation"
 import { CreateArtworkImportArtworksMutation } from "./ArtworkImport/mutations/createArtworkImportArtworksMutation"
@@ -482,6 +486,7 @@ const rootFields = {
   artworkFilterSuggestions,
   artworkMediums: ArtworkMediums,
   artworkImport: ArtworkImport,
+  partnerConversionTemplates: PartnerConversionTemplates,
   artworkResult: ArtworkResult,
   artworks: Artworks,
   artworksByImageConnection,
@@ -656,6 +661,7 @@ export default new GraphQLSchema({
       createArtworkImport: CreateArtworkImportMutation,
       createArtworkTemplate: CreateArtworkTemplateMutation,
       createArtworkFromTemplate: CreateArtworkFromTemplateMutation,
+      createPartnerArtworkImport: CreatePartnerArtworkImportMutation,
       createBackupSecondFactors: createBackupSecondFactorsMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
