@@ -5343,11 +5343,6 @@ type ArtworkImport implements Node {
   Columns to display for an import, will exist in a row's `transformedData`
   """
   columns: [String!]!
-
-  """
-  Type of partner conversion: 'standard' or 'auction'
-  """
-  conversionType: String
   createdAt(
     format: String
 
@@ -5373,25 +5368,10 @@ type ArtworkImport implements Node {
   locationID: String
 
   """
-  Original exclude from marketing flag from partner conversion
-  """
-  originalExcludeFromMarketing: Boolean
-
-  """
-  Original image filenames provided during partner conversion
-  """
-  originalImageFilenames: String
-
-  """
   Original sale slug provided during partner conversion
   """
   originalSaleSlug: String
   partnerListID: String
-
-  """
-  Type of partner template detected during conversion
-  """
-  partnerTemplateType: String
   rawDataMapping: JSON!
   rowsConnection(
     after: String
