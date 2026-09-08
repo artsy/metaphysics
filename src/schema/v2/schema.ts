@@ -355,6 +355,19 @@ import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { Itinerary } from "./itinerary"
 import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
+import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
+import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
+import { createItinerarySectionMutation } from "./itinerary/mutations/createItinerarySectionMutation"
+import { createItineraryStopMutation } from "./itinerary/mutations/createItineraryStopMutation"
+import { deleteItineraryMutation } from "./itinerary/mutations/deleteItineraryMutation"
+import { deleteItinerarySectionMutation } from "./itinerary/mutations/deleteItinerarySectionMutation"
+import { deleteItineraryStopMutation } from "./itinerary/mutations/deleteItineraryStopMutation"
+import { publishItineraryMutation } from "./itinerary/mutations/publishItineraryMutation"
+import { removeItineraryStopByItemMutation } from "./itinerary/mutations/removeItineraryStopByItemMutation"
+import { unpublishItineraryMutation } from "./itinerary/mutations/unpublishItineraryMutation"
+import { updateItineraryMutation } from "./itinerary/mutations/updateItineraryMutation"
+import { updateItinerarySectionMutation } from "./itinerary/mutations/updateItinerarySectionMutation"
+import { updateItineraryStopMutation } from "./itinerary/mutations/updateItineraryStopMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -645,6 +658,7 @@ export default new GraphQLSchema({
       bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
+      copyItinerary: copyItineraryMutation,
       createImage: createImageMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
@@ -675,6 +689,9 @@ export default new GraphQLSchema({
       createHeroUnit: createHeroUnitMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
+      createItinerary: createItineraryMutation,
+      createItinerarySection: createItinerarySectionMutation,
+      createItineraryStop: createItineraryStopMutation,
       createNavigationDraft: createNavigationDraftMutation,
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
@@ -742,6 +759,9 @@ export default new GraphQLSchema({
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
+      deleteItinerary: deleteItineraryMutation,
+      deleteItinerarySection: deleteItinerarySectionMutation,
+      deleteItineraryStop: deleteItineraryStopMutation,
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
@@ -788,12 +808,14 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      publishItinerary: publishItineraryMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       reopenArtworkDuplicatePair: reopenArtworkDuplicatePairMutation,
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
+      removeItineraryStopByItem: removeItineraryStopByItemMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
@@ -820,6 +842,7 @@ export default new GraphQLSchema({
       transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      unpublishItinerary: unpublishItineraryMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
       unsetOrderPaymentMethod: unsetOrderPaymentMethodMutation,
@@ -848,6 +871,9 @@ export default new GraphQLSchema({
       updateFeature: UpdateFeatureMutation,
       updateFeaturedLink: UpdateFeaturedLinkMutation,
       updateHeroUnit: updateHeroUnitMutation,
+      updateItinerary: updateItineraryMutation,
+      updateItinerarySection: updateItinerarySectionMutation,
+      updateItineraryStop: updateItineraryStopMutation,
       updateMeCollectionsMutation: updateMeCollectionsMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,

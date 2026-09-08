@@ -23258,6 +23258,18 @@ type Itinerary {
   visibility: ItineraryVisibility!
 }
 
+type ItineraryMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItineraryMutationResponseOrError =
+    ItineraryMutationFailure
+  | ItineraryMutationSuccess
+
+type ItineraryMutationSuccess {
+  itinerary: Itinerary
+}
+
 type ItinerarySection {
   internalID: String!
   position: Int!
@@ -23268,6 +23280,18 @@ type ItinerarySection {
   An opaque display string for the section, e.g. "Day 1", "Morning", or "Peckham"
   """
   title: String
+}
+
+type ItinerarySectionMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItinerarySectionMutationResponseOrError =
+    ItinerarySectionMutationFailure
+  | ItinerarySectionMutationSuccess
+
+type ItinerarySectionMutationSuccess {
+  itinerarySection: ItinerarySection
 }
 
 type ItineraryStop {
@@ -23323,6 +23347,18 @@ enum ItineraryStopCategory {
 }
 
 union ItineraryStopItem = Fair | Partner | Show
+
+type ItineraryStopMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItineraryStopMutationResponseOrError =
+    ItineraryStopMutationFailure
+  | ItineraryStopMutationSuccess
+
+type ItineraryStopMutationSuccess {
+  itineraryStop: ItineraryStop
+}
 
 enum ItineraryVisibility {
   PRIVATE
@@ -26211,6 +26247,11 @@ type Mutation {
   ): CreateSubmissionMutationPayload
 
   """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  copyItinerary(input: copyItineraryInput!): copyItineraryPayload
+
+  """
   Create an account request
   """
   createAccountRequest(
@@ -26416,6 +26457,25 @@ type Mutation {
   createInvoicePayment(
     input: CreateInvoicePaymentInput!
   ): CreateInvoicePaymentPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  createItinerary(input: createItineraryInput!): createItineraryPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  createItinerarySection(
+    input: createItinerarySectionInput!
+  ): createItinerarySectionPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  createItineraryStop(
+    input: createItineraryStopInput!
+  ): createItineraryStopPayload
 
   """
   Create a Mailchimp campaign draft for a partner from pre-rendered HTML
@@ -26706,6 +26766,25 @@ type Mutation {
   deleteInstagramAccount(
     input: DeleteInstagramAccountInput!
   ): DeleteInstagramAccountPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  deleteItinerary(input: deleteItineraryInput!): deleteItineraryPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  deleteItinerarySection(
+    input: deleteItinerarySectionInput!
+  ): deleteItinerarySectionPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  deleteItineraryStop(
+    input: deleteItineraryStopInput!
+  ): deleteItineraryStopPayload
 
   """
   Disconnect a Mailchimp account from a partner
@@ -27014,6 +27093,11 @@ type Mutation {
   ): MyCollectionUpdateArtworkPayload
 
   """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  publishItinerary(input: publishItineraryInput!): publishItineraryPayload
+
+  """
   Publish a draft navigation version. Accepts either a groupID (for backward compatibility) or versionID (preferred for admin workflows).
   """
   publishNavigationDraft(
@@ -27084,6 +27168,13 @@ type Mutation {
   removeInstallShotFromPartnerShow(
     input: RemoveInstallShotFromPartnerShowMutationInput!
   ): RemoveInstallShotFromPartnerShowMutationPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Removes every stop in the given itinerary that references the given item — not just one. Gravity has no uniqueness constraint on (section, item), so the same item can legitimately appear more than once in one itinerary; a client holding an item (e.g. a show) rather than a stop id should use this instead of `deleteItineraryStop`, which requires already knowing which stop references the item. Calling this mutation always throws.
+  """
+  removeItineraryStopByItem(
+    input: removeItineraryStopByItemInput!
+  ): removeItineraryStopByItemPayload
 
   """
   Reopen a dismissed artwork duplicate pair
@@ -27262,6 +27353,11 @@ type Mutation {
   ): UnlinkAuthenticationMutationPayload
 
   """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  unpublishItinerary(input: unpublishItineraryInput!): unpublishItineraryPayload
+
+  """
   Unpublishes a partner list's private viewing room. Does not delete the publication.
   """
   unpublishPartnerListPublication(
@@ -27423,6 +27519,25 @@ type Mutation {
   updateInstallShotForPartnerShow(
     input: UpdateInstallShotForPartnerShowMutationInput!
   ): UpdateInstallShotForPartnerShowMutationPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  updateItinerary(input: updateItineraryInput!): updateItineraryPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  updateItinerarySection(
+    input: updateItinerarySectionInput!
+  ): updateItinerarySectionPayload
+
+  """
+  Not implemented yet: Gravity's itinerary endpoints are not deployed. Calling this mutation always throws.
+  """
+  updateItineraryStop(
+    input: updateItineraryStopInput!
+  ): updateItineraryStopPayload
 
   """
   Updates the user's collections in batch.
@@ -35167,6 +35282,21 @@ union RemoveInstallShotFromPartnerShowResponseOrError =
 
 type RemoveInstallShotFromPartnerShowSuccess {
   show: Show
+}
+
+type RemoveItineraryStopByItemFailure {
+  mutationError: GravityMutationError
+}
+
+union RemoveItineraryStopByItemResponseOrError =
+    RemoveItineraryStopByItemFailure
+  | RemoveItineraryStopByItemSuccess
+
+type RemoveItineraryStopByItemSuccess {
+  """
+  Every stop that was removed
+  """
+  itineraryStops: [ItineraryStop!]!
 }
 
 type ReopenArtworkDuplicatePairFailure {
@@ -44778,6 +44908,21 @@ enum contactType {
   PARTNER
 }
 
+input copyItineraryInput {
+  clientMutationId: String
+  id: String!
+
+  """
+  The share token of the itinerary being copied, required to copy an unlisted itinerary the caller does not own
+  """
+  shareToken: String
+}
+
+type copyItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
 input createAlertInput {
   acquireable: Boolean
   additionalGeneIDs: [String]
@@ -44858,6 +45003,58 @@ union createHeroUnitResponseOrError =
 
 type createHeroUnitSuccess {
   heroUnit: HeroUnit
+}
+
+input createItineraryInput {
+  arImageID: String
+  authorName: String
+  citySlug: String!
+  clientMutationId: String
+  description: String
+  isCurated: Boolean
+  name: String!
+  subtitle: String
+}
+
+type createItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
+input createItinerarySectionInput {
+  clientMutationId: String
+  itineraryID: String!
+  title: String
+}
+
+type createItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
+}
+
+input createItineraryStopInput {
+  address: String
+  category: ItineraryStopCategory
+  clientMutationId: String
+  endAt: String
+  eventID: String
+  eventType: String
+  imageURL: String
+  isFreeAdmission: Boolean
+  itemID: String
+  itemType: String
+  itinerarySectionID: String!
+  latitude: Float
+  longitude: Float
+  note: String
+  sourceURL: String
+  startAt: String
+  title: String
+}
+
+type createItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
 }
 
 type createOrderedSetFailure {
@@ -45019,6 +45216,36 @@ type deleteHeroUnitSuccess {
   heroUnit: HeroUnit
 }
 
+input deleteItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
+input deleteItinerarySectionInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
+}
+
+input deleteItineraryStopInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
+}
+
 type deleteOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -45158,6 +45385,16 @@ type partnerBiographyBlurb {
   text: String
 }
 
+input publishItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type publishItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
 type purchases {
   """
   Total number of auction winning bids
@@ -45192,6 +45429,18 @@ input rejectSellerOfferInput {
 type rejectSellerOfferPayload {
   clientMutationId: String
   orderOrError: OrderMutationResponse
+}
+
+input removeItineraryStopByItemInput {
+  clientMutationId: String
+  itemID: String!
+  itemType: String!
+  itineraryID: String!
+}
+
+type removeItineraryStopByItemPayload {
+  clientMutationId: String
+  responseOrError: RemoveItineraryStopByItemResponseOrError
 }
 
 input setOrderFulfillmentOptionInput {
@@ -45313,6 +45562,16 @@ input submitOrderInput {
 type submitOrderPayload {
   clientMutationId: String
   orderOrError: OrderMutationResponse
+}
+
+input unpublishItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type unpublishItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
 }
 
 input unsetOrderFulfillmentOptionInput {
@@ -45442,6 +45701,79 @@ union updateHeroUnitResponseOrError =
 
 type updateHeroUnitSuccess {
   heroUnit: HeroUnit
+}
+
+input updateItineraryInput {
+  arImageID: String
+  authorName: String
+  citySlug: String
+  clientMutationId: String
+  description: String
+
+  """
+  Generate a new share token for this itinerary, replacing any existing one
+  """
+  generateShareToken: Boolean
+  id: String!
+  isCurated: Boolean
+  name: String
+
+  """
+  Revoke this itinerary's current share token, if any
+  """
+  revokeShareToken: Boolean
+  subtitle: String
+}
+
+type updateItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
+input updateItinerarySectionInput {
+  clientMutationId: String
+  id: String!
+
+  """
+  Reorders the section among its itinerary's sections via acts_as_list's insert_at. There is no separate reposition mutation for sections.
+  """
+  position: Int
+  title: String
+}
+
+type updateItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
+}
+
+input updateItineraryStopInput {
+  address: String
+  category: ItineraryStopCategory
+  clientMutationId: String
+  endAt: String
+  eventID: String
+  eventType: String
+  id: String!
+  imageURL: String
+  isFreeAdmission: Boolean
+  itemID: String
+  itemType: String
+  latitude: Float
+  longitude: Float
+  note: String
+
+  """
+  Reorders the stop among its section's stops via acts_as_list's insert_at. There is no separate reposition mutation for stops.
+  """
+  position: Int
+  sourceURL: String
+  startAt: String
+  title: String
+}
+
+type updateItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
 }
 
 input updateMeCollectionsMutationInput {
