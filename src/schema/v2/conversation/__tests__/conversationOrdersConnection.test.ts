@@ -214,6 +214,75 @@ describe("conversation orders connections", () => {
     )
   })
 
+  it("resolves partnerOffer on an order reached via partnerOrdersConnection", async () => {
+    const partnerOrdersLoaderWithOffer = jest.fn((_partnerId, params) => {
+      let filteredOrders = [
+        {
+          ...ordersResponse[0],
+          line_items: [
+            {
+              ...ordersResponse[0].line_items[0],
+              partner_offer_id: "partner-offer-1",
+            },
+          ],
+        },
+      ]
+
+      if (params.artwork_id) {
+        filteredOrders = filteredOrders.filter((order) =>
+          order.line_items.some((li) => li.artwork_id === params.artwork_id)
+        )
+      }
+
+      return Promise.resolve({
+        body: filteredOrders,
+        headers: { "x-total-count": filteredOrders.length.toString() },
+      })
+    })
+
+    context.partnerOrdersLoader = partnerOrdersLoaderWithOffer
+    context.partnerOffersLoader = jest.fn().mockResolvedValue({
+      body: [{ id: "partner-offer-1", active: false }],
+    })
+
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          partnerOrdersConnection(first: 5) {
+            edges {
+              node {
+                internalID
+                partnerOffer {
+                  internalID
+                  isActive
+                  isPurchased
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(data.conversation.partnerOrdersConnection.edges[0].node).toEqual({
+      internalID: "order-1",
+      partnerOffer: {
+        internalID: "partner-offer-1",
+        isActive: false,
+        isPurchased: true,
+      },
+    })
+    expect(context.partnerOffersLoader).toHaveBeenCalledWith({
+      artwork_id: "artwork-1",
+      user_id: "buyer-1",
+    })
+    // isPurchased should come from the stamped value, not a meOrdersLoader
+    // lookup scoped to whichever viewer (here, the partner) ran this query.
+    expect(context.meOrdersLoader).not.toHaveBeenCalled()
+  })
+
   it("returns hasNextPage=true when first is below total for collectorOrdersConnection", async () => {
     const query = gql`
       {

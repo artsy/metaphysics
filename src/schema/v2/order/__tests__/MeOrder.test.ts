@@ -578,6 +578,125 @@ describe("Me", () => {
       })
     })
 
+    describe("partnerOffer", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              partnerOffer {
+                internalID
+                isActive
+                isPurchased
+              }
+            }
+          }
+        }
+      `
+
+      it("returns the partner offer matching the line item's partnerOfferId, even when expired", async () => {
+        const localOrderJson = {
+          ...orderJson,
+          line_items: [
+            {
+              ...orderJson.line_items[0],
+              partner_offer_id: "partner-offer-123",
+            },
+          ],
+        }
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+          partnerOffersLoader: jest.fn().mockResolvedValue({
+            body: [
+              { id: "partner-offer-999", active: true },
+              { id: "partner-offer-123", active: false },
+            ],
+          }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(context.partnerOffersLoader).toHaveBeenCalledWith({
+          artwork_id: localOrderJson.line_items[0].artwork_id,
+          user_id: "buyer-id-1",
+        })
+        expect(result).toEqual({
+          me: {
+            order: {
+              partnerOffer: {
+                internalID: "partner-offer-123",
+                isActive: false,
+                isPurchased: true,
+              },
+            },
+          },
+        })
+      })
+
+      it("returns null when no partner offer matches the stored id", async () => {
+        const localOrderJson = {
+          ...orderJson,
+          line_items: [
+            {
+              ...orderJson.line_items[0],
+              partner_offer_id: "partner-offer-123",
+            },
+          ],
+        }
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+          partnerOffersLoader: jest.fn().mockResolvedValue({ body: [] }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result).toEqual({
+          me: { order: { partnerOffer: null } },
+        })
+      })
+
+      it("returns null and skips the loader when the order has no partnerOfferId", async () => {
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+          partnerOffersLoader: jest.fn().mockResolvedValue({ body: [] }),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(context.partnerOffersLoader).not.toHaveBeenCalled()
+        expect(result).toEqual({
+          me: { order: { partnerOffer: null } },
+        })
+      })
+
+      it("returns null when unauthenticated (no partnerOffersLoader)", async () => {
+        const localOrderJson = {
+          ...orderJson,
+          line_items: [
+            {
+              ...orderJson.line_items[0],
+              partner_offer_id: "partner-offer-123",
+            },
+          ],
+        }
+
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result).toEqual({
+          me: { order: { partnerOffer: null } },
+        })
+      })
+    })
+
     describe("taxTotal", () => {
       const query = gql`
         query {

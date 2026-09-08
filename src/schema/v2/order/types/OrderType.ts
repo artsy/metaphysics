@@ -27,6 +27,7 @@ import { ArtworkType } from "../../artwork"
 import { DisplayTexts } from "./DisplayTexts"
 import { DisplaySellerTexts } from "./DisplaySellerTexts"
 import { PartnerType } from "schema/v2/partner/partner"
+import { PartnerOfferToCollectorType } from "schema/v2/partnerOfferToCollector"
 import { PhoneNumberType, resolvePhoneNumber } from "../../phoneNumber"
 import {
   PricingBreakdownLinesType,
@@ -436,6 +437,40 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
         if (!seller_id) return null
 
         return partnerLoader(seller_id).catch(() => null)
+      },
+    },
+    partnerOffer: {
+      type: PartnerOfferToCollectorType,
+      description:
+        "The limited partner offer associated with this order if offer existed at order creation.",
+      resolve: async (
+        { buyer_id, line_items },
+        _args,
+        { partnerOffersLoader }
+      ) => {
+        if (!partnerOffersLoader) return null
+
+        // Orders are treated as single-artwork as in other places.
+        const partnerOfferId = line_items?.[0]?.partner_offer_id
+        const artworkId = line_items?.[0]?.artwork_id
+        if (!partnerOfferId || !artworkId) return null
+
+        try {
+          const { body } = await partnerOffersLoader({
+            artwork_id: artworkId,
+            user_id: buyer_id,
+          })
+
+          const match = body?.find((po) => po.id === partnerOfferId)
+
+          // This order's existence already proves the offer was used — stamp
+          // _isPurchased so it short-circuits instead of calling
+          // meOrdersLoader, which reflects whichever viewer (buyer or
+          // seller) is running this query, not necessarily the order's buyer.
+          return match ? { ...match, _isPurchased: true } : null
+        } catch {
+          return null
+        }
       },
     },
     sellerState: {
