@@ -394,6 +394,13 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       type: new GraphQLNonNull(new GraphQLList(LineItemType)),
       resolve: ({ line_items }) => line_items,
     },
+    hasPartnerOffer: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "Flag indicating whether the order has a partner offer associated with it",
+      resolve: ({ line_items }) =>
+        !!line_items?.some((lineItem) => !!lineItem.partner_offer_id),
+    },
     mode: {
       type: new GraphQLNonNull(OrderModeEnum),
       resolve: (order) => resolveMode(order),
