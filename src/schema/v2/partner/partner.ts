@@ -56,6 +56,7 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { UserNotesConnection } from "./PartnerUserNote/PartnerUserNoteType"
 import { AlertType, PartnerAlertsEdgeFields } from "../Alerts"
 import {
   ArtworkVisibility,
@@ -853,6 +854,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artworkDuplicatePairsConnection: ArtworkDuplicatePairsConnection,
+      userNotesConnection: UserNotesConnection,
       conversationMessageTemplatesConnection: ConversationMessageTemplatesConnection,
       artworkTemplatesConnection: ArtworkTemplatesConnection,
       conversationMessageTemplateExamples: {

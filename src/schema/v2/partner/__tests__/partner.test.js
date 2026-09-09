@@ -670,6 +670,115 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#userNotesConnection", () => {
+    let notesResponse
+
+    const partnerUserNotesLoader = jest.fn(() => {
+      return Promise.resolve({
+        body: notesResponse,
+        headers: {
+          "x-total-count": notesResponse.length,
+        },
+      })
+    })
+
+    const partnerLoader = jest.fn(() => {
+      return Promise.resolve(partnerData)
+    })
+
+    beforeEach(() => {
+      notesResponse = [
+        {
+          id: "note-1",
+          partner_id: "catty-partner",
+          user_id: "collector-1",
+          body: "Interested in large scale abstract work.",
+          updated_by_user_id: "partner-user-1",
+        },
+        {
+          id: "note-2",
+          partner_id: "catty-partner",
+          user_id: "collector-2",
+          body: "Prefers a studio visit before committing.",
+          updated_by_user_id: "partner-user-1",
+        },
+      ]
+    })
+
+    it("returns a partner's notes about collectors", async () => {
+      context = {
+        partnerUserNotesLoader,
+        partnerLoader,
+      }
+
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            userNotesConnection(first:3) {
+              totalCount
+              edges {
+                node {
+                  body
+                  userId
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          userNotesConnection: {
+            totalCount: 2,
+            edges: [
+              {
+                node: {
+                  body: "Interested in large scale abstract work.",
+                  userId: "collector-1",
+                },
+              },
+              {
+                node: {
+                  body: "Prefers a studio visit before committing.",
+                  userId: "collector-2",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("passes the userId filter through to the loader", async () => {
+      context = {
+        partnerUserNotesLoader,
+        partnerLoader,
+      }
+
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            userNotesConnection(first:3, userId: "collector-1") {
+              totalCount
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(partnerUserNotesLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: "internal-id",
+          user_id: "collector-1",
+        })
+      )
+    })
+  })
+
   describe("#location", () => {
     let singleLocationResponse
 
