@@ -2440,6 +2440,46 @@ describe("Me", () => {
       })
     })
 
+    describe("hasPartnerOffer", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              hasPartnerOffer
+            }
+          }
+        }
+      `
+
+      it("returns true when a line item has a partnerOfferId", async () => {
+        const localOrderJson = {
+          ...baseOrderJson,
+          line_items: [
+            {
+              ...baseOrderJson.line_items[0],
+              partner_offer_id: "partner-offer-123",
+            },
+          ],
+        }
+
+        const result = await runAuthenticatedQuery(query, {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(localOrderJson),
+        })
+
+        expect(result.me.order.hasPartnerOffer).toBe(true)
+      })
+
+      it("returns false when no line item has a partnerOfferId", async () => {
+        const result = await runAuthenticatedQuery(query, {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(baseOrderJson),
+        })
+
+        expect(result.me.order.hasPartnerOffer).toBe(false)
+      })
+    })
+
     describe("fulfillmentOptions shippingQuoteId", () => {
       const shippingQuoteIdQuery = gql`
         query {
