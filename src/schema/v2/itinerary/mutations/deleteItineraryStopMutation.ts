@@ -7,10 +7,11 @@ interface InputProps {
   id: string
 }
 
-// Deletes exactly one stop by its own id. Kept alongside
-// `removeItineraryStopByItem` because a CMS editing a curated guide has
-// already rendered the stop list and holds stop ids — it may need to
-// remove one of two stops that point at the same item.
+// Deletes exactly one stop, by its own id. Removal is deliberately not by
+// item: the same show can appear in one itinerary twice on purpose (two
+// visits, or the show plus a talk inside it), so removing by item would take
+// both when the viewer pointed at one. Every caller already holds the stop
+// id — `ItineraryStop.internalID` is on the type the list is rendered from.
 export const deleteItineraryStopMutation = mutationWithClientMutationId<
   InputProps,
   any,

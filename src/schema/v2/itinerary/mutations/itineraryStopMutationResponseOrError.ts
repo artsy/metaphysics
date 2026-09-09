@@ -4,9 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { ItineraryStopType } from "../itineraryStop"
 
 // Shared success/failure/union types for every mutation whose successful
-// payload is a single `ItineraryStop` (create, update, delete-by-id).
-// `removeItineraryStopByItem` can affect more than one stop at once, so it
-// gets its own plural response type instead of reusing this one.
+// payload is a single `ItineraryStop`: create, update and delete.
 
 export const ItineraryStopMutationSuccessType = new GraphQLObjectType<
   any,

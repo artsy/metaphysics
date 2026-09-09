@@ -79,12 +79,6 @@ const mutations: {
     successFragment:
       "... on ItineraryStopMutationSuccess { itineraryStop { title } }",
   },
-  {
-    name: "removeItineraryStopByItem",
-    input: `itineraryID: "itinerary-id", itemType: "PartnerShow", itemID: "show-id"`,
-    successFragment:
-      "... on RemoveItineraryStopByItemSuccess { itineraryStops { title } }",
-  },
 ]
 
 describe("Itinerary mutations (stubs, pending Gravity)", () => {

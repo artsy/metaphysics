@@ -363,7 +363,6 @@ import { deleteItineraryMutation } from "./itinerary/mutations/deleteItineraryMu
 import { deleteItinerarySectionMutation } from "./itinerary/mutations/deleteItinerarySectionMutation"
 import { deleteItineraryStopMutation } from "./itinerary/mutations/deleteItineraryStopMutation"
 import { publishItineraryMutation } from "./itinerary/mutations/publishItineraryMutation"
-import { removeItineraryStopByItemMutation } from "./itinerary/mutations/removeItineraryStopByItemMutation"
 import { unpublishItineraryMutation } from "./itinerary/mutations/unpublishItineraryMutation"
 import { updateItineraryMutation } from "./itinerary/mutations/updateItineraryMutation"
 import { updateItinerarySectionMutation } from "./itinerary/mutations/updateItinerarySectionMutation"
@@ -815,7 +814,6 @@ export default new GraphQLSchema({
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
-      removeItineraryStopByItem: removeItineraryStopByItemMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
       repositionArtworksInPartnerShow: repositionArtworksInPartnerShowMutation,
