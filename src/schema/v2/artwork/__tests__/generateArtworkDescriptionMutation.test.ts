@@ -60,6 +60,28 @@ describe("generateArtworkDescription", () => {
     })
   })
 
+  it("returns failure when Gravity omits the generated description", async () => {
+    const context = {
+      generateArtworkDescriptionLoader: jest.fn().mockResolvedValue({
+        id: "artwork-1",
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "generateArtworkDescription": {
+          "artworkDescriptionOrError": {
+            "mutationError": {
+              "message": "Unable to generate artwork description",
+            },
+          },
+        },
+      }
+    `)
+  })
+
   it("returns failure on Gravity error", async () => {
     const gravityResponseBody = {
       type: "error",

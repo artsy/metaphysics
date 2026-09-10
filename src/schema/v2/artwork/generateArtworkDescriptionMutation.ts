@@ -78,7 +78,16 @@ export const generateArtworkDescriptionMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await generateArtworkDescriptionLoader(id)
+      const result = await generateArtworkDescriptionLoader(id)
+
+      if (!result?.additional_information) {
+        return {
+          message: "Unable to generate artwork description",
+          _type: "GravityMutationError",
+        }
+      }
+
+      return result
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
