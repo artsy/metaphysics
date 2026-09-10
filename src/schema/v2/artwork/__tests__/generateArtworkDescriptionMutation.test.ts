@@ -7,7 +7,7 @@ const mutation = `
     generateArtworkDescription(input: { id: "artwork-1" }) {
       artworkDescriptionOrError {
         ... on GenerateArtworkDescriptionSuccess {
-          additionalInformation
+          generatedDescription
         }
 
         ... on GenerateArtworkDescriptionFailure {
@@ -52,7 +52,7 @@ describe("generateArtworkDescription", () => {
         {
           "generateArtworkDescription": {
             "artworkDescriptionOrError": {
-              "additionalInformation": "AI generated description.",
+              "generatedDescription": "AI generated description.",
             },
           },
         }

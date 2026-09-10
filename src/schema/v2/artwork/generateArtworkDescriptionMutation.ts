@@ -19,9 +19,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "GenerateArtworkDescriptionSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    additionalInformation: {
+    generatedDescription: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The generated artwork description",
+      description:
+        "AI-generated artwork description suggestion. Not saved to the artwork until the user applies it.",
       resolve: ({ additional_information }) => additional_information,
     },
   }),

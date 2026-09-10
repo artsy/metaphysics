@@ -21094,9 +21094,9 @@ union GenerateArtworkDescriptionResponseOrError =
 
 type GenerateArtworkDescriptionSuccess {
   """
-  The generated artwork description
+  AI-generated artwork description suggestion. Not saved to the artwork until the user applies it.
   """
-  additionalInformation: String!
+  generatedDescription: String!
 }
 
 type GravityARImage {
