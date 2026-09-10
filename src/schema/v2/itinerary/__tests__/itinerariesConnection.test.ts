@@ -13,21 +13,32 @@ const noItemsLoaders = {
   fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
 }
 
-// The fixture has 8 published, curated guides (3 London, 1 each for New
-// York, Los Angeles, Berlin, Paris, and Hong Kong) plus two unlisted
-// personal itineraries owned by "user-42" (one in New York, one in LA).
+// The fixture has 15 published, curated guides (5 London, 2 each for New
+// York and Paris, 1 each for Los Angeles, Berlin, Hong Kong, Tokyo, Milan
+// and Mexico City) plus two unlisted personal itineraries owned by
+// "user-42" (one in New York, one in LA).
 const LONDON_CURATED_IDS = [
   "chill-vibes-only",
   "36-hours-in-london",
   "must-sees-and-hidden-gems",
+  "peckham-and-deptford",
+  "mayfair-in-an-afternoon",
+]
+const PARIS_CURATED_IDS = [
+  "paris-marais-to-left-bank",
+  "paris-right-bank-galleries",
 ]
 const CURATED_IDS = [
   ...LONDON_CURATED_IDS,
+  ...PARIS_CURATED_IDS,
   "chelsea-and-the-high-line",
+  "lower-east-side-crawl",
   "la-arts-district-and-miracle-mile",
   "berlin-mitte-to-kreuzberg",
-  "paris-marais-to-left-bank",
   "hong-kong-central-to-west-kowloon",
+  "tokyo-roppongi-to-ginza",
+  "milan-brera-and-porta-venezia",
+  "mexico-city-roma-and-juarez",
 ]
 const PERSONAL_ID = "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
 const PERSONAL_IDS = [PERSONAL_ID, "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"]
@@ -35,7 +46,7 @@ const PERSONAL_IDS = [PERSONAL_ID, "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"]
 describe("itinerariesConnection (root field)", () => {
   const query = gql`
     {
-      itinerariesConnection(first: 10) {
+      itinerariesConnection(first: 25) {
         totalCount
         edges {
           node {
@@ -49,7 +60,7 @@ describe("itinerariesConnection (root field)", () => {
   it("returns only public itineraries when there is no viewer", async () => {
     const data = await runQuery(query)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(8)
+    expect(data.itinerariesConnection.totalCount).toEqual(15)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     expect(ids.sort()).toEqual(CURATED_IDS.sort())
   })
@@ -57,7 +68,7 @@ describe("itinerariesConnection (root field)", () => {
   it("also includes the viewer's own itinerary, whatever its visibility", async () => {
     const data = await runAuthenticatedQuery(query, noItemsLoaders)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(10)
+    expect(data.itinerariesConnection.totalCount).toEqual(17)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     CURATED_IDS.forEach((id) => expect(ids).toContain(id))
     PERSONAL_IDS.forEach((id) => expect(ids).toContain(id))
@@ -72,7 +83,7 @@ describe("itinerariesConnection (root field)", () => {
       userID: "someone-else",
     })
 
-    expect(data.itinerariesConnection.totalCount).toEqual(8)
+    expect(data.itinerariesConnection.totalCount).toEqual(15)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     PERSONAL_IDS.forEach((id) => expect(ids).not.toContain(id))
   })
@@ -116,7 +127,7 @@ describe("itinerariesConnection (root field)", () => {
       {}
     )
 
-    expect(data.itinerariesConnection.totalCount).toEqual(3)
+    expect(data.itinerariesConnection.totalCount).toEqual(5)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
     expect(ids.sort()).toEqual(LONDON_CURATED_IDS.sort())
   })
@@ -146,12 +157,13 @@ describe("itinerariesConnection (root field)", () => {
       {}
     )
 
-    expect(data.itinerariesConnection.totalCount).toEqual(1)
-    expect(data.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "paris-marais-to-left-bank"
+    expect(data.itinerariesConnection.totalCount).toEqual(2)
+    const parisIds = data.itinerariesConnection.edges.map(
+      (e) => e.node.internalID
     )
-    expect(data.itinerariesConnection.edges[0].node.citySlug).toEqual(
-      "paris-france"
+    expect(parisIds.sort()).toEqual(PARIS_CURATED_IDS.sort())
+    data.itinerariesConnection.edges.forEach((e) =>
+      expect(e.node.citySlug).toEqual("paris-france")
     )
   })
 
