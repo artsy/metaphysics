@@ -12,7 +12,7 @@ import {
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { ItineraryType } from "./itinerary"
-import { attachStopItems } from "./stopItems"
+import { attachStopItemsToMany } from "./stopItems"
 
 export const ItinerariesConnectionType = connectionWithCursorInfo({
   name: "Itineraries",
@@ -27,8 +27,6 @@ interface ItinerariesConnectionArgs extends CursorPageable {
 }
 
 interface ItinerariesConnectionOptions {
-  // Ignored when `onlyOwnedBy` is set.
-  userID?: string | null
   onlyOwnedBy?: string | null
 }
 
@@ -58,9 +56,7 @@ export const resolveItinerariesConnection = async (
 
   const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-  await Promise.all(
-    body.map((itinerary) => attachStopItems(itinerary, context))
-  )
+  await attachStopItemsToMany(body, context)
 
   return paginationResolver({
     totalCount,
@@ -91,7 +87,7 @@ export const ItinerariesConnectionField: GraphQLFieldConfig<
     size: { type: GraphQLInt },
   }),
   resolve: (_root, args, context) =>
-    resolveItinerariesConnection(args, context, { userID: context.userID }),
+    resolveItinerariesConnection(args, context),
 }
 
 export default ItinerariesConnectionField

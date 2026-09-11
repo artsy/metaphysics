@@ -1,6 +1,8 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 
+// Mirrors Gravity's list index (`properties: :short`), which has no
+// `sections` key; pass `sections: [...]` to opt into a detail-shaped payload.
 const itinerary = (id: string, overrides = {}) => ({
   id,
   slug: id,
@@ -20,7 +22,6 @@ const itinerary = (id: string, overrides = {}) => ({
   image_urls: null,
   created_at: "2026-08-01T09:00:00Z",
   updated_at: "2026-08-01T09:00:00Z",
-  sections: [],
   ...overrides,
 })
 
@@ -126,7 +127,7 @@ describe("itinerariesConnection (root field)", () => {
     )
   })
 
-  it("wires attachStopItems in: a returned stop's item resolves", async () => {
+  it("wires attachStopItemsToMany in: a returned stop's item resolves", async () => {
     const withStop = itinerary("a", {
       sections_count: 1,
       sections: [
