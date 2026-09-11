@@ -10,7 +10,7 @@ import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import {
   buildAgentTools,
-  summarizeToolCall,
+  describeToolCall,
   AIAgentToolRunResult,
 } from "./tools"
 import {
@@ -463,6 +463,7 @@ export async function* runTurn(
     conversationID: string
     message: string
     history?: AIAgentHistoryEntry[] | null
+    includeDebugToolCalls?: boolean | null
   },
   schema: GraphQLSchema,
   context: ResolverContext
@@ -570,10 +571,15 @@ export async function* runTurn(
 
         case "tool-call": {
           toolCallCount += 1
+          const description = describeToolCall(part.input)
           const payload: AIAgentToolCallPayload = {
             __typename: "AIAgentToolCall",
             toolName: part.toolName,
-            summary: summarizeToolCall(part.input),
+            activity: description.activity,
+            summary: description.summary,
+            debugSummary: input.includeDebugToolCalls
+              ? description.debugSummary
+              : null,
           }
           yield payload
           break
@@ -585,7 +591,9 @@ export async function* runTurn(
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
             ok: output.ok,
-            summary: output.ok ? null : output.content,
+            summary: output.ok ? null : "Search failed.",
+            debugSummary:
+              !output.ok && input.includeDebugToolCalls ? output.content : null,
           }
           yield payload
           break
@@ -598,7 +606,10 @@ export async function* runTurn(
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
             ok: false,
-            summary: "The query could not be run.",
+            summary: "Search failed.",
+            debugSummary: input.includeDebugToolCalls
+              ? "The query could not be run."
+              : null,
           }
           yield payload
           break
