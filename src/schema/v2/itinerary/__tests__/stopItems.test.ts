@@ -31,9 +31,9 @@ const buildStop = (
 describe("loadStopItems", () => {
   it("batches ids by type, calling each loader at most once", async () => {
     const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
-    const partnerLocationByIdLoader = jest
+    const partnerLocationsByIdsLoader = jest
       .fn()
-      .mockResolvedValue({ _id: "location-1" })
+      .mockResolvedValue([{ id: "location-1" }])
     const fairsLoader = jest
       .fn()
       .mockResolvedValue({ body: [{ _id: "fair-1" }], headers: {} })
@@ -48,14 +48,16 @@ describe("loadStopItems", () => {
 
     const map = await loadStopItems(stops, {
       showsLoader,
-      partnerLocationByIdLoader,
+      partnerLocationsByIdsLoader,
       fairsLoader,
     } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
     expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"] })
-    expect(partnerLocationByIdLoader).toHaveBeenCalledTimes(1)
-    expect(partnerLocationByIdLoader).toHaveBeenCalledWith("location-1")
+    expect(partnerLocationsByIdsLoader).toHaveBeenCalledTimes(1)
+    expect(partnerLocationsByIdsLoader).toHaveBeenCalledWith({
+      id: ["location-1"],
+    })
     expect(fairsLoader).toHaveBeenCalledTimes(1)
     expect(fairsLoader).toHaveBeenCalledWith({ id: ["fair-1"] })
 
@@ -64,7 +66,7 @@ describe("loadStopItems", () => {
       __typename: "Show",
     })
     expect(map.get("PartnerLocation:location-1")).toEqual({
-      _id: "location-1",
+      id: "location-1",
       __typename: "PartnerLocation",
     })
     expect(map.get("Fair:fair-1")).toEqual({
@@ -83,15 +85,13 @@ describe("loadStopItems", () => {
     expect(map.get("Fair:gone")).toBeUndefined()
   })
 
-  it("leaves out a location that 404s rather than failing the itinerary", async () => {
-    const partnerLocationByIdLoader = jest
-      .fn()
-      .mockRejectedValue(new Error("Not Found"))
+  it("leaves a location missing from the batch response out of the map", async () => {
+    const partnerLocationsByIdsLoader = jest.fn().mockResolvedValue([])
 
     const stops = [buildStop({ item_type: "PartnerLocation", item_id: "gone" })]
 
     const map = await loadStopItems(stops, {
-      partnerLocationByIdLoader,
+      partnerLocationsByIdsLoader,
     } as any)
 
     expect(map.get("PartnerLocation:gone")).toBeUndefined()
@@ -113,6 +113,20 @@ describe("loadStopItems", () => {
     await expect(loadStopItems(stops, { fairsLoader } as any)).rejects.toThrow(
       "Gravity 500"
     )
+  })
+
+  it("propagates a location loader failure instead of swallowing it into a null item", async () => {
+    const partnerLocationsByIdsLoader = jest
+      .fn()
+      .mockRejectedValue(new Error("Gravity 500"))
+
+    const stops = [
+      buildStop({ item_type: "PartnerLocation", item_id: "loc-1" }),
+    ]
+
+    await expect(
+      loadStopItems(stops, { partnerLocationsByIdsLoader } as any)
+    ).rejects.toThrow("Gravity 500")
   })
 })
 

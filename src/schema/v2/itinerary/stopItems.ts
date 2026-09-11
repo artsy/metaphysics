@@ -4,14 +4,18 @@ import { GravityItinerary, GravityItineraryStop } from "./types"
 type StopItemType = "PartnerShow" | "PartnerLocation" | "Fair"
 
 const LOADER_BY_ITEM_TYPE: Record<
-  "PartnerShow" | "Fair",
+  StopItemType,
   {
-    loaderKey: "showsLoader" | "fairsLoader"
+    loaderKey: "showsLoader" | "fairsLoader" | "partnerLocationsByIdsLoader"
     typename: string
   }
 > = {
   PartnerShow: { loaderKey: "showsLoader", typename: "Show" },
   Fair: { loaderKey: "fairsLoader", typename: "Fair" },
+  PartnerLocation: {
+    loaderKey: "partnerLocationsByIdsLoader",
+    typename: "PartnerLocation",
+  },
 }
 
 const isStopItemType = (value: string | null): value is StopItemType =>
@@ -47,41 +51,26 @@ export const loadStopItems = async (
 
   const map = new Map<string, ResolvedStopItem>()
 
-  const fetches = (["PartnerShow", "Fair"] as const).map(async (itemType) => {
-    const ids = Array.from(idsByType[itemType])
-    if (ids.length === 0) return
+  const fetches = (["PartnerShow", "Fair", "PartnerLocation"] as const).map(
+    async (itemType) => {
+      const ids = Array.from(idsByType[itemType])
+      if (ids.length === 0) return
 
-    const { loaderKey, typename } = LOADER_BY_ITEM_TYPE[itemType]
-    const loader = context[loaderKey]
-    if (!loader) return
+      const { loaderKey, typename } = LOADER_BY_ITEM_TYPE[itemType]
+      const loader = context[loaderKey]
+      if (!loader) return
 
-    const result = await loader({ id: ids })
-    const records: any[] = Array.isArray(result) ? result : result.body
+      const result = await loader({ id: ids })
+      const records: any[] = Array.isArray(result) ? result : result.body
 
-    for (const record of records) {
-      map.set(mapKey(itemType, record._id), {
-        ...record,
-        __typename: typename,
-      })
+      for (const record of records) {
+        map.set(mapKey(itemType, record._id ?? record.id), {
+          ...record,
+          __typename: typename,
+        })
+      }
     }
-  })
-
-  // Gravity has no batch route for locations, so these go one request each.
-  const locationIds = Array.from(idsByType.PartnerLocation)
-  const locationLoader = context.partnerLocationByIdLoader
-  if (locationIds.length > 0 && locationLoader) {
-    await Promise.all(
-      locationIds.map(async (id) => {
-        const location = await locationLoader(id).catch(() => null)
-        if (location) {
-          map.set(mapKey("PartnerLocation", id), {
-            ...location,
-            __typename: "PartnerLocation",
-          })
-        }
-      })
-    )
-  }
+  )
 
   await Promise.all(fetches)
 
