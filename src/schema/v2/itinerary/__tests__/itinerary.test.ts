@@ -1,4 +1,5 @@
 import { runQuery } from "schema/v2/test/utils"
+import { HTTPError } from "lib/HTTPError"
 
 const gravityItinerary = {
   id: "b0b1c2d3-e4f5-4a6b-8c9d-0e1f2a3b4c5d",
@@ -220,14 +221,28 @@ describe("Itinerary", () => {
     })
   })
 
-  it("resolves null when Gravity does not return one", async () => {
+  it("resolves null on a Gravity 404", async () => {
     const query = `{ itinerary(id: "nope") { title } }`
 
     const data = await runQuery(query, {
-      itineraryLoader: jest.fn().mockRejectedValue(new Error("Not Found")),
+      itineraryLoader: jest
+        .fn()
+        .mockRejectedValue(new HTTPError("Not Found", 404)),
     })
 
     expect(data.itinerary).toBeNull()
+  })
+
+  it("propagates a non-404 loader failure instead of resolving null", async () => {
+    const query = `{ itinerary(id: "chill-vibes-only") { title } }`
+
+    await expect(
+      runQuery(query, {
+        itineraryLoader: jest
+          .fn()
+          .mockRejectedValue(new HTTPError("Gravity down", 500)),
+      })
+    ).rejects.toThrow("Gravity down")
   })
 
   it("passes a share token through to Gravity", async () => {

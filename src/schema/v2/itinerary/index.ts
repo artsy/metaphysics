@@ -1,5 +1,6 @@
 import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { HTTPError } from "lib/HTTPError"
 import { ItineraryType } from "./itinerary"
 import { attachStopItems } from "./stopItems"
 
@@ -28,7 +29,10 @@ export const Itinerary: GraphQLFieldConfig<void, ResolverContext> = {
     const itinerary = await loader(
       id,
       shareToken ? { share_token: shareToken } : {}
-    ).catch(() => null)
+    ).catch((error) => {
+      if (error instanceof HTTPError && error.statusCode === 404) return null
+      throw error
+    })
     if (!itinerary) return null
 
     return attachStopItems(itinerary, context)
