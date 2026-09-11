@@ -14,6 +14,7 @@ import { ItineraryStopCategory } from "../itineraryStop"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
 interface InputProps {
+  clientMutationId?: string
   id: string
   itemType?: string
   itemID?: string
@@ -77,20 +78,21 @@ export const updateItineraryStopMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ id, ...attributes }, context) => {
+  mutateAndGetPayload: async (
+    { id, clientMutationId: _clientMutationId, ...attributes },
+    context
+  ) => {
     if (!context.updateItineraryStopLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    let stop
+
     try {
-      const stop = await context.updateItineraryStopLoader(
+      stop = await context.updateItineraryStopLoader(
         id,
         snakeCaseKeys(attributes)
       )
-
-      await attachItemsToStops([stop], context)
-
-      return stop
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -100,5 +102,10 @@ export const updateItineraryStopMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    await attachItemsToStops([stop], context).catch(() => undefined)
+
+    return stop
   },
 })
