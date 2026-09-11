@@ -7,9 +7,8 @@ interface InputProps {
   id: string
 }
 
-// Separate from `updateItinerary` because Gravity role-checks the
-// publish/unpublish transition and records who published the guide and
-// when — that's not just a field update.
+// Separate from `updateItinerary`: Gravity role-checks this transition
+// and records who published and when.
 export const unpublishItineraryMutation = mutationWithClientMutationId<
   InputProps,
   any,

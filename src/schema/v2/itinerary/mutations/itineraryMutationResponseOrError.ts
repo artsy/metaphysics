@@ -3,9 +3,8 @@ import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ItineraryType } from "../itinerary"
 
-// Shared success/failure/union types for every mutation whose successful
-// payload is a whole `Itinerary` (create, update, delete, publish,
-// unpublish, copy) — one definition instead of six near-identical copies.
+// Shared success/failure/union types for every mutation that returns a
+// whole `Itinerary`, instead of six near-identical copies.
 
 export const ItineraryMutationSuccessType = new GraphQLObjectType<
   any,
