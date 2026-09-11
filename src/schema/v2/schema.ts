@@ -359,10 +359,13 @@ import { Itinerary } from "./itinerary"
 import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
 import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
 import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
+import { createItinerarySectionMutation } from "./itinerary/mutations/createItinerarySectionMutation"
 import { deleteItineraryMutation } from "./itinerary/mutations/deleteItineraryMutation"
+import { deleteItinerarySectionMutation } from "./itinerary/mutations/deleteItinerarySectionMutation"
 import { publishItineraryMutation } from "./itinerary/mutations/publishItineraryMutation"
 import { unpublishItineraryMutation } from "./itinerary/mutations/unpublishItineraryMutation"
 import { updateItineraryMutation } from "./itinerary/mutations/updateItineraryMutation"
+import { updateItinerarySectionMutation } from "./itinerary/mutations/updateItinerarySectionMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -691,6 +694,7 @@ export default new GraphQLSchema({
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
       createItinerary: createItineraryMutation,
+      createItinerarySection: createItinerarySectionMutation,
       createNavigationDraft: createNavigationDraftMutation,
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
@@ -760,6 +764,7 @@ export default new GraphQLSchema({
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
       deleteItinerary: deleteItineraryMutation,
+      deleteItinerarySection: deleteItinerarySectionMutation,
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
@@ -870,6 +875,7 @@ export default new GraphQLSchema({
       updateFeaturedLink: UpdateFeaturedLinkMutation,
       updateHeroUnit: updateHeroUnitMutation,
       updateItinerary: updateItineraryMutation,
+      updateItinerarySection: updateItinerarySectionMutation,
       updateMeCollectionsMutation: updateMeCollectionsMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,

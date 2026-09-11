@@ -1474,6 +1474,21 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createItinerarySectionLoader: gravityLoader(
+      "itinerary_section",
+      {},
+      { method: "POST" }
+    ),
+    updateItinerarySectionLoader: gravityLoader(
+      (id) => `itinerary_section/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItinerarySectionLoader: gravityLoader(
+      (id) => `itinerary_section/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,

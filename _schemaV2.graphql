@@ -23436,6 +23436,18 @@ type ItinerarySection {
   title: String
 }
 
+type ItinerarySectionMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItinerarySectionMutationResponseOrError =
+    ItinerarySectionMutationFailure
+  | ItinerarySectionMutationSuccess
+
+type ItinerarySectionMutationSuccess {
+  itinerarySection: ItinerarySection
+}
+
 type ItineraryStop {
   address: String
   category: ItineraryStopCategory
@@ -26599,6 +26611,13 @@ type Mutation {
   createItinerary(input: createItineraryInput!): createItineraryPayload
 
   """
+  Create a section in an itinerary.
+  """
+  createItinerarySection(
+    input: createItinerarySectionInput!
+  ): createItinerarySectionPayload
+
+  """
   Create a Mailchimp campaign draft for a partner from pre-rendered HTML
   """
   createMailchimpCampaign(
@@ -26899,6 +26918,13 @@ type Mutation {
   Delete an itinerary.
   """
   deleteItinerary(input: deleteItineraryInput!): deleteItineraryPayload
+
+  """
+  Delete a section and its stops.
+  """
+  deleteItinerarySection(
+    input: deleteItinerarySectionInput!
+  ): deleteItinerarySectionPayload
 
   """
   Disconnect a Mailchimp account from a partner
@@ -27645,6 +27671,13 @@ type Mutation {
   Update an itinerary. Pass `generateShareToken` or `revokeShareToken` to manage its share link.
   """
   updateItinerary(input: updateItineraryInput!): updateItineraryPayload
+
+  """
+  Update a section. `position` moves it among its itinerary's sections.
+  """
+  updateItinerarySection(
+    input: updateItinerarySectionInput!
+  ): updateItinerarySectionPayload
 
   """
   Updates the user's collections in batch.
@@ -45149,6 +45182,22 @@ type createItineraryPayload {
   responseOrError: ItineraryMutationResponseOrError
 }
 
+input createItinerarySectionInput {
+  clientMutationId: String
+  itineraryID: String!
+
+  """
+  Free-text note shown with the section.
+  """
+  note: String
+  title: String
+}
+
+type createItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
+}
+
 type createOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -45316,6 +45365,16 @@ input deleteItineraryInput {
 type deleteItineraryPayload {
   clientMutationId: String
   responseOrError: ItineraryMutationResponseOrError
+}
+
+input deleteItinerarySectionInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
 }
 
 type deleteOrderedSetFailure {
@@ -45787,6 +45846,27 @@ input updateItineraryInput {
 type updateItineraryPayload {
   clientMutationId: String
   responseOrError: ItineraryMutationResponseOrError
+}
+
+input updateItinerarySectionInput {
+  clientMutationId: String
+  id: String!
+
+  """
+  Free-text note shown with the section.
+  """
+  note: String
+
+  """
+  Reorders the section among its itinerary's sections via acts_as_list's insert_at. There is no separate reposition mutation for sections.
+  """
+  position: Int
+  title: String
+}
+
+type updateItinerarySectionPayload {
+  clientMutationId: String
+  responseOrError: ItinerarySectionMutationResponseOrError
 }
 
 input updateMeCollectionsMutationInput {
