@@ -93,7 +93,11 @@ describe("loadStopItems", () => {
     } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
-    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
+    expect(showsLoader).toHaveBeenCalledWith({
+      id: ["show-1"],
+      size: 1,
+      include_local_discovery: true,
+    })
     expect(partnerLocationsByIdsLoader).toHaveBeenCalledTimes(1)
     expect(partnerLocationsByIdsLoader).toHaveBeenCalledWith({
       id: ["location-1"],
@@ -228,7 +232,11 @@ describe("attachStopItems", () => {
     await attachStopItems(itinerary, { showsLoader } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
-    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
+    expect(showsLoader).toHaveBeenCalledWith({
+      id: ["show-1"],
+      size: 1,
+      include_local_discovery: true,
+    })
 
     const resolvedItems = itinerary.sections.flatMap((section) =>
       section.stops.map((stop: any) => stop._resolvedItem)
@@ -288,7 +296,11 @@ describe("attachStopItemsToMany", () => {
     } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
-    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
+    expect(showsLoader).toHaveBeenCalledWith({
+      id: ["show-1"],
+      size: 1,
+      include_local_discovery: true,
+    })
 
     expect((itineraryA.sections[0].stops[0] as any)._resolvedItem).toEqual({
       _id: "show-1",

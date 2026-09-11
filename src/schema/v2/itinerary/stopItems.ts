@@ -9,9 +9,16 @@ const LOADER_BY_ITEM_TYPE: Record<
     loaderKey: "showsLoader" | "fairsLoader" | "partnerLocationsByIdsLoader"
     typename: string
     idKey: "_id" | "id"
+    extraParams?: Record<string, unknown>
   }
 > = {
-  PartnerShow: { loaderKey: "showsLoader", typename: "Show", idKey: "_id" },
+  // Gravity's shows index excludes is_local_discovery shows by default.
+  PartnerShow: {
+    loaderKey: "showsLoader",
+    typename: "Show",
+    idKey: "_id",
+    extraParams: { include_local_discovery: true },
+  },
   Fair: { loaderKey: "fairsLoader", typename: "Fair", idKey: "_id" },
   PartnerLocation: {
     loaderKey: "partnerLocationsByIdsLoader",
@@ -57,11 +64,17 @@ export const loadStopItems = async (
       const ids = Array.from(idsByType[itemType])
       if (ids.length === 0) return
 
-      const { loaderKey, typename, idKey } = LOADER_BY_ITEM_TYPE[itemType]
+      const { loaderKey, typename, idKey, extraParams } = LOADER_BY_ITEM_TYPE[
+        itemType
+      ]
       const loader = context[loaderKey]
       if (!loader) return
 
-      const result = await loader({ id: ids, size: ids.length })
+      const result = await loader({
+        id: ids,
+        size: ids.length,
+        ...extraParams,
+      })
       const records: any[] = Array.isArray(result) ? result : result.body
 
       for (const record of records) {
