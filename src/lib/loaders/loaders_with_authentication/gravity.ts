@@ -1448,6 +1448,7 @@ export default (accessToken, userID, opts) => {
     // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
+    fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
     createItineraryLoader: gravityLoader("itinerary", {}, { method: "POST" }),
     updateItineraryLoader: gravityLoader(
       (id) => `itinerary/${id}`,

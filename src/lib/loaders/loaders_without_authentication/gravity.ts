@@ -337,6 +337,7 @@ export default (opts) => {
     showLoader: gravityLoader((id) => `show/${id}`),
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
+    fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),

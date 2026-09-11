@@ -13,6 +13,8 @@ import { date } from "schema/v2/fields/date"
 import { ShowType } from "schema/v2/show"
 import { LocationType } from "schema/v2/location"
 import { FairType } from "schema/v2/fair"
+import ShowEventType from "schema/v2/show_event"
+import { FairEventType } from "schema/v2/fairEvent"
 import { StopWithResolvedItem } from "./stopItems"
 
 export const ItineraryStopCategory = new GraphQLEnumType({
@@ -58,6 +60,21 @@ export const ItineraryStopItem = new GraphQLUnionType({
         return FairType.name
       default:
         return null
+    }
+  },
+})
+
+export const ItineraryStopEvent = new GraphQLUnionType({
+  name: "ItineraryStopEvent",
+  types: [ShowEventType, FairEventType],
+  resolveType: (value) => {
+    switch (value?.__typename) {
+      case "ShowEventType":
+        return ShowEventType.name
+      case "FairEvent":
+        return FairEventType.name
+      default:
+        return undefined
     }
   },
 })
@@ -149,6 +166,12 @@ export const ItineraryStopType = new GraphQLObjectType<
       // `_resolvedItem` is filled by `attachStopItems`, which every
       // resolver returning an `Itinerary` must call first.
       resolve: ({ _resolvedItem }) => _resolvedItem ?? null,
+    },
+    event: {
+      description:
+        "The event this stop names inside its show or fair, when any",
+      type: ItineraryStopEvent,
+      resolve: ({ _resolvedEvent }) => _resolvedEvent ?? null,
     },
   },
 })

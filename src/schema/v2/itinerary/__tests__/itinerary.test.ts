@@ -245,6 +245,43 @@ describe("Itinerary", () => {
     })
   })
 
+  it("resolves the event a show stop names", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections {
+            stops {
+              event {
+                __typename
+                ... on ShowEventType { internalID }
+                ... on FairEvent { internalID }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      ...loaders(),
+      showsLoader: jest.fn().mockResolvedValue([
+        {
+          _id: "show-1",
+          events: [{ _id: "event-1", title: "Opening Reception" }],
+        },
+      ]),
+    }
+    const data = await runQuery(query, context)
+
+    const [show, gallery, custom] = data.itinerary.sections[0].stops
+    expect(show.event).toEqual({
+      __typename: "ShowEventType",
+      internalID: "event-1",
+    })
+    expect(gallery.event).toBeNull()
+    expect(custom.event).toBeNull()
+  })
+
   it("resolves null on a Gravity 404", async () => {
     const query = `{ itinerary(id: "nope") { title } }`
 
