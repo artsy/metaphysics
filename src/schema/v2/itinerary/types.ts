@@ -4,11 +4,11 @@ export interface GravityItineraryStop {
   id: string
   itinerary_section_id: string
   position: number
-  /** One of `PartnerShow`, `PartnerLocation`, `Fair`. Null for a custom stop. */
-  item_type: string | null
+  /** Null for a custom stop. */
+  item_type: "PartnerShow" | "PartnerLocation" | "Fair" | null
   item_id: string | null
-  /** `PartnerShowEvent` or `FairEvent`, and only on a show or fair stop. */
-  event_type: string | null
+  /** Only on a show or fair stop. */
+  event_type: "PartnerShowEvent" | "FairEvent" | null
   event_id: string | null
   /** Overrides the item's name. Required when there is no item. */
   title: string | null

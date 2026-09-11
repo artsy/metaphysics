@@ -147,6 +147,7 @@ describe("Itinerary", () => {
               isFreeAdmission
               timeZone
               sourceURL
+              itemType
               eventType
               eventID
             }
@@ -172,11 +173,14 @@ describe("Itinerary", () => {
     const [show, gallery, custom] = section.stops
     expect(show.timeZone).toEqual("Europe/London")
     expect(show.sourceURL).toEqual("https://example.com/source")
-    expect(show.eventType).toEqual("PartnerShowEvent")
+    expect(show.itemType).toEqual("SHOW")
+    expect(show.eventType).toEqual("SHOW_EVENT")
     expect(show.eventID).toEqual("event-1")
     expect(gallery.category).toEqual("GALLERY")
     expect(custom.title).toEqual("Coffee at Monmouth")
     expect(custom.address).toEqual("2 Park Street, London SE1 9AB")
+    expect(custom.itemType).toBeNull()
+    expect(custom.eventType).toBeNull()
   })
 
   it("maps a non-public Gravity visibility value", async () => {
