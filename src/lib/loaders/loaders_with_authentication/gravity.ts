@@ -1489,6 +1489,21 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    createItineraryStopLoader: gravityLoader(
+      "itinerary_stop",
+      {},
+      { method: "POST" }
+    ),
+    updateItineraryStopLoader: gravityLoader(
+      (id) => `itinerary_stop/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItineraryStopLoader: gravityLoader(
+      (id) => `itinerary_stop/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,

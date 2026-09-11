@@ -360,12 +360,15 @@ import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
 import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
 import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
 import { createItinerarySectionMutation } from "./itinerary/mutations/createItinerarySectionMutation"
+import { createItineraryStopMutation } from "./itinerary/mutations/createItineraryStopMutation"
 import { deleteItineraryMutation } from "./itinerary/mutations/deleteItineraryMutation"
 import { deleteItinerarySectionMutation } from "./itinerary/mutations/deleteItinerarySectionMutation"
+import { deleteItineraryStopMutation } from "./itinerary/mutations/deleteItineraryStopMutation"
 import { publishItineraryMutation } from "./itinerary/mutations/publishItineraryMutation"
 import { unpublishItineraryMutation } from "./itinerary/mutations/unpublishItineraryMutation"
 import { updateItineraryMutation } from "./itinerary/mutations/updateItineraryMutation"
 import { updateItinerarySectionMutation } from "./itinerary/mutations/updateItinerarySectionMutation"
+import { updateItineraryStopMutation } from "./itinerary/mutations/updateItineraryStopMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -695,6 +698,7 @@ export default new GraphQLSchema({
       createInvoicePayment: createInvoicePaymentMutation,
       createItinerary: createItineraryMutation,
       createItinerarySection: createItinerarySectionMutation,
+      createItineraryStop: createItineraryStopMutation,
       createNavigationDraft: createNavigationDraftMutation,
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
@@ -765,6 +769,7 @@ export default new GraphQLSchema({
       deleteHeroUnit: deleteHeroUnitMutation,
       deleteItinerary: deleteItineraryMutation,
       deleteItinerarySection: deleteItinerarySectionMutation,
+      deleteItineraryStop: deleteItineraryStopMutation,
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
@@ -876,6 +881,7 @@ export default new GraphQLSchema({
       updateHeroUnit: updateHeroUnitMutation,
       updateItinerary: updateItineraryMutation,
       updateItinerarySection: updateItinerarySectionMutation,
+      updateItineraryStop: updateItineraryStopMutation,
       updateMeCollectionsMutation: updateMeCollectionsMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
