@@ -11,7 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
 import { ShowType } from "schema/v2/show"
-import { PartnerType } from "schema/v2/partner/partner"
+import { LocationType } from "schema/v2/location"
 import { FairType } from "schema/v2/fair"
 import { StopWithResolvedItem } from "./stopItems"
 
@@ -27,7 +27,7 @@ export const ItineraryStopCategory = new GraphQLEnumType({
 
 export const ItineraryStopItem = new GraphQLUnionType({
   name: "ItineraryStopItem",
-  types: [ShowType, PartnerType, FairType],
+  types: [ShowType, LocationType, FairType],
   // graphql-js 16 requires `resolveType` to return the type NAME, not the
   // GraphQLObjectType itself — returning the object throws at execution
   // time.
@@ -35,8 +35,8 @@ export const ItineraryStopItem = new GraphQLUnionType({
     switch (value?.__typename) {
       case "Show":
         return ShowType.name
-      case "Partner":
-        return PartnerType.name
+      case "PartnerLocation":
+        return LocationType.name
       case "Fair":
         return FairType.name
       default:
@@ -64,19 +64,9 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ title }) => title,
     },
-    titleOverride: {
-      description:
-        "The same raw title-override value as `title`, exposed separately for edit forms",
-      type: GraphQLString,
-      resolve: ({ title_override }) => title_override,
-    },
     address: {
       type: GraphQLString,
       resolve: ({ address }) => address,
-    },
-    addressOverride: {
-      type: GraphQLString,
-      resolve: ({ address_override }) => address_override,
     },
     imageURL: {
       type: GraphQLString,
@@ -92,6 +82,14 @@ export const ItineraryStopType = new GraphQLObjectType<
     },
     startAt: date(({ start_at }) => start_at),
     endAt: date(({ end_at }) => end_at),
+    timeZone: {
+      description:
+        "IANA identifier saying which wall clock startAt and endAt were " +
+        "written against, e.g. Europe/London. Pass it to those fields as " +
+        "`timezone` to render the time the curator meant.",
+      type: GraphQLString,
+      resolve: ({ time_zone }) => time_zone,
+    },
     note: {
       type: GraphQLString,
       resolve: ({ note }) => note,
@@ -104,13 +102,26 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: ({ is_free_admission }) => is_free_admission,
     },
+    eventType: {
+      description:
+        "PartnerShowEvent on a show stop, FairEvent on a fair stop. Null " +
+        "when the stop names no event.",
+      type: GraphQLString,
+      resolve: ({ event_type }) => event_type,
+    },
     eventID: {
       type: GraphQLString,
       resolve: ({ event_id }) => event_id,
     },
+    sourceURL: {
+      description: "Where the curator found this stop",
+      type: GraphQLString,
+      resolve: ({ source_url }) => source_url,
+    },
     item: {
       description:
-        "The Show, Partner, or Fair this stop refers to, if any. A stop " +
+        "The Show, gallery location, or Fair this stop refers to, if " +
+        "any. A stop " +
         "without an `item_id` (e.g. a café) resolves to null.",
       type: ItineraryStopItem,
       // Resolved by `attachStopItems`, which every resolver returning an

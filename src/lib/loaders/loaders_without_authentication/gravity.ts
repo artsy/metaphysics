@@ -335,6 +335,13 @@ export default (opts) => {
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     shortcutLoader: gravityLoader((id) => `shortcut/${id}`),
     showLoader: gravityLoader((id) => `show/${id}`),
+    itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
+    // Gravity's root-level location route, added so a stop whose item is a
+    // `PartnerLocation` resolves for a logged-out reader of a public guide.
+    // The authenticated `partnerLocationLoader` is a different thing: it is
+    // keyed by `{ partnerId, locationId }`, which a stop does not carry.
+    partnerLocationByIdLoader: gravityLoader((id) => `partner_location/${id}`),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),

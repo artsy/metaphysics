@@ -1,194 +1,197 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 
-// `resolveItinerariesConnection` calls `attachStopItems` on every itinerary
-// it returns, regardless of whether `item` was actually requested -- that's
-// what wires batching in unconditionally. `runAuthenticatedQuery` stubs
-// every authenticated loader as a bare `jest.fn()` (resolves `undefined`)
-// unless overridden, so any test whose itineraries carry stop items needs
-// these stubbed with a well-shaped empty response.
-const noItemsLoaders = {
+// Which itineraries a listing may contain is Gravity's decision — its
+// predicate is "published, or the caller's own". Metaphysics used to
+// re-implement that over fixture data; it no longer does, so these tests
+// assert what Metaphysics is actually still responsible for: passing the
+// right arguments through, and mapping what comes back.
+
+const itinerary = (id: string, overrides = {}) => ({
+  id,
+  slug: id,
+  user_id: "user-42",
+  city_slug: "london-united-kingdom",
+  title: `Guide ${id}`,
+  subtitle: null,
+  description: null,
+  author_name: "Casey Lesser",
+  is_curated: true,
+  visibility: "public",
+  published_at: "2026-08-01T09:00:00Z",
+  published_by_id: null,
+  share_token: null,
+  sections_count: 0,
+  image_url: null,
+  image_urls: null,
+  created_at: "2026-08-01T09:00:00Z",
+  updated_at: "2026-08-01T09:00:00Z",
+  sections: [],
+  ...overrides,
+})
+
+const loadersReturning = (body: any[], totalCount = body.length) => ({
+  itinerariesLoader: jest.fn().mockResolvedValue({
+    body,
+    headers: { "x-total-count": String(totalCount) },
+  }),
   showsLoader: jest.fn().mockResolvedValue([]),
-  partnersLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
+  partnerLocationByIdLoader: jest.fn().mockResolvedValue(null),
   fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
-}
+})
 
-// The fixture has 15 published, curated guides (5 London, 2 each for New
-// York and Paris, 1 each for Los Angeles, Berlin, Hong Kong, Tokyo, Milan
-// and Mexico City) plus two unlisted personal itineraries owned by
-// "user-42" (one in New York, one in LA).
-const LONDON_CURATED_IDS = [
-  "chill-vibes-only",
-  "36-hours-in-london",
-  "must-sees-and-hidden-gems",
-  "peckham-and-deptford",
-  "mayfair-in-an-afternoon",
-]
-const PARIS_CURATED_IDS = [
-  "paris-marais-to-left-bank",
-  "paris-right-bank-galleries",
-]
-const CURATED_IDS = [
-  ...LONDON_CURATED_IDS,
-  ...PARIS_CURATED_IDS,
-  "chelsea-and-the-high-line",
-  "lower-east-side-crawl",
-  "la-arts-district-and-miracle-mile",
-  "berlin-mitte-to-kreuzberg",
-  "hong-kong-central-to-west-kowloon",
-  "tokyo-roppongi-to-ginza",
-  "milan-brera-and-porta-venezia",
-  "mexico-city-roma-and-juarez",
-]
-const PERSONAL_ID = "7d4b1e5a-2c3d-4f6e-8a9b-0c1d2e3f4a5b"
-const PERSONAL_IDS = [PERSONAL_ID, "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"]
-
-describe("itinerariesConnection (root field)", () => {
-  const query = gql`
-    {
-      itinerariesConnection(first: 25) {
-        totalCount
-        edges {
-          node {
-            internalID
-          }
+const query = gql`
+  {
+    itinerariesConnection(first: 10) {
+      totalCount
+      edges {
+        node {
+          internalID
+          title
         }
       }
     }
-  `
+  }
+`
 
-  it("returns only public itineraries when there is no viewer", async () => {
-    const data = await runQuery(query)
+describe("itinerariesConnection (root field)", () => {
+  it("maps Gravity's page onto the connection", async () => {
+    const context = loadersReturning([itinerary("a"), itinerary("b")], 7)
 
-    expect(data.itinerariesConnection.totalCount).toEqual(15)
+    const data = await runQuery(query, context)
+
+    expect(data.itinerariesConnection.totalCount).toEqual(7)
     const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids.sort()).toEqual(CURATED_IDS.sort())
+    expect(ids).toEqual(["a", "b"])
+    expect(data.itinerariesConnection.edges[0].node.title).toEqual("Guide a")
   })
 
-  it("also includes the viewer's own itinerary, whatever its visibility", async () => {
-    const data = await runAuthenticatedQuery(query, noItemsLoaders)
+  it("asks Gravity for a total count, so the connection can report one", async () => {
+    const context = loadersReturning([])
 
-    expect(data.itinerariesConnection.totalCount).toEqual(17)
-    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    CURATED_IDS.forEach((id) => expect(ids).toContain(id))
-    PERSONAL_IDS.forEach((id) => expect(ids).toContain(id))
-  })
+    await runQuery(query, context)
 
-  // The critical guarantee: a listing must never hand out someone else's
-  // unlisted itinerary. The personal fixtures are unlisted and owned by
-  // "user-42" — a *different* authenticated viewer must not see them.
-  it("never returns another user's unlisted itinerary", async () => {
-    const data = await runAuthenticatedQuery(query, {
-      ...noItemsLoaders,
-      userID: "someone-else",
-    })
-
-    expect(data.itinerariesConnection.totalCount).toEqual(15)
-    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    PERSONAL_IDS.forEach((id) => expect(ids).not.toContain(id))
-  })
-
-  it("filters by isCurated", async () => {
-    const data = await runAuthenticatedQuery(
-      gql`
-        {
-          itinerariesConnection(first: 10, isCurated: false) {
-            totalCount
-            edges {
-              node {
-                internalID
-              }
-            }
-          }
-        }
-      `,
-      noItemsLoaders
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ total_count: true })
     )
-
-    expect(data.itinerariesConnection.totalCount).toEqual(2)
-    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids.sort()).toEqual([...PERSONAL_IDS].sort())
   })
 
-  it("filters by citySlug", async () => {
-    const data = await runQuery(
-      gql`
-        {
-          itinerariesConnection(first: 10, citySlug: "london-united-kingdom") {
-            totalCount
-            edges {
-              node {
-                internalID
-              }
-            }
-          }
-        }
-      `,
-      {}
-    )
+  it("passes citySlug and isCurated through as Gravity's own filters", async () => {
+    const context = loadersReturning([])
 
-    expect(data.itinerariesConnection.totalCount).toEqual(5)
-    const ids = data.itinerariesConnection.edges.map((e) => e.node.internalID)
-    expect(ids.sort()).toEqual(LONDON_CURATED_IDS.sort())
-  })
-
-  // The regression this fixture change guards against: before curated
-  // guides existed for cities other than London, this returned an empty
-  // page for every other city — the exact "empty screen" bug being fixed.
-  it("returns curated results for a non-London city", async () => {
-    const data = await runQuery(
+    await runQuery(
       gql`
         {
           itinerariesConnection(
             first: 10
-            citySlug: "paris-france"
+            citySlug: "london-united-kingdom"
             isCurated: true
           ) {
             totalCount
-            edges {
-              node {
-                internalID
-                citySlug
-              }
-            }
           }
         }
       `,
-      {}
+      context
     )
 
-    expect(data.itinerariesConnection.totalCount).toEqual(2)
-    const parisIds = data.itinerariesConnection.edges.map(
-      (e) => e.node.internalID
-    )
-    expect(parisIds.sort()).toEqual(PARIS_CURATED_IDS.sort())
-    data.itinerariesConnection.edges.forEach((e) =>
-      expect(e.node.citySlug).toEqual("paris-france")
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        city_slug: "london-united-kingdom",
+        is_curated: true,
+      })
     )
   })
 
-  it("wires attachStopItems in: a returned itinerary's stop item resolves via the batched loader", async () => {
-    const partnersLoader = jest.fn().mockResolvedValue({
-      body: [{ _id: "white-cube" }],
-      headers: {},
+  // `isCurated: false` is a real filter — personal itineraries only — and
+  // must not be dropped the way an absent argument is.
+  it("passes isCurated: false rather than omitting it", async () => {
+    const context = loadersReturning([])
+
+    await runQuery(
+      gql`
+        {
+          itinerariesConnection(first: 10, isCurated: false) {
+            totalCount
+          }
+        }
+      `,
+      context
+    )
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ is_curated: false })
+    )
+  })
+
+  it("sends no owner filter on the root field", async () => {
+    const context = loadersReturning([])
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.not.objectContaining({ user_id: expect.anything() })
+    )
+  })
+
+  it("wires attachStopItems in: a returned stop's item resolves", async () => {
+    const withStop = itinerary("a", {
+      sections_count: 1,
+      sections: [
+        {
+          id: "s1",
+          itinerary_id: "a",
+          title: null,
+          note: null,
+          position: 0,
+          stops_count: 1,
+          created_at: "2026-08-01T09:00:00Z",
+          updated_at: "2026-08-01T09:00:00Z",
+          stops: [
+            {
+              id: "stop-1",
+              itinerary_section_id: "s1",
+              position: 0,
+              item_type: "PartnerShow",
+              item_id: "show-1",
+              event_type: null,
+              event_id: null,
+              title: null,
+              address: null,
+              image_url: null,
+              latitude: null,
+              longitude: null,
+              start_at: null,
+              end_at: null,
+              time_zone: null,
+              note: null,
+              category: null,
+              is_free_admission: null,
+              source_url: null,
+              created_at: "2026-08-01T09:00:00Z",
+              updated_at: "2026-08-01T09:00:00Z",
+            },
+          ],
+        },
+      ],
     })
 
-    // This would come back null on every stop if this connection's
-    // resolver forgot to call `attachStopItems` on the page it returns.
+    const context = {
+      ...loadersReturning([withStop]),
+      showsLoader: jest.fn().mockResolvedValue([{ _id: "show-1" }]),
+    }
+
+    // This comes back null on every stop if the connection's resolver
+    // forgets to call `attachStopItems` on the page it returns.
     const data = await runAuthenticatedQuery(
       gql`
         {
           itinerariesConnection(first: 10) {
             edges {
               node {
-                internalID
                 sections {
                   stops {
                     item {
                       __typename
-                      ... on Partner {
-                        internalID
-                      }
                     }
                   }
                 }
@@ -197,22 +200,18 @@ describe("itinerariesConnection (root field)", () => {
           }
         }
       `,
-      { ...noItemsLoaders, partnersLoader }
+      context
     )
 
-    const mustSees = data.itinerariesConnection.edges.find(
-      (e) => e.node.internalID === "must-sees-and-hidden-gems"
-    )
-
-    expect(mustSees.node.sections[0].stops[0].item).toEqual({
-      __typename: "Partner",
-      internalID: "white-cube",
-    })
+    expect(
+      data.itinerariesConnection.edges[0].node.sections[0].stops[0].item
+        .__typename
+    ).toEqual("Show")
   })
 })
 
 describe("Me.itinerariesConnection", () => {
-  const query = gql`
+  const meQuery = gql`
     {
       me {
         itinerariesConnection(first: 10) {
@@ -227,88 +226,23 @@ describe("Me.itinerariesConnection", () => {
     }
   `
 
-  it("returns only the viewer's own itineraries, whatever their visibility", async () => {
-    const data = await runAuthenticatedQuery(query, noItemsLoaders)
+  // The difference between this and the root field: Gravity is asked for
+  // exactly one owner's itineraries, of any visibility. Without the
+  // user_id, this would return every public guide as though it were the
+  // viewer's own.
+  it("restricts the listing to the viewer by passing their user_id", async () => {
+    const context = {
+      ...loadersReturning([itinerary("mine", { is_curated: false })]),
+      meLoader: jest.fn().mockResolvedValue({ id: "user-42" }),
+    }
 
-    expect(data.me.itinerariesConnection.totalCount).toEqual(2)
-    const ids = data.me.itinerariesConnection.edges.map(
-      (e) => e.node.internalID
+    const data = await runAuthenticatedQuery(meQuery, context)
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-42" })
     )
-    expect(ids.sort()).toEqual([...PERSONAL_IDS].sort())
-  })
-
-  it("filters the viewer's own itineraries by citySlug", async () => {
-    const data = await runAuthenticatedQuery(
-      gql`
-        {
-          me {
-            itinerariesConnection(first: 10, citySlug: "los-angeles-ca-usa") {
-              totalCount
-              edges {
-                node {
-                  internalID
-                }
-              }
-            }
-          }
-        }
-      `,
-      noItemsLoaders
-    )
-
-    expect(data.me.itinerariesConnection.totalCount).toEqual(1)
     expect(data.me.itinerariesConnection.edges[0].node.internalID).toEqual(
-      "8e5c2f6b-3d4e-5a7f-9b0c-1d2e3f4a5b6c"
+      "mine"
     )
-  })
-
-  it("does not return a public itinerary that isn't the viewer's own", async () => {
-    const data = await runAuthenticatedQuery(query, {
-      ...noItemsLoaders,
-      userID: "someone-else",
-    })
-
-    expect(data.me.itinerariesConnection.totalCount).toEqual(0)
-    expect(data.me.itinerariesConnection.edges).toHaveLength(0)
-  })
-
-  it("wires attachStopItems in: a returned itinerary's stop item resolves via the batched loader", async () => {
-    const fairsLoader = jest.fn().mockResolvedValue({
-      body: [{ _id: "000000000000000000000002" }],
-      headers: {},
-    })
-
-    const data = await runAuthenticatedQuery(
-      gql`
-        {
-          me {
-            itinerariesConnection(first: 10) {
-              edges {
-                node {
-                  sections {
-                    stops {
-                      item {
-                        __typename
-                        ... on Fair {
-                          internalID
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-      { ...noItemsLoaders, fairsLoader }
-    )
-
-    expect(
-      data.me.itinerariesConnection.edges[0].node.sections[0].stops[0].item
-    ).toEqual({
-      __typename: "Fair",
-      internalID: "000000000000000000000002",
-    })
   })
 })

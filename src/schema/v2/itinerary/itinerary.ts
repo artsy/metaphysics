@@ -12,7 +12,7 @@ import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
-import { FixtureItinerary } from "./fixtures/itineraries"
+import { GravityItinerary } from "./types"
 import { ItinerarySectionType } from "./itinerarySection"
 
 export const ItineraryVisibilityEnum = new GraphQLEnumType({
@@ -32,14 +32,14 @@ export const ItineraryVisibilityEnum = new GraphQLEnumType({
 const deriveVisibility = ({
   published_at,
   share_token,
-}: FixtureItinerary): "PRIVATE" | "UNLISTED" | "PUBLIC" => {
+}: GravityItinerary): "PRIVATE" | "UNLISTED" | "PUBLIC" => {
   if (published_at) return "PUBLIC"
   if (share_token) return "UNLISTED"
   return "PRIVATE"
 }
 
 export const ItineraryType = new GraphQLObjectType<
-  FixtureItinerary,
+  GravityItinerary,
   ResolverContext
 >({
   name: "Itinerary",
@@ -62,9 +62,9 @@ export const ItineraryType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ slug }) => slug,
     },
-    name: {
+    title: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name }) => name,
+      resolve: ({ title }) => title,
     },
     subtitle: {
       type: GraphQLString,
@@ -108,9 +108,20 @@ export const ItineraryType = new GraphQLObjectType<
     // data — don't "fix" it back to match.
     heroImage: {
       type: ImageType,
-      resolve: ({ image }) => image,
+      // Gravity sends `image_url` (templated, with a `:version` placeholder)
+      // and `image_urls` (a hash keyed by version), but no `image_versions`
+      // — so derive it from the hash's keys. Without it `setVersion` finds no
+      // version and returns the raw template, `:version` and all.
+      //
+      // `resized(width:)` still cannot work: it scales from `original_width`,
+      // which Gravity does not send. Ask for `url(version:)` instead.
+      resolve: ({ image_url, image_urls }) =>
+        image_urls
+          ? { image_url, image_urls, image_versions: Object.keys(image_urls) }
+          : null,
     },
     publishedAt: date(({ published_at }) => published_at),
+    updatedAt: date(({ updated_at }) => updated_at),
     sectionsCount: {
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ sections_count }) => sections_count,

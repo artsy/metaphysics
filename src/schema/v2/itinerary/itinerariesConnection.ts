@@ -11,7 +11,6 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { FixtureItinerary, fixtureItineraries } from "./fixtures/itineraries"
 import { ItineraryType } from "./itinerary"
 import { attachStopItems } from "./stopItems"
 
@@ -36,58 +35,47 @@ interface ItinerariesConnectionOptions {
   onlyOwnedBy?: string | null
 }
 
-// An unlisted itinerary is reached only by presenting its share token —
-// listing it hands out the very thing the token exists to gate. So a
-// listing includes an itinerary only when it's actually public
-// (`published_at` present), or it's the caller's own itinerary regardless
-// of visibility. Note this is deliberately NOT "publicly readable"
-// (public-or-unlisted) — that's the right predicate for the `itinerary`
-// single-item field (which authorizes via a presented share token), but
-// the wrong one here.
-const isListableFor = (
-  itinerary: FixtureItinerary,
-  userID?: string | null
-): boolean => {
-  const isPublic = !!itinerary.published_at
-  const isOwnItinerary = !!userID && itinerary.user_id === userID
-
-  return isPublic || isOwnItinerary
-}
+// Gravity decides what a listing may contain, and it is the one place that
+// decision belongs. Its predicate is "published, or the caller's own" —
+// deliberately not "public or unlisted". An unlisted itinerary is reached
+// only by presenting its share token, so listing one would hand out the
+// very thing the token exists to gate.
+//
+// Metaphysics used to re-implement that filter over fixture data. It no
+// longer does: passing the authenticated loader through is what makes a
+// viewer's own itineraries appear, and nothing here can widen the set.
 
 /**
  * Shared by the root `itinerariesConnection` field and
- * `Me.itinerariesConnection`. Once Gravity ships itinerary endpoints, this
- * is the one place that swaps the fixture read for a loader call.
+ * `Me.itinerariesConnection`.
  */
 export const resolveItinerariesConnection = async (
   args: ItinerariesConnectionArgs,
   context: ResolverContext,
   options: ItinerariesConnectionOptions = {}
 ) => {
-  const all = fixtureItineraries() ?? []
-
-  const filtered = all.filter((itinerary) => {
-    if (args.citySlug && itinerary.city_slug !== args.citySlug) return false
-    if (
-      typeof args.isCurated === "boolean" &&
-      itinerary.is_curated !== args.isCurated
-    ) {
-      return false
-    }
-
-    if (options.onlyOwnedBy) {
-      return itinerary.user_id === options.onlyOwnedBy
-    }
-
-    return isListableFor(itinerary, options.userID)
-  })
+  const loader =
+    context.itinerariesLoader ??
+    context.unauthenticatedLoaders?.itinerariesLoader
+  if (!loader) return null
 
   const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-  const totalCount = filtered.length
-  const pageItems = filtered.slice(offset, offset + size)
+
+  const { body, headers } = await loader({
+    page,
+    size,
+    total_count: true,
+    ...(args.citySlug ? { city_slug: args.citySlug } : {}),
+    ...(typeof args.isCurated === "boolean"
+      ? { is_curated: args.isCurated }
+      : {}),
+    ...(options.onlyOwnedBy ? { user_id: options.onlyOwnedBy } : {}),
+  })
+
+  const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
   await Promise.all(
-    pageItems.map((itinerary) => attachStopItems(itinerary, context))
+    body.map((itinerary) => attachStopItems(itinerary, context))
   )
 
   return paginationResolver({
@@ -95,7 +83,7 @@ export const resolveItinerariesConnection = async (
     offset,
     page,
     size,
-    body: pageItems,
+    body,
     args,
   })
 }

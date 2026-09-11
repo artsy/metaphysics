@@ -16,32 +16,32 @@ const mutations: {
   {
     name: "createItinerary",
     input: `citySlug: "new-york", name: "A day in Chelsea"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "updateItinerary",
     input: `id: "itinerary-id", name: "Updated name"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "deleteItinerary",
     input: `id: "itinerary-id"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "publishItinerary",
     input: `id: "itinerary-id"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "unpublishItinerary",
     input: `id: "itinerary-id"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "copyItinerary",
     input: `id: "itinerary-id"`,
-    successFragment: "... on ItineraryMutationSuccess { itinerary { name } }",
+    successFragment: "... on ItineraryMutationSuccess { itinerary { title } }",
   },
   {
     name: "createItinerarySection",

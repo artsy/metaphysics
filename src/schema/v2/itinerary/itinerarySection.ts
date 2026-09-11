@@ -7,11 +7,11 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { FixtureItinerarySection } from "./fixtures/itineraries"
+import { GravityItinerarySection } from "./types"
 import { ItineraryStopType } from "./itineraryStop"
 
 export const ItinerarySectionType = new GraphQLObjectType<
-  FixtureItinerarySection,
+  GravityItinerarySection,
   ResolverContext
 >({
   name: "ItinerarySection",
@@ -26,6 +26,11 @@ export const ItinerarySectionType = new GraphQLObjectType<
         '"Morning", or "Peckham"',
       type: GraphQLString,
       resolve: ({ title }) => title,
+    },
+    note: {
+      description: "An editorial note about the section, shown under its title",
+      type: GraphQLString,
+      resolve: ({ note }) => note,
     },
     position: {
       type: new GraphQLNonNull(GraphQLInt),
