@@ -1,6 +1,8 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { attachStopItems } from "../stopItems"
 import { ItineraryMutationResponseOrErrorType } from "./itineraryMutationResponseOrError"
 
 interface InputProps {
@@ -16,7 +18,8 @@ export const unpublishItineraryMutation = mutationWithClientMutationId<
 >({
   name: "unpublishItinerary",
   description:
-    "Not implemented yet in Metaphysics. Calling this mutation always throws.",
+    "Unpublish an itinerary. Also revokes its share link, so it becomes " +
+    "private. Needs the publish ability.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -26,7 +29,23 @@ export const unpublishItineraryMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (_args, _context) => {
-    throw new Error("unpublishItinerary is not implemented yet in Metaphysics.")
+  mutateAndGetPayload: async ({ id }, context) => {
+    if (!context.unpublishItineraryLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    try {
+      const itinerary = await context.unpublishItineraryLoader(id, {})
+
+      return attachStopItems(itinerary, context)
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw error
+      }
+    }
   },
 })

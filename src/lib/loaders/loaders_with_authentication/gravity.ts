@@ -1448,6 +1448,32 @@ export default (accessToken, userID, opts) => {
     // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
+    createItineraryLoader: gravityLoader("itinerary", {}, { method: "POST" }),
+    updateItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    publishItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    unpublishItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/unpublish`,
+      {},
+      { method: "POST" }
+    ),
+    copyItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/copy`,
+      {},
+      { method: "POST" }
+    ),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,

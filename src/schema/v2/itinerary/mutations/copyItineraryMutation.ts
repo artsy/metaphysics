@@ -1,6 +1,8 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { attachStopItems } from "../stopItems"
 import { ItineraryMutationResponseOrErrorType } from "./itineraryMutationResponseOrError"
 
 interface InputProps {
@@ -15,7 +17,8 @@ export const copyItineraryMutation = mutationWithClientMutationId<
 >({
   name: "copyItinerary",
   description:
-    "Not implemented yet in Metaphysics. Calling this mutation always throws.",
+    "Copy an itinerary into the caller's account. `shareToken` is needed " +
+    "for an unlisted source.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     shareToken: {
@@ -31,7 +34,26 @@ export const copyItineraryMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (_args, _context) => {
-    throw new Error("copyItinerary is not implemented yet in Metaphysics.")
+  mutateAndGetPayload: async ({ id, shareToken }, context) => {
+    if (!context.copyItineraryLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    try {
+      const itinerary = await context.copyItineraryLoader(
+        id,
+        shareToken ? { share_token: shareToken } : {}
+      )
+
+      return attachStopItems(itinerary, context)
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw error
+      }
+    }
   },
 })

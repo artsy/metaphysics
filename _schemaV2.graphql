@@ -26382,7 +26382,7 @@ type Mutation {
   ): CreateSubmissionMutationPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Copy an itinerary into the caller's account. `shareToken` is needed for an unlisted source.
   """
   copyItinerary(input: copyItineraryInput!): copyItineraryPayload
 
@@ -26594,7 +26594,7 @@ type Mutation {
   ): CreateInvoicePaymentPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Create an itinerary.
   """
   createItinerary(input: createItineraryInput!): createItineraryPayload
 
@@ -26896,7 +26896,7 @@ type Mutation {
   ): DeleteInstagramAccountPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Delete an itinerary.
   """
   deleteItinerary(input: deleteItineraryInput!): deleteItineraryPayload
 
@@ -27221,7 +27221,7 @@ type Mutation {
   ): MyCollectionUpdateArtworkPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Publish an itinerary. Needs the publish ability.
   """
   publishItinerary(input: publishItineraryInput!): publishItineraryPayload
 
@@ -27474,7 +27474,7 @@ type Mutation {
   ): UnlinkAuthenticationMutationPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Unpublish an itinerary. Also revokes its share link, so it becomes private. Needs the publish ability.
   """
   unpublishItinerary(input: unpublishItineraryInput!): unpublishItineraryPayload
 
@@ -27642,7 +27642,7 @@ type Mutation {
   ): UpdateInstallShotForPartnerShowMutationPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Update an itinerary. Pass `generateShareToken` or `revokeShareToken` to manage its share link.
   """
   updateItinerary(input: updateItineraryInput!): updateItineraryPayload
 
