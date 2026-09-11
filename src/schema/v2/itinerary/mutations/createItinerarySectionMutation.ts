@@ -7,6 +7,7 @@ import { attachItemsToStops } from "../stopItems"
 import { ItinerarySectionMutationResponseOrErrorType } from "./itinerarySectionMutationResponseOrError"
 
 interface InputProps {
+  clientMutationId?: string
   itineraryID: string
   title?: string
   note?: string
@@ -33,19 +34,20 @@ export const createItinerarySectionMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (input, context) => {
+  mutateAndGetPayload: async (
+    { clientMutationId: _clientMutationId, ...attributes },
+    context
+  ) => {
     if (!context.createItinerarySectionLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    let section
+
     try {
-      const section = await context.createItinerarySectionLoader(
-        snakeCaseKeys(input)
+      section = await context.createItinerarySectionLoader(
+        snakeCaseKeys(attributes)
       )
-
-      await attachItemsToStops(section.stops ?? [], context)
-
-      return section
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -55,5 +57,12 @@ export const createItinerarySectionMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    await attachItemsToStops(section.stops ?? [], context).catch(
+      () => undefined
+    )
+
+    return section
   },
 })

@@ -145,6 +145,49 @@ describe("createItinerarySection", () => {
     })
   })
 
+  it("does not forward clientMutationId to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravitySection())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItinerarySection(
+            input: {
+              itineraryID: "itinerary-id"
+              title: "Morning"
+              clientMutationId: "abc"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][0]).not.toHaveProperty("client_mutation_id")
+  })
+
+  it("still returns success when stop-item enrichment fails", async () => {
+    const loader = jest.fn().mockResolvedValue(gravitySection())
+    const context = {
+      ...withShowsLoader(loader),
+      showsLoader: jest.fn().mockRejectedValue(new Error("Gravity is down")),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(
+      result.createItinerarySection.responseOrError.itinerarySection
+    ).toMatchObject({
+      internalID: "section-id",
+      stops: [{ item: null }],
+    })
+  })
+
   it("returns the failure member on a Gravity validation error", async () => {
     const loader = jest.fn().mockRejectedValue(paramError)
     const context = withShowsLoader(loader)
@@ -203,6 +246,28 @@ describe("updateItinerarySection", () => {
       position: 0,
       note: null,
     })
+  })
+
+  it("does not forward clientMutationId to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravitySection())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerarySection(
+            input: { id: "section-id", position: 0, clientMutationId: "abc" }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][1]).not.toHaveProperty("client_mutation_id")
   })
 
   it("returns the success payload with the resolved stop item", async () => {
