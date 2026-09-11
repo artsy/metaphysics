@@ -9,8 +9,6 @@ interface InputProps {
   id: string
 }
 
-// Separate from `updateItinerary`: Gravity role-checks this transition
-// and records who published and when.
 export const unpublishItineraryMutation = mutationWithClientMutationId<
   InputProps,
   any,
@@ -34,10 +32,10 @@ export const unpublishItineraryMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    try {
-      const itinerary = await context.unpublishItineraryLoader(id, {})
+    let itinerary
 
-      return attachStopItems(itinerary, context)
+    try {
+      itinerary = await context.unpublishItineraryLoader(id, {})
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -47,5 +45,8 @@ export const unpublishItineraryMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    return attachStopItems(itinerary, context).catch(() => itinerary)
   },
 })

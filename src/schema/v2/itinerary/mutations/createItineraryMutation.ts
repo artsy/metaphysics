@@ -7,6 +7,7 @@ import { attachStopItems } from "../stopItems"
 import { ItineraryMutationResponseOrErrorType } from "./itineraryMutationResponseOrError"
 
 interface InputProps {
+  clientMutationId?: string
   citySlug: string
   title: string
   subtitle?: string
@@ -36,17 +37,18 @@ export const createItineraryMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (input, context) => {
+  mutateAndGetPayload: async (
+    { clientMutationId: _clientMutationId, ...attributes },
+    context
+  ) => {
     if (!context.createItineraryLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    try {
-      const itinerary = await context.createItineraryLoader(
-        snakeCaseKeys(input)
-      )
+    let itinerary
 
-      return attachStopItems(itinerary, context)
+    try {
+      itinerary = await context.createItineraryLoader(snakeCaseKeys(attributes))
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -56,5 +58,8 @@ export const createItineraryMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    return attachStopItems(itinerary, context).catch(() => itinerary)
   },
 })

@@ -161,6 +161,32 @@ describe("createItinerary", () => {
     })
   })
 
+  it("does not forward clientMutationId to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItinerary(
+            input: {
+              citySlug: "new-york"
+              title: "A day in Chelsea"
+              clientMutationId: "abc"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][0]).not.toHaveProperty("client_mutation_id")
+  })
+
   it("returns the success payload with the resolved stop item", async () => {
     const loader = jest.fn().mockResolvedValue(gravityItinerary())
     const context = withShowsLoader(loader)
@@ -175,6 +201,21 @@ describe("createItinerary", () => {
           stops: [{ item: { __typename: "Show", internalID: "show-id" } }],
         },
       ],
+    })
+  })
+
+  it("still returns success when stop-item enrichment fails", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = {
+      ...withShowsLoader(loader),
+      showsLoader: jest.fn().mockRejectedValue(new Error("Gravity is down")),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(result.createItinerary.responseOrError.itinerary).toMatchObject({
+      internalID: "itinerary-id",
+      sections: [{ stops: [{ item: null }] }],
     })
   })
 
@@ -230,6 +271,28 @@ describe("updateItinerary", () => {
     await runAuthenticatedQuery(mutation, context)
 
     expect(loader).toHaveBeenCalledWith("itinerary-id", { subtitle: null })
+  })
+
+  it("does not forward clientMutationId to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(
+            input: { id: "itinerary-id", subtitle: null, clientMutationId: "abc" }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][1]).not.toHaveProperty("client_mutation_id")
   })
 
   it("omits fields the client did not send", async () => {

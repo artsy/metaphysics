@@ -39,13 +39,13 @@ export const copyItineraryMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    let itinerary
+
     try {
-      const itinerary = await context.copyItineraryLoader(
+      itinerary = await context.copyItineraryLoader(
         id,
         shareToken ? { share_token: shareToken } : {}
       )
-
-      return attachStopItems(itinerary, context)
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -55,5 +55,8 @@ export const copyItineraryMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    return attachStopItems(itinerary, context).catch(() => itinerary)
   },
 })

@@ -32,10 +32,10 @@ export const publishItineraryMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    try {
-      const itinerary = await context.publishItineraryLoader(id, {})
+    let itinerary
 
-      return attachStopItems(itinerary, context)
+    try {
+      itinerary = await context.publishItineraryLoader(id, {})
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -45,5 +45,8 @@ export const publishItineraryMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Enrichment failing must not report a committed write as failed.
+    return attachStopItems(itinerary, context).catch(() => itinerary)
   },
 })
