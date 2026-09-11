@@ -23511,6 +23511,18 @@ enum ItineraryStopCategory {
 
 union ItineraryStopItem = Fair | Location | Show
 
+type ItineraryStopMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItineraryStopMutationResponseOrError =
+    ItineraryStopMutationFailure
+  | ItineraryStopMutationSuccess
+
+type ItineraryStopMutationSuccess {
+  itineraryStop: ItineraryStop
+}
+
 enum ItineraryVisibility {
   PRIVATE
   PUBLIC
@@ -26618,6 +26630,13 @@ type Mutation {
   ): createItinerarySectionPayload
 
   """
+  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  """
+  createItineraryStop(
+    input: createItineraryStopInput!
+  ): createItineraryStopPayload
+
+  """
   Create a Mailchimp campaign draft for a partner from pre-rendered HTML
   """
   createMailchimpCampaign(
@@ -26925,6 +26944,13 @@ type Mutation {
   deleteItinerarySection(
     input: deleteItinerarySectionInput!
   ): deleteItinerarySectionPayload
+
+  """
+  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  """
+  deleteItineraryStop(
+    input: deleteItineraryStopInput!
+  ): deleteItineraryStopPayload
 
   """
   Disconnect a Mailchimp account from a partner
@@ -27678,6 +27704,13 @@ type Mutation {
   updateItinerarySection(
     input: updateItinerarySectionInput!
   ): updateItinerarySectionPayload
+
+  """
+  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  """
+  updateItineraryStop(
+    input: updateItineraryStopInput!
+  ): updateItineraryStopPayload
 
   """
   Updates the user's collections in batch.
@@ -45198,6 +45231,36 @@ type createItinerarySectionPayload {
   responseOrError: ItinerarySectionMutationResponseOrError
 }
 
+input createItineraryStopInput {
+  address: String
+  category: ItineraryStopCategory
+  clientMutationId: String
+  endAt: String
+  eventID: String
+  eventType: String
+  imageURL: String
+  isFreeAdmission: Boolean
+  itemID: String
+  itemType: String
+  itinerarySectionID: String!
+  latitude: Float
+  longitude: Float
+  note: String
+  sourceURL: String
+  startAt: String
+
+  """
+  IANA time zone identifier, e.g. Europe/London.
+  """
+  timeZone: String
+  title: String
+}
+
+type createItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
+}
+
 type createOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -45375,6 +45438,16 @@ input deleteItinerarySectionInput {
 type deleteItinerarySectionPayload {
   clientMutationId: String
   responseOrError: ItinerarySectionMutationResponseOrError
+}
+
+input deleteItineraryStopInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
 }
 
 type deleteOrderedSetFailure {
@@ -45867,6 +45940,41 @@ input updateItinerarySectionInput {
 type updateItinerarySectionPayload {
   clientMutationId: String
   responseOrError: ItinerarySectionMutationResponseOrError
+}
+
+input updateItineraryStopInput {
+  address: String
+  category: ItineraryStopCategory
+  clientMutationId: String
+  endAt: String
+  eventID: String
+  eventType: String
+  id: String!
+  imageURL: String
+  isFreeAdmission: Boolean
+  itemID: String
+  itemType: String
+  latitude: Float
+  longitude: Float
+  note: String
+
+  """
+  Reorders the stop among its section's stops via acts_as_list's insert_at. There is no separate reposition mutation for stops.
+  """
+  position: Int
+  sourceURL: String
+  startAt: String
+
+  """
+  IANA time zone identifier, e.g. Europe/London.
+  """
+  timeZone: String
+  title: String
+}
+
+type updateItineraryStopPayload {
+  clientMutationId: String
+  responseOrError: ItineraryStopMutationResponseOrError
 }
 
 input updateMeCollectionsMutationInput {
