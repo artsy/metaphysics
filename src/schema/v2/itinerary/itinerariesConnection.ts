@@ -36,10 +36,7 @@ export const resolveItinerariesConnection = async (
   context: ResolverContext,
   options: ItinerariesConnectionOptions = {}
 ) => {
-  const loader =
-    context.itinerariesLoader ??
-    context.unauthenticatedLoaders?.itinerariesLoader
-  if (!loader) return null
+  const loader = context.itinerariesLoader
 
   const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
