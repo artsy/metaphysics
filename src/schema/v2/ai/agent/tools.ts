@@ -3,6 +3,7 @@ import type { JSONSchema7, Tool } from "ai"
 import {
   DocumentNode,
   execute,
+  FieldNode,
   getNamedType,
   GraphQLError,
   GraphQLSchema,
@@ -10,6 +11,7 @@ import {
   parse,
   specifiedRules,
   validate,
+  valueFromASTUntyped,
   visit,
 } from "graphql"
 import type { ValidationRule } from "graphql"
@@ -25,6 +27,7 @@ import {
   statusCodeForError,
 } from "lib/graphqlErrorHandler"
 import { ResolverContext } from "types/graphql"
+import type { AIAgentActivity } from "./types"
 
 /**
  * The AI agent's entire tool surface: one generic `query_artsy` tool that
@@ -528,16 +531,143 @@ export function buildAgentTools(
   }
 }
 
+const ACTIVITY_BY_FIELD: Record<string, AIAgentActivity> = {
+  __type: "THINKING",
+  artworksConnection: "SEARCHING_ARTWORKS",
+  artwork: "LOADING_ARTWORK_DETAILS",
+  artistsConnection: "SEARCHING_ARTISTS",
+  artist: "SEARCHING_ARTISTS",
+  artistSeriesConnection: "SEARCHING_ARTWORKS",
+  artistSeries: "SEARCHING_ARTWORKS",
+  gene: "SEARCHING_ARTWORKS",
+  genes: "SEARCHING_ARTWORKS",
+  marketingCollection: "SEARCHING_ARTWORKS",
+  marketingCollections: "SEARCHING_ARTWORKS",
+  trendingSearches: "SEARCHING_ARTWORKS",
+  showsConnection: "SEARCHING_SHOWS",
+  fair: "SEARCHING_FAIRS",
+  fairs: "SEARCHING_FAIRS",
+  matchConnection: "SEARCHING_ARTSY",
+  basedOnUserSaves: "FINDING_RECOMMENDATIONS",
+  artworkRecommendations: "FINDING_RECOMMENDATIONS",
+  artistRecommendations: "FINDING_RECOMMENDATIONS",
+  followsAndSaves: "FINDING_RECOMMENDATIONS",
+}
+
+const SUMMARY_BY_ACTIVITY: Record<AIAgentActivity, string> = {
+  THINKING: "Thinking…",
+  SEARCHING_ARTWORKS: "Searching for artworks…",
+  SEARCHING_ARTISTS: "Searching for artists…",
+  SEARCHING_SHOWS: "Searching for shows…",
+  SEARCHING_FAIRS: "Searching for fairs…",
+  FINDING_RECOMMENDATIONS: "Finding recommendations…",
+  LOADING_ARTWORK_DETAILS: "Looking at the artwork…",
+  SEARCHING_ARTSY: "Searching Artsy…",
+}
+
+const MAX_DEBUG_SUMMARY_LENGTH = 4_000
+
+export interface AIAgentToolCallDescription {
+  activity: AIAgentActivity
+  summary: string
+  debugSummary: string
+}
+
+function inspectToolCallDocument(
+  document: DocumentNode
+): {
+  activityField?: FieldNode
+  fieldsWithArguments: FieldNode[]
+} {
+  let matchedField: FieldNode | undefined
+  const fieldsWithArguments: FieldNode[] = []
+
+  visit(document, {
+    Field(node) {
+      if (!matchedField && ACTIVITY_BY_FIELD[node.name.value]) {
+        matchedField = node
+      }
+      if (node.arguments?.length) fieldsWithArguments.push(node)
+    },
+  })
+
+  return { activityField: matchedField, fieldsWithArguments }
+}
+
+function formatDebugValue(value: unknown): string {
+  const serialized = JSON.stringify(value)
+  return serialized === undefined ? "undefined" : serialized
+}
+
+function formatDebugSummary(
+  fields: FieldNode[],
+  variables: Record<string, unknown>
+): string {
+  const summary = fields
+    .map((field) => {
+      const args = (field.arguments ?? []).map((argument) => {
+        const value = valueFromASTUntyped(argument.value, variables)
+        return `  ${argument.name.value}: ${formatDebugValue(value)}`
+      })
+      if (args.length === 0) return `${field.name.value}()`
+
+      return `${field.name.value}(\n${args.join(",\n")}\n)`
+    })
+    .join("\n→\n")
+
+  if (summary.length <= MAX_DEBUG_SUMMARY_LENGTH) return summary
+  return `${summary.slice(0, MAX_DEBUG_SUMMARY_LENGTH)}…`
+}
+
 /**
- * A short, human-readable label for the AIAgentToolCall event — the tool
- * name itself is always "query_artsy", so it carries no information on its own.
+ * Produces two deliberately separate descriptions of a model-authored query:
+ * a stable, client-safe activity/summary and a developer-only rendering of
+ * the actual GraphQL arguments. Parsing the AST also resolves variables, so
+ * the CLI shows the values the resolver received rather than `$variable`
+ * placeholders.
+ */
+export function describeToolCall(input: unknown): AIAgentToolCallDescription {
+  const { query, variables } = (input ?? {}) as {
+    query?: unknown
+    variables?: unknown
+  }
+  const fallback: AIAgentToolCallDescription = {
+    activity: "SEARCHING_ARTSY",
+    summary: SUMMARY_BY_ACTIVITY.SEARCHING_ARTSY,
+    debugSummary: "query_artsy()",
+  }
+  if (typeof query !== "string") return fallback
+
+  try {
+    const {
+      activityField: field,
+      fieldsWithArguments,
+    } = inspectToolCallDocument(parse(query))
+    if (!field) return fallback
+
+    const activity = ACTIVITY_BY_FIELD[field.name.value]
+    const variableValues =
+      variables && typeof variables === "object"
+        ? (variables as Record<string, unknown>)
+        : {}
+
+    return {
+      activity,
+      summary: SUMMARY_BY_ACTIVITY[activity],
+      debugSummary: formatDebugSummary(
+        fieldsWithArguments.length > 0 ? fieldsWithArguments : [field],
+        variableValues
+      ),
+    }
+  } catch (_error) {
+    return fallback
+  }
+}
+
+/**
+ * Backwards-compatible generic label. New clients should use `activity` so
+ * they can own wording and localization without parsing display strings.
  */
 export function summarizeToolCall(input: unknown): string {
-  const query = (input as { query?: unknown } | undefined)?.query
-  if (typeof query !== "string") return "Querying Artsy…"
-
-  const match = query.match(
-    /\b(artworksConnection|artistsConnection|artistSeriesConnection|artistSeries|artist|artwork|marketingCollections|marketingCollection|genes|gene|fairs|fair|showsConnection|matchConnection|trendingSearches|basedOnUserSaves|artworkRecommendations|artistRecommendations|followsAndSaves)\b/
-  )
-  return match ? `Querying Artsy: ${match[1]}…` : "Querying Artsy…"
+  return describeToolCall(input).summary
 }

@@ -17,7 +17,8 @@ import "../src/lib/loadenv"
 import { randomUUID } from "crypto"
 import * as readline from "readline"
 
-const METAPHYSICS_URL = process.env.METAPHYSICS_URL || "http://localhost:5001/v2"
+const METAPHYSICS_URL =
+  process.env.METAPHYSICS_URL || "http://localhost:5001/v2"
 const ACCESS_TOKEN = process.env.METAPHYSICS_ACCESS_TOKEN
 const USER_ID = process.env.METAPHYSICS_USER_ID
 
@@ -27,7 +28,7 @@ if (!ACCESS_TOKEN || !USER_ID) {
       "Set METAPHYSICS_ACCESS_TOKEN and METAPHYSICS_USER_ID (in .env, or prefixed on the",
       "command line) before running this script -- a signed-in user with the",
       "`onyx_ai_agent-turn` Unleash flag enabled (or any values, if the running server's",
-      "NODE_ENV is \"development\", which skips that check).",
+      'NODE_ENV is "development", which skips that check).',
       "Optionally set METAPHYSICS_URL (default http://localhost:5001/v2).",
     ].join(" ")
   )
@@ -39,8 +40,8 @@ const QUERY = `
     aiAgentTurn(input: $input) {
       __typename
       ... on AIAgentTextDelta { text }
-      ... on AIAgentToolCall { toolName summary }
-      ... on AIAgentToolResult { toolName ok summary }
+      ... on AIAgentToolCall { toolName activity summary debugSummary }
+      ... on AIAgentToolResult { toolName ok summary debugSummary }
       ... on AIAgentTurnComplete {
         message
         stopReason
@@ -54,6 +55,12 @@ const QUERY = `
 type HistoryEntry = { role: "USER" | "ASSISTANT"; content: string }
 
 const dim = (text: string) => `\x1b[2m${text}\x1b[0m`
+
+const indent = (text: string) =>
+  text
+    .split("\n")
+    .map((line) => `  ${line}`)
+    .join("\n")
 
 function describeOne(error: unknown): string {
   if (!(error instanceof Error)) return String(error)
@@ -74,7 +81,8 @@ function describeError(error: unknown): string {
       break // AggregateError.errors don't chain further
     }
     parts.push(describeOne(cause))
-    cause = cause instanceof Error ? (cause as { cause?: unknown }).cause : undefined
+    cause =
+      cause instanceof Error ? (cause as { cause?: unknown }).cause : undefined
   }
 
   let description = parts.join(" -> ")
@@ -99,7 +107,14 @@ async function sendTurn(
     },
     body: JSON.stringify({
       query: QUERY,
-      variables: { input: { conversationID, message, history } },
+      variables: {
+        input: {
+          conversationID,
+          message,
+          history,
+          includeDebugToolCalls: true,
+        },
+      },
     }),
   })
 
@@ -109,8 +124,9 @@ async function sendTurn(
     // back as a normal, non-streaming GraphQL error response.
     const body = await response.json().catch(() => null)
     const errorMessage =
-      body?.errors?.map((error: { message: string }) => error.message).join("; ") ??
-      `Unexpected response (${response.status})`
+      body?.errors
+        ?.map((error: { message: string }) => error.message)
+        .join("; ") ?? `Unexpected response (${response.status})`
     throw new Error(errorMessage)
   }
 
@@ -146,7 +162,10 @@ async function sendTurn(
       if (payload.errors?.length) {
         console.error(
           `\n${dim(
-            "[error] " + payload.errors.map((e: { message: string }) => e.message).join("; ")
+            "[error] " +
+              payload.errors
+                .map((e: { message: string }) => e.message)
+                .join("; ")
           )}`
         )
         stop = true
@@ -161,7 +180,12 @@ async function sendTurn(
           process.stdout.write(event.text)
           break
         case "AIAgentToolCall":
-          process.stdout.write(`\n${dim(`[calling ${event.toolName}: ${event.summary ?? ""}]`)}\n`)
+          process.stdout.write(
+            `\n${dim(`[calling ${event.toolName}: ${event.summary ?? ""}]`)}\n`
+          )
+          if (event.debugSummary) {
+            process.stdout.write(`${dim(indent(event.debugSummary))}\n`)
+          }
           break
         case "AIAgentToolResult":
           process.stdout.write(
@@ -171,6 +195,9 @@ async function sendTurn(
               }]`
             )}\n`
           )
+          if (event.debugSummary) {
+            process.stdout.write(`${dim(indent(event.debugSummary))}\n`)
+          }
           break
         case "AIAgentTurnComplete":
           assistantText = event.message
@@ -180,13 +207,21 @@ async function sendTurn(
           if (event.artworks?.length) {
             process.stdout.write(`\n${dim("Artworks:")}\n`)
             for (const artwork of event.artworks) {
-              const price = artwork.saleMessage ? ` — ${artwork.saleMessage}` : ""
-              const artist = artwork.artistNames ? `${artwork.artistNames}, ` : ""
-              process.stdout.write(dim(`  • ${artist}${artwork.title}${price}\n`))
+              const price = artwork.saleMessage
+                ? ` — ${artwork.saleMessage}`
+                : ""
+              const artist = artwork.artistNames
+                ? `${artwork.artistNames}, `
+                : ""
+              process.stdout.write(
+                dim(`  • ${artist}${artwork.title}${price}\n`)
+              )
             }
           }
           process.stdout.write(
-            `\n${dim(`(stopReason: ${event.stopReason}, ${event.toolCallCount} tool call(s))`)}\n`
+            `\n${dim(
+              `(stopReason: ${event.stopReason}, ${event.toolCallCount} tool call(s))`
+            )}\n`
           )
           stop = true
           break
@@ -201,8 +236,12 @@ function main() {
   const conversationID = randomUUID()
   const history: HistoryEntry[] = []
 
-  console.log(`Chatting with the Artsy AI agent (conversation ${conversationID}).`)
-  console.log('Type your message and press enter. Type "exit" or Ctrl+C to quit.\n')
+  console.log(
+    `Chatting with the Artsy AI agent (conversation ${conversationID}).`
+  )
+  console.log(
+    'Type your message and press enter. Type "exit" or Ctrl+C to quit.\n'
+  )
 
   const rl = readline.createInterface({
     input: process.stdin,

@@ -100,6 +100,7 @@ async function collectEvents(
       content: string
       artworkIDs?: string[] | null
     }>
+    includeDebugToolCalls?: boolean | null
   },
   context: ResolverContext = fakeContext()
 ) {
@@ -187,7 +188,12 @@ describe("runTurn", () => {
       "AIAgentTextDelta",
       "AIAgentTurnComplete",
     ])
-    expect(events[0]).toMatchObject({ toolName: "query_artsy" })
+    expect(events[0]).toMatchObject({
+      toolName: "query_artsy",
+      activity: "SEARCHING_ARTISTS",
+      summary: "Searching for artists…",
+      debugSummary: null,
+    })
     expect(events[1]).toMatchObject({ toolName: "query_artsy", ok: true })
     expect(events[2]).toMatchObject({ text: "Found Andy Warhol." })
     expect(events[3]).toMatchObject({
@@ -318,10 +324,21 @@ describe("runTurn", () => {
     const events = await collectEvents({
       conversationID: "c1",
       message: "Find artworks",
+      includeDebugToolCalls: true,
     })
 
+    const toolCall = events.find((e) => e.__typename === "AIAgentToolCall")
+    expect(toolCall).toMatchObject({
+      activity: "SEARCHING_ARTWORKS",
+      summary: "Searching for artworks…",
+      debugSummary: "artworksConnection(\n  first: 5\n)",
+    })
     const toolResult = events.find((e) => e.__typename === "AIAgentToolResult")
-    expect(toolResult).toMatchObject({ ok: false })
+    expect(toolResult).toMatchObject({
+      ok: false,
+      summary: "Search failed.",
+      debugSummary: "This query must contain the total aggregation",
+    })
 
     const complete = events.find((e) => e.__typename === "AIAgentTurnComplete")
     expect(complete).toMatchObject({ stopReason: "stop" })
@@ -486,7 +503,8 @@ describe("runTurn", () => {
     const toolResult = events.find((e) => e.__typename === "AIAgentToolResult")
     expect(toolResult).toMatchObject({
       ok: false,
-      summary: "The query could not be run.",
+      summary: "Search failed.",
+      debugSummary: null,
     })
     expect(toolResult.summary).not.toMatch(/SECRET|internal\/path|AI_Tool/)
 

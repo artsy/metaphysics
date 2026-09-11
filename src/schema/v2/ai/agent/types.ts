@@ -20,6 +20,32 @@ export const AIAgentRoleType = new GraphQLEnumType({
   },
 })
 
+export const AIAgentActivityType = new GraphQLEnumType({
+  name: "AIAgentActivity",
+  description:
+    "A stable, client-safe description of what the agent is currently doing.",
+  values: {
+    THINKING: {},
+    SEARCHING_ARTWORKS: {},
+    SEARCHING_ARTISTS: {},
+    SEARCHING_SHOWS: {},
+    SEARCHING_FAIRS: {},
+    FINDING_RECOMMENDATIONS: {},
+    LOADING_ARTWORK_DETAILS: {},
+    SEARCHING_ARTSY: {},
+  },
+})
+
+export type AIAgentActivity =
+  | "THINKING"
+  | "SEARCHING_ARTWORKS"
+  | "SEARCHING_ARTISTS"
+  | "SEARCHING_SHOWS"
+  | "SEARCHING_FAIRS"
+  | "FINDING_RECOMMENDATIONS"
+  | "LOADING_ARTWORK_DETAILS"
+  | "SEARCHING_ARTSY"
+
 export const AIAgentMessageInputType = new GraphQLInputObjectType({
   name: "AIAgentMessageInput",
   fields: {
@@ -53,6 +79,11 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
       type: new GraphQLList(new GraphQLNonNull(AIAgentMessageInputType)),
       description: "Prior turns, owned and replayed by the client.",
     },
+    includeDebugToolCalls: {
+      type: GraphQLBoolean,
+      description:
+        "Include developer-facing tool-call details. Available only in development.",
+    },
   },
 })
 
@@ -68,7 +99,9 @@ export interface AIAgentTextDeltaPayload {
 export interface AIAgentToolCallPayload {
   __typename: "AIAgentToolCall"
   toolName: string
+  activity: AIAgentActivity
   summary: string | null
+  debugSummary: string | null
 }
 
 export interface AIAgentToolResultPayload {
@@ -76,6 +109,7 @@ export interface AIAgentToolResultPayload {
   toolName: string
   ok: boolean
   summary: string | null
+  debugSummary: string | null
 }
 
 export interface AIAgentTurnCompletePayload {
@@ -113,9 +147,20 @@ const AIAgentToolCallType = new GraphQLObjectType<
   name: "AIAgentToolCall",
   fields: {
     toolName: { type: new GraphQLNonNull(GraphQLString) },
+    activity: {
+      type: new GraphQLNonNull(AIAgentActivityType),
+      description:
+        "Stable, client-safe activity for rendering localized progress UI.",
+    },
     summary: {
       type: GraphQLString,
-      description: 'Human-readable label, e.g. "Searching artists…".',
+      description:
+        'Generic human-readable label, e.g. "Searching for artists…".',
+    },
+    debugSummary: {
+      type: GraphQLString,
+      description:
+        "Developer-facing tool arguments, populated only when development debug mode is enabled.",
     },
   },
 })
@@ -129,6 +174,11 @@ const AIAgentToolResultType = new GraphQLObjectType<
     toolName: { type: new GraphQLNonNull(GraphQLString) },
     ok: { type: new GraphQLNonNull(GraphQLBoolean) },
     summary: { type: GraphQLString },
+    debugSummary: {
+      type: GraphQLString,
+      description:
+        "Developer-facing failure detail, populated only when development debug mode is enabled.",
+    },
   },
 })
 

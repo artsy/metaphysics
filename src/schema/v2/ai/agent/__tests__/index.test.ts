@@ -93,6 +93,49 @@ describe("AIAgentTurn", () => {
     }
   })
 
+  it("rejects tool-call debugging outside development", () => {
+    const originalNodeEnv = config.NODE_ENV
+    config.NODE_ENV = "test"
+
+    try {
+      expect(() =>
+        callSubscribe(
+          {
+            conversationID: "c1",
+            message: "hi",
+            includeDebugToolCalls: true,
+          },
+          { userID: "user-42", accessToken: "token" }
+        )
+      ).toThrow(/debugging is available only in development/)
+      expect(mockRunTurn).not.toHaveBeenCalled()
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+    }
+  })
+
+  it("allows tool-call debugging in development", () => {
+    const originalNodeEnv = config.NODE_ENV
+    config.NODE_ENV = "development"
+    const input = {
+      conversationID: "c1",
+      message: "hi",
+      includeDebugToolCalls: true,
+    }
+    const context = { userID: "user-42", accessToken: "token" }
+
+    try {
+      callSubscribe(input, context)
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        input,
+        expect.anything(),
+        context
+      )
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+    }
+  })
+
   it("rejects a history longer than the message cap", () => {
     const history = Array.from({ length: 41 }, () => ({
       role: "user",

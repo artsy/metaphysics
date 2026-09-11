@@ -73,6 +73,13 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       conversationID: string
       message: string
       history?: Array<AIAgentHistoryEntry> | null
+      includeDebugToolCalls?: boolean | null
+    }
+
+    if (input.includeDebugToolCalls && !isDevelopment) {
+      throw new Error(
+        "AI agent tool-call debugging is available only in development"
+      )
     }
 
     assertInputWithinLimits(input)
