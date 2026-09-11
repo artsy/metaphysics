@@ -335,6 +335,7 @@ export default (opts) => {
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     shortcutLoader: gravityLoader((id) => `shortcut/${id}`),
     showLoader: gravityLoader((id) => `show/${id}`),
+    partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),
