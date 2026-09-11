@@ -245,6 +245,97 @@ describe("Itinerary", () => {
     })
   })
 
+  it("resolves the event a show stop names", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections {
+            stops {
+              event {
+                __typename
+                ... on ShowEventType { internalID }
+                ... on FairEvent { internalID }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      ...loaders(),
+      showsLoader: jest.fn().mockResolvedValue([
+        {
+          _id: "show-1",
+          events: [{ _id: "event-1", title: "Opening Reception" }],
+        },
+      ]),
+    }
+    const data = await runQuery(query, context)
+
+    const [show, gallery, custom] = data.itinerary.sections[0].stops
+    expect(show.event).toEqual({
+      __typename: "ShowEventType",
+      internalID: "event-1",
+    })
+    expect(gallery.event).toBeNull()
+    expect(custom.event).toBeNull()
+  })
+
+  it("resolves the event a fair stop names", async () => {
+    const fairItinerary = {
+      ...gravityItinerary,
+      sections: [
+        {
+          ...gravityItinerary.sections[0],
+          stops: [
+            {
+              ...gravityItinerary.sections[0].stops[0],
+              item_type: "Fair",
+              item_id: "fair-1",
+              event_type: "FairEvent",
+              event_id: "fair-event-1",
+            },
+          ],
+        },
+      ],
+    }
+
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections {
+            stops {
+              event {
+                __typename
+                ... on FairEvent { internalID name }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context = {
+      ...loaders(),
+      itineraryLoader: jest.fn().mockResolvedValue(fairItinerary),
+      fairsLoader: jest
+        .fn()
+        .mockResolvedValue({ body: [{ _id: "fair-1" }], headers: {} }),
+      fairEventsLoader: jest
+        .fn()
+        .mockResolvedValue([{ id: "fair-event-1", name: "Booth Talk" }]),
+    }
+    const data = await runQuery(query, context)
+
+    const [stop] = data.itinerary.sections[0].stops
+    expect(stop.event).toEqual({
+      __typename: "FairEvent",
+      internalID: "fair-event-1",
+      name: "Booth Talk",
+    })
+  })
+
   it("resolves null on a Gravity 404", async () => {
     const query = `{ itinerary(id: "nope") { title } }`
 

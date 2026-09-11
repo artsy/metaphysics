@@ -279,6 +279,136 @@ describe("attachStopItems", () => {
   })
 })
 
+describe("event resolution", () => {
+  it("picks a show event out of the show payload with no fair loader call", async () => {
+    const showsLoader = jest.fn().mockResolvedValue([
+      {
+        _id: "show-1",
+        events: [
+          { _id: "event-1", title: "Opening Reception" },
+          { _id: "event-2", title: "Closing Reception" },
+        ],
+      },
+    ])
+    const fairEventsLoader = jest.fn()
+
+    const stops = [
+      buildStop({
+        item_type: "PartnerShow",
+        item_id: "show-1",
+        event_type: "PartnerShowEvent",
+        event_id: "event-1",
+      }),
+    ]
+
+    await attachItemsToStops(stops, { showsLoader, fairEventsLoader } as any)
+
+    expect((stops[0] as any)._resolvedEvent).toEqual({
+      _id: "event-1",
+      title: "Opening Reception",
+      __typename: "ShowEventType",
+    })
+    expect(fairEventsLoader).not.toHaveBeenCalled()
+  })
+
+  it("resolves a fair event with one fairEventsLoader call for two stops on the same fair", async () => {
+    const fairsLoader = jest
+      .fn()
+      .mockResolvedValue({ body: [{ _id: "fair-1" }], headers: {} })
+    const fairEventsLoader = jest.fn().mockResolvedValue([
+      { id: "fair-event-1", name: "Booth Talk" },
+      { id: "fair-event-2", name: "VIP Preview" },
+    ])
+
+    const stops = [
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-1",
+        event_type: "FairEvent",
+        event_id: "fair-event-1",
+      }),
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-1",
+        event_type: "FairEvent",
+        event_id: "fair-event-2",
+      }),
+    ]
+
+    await attachItemsToStops(stops, { fairsLoader, fairEventsLoader } as any)
+
+    expect(fairEventsLoader).toHaveBeenCalledTimes(1)
+    expect(fairEventsLoader).toHaveBeenCalledWith("fair-1")
+    expect(stops.map((stop: any) => stop._resolvedEvent)).toEqual([
+      { id: "fair-event-1", name: "Booth Talk", __typename: "FairEvent" },
+      { id: "fair-event-2", name: "VIP Preview", __typename: "FairEvent" },
+    ])
+  })
+
+  it("resolves null when the event id doesn't match any event", async () => {
+    const showsLoader = jest
+      .fn()
+      .mockResolvedValue([{ _id: "show-1", events: [] }])
+
+    const stops = [
+      buildStop({
+        item_type: "PartnerShow",
+        item_id: "show-1",
+        event_type: "PartnerShowEvent",
+        event_id: "gone",
+      }),
+    ]
+
+    await attachItemsToStops(stops, { showsLoader } as any)
+
+    expect((stops[0] as any)._resolvedEvent).toBeNull()
+  })
+
+  it("resolves null and calls no loader for a stop with no event", async () => {
+    const fairEventsLoader = jest.fn()
+
+    const stops = [buildStop({})]
+
+    await attachItemsToStops(stops, { fairEventsLoader } as any)
+
+    expect((stops[0] as any)._resolvedEvent).toBeNull()
+    expect(fairEventsLoader).not.toHaveBeenCalled()
+  })
+
+  it("leaves a rejecting fair's events null and resolves the other fair's events", async () => {
+    const fairEventsLoader = jest.fn().mockImplementation((fairId) => {
+      if (fairId === "fair-bad") return Promise.reject(new Error("Gravity 500"))
+      return Promise.resolve([{ id: "fair-event-1", name: "Booth Talk" }])
+    })
+
+    const stops = [
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-bad",
+        event_type: "FairEvent",
+        event_id: "fair-event-1",
+      }),
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-good",
+        event_type: "FairEvent",
+        event_id: "fair-event-1",
+      }),
+    ]
+
+    await expect(
+      attachItemsToStops(stops, { fairEventsLoader } as any)
+    ).resolves.toBe(stops)
+
+    expect((stops[0] as any)._resolvedEvent).toBeNull()
+    expect((stops[1] as any)._resolvedEvent).toEqual({
+      id: "fair-event-1",
+      name: "Booth Talk",
+      __typename: "FairEvent",
+    })
+  })
+})
+
 describe("attachItemsToStops", () => {
   it("resolves a flat list of stops in a single batch and stamps each one", async () => {
     const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
