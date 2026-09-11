@@ -215,6 +215,15 @@ describe("imageHelper", () => {
       expect(hasProcessingFailed(image)).toBe(true)
     })
 
+    it("returns false when nothing has been submitted to Gemini yet", () => {
+      const image = {
+        image_url: "https://scontent.cdninstagram.com/1.jpg",
+        image_versions: [],
+        gemini_token_updated_at: null,
+      }
+      expect(hasProcessingFailed(image)).toBe(false)
+    })
+
     it("returns true when image has some versions but not normalized and no gemini_token_updated_at", () => {
       const image = {
         image_url: "https://example.com/image.jpg",

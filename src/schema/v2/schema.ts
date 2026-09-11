@@ -165,6 +165,7 @@ import { updateCatalogEditionSetMutation } from "./artwork/updateCatalogEditionS
 import { syncCatalogToArtworkMutation } from "./artwork/syncCatalogToArtworkMutation"
 import { duplicateCatalogArtworkMutation } from "./artwork/duplicateCatalogArtworkMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
+import { generateArtworkDescriptionMutation } from "./artwork/generateArtworkDescriptionMutation"
 import { repositionArtworkImagesMutation } from "./artwork/repositionArtworkImagesMutation"
 import { artworkFilterSuggestions } from "./artworkFilterSuggestions"
 import { artworksForUser } from "./artworksForUser"
@@ -354,6 +355,20 @@ import { PrivateViewingRoom } from "./privateViewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
+import { Itinerary } from "./itinerary"
+import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
+import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
+import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
+import { createItinerarySectionMutation } from "./itinerary/mutations/createItinerarySectionMutation"
+import { createItineraryStopMutation } from "./itinerary/mutations/createItineraryStopMutation"
+import { deleteItineraryMutation } from "./itinerary/mutations/deleteItineraryMutation"
+import { deleteItinerarySectionMutation } from "./itinerary/mutations/deleteItinerarySectionMutation"
+import { deleteItineraryStopMutation } from "./itinerary/mutations/deleteItineraryStopMutation"
+import { publishItineraryMutation } from "./itinerary/mutations/publishItineraryMutation"
+import { unpublishItineraryMutation } from "./itinerary/mutations/unpublishItineraryMutation"
+import { updateItineraryMutation } from "./itinerary/mutations/updateItineraryMutation"
+import { updateItinerarySectionMutation } from "./itinerary/mutations/updateItinerarySectionMutation"
+import { updateItineraryStopMutation } from "./itinerary/mutations/updateItineraryStopMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -533,6 +548,8 @@ const rootFields = {
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
   invoice: Invoice,
+  itinerary: Itinerary,
+  itinerariesConnection: ItinerariesConnectionField,
   job,
   jobs,
   saleAgreement: SaleAgreement,
@@ -647,6 +664,7 @@ export default new GraphQLSchema({
       bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
       confirmPassword: confirmPasswordMutation,
+      copyItinerary: copyItineraryMutation,
       createImage: createImageMutation,
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
@@ -678,6 +696,9 @@ export default new GraphQLSchema({
       createHeroUnit: createHeroUnitMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createInvoicePayment: createInvoicePaymentMutation,
+      createItinerary: createItineraryMutation,
+      createItinerarySection: createItinerarySectionMutation,
+      createItineraryStop: createItineraryStopMutation,
       createNavigationDraft: createNavigationDraftMutation,
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
@@ -746,6 +767,9 @@ export default new GraphQLSchema({
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
+      deleteItinerary: deleteItineraryMutation,
+      deleteItinerarySection: deleteItinerarySectionMutation,
+      deleteItineraryStop: deleteItineraryStopMutation,
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
@@ -792,6 +816,7 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      publishItinerary: publishItineraryMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       reopenArtworkDuplicatePair: reopenArtworkDuplicatePairMutation,
@@ -824,6 +849,7 @@ export default new GraphQLSchema({
       transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      unpublishItinerary: unpublishItineraryMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
       unsetOrderPaymentMethod: unsetOrderPaymentMethodMutation,
@@ -834,6 +860,7 @@ export default new GraphQLSchema({
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
+      generateArtworkDescription: generateArtworkDescriptionMutation,
       updateArtworkImport: UpdateArtworkImportMutation,
       updateArtworkImportRow: UpdateArtworkImportRowMutation,
       createArtworkImportArtworks: CreateArtworkImportArtworksMutation,
@@ -852,6 +879,9 @@ export default new GraphQLSchema({
       updateFeature: UpdateFeatureMutation,
       updateFeaturedLink: UpdateFeaturedLinkMutation,
       updateHeroUnit: updateHeroUnitMutation,
+      updateItinerary: updateItineraryMutation,
+      updateItinerarySection: updateItinerarySectionMutation,
+      updateItineraryStop: updateItineraryStopMutation,
       updateMeCollectionsMutation: updateMeCollectionsMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,

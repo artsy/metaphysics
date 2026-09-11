@@ -16,12 +16,14 @@ export const EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE = {
     "tall",
   ],
   "brand-kit-logo": ["logo_brand_kit"],
+  "artist-social-post": ["large"],
 } as const
 
 // The last version Gemini emits per template — its presence signals processing is complete.
 export const COMPLETION_VERSION_BY_TEMPLATE = {
   "additional-image": "normalized",
   "brand-kit-logo": "logo_brand_kit",
+  "artist-social-post": "large",
 } as const
 
 type TemplateKey = keyof typeof EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE
@@ -69,6 +71,10 @@ export const isProcessingImage = (image) => {
 
 // Check if image processing has failed
 export const hasProcessingFailed = (image) => {
+  if (!image.gemini_token_updated_at && !image.image_versions?.length) {
+    return false
+  }
+
   // Processing is not failed if image is missing original or still processing
   if (isProcessingImage(image)) {
     return false
