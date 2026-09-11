@@ -1,4 +1,8 @@
-import { attachStopItems, loadStopItems } from "../stopItems"
+import {
+  attachStopItems,
+  attachStopItemsToMany,
+  loadStopItems,
+} from "../stopItems"
 import { GravityItinerary, GravityItineraryStop } from "../types"
 
 const buildStop = (
@@ -28,6 +32,42 @@ const buildStop = (
   ...overrides,
 })
 
+const buildItinerary = (
+  stopsBySection: GravityItineraryStop[][],
+  overrides: Partial<GravityItinerary> = {}
+): GravityItinerary => ({
+  id: "itinerary-id",
+  slug: null,
+  title: "Test itinerary",
+  subtitle: null,
+  description: null,
+  author_name: null,
+  user_id: "user-1",
+  city_slug: "london-united-kingdom",
+  is_curated: false,
+  visibility: "private",
+  share_token: null,
+  published_at: null,
+  published_by_id: null,
+  image_url: null,
+  image_urls: null,
+  created_at: "2026-09-01T00:00:00Z",
+  updated_at: "2026-09-01T00:00:00Z",
+  sections_count: stopsBySection.length,
+  sections: stopsBySection.map((stops, index) => ({
+    id: `section-${index}`,
+    itinerary_id: "itinerary-id",
+    title: null,
+    note: null,
+    position: index,
+    stops_count: stops.length,
+    stops,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-09-01T00:00:00Z",
+  })),
+  ...overrides,
+})
+
 describe("loadStopItems", () => {
   it("batches ids by type, calling each loader at most once", async () => {
     const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
@@ -53,13 +93,14 @@ describe("loadStopItems", () => {
     } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
-    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"] })
+    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
     expect(partnerLocationsByIdsLoader).toHaveBeenCalledTimes(1)
     expect(partnerLocationsByIdsLoader).toHaveBeenCalledWith({
       id: ["location-1"],
+      size: 1,
     })
     expect(fairsLoader).toHaveBeenCalledTimes(1)
-    expect(fairsLoader).toHaveBeenCalledWith({ id: ["fair-1"] })
+    expect(fairsLoader).toHaveBeenCalledWith({ id: ["fair-1"], size: 1 })
 
     expect(map.get("PartnerShow:show-1")).toEqual({
       _id: "show-1",
@@ -72,6 +113,42 @@ describe("loadStopItems", () => {
     expect(map.get("Fair:fair-1")).toEqual({
       _id: "fair-1",
       __typename: "Fair",
+    })
+  })
+
+  it("keys a partner location by id even when an unrelated _id is present", async () => {
+    const partnerLocationsByIdsLoader = jest
+      .fn()
+      .mockResolvedValue([{ id: "location-1", _id: "unrelated-mongo-id" }])
+
+    const stops = [
+      buildStop({ item_type: "PartnerLocation", item_id: "location-1" }),
+    ]
+
+    const map = await loadStopItems(stops, {
+      partnerLocationsByIdsLoader,
+    } as any)
+
+    expect(map.get("PartnerLocation:location-1")).toEqual({
+      id: "location-1",
+      _id: "unrelated-mongo-id",
+      __typename: "PartnerLocation",
+    })
+  })
+
+  it("keys a partner show by _id even when it also has a slug id", async () => {
+    const showsLoader = jest
+      .fn()
+      .mockResolvedValue([{ _id: "show-1", id: "andy-warhol-retrospective" }])
+
+    const stops = [buildStop({ item_type: "PartnerShow", item_id: "show-1" })]
+
+    const map = await loadStopItems(stops, { showsLoader } as any)
+
+    expect(map.get("PartnerShow:show-1")).toEqual({
+      _id: "show-1",
+      id: "andy-warhol-retrospective",
+      __typename: "Show",
     })
   })
 
@@ -105,6 +182,15 @@ describe("loadStopItems", () => {
     expect(map.size).toEqual(0)
   })
 
+  it("returns early without calling any loader when there are no stops", async () => {
+    const fairsLoader = jest.fn()
+
+    const map = await loadStopItems([], { fairsLoader } as any)
+
+    expect(map.size).toEqual(0)
+    expect(fairsLoader).not.toHaveBeenCalled()
+  })
+
   it("propagates a loader failure instead of swallowing it into a null item", async () => {
     const fairsLoader = jest.fn().mockRejectedValue(new Error("Gravity 500"))
 
@@ -131,40 +217,6 @@ describe("loadStopItems", () => {
 })
 
 describe("attachStopItems", () => {
-  const buildItinerary = (
-    stopsBySection: GravityItineraryStop[][]
-  ): GravityItinerary => ({
-    id: "itinerary-id",
-    slug: null,
-    title: "Test itinerary",
-    subtitle: null,
-    description: null,
-    author_name: null,
-    user_id: "user-1",
-    city_slug: "london-united-kingdom",
-    is_curated: false,
-    visibility: "private",
-    share_token: null,
-    published_at: null,
-    published_by_id: null,
-    image_url: null,
-    image_urls: null,
-    created_at: "2026-09-01T00:00:00Z",
-    updated_at: "2026-09-01T00:00:00Z",
-    sections_count: stopsBySection.length,
-    sections: stopsBySection.map((stops, index) => ({
-      id: `section-${index}`,
-      itinerary_id: "itinerary-id",
-      title: null,
-      note: null,
-      position: index,
-      stops_count: stops.length,
-      stops,
-      created_at: "2026-09-01T00:00:00Z",
-      updated_at: "2026-09-01T00:00:00Z",
-    })),
-  })
-
   it("resolves stops across every section in a single batch per type", async () => {
     const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
 
@@ -176,7 +228,7 @@ describe("attachStopItems", () => {
     await attachStopItems(itinerary, { showsLoader } as any)
 
     expect(showsLoader).toHaveBeenCalledTimes(1)
-    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"] })
+    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
 
     const resolvedItems = itinerary.sections.flatMap((section) =>
       section.stops.map((stop: any) => stop._resolvedItem)
@@ -193,5 +245,58 @@ describe("attachStopItems", () => {
     await attachStopItems(itinerary, {} as any)
 
     expect((itinerary.sections[0].stops[0] as any)._resolvedItem).toBeNull()
+  })
+
+  it("resolves without throwing and calls no loader when sections is absent", async () => {
+    const showsLoader = jest.fn()
+    const itinerary = buildItinerary([])
+    delete (itinerary as any).sections
+
+    await expect(
+      attachStopItems(itinerary, { showsLoader } as any)
+    ).resolves.toBe(itinerary)
+    expect(showsLoader).not.toHaveBeenCalled()
+  })
+
+  it("resolves without throwing and calls no loader when a section has no stops", async () => {
+    const showsLoader = jest.fn()
+    const itinerary = buildItinerary([[]])
+    delete (itinerary.sections[0] as any).stops
+
+    await expect(
+      attachStopItems(itinerary, { showsLoader } as any)
+    ).resolves.toBe(itinerary)
+    expect(showsLoader).not.toHaveBeenCalled()
+  })
+})
+
+describe("attachStopItemsToMany", () => {
+  it("dedupes ids across itineraries into a single loader call and stamps every stop", async () => {
+    const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
+
+    const itineraryA = buildItinerary(
+      [[buildStop({ item_type: "PartnerShow", item_id: "show-1" })]],
+      { id: "itinerary-a" }
+    )
+    const itineraryB = buildItinerary(
+      [[buildStop({ item_type: "PartnerShow", item_id: "show-1" })]],
+      { id: "itinerary-b" }
+    )
+
+    await attachStopItemsToMany([itineraryA, itineraryB], {
+      showsLoader,
+    } as any)
+
+    expect(showsLoader).toHaveBeenCalledTimes(1)
+    expect(showsLoader).toHaveBeenCalledWith({ id: ["show-1"], size: 1 })
+
+    expect((itineraryA.sections[0].stops[0] as any)._resolvedItem).toEqual({
+      _id: "show-1",
+      __typename: "Show",
+    })
+    expect((itineraryB.sections[0].stops[0] as any)._resolvedItem).toEqual({
+      _id: "show-1",
+      __typename: "Show",
+    })
   })
 })

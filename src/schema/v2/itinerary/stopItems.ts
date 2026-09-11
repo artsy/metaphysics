@@ -8,13 +8,15 @@ const LOADER_BY_ITEM_TYPE: Record<
   {
     loaderKey: "showsLoader" | "fairsLoader" | "partnerLocationsByIdsLoader"
     typename: string
+    idKey: "_id" | "id"
   }
 > = {
-  PartnerShow: { loaderKey: "showsLoader", typename: "Show" },
-  Fair: { loaderKey: "fairsLoader", typename: "Fair" },
+  PartnerShow: { loaderKey: "showsLoader", typename: "Show", idKey: "_id" },
+  Fair: { loaderKey: "fairsLoader", typename: "Fair", idKey: "_id" },
   PartnerLocation: {
     loaderKey: "partnerLocationsByIdsLoader",
     typename: "PartnerLocation",
+    idKey: "id",
   },
 }
 
@@ -23,20 +25,21 @@ const isStopItemType = (value: string | null): value is StopItemType =>
 
 const mapKey = (itemType: string, itemId: string) => `${itemType}:${itemId}`
 
-// A resolved Show/Partner/Fair, tagged for `ItineraryStopItem.resolveType`.
+// A resolved Show, Location, or Fair, tagged for `ItineraryStopItem.resolveType`.
 export type ResolvedStopItem = Record<string, unknown> & { __typename: string }
 
 export type StopWithResolvedItem = GravityItineraryStop & {
   _resolvedItem?: ResolvedStopItem | null
 }
 
-// Batch-resolves every stop's item into the referenced Show, Partner, or
-// Fair, at most one loader call per type. Returns a map keyed by
-// `"<item_type>:<item_id>"`.
+// One loader call per item type; returns a map keyed "<item_type>:<item_id>".
 export const loadStopItems = async (
   stops: GravityItineraryStop[],
   context: ResolverContext
 ): Promise<Map<string, ResolvedStopItem>> => {
+  const map = new Map<string, ResolvedStopItem>()
+  if (stops.length === 0) return map
+
   const idsByType: Record<StopItemType, Set<string>> = {
     PartnerShow: new Set(),
     PartnerLocation: new Set(),
@@ -49,22 +52,20 @@ export const loadStopItems = async (
     }
   }
 
-  const map = new Map<string, ResolvedStopItem>()
-
   const fetches = (["PartnerShow", "Fair", "PartnerLocation"] as const).map(
     async (itemType) => {
       const ids = Array.from(idsByType[itemType])
       if (ids.length === 0) return
 
-      const { loaderKey, typename } = LOADER_BY_ITEM_TYPE[itemType]
+      const { loaderKey, typename, idKey } = LOADER_BY_ITEM_TYPE[itemType]
       const loader = context[loaderKey]
       if (!loader) return
 
-      const result = await loader({ id: ids })
+      const result = await loader({ id: ids, size: ids.length })
       const records: any[] = Array.isArray(result) ? result : result.body
 
       for (const record of records) {
-        map.set(mapKey(itemType, record._id ?? record.id), {
+        map.set(mapKey(itemType, record[idKey]), {
           ...record,
           __typename: typename,
         })
@@ -77,14 +78,14 @@ export const loadStopItems = async (
   return map
 }
 
-// Must be called by every resolver that returns an `Itinerary`, or `item`
-// resolves to null on every stop.
-export const attachStopItems = async (
-  itinerary: GravityItinerary,
+// Call from every resolver that returns Itinerary nodes, once per page.
+// Tolerates list payloads with no sections.
+export const attachStopItemsToMany = async <T extends GravityItinerary>(
+  itineraries: T[],
   context: ResolverContext
-): Promise<GravityItinerary> => {
-  const stops: StopWithResolvedItem[] = itinerary.sections.flatMap(
-    (section) => section.stops
+): Promise<T[]> => {
+  const stops: StopWithResolvedItem[] = itineraries.flatMap((itinerary) =>
+    (itinerary.sections ?? []).flatMap((section) => section.stops ?? [])
   )
 
   const itemsByKey = await loadStopItems(stops, context)
@@ -96,5 +97,13 @@ export const attachStopItems = async (
         : null
   }
 
-  return itinerary
+  return itineraries
+}
+
+export const attachStopItems = async (
+  itinerary: GravityItinerary,
+  context: ResolverContext
+): Promise<GravityItinerary> => {
+  const [attached] = await attachStopItemsToMany([itinerary], context)
+  return attached
 }
