@@ -1,4 +1,5 @@
 import { formatGravityError } from "../gravityErrorHandler"
+import { HTTPError } from "../HTTPError"
 
 describe("gravityErrorHandler", () => {
   describe("formatGravityError", () => {
@@ -65,6 +66,40 @@ describe("gravityErrorHandler", () => {
       }
 
       expect(formatGravityError(unrecognizableError)).toEqual(null)
+    })
+
+    it("does not log when the HTTPError body is already an object", () => {
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation()
+
+      const error = new HTTPError("Gravity error", 400, {
+        type: "param_error",
+        message: "Title can't be blank.",
+        detail: { title: ["can't be blank"] },
+      })
+
+      expect(formatGravityError(error)).toEqual({
+        fieldErrors: [{ name: "title", message: "can't be blank" }],
+        type: "param_error",
+        message: "Title can't be blank.",
+        statusCode: 400,
+      })
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
+
+      consoleErrorSpy.mockRestore()
+    })
+
+    it("still logs and returns an error when the HTTPError body is an unparsable string", () => {
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation()
+
+      const error = new HTTPError("Gravity error", 400, "not json")
+
+      expect(formatGravityError(error)).toEqual({
+        type: "error",
+        message: "not json",
+      })
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
+
+      consoleErrorSpy.mockRestore()
     })
   })
 })
