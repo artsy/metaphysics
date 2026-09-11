@@ -52,7 +52,7 @@ export interface GravityItinerary {
   author_name: string | null
   is_curated: boolean
   /** Gravity derives this from published_at and share_token. */
-  visibility: string
+  visibility: "private" | "unlisted" | "public"
   published_at: string | null
   published_by_id: string | null
   share_token: string | null
