@@ -214,6 +214,16 @@ export const OrderSellerStateEnum = new GraphQLEnumType({
   },
 })
 
+export const PartnerOrdersSortEnum = new GraphQLEnumType({
+  name: "PartnerOrdersSortEnum",
+  values: {
+    STATE_EXPIRES_AT_ASC: { value: "STATE_EXPIRES_AT_ASC" },
+    STATE_EXPIRES_AT_DESC: { value: "STATE_EXPIRES_AT_DESC" },
+    STATE_UPDATED_AT_ASC: { value: "STATE_UPDATED_AT_ASC" },
+    STATE_UPDATED_AT_DESC: { value: "STATE_UPDATED_AT_DESC" },
+  },
+})
+
 // Enum for fulfillment_option.type field
 const FulfillmentOptionTypeEnum = new GraphQLEnumType({
   name: "FulfillmentOptionTypeEnum",

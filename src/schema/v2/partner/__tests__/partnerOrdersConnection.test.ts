@@ -17,6 +17,7 @@ describe("partner.ordersConnection", () => {
         buyer_type: "User",
         seller_id: "partner-id",
         seller_type: "Partner",
+        seller_state: "OFFER_RECEIVED",
         items_total_cents: 100000,
         shipping_total_cents: 2000,
         tax_total_cents: 8000,
@@ -44,6 +45,7 @@ describe("partner.ordersConnection", () => {
         buyer_type: "User",
         seller_id: "partner-id",
         seller_type: "Partner",
+        seller_state: "APPROVED_SELLER_SHIP",
         items_total_cents: 50000,
         shipping_total_cents: 1000,
         tax_total_cents: 4000,
@@ -70,6 +72,13 @@ describe("partner.ordersConnection", () => {
       if (params.artwork_id) {
         filteredOrders = filteredOrders.filter((order) =>
           order.line_items.some((li) => li.artwork_id === params.artwork_id)
+        )
+      }
+
+      if (params.seller_state) {
+        const sellerStates = params.seller_state.split(",")
+        filteredOrders = filteredOrders.filter((order) =>
+          sellerStates.includes(order.seller_state)
         )
       }
 
@@ -170,6 +179,71 @@ describe("partner.ordersConnection", () => {
       "partner-id",
       expect.objectContaining({
         artwork_id: "artwork-1",
+      })
+    )
+  })
+
+  it("filters orders by sellerState", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sellerState: [OFFER_RECEIVED]) {
+            edges {
+              node {
+                internalID
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      partner: {
+        ordersConnection: {
+          edges: [
+            {
+              node: {
+                internalID: "order-1",
+                code: "ORD001",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-id",
+      expect.objectContaining({
+        seller_state: "OFFER_RECEIVED",
+      })
+    )
+  })
+
+  it("passes the sort param through to the loader", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sort: STATE_EXPIRES_AT_ASC) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-id",
+      expect.objectContaining({
+        sort: "STATE_EXPIRES_AT_ASC",
       })
     )
   })
