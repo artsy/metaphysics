@@ -24,15 +24,11 @@ export const ItineraryVisibilityEnum = new GraphQLEnumType({
   },
 })
 
-// Derived from published_at / share_token — Gravity has no visibility column.
-const deriveVisibility = ({
-  published_at,
-  share_token,
-}: GravityItinerary): "PRIVATE" | "UNLISTED" | "PUBLIC" => {
-  if (published_at) return "PUBLIC"
-  if (share_token) return "UNLISTED"
-  return "PRIVATE"
-}
+const VISIBILITY_BY_GRAVITY = {
+  private: "PRIVATE",
+  unlisted: "UNLISTED",
+  public: "PUBLIC",
+} as const
 
 export const ItineraryType = new GraphQLObjectType<
   GravityItinerary,
@@ -80,7 +76,7 @@ export const ItineraryType = new GraphQLObjectType<
     },
     visibility: {
       type: new GraphQLNonNull(ItineraryVisibilityEnum),
-      resolve: (itinerary) => deriveVisibility(itinerary),
+      resolve: ({ visibility }) => VISIBILITY_BY_GRAVITY[visibility],
     },
     shareToken: {
       type: GraphQLString,
