@@ -23407,6 +23407,18 @@ type Itinerary {
   visibility: ItineraryVisibility!
 }
 
+type ItineraryMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union ItineraryMutationResponseOrError =
+    ItineraryMutationFailure
+  | ItineraryMutationSuccess
+
+type ItineraryMutationSuccess {
+  itinerary: Itinerary
+}
+
 type ItinerarySection {
   internalID: String!
 
@@ -26370,6 +26382,11 @@ type Mutation {
   ): CreateSubmissionMutationPayload
 
   """
+  Copy an itinerary into the caller's account. `shareToken` is needed for an unlisted source.
+  """
+  copyItinerary(input: copyItineraryInput!): copyItineraryPayload
+
+  """
   Create an account request
   """
   createAccountRequest(
@@ -26575,6 +26592,11 @@ type Mutation {
   createInvoicePayment(
     input: CreateInvoicePaymentInput!
   ): CreateInvoicePaymentPayload
+
+  """
+  Create an itinerary.
+  """
+  createItinerary(input: createItineraryInput!): createItineraryPayload
 
   """
   Create a Mailchimp campaign draft for a partner from pre-rendered HTML
@@ -26872,6 +26894,11 @@ type Mutation {
   deleteInstagramAccount(
     input: DeleteInstagramAccountInput!
   ): DeleteInstagramAccountPayload
+
+  """
+  Delete an itinerary.
+  """
+  deleteItinerary(input: deleteItineraryInput!): deleteItineraryPayload
 
   """
   Disconnect a Mailchimp account from a partner
@@ -27194,6 +27221,11 @@ type Mutation {
   ): MyCollectionUpdateArtworkPayload
 
   """
+  Publish an itinerary. Needs the publish ability.
+  """
+  publishItinerary(input: publishItineraryInput!): publishItineraryPayload
+
+  """
   Publish a draft navigation version. Accepts either a groupID (for backward compatibility) or versionID (preferred for admin workflows).
   """
   publishNavigationDraft(
@@ -27442,6 +27474,11 @@ type Mutation {
   ): UnlinkAuthenticationMutationPayload
 
   """
+  Unpublish an itinerary. Also revokes its share link, so it becomes private. Needs the publish ability.
+  """
+  unpublishItinerary(input: unpublishItineraryInput!): unpublishItineraryPayload
+
+  """
   Unpublishes a partner list's private viewing room. Does not delete the publication.
   """
   unpublishPartnerListPublication(
@@ -27603,6 +27640,11 @@ type Mutation {
   updateInstallShotForPartnerShow(
     input: UpdateInstallShotForPartnerShowMutationInput!
   ): UpdateInstallShotForPartnerShowMutationPayload
+
+  """
+  Update an itinerary. Pass `generateShareToken` or `revokeShareToken` to manage its share link.
+  """
+  updateItinerary(input: updateItineraryInput!): updateItineraryPayload
 
   """
   Updates the user's collections in batch.
@@ -44995,6 +45037,21 @@ enum contactType {
   PARTNER
 }
 
+input copyItineraryInput {
+  clientMutationId: String
+  id: String!
+
+  """
+  The share token of the itinerary being copied, required to copy an unlisted itinerary the caller does not own
+  """
+  shareToken: String
+}
+
+type copyItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
 input createAlertInput {
   acquireable: Boolean
   additionalGeneIDs: [String]
@@ -45075,6 +45132,21 @@ union createHeroUnitResponseOrError =
 
 type createHeroUnitSuccess {
   heroUnit: HeroUnit
+}
+
+input createItineraryInput {
+  authorName: String
+  citySlug: String!
+  clientMutationId: String
+  description: String
+  isCurated: Boolean
+  subtitle: String
+  title: String!
+}
+
+type createItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
 }
 
 type createOrderedSetFailure {
@@ -45236,6 +45308,16 @@ type deleteHeroUnitSuccess {
   heroUnit: HeroUnit
 }
 
+input deleteItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
 type deleteOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -45373,6 +45455,16 @@ type dimensions {
 
 type partnerBiographyBlurb {
   text: String
+}
+
+input publishItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type publishItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
 }
 
 type purchases {
@@ -45532,6 +45624,16 @@ type submitOrderPayload {
   orderOrError: OrderMutationResponse
 }
 
+input unpublishItineraryInput {
+  clientMutationId: String
+  id: String!
+}
+
+type unpublishItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
+}
+
 input unsetOrderFulfillmentOptionInput {
   clientMutationId: String
 
@@ -45659,6 +45761,32 @@ union updateHeroUnitResponseOrError =
 
 type updateHeroUnitSuccess {
   heroUnit: HeroUnit
+}
+
+input updateItineraryInput {
+  authorName: String
+  citySlug: String
+  clientMutationId: String
+  description: String
+
+  """
+  Generate a new share token for this itinerary, replacing any existing one
+  """
+  generateShareToken: Boolean
+  id: String!
+  isCurated: Boolean
+
+  """
+  Revoke this itinerary's current share token, if any
+  """
+  revokeShareToken: Boolean
+  subtitle: String
+  title: String
+}
+
+type updateItineraryPayload {
+  clientMutationId: String
+  responseOrError: ItineraryMutationResponseOrError
 }
 
 input updateMeCollectionsMutationInput {
