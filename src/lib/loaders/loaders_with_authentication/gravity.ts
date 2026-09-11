@@ -480,6 +480,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerUserNoteLoader: gravityLoader(
+      "partner_user_note",
+      {},
+      { method: "POST" }
+    ),
     createPartnerLocationLoader: gravityLoader(
       (id) => `partner/${id}/location`,
       {},
@@ -621,6 +626,11 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; contactId: string }
     >(
       ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`,
       {},
       { method: "DELETE" }
     ),
@@ -1227,6 +1237,14 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`
+    ),
+    partnerUserNotesLoader: gravityLoader(
+      "partner_user_notes",
+      {},
+      { headers: true }
+    ),
     conversationMessageTemplateLoader: gravityLoader(
       (id) => `conversation_message_template/${id}`
     ),
@@ -1595,6 +1613,11 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; contactId: string }
     >(
       ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`,
       {},
       { method: "PUT" }
     ),
