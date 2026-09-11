@@ -16,12 +16,14 @@ export const EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE = {
     "tall",
   ],
   "brand-kit-logo": ["logo_brand_kit"],
+  "artist-social-post": ["large"],
 } as const
 
 // The last version Gemini emits per template — its presence signals processing is complete.
 export const COMPLETION_VERSION_BY_TEMPLATE = {
   "additional-image": "normalized",
   "brand-kit-logo": "logo_brand_kit",
+  "artist-social-post": "large",
 } as const
 
 type TemplateKey = keyof typeof EXPECTED_IMAGE_VERSIONS_BY_TEMPLATE
