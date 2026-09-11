@@ -218,6 +218,7 @@ describe("Itinerary", () => {
     expect(typenames).toEqual(["Show", "Location", null])
     expect(context.partnerLocationsByIdsLoader).toHaveBeenCalledWith({
       id: ["location-1"],
+      size: 1,
     })
   })
 
