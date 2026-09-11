@@ -26611,7 +26611,7 @@ type Mutation {
   createItinerary(input: createItineraryInput!): createItineraryPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Create a section in an itinerary.
   """
   createItinerarySection(
     input: createItinerarySectionInput!
@@ -26920,7 +26920,7 @@ type Mutation {
   deleteItinerary(input: deleteItineraryInput!): deleteItineraryPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Delete a section and its stops.
   """
   deleteItinerarySection(
     input: deleteItinerarySectionInput!
@@ -27673,7 +27673,7 @@ type Mutation {
   updateItinerary(input: updateItineraryInput!): updateItineraryPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Update a section. `position` moves it among its itinerary's sections.
   """
   updateItinerarySection(
     input: updateItinerarySectionInput!

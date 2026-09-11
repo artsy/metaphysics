@@ -1,6 +1,9 @@
 import { GraphQLInt, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { snakeCaseKeys } from "lib/helpers"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { attachItemsToStops } from "../stopItems"
 import { ItinerarySectionMutationResponseOrErrorType } from "./itinerarySectionMutationResponseOrError"
 
 interface InputProps {
@@ -17,7 +20,7 @@ export const updateItinerarySectionMutation = mutationWithClientMutationId<
 >({
   name: "updateItinerarySection",
   description:
-    "Not implemented yet in Metaphysics. Calling this mutation always throws.",
+    "Update a section. `position` moves it among its itinerary's sections.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     title: { type: GraphQLString },
@@ -39,9 +42,28 @@ export const updateItinerarySectionMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (_args, _context) => {
-    throw new Error(
-      "updateItinerarySection is not implemented yet in Metaphysics."
-    )
+  mutateAndGetPayload: async ({ id, ...attributes }, context) => {
+    if (!context.updateItinerarySectionLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    try {
+      const section = await context.updateItinerarySectionLoader(
+        id,
+        snakeCaseKeys(attributes)
+      )
+
+      await attachItemsToStops(section.stops ?? [], context)
+
+      return section
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw error
+      }
+    }
   },
 })

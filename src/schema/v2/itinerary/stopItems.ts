@@ -91,6 +91,23 @@ export const loadStopItems = async (
   return map
 }
 
+// Loads and stamps `_resolvedItem` on each stop, in place.
+export const attachItemsToStops = async (
+  stops: StopWithResolvedItem[],
+  context: ResolverContext
+): Promise<StopWithResolvedItem[]> => {
+  const itemsByKey = await loadStopItems(stops, context)
+
+  for (const stop of stops) {
+    stop._resolvedItem =
+      stop.item_id && isStopItemType(stop.item_type)
+        ? itemsByKey.get(mapKey(stop.item_type, stop.item_id)) ?? null
+        : null
+  }
+
+  return stops
+}
+
 // Call from every resolver that returns Itinerary nodes, once per page.
 // Tolerates list payloads with no sections.
 export const attachStopItemsToMany = async <T extends GravityItinerary>(
@@ -101,14 +118,7 @@ export const attachStopItemsToMany = async <T extends GravityItinerary>(
     (itinerary.sections ?? []).flatMap((section) => section.stops ?? [])
   )
 
-  const itemsByKey = await loadStopItems(stops, context)
-
-  for (const stop of stops) {
-    stop._resolvedItem =
-      stop.item_id && isStopItemType(stop.item_type)
-        ? itemsByKey.get(mapKey(stop.item_type, stop.item_id)) ?? null
-        : null
-  }
+  await attachItemsToStops(stops, context)
 
   return itineraries
 }

@@ -1,4 +1,5 @@
 import {
+  attachItemsToStops,
   attachStopItems,
   attachStopItemsToMany,
   loadStopItems,
@@ -275,6 +276,25 @@ describe("attachStopItems", () => {
       attachStopItems(itinerary, { showsLoader } as any)
     ).resolves.toBe(itinerary)
     expect(showsLoader).not.toHaveBeenCalled()
+  })
+})
+
+describe("attachItemsToStops", () => {
+  it("resolves a flat list of stops in a single batch and stamps each one", async () => {
+    const showsLoader = jest.fn().mockResolvedValue([{ _id: "show-1" }])
+
+    const stops = [
+      buildStop({ item_type: "PartnerShow", item_id: "show-1" }),
+      buildStop({ item_type: "PartnerShow", item_id: "show-1" }),
+    ]
+
+    await attachItemsToStops(stops, { showsLoader } as any)
+
+    expect(showsLoader).toHaveBeenCalledTimes(1)
+    expect(stops.map((stop: any) => stop._resolvedItem)).toEqual([
+      { _id: "show-1", __typename: "Show" },
+      { _id: "show-1", __typename: "Show" },
+    ])
   })
 })
 

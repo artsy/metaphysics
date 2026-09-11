@@ -1,5 +1,6 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ItinerarySectionMutationResponseOrErrorType } from "./itinerarySectionMutationResponseOrError"
 
@@ -13,8 +14,7 @@ export const deleteItinerarySectionMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "deleteItinerarySection",
-  description:
-    "Not implemented yet in Metaphysics. Calling this mutation always throws.",
+  description: "Delete a section and its stops.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -24,9 +24,21 @@ export const deleteItinerarySectionMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (_args, _context) => {
-    throw new Error(
-      "deleteItinerarySection is not implemented yet in Metaphysics."
-    )
+  mutateAndGetPayload: async ({ id }, context) => {
+    if (!context.deleteItinerarySectionLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    try {
+      return await context.deleteItinerarySectionLoader(id, {})
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw error
+      }
+    }
   },
 })
