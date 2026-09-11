@@ -41,11 +41,8 @@ describe("loadStopItems", () => {
     const stops = [
       buildStop({ item_type: "PartnerShow", item_id: "show-1" }),
       buildStop({ item_type: "PartnerLocation", item_id: "location-1" }),
-      // A second stop referencing the same location -- must not trigger a
-      // second call, even though locations are fetched one id at a time.
       buildStop({ item_type: "PartnerLocation", item_id: "location-1" }),
       buildStop({ item_type: "Fair", item_id: "fair-1" }),
-      // No item behind this stop at all.
       buildStop({ item_type: null, item_id: null }),
     ]
 
@@ -86,9 +83,6 @@ describe("loadStopItems", () => {
     expect(map.get("Fair:gone")).toBeUndefined()
   })
 
-  // A guide outlives its stops' entities. A location that has been deleted,
-  // or made private since the guide was written, must leave that one stop
-  // without an item rather than failing the whole itinerary.
   it("leaves out a location that 404s rather than failing the itinerary", async () => {
     const partnerLocationByIdLoader = jest
       .fn()

@@ -1,9 +1,4 @@
-/**
- * The shapes Gravity's itinerary endpoints return, in the snake_case they
- * arrive in. These mirror `json_properties` on `Itinerary`,
- * `ItinerarySection` and `ItineraryStop` — if a field is missing here, check
- * the model rather than assuming Gravity sends it.
- */
+// The shapes Gravity's itinerary endpoints return, in snake_case.
 
 export interface GravityItineraryStop {
   id: string

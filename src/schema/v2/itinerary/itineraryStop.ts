@@ -28,9 +28,7 @@ export const ItineraryStopCategory = new GraphQLEnumType({
 export const ItineraryStopItem = new GraphQLUnionType({
   name: "ItineraryStopItem",
   types: [ShowType, LocationType, FairType],
-  // graphql-js 16 requires `resolveType` to return the type NAME, not the
-  // GraphQLObjectType itself — returning the object throws at execution
-  // time.
+  // Must return the type NAME, not the GraphQLObjectType itself.
   resolveType: (value) => {
     switch (value?.__typename) {
       case "Show":
@@ -124,10 +122,8 @@ export const ItineraryStopType = new GraphQLObjectType<
         "any. A stop " +
         "without an `item_id` (e.g. a café) resolves to null.",
       type: ItineraryStopItem,
-      // Resolved by `attachStopItems`, which every resolver returning an
-      // `Itinerary` must call before returning it (the root `itinerary`
-      // field and both `itinerariesConnection` resolvers). This is a
-      // lookup, not a request -- the batched fetch already happened.
+      // `_resolvedItem` is filled by `attachStopItems`, which every
+      // resolver returning an `Itinerary` must call first.
       resolve: ({ _resolvedItem }) => _resolvedItem ?? null,
     },
   },
