@@ -1445,6 +1445,9 @@ export default (accessToken, userID, opts) => {
     ),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
+    // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
+    itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,
