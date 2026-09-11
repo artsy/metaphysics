@@ -322,10 +322,9 @@ describe("Itinerary", () => {
       fairsLoader: jest
         .fn()
         .mockResolvedValue({ body: [{ _id: "fair-1" }], headers: {} }),
-      fairEventsLoader: jest.fn().mockResolvedValue({
-        body: [{ id: "fair-event-1", name: "Booth Talk" }],
-        headers: {},
-      }),
+      fairEventsLoader: jest
+        .fn()
+        .mockResolvedValue([{ id: "fair-event-1", name: "Booth Talk" }]),
     }
     const data = await runQuery(query, context)
 

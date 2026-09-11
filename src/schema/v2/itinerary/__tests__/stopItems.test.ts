@@ -315,13 +315,10 @@ describe("event resolution", () => {
     const fairsLoader = jest
       .fn()
       .mockResolvedValue({ body: [{ _id: "fair-1" }], headers: {} })
-    const fairEventsLoader = jest.fn().mockResolvedValue({
-      body: [
-        { id: "fair-event-1", name: "Booth Talk" },
-        { id: "fair-event-2", name: "VIP Preview" },
-      ],
-      headers: {},
-    })
+    const fairEventsLoader = jest.fn().mockResolvedValue([
+      { id: "fair-event-1", name: "Booth Talk" },
+      { id: "fair-event-2", name: "VIP Preview" },
+    ])
 
     const stops = [
       buildStop({
@@ -381,10 +378,7 @@ describe("event resolution", () => {
   it("leaves a rejecting fair's events null and resolves the other fair's events", async () => {
     const fairEventsLoader = jest.fn().mockImplementation((fairId) => {
       if (fairId === "fair-bad") return Promise.reject(new Error("Gravity 500"))
-      return Promise.resolve({
-        body: [{ id: "fair-event-1", name: "Booth Talk" }],
-        headers: {},
-      })
+      return Promise.resolve([{ id: "fair-event-1", name: "Booth Talk" }])
     })
 
     const stops = [
