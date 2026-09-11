@@ -1445,6 +1445,7 @@ export default (accessToken, userID, opts) => {
     ),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
+    partnerLocationByIdLoader: gravityLoader((id) => `partner_location/${id}`),
     partnerShowLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }
