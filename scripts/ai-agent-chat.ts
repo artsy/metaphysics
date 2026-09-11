@@ -15,12 +15,19 @@
 
 import "../src/lib/loadenv"
 import { randomUUID } from "crypto"
+import { readFileSync, writeFileSync } from "fs"
+import { homedir } from "os"
+import { join } from "path"
 import * as readline from "readline"
 
 const METAPHYSICS_URL =
   process.env.METAPHYSICS_URL || "http://localhost:5001/v2"
 const ACCESS_TOKEN = process.env.METAPHYSICS_ACCESS_TOKEN
 const USER_ID = process.env.METAPHYSICS_USER_ID
+const INPUT_HISTORY_SIZE = 200
+const INPUT_HISTORY_FILE =
+  process.env.AI_AGENT_CHAT_HISTORY_FILE ||
+  join(homedir(), ".metaphysics-ai-agent-history.json")
 
 if (!ACCESS_TOKEN || !USER_ID) {
   console.error(
@@ -61,6 +68,45 @@ const indent = (text: string) =>
     .split("\n")
     .map((line) => `  ${line}`)
     .join("\n")
+
+function loadInputHistory(): string[] {
+  try {
+    const history = JSON.parse(readFileSync(INPUT_HISTORY_FILE, "utf8"))
+    if (!Array.isArray(history)) return []
+
+    return history
+      .filter((entry): entry is string => typeof entry === "string")
+      .slice(0, INPUT_HISTORY_SIZE)
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    if (code !== "ENOENT") {
+      console.error(dim(`[history] Could not read ${INPUT_HISTORY_FILE}`))
+    }
+    return []
+  }
+}
+
+function saveInputHistory(history: readonly string[]): void {
+  const entries = history
+    .map((entry) => entry.trim())
+    .filter(
+      (entry, index, all) =>
+        entry.length > 0 &&
+        entry !== "exit" &&
+        entry !== "quit" &&
+        all.indexOf(entry) === index
+    )
+    .slice(0, INPUT_HISTORY_SIZE)
+
+  try {
+    writeFileSync(INPUT_HISTORY_FILE, `${JSON.stringify(entries, null, 2)}\n`, {
+      encoding: "utf8",
+      mode: 0o600,
+    })
+  } catch (_error) {
+    console.error(dim(`[history] Could not write ${INPUT_HISTORY_FILE}`))
+  }
+}
 
 function describeOne(error: unknown): string {
   if (!(error instanceof Error)) return String(error)
@@ -247,11 +293,15 @@ function main() {
     input: process.stdin,
     output: process.stdout,
     prompt: "you> ",
+    history: loadInputHistory(),
+    historySize: INPUT_HISTORY_SIZE,
+    removeHistoryDuplicates: true,
   })
   rl.prompt()
 
   rl.on("line", async (line) => {
     const message = line.trim()
+    saveInputHistory(rl.history)
     if (!message) {
       rl.prompt()
       return
@@ -279,6 +329,7 @@ function main() {
   })
 
   rl.on("close", () => {
+    saveInputHistory(rl.history)
     console.log("\nBye.")
     process.exit(0)
   })
