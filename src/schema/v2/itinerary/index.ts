@@ -21,9 +21,7 @@ export const Itinerary: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: async (_root, { id, shareToken }, context) => {
-    const loader =
-      context.itineraryLoader ?? context.unauthenticatedLoaders?.itineraryLoader
-    if (!loader) return null
+    const loader = context.itineraryLoader
 
     // Gravity 404s a private/missing itinerary; resolve null rather than erroring.
     const itinerary = await loader(

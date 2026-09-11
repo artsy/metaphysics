@@ -179,6 +179,25 @@ describe("Itinerary", () => {
     expect(custom.address).toEqual("2 Park Street, London SE1 9AB")
   })
 
+  it("maps a non-public Gravity visibility value", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          visibility
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...loaders(),
+      itineraryLoader: jest
+        .fn()
+        .mockResolvedValue({ ...gravityItinerary, visibility: "unlisted" }),
+    })
+
+    expect(data.itinerary.visibility).toEqual("UNLISTED")
+  })
+
   // Gravity sends `image_urls` keyed by version but no `image_versions`.
   it("derives the image versions from the URL hash", async () => {
     const query = `
