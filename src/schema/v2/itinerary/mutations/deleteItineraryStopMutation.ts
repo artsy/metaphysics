@@ -1,5 +1,6 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
@@ -15,8 +16,7 @@ export const deleteItineraryStopMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "deleteItineraryStop",
-  description:
-    "Not implemented yet in Metaphysics. Calling this mutation always throws.",
+  description: "Delete a stop by its id.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -26,9 +26,21 @@ export const deleteItineraryStopMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (_args, _context) => {
-    throw new Error(
-      "deleteItineraryStop is not implemented yet in Metaphysics."
-    )
+  mutateAndGetPayload: async ({ id }, context) => {
+    if (!context.deleteItineraryStopLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    try {
+      return await context.deleteItineraryStopLoader(id, {})
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw error
+      }
+    }
   },
 })

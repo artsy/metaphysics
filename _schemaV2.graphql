@@ -26630,7 +26630,7 @@ type Mutation {
   ): createItinerarySectionPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Add a stop to a section. A stop points at a show, a location or a fair, or is a custom place with its own title and coordinates.
   """
   createItineraryStop(
     input: createItineraryStopInput!
@@ -26946,7 +26946,7 @@ type Mutation {
   ): deleteItinerarySectionPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Delete a stop by its id.
   """
   deleteItineraryStop(
     input: deleteItineraryStopInput!
@@ -27706,7 +27706,7 @@ type Mutation {
   ): updateItinerarySectionPayload
 
   """
-  Not implemented yet in Metaphysics. Calling this mutation always throws.
+  Update a stop. `position` moves it among its section's stops. `isFreeAdmission: null` clears the override.
   """
   updateItineraryStop(
     input: updateItineraryStopInput!
