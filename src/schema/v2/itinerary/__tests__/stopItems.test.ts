@@ -377,6 +377,42 @@ describe("event resolution", () => {
     expect((stops[0] as any)._resolvedEvent).toBeNull()
     expect(fairEventsLoader).not.toHaveBeenCalled()
   })
+
+  it("leaves a rejecting fair's events null and resolves the other fair's events", async () => {
+    const fairEventsLoader = jest.fn().mockImplementation((fairId) => {
+      if (fairId === "fair-bad") return Promise.reject(new Error("Gravity 500"))
+      return Promise.resolve({
+        body: [{ id: "fair-event-1", name: "Booth Talk" }],
+        headers: {},
+      })
+    })
+
+    const stops = [
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-bad",
+        event_type: "FairEvent",
+        event_id: "fair-event-1",
+      }),
+      buildStop({
+        item_type: "Fair",
+        item_id: "fair-good",
+        event_type: "FairEvent",
+        event_id: "fair-event-1",
+      }),
+    ]
+
+    await expect(
+      attachItemsToStops(stops, { fairEventsLoader } as any)
+    ).resolves.toBe(stops)
+
+    expect((stops[0] as any)._resolvedEvent).toBeNull()
+    expect((stops[1] as any)._resolvedEvent).toEqual({
+      id: "fair-event-1",
+      name: "Booth Talk",
+      __typename: "FairEvent",
+    })
+  })
 })
 
 describe("attachItemsToStops", () => {

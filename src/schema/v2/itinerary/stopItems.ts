@@ -109,13 +109,18 @@ const loadFairEvents = async (
 
   await Promise.all(
     fairIds.map(async (fairId) => {
-      const result = await loader(fairId)
-      const events: any[] = Array.isArray(result) ? result : result.body
-      const byEventId = new Map<string, Record<string, unknown>>()
-      for (const event of events) {
-        byEventId.set(event.id, event)
+      // A fair's events are peripheral; don't fail the page for them.
+      try {
+        const result = await loader(fairId)
+        const events: any[] = Array.isArray(result) ? result : result.body
+        const byEventId = new Map<string, Record<string, unknown>>()
+        for (const event of events) {
+          byEventId.set(event.id, event)
+        }
+        byFairId.set(fairId, byEventId)
+      } catch {
+        byFairId.set(fairId, new Map())
       }
-      byFairId.set(fairId, byEventId)
     })
   )
 
