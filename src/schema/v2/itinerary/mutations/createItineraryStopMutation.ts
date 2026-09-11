@@ -9,15 +9,20 @@ import { snakeCaseKeys } from "lib/helpers"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { attachItemsToStops } from "../stopItems"
-import { ItineraryStopCategory } from "../itineraryStop"
+import {
+  ItineraryStopCategory,
+  ItineraryStopItemType,
+  ItineraryStopEventType,
+} from "../itineraryStop"
+import { GravityItineraryStop } from "../types"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
 interface InputProps {
   clientMutationId?: string
   itinerarySectionID: string
-  itemType?: string
+  itemType?: GravityItineraryStop["item_type"]
   itemID?: string
-  eventType?: string
+  eventType?: GravityItineraryStop["event_type"]
   eventID?: string
   title?: string
   address?: string
@@ -44,9 +49,9 @@ export const createItineraryStopMutation = mutationWithClientMutationId<
     "fair, or is a custom place with its own title and coordinates.",
   inputFields: {
     itinerarySectionID: { type: new GraphQLNonNull(GraphQLString) },
-    itemType: { type: GraphQLString },
+    itemType: { type: ItineraryStopItemType },
     itemID: { type: GraphQLString },
-    eventType: { type: GraphQLString },
+    eventType: { type: ItineraryStopEventType },
     eventID: { type: GraphQLString },
     title: { type: GraphQLString },
     address: { type: GraphQLString },

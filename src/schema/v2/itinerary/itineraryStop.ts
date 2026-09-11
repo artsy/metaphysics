@@ -25,6 +25,25 @@ export const ItineraryStopCategory = new GraphQLEnumType({
   },
 })
 
+export const ItineraryStopItemType = new GraphQLEnumType({
+  name: "ItineraryStopItemType",
+  description: "What kind of item a stop points at",
+  values: {
+    SHOW: { value: "PartnerShow" },
+    LOCATION: { value: "PartnerLocation" },
+    FAIR: { value: "Fair" },
+  },
+})
+
+export const ItineraryStopEventType = new GraphQLEnumType({
+  name: "ItineraryStopEventType",
+  description: "What kind of event a stop names",
+  values: {
+    SHOW_EVENT: { value: "PartnerShowEvent" },
+    FAIR_EVENT: { value: "FairEvent" },
+  },
+})
+
 export const ItineraryStopItem = new GraphQLUnionType({
   name: "ItineraryStopItem",
   types: [ShowType, LocationType, FairType],
@@ -100,11 +119,16 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: ({ is_free_admission }) => is_free_admission,
     },
+    itemType: {
+      description: "What kind of item this stop points at, if any",
+      type: ItineraryStopItemType,
+      resolve: ({ item_type }) => item_type,
+    },
     eventType: {
       description:
-        "PartnerShowEvent on a show stop, FairEvent on a fair stop. Null " +
-        "when the stop names no event.",
-      type: GraphQLString,
+        "SHOW_EVENT on a show stop, FAIR_EVENT on a fair stop; null when " +
+        "the stop names no event.",
+      type: ItineraryStopEventType,
       resolve: ({ event_type }) => event_type,
     },
     eventID: {

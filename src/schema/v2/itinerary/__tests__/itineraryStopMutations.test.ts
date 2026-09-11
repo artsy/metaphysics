@@ -85,8 +85,10 @@ describe("createItineraryStop", () => {
       createItineraryStop(
         input: {
           itinerarySectionID: "section-id"
-          itemType: "PartnerShow"
+          itemType: SHOW
           itemID: "show-id"
+          eventType: SHOW_EVENT
+          eventID: "event-id"
           category: SHOW
           isFreeAdmission: true
           timeZone: "America/New_York"
@@ -110,10 +112,40 @@ describe("createItineraryStop", () => {
       itinerary_section_id: "section-id",
       item_type: "PartnerShow",
       item_id: "show-id",
+      event_type: "PartnerShowEvent",
+      event_id: "event-id",
       category: "SHOW",
       is_free_admission: true,
       time_zone: "America/New_York",
     })
+  })
+
+  it("rejects an invalid itemType before calling the loader", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await expect(
+      runAuthenticatedQuery(
+        gql`
+          mutation {
+            createItineraryStop(
+              input: {
+                itinerarySectionID: "section-id"
+                itemType: GALLERY
+                itemID: "show-id"
+              }
+            ) {
+              responseOrError {
+                ${successFragment}
+              }
+            }
+          }
+        `,
+        context
+      )
+    ).rejects.toThrow(/GALLERY/)
+
+    expect(loader).not.toHaveBeenCalled()
   })
 
   it("returns the success payload with the resolved item", async () => {
@@ -143,7 +175,7 @@ describe("createItineraryStop", () => {
           createItineraryStop(
             input: {
               itinerarySectionID: "section-id"
-              itemType: "PartnerShow"
+              itemType: SHOW
               itemID: "show-id"
               clientMutationId: "abc"
             }
@@ -213,7 +245,13 @@ describe("updateItineraryStop", () => {
   const mutation = gql`
     mutation {
       updateItineraryStop(
-        input: { id: "stop-id", position: 0, isFreeAdmission: null }
+        input: {
+          id: "stop-id"
+          position: 0
+          itemType: SHOW
+          eventType: SHOW_EVENT
+          isFreeAdmission: null
+        }
       ) {
         responseOrError {
           ${successFragment}
@@ -231,8 +269,32 @@ describe("updateItineraryStop", () => {
 
     expect(loader).toHaveBeenCalledWith("stop-id", {
       position: 0,
+      item_type: "PartnerShow",
+      event_type: "PartnerShowEvent",
       is_free_admission: null,
     })
+  })
+
+  it("rejects an invalid itemType before calling the loader", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await expect(
+      runAuthenticatedQuery(
+        gql`
+          mutation {
+            updateItineraryStop(input: { id: "stop-id", itemType: GALLERY }) {
+              responseOrError {
+                ${successFragment}
+              }
+            }
+          }
+        `,
+        context
+      )
+    ).rejects.toThrow(/GALLERY/)
+
+    expect(loader).not.toHaveBeenCalled()
   })
 
   it("does not forward clientMutationId to Gravity", async () => {
