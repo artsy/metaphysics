@@ -14,6 +14,8 @@ describe("Partner brandKit field", () => {
           fontFamily
           fontWeight
           fontStyle
+          writingLanguage
+          writingSample
         }
       }
     }
@@ -34,6 +36,8 @@ describe("Partner brandKit field", () => {
       font_family: "Helvetica",
       font_weight: "bold",
       font_style: "normal",
+      writing_language: "English",
+      writing_sample: "A spare, observational gallery voice.",
     }
 
     const context = {
@@ -57,6 +61,8 @@ describe("Partner brandKit field", () => {
           fontFamily: "Helvetica",
           fontWeight: "bold",
           fontStyle: "normal",
+          writingLanguage: "English",
+          writingSample: "A spare, observational gallery voice.",
         },
       },
     })

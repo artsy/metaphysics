@@ -36,6 +36,14 @@ export const BrandKitType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ font_style }) => font_style,
     },
+    writingLanguage: {
+      type: GraphQLString,
+      resolve: ({ writing_language }) => writing_language,
+    },
+    writingSample: {
+      type: GraphQLString,
+      resolve: ({ writing_sample }) => writing_sample,
+    },
     logo: {
       type: Image.type,
       resolve: ({ image }) => {

@@ -7858,6 +7858,8 @@ type BrandKit {
     """
     timezone: String
   ): String
+  writingLanguage: String
+  writingSample: String
 }
 
 type BulkAddArtworksToPartnerListFailure {
@@ -14972,6 +14974,16 @@ input CreateBrandKitInput {
   Text color hex code (e.g. #FF0000)
   """
   textColor: String
+
+  """
+  Language used for generated artwork descriptions
+  """
+  writingLanguage: String
+
+  """
+  Writing sample used to match tone in generated descriptions
+  """
+  writingSample: String
 }
 
 type CreateBrandKitPayload {
@@ -20522,6 +20534,7 @@ type FollowedShowConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+  totalCount: Int
 }
 
 """
@@ -21058,6 +21071,38 @@ Meta tags for Gene pages
 """
 type GeneMeta {
   description: String!
+}
+
+type GenerateArtworkDescriptionFailure {
+  mutationError: GravityMutationError
+}
+
+input GenerateArtworkDescriptionInput {
+  clientMutationId: String
+
+  """
+  The internal ID of the artwork to generate a description for
+  """
+  id: String!
+}
+
+type GenerateArtworkDescriptionPayload {
+  """
+  On success: the generated artwork description
+  """
+  artworkDescriptionOrError: GenerateArtworkDescriptionResponseOrError
+  clientMutationId: String
+}
+
+union GenerateArtworkDescriptionResponseOrError =
+    GenerateArtworkDescriptionFailure
+  | GenerateArtworkDescriptionSuccess
+
+type GenerateArtworkDescriptionSuccess {
+  """
+  AI-generated artwork description suggestion. Not saved to the artwork until the user applies it.
+  """
+  generatedDescription: String!
 }
 
 type GravityARImage {
@@ -23446,6 +23491,7 @@ type Location {
   Union returning opening hours in formatted structure or a string
   """
   openingHours: OpeningHoursUnion
+  partner: Partner
   phone: String
   pier: String
   postalCode: String
@@ -26896,6 +26942,13 @@ type Mutation {
   Follow (or unfollow) a show
   """
   followShow(input: FollowShowInput!): FollowShowPayload
+
+  """
+  Generate an AI artwork description without saving it to the artwork
+  """
+  generateArtworkDescription(
+    input: GenerateArtworkDescriptionInput!
+  ): GenerateArtworkDescriptionPayload
 
   """
   Links a 3rd party account
@@ -37341,6 +37394,11 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   isFollowed: Boolean
 
   """
+  Is entry to this show free? Null means this is genuinely unknown, not that admission isn't free.
+  """
+  isFreeAdmission: Boolean
+
+  """
   Does the show exist soley online
   """
   isOnlineExclusive: Boolean!
@@ -39041,6 +39099,16 @@ input UpdateBrandKitInput {
   Text color hex code (e.g. #FF0000)
   """
   textColor: String
+
+  """
+  Language used for generated artwork descriptions
+  """
+  writingLanguage: String
+
+  """
+  Writing sample used to match tone in generated descriptions
+  """
+  writingSample: String
 }
 
 type UpdateBrandKitLogoFailure {
