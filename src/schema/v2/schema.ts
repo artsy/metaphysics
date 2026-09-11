@@ -356,6 +356,7 @@ import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { Itinerary } from "./itinerary"
+import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import {
@@ -536,6 +537,7 @@ const rootFields = {
   identityVerificationsConnection,
   invoice: Invoice,
   itinerary: Itinerary,
+  itinerariesConnection: ItinerariesConnectionField,
   job,
   jobs,
   saleAgreement: SaleAgreement,
