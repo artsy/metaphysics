@@ -135,6 +135,8 @@ describe("artist.instagramMedia", () => {
             image {
               url(version: ["large"])
               imageVersions
+              isProcessing
+              processingFailed
             }
           }
         }
@@ -150,10 +152,40 @@ describe("artist.instagramMedia", () => {
             image: {
               url: "https://scontent.cdninstagram.com/1.jpg",
               imageVersions: [],
+              isProcessing: false,
+              processingFailed: false,
             },
           },
         ],
       },
+    })
+  })
+
+  it("reports processing as failed once Gemini was asked and nothing arrived", async () => {
+    media[0].image.gemini_token_updated_at = new Date(
+      Date.now() - 45 * 60 * 1000
+    ).toISOString()
+    media[0].image.image_urls = null
+    media[0].image.image_versions = []
+
+    const query = gql`
+      {
+        artist(id: "artistID") {
+          instagramMedia {
+            image {
+              isProcessing
+              processingFailed
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(data.artist.instagramMedia[0].image).toEqual({
+      isProcessing: false,
+      processingFailed: true,
     })
   })
 

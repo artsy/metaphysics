@@ -71,6 +71,10 @@ export const isProcessingImage = (image) => {
 
 // Check if image processing has failed
 export const hasProcessingFailed = (image) => {
+  if (!image.gemini_token_updated_at && !image.image_versions?.length) {
+    return false
+  }
+
   // Processing is not failed if image is missing original or still processing
   if (isProcessingImage(image)) {
     return false
