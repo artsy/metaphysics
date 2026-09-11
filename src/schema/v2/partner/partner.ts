@@ -1205,6 +1205,89 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      inquiryMetrics: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "PartnerInquiryMetrics",
+          fields: {
+            confirmedBuyersWaitingCount: {
+              type: GraphQLInt,
+              description:
+                "Number of confirmed buyers whose inquiries are still awaiting a response from the partner",
+              resolve: ({ confirmed_buyers_waiting_count }) =>
+                confirmed_buyers_waiting_count,
+            },
+            unansweredCount: {
+              type: GraphQLInt,
+              description:
+                "Number of inquiries still awaiting a response from the partner",
+              resolve: ({ unanswered_count }) => unanswered_count,
+            },
+          },
+        }),
+        description:
+          "Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles",
+        resolve: async (
+          { _id },
+          _args,
+          { conversationsLoader, partnerCollectorProfilesLoader }
+        ) => {
+          if (!conversationsLoader || !partnerCollectorProfilesLoader) {
+            return null
+          }
+
+          // Confirmed-buyer inquirers are only counted within the most
+          // recent batch of unanswered conversations.
+          const UNANSWERED_CONVERSATIONS_SCAN_LIMIT = 50
+
+          try {
+            // Same filters as the CMS unanswered-inquiries view, so counts
+            // always match what the partner sees when clicking through.
+            const { total_count, conversations } = await conversationsLoader({
+              page: 1,
+              size: UNANSWERED_CONVERSATIONS_SCAN_LIMIT,
+              deleted: false,
+              intercepted: false,
+              to_id: _id,
+              to_type: "Partner",
+              has_message: true,
+              has_reply: false,
+              dismissed: false,
+              to_be_replied: true,
+            })
+
+            const userIds = [
+              ...new Set(
+                (conversations ?? [])
+                  .map((conversation) => conversation.from_id)
+                  .filter((id): id is string => !!id)
+              ),
+            ]
+
+            let confirmedBuyersWaitingCount = 0
+            if (userIds.length > 0) {
+              const { body } = await partnerCollectorProfilesLoader({
+                partner_id: _id,
+                user_ids: userIds,
+                size: userIds.length,
+              })
+              confirmedBuyersWaitingCount = body.filter(
+                (item) => item.collector_profile?.confirmed_buyer_at
+              ).length
+            }
+
+            return {
+              unanswered_count: total_count,
+              confirmed_buyers_waiting_count: confirmedBuyersWaitingCount,
+            }
+          } catch (error) {
+            console.error(
+              "[partner/inquiryMetrics] Error fetching metrics:",
+              error
+            )
+            return null
+          }
+        },
+      },
       isLinkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>

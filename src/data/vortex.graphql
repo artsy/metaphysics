@@ -642,6 +642,11 @@ type PartnerSalesStats {
   orderCount: Int!
 
   """
+  Percentage (0-100) of orders/offers the partner responded to
+  """
+  orderResponseRate: Float
+
+  """
   Order response time in seconds
   """
   orderResponseTime: Int

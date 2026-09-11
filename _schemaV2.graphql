@@ -1439,6 +1439,11 @@ type AnalyticsPartnerSalesStats {
   orderCount: Int!
 
   """
+  Percentage (0-100) of orders/offers the partner responded to
+  """
+  orderResponseRate: Float
+
+  """
   Order response time in seconds
   """
   orderResponseTime: Int
@@ -29523,6 +29528,11 @@ type Partner implements Node {
   initials(length: Int = 3): String
 
   """
+  Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles
+  """
+  inquiryMetrics: PartnerInquiryMetrics
+
+  """
   Inquiry Request details
   """
   inquiryRequest(
@@ -30842,6 +30852,18 @@ type PartnerGenomeGenesConnectionEdge {
   The item at the end of the edge
   """
   node: PartnerGenomeGene
+}
+
+type PartnerInquiryMetrics {
+  """
+  Number of confirmed buyers whose inquiries are still awaiting a response from the partner
+  """
+  confirmedBuyersWaitingCount: Int
+
+  """
+  Number of inquiries still awaiting a response from the partner
+  """
+  unansweredCount: Int
 }
 
 type PartnerInquiryRequest {
