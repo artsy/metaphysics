@@ -142,7 +142,7 @@
     "@typescript-eslint/parser": "4.8.1",
     "babel-jest": "^29.7.0",
     "babel-plugin-module-resolver": "4.1.0",
-    "danger": "^11.2.1",
+    "danger": "^13.0.8",
     "deep-equal": "1.0.1",
     "diff": "4.0.1",
     "eslint": "6.7.2",
