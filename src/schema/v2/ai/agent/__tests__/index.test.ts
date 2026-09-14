@@ -93,24 +93,54 @@ describe("AIAgentTurn", () => {
     }
   })
 
-  it("rejects tool-call debugging outside development", () => {
+  it("ignores requested tool-call debugging where debug mode is disabled", () => {
     const originalNodeEnv = config.NODE_ENV
     config.NODE_ENV = "test"
 
     try {
-      expect(() =>
-        callSubscribe(
-          {
-            conversationID: "c1",
-            message: "hi",
-            includeDebugToolCalls: true,
-          },
-          { userID: "user-42", accessToken: "token" }
-        )
-      ).toThrow(/debugging is available only in development/)
-      expect(mockRunTurn).not.toHaveBeenCalled()
+      callSubscribe(
+        {
+          conversationID: "c1",
+          message: "hi",
+          includeDebugToolCalls: true,
+        },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ includeDebugToolCalls: false }),
+        expect.anything(),
+        expect.anything()
+      )
     } finally {
       config.NODE_ENV = originalNodeEnv
+    }
+  })
+
+  it("allows tool-call debugging outside development when ENABLE_AI_AGENT_DEBUG is set", () => {
+    const originalNodeEnv = config.NODE_ENV
+    const originalDebug = config.ENABLE_AI_AGENT_DEBUG
+    config.NODE_ENV = "test"
+    config.ENABLE_AI_AGENT_DEBUG = true
+
+    try {
+      callSubscribe(
+        {
+          conversationID: "c1",
+          message: "hi",
+          includeDebugToolCalls: true,
+        },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ includeDebugToolCalls: true }),
+        expect.anything(),
+        expect.anything()
+      )
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+      config.ENABLE_AI_AGENT_DEBUG = originalDebug
     }
   })
 
@@ -187,7 +217,11 @@ describe("AIAgentTurn", () => {
 
     callSubscribe(input, context, schema)
 
-    expect(mockRunTurn).toHaveBeenCalledWith(input, schema, context)
+    expect(mockRunTurn).toHaveBeenCalledWith(
+      { ...input, includeDebugToolCalls: false },
+      schema,
+      context
+    )
   })
 
   it("resolve is the identity function", () => {

@@ -76,15 +76,18 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       includeDebugToolCalls?: boolean | null
     }
 
-    if (input.includeDebugToolCalls && !isDevelopment) {
-      throw new Error(
-        "AI agent tool-call debugging is available only in development"
-      )
-    }
-
     assertInputWithinLimits(input)
 
-    return runTurn(input, info.schema, context)
+    const debugAvailable = isDevelopment || config.ENABLE_AI_AGENT_DEBUG
+
+    return runTurn(
+      {
+        ...input,
+        includeDebugToolCalls: debugAvailable && !!input.includeDebugToolCalls,
+      },
+      info.schema,
+      context
+    )
   },
   resolve: (payload) => payload,
 }

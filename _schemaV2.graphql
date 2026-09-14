@@ -73,7 +73,7 @@ type AIAgentToolCall {
   activity: AIAgentActivity!
 
   """
-  Developer-facing tool arguments, populated only when development debug mode is enabled.
+  Developer-facing tool arguments, populated only when debug mode is enabled.
   """
   debugSummary: String
 
@@ -86,7 +86,7 @@ type AIAgentToolCall {
 
 type AIAgentToolResult {
   """
-  Developer-facing failure detail, populated only when development debug mode is enabled.
+  Developer-facing failure detail, populated only when debug mode is enabled.
   """
   debugSummary: String
   ok: Boolean!
@@ -116,7 +116,7 @@ input AIAgentTurnInput {
   history: [AIAgentMessageInput!]
 
   """
-  Include developer-facing tool-call details. Available only in development.
+  Request developer-facing tool-call details. Honored only where the server enables debug mode; ignored elsewhere.
   """
   includeDebugToolCalls: Boolean
 

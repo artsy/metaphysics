@@ -82,7 +82,7 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
     includeDebugToolCalls: {
       type: GraphQLBoolean,
       description:
-        "Include developer-facing tool-call details. Available only in development.",
+        "Request developer-facing tool-call details. Honored only where the server enables debug mode; ignored elsewhere.",
     },
   },
 })
@@ -160,7 +160,7 @@ const AIAgentToolCallType = new GraphQLObjectType<
     debugSummary: {
       type: GraphQLString,
       description:
-        "Developer-facing tool arguments, populated only when development debug mode is enabled.",
+        "Developer-facing tool arguments, populated only when debug mode is enabled.",
     },
   },
 })
@@ -177,7 +177,7 @@ const AIAgentToolResultType = new GraphQLObjectType<
     debugSummary: {
       type: GraphQLString,
       description:
-        "Developer-facing failure detail, populated only when development debug mode is enabled.",
+        "Developer-facing failure detail, populated only when debug mode is enabled.",
     },
   },
 })
