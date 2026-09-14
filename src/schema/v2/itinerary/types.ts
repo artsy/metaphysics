@@ -59,6 +59,8 @@ export interface GravityItinerary {
   published_by_id: string | null
   share_token: string | null
   sections_count: number
+  /** Absent from older Gravity responses; the listing endpoint only began sending it recently. */
+  stops_count?: number
   sections: GravityItinerarySection[]
   /** Templated URL with a `:version` placeholder. */
   image_url: string | null
