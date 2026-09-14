@@ -14,6 +14,7 @@ interface InputProps {
   description?: string
   authorName?: string
   isCurated?: boolean
+  imageURL?: string
 }
 
 export const createItineraryMutation = mutationWithClientMutationId<
@@ -30,6 +31,12 @@ export const createItineraryMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     authorName: { type: GraphQLString },
     isCurated: { type: GraphQLBoolean },
+    imageURL: {
+      description:
+        "URL of an image already uploaded to S3, from which Gravity " +
+        "builds the itinerary's hero `ArImage`",
+      type: GraphQLString,
+    },
   },
   outputFields: {
     responseOrError: {

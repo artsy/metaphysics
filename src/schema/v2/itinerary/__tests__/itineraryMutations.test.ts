@@ -187,6 +187,36 @@ describe("createItinerary", () => {
     expect(loader.mock.calls[0][0]).not.toHaveProperty("client_mutation_id")
   })
 
+  it("forwards imageURL to Gravity as image_url", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItinerary(
+            input: {
+              citySlug: "new-york"
+              title: "A day in Chelsea"
+              imageURL: "https://s3.amazonaws.com/bucket/hero.jpg"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      city_slug: "new-york",
+      title: "A day in Chelsea",
+      image_url: "https://s3.amazonaws.com/bucket/hero.jpg",
+    })
+  })
+
   it("returns the success payload with the resolved stop item", async () => {
     const loader = jest.fn().mockResolvedValue(gravityItinerary())
     const context = withShowsLoader(loader)
@@ -313,6 +343,53 @@ describe("updateItinerary", () => {
     )
 
     expect(loader).toHaveBeenCalledWith("itinerary-id", { title: "New title" })
+  })
+
+  it("forwards imageURL to Gravity as image_url", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(
+            input: {
+              id: "itinerary-id"
+              imageURL: "https://s3.amazonaws.com/bucket/hero.jpg"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", {
+      image_url: "https://s3.amazonaws.com/bucket/hero.jpg",
+    })
+  })
+
+  it("passes an explicit null imageURL through to Gravity, to clear it", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(input: { id: "itinerary-id", imageURL: null }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", { image_url: null })
   })
 
   it("returns the success payload with the resolved stop item", async () => {

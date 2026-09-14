@@ -55,7 +55,12 @@ export const createItineraryStopMutation = mutationWithClientMutationId<
     eventID: { type: GraphQLString },
     title: { type: GraphQLString },
     address: { type: GraphQLString },
-    imageURL: { type: GraphQLString },
+    imageURL: {
+      description:
+        "S3 upload URL for the stop image; Gravity converts it via " +
+        "Gemini. Other URLs are rejected.",
+      type: GraphQLString,
+    },
     latitude: { type: GraphQLFloat },
     longitude: { type: GraphQLFloat },
     startAt: { type: GraphQLString },

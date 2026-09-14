@@ -223,6 +223,92 @@ describe("Itinerary", () => {
     )
   })
 
+  it("derives a stop's image versions from its URL hash", async () => {
+    const stopItinerary = {
+      ...gravityItinerary,
+      sections: [
+        {
+          ...gravityItinerary.sections[0],
+          stops: [
+            {
+              ...gravityItinerary.sections[0].stops[0],
+              image_url:
+                "https://d32dm0rphc51dk.cloudfront.net/stop-1/:version.jpg",
+              image_urls: {
+                large: "https://d32dm0rphc51dk.cloudfront.net/stop-1/large.jpg",
+                small: "https://d32dm0rphc51dk.cloudfront.net/stop-1/small.jpg",
+              },
+            },
+          ],
+        },
+      ],
+    }
+
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections { stops { image { url(version: "large") } } }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...loaders(),
+      itineraryLoader: jest.fn().mockResolvedValue(stopItinerary),
+    })
+
+    expect(data.itinerary.sections[0].stops[0].image.url).toEqual(
+      "https://d32dm0rphc51dk.cloudfront.net/stop-1/large.jpg"
+    )
+  })
+
+  it("is null until Gemini processing finishes", async () => {
+    const stopItinerary = {
+      ...gravityItinerary,
+      sections: [
+        {
+          ...gravityItinerary.sections[0],
+          stops: [
+            {
+              ...gravityItinerary.sections[0].stops[0],
+              image_url: "https://picsum.photos/200",
+              image_urls: null,
+            },
+          ],
+        },
+      ],
+    }
+
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections { stops { image { url } } }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...loaders(),
+      itineraryLoader: jest.fn().mockResolvedValue(stopItinerary),
+    })
+
+    expect(data.itinerary.sections[0].stops[0].image).toBeNull()
+  })
+
+  it("resolves null when a stop has no image", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          sections { stops { image { url } } }
+        }
+      }
+    `
+
+    const data = await runQuery(query, loaders())
+
+    expect(data.itinerary.sections[0].stops[0].image).toBeNull()
+  })
+
   it("resolves each stop's item through the batched loaders", async () => {
     const query = `
       {
