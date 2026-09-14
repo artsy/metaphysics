@@ -112,4 +112,50 @@ describe("Partner inquiry metrics", () => {
 
     expect(partner.inquiryMetrics).toBeNull()
   })
+
+  it("throws if inquiryMetrics is selected under partnersConnection instead of a single partner", async () => {
+    const connectionQuery = gql`
+      {
+        partnersConnection(first: 2) {
+          edges {
+            node {
+              inquiryMetrics {
+                unansweredCount
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const partnersLoader = jest.fn().mockResolvedValue({
+      body: [
+        { id: "partner-1", _id: "partner-1-internal-id" },
+        { id: "partner-2", _id: "partner-2-internal-id" },
+      ],
+      headers: { "x-total-count": "2" },
+    })
+    const conversationsLoader = jest.fn().mockResolvedValue({
+      total_count: 0,
+      conversations: [],
+    })
+    const partnerCollectorProfilesLoader = jest.fn()
+
+    let thrown: Error | undefined
+    try {
+      await runAuthenticatedQuery(connectionQuery, {
+        partnersLoader,
+        conversationsLoader,
+        partnerCollectorProfilesLoader,
+        userID: "user-id",
+        accessToken: "access-token",
+      })
+    } catch (error) {
+      thrown = error as Error
+    }
+
+    expect(thrown?.stack).toMatch(
+      /cannot be queried under a list or connection/
+    )
+  })
 })

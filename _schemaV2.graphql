@@ -29929,7 +29929,7 @@ type Partner implements Node {
   initials(length: Int = 3): String
 
   """
-  Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles
+  Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage) — not selectable under any list or connection field, such as partnersConnection.
   """
   inquiryMetrics: PartnerInquiryMetrics
 
@@ -31267,7 +31267,7 @@ type PartnerGenomeGenesConnectionEdge {
 
 type PartnerInquiryMetrics {
   """
-  Number of confirmed buyers whose inquiries are still awaiting a response from the partner
+  Number of confirmed buyers whose inquiries are still awaiting a response from the partner. Only scanned within the first 50 unanswered conversations returned by Impulse, so for partners with more unanswered conversations than that, this is a lower bound rather than an exact count.
   """
   confirmedBuyersWaitingCount: Int
 
