@@ -94,6 +94,16 @@ export const ItineraryType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ sections_count }) => sections_count,
     },
+    stopsCount: {
+      type: GraphQLInt,
+      description:
+        "How many stops the itinerary has in total. Nullable because the " +
+        "listing endpoint only began sending it recently; fall back to " +
+        "summing the sections when it is absent.",
+      // Gravity sums its sections' counter caches. A caller listing itineraries cannot do
+      // that itself: the index serializes at :short, which omits `sections` entirely.
+      resolve: ({ stops_count }) => stops_count,
+    },
     sections: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(ItinerarySectionType))
