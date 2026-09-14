@@ -12,6 +12,7 @@ import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
+import { imageFromGravity } from "./gravityImage"
 import { GravityItinerary } from "./types"
 import { ItinerarySectionType } from "./itinerarySection"
 
@@ -84,12 +85,8 @@ export const ItineraryType = new GraphQLObjectType<
     },
     heroImage: {
       type: ImageType,
-      // image_versions is derived from image_urls' keys; Gravity sends no
-      // versions array.
       resolve: ({ image_url, image_urls }) =>
-        image_urls
-          ? { image_url, image_urls, image_versions: Object.keys(image_urls) }
-          : null,
+        imageFromGravity(image_url, image_urls),
     },
     publishedAt: date(({ published_at }) => published_at),
     updatedAt: date(({ updated_at }) => updated_at),

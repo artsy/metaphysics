@@ -14,6 +14,8 @@ export interface GravityItineraryStop {
   title: string | null
   address: string | null
   image_url: string | null
+  /** Version name to URL; null when the image is a pasted external URL. */
+  image_urls: Record<string, string> | null
   latitude: number | null
   longitude: number | null
   start_at: string | null

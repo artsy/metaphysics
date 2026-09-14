@@ -15,6 +15,7 @@ const buildStop = (
   title: null,
   address: null,
   image_url: null,
+  image_urls: null,
   latitude: null,
   longitude: null,
   start_at: null,
