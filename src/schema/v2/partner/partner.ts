@@ -1734,7 +1734,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             params.sort = args.sort
           }
 
-          const response = await partnerOrdersLoader(partner.id, params)
+          const response = await partnerOrdersLoader(partner._id, params)
 
           const { body, headers } = response
           const totalCount = parseInt(
@@ -1765,7 +1765,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           if (!partnerOrderLoader) return null
 
           return partnerOrderLoader({
-            partnerId: partner.id,
+            partnerId: partner._id,
             orderId: args.id,
           })
         },
