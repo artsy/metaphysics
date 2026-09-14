@@ -741,6 +741,8 @@ const resolveSellerState = (order) => {
       return "COMPLETED"
     case "refunded":
       return "REFUNDED"
+    case "expired":
+      return "EXPIRED"
     case "canceled":
       return "CANCELED"
     default:

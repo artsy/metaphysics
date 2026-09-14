@@ -203,6 +203,10 @@ export const OrderSellerStateEnum = new GraphQLEnumType({
       value: "REFUNDED",
       description: "Order has been refunded",
     },
+    EXPIRED: {
+      value: "EXPIRED",
+      description: "Order has expired",
+    },
     CANCELED: {
       value: "CANCELED",
       description: "Order has been canceled",
