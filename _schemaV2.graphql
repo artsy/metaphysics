@@ -8637,6 +8637,22 @@ enum ChannelType {
 }
 
 type City {
+  """
+  A connection of City Guide events for this city
+  """
+  cityGuideEventsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+
+    """
+    Only current, or only past, events
+    """
+    status: CityGuideEventStatus
+  ): CityGuideEventsConnection
   coordinates: LatLng
   fairsConnection(
     after: String
@@ -8737,6 +8753,50 @@ type CityGuideEvent {
     """
     timezone: String
   ): String!
+}
+
+enum CityGuideEventStatus {
+  """
+  End date hasn't passed
+  """
+  CURRENT
+
+  """
+  End date has passed
+  """
+  PAST
+}
+
+"""
+A connection to a list of items.
+"""
+type CityGuideEventsConnection {
+  """
+  A list of edges.
+  """
+  edges: [CityGuideEventsEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+"""
+An edge in a connection.
+"""
+type CityGuideEventsEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: CityGuideEvent
 }
 
 type CitySponsoredContent {

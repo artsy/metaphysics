@@ -405,6 +405,104 @@ describe("City", () => {
     })
   })
 
+  describe("cityGuideEvents", () => {
+    let query, context, mockEvents, mockCityGuideEventsLoader
+
+    beforeEach(() => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            cityGuideEventsConnection(first: 1) {
+              totalCount
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      mockEvents = [{ id: "event-1", slug: "sacramende-art-week" }]
+      mockCityGuideEventsLoader = jest.fn(() =>
+        Promise.resolve({
+          body: mockEvents,
+          headers: { "x-total-count": "1" },
+        })
+      )
+      context = {
+        ...MOCK_CONTEXT,
+        cityGuideEventsLoader: mockCityGuideEventsLoader,
+      }
+    })
+
+    it("resolves the city's guide events", async () => {
+      const result = await runQuery(query, context)
+
+      expect(result!.city).toEqual({
+        cityGuideEventsConnection: {
+          totalCount: 1,
+          edges: [{ node: { slug: "sacramende-art-week" } }],
+        },
+      })
+    })
+
+    it("scopes the request to this city's slug", async () => {
+      await runQuery(query, context)
+
+      expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ city_slug: "sacramende-ca-usa" })
+      )
+    })
+
+    it("passes status: CURRENT as current: true", async () => {
+      await runQuery(
+        gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              cityGuideEventsConnection(first: 1, status: CURRENT) {
+                totalCount
+              }
+            }
+          }
+        `,
+        context
+      )
+
+      expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ current: true })
+      )
+    })
+
+    it("passes status: PAST as current: false, not omitting it", async () => {
+      await runQuery(
+        gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              cityGuideEventsConnection(first: 1, status: PAST) {
+                totalCount
+              }
+            }
+          }
+        `,
+        context
+      )
+
+      expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ current: false })
+      )
+    })
+
+    it("sends no current filter when status is omitted", async () => {
+      await runQuery(query, context)
+
+      expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ current: expect.anything() })
+      )
+    })
+  })
+
   describe("fairs", () => {
     let mockFairs
     let mockFairsLoader
