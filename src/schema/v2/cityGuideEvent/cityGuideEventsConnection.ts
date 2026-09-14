@@ -6,7 +6,7 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { TCity } from "schema/v2/city"
+import type { TCity } from "schema/v2/city"
 import { CityGuideEventType } from "./cityGuideEvent"
 
 export const CityGuideEventStatusEnum = new GraphQLEnumType({
