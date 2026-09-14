@@ -93,8 +93,8 @@ describe("partner.ordersConnection", () => {
     context = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
       partnerOrdersLoader,
@@ -176,7 +176,7 @@ describe("partner.ordersConnection", () => {
     })
 
     expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
-      "partner-id",
+      "partner-internal-id",
       expect.objectContaining({
         artwork_id: "artwork-1",
       })
@@ -216,7 +216,7 @@ describe("partner.ordersConnection", () => {
     })
 
     expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
-      "partner-id",
+      "partner-internal-id",
       expect.objectContaining({
         seller_state: "OFFER_RECEIVED",
       })
@@ -241,7 +241,7 @@ describe("partner.ordersConnection", () => {
     await runQuery(query, context)
 
     expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
-      "partner-id",
+      "partner-internal-id",
       expect.objectContaining({
         sort: "STATE_EXPIRES_AT_ASC",
       })
@@ -326,8 +326,8 @@ describe("partner.ordersConnection", () => {
     const contextWithoutLoader = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
     }
