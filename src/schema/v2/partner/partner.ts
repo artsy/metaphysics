@@ -249,6 +249,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       PartnerOrdersConnectionType,
     } = require("../order/types/OrderType")
 
+    const {
+      OrderSellerStateEnum,
+      PartnerOrdersSortEnum,
+    } = require("../order/types/sharedOrderTypes")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -1695,6 +1700,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLString,
             description: "Filter by artwork ID in line items",
           },
+          sellerState: {
+            type: new GraphQLList(OrderSellerStateEnum),
+            description: "Filter by seller states",
+          },
+          sort: {
+            type: PartnerOrdersSortEnum,
+            description: "Sort order for returned orders",
+          },
         }),
         resolve: async (partner, args, context, _info) => {
           const { partnerOrdersLoader } = context
@@ -1711,6 +1724,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           if (args.artworkID) {
             params.artwork_id = args.artworkID
+          }
+
+          if (args.sellerState && args.sellerState.length > 0) {
+            params.seller_state = args.sellerState.join(",")
+          }
+
+          if (args.sort) {
+            params.sort = args.sort
           }
 
           const response = await partnerOrdersLoader(partner.id, params)
