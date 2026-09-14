@@ -531,28 +531,28 @@ export function buildAgentTools(
   }
 }
 
-const ACTIVITY_BY_FIELD: Record<string, AIAgentActivity> = {
-  __type: "THINKING",
-  artworksConnection: "SEARCHING_ARTWORKS",
-  artwork: "LOADING_ARTWORK_DETAILS",
-  artistsConnection: "SEARCHING_ARTISTS",
-  artist: "SEARCHING_ARTISTS",
-  artistSeriesConnection: "SEARCHING_ARTWORKS",
-  artistSeries: "SEARCHING_ARTWORKS",
-  gene: "SEARCHING_ARTWORKS",
-  genes: "SEARCHING_ARTWORKS",
-  marketingCollection: "SEARCHING_ARTWORKS",
-  marketingCollections: "SEARCHING_ARTWORKS",
-  trendingSearches: "SEARCHING_ARTWORKS",
-  showsConnection: "SEARCHING_SHOWS",
-  fair: "SEARCHING_FAIRS",
-  fairs: "SEARCHING_FAIRS",
-  matchConnection: "SEARCHING_ARTSY",
-  basedOnUserSaves: "FINDING_RECOMMENDATIONS",
-  artworkRecommendations: "FINDING_RECOMMENDATIONS",
-  artistRecommendations: "FINDING_RECOMMENDATIONS",
-  followsAndSaves: "FINDING_RECOMMENDATIONS",
-}
+const ACTIVITY_BY_FIELD = new Map<string, AIAgentActivity>([
+  ["__type", "THINKING"],
+  ["artworksConnection", "SEARCHING_ARTWORKS"],
+  ["artwork", "LOADING_ARTWORK_DETAILS"],
+  ["artistsConnection", "SEARCHING_ARTISTS"],
+  ["artist", "SEARCHING_ARTISTS"],
+  ["artistSeriesConnection", "SEARCHING_ARTWORKS"],
+  ["artistSeries", "SEARCHING_ARTWORKS"],
+  ["gene", "SEARCHING_ARTWORKS"],
+  ["genes", "SEARCHING_ARTWORKS"],
+  ["marketingCollection", "SEARCHING_ARTWORKS"],
+  ["marketingCollections", "SEARCHING_ARTWORKS"],
+  ["trendingSearches", "SEARCHING_ARTWORKS"],
+  ["showsConnection", "SEARCHING_SHOWS"],
+  ["fair", "SEARCHING_FAIRS"],
+  ["fairs", "SEARCHING_FAIRS"],
+  ["matchConnection", "SEARCHING_ARTSY"],
+  ["basedOnUserSaves", "FINDING_RECOMMENDATIONS"],
+  ["artworkRecommendations", "FINDING_RECOMMENDATIONS"],
+  ["artistRecommendations", "FINDING_RECOMMENDATIONS"],
+  ["followsAndSaves", "FINDING_RECOMMENDATIONS"],
+])
 
 const SUMMARY_BY_ACTIVITY: Record<AIAgentActivity, string> = {
   THINKING: "Thinking…",
@@ -576,22 +576,32 @@ export interface AIAgentToolCallDescription {
 function inspectToolCallDocument(
   document: DocumentNode
 ): {
+  activity?: AIAgentActivity
   activityField?: FieldNode
   fieldsWithArguments: FieldNode[]
 } {
+  let matchedActivity: AIAgentActivity | undefined
   let matchedField: FieldNode | undefined
   const fieldsWithArguments: FieldNode[] = []
 
   visit(document, {
     Field(node) {
-      if (!matchedField && ACTIVITY_BY_FIELD[node.name.value]) {
-        matchedField = node
+      if (!matchedField) {
+        const activity = ACTIVITY_BY_FIELD.get(node.name.value)
+        if (activity) {
+          matchedActivity = activity
+          matchedField = node
+        }
       }
       if (node.arguments?.length) fieldsWithArguments.push(node)
     },
   })
 
-  return { activityField: matchedField, fieldsWithArguments }
+  return {
+    activity: matchedActivity,
+    activityField: matchedField,
+    fieldsWithArguments,
+  }
 }
 
 function formatDebugValue(value: unknown): string {
@@ -640,12 +650,12 @@ export function describeToolCall(input: unknown): AIAgentToolCallDescription {
 
   try {
     const {
+      activity,
       activityField: field,
       fieldsWithArguments,
     } = inspectToolCallDocument(parse(query))
-    if (!field) return fallback
+    if (!activity || !field) return fallback
 
-    const activity = ACTIVITY_BY_FIELD[field.name.value]
     const variableValues =
       variables && typeof variables === "object"
         ? (variables as Record<string, unknown>)
