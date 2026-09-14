@@ -107,8 +107,8 @@ export const ItineraryStopType = new GraphQLObjectType<
     image: {
       type: ImageType,
       description:
-        "The stop's uploaded image. Gemini versions appear once " +
-        "processing finishes; until then `url` returns the source url.",
+        "The stop's uploaded image; null until Gemini processing " +
+        "finishes.",
       resolve: ({ image_url, image_urls }) =>
         imageFromGravity(image_url, image_urls),
     },

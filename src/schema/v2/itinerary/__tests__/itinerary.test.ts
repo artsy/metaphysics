@@ -262,7 +262,7 @@ describe("Itinerary", () => {
     )
   })
 
-  it("returns the source url before Gemini processing finishes", async () => {
+  it("is null until Gemini processing finishes", async () => {
     const stopItinerary = {
       ...gravityItinerary,
       sections: [
@@ -292,9 +292,7 @@ describe("Itinerary", () => {
       itineraryLoader: jest.fn().mockResolvedValue(stopItinerary),
     })
 
-    expect(data.itinerary.sections[0].stops[0].image.url).toEqual(
-      "https://picsum.photos/200"
-    )
+    expect(data.itinerary.sections[0].stops[0].image).toBeNull()
   })
 
   it("resolves null when a stop has no image", async () => {

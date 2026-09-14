@@ -17,16 +17,8 @@ describe("imageFromGravity", () => {
     })
   })
 
-  it("returns a plain image_url before Gemini processing finishes", () => {
-    expect(imageFromGravity("https://picsum.photos/200", null)).toEqual({
-      image_url: "https://picsum.photos/200",
-    })
-  })
-
-  it("returns null for a :version template with no image_urls", () => {
-    expect(
-      imageFromGravity("https://example.com/:version.jpg", null)
-    ).toBeNull()
+  it("is null until Gemini processing finishes", () => {
+    expect(imageFromGravity("https://picsum.photos/200", null)).toBeNull()
   })
 
   it("returns null when there is no image at all", () => {
