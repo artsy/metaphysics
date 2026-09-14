@@ -69,6 +69,7 @@ import BidderStatus from "./bidder_status"
 import Bidders from "./bidders"
 import { Collection } from "./collection"
 import { CollectionsConnection } from "./collectionsConnection"
+import { MeItinerariesConnection } from "./itinerariesConnection"
 import { CreditCards } from "./credit_cards"
 import { followedProfiles } from "./followedProfiles"
 import FollowedArtists from "./followed_artists"
@@ -463,6 +464,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return introduction
       },
     },
+    itinerariesConnection: MeItinerariesConnection,
     userInterestsConnection: UserInterestsConnection,
     isCollector: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -861,6 +863,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "myCollectionConnection",
       "artworkInquiriesConnection",
       "collectionsConnection",
+      "itinerariesConnection",
       "auctionResultsByFollowedArtists",
       "myCollectionAuctionResults",
       "newWorksByInterestingArtists",

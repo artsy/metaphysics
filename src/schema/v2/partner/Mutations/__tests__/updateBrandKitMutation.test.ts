@@ -8,6 +8,8 @@ const mutation = `
       id: "brand-kit-1"
       textColor: "#FF0000"
       fontFamily: "Courier"
+      writingLanguage: "English"
+      writingSample: "A spare, observational gallery voice."
     }) {
       brandKitOrError {
         ... on UpdateBrandKitSuccess {
@@ -15,6 +17,8 @@ const mutation = `
             internalID
             textColor
             fontFamily
+            writingLanguage
+            writingSample
           }
         }
 
@@ -35,6 +39,8 @@ describe("updateBrandKit", () => {
       partner_id: "partner-1",
       text_color: "#FF0000",
       font_family: "Courier",
+      writing_language: "English",
+      writing_sample: "A spare, observational gallery voice.",
     }
 
     let context: Partial<ResolverContext>
@@ -57,6 +63,8 @@ describe("updateBrandKit", () => {
           font_family: "Courier",
           font_weight: undefined,
           font_style: undefined,
+          writing_language: "English",
+          writing_sample: "A spare, observational gallery voice.",
         }
       )
     })
@@ -72,6 +80,8 @@ describe("updateBrandKit", () => {
                 "fontFamily": "Courier",
                 "internalID": "brand-kit-1",
                 "textColor": "#FF0000",
+                "writingLanguage": "English",
+                "writingSample": "A spare, observational gallery voice.",
               },
             },
           },

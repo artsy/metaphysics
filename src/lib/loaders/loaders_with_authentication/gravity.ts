@@ -1445,6 +1445,67 @@ export default (accessToken, userID, opts) => {
     ),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
+    // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
+    itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
+    fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
+    createItineraryLoader: gravityLoader("itinerary", {}, { method: "POST" }),
+    updateItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    publishItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    unpublishItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/unpublish`,
+      {},
+      { method: "POST" }
+    ),
+    copyItineraryLoader: gravityLoader(
+      (id) => `itinerary/${id}/copy`,
+      {},
+      { method: "POST" }
+    ),
+    createItinerarySectionLoader: gravityLoader(
+      "itinerary_section",
+      {},
+      { method: "POST" }
+    ),
+    updateItinerarySectionLoader: gravityLoader(
+      (id) => `itinerary_section/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItinerarySectionLoader: gravityLoader(
+      (id) => `itinerary_section/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    createItineraryStopLoader: gravityLoader(
+      "itinerary_stop",
+      {},
+      { method: "POST" }
+    ),
+    updateItineraryStopLoader: gravityLoader(
+      (id) => `itinerary_stop/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteItineraryStopLoader: gravityLoader(
+      (id) => `itinerary_stop/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }
@@ -1534,6 +1595,11 @@ export default (accessToken, userID, opts) => {
       (id) => `artwork/${id}`,
       {},
       { method: "PUT" }
+    ),
+    generateArtworkDescriptionLoader: gravityLoader(
+      (id) => `artwork/${id}/generate_description`,
+      {},
+      { method: "POST" }
     ),
     updateCollectionLoader: gravityLoader(
       (id) => `collection/${id}`,

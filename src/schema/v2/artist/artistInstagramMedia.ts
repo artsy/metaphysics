@@ -25,7 +25,13 @@ const ArtistInstagramMediaType = new GraphQLObjectType<any, ResolverContext>({
     },
     image: {
       type: Image.type,
-      resolve: ({ media_url }) => normalizeImageData(media_url),
+      resolve: ({ image }) => {
+        if (!image) return null
+        return {
+          ...normalizeImageData(image, true),
+          gemini_template_key: "artist-social-post",
+        }
+      },
     },
   },
 })
@@ -41,8 +47,6 @@ export const InstagramMedia: GraphQLFieldConfig<any, ResolverContext> = {
   },
   resolve: async ({ id }, { first }, { artistInstagramMediaLoader }) => {
     const body = (await artistInstagramMediaLoader(id)) || []
-    return typeof first === "number"
-      ? body.slice(0, Math.max(0, first))
-      : body
+    return typeof first === "number" ? body.slice(0, Math.max(0, first)) : body
   },
 }

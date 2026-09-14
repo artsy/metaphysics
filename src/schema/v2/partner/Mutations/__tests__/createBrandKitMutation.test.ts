@@ -12,6 +12,8 @@ const mutation = `
       fontFamily: "Helvetica"
       fontWeight: "bold"
       fontStyle: "normal"
+      writingLanguage: "English"
+      writingSample: "A spare, observational gallery voice."
     }) {
       brandKitOrError {
         ... on CreateBrandKitSuccess {
@@ -24,6 +26,8 @@ const mutation = `
             fontFamily
             fontWeight
             fontStyle
+            writingLanguage
+            writingSample
           }
         }
 
@@ -48,6 +52,8 @@ describe("createBrandKit", () => {
       font_family: "Helvetica",
       font_weight: "bold",
       font_style: "normal",
+      writing_language: "English",
+      writing_sample: "A spare, observational gallery voice.",
     }
 
     let context: Partial<ResolverContext>
@@ -69,6 +75,8 @@ describe("createBrandKit", () => {
         font_family: "Helvetica",
         font_weight: "bold",
         font_style: "normal",
+        writing_language: "English",
+        writing_sample: "A spare, observational gallery voice.",
       })
     })
 
@@ -88,6 +96,8 @@ describe("createBrandKit", () => {
                 "internalID": "brand-kit-1",
                 "partnerID": "partner-1",
                 "textColor": "#FF0000",
+                "writingLanguage": "English",
+                "writingSample": "A spare, observational gallery voice.",
               },
             },
           },

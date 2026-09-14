@@ -522,6 +522,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ featured }) => featured,
       },
+      isFreeAdmission: {
+        description:
+          "Is entry to this show free? Null means this is genuinely unknown, not that admission isn't free.",
+        type: GraphQLBoolean,
+        resolve: ({ is_free_admission }) => is_free_admission,
+      },
       isActive: {
         type: GraphQLBoolean,
         description:

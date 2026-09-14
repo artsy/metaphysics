@@ -10,6 +10,11 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
 export const FollowedShowConnection = connectionDefinitions({
   name: "FollowedShow",
   nodeType: ShowType,
+  connectionFields: {
+    totalCount: {
+      type: GraphQLInt,
+    },
+  },
 })
 
 const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
@@ -62,11 +67,16 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
-        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-        sliceStart: offset,
-        resolveNode: (follow_show) => follow_show.partner_show,
-      })
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return {
+        totalCount,
+        ...connectionFromArraySlice(body, options, {
+          arrayLength: totalCount,
+          sliceStart: offset,
+          resolveNode: (follow_show) => follow_show.partner_show,
+        }),
+      }
     })
   },
 }

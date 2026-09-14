@@ -64,6 +64,14 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...IDFields,
     cached,
+    // Only present when the location was loaded in its own right — Gravity
+    // serialises a partner reference on `PartnerLocation`, but an embedded
+    // location (a show's, a fair's) has no partner of its own. Imported
+    // lazily because `partner/partner.ts` imports this module.
+    partner: {
+      type: require("schema/v2/partner/partner").PartnerType,
+      resolve: ({ partner }) => partner ?? null,
+    },
     name: {
       type: GraphQLString,
     },
