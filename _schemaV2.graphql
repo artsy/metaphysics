@@ -21090,12 +21090,34 @@ type GeneMeta {
   description: String!
 }
 
+input GenerateArtworkDescriptionDocumentInput {
+  """
+  Original filename of the document.
+  """
+  fileName: String
+
+  """
+  S3 bucket of the uploaded document.
+  """
+  s3Bucket: String!
+
+  """
+  S3 key of the uploaded document.
+  """
+  s3Key: String!
+}
+
 type GenerateArtworkDescriptionFailure {
   mutationError: GravityMutationError
 }
 
 input GenerateArtworkDescriptionInput {
   clientMutationId: String
+
+  """
+  S3 PDFs to include as additional context for description generation.
+  """
+  documents: [GenerateArtworkDescriptionDocumentInput!]
 
   """
   The internal ID of the artwork to generate a description for

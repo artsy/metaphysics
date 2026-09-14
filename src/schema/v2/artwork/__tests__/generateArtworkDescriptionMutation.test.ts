@@ -20,11 +20,34 @@ const mutation = `
   }
 `
 
+const mutationWithDocuments = `
+  mutation {
+    generateArtworkDescription(
+      input: {
+        id: "artwork-1"
+        documents: [
+          {
+            s3Bucket: "imports"
+            s3Key: "partner-1/writing_assistant/1/coa.pdf"
+            fileName: "coa.pdf"
+          }
+        ]
+      }
+    ) {
+      artworkDescriptionOrError {
+        ... on GenerateArtworkDescriptionSuccess {
+          generatedDescription
+        }
+      }
+    }
+  }
+`
+
 describe("generateArtworkDescription", () => {
   describe("valid query", () => {
     const mockGravityResponse = {
       id: "artwork-1",
-      additional_information: "AI generated description.",
+      generated_description: "AI generated description.",
     }
 
     let context: Partial<ResolverContext>
@@ -57,6 +80,22 @@ describe("generateArtworkDescription", () => {
           },
         }
       `)
+    })
+
+    it("forwards documents to Gravity", async () => {
+      await runAuthenticatedQuery(mutationWithDocuments, context)
+
+      expect(
+        context.generateArtworkDescriptionLoader as jest.Mock
+      ).toHaveBeenCalledWith("artwork-1", {
+        documents: [
+          {
+            s3_bucket: "imports",
+            s3_key: "partner-1/writing_assistant/1/coa.pdf",
+            file_name: "coa.pdf",
+          },
+        ],
+      })
     })
   })
 
