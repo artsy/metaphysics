@@ -107,8 +107,8 @@ export const ItineraryStopType = new GraphQLObjectType<
     image: {
       type: ImageType,
       description:
-        "The stop's image. An uploaded image carries Gemini versions; a " +
-        "pasted external URL only answers `url`.",
+        "The stop's uploaded image. Gemini versions appear once " +
+        "processing finishes; until then `url` returns the source url.",
       resolve: ({ image_url, image_urls }) =>
         imageFromGravity(image_url, image_urls),
     },

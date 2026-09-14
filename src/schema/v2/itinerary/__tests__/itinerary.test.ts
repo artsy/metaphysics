@@ -262,7 +262,7 @@ describe("Itinerary", () => {
     )
   })
 
-  it("resolves a stop's pasted image URL with no versions", async () => {
+  it("returns the source url before Gemini processing finishes", async () => {
     const stopItinerary = {
       ...gravityItinerary,
       sections: [

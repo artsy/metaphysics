@@ -23494,7 +23494,7 @@ type ItineraryStop {
   eventType: ItineraryStopEventType
 
   """
-  The stop's image. An uploaded image carries Gemini versions; a pasted external URL only answers `url`.
+  The stop's uploaded image. Gemini versions appear once processing finishes; until then `url` returns the source url.
   """
   image: Image
   internalID: String!

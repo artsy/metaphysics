@@ -17,7 +17,7 @@ describe("imageFromGravity", () => {
     })
   })
 
-  it("returns a plain image_url when it is a pasted url", () => {
+  it("returns a plain image_url before Gemini processing finishes", () => {
     expect(imageFromGravity("https://picsum.photos/200", null)).toEqual({
       image_url: "https://picsum.photos/200",
     })
