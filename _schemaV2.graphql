@@ -45256,6 +45256,11 @@ input createItineraryInput {
   citySlug: String!
   clientMutationId: String
   description: String
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the itinerary's hero `ArImage`
+  """
+  imageURL: String
   isCurated: Boolean
   subtitle: String
   title: String!
@@ -45957,6 +45962,11 @@ input updateItineraryInput {
   """
   generateShareToken: Boolean
   id: String!
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the itinerary's hero `ArImage`. Pass `null` to clear the current hero image.
+  """
+  imageURL: String
   isCurated: Boolean
 
   """
