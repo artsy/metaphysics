@@ -23492,7 +23492,11 @@ type ItineraryStop {
   SHOW_EVENT on a show stop, FAIR_EVENT on a fair stop; null when the stop names no event.
   """
   eventType: ItineraryStopEventType
-  imageURL: String
+
+  """
+  The stop's image. An uploaded image carries Gemini versions; a pasted external URL only answers `url`.
+  """
+  image: Image
   internalID: String!
   isFreeAdmission: Boolean
 

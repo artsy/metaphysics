@@ -10,6 +10,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
+import { ImageType } from "schema/v2/image"
 import { ShowType } from "schema/v2/show"
 import { LocationType } from "schema/v2/location"
 import { FairType } from "schema/v2/fair"
@@ -102,9 +103,17 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ address }) => address,
     },
-    imageURL: {
-      type: GraphQLString,
-      resolve: ({ image_url }) => image_url,
+    image: {
+      type: ImageType,
+      description:
+        "The stop's image. An uploaded image carries Gemini versions; a " +
+        "pasted external URL only answers `url`.",
+      resolve: ({ image_url, image_urls }) =>
+        image_urls
+          ? { image_url, image_urls, image_versions: Object.keys(image_urls) }
+          : image_url
+          ? { image_url }
+          : null,
     },
     latitude: {
       type: GraphQLFloat,
