@@ -8686,6 +8686,59 @@ type City {
   sponsoredContent: CitySponsoredContent
 }
 
+type CityGuideEvent {
+  citySlug: String!
+  description: String
+  endAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+  heroImage: Image
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  The city guide event's UUID
+  """
+  internalID: String!
+  itineraries: [Itinerary!]!
+  publishedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  slug: String!
+  startAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+  subtitle: String
+  timeZone: String
+  title: String!
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+}
+
 type CitySponsoredContent {
   artGuideUrl: String
   featuredShows: [Show]
@@ -33320,6 +33373,16 @@ type Query {
     """
     slug: String
   ): City
+
+  """
+  A City Guide event, e.g. "London Art Week"
+  """
+  cityGuideEvent(
+    """
+    The internal ID or slug of the City Guide Event
+    """
+    id: String!
+  ): CityGuideEvent
   collection(
     """
     The ID or slug of the Collection
@@ -43309,6 +43372,16 @@ type Viewer {
     """
     slug: String
   ): City
+
+  """
+  A City Guide event, e.g. "London Art Week"
+  """
+  cityGuideEvent(
+    """
+    The internal ID or slug of the City Guide Event
+    """
+    id: String!
+  ): CityGuideEvent
   collection(
     """
     The ID or slug of the Collection
