@@ -223,6 +223,83 @@ describe("partner.ordersConnection", () => {
     )
   })
 
+  it("resolves the EXPIRED seller state", async () => {
+    const expiredOrder = {
+      id: "order-3",
+      code: "ORD003",
+      mode: "buy",
+      created_at: "2024-01-03T00:00:00Z",
+      currency_code: "USD",
+      buyer_id: "buyer-3",
+      buyer_type: "User",
+      seller_id: "partner-internal-id",
+      seller_type: "Partner",
+      seller_state: "expired",
+      items_total_cents: 100000,
+      shipping_total_cents: 2000,
+      tax_total_cents: 8000,
+      seller_total_cents: 110000,
+      commission_fee_cents: 5000,
+      transaction_fee_cents: 300,
+      line_items: [],
+      submitted_offers: [],
+    }
+
+    const expiredContext = {
+      partnerLoader: () => {
+        return Promise.resolve({
+          id: "partner-slug",
+          _id: "partner-internal-id",
+        })
+      },
+      partnerOrdersLoader: jest.fn(() =>
+        Promise.resolve({
+          body: [expiredOrder],
+          headers: { "x-total-count": "1" },
+        })
+      ),
+    }
+
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sellerState: [EXPIRED]) {
+            edges {
+              node {
+                internalID
+                sellerState
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, expiredContext)
+
+    expect(data).toEqual({
+      partner: {
+        ordersConnection: {
+          edges: [
+            {
+              node: {
+                internalID: "order-3",
+                sellerState: "EXPIRED",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    expect(expiredContext.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-internal-id",
+      expect.objectContaining({
+        seller_state: "EXPIRED",
+      })
+    )
+  })
+
   it("passes the sort param through to the loader", async () => {
     const query = gql`
       {
