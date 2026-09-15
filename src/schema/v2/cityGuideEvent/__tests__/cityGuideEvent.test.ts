@@ -21,25 +21,33 @@ const gravityCityGuideEvent = {
   },
   itineraries: [
     {
-      id: "itin-1",
-      slug: "peckham-crawl",
-      user_id: "user-1",
-      city_slug: "london-united-kingdom",
-      title: "Peckham Crawl",
-      subtitle: null,
-      description: null,
-      author_name: "Casey Lesser",
-      is_curated: true,
-      visibility: "public",
-      published_at: "2026-08-01T09:00:00Z",
-      published_by_id: null,
-      share_token: null,
-      sections_count: 3,
-      image_url: null,
-      image_urls: null,
+      id: "join-1",
+      city_guide_event_id: "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      itinerary_id: "itin-1",
+      position: 0,
       created_at: "2026-08-01T09:00:00Z",
       updated_at: "2026-08-01T09:00:00Z",
-      // No `sections` key: mirrors Gravity's `:short` embedded shape.
+      itinerary: {
+        id: "itin-1",
+        slug: "peckham-crawl",
+        user_id: "user-1",
+        city_slug: "london-united-kingdom",
+        title: "Peckham Crawl",
+        subtitle: null,
+        description: null,
+        author_name: "Casey Lesser",
+        is_curated: true,
+        visibility: "public",
+        published_at: "2026-08-01T09:00:00Z",
+        published_by_id: null,
+        share_token: null,
+        sections_count: 3,
+        image_url: null,
+        image_urls: null,
+        created_at: "2026-08-01T09:00:00Z",
+        updated_at: "2026-08-01T09:00:00Z",
+        // No `sections` key: mirrors Gravity's `:short` embedded shape.
+      },
     },
   ],
   created_at: "2026-09-01T09:00:00Z",
@@ -101,15 +109,19 @@ describe("CityGuideEvent", () => {
     )
   })
 
-  it("renders an embedded itinerary's short shape, with no sections", async () => {
+  it("exposes each attachment's own id and position alongside the itinerary", async () => {
     const query = `
       {
         cityGuideEvent(id: "london-art-week") {
           itineraries {
             internalID
-            title
-            sections {
+            position
+            itinerary {
+              internalID
               title
+              sections {
+                title
+              }
             }
           }
         }
@@ -119,7 +131,116 @@ describe("CityGuideEvent", () => {
     const data = await runQuery(query, loaders())
 
     expect(data.cityGuideEvent.itineraries).toEqual([
-      { internalID: "itin-1", title: "Peckham Crawl", sections: [] },
+      {
+        internalID: "join-1",
+        position: 0,
+        itinerary: {
+          internalID: "itin-1",
+          title: "Peckham Crawl",
+          // No sections: mirrors Gravity's `:short` embedded itinerary shape.
+          sections: [],
+        },
+      },
+    ])
+  })
+
+  it("pools stop-item lookups across every attached itinerary", async () => {
+    const stopAt = (n: number) => ({
+      id: `stop-${n}`,
+      itinerary_section_id: `section-${n}`,
+      position: 0,
+      item_type: "PartnerShow",
+      item_id: `show-${n}`,
+      event_type: null,
+      event_id: null,
+      title: null,
+      address: null,
+      image_url: null,
+      latitude: null,
+      longitude: null,
+      start_at: null,
+      end_at: null,
+      time_zone: null,
+      note: null,
+      category: null,
+      is_free_admission: null,
+      source_url: null,
+      created_at: "2026-08-01T09:00:00Z",
+      updated_at: "2026-08-01T09:00:00Z",
+    })
+    const joinAt = (n: number) => ({
+      ...gravityCityGuideEvent.itineraries[0],
+      id: `join-${n}`,
+      itinerary_id: `itin-${n}`,
+      position: n - 1,
+      itinerary: {
+        ...gravityCityGuideEvent.itineraries[0].itinerary,
+        id: `itin-${n}`,
+        sections: [
+          {
+            id: `section-${n}`,
+            itinerary_id: `itin-${n}`,
+            title: "Morning",
+            note: null,
+            position: 0,
+            stops_count: 1,
+            stops: [stopAt(n)],
+            created_at: "2026-08-01T09:00:00Z",
+            updated_at: "2026-08-01T09:00:00Z",
+          },
+        ],
+      },
+    })
+    const showsLoader = jest.fn().mockResolvedValue({
+      body: [
+        { _id: "show-1", id: "show-1", name: "Show 1" },
+        { _id: "show-2", id: "show-2", name: "Show 2" },
+      ],
+      headers: {},
+    })
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          itineraries {
+            itinerary {
+              sections {
+                stops {
+                  item {
+                    __typename
+                    ... on Show {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest.fn().mockResolvedValue({
+          ...gravityCityGuideEvent,
+          itineraries: [joinAt(1), joinAt(2)],
+        }),
+        showsLoader,
+      })
+    )
+
+    expect(showsLoader).toHaveBeenCalledTimes(1)
+    expect(showsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ id: ["show-1", "show-2"] })
+    )
+    expect(
+      data.cityGuideEvent.itineraries.map(
+        (join) => join.itinerary.sections[0].stops[0].item
+      )
+    ).toEqual([
+      { __typename: "Show", internalID: "show-1" },
+      { __typename: "Show", internalID: "show-2" },
     ])
   })
 
