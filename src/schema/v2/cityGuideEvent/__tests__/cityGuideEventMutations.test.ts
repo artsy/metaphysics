@@ -2,9 +2,8 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
 
-// Mirrors Gravity's `:all` city_guide_event JSON. `itineraries` holds join
-// rows, each with the attached itinerary nested in its `:short` shape (no
-// `sections` key).
+// Mirrors Gravity's `:all` city_guide_event JSON: `itineraries` holds join
+// rows, each with the attached itinerary nested in its `:short` shape.
 const gravityCityGuideEvent = (overrides = {}) => ({
   id: "event-id",
   slug: "london-art-week",

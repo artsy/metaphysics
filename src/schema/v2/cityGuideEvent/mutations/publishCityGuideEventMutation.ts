@@ -8,8 +8,6 @@ interface InputProps {
   id: string
 }
 
-// Separate from `updateCityGuideEvent`: Gravity role-checks this transition
-// and records who published and when.
 export const publishCityGuideEventMutation = mutationWithClientMutationId<
   InputProps,
   any,

@@ -43,7 +43,7 @@ export const updateCityGuideEventItineraryMutation = mutationWithClientMutationI
     }
 
     try {
-      // Gravity returns only the join row; the refetched event is the payload.
+      // Gravity returns only the join row.
       const join = await context.updateCityGuideEventItineraryLoader(id, {
         position,
       })

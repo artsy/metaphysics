@@ -1,7 +1,5 @@
-// Force the full schema to resolve first: importing the mutation response
-// file directly hits a circular require (show.ts -> artist -> article ->
-// artwork/collectorSignals -> show.ts) that only resolves cleanly once the
-// whole schema has loaded once, as query tests do via `schema/v2/test/utils`.
+// Load the whole schema first: importing the response type directly trips a
+// pre-existing circular require between show.ts and artwork/collectorSignals.
 import "schema/v2"
 import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 import {

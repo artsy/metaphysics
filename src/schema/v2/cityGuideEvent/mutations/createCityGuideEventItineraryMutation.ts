@@ -45,7 +45,7 @@ export const createCityGuideEventItineraryMutation = mutationWithClientMutationI
     }
 
     try {
-      // Gravity returns only the join row; the refetched event is the payload.
+      // Gravity returns only the join row.
       const join = await context.createCityGuideEventItineraryLoader(
         snakeCaseKeys(attributes)
       )

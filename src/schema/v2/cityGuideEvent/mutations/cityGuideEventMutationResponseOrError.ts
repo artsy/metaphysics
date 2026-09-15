@@ -3,9 +3,6 @@ import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { CityGuideEventType } from "../cityGuideEvent"
 
-// Shared by all eight city guide event mutations: each one succeeds with a
-// whole `CityGuideEvent`, the join mutations included.
-
 export const CityGuideEventMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext

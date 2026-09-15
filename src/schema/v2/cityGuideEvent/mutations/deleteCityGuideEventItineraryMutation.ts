@@ -35,7 +35,7 @@ export const deleteCityGuideEventItineraryMutation = mutationWithClientMutationI
     }
 
     try {
-      // Gravity returns only the join row; the refetched event is the payload.
+      // Gravity returns only the join row.
       const join = await context.deleteCityGuideEventItineraryLoader(id, {})
       return await context.cityGuideEventLoader(join.city_guide_event_id)
     } catch (error) {

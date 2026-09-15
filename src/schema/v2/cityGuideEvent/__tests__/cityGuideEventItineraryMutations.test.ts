@@ -26,7 +26,7 @@ const gravityShortItinerary = {
 }
 
 // Mirrors Gravity's city_guide_event_itinerary JSON: the join row, with the
-// itinerary nested. The mutations only read `city_guide_event_id` off it.
+// itinerary nested.
 const gravityJoin = (overrides = {}) => ({
   id: "join-id",
   city_guide_event_id: "event-id",
