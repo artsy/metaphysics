@@ -61,8 +61,6 @@ describe("updateBrandKit", () => {
           background_color: undefined,
           cta_color: undefined,
           font_family: "Courier",
-          font_weight: undefined,
-          font_style: undefined,
           writing_language: "English",
           writing_sample: "A spare, observational gallery voice.",
         }

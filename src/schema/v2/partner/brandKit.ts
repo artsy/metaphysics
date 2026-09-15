@@ -28,14 +28,6 @@ export const BrandKitType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ font_family }) => font_family,
     },
-    fontWeight: {
-      type: GraphQLString,
-      resolve: ({ font_weight }) => font_weight,
-    },
-    fontStyle: {
-      type: GraphQLString,
-      resolve: ({ font_style }) => font_style,
-    },
     writingLanguage: {
       type: GraphQLString,
       resolve: ({ writing_language }) => writing_language,
