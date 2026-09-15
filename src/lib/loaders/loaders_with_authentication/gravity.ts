@@ -1511,6 +1511,46 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    createCityGuideEventLoader: gravityLoader(
+      "city_guide_event",
+      {},
+      { method: "POST" }
+    ),
+    updateCityGuideEventLoader: gravityLoader(
+      (id) => `city_guide_event/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCityGuideEventLoader: gravityLoader(
+      (id) => `city_guide_event/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    publishCityGuideEventLoader: gravityLoader(
+      (id) => `city_guide_event/${id}/publish`,
+      {},
+      { method: "POST" }
+    ),
+    unpublishCityGuideEventLoader: gravityLoader(
+      (id) => `city_guide_event/${id}/unpublish`,
+      {},
+      { method: "POST" }
+    ),
+    createCityGuideEventItineraryLoader: gravityLoader(
+      "city_guide_event_itinerary",
+      {},
+      { method: "POST" }
+    ),
+    updateCityGuideEventItineraryLoader: gravityLoader(
+      (id) => `city_guide_event_itinerary/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCityGuideEventItineraryLoader: gravityLoader(
+      (id) => `city_guide_event_itinerary/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,

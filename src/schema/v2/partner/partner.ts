@@ -1186,8 +1186,20 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       inquiryResponseRate: {
         type: GraphQLFloat,
         description:
-          "The partner's inquiry response rate percentage (0-100) over the last 90 days",
-        resolve: async ({ _id }, _args, { partnerInquiryStatsLoader }) => {
+          "The partner's inquiry response rate percentage (0-100) over the trailing window (90 days by default)",
+        args: {
+          daysInPast: {
+            type: GraphQLInt,
+            defaultValue: 90,
+            description:
+              "Size of the trailing window, in days, to compute the response rate over",
+          },
+        },
+        resolve: async (
+          { _id },
+          { daysInPast },
+          { partnerInquiryStatsLoader }
+        ) => {
           if (!partnerInquiryStatsLoader) {
             return null
           }
@@ -1196,7 +1208,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const stats = await partnerInquiryStatsLoader({
               to_id: _id,
               to_type: "Partner",
-              days_in_past: 90,
+              days_in_past: daysInPast,
             })
             return stats?.response_rate ?? null
           } catch (error) {
@@ -1211,8 +1223,20 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       inquiryResponseTime: {
         type: GraphQLInt,
         description:
-          "The partner's average inquiry response time in minutes over the last 90 days",
-        resolve: async ({ _id }, _args, { partnerInquiryStatsLoader }) => {
+          "The partner's average inquiry response time in minutes over the trailing window (90 days by default)",
+        args: {
+          daysInPast: {
+            type: GraphQLInt,
+            defaultValue: 90,
+            description:
+              "Size of the trailing window, in days, to compute the response time over",
+          },
+        },
+        resolve: async (
+          { _id },
+          { daysInPast },
+          { partnerInquiryStatsLoader }
+        ) => {
           if (!partnerInquiryStatsLoader) {
             return null
           }
@@ -1221,7 +1245,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const stats = await partnerInquiryStatsLoader({
               to_id: _id,
               to_type: "Partner",
-              days_in_past: 90,
+              days_in_past: daysInPast,
             })
             return stats?.response_time_in_minutes ?? null
           } catch (error) {
