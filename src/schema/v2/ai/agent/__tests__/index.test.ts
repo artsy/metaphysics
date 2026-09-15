@@ -93,6 +93,79 @@ describe("AIAgentTurn", () => {
     }
   })
 
+  it("ignores requested tool-call debugging where debug mode is disabled", () => {
+    const originalNodeEnv = config.NODE_ENV
+    config.NODE_ENV = "test"
+
+    try {
+      callSubscribe(
+        {
+          conversationID: "c1",
+          message: "hi",
+          includeDebugToolCalls: true,
+        },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ includeDebugToolCalls: false }),
+        expect.anything(),
+        expect.anything()
+      )
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+    }
+  })
+
+  it("allows tool-call debugging outside development when ENABLE_AI_AGENT_DEBUG is set", () => {
+    const originalNodeEnv = config.NODE_ENV
+    const originalDebug = config.ENABLE_AI_AGENT_DEBUG
+    config.NODE_ENV = "test"
+    config.ENABLE_AI_AGENT_DEBUG = true
+
+    try {
+      callSubscribe(
+        {
+          conversationID: "c1",
+          message: "hi",
+          includeDebugToolCalls: true,
+        },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ includeDebugToolCalls: true }),
+        expect.anything(),
+        expect.anything()
+      )
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+      config.ENABLE_AI_AGENT_DEBUG = originalDebug
+    }
+  })
+
+  it("allows tool-call debugging in development", () => {
+    const originalNodeEnv = config.NODE_ENV
+    config.NODE_ENV = "development"
+    const input = {
+      conversationID: "c1",
+      message: "hi",
+      includeDebugToolCalls: true,
+    }
+    const context = { userID: "user-42", accessToken: "token" }
+
+    try {
+      callSubscribe(input, context)
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        input,
+        expect.anything(),
+        context
+      )
+    } finally {
+      config.NODE_ENV = originalNodeEnv
+    }
+  })
+
   it("rejects a history longer than the message cap", () => {
     const history = Array.from({ length: 41 }, () => ({
       role: "user",
@@ -144,7 +217,11 @@ describe("AIAgentTurn", () => {
 
     callSubscribe(input, context, schema)
 
-    expect(mockRunTurn).toHaveBeenCalledWith(input, schema, context)
+    expect(mockRunTurn).toHaveBeenCalledWith(
+      { ...input, includeDebugToolCalls: false },
+      schema,
+      context
+    )
   })
 
   it("resolve is the identity function", () => {

@@ -2,6 +2,7 @@ import { schema } from "schema/v2"
 import { ResolverContext } from "types/graphql"
 import {
   buildAgentTools,
+  describeToolCall,
   narrowSchemaFor,
   runQueryArtsyTool,
   summarizeToolCall,
@@ -784,55 +785,113 @@ describe("tool result size cap", () => {
 })
 
 describe("summarizeToolCall", () => {
-  it("extracts the root field being queried", () => {
+  it("returns a generic, client-safe summary", () => {
     expect(
       summarizeToolCall({ query: '{ artist(id: "andy-warhol") { name } }' })
-    ).toBe("Querying Artsy: artist…")
+    ).toBe("Searching for artists…")
   })
 
-  it("labels a trending query by trendingSearches, not the artwork nested in it", () => {
+  it("classifies a trending query by trendingSearches, not the artwork nested in it", () => {
     expect(
-      summarizeToolCall({
+      describeToolCall({
         query: "{ trendingSearches { artworks { artwork { slug } } } }",
-      })
-    ).toBe("Querying Artsy: trendingSearches…")
+      }).activity
+    ).toBe("SEARCHING_ARTWORKS")
   })
 
-  it("labels a personalized query by its field, not by the `me` wrapping it", () => {
+  it("classifies a personalized query by its field, not by the `me` wrapping it", () => {
     expect(
-      summarizeToolCall({
+      describeToolCall({
         query:
           "{ me { basedOnUserSaves(first: 10) { edges { node { slug } } } } }",
-      })
-    ).toBe("Querying Artsy: basedOnUserSaves…")
+      }).activity
+    ).toBe("FINDING_RECOMMENDATIONS")
 
-    // The outer field wins over the `artworksConnection` nested inside it,
-    // because the match is on the earliest position, not the listed order.
     expect(
-      summarizeToolCall({
+      describeToolCall({
         query:
           "{ me { followsAndSaves { artworksConnection(first: 10) { edges { node { slug } } } } } }",
-      })
-    ).toBe("Querying Artsy: followsAndSaves…")
+      }).activity
+    ).toBe("FINDING_RECOMMENDATIONS")
   })
 
-  it("labels the entry point, not the connection nested under it", () => {
+  it("classifies the entry point, not the connection nested under it", () => {
     expect(
-      summarizeToolCall({
+      describeToolCall({
         query:
           '{ gene(id: "minimalism") { filterArtworksConnection(first: 5) { edges { node { internalID } } } } }',
-      })
-    ).toBe("Querying Artsy: gene…")
+      }).activity
+    ).toBe("SEARCHING_ARTWORKS")
     expect(
-      summarizeToolCall({
+      describeToolCall({
         query: '{ fair(id: "art-basel-2026") { name } }',
-      })
-    ).toBe("Querying Artsy: fair…")
+      }).activity
+    ).toBe("SEARCHING_FAIRS")
+  })
+
+  it("renders literal arguments in the developer summary", () => {
+    expect(
+      describeToolCall({
+        query:
+          '{ artworksConnection(keyword: "blue", forSale: true, first: 5) { totalCount } }',
+      }).debugSummary
+    ).toBe(`artworksConnection(
+  keyword: "blue",
+  forSale: true,
+  first: 5
+)`)
+  })
+
+  it("resolves variables in the developer summary", () => {
+    expect(
+      describeToolCall({
+        query: `
+          query Search($ids: [String!], $price: String!) {
+            artworksConnection(
+              artistIDs: $ids
+              priceRange: $price
+              first: 5
+            ) { totalCount }
+          }
+        `,
+        variables: {
+          ids: ["4d8b92b34eb68a1b2c000452"],
+          price: "*-5000",
+        },
+      }).debugSummary
+    ).toBe(`artworksConnection(
+  artistIDs: ["4d8b92b34eb68a1b2c000452"],
+  priceRange: "*-5000",
+  first: 5
+)`)
+  })
+
+  it("includes arguments from nested search fields", () => {
+    expect(
+      describeToolCall({
+        query: `
+          {
+            gene(id: "minimalism") {
+              filterArtworksConnection(forSale: true, first: 5) {
+                totalCount
+              }
+            }
+          }
+        `,
+      }).debugSummary
+    ).toBe(`gene(
+  id: "minimalism"
+)
+→
+filterArtworksConnection(
+  forSale: true,
+  first: 5
+)`)
   })
 
   it("falls back to a generic label when the root field can't be identified", () => {
-    expect(summarizeToolCall({ query: "not graphql" })).toBe("Querying Artsy…")
-    expect(summarizeToolCall({})).toBe("Querying Artsy…")
+    expect(summarizeToolCall({ query: "not graphql" })).toBe("Searching Artsy…")
+    expect(summarizeToolCall({})).toBe("Searching Artsy…")
   })
 })
 

@@ -73,11 +73,21 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       conversationID: string
       message: string
       history?: Array<AIAgentHistoryEntry> | null
+      includeDebugToolCalls?: boolean | null
     }
 
     assertInputWithinLimits(input)
 
-    return runTurn(input, info.schema, context)
+    const debugAvailable = isDevelopment || config.ENABLE_AI_AGENT_DEBUG
+
+    return runTurn(
+      {
+        ...input,
+        includeDebugToolCalls: debugAvailable && !!input.includeDebugToolCalls,
+      },
+      info.schema,
+      context
+    )
   },
   resolve: (payload) => payload,
 }
