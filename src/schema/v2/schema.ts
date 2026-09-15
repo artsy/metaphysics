@@ -238,6 +238,10 @@ import { PagesConnection } from "./Page/PagesConnection"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { PartnerArtistDocumentsConnection } from "./partner/partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsConnection"
+import { PartnerUserNote } from "./partner/PartnerUserNote/PartnerUserNoteType"
+import { CreatePartnerUserNoteMutation } from "./partner/PartnerUserNote/createPartnerUserNoteMutation"
+import { UpdatePartnerUserNoteMutation } from "./partner/PartnerUserNote/updatePartnerUserNoteMutation"
+import { DeletePartnerUserNoteMutation } from "./partner/PartnerUserNote/deletePartnerUserNoteMutation"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 import { updatePartnerFlagsMutation } from "./partner/updatePartnerFlagsMutation"
 import { updatePartnerMutation } from "./partner/updatePartnerMutation"
@@ -597,6 +601,7 @@ const rootFields = {
   partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
+  partnerUserNote: PartnerUserNote,
   phoneNumber: PhoneNumber,
   previewSavedSearch: PreviewSavedSearchField,
   privateViewingRoom: PrivateViewingRoom,
@@ -715,6 +720,7 @@ export default new GraphQLSchema({
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
+      createPartnerUserNote: CreatePartnerUserNoteMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
@@ -787,6 +793,7 @@ export default new GraphQLSchema({
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
+      deletePartnerUserNote: DeletePartnerUserNoteMutation,
       deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
       deletePartnerLocation: DeletePartnerLocationMutation,
       deletePartnerShow: deletePartnerShowMutation,
@@ -912,6 +919,7 @@ export default new GraphQLSchema({
       updatePage: UpdatePageMutation,
       updatePurchase: updatePurchaseMutation,
       updatePartnerContact: UpdatePartnerContactMutation,
+      updatePartnerUserNote: UpdatePartnerUserNoteMutation,
       updatePartnerLocation: UpdatePartnerLocationMutation,
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,
       updatePartnerShow: updatePartnerShowMutation,
