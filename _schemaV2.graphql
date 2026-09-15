@@ -8649,7 +8649,7 @@ type City {
     size: Int
 
     """
-    Only current, or only past, events
+    Limit to events with this status
     """
     status: CityGuideEventStatus
   ): CityGuideEventsConnection
@@ -8757,14 +8757,19 @@ type CityGuideEvent {
 
 enum CityGuideEventStatus {
   """
-  End date hasn't passed
+  Already ended
+  """
+  CLOSED
+
+  """
+  Started, hasn't ended
   """
   CURRENT
 
   """
-  End date has passed
+  Hasn't started yet
   """
-  PAST
+  UPCOMING
 }
 
 """

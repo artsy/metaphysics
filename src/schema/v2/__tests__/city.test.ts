@@ -456,12 +456,43 @@ describe("City", () => {
       )
     })
 
-    it("passes status: CURRENT as current: true", async () => {
+    // Gravity's list payload (:short) never sends an `itineraries` key at all, unlike the
+    // single-record fetch (:public/:all) — the node must still resolve, not error.
+    it("resolves an empty itineraries list when a node has none embedded", async () => {
+      const data = await runQuery(
+        gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              cityGuideEventsConnection(first: 1) {
+                edges {
+                  node {
+                    itineraries {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+
+      expect(
+        data.city.cityGuideEventsConnection.edges[0].node.itineraries
+      ).toEqual([])
+    })
+
+    it.each([
+      ["CURRENT", "current"],
+      ["UPCOMING", "upcoming"],
+      ["CLOSED", "closed"],
+    ])("passes status: %s as status: %s", async (enumValue, gravityValue) => {
       await runQuery(
         gql`
           {
             city(slug: "sacramende-ca-usa") {
-              cityGuideEventsConnection(first: 1, status: CURRENT) {
+              cityGuideEventsConnection(first: 1, status: ${enumValue}) {
                 totalCount
               }
             }
@@ -471,34 +502,15 @@ describe("City", () => {
       )
 
       expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
-        expect.objectContaining({ current: true })
+        expect.objectContaining({ status: gravityValue })
       )
     })
 
-    it("passes status: PAST as current: false, not omitting it", async () => {
-      await runQuery(
-        gql`
-          {
-            city(slug: "sacramende-ca-usa") {
-              cityGuideEventsConnection(first: 1, status: PAST) {
-                totalCount
-              }
-            }
-          }
-        `,
-        context
-      )
-
-      expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
-        expect.objectContaining({ current: false })
-      )
-    })
-
-    it("sends no current filter when status is omitted", async () => {
+    it("sends no status filter when status is omitted", async () => {
       await runQuery(query, context)
 
       expect(mockCityGuideEventsLoader).toHaveBeenCalledWith(
-        expect.not.objectContaining({ current: expect.anything() })
+        expect.not.objectContaining({ status: expect.anything() })
       )
     })
   })

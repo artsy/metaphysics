@@ -9,11 +9,14 @@ import { ResolverContext } from "types/graphql"
 import type { TCity } from "schema/v2/city"
 import { CityGuideEventType } from "./cityGuideEvent"
 
+// Mirrors Gravity's CityGuideEvent::STATUS values verbatim (current/upcoming/closed) —
+// the enum values below are exactly the strings sent as Gravity's `status` param.
 export const CityGuideEventStatusEnum = new GraphQLEnumType({
   name: "CityGuideEventStatus",
   values: {
-    CURRENT: { value: true, description: "End date hasn't passed" },
-    PAST: { value: false, description: "End date has passed" },
+    CURRENT: { value: "current", description: "Started, hasn't ended" },
+    UPCOMING: { value: "upcoming", description: "Hasn't started yet" },
+    CLOSED: { value: "closed", description: "Already ended" },
   },
 })
 
@@ -23,7 +26,7 @@ export const CityGuideEventsConnectionType = connectionWithCursorInfo({
 }).connectionType
 
 interface CityGuideEventsConnectionArgs extends CursorPageable {
-  status?: boolean
+  status?: string
   page?: number
   size?: number
 }
@@ -37,7 +40,7 @@ export const CityGuideEventsConnectionField: GraphQLFieldConfig<
   args: pageable({
     status: {
       type: CityGuideEventStatusEnum,
-      description: "Only current, or only past, events",
+      description: "Limit to events with this status",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
@@ -54,7 +57,7 @@ export const CityGuideEventsConnectionField: GraphQLFieldConfig<
       size,
       total_count: true,
       city_slug: city.slug,
-      ...(typeof args.status === "boolean" ? { current: args.status } : {}),
+      ...(args.status ? { status: args.status } : {}),
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

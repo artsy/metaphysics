@@ -14,7 +14,9 @@ export interface GravityCityGuideEvent {
   published_by_id: string | null
   image_url: string | null
   image_urls: Record<string, string> | null
-  itineraries: GravityItinerary[]
+  // Absent (not just empty) from Gravity's list payload (:short), which hides itineraries
+  // to keep listings cheap; present only on the single-record fetch (:public/:all).
+  itineraries?: GravityItinerary[]
   created_at: string
   updated_at: string
 }
