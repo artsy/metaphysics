@@ -1,5 +1,17 @@
 import { GravityItinerary } from "schema/v2/itinerary/types"
 
+// A join row, not a bare itinerary: carries its own id and position (needed to reorder or
+// detach the attachment later) alongside the nested itinerary.
+export interface GravityCityGuideEventItinerary {
+  id: string
+  city_guide_event_id: string
+  itinerary_id: string
+  position: number
+  itinerary: GravityItinerary
+  created_at: string
+  updated_at: string
+}
+
 export interface GravityCityGuideEvent {
   id: string
   slug: string
@@ -16,7 +28,7 @@ export interface GravityCityGuideEvent {
   image_urls: Record<string, string> | null
   // Absent (not just empty) from Gravity's list payload (:short), which hides itineraries
   // to keep listings cheap; present only on the single-record fetch (:public/:all).
-  itineraries?: GravityItinerary[]
+  itineraries?: GravityCityGuideEventItinerary[]
   created_at: string
   updated_at: string
 }

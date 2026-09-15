@@ -21,25 +21,33 @@ const gravityCityGuideEvent = {
   },
   itineraries: [
     {
-      id: "itin-1",
-      slug: "peckham-crawl",
-      user_id: "user-1",
-      city_slug: "london-united-kingdom",
-      title: "Peckham Crawl",
-      subtitle: null,
-      description: null,
-      author_name: "Casey Lesser",
-      is_curated: true,
-      visibility: "public",
-      published_at: "2026-08-01T09:00:00Z",
-      published_by_id: null,
-      share_token: null,
-      sections_count: 3,
-      image_url: null,
-      image_urls: null,
+      id: "join-1",
+      city_guide_event_id: "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      itinerary_id: "itin-1",
+      position: 0,
       created_at: "2026-08-01T09:00:00Z",
       updated_at: "2026-08-01T09:00:00Z",
-      // No `sections` key: mirrors Gravity's `:short` embedded shape.
+      itinerary: {
+        id: "itin-1",
+        slug: "peckham-crawl",
+        user_id: "user-1",
+        city_slug: "london-united-kingdom",
+        title: "Peckham Crawl",
+        subtitle: null,
+        description: null,
+        author_name: "Casey Lesser",
+        is_curated: true,
+        visibility: "public",
+        published_at: "2026-08-01T09:00:00Z",
+        published_by_id: null,
+        share_token: null,
+        sections_count: 3,
+        image_url: null,
+        image_urls: null,
+        created_at: "2026-08-01T09:00:00Z",
+        updated_at: "2026-08-01T09:00:00Z",
+        // No `sections` key: mirrors Gravity's `:short` embedded shape.
+      },
     },
   ],
   created_at: "2026-09-01T09:00:00Z",
@@ -101,15 +109,19 @@ describe("CityGuideEvent", () => {
     )
   })
 
-  it("renders an embedded itinerary's short shape, with no sections", async () => {
+  it("exposes each attachment's own id and position alongside the itinerary", async () => {
     const query = `
       {
         cityGuideEvent(id: "london-art-week") {
           itineraries {
             internalID
-            title
-            sections {
+            position
+            itinerary {
+              internalID
               title
+              sections {
+                title
+              }
             }
           }
         }
@@ -119,7 +131,16 @@ describe("CityGuideEvent", () => {
     const data = await runQuery(query, loaders())
 
     expect(data.cityGuideEvent.itineraries).toEqual([
-      { internalID: "itin-1", title: "Peckham Crawl", sections: [] },
+      {
+        internalID: "join-1",
+        position: 0,
+        itinerary: {
+          internalID: "itin-1",
+          title: "Peckham Crawl",
+          // No sections: mirrors Gravity's `:short` embedded itinerary shape.
+          sections: [],
+        },
+      },
     ])
   })
 

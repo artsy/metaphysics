@@ -9,8 +9,7 @@ import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
 import { imageFromGravity } from "schema/v2/itinerary/gravityImage"
-import { ItineraryType } from "schema/v2/itinerary/itinerary"
-import { attachStopItemsToMany } from "schema/v2/itinerary/stopItems"
+import { CityGuideEventItineraryType } from "./cityGuideEventItinerary"
 import { GravityCityGuideEvent } from "./types"
 
 export const CityGuideEventType = new GraphQLObjectType<
@@ -59,10 +58,9 @@ export const CityGuideEventType = new GraphQLObjectType<
     },
     itineraries: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ItineraryType))
+        new GraphQLList(new GraphQLNonNull(CityGuideEventItineraryType))
       ),
-      resolve: ({ itineraries }, _args, context) =>
-        attachStopItemsToMany(itineraries ?? [], context),
+      resolve: ({ itineraries }) => itineraries ?? [],
     },
     updatedAt: date(({ updated_at }) => updated_at, true),
   }),
