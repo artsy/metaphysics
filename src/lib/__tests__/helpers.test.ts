@@ -321,6 +321,17 @@ describe("convertConnectionArgsToGravityArgs", () => {
       size: 30,
     })
   })
+
+  it("defaults offset to 0 when no pagination args are given at all", () => {
+    // getPagingParameters({}) returns `{}`, so `offset` is undefined here —
+    // this must not leak through as NaN once connectionFromArraySlice does
+    // arithmetic on it (see cityGuideEventsConnection's regression test).
+    expect(convertConnectionArgsToGravityArgs({})).toEqual({
+      page: 1,
+      offset: 0,
+      size: undefined,
+    })
+  })
 })
 
 describe("isInteger", () => {

@@ -155,15 +155,21 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
     }
   }
 
+  // getPagingParameters returns `{}` (offset undefined) when the caller gave
+  // no first/last/after/before at all — left as-is, that undefined poisons
+  // connectionFromArraySlice's arithmetic into NaN, silently emptying every
+  // edge regardless of how many records the loader actually returned.
+  const safeOffset = offset ?? 0
+
   // If a size of 0 explicitly requested, it doesn't really matter what
   // the page is.
-  const page = size ? Math.round((size + offset) / size) : 1
+  const page = size ? Math.round((size + safeOffset) / size) : 1
 
   return {
     ...gravityArgs,
     size,
     page,
-    offset,
+    offset: safeOffset,
   }
 }
 
