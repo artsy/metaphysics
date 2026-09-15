@@ -25,6 +25,7 @@ import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import { City } from "./city"
+import { CityGuideEvent } from "./cityGuideEvent"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -515,6 +516,7 @@ const rootFields = {
   channel,
   cities,
   city: City,
+  cityGuideEvent: CityGuideEvent,
   collection: Collection,
   collectorProfile: CollectorProfileForUser,
   collectorProfilesConnection: CollectorProfilesConnection,
