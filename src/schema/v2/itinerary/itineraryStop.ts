@@ -3,6 +3,7 @@ import {
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -17,7 +18,9 @@ import { LocationType } from "schema/v2/location"
 import { FairType } from "schema/v2/fair"
 import ShowEventType from "schema/v2/show_event"
 import { FairEventType } from "schema/v2/fairEvent"
-import { StopWithResolvedItem } from "./stopItems"
+import { attachStopItemsToMany, StopWithResolvedItem } from "./stopItems"
+import { GravityItineraryStop } from "./types"
+import { ItineraryType } from "./itinerary"
 
 export const ItineraryStopCategory = new GraphQLEnumType({
   name: "ItineraryStopCategory",
@@ -81,12 +84,37 @@ export const ItineraryStopEvent = new GraphQLUnionType({
   },
 })
 
+/**
+ * The caller's own stops pointing at the same entity as this one.
+ *
+ * Asked of Gravity by city rather than by entity, so a guide's stops share one request: the
+ * loader caches on its params (loader_with_authentication_factory.ts:87-89), and every stop of
+ * a guide asks for the same city. Per-entity keying would be a request per stop.
+ */
+const callersStopsFor = async (
+  { item_type, item_id, _citySlug }: StopWithResolvedItem,
+  { itineraryStopsLoader }: ResolverContext
+): Promise<GravityItineraryStop[]> => {
+  // An unauthenticated caller has no itineraries, and a custom stop points at nothing to
+  // match against.
+  if (!itineraryStopsLoader || !item_type || !item_id) return []
+
+  const mine = await itineraryStopsLoader(
+    _citySlug ? { city_slug: _citySlug } : {}
+  )
+
+  return mine.filter(
+    (stop) => stop.item_type === item_type && stop.item_id === item_id
+  )
+}
+
 export const ItineraryStopType = new GraphQLObjectType<
   StopWithResolvedItem,
   ResolverContext
 >({
   name: "ItineraryStop",
-  fields: {
+  // A thunk, not an object: `myItineraryStops` returns this same type.
+  fields: () => ({
     internalID: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,
@@ -179,5 +207,55 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: ItineraryStopEvent,
       resolve: ({ _resolvedEvent }) => _resolvedEvent ?? null,
     },
-  },
+    itineraryID: {
+      description:
+        "The itinerary this stop belongs to. Only sent where Gravity selects it through " +
+        "the section, which today means the stops behind `myItineraries`.",
+      type: GraphQLString,
+      resolve: ({ itinerary_id }) => itinerary_id ?? null,
+    },
+    isOnMyItinerary: {
+      description:
+        "Whether the caller already has this stop's entity on an itinerary of their own. " +
+        "False for a custom stop, which points at no entity and so cannot be matched.",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: async (stop, _args, context) => {
+        // Gravity already computed this once for the whole guide when the parent
+        // itinerary was fetched with includeOnMyItinerary: true — cheaper than the
+        // per-stop round trip below, which stays as the fallback for every other caller.
+        if (stop.is_on_my_itinerary != null) return stop.is_on_my_itinerary
+
+        return (await callersStopsFor(stop, context)).length > 0
+      },
+    },
+    myItineraries: {
+      description:
+        "The caller's own itineraries holding this stop's entity, so a client can say which " +
+        "ones it is already on. Empty when they have not added it, and always empty for a " +
+        "custom stop, which points at no entity.",
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ItineraryType))
+      ),
+      resolve: async (stop, _args, context) => {
+        const mine = await callersStopsFor(stop, context)
+        const itineraryIDs = Array.from(
+          new Set(mine.map(({ itinerary_id }) => itinerary_id).filter(Boolean))
+        ) as string[]
+
+        if (!itineraryIDs.length) return []
+
+        // Fetched by id rather than by listing the caller's itineraries, so the answer cannot
+        // be truncated by a page size. There are as many calls as itineraries actually
+        // holding the entity — usually one — and the loader caches each, so a guide whose
+        // stops share an itinerary asks for it once.
+        const itineraries = await Promise.all(
+          itineraryIDs.map((id) => context.itineraryLoader!(id))
+        )
+
+        // Every resolver returning Itinerary nodes attaches stop items, or a caller reading
+        // `myItineraries { sections { stops { item } } }` would silently get nulls.
+        return attachStopItemsToMany(itineraries, context)
+      },
+    },
+  }),
 })

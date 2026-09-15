@@ -43,6 +43,12 @@ export type ResolvedStopEvent = Record<string, unknown> & {
 export type StopWithResolvedItem = GravityItineraryStop & {
   _resolvedItem?: ResolvedStopItem | null
   _resolvedEvent?: ResolvedStopEvent | null
+  /**
+   * The parent itinerary's city, stamped on by `attachStopItemsToMany`. A stop's own payload
+   * has no city, and `myItineraryStops` uses it to ask Gravity for one city's worth of the
+   * caller's stops rather than all of them.
+   */
+  _citySlug?: string
 }
 
 // One loader call per item type; returns a map keyed "<item_type>:<item_id>".
@@ -185,7 +191,11 @@ export const attachStopItemsToMany = async <T extends GravityItinerary>(
   context: ResolverContext
 ): Promise<T[]> => {
   const stops: StopWithResolvedItem[] = itineraries.flatMap((itinerary) =>
-    (itinerary.sections ?? []).flatMap((section) => section.stops ?? [])
+    (itinerary.sections ?? []).flatMap((section) =>
+      (section.stops ?? []).map((stop) =>
+        Object.assign(stop, { _citySlug: itinerary.city_slug })
+      )
+    )
   )
 
   await attachItemsToStops(stops, context)

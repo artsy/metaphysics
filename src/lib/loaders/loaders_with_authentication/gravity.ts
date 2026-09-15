@@ -1454,6 +1454,9 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    // Keyed on the item, not on an itinerary: one call answers which of the caller's
+    // itineraries hold it, so a list of them costs one request rather than one each.
+    itineraryStopsLoader: gravityLoader("itinerary_stops"),
     fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
     createItineraryLoader: gravityLoader("itinerary", {}, { method: "POST" }),
     updateItineraryLoader: gravityLoader(

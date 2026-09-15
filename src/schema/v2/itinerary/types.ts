@@ -3,6 +3,8 @@
 export interface GravityItineraryStop {
   id: string
   itinerary_section_id: string
+  /** Only sent by `itinerary_stops`, which selects it through the section. */
+  itinerary_id?: string
   position: number
   /** Null for a custom stop. */
   item_type: "PartnerShow" | "PartnerLocation" | "Fair" | null
@@ -26,6 +28,11 @@ export interface GravityItineraryStop {
   category: string | null
   is_free_admission: boolean | null
   source_url: string | null
+  /**
+   * Only present when the parent itinerary was fetched with
+   * include_on_my_itinerary: true — null/absent otherwise, including when signed out.
+   */
+  is_on_my_itinerary?: boolean | null
   created_at: string
   updated_at: string
 }
