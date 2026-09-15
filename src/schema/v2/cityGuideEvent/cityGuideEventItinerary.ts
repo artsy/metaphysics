@@ -1,8 +1,12 @@
-import { GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { ItineraryType } from "schema/v2/itinerary/itinerary"
-import { attachStopItems } from "schema/v2/itinerary/stopItems"
 import { GravityCityGuideEventItinerary } from "./types"
 
 // A join row (an itinerary attached to a city guide event), not the itinerary itself.
@@ -23,10 +27,11 @@ export const CityGuideEventItineraryType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ position }) => position,
     },
+    // Stop items are already attached by CityGuideEvent.itineraries, pooled
+    // across the whole list.
     itinerary: {
       type: new GraphQLNonNull(ItineraryType),
-      resolve: ({ itinerary }, _args, context) =>
-        attachStopItems(itinerary, context),
+      resolve: ({ itinerary }) => itinerary,
     },
   }),
 })

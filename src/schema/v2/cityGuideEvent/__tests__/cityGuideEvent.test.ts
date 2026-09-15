@@ -144,6 +144,106 @@ describe("CityGuideEvent", () => {
     ])
   })
 
+  it("pools stop-item lookups across every attached itinerary", async () => {
+    const stopAt = (n: number) => ({
+      id: `stop-${n}`,
+      itinerary_section_id: `section-${n}`,
+      position: 0,
+      item_type: "PartnerShow",
+      item_id: `show-${n}`,
+      event_type: null,
+      event_id: null,
+      title: null,
+      address: null,
+      image_url: null,
+      latitude: null,
+      longitude: null,
+      start_at: null,
+      end_at: null,
+      time_zone: null,
+      note: null,
+      category: null,
+      is_free_admission: null,
+      source_url: null,
+      created_at: "2026-08-01T09:00:00Z",
+      updated_at: "2026-08-01T09:00:00Z",
+    })
+    const joinAt = (n: number) => ({
+      ...gravityCityGuideEvent.itineraries[0],
+      id: `join-${n}`,
+      itinerary_id: `itin-${n}`,
+      position: n - 1,
+      itinerary: {
+        ...gravityCityGuideEvent.itineraries[0].itinerary,
+        id: `itin-${n}`,
+        sections: [
+          {
+            id: `section-${n}`,
+            itinerary_id: `itin-${n}`,
+            title: "Morning",
+            note: null,
+            position: 0,
+            stops_count: 1,
+            stops: [stopAt(n)],
+            created_at: "2026-08-01T09:00:00Z",
+            updated_at: "2026-08-01T09:00:00Z",
+          },
+        ],
+      },
+    })
+    const showsLoader = jest.fn().mockResolvedValue({
+      body: [
+        { _id: "show-1", id: "show-1", name: "Show 1" },
+        { _id: "show-2", id: "show-2", name: "Show 2" },
+      ],
+      headers: {},
+    })
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          itineraries {
+            itinerary {
+              sections {
+                stops {
+                  item {
+                    __typename
+                    ... on Show {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest.fn().mockResolvedValue({
+          ...gravityCityGuideEvent,
+          itineraries: [joinAt(1), joinAt(2)],
+        }),
+        showsLoader,
+      })
+    )
+
+    expect(showsLoader).toHaveBeenCalledTimes(1)
+    expect(showsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ id: ["show-1", "show-2"] })
+    )
+    expect(
+      data.cityGuideEvent.itineraries.map(
+        (join) => join.itinerary.sections[0].stops[0].item
+      )
+    ).toEqual([
+      { __typename: "Show", internalID: "show-1" },
+      { __typename: "Show", internalID: "show-2" },
+    ])
+  })
+
   it("resolves null on a Gravity 404", async () => {
     const query = `{ cityGuideEvent(id: "nope") { title } }`
 

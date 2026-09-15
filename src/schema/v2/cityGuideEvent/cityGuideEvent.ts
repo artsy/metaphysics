@@ -9,6 +9,7 @@ import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
 import { imageFromGravity } from "schema/v2/itinerary/gravityImage"
+import { attachStopItemsToMany } from "schema/v2/itinerary/stopItems"
 import { CityGuideEventItineraryType } from "./cityGuideEventItinerary"
 import { GravityCityGuideEvent } from "./types"
 
@@ -60,7 +61,16 @@ export const CityGuideEventType = new GraphQLObjectType<
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(CityGuideEventItineraryType))
       ),
-      resolve: ({ itineraries }) => itineraries ?? [],
+      // Pooled here, once per event, rather than per join row: one loader call
+      // per item type for the whole list instead of one per itinerary.
+      resolve: async ({ itineraries }, _args, context) => {
+        const joins = itineraries ?? []
+        await attachStopItemsToMany(
+          joins.map((join) => join.itinerary),
+          context
+        )
+        return joins
+      },
     },
     updatedAt: date(({ updated_at }) => updated_at, true),
   }),
