@@ -1,4 +1,9 @@
-import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { HTTPError } from "lib/HTTPError"
 import { ItineraryType } from "./itinerary"
@@ -19,15 +24,23 @@ export const Itinerary: GraphQLFieldConfig<void, ResolverContext> = {
         "token cannot tell an unlisted guide from one that does not exist.",
       type: GraphQLString,
     },
+    includeOnMyItinerary: {
+      description:
+        "Ask Gravity to annotate every stop's isOnMyItinerary in the same request that " +
+        "fetches this guide, rather than one extra round trip per stop. Costs one query " +
+        "against the caller's own stops for this guide's city — off by default, since most " +
+        "callers don't read isOnMyItinerary on every stop of every guide they fetch.",
+      type: GraphQLBoolean,
+    },
   },
-  resolve: async (_root, { id, shareToken }, context) => {
+  resolve: async (_root, { id, shareToken, includeOnMyItinerary }, context) => {
     const loader = context.itineraryLoader
 
     // Gravity 404s a private/missing itinerary; resolve null rather than erroring.
-    const itinerary = await loader(
-      id,
-      shareToken ? { share_token: shareToken } : {}
-    ).catch((error) => {
+    const itinerary = await loader(id, {
+      ...(shareToken ? { share_token: shareToken } : {}),
+      ...(includeOnMyItinerary ? { include_on_my_itinerary: true } : {}),
+    }).catch((error) => {
       if (error instanceof HTTPError && error.statusCode === 404) return null
       throw error
     })

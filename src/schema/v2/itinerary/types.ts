@@ -28,6 +28,11 @@ export interface GravityItineraryStop {
   category: string | null
   is_free_admission: boolean | null
   source_url: string | null
+  /**
+   * Only present when the parent itinerary was fetched with
+   * include_on_my_itinerary: true — null/absent otherwise, including when signed out.
+   */
+  is_on_my_itinerary?: boolean | null
   created_at: string
   updated_at: string
 }

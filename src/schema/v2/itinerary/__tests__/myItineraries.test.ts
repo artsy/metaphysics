@@ -286,3 +286,65 @@ describe("ItineraryStop.myItineraries", () => {
     expect(stopsFrom(data)[0].isOnMyItinerary).toBe(false)
   })
 })
+
+// Gravity precomputes is_on_my_itinerary, in one query for the whole guide, when the
+// parent itinerary was fetched with includeOnMyItinerary: true. isOnMyItinerary should
+// use that value directly rather than falling back to its own per-stop lookup.
+describe("ItineraryStop.isOnMyItinerary with Gravity's precomputed flag", () => {
+  const queryWithArg = gql`
+    {
+      itinerary(id: "chill-vibes-only", includeOnMyItinerary: true) {
+        sections {
+          stops {
+            internalID
+            isOnMyItinerary
+          }
+        }
+      }
+    }
+  `
+
+  it("passes include_on_my_itinerary through to the itinerary loader", async () => {
+    const ctx = context([], guide([stop("guide-stop-1")]))
+
+    await runAuthenticatedQuery(queryWithArg, ctx)
+
+    expect(ctx.itineraryLoader).toHaveBeenCalledWith(
+      "chill-vibes-only",
+      expect.objectContaining({ include_on_my_itinerary: true })
+    )
+  })
+
+  it("uses Gravity's true without calling itineraryStopsLoader", async () => {
+    const ctx = context(
+      [],
+      guide([stop("guide-stop-1", { is_on_my_itinerary: true })])
+    )
+
+    const data = await runAuthenticatedQuery(queryWithArg, ctx)
+
+    expect(stopsFrom(data)[0].isOnMyItinerary).toBe(true)
+    expect(ctx.itineraryStopsLoader).not.toHaveBeenCalled()
+  })
+
+  it("uses Gravity's false without calling itineraryStopsLoader", async () => {
+    const ctx = context(
+      [myStop("mine-1", "itin-1")], // would answer true if the fallback ran
+      guide([stop("guide-stop-1", { is_on_my_itinerary: false })])
+    )
+
+    const data = await runAuthenticatedQuery(queryWithArg, ctx)
+
+    expect(stopsFrom(data)[0].isOnMyItinerary).toBe(false)
+    expect(ctx.itineraryStopsLoader).not.toHaveBeenCalled()
+  })
+
+  it("falls back to the per-stop lookup when Gravity sent no flag", async () => {
+    const data = await runAuthenticatedQuery(
+      query, // no includeOnMyItinerary, so Gravity never sets is_on_my_itinerary
+      context([myStop("mine-1", "itin-1")], guide([stop("guide-stop-1")]))
+    )
+
+    expect(stopsFrom(data)[0].isOnMyItinerary).toBe(true)
+  })
+})

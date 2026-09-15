@@ -219,8 +219,14 @@ export const ItineraryStopType = new GraphQLObjectType<
         "Whether the caller already has this stop's entity on an itinerary of their own. " +
         "False for a custom stop, which points at no entity and so cannot be matched.",
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: async (stop, _args, context) =>
-        (await callersStopsFor(stop, context)).length > 0,
+      resolve: async (stop, _args, context) => {
+        // Gravity already computed this once for the whole guide when the parent
+        // itinerary was fetched with includeOnMyItinerary: true — cheaper than the
+        // per-stop round trip below, which stays as the fallback for every other caller.
+        if (stop.is_on_my_itinerary != null) return stop.is_on_my_itinerary
+
+        return (await callersStopsFor(stop, context)).length > 0
+      },
     },
     myItineraries: {
       description:
