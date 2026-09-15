@@ -3,6 +3,8 @@
 export interface GravityItineraryStop {
   id: string
   itinerary_section_id: string
+  /** Only sent by `itinerary_stops`, which selects it through the section. */
+  itinerary_id?: string
   position: number
   /** Null for a custom stop. */
   item_type: "PartnerShow" | "PartnerLocation" | "Fair" | null

@@ -23688,6 +23688,11 @@ type ItineraryStop {
   isFreeAdmission: Boolean
 
   """
+  Whether the caller already has this stop's entity on an itinerary of their own. False for a custom stop, which points at no entity and so cannot be matched.
+  """
+  isOnMyItinerary: Boolean!
+
+  """
   The Show, gallery location, or Fair this stop refers to, if any. A stop without an `item_id` (e.g. a café) resolves to null.
   """
   item: ItineraryStopItem
@@ -23696,8 +23701,18 @@ type ItineraryStop {
   What kind of item this stop points at, if any
   """
   itemType: ItineraryStopItemType
+
+  """
+  The itinerary this stop belongs to. Only sent where Gravity selects it through the section, which today means the stops behind `myItineraries`.
+  """
+  itineraryID: String
   latitude: Float
   longitude: Float
+
+  """
+  The caller's own itineraries holding this stop's entity, so a client can say which ones it is already on. Empty when they have not added it, and always empty for a custom stop, which points at no entity.
+  """
+  myItineraries: [Itinerary!]!
   note: String
   position: Int!
 
