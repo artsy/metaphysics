@@ -26769,6 +26769,13 @@ type Mutation {
   ): createCityGuideEventPayload
 
   """
+  Attach a curated itinerary to a city guide event, at the end of its list. Returns the event with its itineraries in their new order.
+  """
+  createCityGuideEventItinerary(
+    input: createCityGuideEventItineraryInput!
+  ): createCityGuideEventItineraryPayload
+
+  """
   Create a collection
   """
   createCollection(input: createCollectionInput!): createCollectionPayload
@@ -27136,6 +27143,13 @@ type Mutation {
   deleteCityGuideEvent(
     input: deleteCityGuideEventInput!
   ): deleteCityGuideEventPayload
+
+  """
+  Detach an itinerary from a city guide event. The itinerary itself is left alone. Returns the event with its remaining itineraries.
+  """
+  deleteCityGuideEventItinerary(
+    input: deleteCityGuideEventItineraryInput!
+  ): deleteCityGuideEventItineraryPayload
 
   """
   Delete a collection
@@ -27902,6 +27916,13 @@ type Mutation {
   updateCityGuideEvent(
     input: updateCityGuideEventInput!
   ): updateCityGuideEventPayload
+
+  """
+  Move an itinerary within its city guide event's list. Returns the event with its itineraries in their new order.
+  """
+  updateCityGuideEventItinerary(
+    input: updateCityGuideEventItineraryInput!
+  ): updateCityGuideEventItineraryPayload
 
   """
   Update a collection
@@ -45542,6 +45563,24 @@ input createCityGuideEventInput {
   title: String!
 }
 
+input createCityGuideEventItineraryInput {
+  """
+  The event's id or slug.
+  """
+  cityGuideEventID: String!
+  clientMutationId: String
+
+  """
+  The itinerary's id or slug. Must be a curated guide.
+  """
+  itineraryID: String!
+}
+
+type createCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 type createCityGuideEventPayload {
   clientMutationId: String
   responseOrError: CityGuideEventMutationResponseOrError
@@ -45768,6 +45807,20 @@ input deleteCityGuideEventInput {
   The event's id or slug.
   """
   id: String!
+}
+
+input deleteCityGuideEventItineraryInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the itinerary's).
+  """
+  id: String!
+}
+
+type deleteCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 type deleteCityGuideEventPayload {
@@ -46319,6 +46372,25 @@ input updateCityGuideEventInput {
   """
   timeZone: String
   title: String
+}
+
+input updateCityGuideEventItineraryInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the itinerary's).
+  """
+  id: String!
+
+  """
+  Zero-based position among the event's itineraries, via acts_as_list's insert_at.
+  """
+  position: Int!
+}
+
+type updateCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 type updateCityGuideEventPayload {
