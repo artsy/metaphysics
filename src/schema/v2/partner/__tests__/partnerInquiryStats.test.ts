@@ -86,4 +86,35 @@ describe("Partner inquiry stats", () => {
     expect(partner.inquiryResponseRate).toBeNull()
     expect(partner.inquiryResponseTime).toBeNull()
   })
+
+  it("passes a custom daysInPast through to Impulse /stats", async () => {
+    const queryWithDaysInPast = gql`
+      {
+        partner(id: "example-partner") {
+          inquiryResponseRate(daysInPast: 7)
+          inquiryResponseTime(daysInPast: 7)
+        }
+      }
+    `
+
+    const partnerInquiryStatsLoader = jest.fn().mockResolvedValue({
+      response_rate: 40,
+      response_time_in_minutes: 30,
+    })
+
+    const { partner } = await runAuthenticatedQuery(queryWithDaysInPast, {
+      partnerLoader,
+      partnerInquiryStatsLoader,
+      userID: "user-id",
+      accessToken: "access-token",
+    })
+
+    expect(partnerInquiryStatsLoader).toHaveBeenCalledWith({
+      to_id: "partner-internal-id",
+      to_type: "Partner",
+      days_in_past: 7,
+    })
+    expect(partner.inquiryResponseRate).toBe(40)
+    expect(partner.inquiryResponseTime).toBe(30)
+  })
 })
