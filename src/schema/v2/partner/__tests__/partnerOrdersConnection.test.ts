@@ -17,6 +17,7 @@ describe("partner.ordersConnection", () => {
         buyer_type: "User",
         seller_id: "partner-id",
         seller_type: "Partner",
+        seller_state: "OFFER_RECEIVED",
         items_total_cents: 100000,
         shipping_total_cents: 2000,
         tax_total_cents: 8000,
@@ -44,6 +45,7 @@ describe("partner.ordersConnection", () => {
         buyer_type: "User",
         seller_id: "partner-id",
         seller_type: "Partner",
+        seller_state: "APPROVED_SELLER_SHIP",
         items_total_cents: 50000,
         shipping_total_cents: 1000,
         tax_total_cents: 4000,
@@ -73,6 +75,13 @@ describe("partner.ordersConnection", () => {
         )
       }
 
+      if (params.seller_state) {
+        const sellerStates = params.seller_state.split(",")
+        filteredOrders = filteredOrders.filter((order) =>
+          sellerStates.includes(order.seller_state)
+        )
+      }
+
       return Promise.resolve({
         body: filteredOrders,
         headers: {
@@ -84,8 +93,8 @@ describe("partner.ordersConnection", () => {
     context = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
       partnerOrdersLoader,
@@ -167,9 +176,151 @@ describe("partner.ordersConnection", () => {
     })
 
     expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
-      "partner-id",
+      "partner-internal-id",
       expect.objectContaining({
         artwork_id: "artwork-1",
+      })
+    )
+  })
+
+  it("filters orders by sellerState", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sellerState: [OFFER_RECEIVED]) {
+            edges {
+              node {
+                internalID
+                code
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      partner: {
+        ordersConnection: {
+          edges: [
+            {
+              node: {
+                internalID: "order-1",
+                code: "ORD001",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-internal-id",
+      expect.objectContaining({
+        seller_state: "OFFER_RECEIVED",
+      })
+    )
+  })
+
+  it("resolves the EXPIRED seller state", async () => {
+    const expiredOrder = {
+      id: "order-3",
+      code: "ORD003",
+      mode: "buy",
+      created_at: "2024-01-03T00:00:00Z",
+      currency_code: "USD",
+      buyer_id: "buyer-3",
+      buyer_type: "User",
+      seller_id: "partner-internal-id",
+      seller_type: "Partner",
+      seller_state: "expired",
+      items_total_cents: 100000,
+      shipping_total_cents: 2000,
+      tax_total_cents: 8000,
+      seller_total_cents: 110000,
+      commission_fee_cents: 5000,
+      transaction_fee_cents: 300,
+      line_items: [],
+      submitted_offers: [],
+    }
+
+    const expiredContext = {
+      partnerLoader: () => {
+        return Promise.resolve({
+          id: "partner-slug",
+          _id: "partner-internal-id",
+        })
+      },
+      partnerOrdersLoader: jest.fn(() =>
+        Promise.resolve({
+          body: [expiredOrder],
+          headers: { "x-total-count": "1" },
+        })
+      ),
+    }
+
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sellerState: [EXPIRED]) {
+            edges {
+              node {
+                internalID
+                sellerState
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, expiredContext)
+
+    expect(data).toEqual({
+      partner: {
+        ordersConnection: {
+          edges: [
+            {
+              node: {
+                internalID: "order-3",
+                sellerState: "EXPIRED",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    expect(expiredContext.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-internal-id",
+      expect.objectContaining({
+        seller_state: "EXPIRED",
+      })
+    )
+  })
+
+  it("passes the sort param through to the loader", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sort: STATE_EXPIRES_AT_ASC) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-internal-id",
+      expect.objectContaining({
+        sort: "STATE_EXPIRES_AT_ASC",
       })
     )
   })
@@ -252,8 +403,8 @@ describe("partner.ordersConnection", () => {
     const contextWithoutLoader = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
     }
