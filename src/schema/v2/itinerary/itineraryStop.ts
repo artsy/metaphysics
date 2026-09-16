@@ -22,6 +22,11 @@ import { StopWithResolvedItem } from "./stopItems"
 import { attachMembershipStopItems } from "./stopMemberships"
 import { ItineraryType } from "./itinerary"
 import { isFieldRequested } from "lib/isFieldRequested"
+import { GlobalIDField } from "schema/v2/object_identification"
+import {
+  ItineraryStopMembershipType,
+  itineraryStopMemberships,
+} from "./itineraryStopMembership"
 
 export const ItineraryStopCategory = new GraphQLEnumType({
   name: "ItineraryStopCategory",
@@ -91,6 +96,7 @@ export const ItineraryStopType = new GraphQLObjectType<
 >({
   name: "ItineraryStop",
   fields: () => ({
+    id: GlobalIDField,
     isOnMyItineraries: {
       description:
         "Whether this stop occurs in any of the current user's personal itineraries. " +
@@ -120,6 +126,17 @@ export const ItineraryStopType = new GraphQLObjectType<
           return attachMembershipStopItems(itineraries, context)
         }
         return itineraries
+      },
+    },
+    myItineraryStopMemberships: {
+      description:
+        "The current user's personal itineraries containing an equivalent stop, " +
+        "with every matching stop ID grouped by itinerary. Empty when signed out.",
+      type: new GraphQLList(new GraphQLNonNull(ItineraryStopMembershipType)),
+      resolve: async (stop, _args, { itineraryStopMembershipsLoader }) => {
+        if (!itineraryStopMembershipsLoader) return []
+        const result = await itineraryStopMembershipsLoader(stop, true)
+        return itineraryStopMemberships(stop, result.my_itineraries ?? [])
       },
     },
     internalID: {

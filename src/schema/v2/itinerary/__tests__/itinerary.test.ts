@@ -2,6 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
 import { createBatchItineraryStopMembershipsLoader } from "lib/loaders/batchItineraryStopMembershipsLoader"
 import { graphql } from "graphql"
+import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 
 const gravityItinerary = {
@@ -210,6 +211,63 @@ describe("Itinerary", () => {
       expect(context.showsLoader).toHaveBeenCalledTimes(1)
     })
 
+    it("returns every matching stop ID grouped by itinerary", async () => {
+      const matchingStop = gravityItinerary.sections[0].stops[0]
+      const duplicate = { ...matchingStop, id: "duplicate-stop" }
+      const matchingItinerary = {
+        ...gravityItinerary,
+        id: "owned-itinerary",
+        sections: [
+          {
+            ...gravityItinerary.sections[0],
+            stops: [matchingStop],
+          },
+          {
+            ...gravityItinerary.sections[0],
+            id: "section-2",
+            stops: [duplicate, gravityItinerary.sections[0].stops[1]],
+          },
+        ],
+      }
+      const data = await runQuery(
+        gql`
+          {
+            itinerary(id: "guide") {
+              sections {
+                stops {
+                  myItineraryStopMemberships {
+                    itineraryID
+                    stopIDs
+                  }
+                }
+              }
+            }
+          }
+        `,
+        {
+          ...loaders(),
+          itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+            jest.fn(async ({ stops }) =>
+              JSON.parse(stops).map((stop) => ({
+                is_on_my_itineraries: stop.item_id === "show-1",
+                my_itineraries:
+                  stop.item_id === "show-1" ? [matchingItinerary] : [],
+              }))
+            )
+          ),
+        }
+      )
+
+      expect(
+        data.itinerary.sections[0].stops[0].myItineraryStopMemberships
+      ).toEqual([
+        {
+          itineraryID: "owned-itinerary",
+          stopIDs: [matchingStop.id, duplicate.id],
+        },
+      ])
+    })
+
     it("makes no membership calls if neither field is selected", async () => {
       const { fetch, context } = setup()
       await runQuery(
@@ -343,11 +401,13 @@ describe("Itinerary", () => {
           visibility
           sectionsCount
           sections {
+            id
             title
             note
             position
             stopsCount
             stops {
+              id
               position
               title
               address
@@ -374,11 +434,13 @@ describe("Itinerary", () => {
     expect(data.itinerary.visibility).toEqual("PUBLIC")
 
     const section = data.itinerary.sections[0]
+    expect(section.id).toEqual(toGlobalId("ItinerarySection", "section-1"))
     expect(section.note).toEqual(
       "Start early, the galleries are empty before noon."
     )
 
     const [show, gallery, custom] = section.stops
+    expect(show.id).toEqual(toGlobalId("ItineraryStop", "stop-1"))
     expect(show.timeZone).toEqual("Europe/London")
     expect(show.sourceURL).toEqual("https://example.com/source")
     expect(show.itemType).toEqual("SHOW")
