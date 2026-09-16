@@ -14,31 +14,34 @@ import {
 import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 
-export const PartnerUserNoteType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
+export const PartnerUserNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerUserNote",
   description: "A partner's private note about a collector.",
   fields: () => ({
     ...InternalIDFields,
     partnerId: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ partner_id }) => partner_id,
     },
     userId: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "ID of the collector this note is about.",
       resolve: ({ user_id }) => user_id,
     },
     body: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ body }) => body,
     },
     updatedByUserId: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "ID of the partner user who last touched this note.",
       resolve: ({ updated_by_user_id }) => updated_by_user_id,
+    },
+    updatedByUserName: {
+      type: GraphQLString,
+      description:
+        "Name of the partner user who last touched this note. Null if that user has since been deleted or has no name.",
+      resolve: ({ updated_by_user_name }) => updated_by_user_name,
     },
     createdAt: date(),
     updatedAt: date(),
@@ -50,8 +53,7 @@ export const partnerUserNotesConnection = connectionWithCursorInfo({
 })
 
 export const UserNotesConnection: GraphQLFieldConfig<any, ResolverContext> = {
-  description:
-    "A connection of notes this partner has made about collectors.",
+  description: "A connection of notes this partner has made about collectors.",
   type: partnerUserNotesConnection.connectionType,
   args: pageable({
     userId: {
@@ -82,6 +84,33 @@ export const UserNotesConnection: GraphQLFieldConfig<any, ResolverContext> = {
       body,
       args,
     })
+  },
+}
+
+export const CollectorResumeNotesConnection: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  description: "Notes this partner has made about this collector.",
+  type: partnerUserNotesConnection.connectionType,
+  args: pageable({}),
+  resolve: async ({ partnerId, userId }, args, { partnerUserNotesLoader }) => {
+    if (!partnerUserNotesLoader) return null
+    if (!partnerId || !userId) return null
+
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const { body, headers } = await partnerUserNotesLoader({
+      partner_id: partnerId,
+      user_id: userId,
+      page,
+      size,
+      total_count: true,
+    })
+
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return paginationResolver({ totalCount, offset, page, size, body, args })
   },
 }
 

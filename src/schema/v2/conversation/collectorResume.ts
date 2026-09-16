@@ -6,6 +6,7 @@ import {
   GraphQLInt,
 } from "graphql"
 import { CollectorProfileType } from "schema/v2/CollectorProfile/collectorProfile"
+import { CollectorResumeNotesConnection } from "schema/v2/partner/PartnerUserNote/PartnerUserNoteType"
 import { ResolverContext } from "types/graphql"
 
 export const CollectorResume = new GraphQLObjectType<any, ResolverContext>({
@@ -26,6 +27,12 @@ export const CollectorResume = new GraphQLObjectType<any, ResolverContext>({
         "Collector's ID used to stitch buyerActivity with the Exchange schema",
       resolve: ({ userId }) => userId,
     },
+    partnerId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the partner responding to the conversation",
+      resolve: ({ partnerId }) => partnerId,
+    },
+    notesConnection: CollectorResumeNotesConnection,
     purchases: {
       type: CollectorPurchasesType,
       description: "non-bnmo Collector's purchase history",
