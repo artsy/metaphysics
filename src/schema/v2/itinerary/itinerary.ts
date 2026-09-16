@@ -97,6 +97,13 @@ export const ItineraryType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ sections_count }) => sections_count,
     },
+    stopsCount: {
+      description: "The total number of stops across all sections",
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ stops_count, sections }) =>
+        stops_count ??
+        (sections ?? []).reduce((sum, section) => sum + section.stops_count, 0),
+    },
     sections: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(ItinerarySectionType))

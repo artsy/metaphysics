@@ -1,5 +1,8 @@
 import { runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
+import { createBatchItineraryStopMembershipsLoader } from "lib/loaders/batchItineraryStopMembershipsLoader"
+import { graphql } from "graphql"
+import gql from "lib/gql"
 
 const gravityItinerary = {
   id: "b0b1c2d3-e4f5-4a6b-8c9d-0e1f2a3b4c5d",
@@ -121,6 +124,210 @@ const loaders = () => ({
 })
 
 describe("Itinerary", () => {
+  describe("stop memberships", () => {
+    const query = gql`
+      query Memberships($details: Boolean!) {
+        itinerary(id: "guide") {
+          sections {
+            stops {
+              internalID
+              saved: isOnMyItineraries
+              ...MembershipDetails
+            }
+          }
+        }
+      }
+      fragment MembershipDetails on ItineraryStop {
+        myItineraries @include(if: $details) {
+          internalID
+          title
+          stopsCount
+          sections {
+            internalID
+            stops {
+              internalID
+            }
+          }
+        }
+      }
+    `
+    const setup = () => {
+      const fetch = jest.fn(async ({ stops, include_itineraries }) =>
+        JSON.parse(stops).map((stop) => ({
+          is_on_my_itineraries: stop.item_id === "show-1",
+          ...(include_itineraries
+            ? {
+                my_itineraries:
+                  stop.item_id === "show-1" ? [gravityItinerary] : [],
+              }
+            : {}),
+        }))
+      )
+      return {
+        fetch,
+        context: {
+          ...loaders(),
+          itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+            fetch
+          ),
+        },
+      }
+    }
+
+    it("batches all stop booleans in one lightweight Gravity request", async () => {
+      const { fetch, context } = setup()
+      const data = await runQuery(query, context, { details: false })
+      expect(
+        data.itinerary.sections[0].stops.map((stop) => stop.saved)
+      ).toEqual([true, false, false])
+      expect(fetch).toHaveBeenCalledTimes(1)
+      expect(fetch.mock.calls[0][0].include_itineraries).toBe(false)
+    })
+
+    it("loads details on demand through fragments, aliases and directives", async () => {
+      const { fetch, context } = setup()
+      const data = await runQuery(query, context, { details: true })
+      expect(fetch).toHaveBeenCalledTimes(1)
+      expect(fetch.mock.calls[0][0].include_itineraries).toBe(true)
+      expect(
+        data.itinerary.sections[0].stops[0].myItineraries[0]
+      ).toMatchObject({
+        internalID: gravityItinerary.id,
+        title: gravityItinerary.title,
+        stopsCount: 3,
+        sections: [
+          {
+            internalID: "section-1",
+            stops: [
+              { internalID: "stop-1" },
+              { internalID: "stop-2" },
+              { internalID: "stop-3" },
+            ],
+          },
+        ],
+      })
+      expect(context.showsLoader).toHaveBeenCalledTimes(1)
+    })
+
+    it("makes no membership calls if neither field is selected", async () => {
+      const { fetch, context } = setup()
+      await runQuery(
+        gql`
+          {
+            itinerary(id: "guide") {
+              sections {
+                stops {
+                  title
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    it("batches nested item hydration across different stops' matching itineraries", async () => {
+      const context = {
+        ...loaders(),
+        itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+          jest.fn(async ({ stops }) =>
+            JSON.parse(stops).map((_, index) => ({
+              is_on_my_itineraries: true,
+              my_itineraries: [
+                {
+                  ...gravityItinerary,
+                  id: `owned-${index}`,
+                  sections: [
+                    {
+                      ...gravityItinerary.sections[0],
+                      stops: [
+                        {
+                          ...gravityItinerary.sections[0].stops[0],
+                          item_id: `nested-show-${index}`,
+                          event_type: null,
+                          event_id: null,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }))
+          )
+        ),
+      }
+      context.showsLoader.mockImplementation(async ({ id }) =>
+        id.map((_id) => ({ _id }))
+      )
+      const result = await runQuery(
+        gql`
+          {
+            itinerary(id: "guide") {
+              sections {
+                stops {
+                  myItineraries {
+                    sections {
+                      stops {
+                        item {
+                          ... on Show {
+                            internalID
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+      expect(context.showsLoader).toHaveBeenCalledTimes(2)
+      expect(context.showsLoader).toHaveBeenLastCalledWith({
+        id: ["nested-show-0", "nested-show-1", "nested-show-2"],
+        size: 3,
+        include_local_discovery: true,
+      })
+      expect(
+        result.itinerary.sections[0].stops[0].myItineraries[0].sections[0]
+          .stops[0].item.internalID
+      ).toBe("nested-show-0")
+    })
+
+    it("returns false and empty lists when signed out", async () => {
+      const data = await runQuery(query, loaders(), { details: true })
+      expect(
+        data.itinerary.sections[0].stops.every(
+          (stop) => stop.saved === false && stop.myItineraries.length === 0
+        )
+      ).toBe(true)
+    })
+
+    it("retains stops when membership lookup fails", async () => {
+      const { schema } = require("schema/v2")
+      const result = await graphql({
+        schema,
+        source: query,
+        variableValues: { details: true },
+        contextValue: {
+          ...loaders(),
+          itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+            jest.fn().mockRejectedValue(new Error("Membership lookup failed"))
+          ),
+        },
+      })
+      expect(result.errors).toBeDefined()
+      expect((result.data as any).itinerary.sections[0].stops[0]).toEqual({
+        internalID: "stop-1",
+        saved: null,
+        myItineraries: null,
+      })
+    })
+  })
+
   it("maps Gravity's payload onto the type", async () => {
     const query = `
       {
