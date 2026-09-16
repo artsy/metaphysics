@@ -31,6 +31,20 @@ type AI {
   ): AIPromptTemplateConnection
 }
 
+"""
+A stable, client-safe description of what the agent is currently doing.
+"""
+enum AIAgentActivity {
+  FINDING_RECOMMENDATIONS
+  LOADING_ARTWORK_DETAILS
+  SEARCHING_ARTISTS
+  SEARCHING_ARTSY
+  SEARCHING_ARTWORKS
+  SEARCHING_FAIRS
+  SEARCHING_SHOWS
+  THINKING
+}
+
 union AIAgentEvent =
     AIAgentTextDelta
   | AIAgentToolCall
@@ -54,13 +68,27 @@ type AIAgentTextDelta {
 
 type AIAgentToolCall {
   """
-  Human-readable label, e.g. "Searching artists…".
+  Stable, client-safe activity for rendering localized progress UI.
+  """
+  activity: AIAgentActivity!
+
+  """
+  Developer-facing tool arguments, populated only when debug mode is enabled.
+  """
+  debugSummary: String
+
+  """
+  Generic human-readable label, e.g. "Searching for artists…".
   """
   summary: String
   toolName: String!
 }
 
 type AIAgentToolResult {
+  """
+  Developer-facing failure detail, populated only when debug mode is enabled.
+  """
+  debugSummary: String
   ok: Boolean!
   summary: String
   toolName: String!
@@ -86,6 +114,11 @@ input AIAgentTurnInput {
   Prior turns, owned and replayed by the client.
   """
   history: [AIAgentMessageInput!]
+
+  """
+  Request developer-facing tool-call details. Honored only where the server enables debug mode; ignored elsewhere.
+  """
+  includeDebugToolCalls: Boolean
 
   """
   The new user message.
@@ -1437,6 +1470,11 @@ Sales stats of a partner
 """
 type AnalyticsPartnerSalesStats {
   orderCount: Int!
+
+  """
+  Percentage (0-100) of orders/offers the partner responded to
+  """
+  orderResponseRate: Float
 
   """
   Order response time in seconds
@@ -8637,6 +8675,22 @@ enum ChannelType {
 }
 
 type City {
+  """
+  A connection of City Guide events for this city
+  """
+  cityGuideEventsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+
+    """
+    Limit to events with this status
+    """
+    status: CityGuideEventStatus
+  ): CityGuideEventsConnection
   coordinates: LatLng
   fairsConnection(
     after: String
@@ -8684,6 +8738,134 @@ type City {
   ): ShowConnection
   slug: String!
   sponsoredContent: CitySponsoredContent
+}
+
+type CityGuideEvent {
+  citySlug: String!
+  description: String
+  endAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+  heroImage: Image
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  The city guide event's UUID
+  """
+  internalID: String!
+  itineraries: [CityGuideEventItinerary!]!
+  publishedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  slug: String!
+  startAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+  subtitle: String
+  timeZone: String
+  title: String!
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String!
+}
+
+type CityGuideEventItinerary {
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  The attachment's own UUID, not the itinerary's
+  """
+  internalID: String!
+  itinerary: Itinerary!
+  position: Int!
+}
+
+type CityGuideEventMutationFailure {
+  mutationError: GravityMutationError
+}
+
+union CityGuideEventMutationResponseOrError =
+    CityGuideEventMutationFailure
+  | CityGuideEventMutationSuccess
+
+type CityGuideEventMutationSuccess {
+  cityGuideEvent: CityGuideEvent
+}
+
+enum CityGuideEventStatus {
+  """
+  Already ended
+  """
+  CLOSED
+
+  """
+  Started, hasn't ended
+  """
+  CURRENT
+
+  """
+  Hasn't started yet
+  """
+  UPCOMING
+}
+
+"""
+A connection to a list of items.
+"""
+type CityGuideEventsConnection {
+  """
+  A list of edges.
+  """
+  edges: [CityGuideEventsEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+"""
+An edge in a connection.
+"""
+type CityGuideEventsEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: CityGuideEvent
 }
 
 type CitySponsoredContent {
@@ -23418,9 +23600,9 @@ type Itinerary {
   slug: String
 
   """
-  The total number of stops across all sections
+  How many stops the itinerary has in total. Nullable because the listing endpoint only began sending it recently; fall back to summing the sections when it is absent.
   """
-  stopsCount: Int!
+  stopsCount: Int
   subtitle: String
   title: String!
   updatedAt(
@@ -23497,7 +23679,11 @@ type ItineraryStop {
   SHOW_EVENT on a show stop, FAIR_EVENT on a fair stop; null when the stop names no event.
   """
   eventType: ItineraryStopEventType
-  imageURL: String
+
+  """
+  The stop's uploaded image; null until Gemini processing finishes.
+  """
+  image: Image
   internalID: String!
   isFreeAdmission: Boolean
 
@@ -26586,6 +26772,20 @@ type Mutation {
   ): CreateCatalogArtworkDocumentMutationPayload
 
   """
+  Create a city guide event. Needs the editorial or content-manager role.
+  """
+  createCityGuideEvent(
+    input: createCityGuideEventInput!
+  ): createCityGuideEventPayload
+
+  """
+  Attach a curated itinerary to a city guide event, at the end of its list. Returns the event with its itineraries in their new order.
+  """
+  createCityGuideEventItinerary(
+    input: createCityGuideEventItineraryInput!
+  ): createCityGuideEventItineraryPayload
+
+  """
   Create a collection
   """
   createCollection(input: createCollectionInput!): createCollectionPayload
@@ -26946,6 +27146,20 @@ type Mutation {
   deleteCatalogArtworkDocument(
     input: DeleteCatalogArtworkDocumentMutationInput!
   ): DeleteCatalogArtworkDocumentMutationPayload
+
+  """
+  Delete a city guide event and its itinerary attachments. The itineraries themselves are left alone.
+  """
+  deleteCityGuideEvent(
+    input: deleteCityGuideEventInput!
+  ): deleteCityGuideEventPayload
+
+  """
+  Detach an itinerary from a city guide event. The itinerary itself is left alone. Returns the event with its remaining itineraries.
+  """
+  deleteCityGuideEventItinerary(
+    input: deleteCityGuideEventItineraryInput!
+  ): deleteCityGuideEventItineraryPayload
 
   """
   Delete a collection
@@ -27339,6 +27553,13 @@ type Mutation {
   ): MyCollectionUpdateArtworkPayload
 
   """
+  Publish a city guide event, making it visible to everyone. Needs the editorial or content-manager role.
+  """
+  publishCityGuideEvent(
+    input: publishCityGuideEventInput!
+  ): publishCityGuideEventPayload
+
+  """
   Publish an itinerary. Needs the publish ability.
   """
   publishItinerary(input: publishItineraryInput!): publishItineraryPayload
@@ -27592,6 +27813,13 @@ type Mutation {
   ): UnlinkAuthenticationMutationPayload
 
   """
+  Unpublish a city guide event, hiding it from everyone but editors. Needs the editorial or content-manager role.
+  """
+  unpublishCityGuideEvent(
+    input: unpublishCityGuideEventInput!
+  ): unpublishCityGuideEventPayload
+
+  """
   Unpublish an itinerary. Also revokes its share link, so it becomes private. Needs the publish ability.
   """
   unpublishItinerary(input: unpublishItineraryInput!): unpublishItineraryPayload
@@ -27691,6 +27919,20 @@ type Mutation {
   updateCatalogEditionSet(
     input: UpdateCatalogEditionSetInput!
   ): UpdateCatalogEditionSetPayload
+
+  """
+  Update a city guide event. Only the fields sent are changed.
+  """
+  updateCityGuideEvent(
+    input: updateCityGuideEventInput!
+  ): updateCityGuideEventPayload
+
+  """
+  Move an itinerary within its city guide event's list. Returns the event with its itineraries in their new order.
+  """
+  updateCityGuideEventItinerary(
+    input: updateCityGuideEventItineraryInput!
+  ): updateCityGuideEventItineraryPayload
 
   """
   Update a collection
@@ -29090,6 +29332,11 @@ enum OrderSellerStateEnum {
   COMPLETED
 
   """
+  Order has expired
+  """
+  EXPIRED
+
+  """
   Order is incomplete (not actionable by seller)
   """
   INCOMPLETE
@@ -29930,6 +30177,11 @@ type Partner implements Node {
   initials(length: Int = 3): String
 
   """
+  Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage) — not selectable under any list or connection field, such as partnersConnection.
+  """
+  inquiryMetrics: PartnerInquiryMetrics
+
+  """
   Inquiry Request details
   """
   inquiryRequest(
@@ -29940,14 +30192,24 @@ type Partner implements Node {
   ): PartnerInquiryRequest
 
   """
-  The partner's inquiry response rate percentage (0-100) over the last 90 days
+  The partner's inquiry response rate percentage (0-100) over the trailing window (90 days by default)
   """
-  inquiryResponseRate: Float
+  inquiryResponseRate(
+    """
+    Size of the trailing window, in days, to compute the response rate over
+    """
+    daysInPast: Int = 90
+  ): Float
 
   """
-  The partner's average inquiry response time in minutes over the last 90 days
+  The partner's average inquiry response time in minutes over the trailing window (90 days by default)
   """
-  inquiryResponseTime: Int
+  inquiryResponseTime(
+    """
+    Size of the trailing window, in days, to compute the response time over
+    """
+    daysInPast: Int = 90
+  ): Int
 
   """
   A type-specific ID likely used as a database ID.
@@ -30035,7 +30297,17 @@ type Partner implements Node {
     first: Int
     last: Int
     page: Int
+
+    """
+    Filter by seller states
+    """
+    sellerState: [OrderSellerStateEnum]
     size: Int
+
+    """
+    Sort order for returned orders
+    """
+    sort: PartnerOrdersSortEnum
   ): PartnerOrdersConnection
 
   """
@@ -31251,6 +31523,18 @@ type PartnerGenomeGenesConnectionEdge {
   node: PartnerGenomeGene
 }
 
+type PartnerInquiryMetrics {
+  """
+  Number of confirmed buyers whose inquiries are still awaiting a response from the partner. Only scanned within the first 50 unanswered conversations returned by Impulse, so for partners with more unanswered conversations than that, this is a lower bound rather than an exact count.
+  """
+  confirmedBuyersWaitingCount: Int
+
+  """
+  Number of inquiries still awaiting a response from the partner
+  """
+  unansweredCount: Int
+}
+
 type PartnerInquiryRequest {
   collectorProfile: InquirerCollectorProfile
 
@@ -31746,6 +32030,13 @@ type PartnerOrdersEdge {
   The item at the end of the edge
   """
   node: Order
+}
+
+enum PartnerOrdersSortEnum {
+  STATE_EXPIRES_AT_ASC
+  STATE_EXPIRES_AT_DESC
+  STATE_UPDATED_AT_ASC
+  STATE_UPDATED_AT_DESC
 }
 
 """
@@ -33309,6 +33600,16 @@ type Query {
     """
     slug: String
   ): City
+
+  """
+  A City Guide event, e.g. "London Art Week"
+  """
+  cityGuideEvent(
+    """
+    The internal ID or slug of the City Guide Event
+    """
+    id: String!
+  ): CityGuideEvent
   collection(
     """
     The ID or slug of the Collection
@@ -43298,6 +43599,16 @@ type Viewer {
     """
     slug: String
   ): City
+
+  """
+  A City Guide event, e.g. "London Art Week"
+  """
+  cityGuideEvent(
+    """
+    The internal ID or slug of the City Guide Event
+    """
+    id: String!
+  ): CityGuideEvent
   collection(
     """
     The ID or slug of the Collection
@@ -45241,6 +45552,60 @@ type createBuyerOfferPayload {
   offerOrError: OfferMutationResponse
 }
 
+input createCityGuideEventInput {
+  """
+  A featured city's slug, e.g. london-united-kingdom.
+  """
+  citySlug: String!
+  clientMutationId: String
+  description: String
+
+  """
+  ISO 8601 datetime. Must not be before `startAt`.
+  """
+  endAt: String!
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the event's hero `ArImage`
+  """
+  imageURL: String
+
+  """
+  ISO 8601 datetime, e.g. 2026-10-05T00:00:00Z.
+  """
+  startAt: String!
+  subtitle: String
+
+  """
+  IANA time zone identifier, e.g. Europe/London.
+  """
+  timeZone: String
+  title: String!
+}
+
+input createCityGuideEventItineraryInput {
+  """
+  The event's id or slug.
+  """
+  cityGuideEventID: String!
+  clientMutationId: String
+
+  """
+  The itinerary's id or slug. Must be a curated guide.
+  """
+  itineraryID: String!
+}
+
+type createCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
+type createCityGuideEventPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 input createCollectionInput {
   clientMutationId: String
   name: String!
@@ -45271,6 +45636,11 @@ input createItineraryInput {
   citySlug: String!
   clientMutationId: String
   description: String
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the itinerary's hero `ArImage`
+  """
+  imageURL: String
   isCurated: Boolean
   subtitle: String
   title: String!
@@ -45304,6 +45674,10 @@ input createItineraryStopInput {
   endAt: String
   eventID: String
   eventType: ItineraryStopEventType
+
+  """
+  S3 upload URL for the stop image; Gravity converts it via Gemini. Other URLs are rejected.
+  """
   imageURL: String
   isFreeAdmission: Boolean
   itemID: String
@@ -45444,6 +45818,34 @@ input deleteAlertInput {
 type deleteAlertPayload {
   clientMutationId: String
   responseOrError: DeleteAlertResponseOrError
+}
+
+input deleteCityGuideEventInput {
+  clientMutationId: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+}
+
+input deleteCityGuideEventItineraryInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the itinerary's).
+  """
+  id: String!
+}
+
+type deleteCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
+type deleteCityGuideEventPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 input deleteCollectionInput {
@@ -45655,6 +46057,20 @@ type partnerBiographyBlurb {
   text: String
 }
 
+input publishCityGuideEventInput {
+  clientMutationId: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+}
+
+type publishCityGuideEventPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 input publishItineraryInput {
   clientMutationId: String
   id: String!
@@ -45822,6 +46238,20 @@ type submitOrderPayload {
   orderOrError: OrderMutationResponse
 }
 
+input unpublishCityGuideEventInput {
+  clientMutationId: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+}
+
+type unpublishCityGuideEventPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 input unpublishItineraryInput {
   clientMutationId: String
   id: String!
@@ -45928,6 +46358,66 @@ type updateBuyerOfferPayload {
   offerOrError: OfferMutationResponse
 }
 
+input updateCityGuideEventInput {
+  """
+  A featured city's slug, e.g. london-united-kingdom.
+  """
+  citySlug: String
+  clientMutationId: String
+  description: String
+
+  """
+  ISO 8601 datetime. Must not be before `startAt`.
+  """
+  endAt: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the event's hero `ArImage`. Pass `null` to clear the current hero image.
+  """
+  imageURL: String
+
+  """
+  ISO 8601 datetime, e.g. 2026-10-05T00:00:00Z.
+  """
+  startAt: String
+  subtitle: String
+
+  """
+  IANA time zone identifier, e.g. Europe/London.
+  """
+  timeZone: String
+  title: String
+}
+
+input updateCityGuideEventItineraryInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the itinerary's).
+  """
+  id: String!
+
+  """
+  Zero-based position among the event's itineraries, via acts_as_list's insert_at.
+  """
+  position: Int!
+}
+
+type updateCityGuideEventItineraryPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
+type updateCityGuideEventPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 input updateCollectionInput {
   clientMutationId: String
 
@@ -45972,6 +46462,11 @@ input updateItineraryInput {
   """
   generateShareToken: Boolean
   id: String!
+
+  """
+  URL of an image already uploaded to S3, from which Gravity builds the itinerary's hero `ArImage`. Pass `null` to clear the current hero image.
+  """
+  imageURL: String
   isCurated: Boolean
 
   """
@@ -46016,6 +46511,10 @@ input updateItineraryStopInput {
   eventID: String
   eventType: ItineraryStopEventType
   id: String!
+
+  """
+  S3 upload URL for the stop image; Gravity converts it via Gemini. Other URLs are rejected. Pass `null` to clear it.
+  """
   imageURL: String
   isFreeAdmission: Boolean
   itemID: String

@@ -11,6 +11,8 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
+import { ImageType } from "schema/v2/image"
+import { imageFromGravity } from "./gravityImage"
 import { ShowType } from "schema/v2/show"
 import { LocationType } from "schema/v2/location"
 import { FairType } from "schema/v2/fair"
@@ -137,9 +139,13 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ address }) => address,
     },
-    imageURL: {
-      type: GraphQLString,
-      resolve: ({ image_url }) => image_url,
+    image: {
+      type: ImageType,
+      description:
+        "The stop's uploaded image; null until Gemini processing " +
+        "finishes.",
+      resolve: ({ image_url, image_urls }) =>
+        imageFromGravity(image_url, image_urls),
     },
     latitude: {
       type: GraphQLFloat,

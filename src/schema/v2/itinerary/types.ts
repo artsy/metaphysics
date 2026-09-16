@@ -14,6 +14,8 @@ export interface GravityItineraryStop {
   title: string | null
   address: string | null
   image_url: string | null
+  /** Version name to URL; null when the image is a pasted external URL. */
+  image_urls: Record<string, string> | null
   latitude: number | null
   longitude: number | null
   start_at: string | null
@@ -57,6 +59,7 @@ export interface GravityItinerary {
   published_by_id: string | null
   share_token: string | null
   sections_count: number
+  /** Absent from older Gravity responses; the listing endpoint only began sending it recently. */
   stops_count?: number
   sections: GravityItinerarySection[]
   /** Templated URL with a `:version` placeholder. */

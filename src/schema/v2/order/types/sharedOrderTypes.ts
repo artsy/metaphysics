@@ -203,6 +203,10 @@ export const OrderSellerStateEnum = new GraphQLEnumType({
       value: "REFUNDED",
       description: "Order has been refunded",
     },
+    EXPIRED: {
+      value: "EXPIRED",
+      description: "Order has expired",
+    },
     CANCELED: {
       value: "CANCELED",
       description: "Order has been canceled",
@@ -211,6 +215,16 @@ export const OrderSellerStateEnum = new GraphQLEnumType({
       value: "UNKNOWN",
       description: "Order status is unknown",
     },
+  },
+})
+
+export const PartnerOrdersSortEnum = new GraphQLEnumType({
+  name: "PartnerOrdersSortEnum",
+  values: {
+    STATE_EXPIRES_AT_ASC: { value: "STATE_EXPIRES_AT_ASC" },
+    STATE_EXPIRES_AT_DESC: { value: "STATE_EXPIRES_AT_DESC" },
+    STATE_UPDATED_AT_ASC: { value: "STATE_UPDATED_AT_ASC" },
+    STATE_UPDATED_AT_DESC: { value: "STATE_UPDATED_AT_DESC" },
   },
 })
 

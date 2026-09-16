@@ -51,8 +51,8 @@ describe("partner.order", () => {
     context = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
       partnerOrderLoader,
@@ -160,8 +160,8 @@ describe("partner.order", () => {
     const contextWithoutLoader = {
       partnerLoader: () => {
         return Promise.resolve({
-          id: "partner-id",
-          _id: "partner-id",
+          id: "partner-slug",
+          _id: "partner-internal-id",
         })
       },
     }
@@ -200,7 +200,7 @@ describe("partner.order", () => {
     await runQuery(query, context)
 
     expect(context.partnerOrderLoader).toHaveBeenCalledWith({
-      partnerId: "partner-id",
+      partnerId: "partner-internal-id",
       orderId: "order-1",
     })
   })

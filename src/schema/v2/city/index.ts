@@ -30,6 +30,7 @@ import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
 import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
+import { CityGuideEventsConnectionField } from "../cityGuideEvent/cityGuideEventsConnection"
 
 export interface TCity {
   slug: string
@@ -139,6 +140,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             status: args.status,
           }),
       },
+      cityGuideEventsConnection: CityGuideEventsConnectionField,
       sponsoredContent: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "CitySponsoredContent",

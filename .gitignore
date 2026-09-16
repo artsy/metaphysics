@@ -26,3 +26,6 @@ Brewfile.lock.json
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+
+# Local git worktrees (superpowers workflow)
+.worktrees/

@@ -25,6 +25,15 @@ import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import { City } from "./city"
+import { CityGuideEvent } from "./cityGuideEvent"
+import { createCityGuideEventMutation } from "./cityGuideEvent/mutations/createCityGuideEventMutation"
+import { createCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/createCityGuideEventItineraryMutation"
+import { deleteCityGuideEventMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventMutation"
+import { deleteCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventItineraryMutation"
+import { publishCityGuideEventMutation } from "./cityGuideEvent/mutations/publishCityGuideEventMutation"
+import { unpublishCityGuideEventMutation } from "./cityGuideEvent/mutations/unpublishCityGuideEventMutation"
+import { updateCityGuideEventMutation } from "./cityGuideEvent/mutations/updateCityGuideEventMutation"
+import { updateCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/updateCityGuideEventItineraryMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -515,6 +524,7 @@ const rootFields = {
   channel,
   cities,
   city: City,
+  cityGuideEvent: CityGuideEvent,
   collection: Collection,
   collectorProfile: CollectorProfileForUser,
   collectorProfilesConnection: CollectorProfilesConnection,
@@ -686,6 +696,8 @@ export default new GraphQLSchema({
       createCanonicalArtist: createCanonicalArtistMutation,
       createCareerHighlight: createCareerHighlightMutation,
       createCatalogArtworkDocument: createCatalogArtworkDocumentMutation,
+      createCityGuideEvent: createCityGuideEventMutation,
+      createCityGuideEventItinerary: createCityGuideEventItineraryMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createConversationMessageTemplate: createConversationMessageTemplateMutation,
@@ -761,6 +773,8 @@ export default new GraphQLSchema({
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
       deleteCatalogArtworkDocument: deleteCatalogArtworkDocumentMutation,
+      deleteCityGuideEvent: deleteCityGuideEventMutation,
+      deleteCityGuideEventItinerary: deleteCityGuideEventItineraryMutation,
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
@@ -816,6 +830,7 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      publishCityGuideEvent: publishCityGuideEventMutation,
       publishItinerary: publishItineraryMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
@@ -849,6 +864,7 @@ export default new GraphQLSchema({
       transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      unpublishCityGuideEvent: unpublishCityGuideEventMutation,
       unpublishItinerary: unpublishItineraryMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
@@ -858,6 +874,8 @@ export default new GraphQLSchema({
       updateArtist: updateArtistMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
+      updateCityGuideEvent: updateCityGuideEventMutation,
+      updateCityGuideEventItinerary: updateCityGuideEventItineraryMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       generateArtworkDescription: generateArtworkDescriptionMutation,

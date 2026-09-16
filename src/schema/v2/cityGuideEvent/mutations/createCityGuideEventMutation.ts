@@ -1,46 +1,60 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { snakeCaseKeys } from "lib/helpers"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { attachStopItems } from "../stopItems"
-import { ItineraryMutationResponseOrErrorType } from "./itineraryMutationResponseOrError"
+import { CityGuideEventMutationResponseOrErrorType } from "./cityGuideEventMutationResponseOrError"
 
 interface InputProps {
   clientMutationId?: string
-  citySlug: string
   title: string
+  citySlug: string
+  startAt: string
+  endAt: string
   subtitle?: string
   description?: string
-  authorName?: string
-  isCurated?: boolean
+  timeZone?: string
   imageURL?: string
 }
 
-export const createItineraryMutation = mutationWithClientMutationId<
+export const createCityGuideEventMutation = mutationWithClientMutationId<
   InputProps,
   any,
   ResolverContext
 >({
-  name: "createItinerary",
-  description: "Create an itinerary.",
+  name: "createCityGuideEvent",
+  description:
+    "Create a city guide event. Needs the editorial or content-manager role.",
   inputFields: {
-    citySlug: { type: new GraphQLNonNull(GraphQLString) },
     title: { type: new GraphQLNonNull(GraphQLString) },
+    citySlug: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "A featured city's slug, e.g. london-united-kingdom.",
+    },
+    startAt: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ISO 8601 datetime, e.g. 2026-10-05T00:00:00Z.",
+    },
+    endAt: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ISO 8601 datetime. Must not be before `startAt`.",
+    },
     subtitle: { type: GraphQLString },
     description: { type: GraphQLString },
-    authorName: { type: GraphQLString },
-    isCurated: { type: GraphQLBoolean },
+    timeZone: {
+      type: GraphQLString,
+      description: "IANA time zone identifier, e.g. Europe/London.",
+    },
     imageURL: {
       description:
         "URL of an image already uploaded to S3, from which Gravity " +
-        "builds the itinerary's hero `ArImage`",
+        "builds the event's hero `ArImage`",
       type: GraphQLString,
     },
   },
   outputFields: {
     responseOrError: {
-      type: ItineraryMutationResponseOrErrorType,
+      type: CityGuideEventMutationResponseOrErrorType,
       resolve: (result) => result,
     },
   },
@@ -48,14 +62,12 @@ export const createItineraryMutation = mutationWithClientMutationId<
     { clientMutationId: _clientMutationId, ...attributes },
     context
   ) => {
-    if (!context.createItineraryLoader) {
+    if (!context.createCityGuideEventLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    let itinerary
-
     try {
-      itinerary = await context.createItineraryLoader(snakeCaseKeys(attributes))
+      return await context.createCityGuideEventLoader(snakeCaseKeys(attributes))
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -65,8 +77,5 @@ export const createItineraryMutation = mutationWithClientMutationId<
         throw error
       }
     }
-
-    // Enrichment failing must not report a committed write as failed.
-    return attachStopItems(itinerary, context).catch(() => itinerary)
   },
 })

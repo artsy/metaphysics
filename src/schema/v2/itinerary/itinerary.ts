@@ -12,6 +12,7 @@ import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
+import { imageFromGravity } from "./gravityImage"
 import { GravityItinerary } from "./types"
 import { ItinerarySectionType } from "./itinerarySection"
 
@@ -84,12 +85,8 @@ export const ItineraryType = new GraphQLObjectType<
     },
     heroImage: {
       type: ImageType,
-      // image_versions is derived from image_urls' keys; Gravity sends no
-      // versions array.
       resolve: ({ image_url, image_urls }) =>
-        image_urls
-          ? { image_url, image_urls, image_versions: Object.keys(image_urls) }
-          : null,
+        imageFromGravity(image_url, image_urls),
     },
     publishedAt: date(({ published_at }) => published_at),
     updatedAt: date(({ updated_at }) => updated_at),
@@ -98,11 +95,14 @@ export const ItineraryType = new GraphQLObjectType<
       resolve: ({ sections_count }) => sections_count,
     },
     stopsCount: {
-      description: "The total number of stops across all sections",
-      type: new GraphQLNonNull(GraphQLInt),
-      resolve: ({ stops_count, sections }) =>
-        stops_count ??
-        (sections ?? []).reduce((sum, section) => sum + section.stops_count, 0),
+      type: GraphQLInt,
+      description:
+        "How many stops the itinerary has in total. Nullable because the " +
+        "listing endpoint only began sending it recently; fall back to " +
+        "summing the sections when it is absent.",
+      // Gravity sums its sections' counter caches. A caller listing itineraries cannot do
+      // that itself: the index serializes at :short, which omits `sections` entirely.
+      resolve: ({ stops_count }) => stops_count,
     },
     sections: {
       type: new GraphQLNonNull(

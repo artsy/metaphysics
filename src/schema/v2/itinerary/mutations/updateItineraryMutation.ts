@@ -17,6 +17,7 @@ interface InputProps {
   isCurated?: boolean
   generateShareToken?: boolean
   revokeShareToken?: boolean
+  imageURL?: string | null
 }
 
 export const updateItineraryMutation = mutationWithClientMutationId<
@@ -45,6 +46,13 @@ export const updateItineraryMutation = mutationWithClientMutationId<
     revokeShareToken: {
       description: "Revoke this itinerary's current share token, if any",
       type: GraphQLBoolean,
+    },
+    imageURL: {
+      description:
+        "URL of an image already uploaded to S3, from which Gravity " +
+        "builds the itinerary's hero `ArImage`. Pass `null` to clear the " +
+        "current hero image.",
+      type: GraphQLString,
     },
   },
   outputFields: {
