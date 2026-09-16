@@ -42,7 +42,10 @@ describe("PartnerUserNote", () => {
   it("calls the loader with the given id", async () => {
     const mockLoader = jest.fn().mockResolvedValue({
       id: "note-123",
+      partner_id: "partner-123",
+      user_id: "collector-123",
       body: "Repeat buyer.",
+      updated_by_user_id: "partner-user-123",
     })
 
     await runAuthenticatedQuery(query, {

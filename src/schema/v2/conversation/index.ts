@@ -442,6 +442,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
               },
               isCollectorFollowingPartner: data.follows_profile,
               userId: from_id,
+              partnerId: to_id,
               purchases: data.purchases,
             }
           } catch (error) {
