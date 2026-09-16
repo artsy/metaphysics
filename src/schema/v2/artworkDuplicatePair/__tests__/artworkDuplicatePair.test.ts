@@ -10,6 +10,7 @@ const mockPair = {
   detection_version: "v1",
   match_metadata: { field: "title" },
   mergeable: true,
+  existing_artwork_also_imported: false,
   dismissed_at: null,
   merged_at: null,
   merged_into_artwork_id: null,
@@ -86,6 +87,99 @@ describe("artworkDuplicatePair", () => {
 
     expect(artworkLoader).toHaveBeenCalledWith("artwork-1")
     expect(artworkLoader).toHaveBeenCalledWith("artwork-2")
+  })
+
+  it("resolves artnetImportID, importedArtwork, and existingArtwork for an import-scoped pair", async () => {
+    const importScopedPair = {
+      ...mockPair,
+      artnet_import_id: "import-1",
+      imported_artwork_id: "artwork-1",
+    }
+    const artworkDuplicatePairLoader = jest
+      .fn()
+      .mockResolvedValue(importScopedPair)
+    const artworkLoader = jest.fn().mockResolvedValue(mockArtwork)
+
+    const query = gql`
+      query {
+        artworkDuplicatePair(id: "pair-1") {
+          artnetImportID
+          importedArtwork {
+            internalID
+          }
+          existingArtwork {
+            internalID
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, {
+      artworkDuplicatePairLoader,
+      artworkLoader,
+    })
+
+    expect(result.artworkDuplicatePair.artnetImportID).toEqual("import-1")
+    expect(artworkLoader).toHaveBeenCalledWith("artwork-1")
+    expect(artworkLoader).toHaveBeenCalledWith("artwork-2")
+  })
+
+  it("resolves existingArtworkAlsoImported", async () => {
+    const bothImportedPair = {
+      ...mockPair,
+      artnet_import_id: "import-1",
+      imported_artwork_id: "artwork-1",
+      existing_artwork_also_imported: true,
+    }
+    const artworkDuplicatePairLoader = jest
+      .fn()
+      .mockResolvedValue(bothImportedPair)
+    const artworkLoader = jest.fn().mockResolvedValue(mockArtwork)
+
+    const query = gql`
+      query {
+        artworkDuplicatePair(id: "pair-1") {
+          existingArtworkAlsoImported
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, {
+      artworkDuplicatePairLoader,
+      artworkLoader,
+    })
+
+    expect(result.artworkDuplicatePair.existingArtworkAlsoImported).toBe(true)
+  })
+
+  it("returns null for artnetImportID, importedArtwork, and existingArtwork on an untagged pair", async () => {
+    const artworkDuplicatePairLoader = jest.fn().mockResolvedValue(mockPair)
+    const artworkLoader = jest.fn().mockResolvedValue(mockArtwork)
+
+    const query = gql`
+      query {
+        artworkDuplicatePair(id: "pair-1") {
+          artnetImportID
+          importedArtwork {
+            internalID
+          }
+          existingArtwork {
+            internalID
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(query, {
+      artworkDuplicatePairLoader,
+      artworkLoader,
+    })
+
+    expect(result.artworkDuplicatePair).toEqual({
+      artnetImportID: null,
+      importedArtwork: null,
+      existingArtwork: null,
+    })
   })
 })
 
@@ -199,6 +293,39 @@ describe("artworkDuplicatePairsConnection", () => {
       expect.objectContaining({
         partner_id: "partner-1",
         mergeable: true,
+      })
+    )
+  })
+
+  it("passes artnetImportID filter", async () => {
+    const artworkDuplicatePairsLoader = jest.fn().mockResolvedValue({
+      body: [],
+      headers: { "x-total-count": "0" },
+    })
+
+    const query = gql`
+      query {
+        artworkDuplicatePairsConnection(
+          partnerId: "partner-1"
+          artnetImportID: "import-1"
+          first: 10
+        ) {
+          totalCount
+          edges {
+            node {
+              internalID
+            }
+          }
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(query, { artworkDuplicatePairsLoader })
+
+    expect(artworkDuplicatePairsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        partner_id: "partner-1",
+        artnet_import_id: "import-1",
       })
     )
   })
