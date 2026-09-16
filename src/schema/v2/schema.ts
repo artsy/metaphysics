@@ -365,6 +365,7 @@ import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { Itinerary } from "./itinerary"
+import { ItineraryStop } from "./itinerary/itineraryStopField"
 import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
 import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
 import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
@@ -559,6 +560,7 @@ const rootFields = {
   identityVerificationsConnection,
   invoice: Invoice,
   itinerary: Itinerary,
+  itineraryStop: ItineraryStop,
   itinerariesConnection: ItinerariesConnectionField,
   job,
   jobs,

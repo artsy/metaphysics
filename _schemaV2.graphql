@@ -34468,6 +34468,21 @@ type Query {
     """
     shareToken: String
   ): Itinerary
+
+  """
+  A single City Guide itinerary stop. Uses the parent itinerary's read permissions.
+  """
+  itineraryStop(
+    """
+    The stop's internal ID
+    """
+    id: String!
+
+    """
+    The parent itinerary's share token, when unlisted
+    """
+    shareToken: String
+  ): ItineraryStop
   job(id: ID!): Job!
   jobs: [Job!]!
 
@@ -44278,6 +44293,21 @@ type Viewer {
     """
     shareToken: String
   ): Itinerary
+
+  """
+  A single City Guide itinerary stop. Uses the parent itinerary's read permissions.
+  """
+  itineraryStop(
+    """
+    The stop's internal ID
+    """
+    id: String!
+
+    """
+    The parent itinerary's share token, when unlisted
+    """
+    shareToken: String
+  ): ItineraryStop
   job(id: ID!): Job!
   jobs: [Job!]!
 

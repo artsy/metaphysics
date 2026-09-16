@@ -1448,6 +1448,7 @@ export default (accessToken, userID, opts) => {
     showLoader: gravityLoader((id) => `show/${id}`),
     // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itineraryStopLoader: gravityLoader((id) => `itinerary_stop/${id}`),
     itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
       gravityLoader("itinerary_stop_memberships")
     ),

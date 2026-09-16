@@ -336,6 +336,7 @@ export default (opts) => {
     shortcutLoader: gravityLoader((id) => `shortcut/${id}`),
     showLoader: gravityLoader((id) => `show/${id}`),
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itineraryStopLoader: gravityLoader((id) => `itinerary_stop/${id}`),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
     cityGuideEventLoader: gravityLoader((id) => `city_guide_event/${id}`),
     cityGuideEventsLoader: gravityLoader(
