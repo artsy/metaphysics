@@ -11,6 +11,9 @@ export interface ItineraryStopMembershipValue {
   stopIDs: string[]
 }
 
+type StopIdentity = Pick<GravityItineraryStop, "item_id" | "item_type"> &
+  Partial<Pick<GravityItineraryStop, "title" | "address">>
+
 export const ItineraryStopMembershipType = new GraphQLObjectType<
   ItineraryStopMembershipValue
 >({
@@ -30,7 +33,7 @@ export const ItineraryStopMembershipType = new GraphQLObjectType<
 })
 
 export const itineraryStopMemberships = (
-  source: GravityItineraryStop,
+  source: StopIdentity,
   itineraries: GravityItinerary[]
 ): ItineraryStopMembershipValue[] =>
   itineraries.map((itinerary) => ({
@@ -41,10 +44,7 @@ export const itineraryStopMemberships = (
       .map((candidate) => candidate.id),
   }))
 
-const stopsMatch = (
-  source: GravityItineraryStop,
-  candidate: GravityItineraryStop
-) =>
+const stopsMatch = (source: StopIdentity, candidate: GravityItineraryStop) =>
   source.item_id
     ? candidate.item_type === source.item_type &&
       candidate.item_id === source.item_id

@@ -43,6 +43,7 @@ import {
 } from "schema/v2/fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
+import { itemItineraryMembershipFields } from "./itinerary/itemItineraryMembershipFields"
 import {
   MarketingCollectionType,
   fetchMarketingCollections,
@@ -72,6 +73,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     const { filterArtworksConnection } = require("./filterArtworksConnection")
     return {
       ...SlugAndInternalIDFields,
+      ...itemItineraryMembershipFields("Fair"),
       about: markdown(),
       followedContent: {
         type: FollowedContentType,
