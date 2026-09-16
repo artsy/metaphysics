@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { GlobalIDField } from "schema/v2/object_identification"
 import { GravityItinerarySection } from "./types"
 import { ItineraryStopType } from "./itineraryStop"
 
@@ -16,6 +17,7 @@ export const ItinerarySectionType = new GraphQLObjectType<
 >({
   name: "ItinerarySection",
   fields: {
+    id: GlobalIDField,
     internalID: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,

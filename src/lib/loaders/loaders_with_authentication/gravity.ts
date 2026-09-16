@@ -1,6 +1,7 @@
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
+import { createBatchItineraryStopMembershipsLoader } from "../batchItineraryStopMembershipsLoader"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -480,6 +481,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerUserNoteLoader: gravityLoader(
+      "partner_user_note",
+      {},
+      { method: "POST" }
+    ),
     createPartnerLocationLoader: gravityLoader(
       (id) => `partner/${id}/location`,
       {},
@@ -621,6 +627,11 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; contactId: string }
     >(
       ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`,
       {},
       { method: "DELETE" }
     ),
@@ -1227,6 +1238,14 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`
+    ),
+    partnerUserNotesLoader: gravityLoader(
+      "partner_user_notes",
+      {},
+      { headers: true }
+    ),
     conversationMessageTemplateLoader: gravityLoader(
       (id) => `conversation_message_template/${id}`
     ),
@@ -1447,6 +1466,10 @@ export default (accessToken, userID, opts) => {
     showLoader: gravityLoader((id) => `show/${id}`),
     // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itineraryStopLoader: gravityLoader((id) => `itinerary_stop/${id}`),
+    itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+      gravityLoader("itinerary_stop_memberships")
+    ),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
     cityGuideEventLoader: gravityLoader((id) => `city_guide_event/${id}`),
     cityGuideEventsLoader: gravityLoader(
@@ -1702,6 +1725,11 @@ export default (accessToken, userID, opts) => {
       { partnerId: string; contactId: string }
     >(
       ({ partnerId, contactId }) => `partner/${partnerId}/contact/${contactId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerUserNoteLoader: gravityLoader(
+      (id) => `partner_user_note/${id}`,
       {},
       { method: "PUT" }
     ),
