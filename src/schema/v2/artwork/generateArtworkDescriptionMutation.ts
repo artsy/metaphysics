@@ -94,7 +94,7 @@ export const generateArtworkDescriptionMutation = mutationWithClientMutationId<
     documents: {
       type: new GraphQLList(new GraphQLNonNull(DocumentInputType)),
       description:
-        "S3 PDFs to include as additional context for description generation.",
+        "S3 documents (DOC, DOCX, or PDF) to include as additional context for description generation.",
     },
   },
   outputFields: {
