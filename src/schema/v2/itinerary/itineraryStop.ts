@@ -3,6 +3,7 @@ import {
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -18,6 +19,9 @@ import { FairType } from "schema/v2/fair"
 import ShowEventType from "schema/v2/show_event"
 import { FairEventType } from "schema/v2/fairEvent"
 import { StopWithResolvedItem } from "./stopItems"
+import { attachMembershipStopItems } from "./stopMemberships"
+import { ItineraryType } from "./itinerary"
+import { isFieldRequested } from "lib/isFieldRequested"
 
 export const ItineraryStopCategory = new GraphQLEnumType({
   name: "ItineraryStopCategory",
@@ -86,7 +90,38 @@ export const ItineraryStopType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "ItineraryStop",
-  fields: {
+  fields: () => ({
+    isOnMyItineraries: {
+      description:
+        "Whether this stop occurs in any of the current user's personal itineraries. " +
+        "Matches Artsy items by type and ID (including events of that item), " +
+        "and custom stops by exact title and address. False when signed out.",
+      type: GraphQLBoolean,
+      resolve: async (stop, _args, { itineraryStopMembershipsLoader }) => {
+        if (!itineraryStopMembershipsLoader) return false
+        const result = await itineraryStopMembershipsLoader(stop)
+        return result.is_on_my_itineraries
+      },
+    },
+    myItineraries: {
+      description:
+        "The current user's personal itineraries containing this stop, newest first. " +
+        "Uses the same matching rules as isOnMyItineraries. " +
+        "Details are fetched only when this field is selected. Empty when signed out.",
+      type: new GraphQLList(new GraphQLNonNull(ItineraryType)),
+      resolve: async (stop, _args, context, info) => {
+        if (!context.itineraryStopMembershipsLoader) return []
+        const result = await context.itineraryStopMembershipsLoader(stop, true)
+        const itineraries = result.my_itineraries ?? []
+        if (
+          isFieldRequested("sections.stops.item", info) ||
+          isFieldRequested("sections.stops.event", info)
+        ) {
+          return attachMembershipStopItems(itineraries, context)
+        }
+        return itineraries
+      },
+    },
     internalID: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,
@@ -179,5 +214,5 @@ export const ItineraryStopType = new GraphQLObjectType<
       type: ItineraryStopEvent,
       resolve: ({ _resolvedEvent }) => _resolvedEvent ?? null,
     },
-  },
+  }),
 })

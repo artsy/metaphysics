@@ -1,6 +1,7 @@
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
+import { createBatchItineraryStopMembershipsLoader } from "../batchItineraryStopMembershipsLoader"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -1447,6 +1448,10 @@ export default (accessToken, userID, opts) => {
     showLoader: gravityLoader((id) => `show/${id}`),
     // Authenticated so a signed-in caller also sees their own private and unlisted itineraries.
     itineraryLoader: gravityLoader((id) => `itinerary/${id}`),
+    itineraryStopLoader: gravityLoader((id) => `itinerary_stop/${id}`),
+    itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+      gravityLoader("itinerary_stop_memberships")
+    ),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
     cityGuideEventLoader: gravityLoader((id) => `city_guide_event/${id}`),
     cityGuideEventsLoader: gravityLoader(
