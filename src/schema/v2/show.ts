@@ -61,6 +61,7 @@ import {
   ViewingRoomStatusEnum,
 } from "./viewingRoomConnection"
 import { PartnerDocumentsConnection } from "./partner/partnerDocumentsConnection"
+import { itemItineraryMembershipFields } from "./itinerary/itemItineraryMembershipFields"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -119,6 +120,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
 
     return {
       ...SlugAndInternalIDFields,
+      ...itemItineraryMembershipFields("PartnerShow"),
       cached,
       artists: {
         description: "The Artists presenting in this show",
