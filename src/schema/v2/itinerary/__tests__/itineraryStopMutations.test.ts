@@ -80,6 +80,43 @@ const paramError = new HTTPError("Bad Request", 400, {
 const forbiddenError = new HTTPError("Forbidden", 403, { error: "Forbidden" })
 
 describe("createItineraryStop", () => {
+  it("forwards the image source ID and share token without reading the source in Metaphysics", async () => {
+    const createItineraryStopLoader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: null, item_id: null, title: "Cafe" })
+      )
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(
+            input: {
+              itinerarySectionID: "section-id"
+              title: "Cafe"
+              sourceStopID: "source-id"
+              sourceShareToken: "token"
+            }
+          ) {
+            responseOrError {
+              ... on ItineraryStopMutationSuccess {
+                itineraryStop {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `,
+      { createItineraryStopLoader }
+    )
+    expect(createItineraryStopLoader).toHaveBeenCalledWith({
+      itinerary_section_id: "section-id",
+      title: "Cafe",
+      source_stop_id: "source-id",
+      source_share_token: "token",
+    })
+  })
+
   const mutation = gql`
     mutation {
       createItineraryStop(

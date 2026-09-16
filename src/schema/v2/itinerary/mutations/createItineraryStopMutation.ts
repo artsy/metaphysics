@@ -27,6 +27,8 @@ interface InputProps {
   title?: string
   address?: string
   imageURL?: string
+  sourceStopID?: string
+  sourceShareToken?: string
   latitude?: number
   longitude?: number
   startAt?: string
@@ -59,6 +61,17 @@ export const createItineraryStopMutation = mutationWithClientMutationId<
       description:
         "S3 upload URL for the stop image; Gravity converts it via " +
         "Gemini. Other URLs are rejected.",
+      type: GraphQLString,
+    },
+    sourceStopID: {
+      description:
+        "Copy the processed image from a readable stop. Other stop fields must " +
+        "be supplied separately. Cannot be combined with imageURL.",
+      type: GraphQLString,
+    },
+    sourceShareToken: {
+      description:
+        "The source stop's parent itinerary share token, when unlisted",
       type: GraphQLString,
     },
     latitude: { type: GraphQLFloat },
