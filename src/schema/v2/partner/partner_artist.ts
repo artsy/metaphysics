@@ -367,6 +367,9 @@ type StampablePartnerArtist = {
  * Stamps `_isVerifiedRepresentative` on a partner's page of artists using a
  * single Gravity call, so `isVerifiedRepresentative` does not fire one call
  * per node. See AGENTS.md on avoiding per-node loader calls in connections.
+ *
+ * Assumes Gravity returns every verified representative for the partner in one
+ * unpaginated response; a truncated response would silently read as false.
  */
 export const stampVerifiedRepresentatives = async (
   partnerArtists: StampablePartnerArtist[],
