@@ -12,6 +12,31 @@ export interface GravityCityGuideEventItinerary {
   updated_at: string
 }
 
+// A join row (an article attached to a city guide event), not the article itself.
+export interface GravityCityGuideEventArticle {
+  id: string
+  city_guide_event_id: string
+  article_id: string
+  position: number
+  created_at: string
+  updated_at: string
+}
+
+// Matches Gravity's Video#json_properties (app/models/video.rb) exactly — this is the
+// same shape videoLoader/VideoType already consume elsewhere, just embedded here instead
+// of fetched separately.
+export interface GravityVideo {
+  _id: string
+  player_embed_url: string
+  title: string
+  description: string | null
+  width: number
+  height: number
+  aspect_ratio: number | null
+  created_at: string
+  updated_at: string
+}
+
 export interface GravityCityGuideEvent {
   id: string
   slug: string
@@ -29,6 +54,9 @@ export interface GravityCityGuideEvent {
   // Absent (not just empty) from Gravity's list payload (:short), which hides itineraries
   // to keep listings cheap; present only on the single-record fetch (:public/:all).
   itineraries?: GravityCityGuideEventItinerary[]
+  // Present at every tier (:short/:public/:all) — Gravity eager-loads both on every route.
+  articles?: GravityCityGuideEventArticle[]
+  video?: GravityVideo | null
   created_at: string
   updated_at: string
 }
