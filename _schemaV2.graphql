@@ -27805,6 +27805,13 @@ type Mutation {
   ): RemoveAssetFromConsignmentSubmissionPayload
 
   """
+  Remove a city guide event's video. The underlying Video record is left alone — delete it separately with deleteVideo if desired.
+  """
+  removeCityGuideEventVideo(
+    input: removeCityGuideEventVideoInput!
+  ): removeCityGuideEventVideoPayload
+
+  """
   Removes an installation shot from a partner show.
   """
   removeInstallShotFromPartnerShow(
@@ -27921,6 +27928,13 @@ type Mutation {
   sendIdentityVerificationEmail(
     input: SendIdentityVerificationEmailMutationInput!
   ): SendIdentityVerificationEmailMutationPayload
+
+  """
+  Set (or replace) a city guide event's video. Needs the editorial or content-manager role. The Video must already exist — create it with createVideo first.
+  """
+  setCityGuideEventVideo(
+    input: setCityGuideEventVideoInput!
+  ): setCityGuideEventVideoPayload
 
   """
   Set fulfillment option on an order
@@ -46532,6 +46546,39 @@ input rejectSellerOfferInput {
 type rejectSellerOfferPayload {
   clientMutationId: String
   orderOrError: OrderMutationResponse
+}
+
+input removeCityGuideEventVideoInput {
+  clientMutationId: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+}
+
+type removeCityGuideEventVideoPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
+input setCityGuideEventVideoInput {
+  clientMutationId: String
+
+  """
+  The event's id or slug.
+  """
+  id: String!
+
+  """
+  The Gravity Video's id.
+  """
+  videoID: String!
+}
+
+type setCityGuideEventVideoPayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 input setOrderFulfillmentOptionInput {

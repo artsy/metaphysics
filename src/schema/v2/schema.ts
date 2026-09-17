@@ -33,6 +33,8 @@ import { deleteCityGuideEventMutation } from "./cityGuideEvent/mutations/deleteC
 import { deleteCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventArticleMutation"
 import { deleteCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventItineraryMutation"
 import { publishCityGuideEventMutation } from "./cityGuideEvent/mutations/publishCityGuideEventMutation"
+import { removeCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/removeCityGuideEventVideoMutation"
+import { setCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/setCityGuideEventVideoMutation"
 import { unpublishCityGuideEventMutation } from "./cityGuideEvent/mutations/unpublishCityGuideEventMutation"
 import { updateCityGuideEventMutation } from "./cityGuideEvent/mutations/updateCityGuideEventMutation"
 import { updateCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/updateCityGuideEventArticleMutation"
@@ -851,6 +853,7 @@ export default new GraphQLSchema({
       reopenArtworkDuplicatePair: reopenArtworkDuplicatePairMutation,
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
+      removeCityGuideEventVideo: removeCityGuideEventVideoMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
@@ -869,6 +872,7 @@ export default new GraphQLSchema({
       sendConversationMessage: SendConversationMessageMutation,
       sendFeedback: sendFeedbackMutation,
       sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
+      setCityGuideEventVideo: setCityGuideEventVideoMutation,
       setOrderFulfillmentOption: setOrderFulfillmentOptionMutation,
       setOrderPayment: setOrderPaymentMutation,
       startIdentityVerification: startIdentityVerificationMutation,
