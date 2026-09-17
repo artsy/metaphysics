@@ -1238,9 +1238,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerUserNoteLoader: gravityLoader(
-      (id) => `partner_user_note/${id}`
-    ),
+    partnerUserNoteLoader: gravityLoader((id) => `partner_user_note/${id}`),
     partnerUserNotesLoader: gravityLoader(
       "partner_user_notes",
       {},
@@ -1571,6 +1569,31 @@ export default (accessToken, userID, opts) => {
     ),
     deleteCityGuideEventItineraryLoader: gravityLoader(
       (id) => `city_guide_event_itinerary/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    createCityGuideEventArticleLoader: gravityLoader(
+      "city_guide_event_article",
+      {},
+      { method: "POST" }
+    ),
+    updateCityGuideEventArticleLoader: gravityLoader(
+      (id) => `city_guide_event_article/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCityGuideEventArticleLoader: gravityLoader(
+      (id) => `city_guide_event_article/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    setCityGuideEventVideoLoader: gravityLoader(
+      (id) => `city_guide_event/${id}/video`,
+      {},
+      { method: "PUT" }
+    ),
+    removeCityGuideEventVideoLoader: gravityLoader(
+      (id) => `city_guide_event/${id}/video`,
       {},
       { method: "DELETE" }
     ),
