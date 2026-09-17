@@ -88,13 +88,17 @@ export const CityGuideEventType = new GraphQLObjectType<
 
         const { results } = await articlesLoader({
           ids: joins.map((join) => join.article_id),
+          published: true,
+          limit: joins.length,
         })
         const byId = new Map<string, PositronArticle>(
           results.map((article: PositronArticle) => [article.id, article])
         )
 
-        // Drop joins whose article Positron didn't return (e.g. deleted or
-        // unpublished) rather than erroring the whole list on a dangling reference.
+        // Drop joins whose article Positron didn't return: either it's an
+        // unpublished draft (filtered intentionally by `published: true`) or
+        // a dangling reference to a deleted article. Either way, we skip it
+        // rather than erroring the whole list.
         return joins.flatMap((join) => {
           const article = byId.get(join.article_id)
           return article ? [{ ...join, article }] : []

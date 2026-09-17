@@ -314,7 +314,11 @@ describe("CityGuideEvent", () => {
     const data = await runQuery(query, loaders({ articlesLoader }))
 
     expect(articlesLoader).toHaveBeenCalledTimes(1)
-    expect(articlesLoader).toHaveBeenCalledWith({ ids: ["article-1"] })
+    expect(articlesLoader).toHaveBeenCalledWith({
+      ids: ["article-1"],
+      published: true,
+      limit: 1,
+    })
     expect(data.cityGuideEvent.articles).toEqual([
       {
         internalID: "article-join-1",
