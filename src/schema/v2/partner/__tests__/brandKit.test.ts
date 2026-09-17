@@ -12,8 +12,6 @@ describe("Partner brandKit field", () => {
           backgroundColor
           ctaColor
           fontFamily
-          fontWeight
-          fontStyle
           writingLanguage
           writingSample
         }
@@ -34,8 +32,6 @@ describe("Partner brandKit field", () => {
       background_color: "#FFFFFF",
       cta_color: "#0000FF",
       font_family: "Helvetica",
-      font_weight: "bold",
-      font_style: "normal",
       writing_language: "English",
       writing_sample: "A spare, observational gallery voice.",
     }
@@ -59,8 +55,6 @@ describe("Partner brandKit field", () => {
           backgroundColor: "#FFFFFF",
           ctaColor: "#0000FF",
           fontFamily: "Helvetica",
-          fontWeight: "bold",
-          fontStyle: "normal",
           writingLanguage: "English",
           writingSample: "A spare, observational gallery voice.",
         },

@@ -10,8 +10,6 @@ const mutation = `
       backgroundColor: "#00FF00"
       ctaColor: "#0000FF"
       fontFamily: "Helvetica"
-      fontWeight: "bold"
-      fontStyle: "normal"
       writingLanguage: "English"
       writingSample: "A spare, observational gallery voice."
     }) {
@@ -24,8 +22,6 @@ const mutation = `
             backgroundColor
             ctaColor
             fontFamily
-            fontWeight
-            fontStyle
             writingLanguage
             writingSample
           }
@@ -50,8 +46,6 @@ describe("createBrandKit", () => {
       background_color: "#00FF00",
       cta_color: "#0000FF",
       font_family: "Helvetica",
-      font_weight: "bold",
-      font_style: "normal",
       writing_language: "English",
       writing_sample: "A spare, observational gallery voice.",
     }
@@ -73,8 +67,6 @@ describe("createBrandKit", () => {
         background_color: "#00FF00",
         cta_color: "#0000FF",
         font_family: "Helvetica",
-        font_weight: "bold",
-        font_style: "normal",
         writing_language: "English",
         writing_sample: "A spare, observational gallery voice.",
       })
@@ -91,8 +83,6 @@ describe("createBrandKit", () => {
                 "backgroundColor": "#00FF00",
                 "ctaColor": "#0000FF",
                 "fontFamily": "Helvetica",
-                "fontStyle": "normal",
-                "fontWeight": "bold",
                 "internalID": "brand-kit-1",
                 "partnerID": "partner-1",
                 "textColor": "#FF0000",
