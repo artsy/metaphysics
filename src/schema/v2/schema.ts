@@ -27,12 +27,15 @@ import { cities } from "./cities"
 import { City } from "./city"
 import { CityGuideEvent } from "./cityGuideEvent"
 import { createCityGuideEventMutation } from "./cityGuideEvent/mutations/createCityGuideEventMutation"
+import { createCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/createCityGuideEventArticleMutation"
 import { createCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/createCityGuideEventItineraryMutation"
 import { deleteCityGuideEventMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventMutation"
+import { deleteCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventArticleMutation"
 import { deleteCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventItineraryMutation"
 import { publishCityGuideEventMutation } from "./cityGuideEvent/mutations/publishCityGuideEventMutation"
 import { unpublishCityGuideEventMutation } from "./cityGuideEvent/mutations/unpublishCityGuideEventMutation"
 import { updateCityGuideEventMutation } from "./cityGuideEvent/mutations/updateCityGuideEventMutation"
+import { updateCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/updateCityGuideEventArticleMutation"
 import { updateCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/updateCityGuideEventItineraryMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
@@ -704,6 +707,7 @@ export default new GraphQLSchema({
       createCareerHighlight: createCareerHighlightMutation,
       createCatalogArtworkDocument: createCatalogArtworkDocumentMutation,
       createCityGuideEvent: createCityGuideEventMutation,
+      createCityGuideEventArticle: createCityGuideEventArticleMutation,
       createCityGuideEventItinerary: createCityGuideEventItineraryMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
@@ -782,6 +786,7 @@ export default new GraphQLSchema({
       deleteCareerHighlight: deleteCareerHighlightMutation,
       deleteCatalogArtworkDocument: deleteCatalogArtworkDocumentMutation,
       deleteCityGuideEvent: deleteCityGuideEventMutation,
+      deleteCityGuideEventArticle: deleteCityGuideEventArticleMutation,
       deleteCityGuideEventItinerary: deleteCityGuideEventItineraryMutation,
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
@@ -884,6 +889,7 @@ export default new GraphQLSchema({
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityGuideEvent: updateCityGuideEventMutation,
+      updateCityGuideEventArticle: updateCityGuideEventArticleMutation,
       updateCityGuideEventItinerary: updateCityGuideEventItineraryMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,

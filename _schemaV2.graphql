@@ -26926,6 +26926,13 @@ type Mutation {
   ): createCityGuideEventPayload
 
   """
+  Attach an editorial article to a city guide event, at the end of its list. Returns the event with its articles in their new order.
+  """
+  createCityGuideEventArticle(
+    input: createCityGuideEventArticleInput!
+  ): createCityGuideEventArticlePayload
+
+  """
   Attach a curated itinerary to a city guide event, at the end of its list. Returns the event with its itineraries in their new order.
   """
   createCityGuideEventItinerary(
@@ -27307,6 +27314,13 @@ type Mutation {
   deleteCityGuideEvent(
     input: deleteCityGuideEventInput!
   ): deleteCityGuideEventPayload
+
+  """
+  Detach an article from a city guide event. Returns the event with its remaining articles.
+  """
+  deleteCityGuideEventArticle(
+    input: deleteCityGuideEventArticleInput!
+  ): deleteCityGuideEventArticlePayload
 
   """
   Detach an itinerary from a city guide event. The itinerary itself is left alone. Returns the event with its remaining itineraries.
@@ -28087,6 +28101,13 @@ type Mutation {
   updateCityGuideEvent(
     input: updateCityGuideEventInput!
   ): updateCityGuideEventPayload
+
+  """
+  Move an article within its city guide event's list. Returns the event with its articles in their new order.
+  """
+  updateCityGuideEventArticle(
+    input: updateCityGuideEventArticleInput!
+  ): updateCityGuideEventArticlePayload
 
   """
   Move an itinerary within its city guide event's list. Returns the event with its itineraries in their new order.
@@ -45906,6 +45927,24 @@ type createBuyerOfferPayload {
   offerOrError: OfferMutationResponse
 }
 
+input createCityGuideEventArticleInput {
+  """
+  The Positron article's id.
+  """
+  articleID: String!
+
+  """
+  The event's id or slug.
+  """
+  cityGuideEventID: String!
+  clientMutationId: String
+}
+
+type createCityGuideEventArticlePayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
+}
+
 input createCityGuideEventInput {
   """
   A featured city's slug, e.g. london-united-kingdom.
@@ -46182,6 +46221,20 @@ input deleteAlertInput {
 type deleteAlertPayload {
   clientMutationId: String
   responseOrError: DeleteAlertResponseOrError
+}
+
+input deleteCityGuideEventArticleInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the article's).
+  """
+  id: String!
+}
+
+type deleteCityGuideEventArticlePayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 input deleteCityGuideEventInput {
@@ -46720,6 +46773,25 @@ input updateBuyerOfferInput {
 type updateBuyerOfferPayload {
   clientMutationId: String
   offerOrError: OfferMutationResponse
+}
+
+input updateCityGuideEventArticleInput {
+  clientMutationId: String
+
+  """
+  The attachment's id (not the article's).
+  """
+  id: String!
+
+  """
+  Zero-based position among the event's articles, via acts_as_list's insert_at.
+  """
+  position: Int!
+}
+
+type updateCityGuideEventArticlePayload {
+  clientMutationId: String
+  responseOrError: CityGuideEventMutationResponseOrError
 }
 
 input updateCityGuideEventInput {
