@@ -30,6 +30,10 @@ const DetectArtworkDuplicatesSuccessType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ detection_version }) => detection_version,
     },
+    artnetImportID: {
+      type: GraphQLString,
+      resolve: ({ artnet_import_id }) => artnet_import_id,
+    },
   }),
 })
 
@@ -67,6 +71,11 @@ export const detectArtworkDuplicatesMutation = mutationWithClientMutationId({
       type: GraphQLString,
       description: "Optional detection version to use",
     },
+    artnetImportID: {
+      type: GraphQLString,
+      description:
+        "Scope detection to an Artnet import's created artworks vs. the partner's whole inventory",
+    },
   },
   outputFields: {
     detectArtworkDuplicatesResponseOrError: {
@@ -75,7 +84,7 @@ export const detectArtworkDuplicatesMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { partnerId, detectionVersion },
+    { partnerId, detectionVersion, artnetImportID },
     { detectArtworkDuplicatesLoader }
   ) => {
     if (!detectArtworkDuplicatesLoader) {
@@ -89,6 +98,10 @@ export const detectArtworkDuplicatesMutation = mutationWithClientMutationId({
 
       if (detectionVersion) {
         gravityArgs.detection_version = detectionVersion
+      }
+
+      if (artnetImportID) {
+        gravityArgs.artnet_import_id = artnetImportID
       }
 
       const result = await detectArtworkDuplicatesLoader(gravityArgs)
