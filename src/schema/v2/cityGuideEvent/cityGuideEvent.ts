@@ -11,7 +11,10 @@ import { ImageType } from "schema/v2/image"
 import { imageFromGravity } from "schema/v2/itinerary/gravityImage"
 import { attachStopItemsToMany } from "schema/v2/itinerary/stopItems"
 import { VideoType } from "schema/v2/types/Video"
-import { CityGuideEventArticleType } from "./cityGuideEventArticle"
+import {
+  CityGuideEventArticleType,
+  PositronArticle,
+} from "./cityGuideEventArticle"
 import { CityGuideEventItineraryType } from "./cityGuideEventItinerary"
 import { GravityCityGuideEvent } from "./types"
 
@@ -86,12 +89,16 @@ export const CityGuideEventType = new GraphQLObjectType<
         const { results } = await articlesLoader({
           ids: joins.map((join) => join.article_id),
         })
-        const byId = new Map(results.map((article) => [article.id, article]))
+        const byId = new Map<string, PositronArticle>(
+          results.map((article: PositronArticle) => [article.id, article])
+        )
 
-        return joins.map((join) => ({
-          ...join,
-          article: byId.get(join.article_id),
-        }))
+        // Drop joins whose article Positron didn't return (e.g. deleted or
+        // unpublished) rather than erroring the whole list on a dangling reference.
+        return joins.flatMap((join) => {
+          const article = byId.get(join.article_id)
+          return article ? [{ ...join, article }] : []
+        })
       },
     },
     video: {

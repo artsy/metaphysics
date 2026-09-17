@@ -9,8 +9,16 @@ import { GlobalIDField } from "schema/v2/object_identification"
 import { ArticleType } from "schema/v2/article"
 import { GravityCityGuideEventArticle } from "./types"
 
-interface CityGuideEventArticleProps extends GravityCityGuideEventArticle {
-  article: any
+// The minimal Positron article shape this join type touches directly (the id used to
+// join it below). `ArticleType` itself resolves against `any` everywhere else in the
+// codebase, since Positron's real article payload is far larger than any one type pins down.
+export interface PositronArticle {
+  id: string
+}
+
+export interface CityGuideEventArticleProps
+  extends GravityCityGuideEventArticle {
+  article: PositronArticle
 }
 
 // A join row (an article attached to a city guide event), not the article itself.

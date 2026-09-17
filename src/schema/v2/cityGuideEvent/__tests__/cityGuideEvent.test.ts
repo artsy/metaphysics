@@ -346,6 +346,58 @@ describe("CityGuideEvent", () => {
     expect(data.cityGuideEvent.articles).toEqual([])
   })
 
+  it("drops an article join when Positron doesn't return a matching article", async () => {
+    const articlesLoader = jest.fn().mockResolvedValue({
+      results: [
+        {
+          id: "article-1",
+          slug: "london-art-week-guide",
+          title: "London Art Week Guide",
+        },
+      ],
+    })
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          articles {
+            internalID
+            article {
+              internalID
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest.fn().mockResolvedValue({
+          ...gravityCityGuideEvent,
+          articles: [
+            ...gravityCityGuideEvent.articles,
+            {
+              id: "article-join-2",
+              city_guide_event_id: "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+              article_id: "article-deleted",
+              position: 1,
+              created_at: "2026-08-01T09:00:00Z",
+              updated_at: "2026-08-01T09:00:00Z",
+            },
+          ],
+        }),
+        articlesLoader,
+      })
+    )
+
+    expect(data.cityGuideEvent.articles).toEqual([
+      {
+        internalID: "article-join-1",
+        article: { internalID: "article-1" },
+      },
+    ])
+  })
+
   it("resolves video as null when the event has no video", async () => {
     const query = `{ cityGuideEvent(id: "london-art-week") { video { internalID } } }`
 
