@@ -31,6 +31,7 @@ import { ShowsConnection } from "../show"
 interface PartnerArtistDetails {
   artist: {
     id: string
+    _id: string
     blurb: string
   }
   biography: string
@@ -41,6 +42,7 @@ interface PartnerArtistDetails {
   image_urls: string[]
   partner: {
     id: string
+    _id: string
     name: string
   }
   published_artworks_count: number
@@ -48,6 +50,7 @@ interface PartnerArtistDetails {
   represented_by: boolean
   sortable_id: string
   use_default_biography: boolean
+  _isVerifiedRepresentative?: boolean
 }
 
 const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
@@ -354,6 +357,87 @@ const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default PartnerArtist
+
+type StampablePartnerArtist = {
+  artist?: { _id?: string }
+  _isVerifiedRepresentative?: boolean
+}
+
+/**
+ * Stamps `_isVerifiedRepresentative` on a partner's page of artists using a
+ * single Gravity call, so `isVerifiedRepresentative` does not fire one call
+ * per node. See AGENTS.md on avoiding per-node loader calls in connections.
+ *
+ * Assumes Gravity returns every verified representative for the partner in one
+ * unpaginated response; a truncated response would silently read as false.
+ */
+export const stampVerifiedRepresentatives = async (
+  partnerArtists: StampablePartnerArtist[],
+  partnerInternalID: string,
+  verifiedRepresentativesLoader?: ResolverContext["verifiedRepresentativesLoader"]
+) => {
+  if (!verifiedRepresentativesLoader || partnerArtists.length === 0) {
+    return partnerArtists
+  }
+
+  try {
+    const response = await verifiedRepresentativesLoader({
+      partner_id: partnerInternalID,
+    })
+
+    const verifiedArtistIDs = new Set(
+      (response ?? []).map((verified) => verified.artist_id).filter(Boolean)
+    )
+
+    partnerArtists.forEach((partnerArtist) => {
+      const artistID = partnerArtist.artist?._id
+
+      partnerArtist._isVerifiedRepresentative = artistID
+        ? verifiedArtistIDs.has(artistID)
+        : false
+    })
+  } catch (error) {
+    partnerArtists.forEach((partnerArtist) => {
+      partnerArtist._isVerifiedRepresentative = false
+    })
+  }
+
+  return partnerArtists
+}
+
+/**
+ * Only mounted on `ArtistPartnerEdge` (a partner's artists), which is the
+ * connection Volt reads. Batched by `stampVerifiedRepresentatives`; the
+ * per-pair lookup is a fallback for when the page was not stamped.
+ */
+export const isVerifiedRepresentative: GraphQLFieldConfig<
+  PartnerArtistDetails & { _isVerifiedRepresentative?: boolean },
+  ResolverContext
+> = {
+  type: GraphQLBoolean,
+  description:
+    "Whether Artsy has verified that this partner represents this artist.",
+  resolve: async (
+    { artist, partner, _isVerifiedRepresentative },
+    _args,
+    { verifiedRepresentativesLoader }
+  ) => {
+    if (_isVerifiedRepresentative !== undefined) {
+      return _isVerifiedRepresentative
+    }
+
+    if (!verifiedRepresentativesLoader || !artist?._id || !partner?._id) {
+      return null
+    }
+
+    const response = await verifiedRepresentativesLoader({
+      artist_id: artist._id,
+      partner_id: partner._id,
+    })
+
+    return response.length > 0
+  },
+}
 
 export const partnersForArtist = (
   artist_id,

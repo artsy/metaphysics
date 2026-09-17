@@ -6,6 +6,7 @@ import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
 import { createBatchSaleArtworkLoader } from "../batchSaleArtworkLoader"
 import config from "config"
+import { toQueryString } from "lib/helpers"
 
 export type StartIdentityVerificationGravityOutput = {
   identity_verification_id: string
@@ -374,8 +375,13 @@ export default (opts) => {
       {},
       { method: "POST" } // Un-cached
     ),
-    verifiedRepresentativesLoader: gravityLoader<any, { artist_id: string }>(
-      ({ artist_id }) => `verified_representatives?artist_id=${artist_id}`,
+    verifiedRepresentativesLoader: gravityLoader<
+      any,
+      | { artist_id: string; partner_id?: string }
+      | { artist_id?: string; partner_id: string }
+    >(
+      ({ artist_id, partner_id }) =>
+        `verified_representatives?${toQueryString({ artist_id, partner_id })}`,
       {},
       { method: "GET" }
     ),
