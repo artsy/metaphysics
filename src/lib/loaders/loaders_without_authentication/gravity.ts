@@ -377,7 +377,8 @@ export default (opts) => {
     ),
     verifiedRepresentativesLoader: gravityLoader<
       any,
-      { artist_id: string; partner_id?: string }
+      | { artist_id: string; partner_id?: string }
+      | { artist_id?: string; partner_id: string }
     >(
       ({ artist_id, partner_id }) =>
         `verified_representatives?${toQueryString({ artist_id, partner_id })}`,

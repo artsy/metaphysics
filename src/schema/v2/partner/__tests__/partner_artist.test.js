@@ -349,12 +349,109 @@ describe("partnerArtist", () => {
       })
     })
 
-    it("looks up the artist and partner pair", async () => {
+    it("batches the lookup by partner rather than by pair", async () => {
       await runQuery(query, context)
 
+      expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
       expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
-        artist_id: "catty-artist",
         partner_id: "catty-partner",
+      })
+    })
+
+    describe("batching across a page", () => {
+      beforeEach(() => {
+        partnerArtistData = [
+          {
+            artist: { id: "verified-artist" },
+            partner: { id: "catty-partner" },
+          },
+          {
+            artist: { id: "unverified-artist" },
+            partner: { id: "catty-partner" },
+          },
+        ]
+
+        verifiedRepresentativesLoader.mockReturnValue(
+          Promise.resolve([
+            {
+              artist_id: "verified-artist",
+              partner_id: "catty-partner",
+            },
+          ])
+        )
+      })
+
+      const pageQuery = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 2) {
+              edges {
+                isVerifiedRepresentative
+              }
+            }
+          }
+        }
+      `
+
+      it("makes one Gravity call for the whole page", async () => {
+        await runQuery(pageQuery, context)
+
+        expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
+        expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
+          partner_id: "catty-partner",
+        })
+      })
+
+      it("resolves each edge from the batched response", async () => {
+        const data = await runQuery(pageQuery, context)
+
+        expect(data).toEqual({
+          partner: {
+            artistsConnection: {
+              edges: [
+                { isVerifiedRepresentative: true },
+                { isVerifiedRepresentative: false },
+              ],
+            },
+          },
+        })
+      })
+
+      it("does not call Gravity when the field is not requested", async () => {
+        const otherQuery = gql`
+          {
+            partner(id: "catty-partner") {
+              artistsConnection(first: 2) {
+                edges {
+                  representedBy
+                }
+              }
+            }
+          }
+        `
+
+        await runQuery(otherQuery, context)
+
+        expect(verifiedRepresentativesLoader).not.toHaveBeenCalled()
+      })
+
+      it("degrades to false when the batched lookup fails", async () => {
+        verifiedRepresentativesLoader.mockReturnValue(
+          Promise.reject(new Error("Gravity is down"))
+        )
+
+        const data = await runQuery(pageQuery, context)
+
+        expect(data).toEqual({
+          partner: {
+            artistsConnection: {
+              edges: [
+                { isVerifiedRepresentative: false },
+                { isVerifiedRepresentative: false },
+              ],
+            },
+          },
+        })
       })
     })
   })

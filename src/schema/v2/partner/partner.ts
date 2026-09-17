@@ -9,6 +9,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLFieldConfigMap,
   GraphQLFloat,
   GraphQLResolveInfo,
 } from "graphql"
@@ -33,11 +34,16 @@ import { ShowsConnection, ShowType } from "schema/v2/show"
 import { ArtistType } from "schema/v2/artist"
 import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import ArtistSorts from "schema/v2/sorts/artist_sorts"
-import { fields as partnerArtistFields } from "./partner_artist"
+import {
+  fields as partnerArtistFields,
+  isVerifiedRepresentative,
+  stampVerifiedRepresentatives,
+} from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -212,7 +218,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     const ArtistPartnerConnection = connectionWithCursorInfo({
       name: "ArtistPartner",
       nodeType: ArtistType,
-      edgeFields: partnerArtistFields,
+      edgeFields: () => ({
+        ...(partnerArtistFields as () => GraphQLFieldConfigMap<
+          any,
+          ResolverContext
+        >)(),
+        isVerifiedRepresentative,
+      }),
     }).connectionType
 
     const {
@@ -618,7 +630,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { id },
           args,
-          { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
+          {
+            partnerArtistsForPartnerLoader,
+            partnerArtistsAllLoader,
+            verifiedRepresentativesLoader,
+          },
+          info
         ) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
@@ -667,6 +684,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             id,
             gravityArgs
           )
+
+          if (isFieldRequested("edges.isVerifiedRepresentative", info)) {
+            await stampVerifiedRepresentatives(
+              body,
+              id,
+              verifiedRepresentativesLoader
+            )
+          }
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
