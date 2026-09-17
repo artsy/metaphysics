@@ -628,7 +628,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: async (
-          { id },
+          { _id, id },
           args,
           {
             partnerArtistsForPartnerLoader,
@@ -688,7 +688,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           if (isFieldRequested("edges.isVerifiedRepresentative", info)) {
             await stampVerifiedRepresentatives(
               body,
-              id,
+              _id,
               verifiedRepresentativesLoader
             )
           }

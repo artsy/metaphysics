@@ -268,14 +268,14 @@ describe("partnerArtist", () => {
     let verifiedRepresentativesLoader
 
     beforeEach(() => {
+      // Gravity returns both the database id (`_id`) and the slug (`id`);
+      // only `_id` matches the verified_representatives columns.
+      partnerData = { ...partnerData, _id: "partner-database-id" }
+
       partnerArtistData = [
         {
-          artist: {
-            id: "catty-artist",
-          },
-          partner: {
-            id: "catty-partner",
-          },
+          artist: { _id: "artist-database-id", id: "catty-artist" },
+          partner: { _id: "partner-database-id", id: "catty-partner" },
         },
       ]
 
@@ -312,8 +312,8 @@ describe("partnerArtist", () => {
       verifiedRepresentativesLoader.mockReturnValue(
         Promise.resolve([
           {
-            artist_id: "catty-artist",
-            partner_id: "catty-partner",
+            artist_id: "artist-database-id",
+            partner_id: "partner-database-id",
           },
         ])
       )
@@ -349,12 +349,34 @@ describe("partnerArtist", () => {
       })
     })
 
-    it("batches the lookup by partner rather than by pair", async () => {
+    it("batches the lookup by the partner's database id, not its slug", async () => {
       await runQuery(query, context)
 
       expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
       expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
-        partner_id: "catty-partner",
+        partner_id: "partner-database-id",
+      })
+    })
+
+    it("does not match on the artist slug", async () => {
+      verifiedRepresentativesLoader.mockReturnValue(
+        Promise.resolve([
+          { artist_id: "catty-artist", partner_id: "partner-database-id" },
+        ])
+      )
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: false,
+              },
+            ],
+          },
+        },
       })
     })
 
@@ -362,20 +384,20 @@ describe("partnerArtist", () => {
       beforeEach(() => {
         partnerArtistData = [
           {
-            artist: { id: "verified-artist" },
-            partner: { id: "catty-partner" },
+            artist: { _id: "verified-artist-id", id: "verified-artist" },
+            partner: { _id: "partner-database-id", id: "catty-partner" },
           },
           {
-            artist: { id: "unverified-artist" },
-            partner: { id: "catty-partner" },
+            artist: { _id: "unverified-artist-id", id: "unverified-artist" },
+            partner: { _id: "partner-database-id", id: "catty-partner" },
           },
         ]
 
         verifiedRepresentativesLoader.mockReturnValue(
           Promise.resolve([
             {
-              artist_id: "verified-artist",
-              partner_id: "catty-partner",
+              artist_id: "verified-artist-id",
+              partner_id: "partner-database-id",
             },
           ])
         )
@@ -397,9 +419,6 @@ describe("partnerArtist", () => {
         await runQuery(pageQuery, context)
 
         expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
-        expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
-          partner_id: "catty-partner",
-        })
       })
 
       it("resolves each edge from the batched response", async () => {

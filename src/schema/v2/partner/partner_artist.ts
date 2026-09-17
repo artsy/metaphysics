@@ -31,6 +31,7 @@ import { ShowsConnection } from "../show"
 interface PartnerArtistDetails {
   artist: {
     id: string
+    _id: string
     blurb: string
   }
   biography: string
@@ -41,6 +42,7 @@ interface PartnerArtistDetails {
   image_urls: string[]
   partner: {
     id: string
+    _id: string
     name: string
   }
   published_artworks_count: number
@@ -357,7 +359,7 @@ const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
 export default PartnerArtist
 
 type StampablePartnerArtist = {
-  artist?: { id?: string }
+  artist?: { _id?: string }
   _isVerifiedRepresentative?: boolean
 }
 
@@ -368,7 +370,7 @@ type StampablePartnerArtist = {
  */
 export const stampVerifiedRepresentatives = async (
   partnerArtists: StampablePartnerArtist[],
-  partner_id: string,
+  partnerInternalID: string,
   verifiedRepresentativesLoader?: ResolverContext["verifiedRepresentativesLoader"]
 ) => {
   if (!verifiedRepresentativesLoader || partnerArtists.length === 0) {
@@ -376,14 +378,16 @@ export const stampVerifiedRepresentatives = async (
   }
 
   try {
-    const response = await verifiedRepresentativesLoader({ partner_id })
+    const response = await verifiedRepresentativesLoader({
+      partner_id: partnerInternalID,
+    })
 
     const verifiedArtistIDs = new Set(
       (response ?? []).map((verified) => verified.artist_id).filter(Boolean)
     )
 
     partnerArtists.forEach((partnerArtist) => {
-      const artistID = partnerArtist.artist?.id
+      const artistID = partnerArtist.artist?._id
 
       partnerArtist._isVerifiedRepresentative = artistID
         ? verifiedArtistIDs.has(artistID)
@@ -419,13 +423,13 @@ export const isVerifiedRepresentative: GraphQLFieldConfig<
       return _isVerifiedRepresentative
     }
 
-    if (!verifiedRepresentativesLoader || !artist?.id || !partner?.id) {
+    if (!verifiedRepresentativesLoader || !artist?._id || !partner?._id) {
       return null
     }
 
     const response = await verifiedRepresentativesLoader({
-      artist_id: artist.id,
-      partner_id: partner.id,
+      artist_id: artist._id,
+      partner_id: partner._id,
     })
 
     return response.length > 0
