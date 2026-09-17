@@ -3464,6 +3464,11 @@ type ArtistPartnerEdge {
   isUseDefaultBiography: Boolean
 
   """
+  Whether Artsy has verified that this partner represents this artist.
+  """
+  isVerifiedRepresentative: Boolean
+
+  """
   The item at the end of the edge
   """
   node: Artist
@@ -31011,6 +31016,11 @@ type PartnerArtist {
   isDisplayOnPartnerProfile: Boolean
   isHiddenInPresentationMode: Boolean
   isUseDefaultBiography: Boolean
+
+  """
+  Whether Artsy has verified that this partner represents this artist.
+  """
+  isVerifiedRepresentative: Boolean
   partner: Partner
   representedBy: Boolean
 
@@ -31320,6 +31330,11 @@ type PartnerArtistEdge {
   isDisplayOnPartnerProfile: Boolean
   isHiddenInPresentationMode: Boolean
   isUseDefaultBiography: Boolean
+
+  """
+  Whether Artsy has verified that this partner represents this artist.
+  """
+  isVerifiedRepresentative: Boolean
 
   """
   The item at the end of the edge

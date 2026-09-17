@@ -314,6 +314,27 @@ export const fields: Thunk<GraphQLFieldConfigMap<
       type: GraphQLBoolean,
       resolve: ({ represented_by }) => represented_by,
     },
+    isVerifiedRepresentative: {
+      type: GraphQLBoolean,
+      description:
+        "Whether Artsy has verified that this partner represents this artist.",
+      resolve: async (
+        { artist, partner },
+        _args,
+        { verifiedRepresentativesLoader }
+      ) => {
+        if (!verifiedRepresentativesLoader) {
+          return null
+        }
+
+        const response = await verifiedRepresentativesLoader({
+          artist_id: artist.id,
+          partner_id: partner.id,
+        })
+
+        return response.length > 0
+      },
+    },
     isUseDefaultBiography: {
       type: GraphQLBoolean,
       resolve: ({ use_default_biography }) => use_default_biography,

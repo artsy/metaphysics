@@ -264,6 +264,101 @@ describe("partnerArtist", () => {
     })
   })
 
+  describe("isVerifiedRepresentative", () => {
+    let verifiedRepresentativesLoader
+
+    beforeEach(() => {
+      partnerArtistData = [
+        {
+          artist: {
+            id: "catty-artist",
+          },
+          partner: {
+            id: "catty-partner",
+          },
+        },
+      ]
+
+      verifiedRepresentativesLoader = jest
+        .fn()
+        .mockReturnValue(Promise.resolve([]))
+
+      context = {
+        partnerArtistsForPartnerLoader: () =>
+          Promise.resolve({
+            body: partnerArtistData,
+            headers: {
+              "x-total-count": partnerArtistData.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+        verifiedRepresentativesLoader,
+      }
+    })
+
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          artistsConnection(first: 1) {
+            edges {
+              isVerifiedRepresentative
+            }
+          }
+        }
+      }
+    `
+
+    it("is true when Artsy has verified the pair", async () => {
+      verifiedRepresentativesLoader.mockReturnValue(
+        Promise.resolve([
+          {
+            artist_id: "catty-artist",
+            partner_id: "catty-partner",
+          },
+        ])
+      )
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: true,
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("is false when Artsy has not verified the pair", async () => {
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: false,
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("looks up the artist and partner pair", async () => {
+      await runQuery(query, context)
+
+      expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
+        artist_id: "catty-artist",
+        partner_id: "catty-partner",
+      })
+    })
+  })
+
   describe("#PartnerArtistArtworksConnection", () => {
     let partnerArtistArtworksResponse
     partnerArtistData = [
