@@ -8741,6 +8741,7 @@ type City {
 }
 
 type CityGuideEvent {
+  articles: [CityGuideEventArticle!]!
   citySlug: String!
   description: String
   endAt(
@@ -8791,6 +8792,22 @@ type CityGuideEvent {
     """
     timezone: String
   ): String!
+  video: Video
+}
+
+type CityGuideEventArticle {
+  article: Article!
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  The attachment's own UUID, not the article's
+  """
+  internalID: String!
+  position: Int!
 }
 
 type CityGuideEventItinerary {

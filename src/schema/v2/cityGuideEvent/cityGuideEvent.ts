@@ -10,6 +10,8 @@ import { date } from "schema/v2/fields/date"
 import { ImageType } from "schema/v2/image"
 import { imageFromGravity } from "schema/v2/itinerary/gravityImage"
 import { attachStopItemsToMany } from "schema/v2/itinerary/stopItems"
+import { VideoType } from "schema/v2/types/Video"
+import { CityGuideEventArticleType } from "./cityGuideEventArticle"
 import { CityGuideEventItineraryType } from "./cityGuideEventItinerary"
 import { GravityCityGuideEvent } from "./types"
 
@@ -71,6 +73,32 @@ export const CityGuideEventType = new GraphQLObjectType<
         )
         return joins
       },
+    },
+    articles: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(CityGuideEventArticleType))
+      ),
+      // One Positron lookup for the whole list, not one per attached article.
+      resolve: async ({ articles }, _args, { articlesLoader }) => {
+        const joins = articles ?? []
+        if (joins.length === 0) return []
+
+        const { results } = await articlesLoader({
+          ids: joins.map((join) => join.article_id),
+        })
+        const byId = new Map(results.map((article) => [article.id, article]))
+
+        return joins.map((join) => ({
+          ...join,
+          article: byId.get(join.article_id),
+        }))
+      },
+    },
+    video: {
+      type: VideoType,
+      // Gravity already embeds the full Video record (eager-loaded on every route), so
+      // this is a plain field access, not a loader call — no N+1 risk to pool against.
+      resolve: ({ video }) => video ?? null,
     },
     updatedAt: date(({ updated_at }) => updated_at, true),
   }),
