@@ -210,6 +210,42 @@ describe("AIAgentTurn", () => {
     ).toThrow(/too large/)
   })
 
+  it("counts ids replayed as displayed sections against the byte cap", () => {
+    // Same reasoning as the legacy ids above: the new format reaches the model
+    // the same way, so it must be weighed the same way.
+    const history = [
+      {
+        role: "assistant",
+        content: "Here you go.",
+        displayedSections: [
+          {
+            entityType: "ARTWORK",
+            internalIDs: Array.from({ length: 5000 }, () => "x".repeat(24)),
+          },
+        ],
+      },
+    ]
+
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c1", message: "hi", history },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/too large/)
+  })
+
+  it("counts declared section types against the byte cap", () => {
+    // The enum bounds which values are legal, not how many arrive.
+    const supportedSections = Array.from({ length: 20_000 }, () => "ARTWORKS")
+
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c1", message: "hi", supportedSections },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/too large/)
+  })
+
   it("calls runTurn with the input and info.schema when all guards pass", () => {
     const schema = ({ marker: "the-schema" } as unknown) as GraphQLSchema
     const context = { userID: "user-42", accessToken: "token" }
