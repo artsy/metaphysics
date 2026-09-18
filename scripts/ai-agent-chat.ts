@@ -53,13 +53,57 @@ const QUERY = `
         message
         stopReason
         toolCallCount
-        artworks { internalID slug title artistNames saleMessage }
+        sections {
+          __typename
+          ... on AIAgentArtworksSection {
+            artworks { internalID title artistNames saleMessage }
+          }
+        }
+        # Only to check the dual write below -- a real client picks one.
+        artworks { internalID }
       }
     }
   }
 `
 
-type HistoryEntry = { role: "USER" | "ASSISTANT"; content: string }
+type EntityType = "ARTWORK"
+
+// What the client keeps: the entity type and the ids, in display order --
+// never the entities themselves. Eigen does the same, and replays these so a
+// follow-up like "the second artist" resolves against what was on screen.
+type DisplayedSection = { entityType: EntityType; internalIDs: string[] }
+
+// Every section type this script can draw. A real client declares only the
+// ones it has a renderer for -- see docs/ai-agent-sections-eigen-integration.md.
+const SUPPORTED_SECTIONS = ["ARTWORKS"]
+
+type HistoryEntry = {
+  role: "USER" | "ASSISTANT"
+  content: string
+  displayedSections?: DisplayedSection[]
+}
+
+const SECTION_ENTITY_TYPES: Record<string, EntityType> = {
+  AIAgentArtworksSection: "ARTWORK",
+}
+
+function describeSections(sections: any[]): DisplayedSection[] {
+  return sections.flatMap((section) => {
+    const entityType = SECTION_ENTITY_TYPES[section.__typename]
+    // An unknown future section type is skipped, not guessed at -- the same
+    // thing a client that predates it should do.
+    if (!entityType) return []
+    const entities = section.artworks ?? []
+    return [
+      {
+        entityType,
+        internalIDs: entities.map(
+          (entity: { internalID: string }) => entity.internalID
+        ),
+      },
+    ]
+  })
+}
 
 const dim = (text: string) => `\x1b[2m${text}\x1b[0m`
 
@@ -68,6 +112,52 @@ const indent = (text: string) =>
     .split("\n")
     .map((line) => `  ${line}`)
     .join("\n")
+
+// A terminal has no card UI, so each section prints as a compact list; a
+// web/mobile client would render the same ids as image cards instead of
+// parsing them out of `message`.
+function printSections(sections: any[]): void {
+  for (const section of sections) {
+    switch (section.__typename) {
+      case "AIAgentArtworksSection":
+        process.stdout.write(`\n${dim("Artworks:")}\n`)
+        for (const artwork of section.artworks) {
+          const price = artwork.saleMessage ? ` — ${artwork.saleMessage}` : ""
+          const artist = artwork.artistNames ? `${artwork.artistNames}, ` : ""
+          process.stdout.write(dim(`  • ${artist}${artwork.title}${price}\n`))
+        }
+        break
+      default:
+        process.stdout.write(
+          `\n${dim(`[${section.__typename}: this script can't render it]`)}\n`
+        )
+    }
+  }
+}
+
+// `artworks` is kept in lockstep with the artworks section for clients that
+// predate `sections`. Drift between them is a server bug, and it would
+// otherwise only show up as missing cards on old app versions.
+function warnOnLegacyDrift(event: any): void {
+  const section = (event.sections ?? []).find(
+    (candidate: any) => candidate.__typename === "AIAgentArtworksSection"
+  )
+  const fromSection = (section?.artworks ?? []).map(
+    (artwork: { internalID: string }) => artwork.internalID
+  )
+  const legacy = (event.artworks ?? []).map(
+    (artwork: { internalID: string }) => artwork.internalID
+  )
+
+  if (fromSection.join() !== legacy.join()) {
+    process.stdout.write(
+      `\n${dim(
+        `[warn] legacy artworks (${legacy.length}) do not match the ` +
+          `artworks section (${fromSection.length})`
+      )}\n`
+    )
+  }
+}
 
 function loadInputHistory(): string[] {
   try {
@@ -142,7 +232,7 @@ async function sendTurn(
   conversationID: string,
   message: string,
   history: HistoryEntry[]
-): Promise<string | null> {
+): Promise<{ text: string | null; displayedSections: DisplayedSection[] }> {
   const response = await fetch(METAPHYSICS_URL, {
     method: "POST",
     headers: {
@@ -158,6 +248,10 @@ async function sendTurn(
           conversationID,
           message,
           history,
+          // The CLI renders every section type, so it declares every type --
+          // a real client declares only what it can actually draw, since the
+          // prose is written expecting those cards to appear.
+          supportedSections: SUPPORTED_SECTIONS,
           includeDebugToolCalls: true,
         },
       },
@@ -181,6 +275,7 @@ async function sendTurn(
   }
 
   let assistantText: string | null = null
+  let displayedSections: DisplayedSection[] = []
   let stop = false
 
   const decoder = new TextDecoder()
@@ -247,23 +342,9 @@ async function sendTurn(
           break
         case "AIAgentTurnComplete":
           assistantText = event.message
-          // A terminal has no card UI, so artworks render as a compact list
-          // here; a web/mobile client would use the same `artworks` field
-          // to render image cards instead of parsing them out of `message`.
-          if (event.artworks?.length) {
-            process.stdout.write(`\n${dim("Artworks:")}\n`)
-            for (const artwork of event.artworks) {
-              const price = artwork.saleMessage
-                ? ` — ${artwork.saleMessage}`
-                : ""
-              const artist = artwork.artistNames
-                ? `${artwork.artistNames}, `
-                : ""
-              process.stdout.write(
-                dim(`  • ${artist}${artwork.title}${price}\n`)
-              )
-            }
-          }
+          displayedSections = describeSections(event.sections ?? [])
+          printSections(event.sections ?? [])
+          warnOnLegacyDrift(event)
           process.stdout.write(
             `\n${dim(
               `(stopReason: ${event.stopReason}, ${event.toolCallCount} tool call(s))`
@@ -275,7 +356,7 @@ async function sendTurn(
     }
   }
 
-  return assistantText
+  return { text: assistantText, displayedSections }
 }
 
 function main() {
@@ -314,10 +395,20 @@ function main() {
     rl.pause()
     process.stdout.write("agent> ")
     try {
-      const assistantText = await sendTurn(conversationID, message, history)
+      const { text, displayedSections } = await sendTurn(
+        conversationID,
+        message,
+        history
+      )
       history.push({ role: "USER", content: message })
-      if (assistantText) {
-        history.push({ role: "ASSISTANT", content: assistantText })
+      if (text) {
+        history.push({
+          role: "ASSISTANT",
+          content: text,
+          // Replayed next turn, so follow-ups behave here the way they do in
+          // a real client rather than losing what was on screen.
+          ...(displayedSections.length > 0 && { displayedSections }),
+        })
       }
     } catch (error) {
       console.error(`\n${dim(`[error] ${describeError(error)}`)}`)
