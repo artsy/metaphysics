@@ -75,6 +75,12 @@ export const ItineraryType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_curated }) => is_curated,
     },
+    featured: {
+      description:
+        "Whether the guide is editorially featured, to be surfaced ahead of its peers.",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ featured }) => featured,
+    },
     visibility: {
       type: new GraphQLNonNull(ItineraryVisibilityEnum),
       resolve: ({ visibility }) => VISIBILITY_BY_GRAVITY[visibility],

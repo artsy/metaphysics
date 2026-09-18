@@ -15,6 +15,7 @@ interface InputProps {
   description?: string
   authorName?: string
   isCurated?: boolean
+  featured?: boolean
   generateShareToken?: boolean
   revokeShareToken?: boolean
   imageURL?: string | null
@@ -37,6 +38,11 @@ export const updateItineraryMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     authorName: { type: GraphQLString },
     isCurated: { type: GraphQLBoolean },
+    featured: {
+      description:
+        "Mark the guide as editorially featured. Needs the content_manager role.",
+      type: GraphQLBoolean,
+    },
     generateShareToken: {
       description:
         "Generate a new share token for this itinerary, replacing any " +

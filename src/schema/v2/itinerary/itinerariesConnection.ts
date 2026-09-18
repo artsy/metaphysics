@@ -22,6 +22,7 @@ export const ItinerariesConnectionType = connectionWithCursorInfo({
 interface ItinerariesConnectionArgs extends CursorPageable {
   citySlug?: string
   isCurated?: boolean
+  featured?: boolean
   page?: number
   size?: number
 }
@@ -48,6 +49,7 @@ export const resolveItinerariesConnection = async (
     ...(typeof args.isCurated === "boolean"
       ? { is_curated: args.isCurated }
       : {}),
+    ...(typeof args.featured === "boolean" ? { featured: args.featured } : {}),
     ...(options.onlyOwnedBy ? { user_id: options.onlyOwnedBy } : {}),
   })
 
@@ -79,6 +81,10 @@ export const ItinerariesConnectionField: GraphQLFieldConfig<
     isCurated: {
       type: GraphQLBoolean,
       description: "Only curated (editorial) or only personal itineraries",
+    },
+    featured: {
+      type: GraphQLBoolean,
+      description: "Only featured, or only unfeatured, itineraries",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
