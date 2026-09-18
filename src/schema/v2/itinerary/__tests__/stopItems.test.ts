@@ -47,6 +47,7 @@ const buildItinerary = (
   user_id: "user-1",
   city_slug: "london-united-kingdom",
   is_curated: false,
+  featured: false,
   visibility: "private",
   share_token: null,
   published_at: null,

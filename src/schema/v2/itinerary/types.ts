@@ -53,6 +53,8 @@ export interface GravityItinerary {
   description: string | null
   author_name: string | null
   is_curated: boolean
+  /** Editorially featured, surfaced ahead of its peers in listings. */
+  featured: boolean
   /** Gravity derives this from published_at and share_token. */
   visibility: "private" | "unlisted" | "public"
   published_at: string | null

@@ -15,6 +15,7 @@ const gravityItinerary = {
   description: "A gentle day.",
   author_name: "Casey Lesser",
   is_curated: true,
+  featured: true,
   visibility: "public",
   published_at: "2026-08-01T09:00:00Z",
   published_by_id: "editor-1",
@@ -398,6 +399,7 @@ describe("Itinerary", () => {
           authorName
           citySlug
           isCurated
+          featured
           visibility
           sectionsCount
           sections {
@@ -431,6 +433,7 @@ describe("Itinerary", () => {
     expect(data.itinerary.authorName).toEqual("Casey Lesser")
     expect(data.itinerary.citySlug).toEqual("london-united-kingdom")
     expect(data.itinerary.isCurated).toEqual(true)
+    expect(data.itinerary.featured).toEqual(true)
     expect(data.itinerary.visibility).toEqual("PUBLIC")
 
     const section = data.itinerary.sections[0]
