@@ -14,6 +14,7 @@ const gravityItinerary = (overrides = {}) => ({
   description: null,
   author_name: null,
   is_curated: false,
+  featured: false,
   visibility: "private",
   published_at: null,
   published_by_id: null,
@@ -73,6 +74,7 @@ const gravityShortItinerary = (overrides = {}) => ({
   description: null,
   author_name: null,
   is_curated: false,
+  featured: false,
   visibility: "private",
   published_at: null,
   published_by_id: null,
@@ -301,6 +303,26 @@ describe("updateItinerary", () => {
     await runAuthenticatedQuery(mutation, context)
 
     expect(loader).toHaveBeenCalledWith("itinerary-id", { subtitle: null })
+  })
+
+  it("snake_cases featured on its way to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(input: { id: "itinerary-id", featured: true }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", { featured: true })
   })
 
   it("does not forward clientMutationId to Gravity", async () => {

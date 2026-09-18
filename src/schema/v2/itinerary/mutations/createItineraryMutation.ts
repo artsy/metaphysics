@@ -14,6 +14,7 @@ interface InputProps {
   description?: string
   authorName?: string
   isCurated?: boolean
+  featured?: boolean
   imageURL?: string
 }
 
@@ -31,6 +32,11 @@ export const createItineraryMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     authorName: { type: GraphQLString },
     isCurated: { type: GraphQLBoolean },
+    featured: {
+      description:
+        "Mark the guide as editorially featured. Needs the content_manager role.",
+      type: GraphQLBoolean,
+    },
     imageURL: {
       description:
         "URL of an image already uploaded to S3, from which Gravity " +
