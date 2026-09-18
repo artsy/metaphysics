@@ -387,7 +387,15 @@ async function resolveArtworks(
   if (internalIDs.length === 0) return []
 
   try {
-    const artworks = await context.artworksLoader({ ids: internalIDs })
+    // `size` alongside the ids: fetching by id is still a paginated Gravity
+    // request, so without it the default page (10) silently truncates a larger
+    // batch -- and the works that fall off are indistinguishable from ids the
+    // model never cited. See searchDropdown, which passes it for the same
+    // reason.
+    const artworks = await context.artworksLoader({
+      ids: internalIDs,
+      size: internalIDs.length,
+    })
     return orderArtworksByCitedIDs(artworks, internalIDs)
   } catch (error) {
     Sentry.captureException(error)
