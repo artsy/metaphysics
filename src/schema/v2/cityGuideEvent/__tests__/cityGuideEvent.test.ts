@@ -50,6 +50,17 @@ const gravityCityGuideEvent = {
       },
     },
   ],
+  articles: [
+    {
+      id: "article-join-1",
+      city_guide_event_id: "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      article_id: "article-1",
+      position: 0,
+      created_at: "2026-08-01T09:00:00Z",
+      updated_at: "2026-08-01T09:00:00Z",
+    },
+  ],
+  video: null,
   created_at: "2026-09-01T09:00:00Z",
   updated_at: "2026-09-01T09:00:00Z",
 }
@@ -272,5 +283,170 @@ describe("CityGuideEvent", () => {
         })
       )
     ).rejects.toThrow("Gravity down")
+  })
+
+  it("resolves attached articles via a single Positron lookup", async () => {
+    const articlesLoader = jest.fn().mockResolvedValue({
+      results: [
+        {
+          id: "article-1",
+          slug: "london-art-week-guide",
+          title: "London Art Week Guide",
+        },
+      ],
+    })
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          articles {
+            internalID
+            position
+            article {
+              internalID
+              slug
+              title
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, loaders({ articlesLoader }))
+
+    expect(articlesLoader).toHaveBeenCalledTimes(1)
+    expect(articlesLoader).toHaveBeenCalledWith({
+      ids: ["article-1"],
+      published: true,
+      limit: 1,
+    })
+    expect(data.cityGuideEvent.articles).toEqual([
+      {
+        internalID: "article-join-1",
+        position: 0,
+        article: {
+          internalID: "article-1",
+          slug: "london-art-week-guide",
+          title: "London Art Week Guide",
+        },
+      },
+    ])
+  })
+
+  it("resolves an empty articles list without calling Positron", async () => {
+    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+    const query = `{ cityGuideEvent(id: "london-art-week") { articles { internalID } } }`
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest
+          .fn()
+          .mockResolvedValue({ ...gravityCityGuideEvent, articles: [] }),
+        articlesLoader,
+      })
+    )
+
+    expect(articlesLoader).not.toHaveBeenCalled()
+    expect(data.cityGuideEvent.articles).toEqual([])
+  })
+
+  it("drops an article join when Positron doesn't return a matching article", async () => {
+    const articlesLoader = jest.fn().mockResolvedValue({
+      results: [
+        {
+          id: "article-1",
+          slug: "london-art-week-guide",
+          title: "London Art Week Guide",
+        },
+      ],
+    })
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          articles {
+            internalID
+            article {
+              internalID
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest.fn().mockResolvedValue({
+          ...gravityCityGuideEvent,
+          articles: [
+            ...gravityCityGuideEvent.articles,
+            {
+              id: "article-join-2",
+              city_guide_event_id: "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+              article_id: "article-deleted",
+              position: 1,
+              created_at: "2026-08-01T09:00:00Z",
+              updated_at: "2026-08-01T09:00:00Z",
+            },
+          ],
+        }),
+        articlesLoader,
+      })
+    )
+
+    expect(data.cityGuideEvent.articles).toEqual([
+      {
+        internalID: "article-join-1",
+        article: { internalID: "article-1" },
+      },
+    ])
+  })
+
+  it("resolves video as null when the event has no video", async () => {
+    const query = `{ cityGuideEvent(id: "london-art-week") { video { internalID } } }`
+
+    const data = await runQuery(query, loaders())
+
+    expect(data.cityGuideEvent.video).toBeNull()
+  })
+
+  it("resolves the attached video directly from the embedded Gravity payload", async () => {
+    const query = `
+      {
+        cityGuideEvent(id: "london-art-week") {
+          video {
+            internalID
+            title
+            playerUrl
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(
+      query,
+      loaders({
+        cityGuideEventLoader: jest.fn().mockResolvedValue({
+          ...gravityCityGuideEvent,
+          video: {
+            _id: "video-1",
+            title: "London Art Week trailer",
+            description: null,
+            player_embed_url: "https://player.vimeo.com/video/123",
+            height: 1080,
+            width: 1920,
+            aspect_ratio: 1.78,
+            created_at: "2026-08-01T09:00:00Z",
+            updated_at: "2026-08-01T09:00:00Z",
+          },
+        }),
+      })
+    )
+
+    expect(data.cityGuideEvent.video).toEqual({
+      internalID: "video-1",
+      title: "London Art Week trailer",
+      playerUrl: "https://player.vimeo.com/video/123",
+    })
   })
 })

@@ -52,6 +52,43 @@ export const ArtworkDuplicatePairType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ detection_version }) => detection_version,
     },
+    artnetImportID: {
+      type: GraphQLString,
+      description:
+        "The Artnet import that found (or claimed) this pair, if any.",
+      resolve: ({ artnet_import_id }) => artnet_import_id,
+    },
+    importedArtwork: {
+      type: ArtworkType,
+      description:
+        "The artwork that came from the Artnet import, if this pair is import-scoped.",
+      resolve: ({ imported_artwork_id }, _args, { artworkLoader }) => {
+        if (!imported_artwork_id) return null
+        return artworkLoader(imported_artwork_id)
+      },
+    },
+    existingArtwork: {
+      type: ArtworkType,
+      description:
+        "The artwork already in the partner's inventory that the imported artwork potentially duplicates, if this pair is import-scoped.",
+      resolve: (
+        { artwork_1_id, artwork_2_id, imported_artwork_id },
+        _args,
+        { artworkLoader }
+      ) => {
+        if (!imported_artwork_id) return null
+        const existingArtworkID =
+          imported_artwork_id === artwork_1_id ? artwork_2_id : artwork_1_id
+        return artworkLoader(existingArtworkID)
+      },
+    },
+    existingArtworkAlsoImported: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "True when both sides of an import-scoped pair came from the same Artnet import — the 'existing' side isn't actually pre-existing inventory, just the sibling artwork the detector found second.",
+      resolve: ({ existing_artwork_also_imported }) =>
+        !!existing_artwork_also_imported,
+    },
     matchMetadata: {
       type: GraphQLJSON,
       description:

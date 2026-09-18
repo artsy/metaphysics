@@ -43,6 +43,48 @@ describe("detectArtworkDuplicatesMutation", () => {
     })
   })
 
+  it("scopes detection to an artnet import and echoes the id back", async () => {
+    const detectArtworkDuplicatesLoader = jest.fn().mockResolvedValue({
+      status: "processing",
+      partner_id: "partner-1",
+      detection_version: "exact_v1",
+      artnet_import_id: "import-1",
+    })
+
+    const mutation = gql`
+      mutation {
+        detectArtworkDuplicates(
+          input: { partnerId: "partner-1", artnetImportID: "import-1" }
+        ) {
+          detectArtworkDuplicatesResponseOrError {
+            ... on DetectArtworkDuplicatesSuccess {
+              status
+              partnerId
+              artnetImportID
+            }
+          }
+        }
+      }
+    `
+
+    const result = await runAuthenticatedQuery(mutation, {
+      detectArtworkDuplicatesLoader,
+    })
+
+    expect(detectArtworkDuplicatesLoader).toHaveBeenCalledWith({
+      partner_id: "partner-1",
+      artnet_import_id: "import-1",
+    })
+
+    expect(
+      result.detectArtworkDuplicates.detectArtworkDuplicatesResponseOrError
+    ).toEqual({
+      status: "processing",
+      partnerId: "partner-1",
+      artnetImportID: "import-1",
+    })
+  })
+
   it("returns an error when gravity fails", async () => {
     const detectArtworkDuplicatesLoader = jest
       .fn()

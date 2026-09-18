@@ -44,6 +44,10 @@ export const artworkDuplicatePairsConnection: GraphQLFieldConfig<
       description:
         "Filter by whether the pair can be merged (neither artwork is both published and listed on Artsy)",
     },
+    artnetImportID: {
+      type: GraphQLString,
+      description: "Filter to pairs found by an import-scoped detection run",
+    },
   }),
   resolve: async (_root, args, { artworkDuplicatePairsLoader }) => {
     if (!artworkDuplicatePairsLoader) {
@@ -69,6 +73,10 @@ export const artworkDuplicatePairsConnection: GraphQLFieldConfig<
 
     if (args.mergeable != null) {
       gravityArgs.mergeable = args.mergeable
+    }
+
+    if (args.artnetImportID) {
+      gravityArgs.artnet_import_id = args.artnetImportID
     }
 
     const { body, headers } = await artworkDuplicatePairsLoader(gravityArgs)
@@ -106,6 +114,10 @@ export const ArtworkDuplicatePairsConnection: GraphQLFieldConfig<
       description:
         "Filter by whether the pair can be merged (neither artwork is both published and listed on Artsy)",
     },
+    artnetImportID: {
+      type: GraphQLString,
+      description: "Filter to pairs found by an import-scoped detection run",
+    },
   }),
   resolve: async ({ id }, args, { artworkDuplicatePairsLoader }) => {
     if (!artworkDuplicatePairsLoader) {
@@ -131,6 +143,10 @@ export const ArtworkDuplicatePairsConnection: GraphQLFieldConfig<
 
     if (args.mergeable != null) {
       gravityArgs.mergeable = args.mergeable
+    }
+
+    if (args.artnetImportID) {
+      gravityArgs.artnet_import_id = args.artnetImportID
     }
 
     const { body, headers } = await artworkDuplicatePairsLoader(gravityArgs)

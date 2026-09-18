@@ -18,8 +18,6 @@ interface Input {
   backgroundColor?: string
   ctaColor?: string
   fontFamily?: string
-  fontWeight?: string
-  fontStyle?: string
   writingLanguage?: string
   writingSample?: string
 }
@@ -85,14 +83,6 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description: "Font family name",
     },
-    fontWeight: {
-      type: GraphQLString,
-      description: "Font weight",
-    },
-    fontStyle: {
-      type: GraphQLString,
-      description: "Font style",
-    },
     writingLanguage: {
       type: GraphQLString,
       description: "Language used for generated artwork descriptions",
@@ -117,8 +107,6 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
       backgroundColor,
       ctaColor,
       fontFamily,
-      fontWeight,
-      fontStyle,
       writingLanguage,
       writingSample,
     },
@@ -134,8 +122,6 @@ export const updateBrandKitMutation = mutationWithClientMutationId<
         background_color: backgroundColor,
         cta_color: ctaColor,
         font_family: fontFamily,
-        font_weight: fontWeight,
-        font_style: fontStyle,
         writing_language: writingLanguage,
         writing_sample: writingSample,
       })

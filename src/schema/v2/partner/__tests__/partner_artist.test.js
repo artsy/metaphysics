@@ -264,6 +264,217 @@ describe("partnerArtist", () => {
     })
   })
 
+  describe("isVerifiedRepresentative", () => {
+    let verifiedRepresentativesLoader
+
+    beforeEach(() => {
+      // Gravity returns both the database id (`_id`) and the slug (`id`);
+      // only `_id` matches the verified_representatives columns.
+      partnerData = { ...partnerData, _id: "partner-database-id" }
+
+      partnerArtistData = [
+        {
+          artist: { _id: "artist-database-id", id: "catty-artist" },
+          partner: { _id: "partner-database-id", id: "catty-partner" },
+        },
+      ]
+
+      verifiedRepresentativesLoader = jest
+        .fn()
+        .mockReturnValue(Promise.resolve([]))
+
+      context = {
+        partnerArtistsForPartnerLoader: () =>
+          Promise.resolve({
+            body: partnerArtistData,
+            headers: {
+              "x-total-count": partnerArtistData.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+        verifiedRepresentativesLoader,
+      }
+    })
+
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          artistsConnection(first: 1) {
+            edges {
+              isVerifiedRepresentative
+            }
+          }
+        }
+      }
+    `
+
+    it("is true when Artsy has verified the pair", async () => {
+      verifiedRepresentativesLoader.mockReturnValue(
+        Promise.resolve([
+          {
+            artist_id: "artist-database-id",
+            partner_id: "partner-database-id",
+          },
+        ])
+      )
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: true,
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("is false when Artsy has not verified the pair", async () => {
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: false,
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("batches the lookup by the partner's database id, not its slug", async () => {
+      await runQuery(query, context)
+
+      expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
+      expect(verifiedRepresentativesLoader).toHaveBeenCalledWith({
+        partner_id: "partner-database-id",
+      })
+    })
+
+    it("does not match on the artist slug", async () => {
+      verifiedRepresentativesLoader.mockReturnValue(
+        Promise.resolve([
+          { artist_id: "catty-artist", partner_id: "partner-database-id" },
+        ])
+      )
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                isVerifiedRepresentative: false,
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    describe("batching across a page", () => {
+      beforeEach(() => {
+        partnerArtistData = [
+          {
+            artist: { _id: "verified-artist-id", id: "verified-artist" },
+            partner: { _id: "partner-database-id", id: "catty-partner" },
+          },
+          {
+            artist: { _id: "unverified-artist-id", id: "unverified-artist" },
+            partner: { _id: "partner-database-id", id: "catty-partner" },
+          },
+        ]
+
+        verifiedRepresentativesLoader.mockReturnValue(
+          Promise.resolve([
+            {
+              artist_id: "verified-artist-id",
+              partner_id: "partner-database-id",
+            },
+          ])
+        )
+      })
+
+      const pageQuery = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 2) {
+              edges {
+                isVerifiedRepresentative
+              }
+            }
+          }
+        }
+      `
+
+      it("makes one Gravity call for the whole page", async () => {
+        await runQuery(pageQuery, context)
+
+        expect(verifiedRepresentativesLoader).toHaveBeenCalledTimes(1)
+      })
+
+      it("resolves each edge from the batched response", async () => {
+        const data = await runQuery(pageQuery, context)
+
+        expect(data).toEqual({
+          partner: {
+            artistsConnection: {
+              edges: [
+                { isVerifiedRepresentative: true },
+                { isVerifiedRepresentative: false },
+              ],
+            },
+          },
+        })
+      })
+
+      it("does not call Gravity when the field is not requested", async () => {
+        const otherQuery = gql`
+          {
+            partner(id: "catty-partner") {
+              artistsConnection(first: 2) {
+                edges {
+                  representedBy
+                }
+              }
+            }
+          }
+        `
+
+        await runQuery(otherQuery, context)
+
+        expect(verifiedRepresentativesLoader).not.toHaveBeenCalled()
+      })
+
+      it("degrades to false when the batched lookup fails", async () => {
+        verifiedRepresentativesLoader.mockReturnValue(
+          Promise.reject(new Error("Gravity is down"))
+        )
+
+        const data = await runQuery(pageQuery, context)
+
+        expect(data).toEqual({
+          partner: {
+            artistsConnection: {
+              edges: [
+                { isVerifiedRepresentative: false },
+                { isVerifiedRepresentative: false },
+              ],
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#PartnerArtistArtworksConnection", () => {
     let partnerArtistArtworksResponse
     partnerArtistData = [
