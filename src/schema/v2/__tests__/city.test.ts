@@ -484,7 +484,7 @@ describe("City", () => {
     })
 
     it.each([
-      ["CURRENT", "current"],
+      ["CURRENT", "visible"],
       ["UPCOMING", "upcoming"],
       ["CLOSED", "closed"],
     ])("passes status: %s as status: %s", async (enumValue, gravityValue) => {

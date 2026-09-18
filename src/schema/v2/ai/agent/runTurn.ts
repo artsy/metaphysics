@@ -387,7 +387,10 @@ async function resolveArtworks(
   if (internalIDs.length === 0) return []
 
   try {
-    const artworks = await context.artworksLoader({ ids: internalIDs })
+    const artworks = await context.artworksLoader({
+      ids: internalIDs,
+      size: internalIDs.length,
+    })
     return orderArtworksByCitedIDs(artworks, internalIDs)
   } catch (error) {
     Sentry.captureException(error)
