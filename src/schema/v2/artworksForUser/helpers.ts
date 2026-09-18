@@ -15,6 +15,9 @@ const MINIMUM_EIGEN_VERSION = { major: 9, minor: 14, patch: 0 }
 
 const REFRESH_EIGEN_FLAG = "onyx_nwfy-refresh-eigen"
 
+// mirrors the Trending Lots rail on /auctions
+const TRENDING_LOTS_ESTIMATE_RANGE = "5_000_00-*"
+
 const isInRefreshExperiment = (context: ResolverContext): boolean => {
   const variant = getExperimentVariant(REFRESH_EIGEN_FLAG, {
     userId: context.userID,
@@ -185,6 +188,36 @@ export const getNewForYouArtworks = async (
   return body
 }
 
+const getTrendingLotsBackfill = async ({
+  size,
+  offset,
+  marketable,
+  context,
+}: {
+  size: number
+  offset: number
+  marketable?: boolean
+  context: ResolverContext
+}): Promise<{ artworks: any[]; totalCount: number | null }> => {
+  const { saleArtworksFilterLoader } = context
+
+  const { hits, aggregations } = await saleArtworksFilterLoader({
+    aggregations: ["total"],
+    biddable_sale: true,
+    estimate_range: TRENDING_LOTS_ESTIMATE_RANGE,
+    exclude_closed_lots: true,
+    offset,
+    size,
+    sort: "-bidder_positions_count",
+    ...(marketable && { marketable: true }),
+  })
+
+  return {
+    artworks: (hits ?? []).map((hit) => hit.artwork).filter(Boolean),
+    totalCount: aggregations?.total?.value ?? 0,
+  }
+}
+
 export const getBackfillArtworks = async ({
   size,
   offset = 0,
@@ -193,6 +226,8 @@ export const getBackfillArtworks = async ({
   marketingCollectionId,
   onlyAtAuction = false,
   excludeDislikedArtworks = false,
+  backfillSource,
+  marketable,
 }: {
   size: number
   offset?: number
@@ -201,8 +236,14 @@ export const getBackfillArtworks = async ({
   marketingCollectionId?: string
   onlyAtAuction?: boolean
   excludeDislikedArtworks?: boolean
+  backfillSource?: string
+  marketable?: boolean
 }): Promise<{ artworks: any[]; totalCount: number | null }> => {
   if (!includeBackfill || size < 1) return { artworks: [], totalCount: 0 }
+
+  if (backfillSource === "TRENDING_LOTS") {
+    return getTrendingLotsBackfill({ size, offset, marketable, context })
+  }
 
   if (marketingCollectionId && onlyAtAuction) {
     throw new Error(

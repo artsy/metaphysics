@@ -474,6 +474,92 @@ describe("getBackfillArtworks", () => {
     })
   })
 
+  it("returns backfill from trending lots when that source is requested", async () => {
+    const mockSaleArtworksFilterLoader = jest.fn(() => ({
+      hits: [{ id: "sale-artwork-id", artwork: { id: "trending-artwork-id" } }],
+      aggregations: { total: { value: 42 } },
+    }))
+    const includeBackfill = true
+    const context = {
+      saleArtworksFilterLoader: mockSaleArtworksFilterLoader,
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {},
+    } as any
+
+    const { artworks, totalCount } = await getBackfillArtworks({
+      size: 1,
+      includeBackfill,
+      context,
+      backfillSource: "TRENDING_LOTS",
+    })
+
+    expect(mockSaleArtworksFilterLoader).toBeCalledWith({
+      aggregations: ["total"],
+      biddable_sale: true,
+      estimate_range: "5_000_00-*",
+      exclude_closed_lots: true,
+      offset: 0,
+      size: 1,
+      sort: "-bidder_positions_count",
+    })
+    expect(artworks.map((artwork) => artwork.id)).toEqual([
+      "trending-artwork-id",
+    ])
+    expect(totalCount).toEqual(42)
+  })
+
+  it("passes marketable to the trending lots backfill", async () => {
+    const mockSaleArtworksFilterLoader = jest.fn(() => ({
+      hits: [],
+      aggregations: { total: { value: 0 } },
+    }))
+    const context = {
+      saleArtworksFilterLoader: mockSaleArtworksFilterLoader,
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {},
+    } as any
+
+    await getBackfillArtworks({
+      size: 1,
+      includeBackfill: true,
+      context,
+      backfillSource: "TRENDING_LOTS",
+      marketable: true,
+    })
+
+    expect(mockSaleArtworksFilterLoader).toBeCalledWith(
+      expect.objectContaining({ marketable: true })
+    )
+  })
+
+  it("prefers trending lots over the auction collection backfill", async () => {
+    const mockSaleArtworksFilterLoader = jest.fn(() => ({
+      hits: [],
+      aggregations: { total: { value: 0 } },
+    }))
+    const mockFilterArtworksLoader = jest.fn()
+    const context = {
+      saleArtworksFilterLoader: mockSaleArtworksFilterLoader,
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    } as any
+
+    await getBackfillArtworks({
+      size: 1,
+      includeBackfill: true,
+      context,
+      backfillSource: "TRENDING_LOTS",
+      onlyAtAuction: true,
+    })
+
+    expect(mockSaleArtworksFilterLoader).toBeCalled()
+    expect(mockFilterArtworksLoader).not.toBeCalled()
+  })
+
   it("returns backfilled from a collection for auction artworks", async () => {
     const mockFilterArtworksLoader = jest.fn(() => ({
       hits: [{ id: "backfill-artwork-id" }],

@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
@@ -19,6 +20,16 @@ import {
   getNewForYouArtworks,
 } from "./helpers"
 
+const BackfillSourceType = new GraphQLEnumType({
+  name: "ArtworksForUserBackfillSource",
+  values: {
+    TRENDING_LOTS: {
+      value: "TRENDING_LOTS",
+      description: "Biddable lots with the most bids, as shown on /auctions",
+    },
+  },
+})
+
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
@@ -32,6 +43,11 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     backfillMarketingCollectionID: {
       type: GraphQLString,
       description: "The ID of the marketing collection to be used for backfill",
+    },
+    backfillSource: {
+      type: BackfillSourceType,
+      description:
+        "Where backfill artworks come from. Defaults to the marketing collection, or the backfill set.",
     },
     onlyAtAuction: {
       type: GraphQLBoolean,
@@ -98,6 +114,8 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       marketingCollectionId: args.backfillMarketingCollectionID,
       onlyAtAuction: args.onlyAtAuction,
       excludeDislikedArtworks: args.excludeDislikedArtworks,
+      backfillSource: args.backfillSource,
+      marketable: args.marketable,
     })
 
     const artworks = uniqBy(pageRecs.concat(backfillArtworks), "id").slice(
