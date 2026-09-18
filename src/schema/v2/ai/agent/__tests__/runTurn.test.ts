@@ -202,7 +202,7 @@ describe("runTurn", () => {
       message: "Found Andy Warhol.",
       artworks: [{ _id: ID_A, id: "andy-warhol-flowers", title: "Flowers" }],
     })
-    expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A] })
+    expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A], size: 1 })
     expect(mockModel.doStreamCalls).toHaveLength(2)
   })
 
@@ -405,7 +405,7 @@ describe("runTurn", () => {
         [{ _id: ID_A, id: "slug-a" }]
       )
 
-      expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A] })
+      expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A], size: 1 })
       expect(artworks.map((a) => a._id)).toEqual([ID_A])
     })
 
@@ -431,6 +431,19 @@ describe("runTurn", () => {
       expect(artworks).toHaveLength(2)
       expect(artworks).not.toContain(undefined)
       expect(artworks.map((a) => a._id)).toEqual([ID_A, ID_B])
+    })
+
+    it("asks for as many works as it cited, since fetching by id still paginates", async () => {
+      // Gravity's default page is 10, so a batch of 20 comes back halved
+      // unless `size` says otherwise -- and the missing cards look exactly
+      // like ids the model never cited.
+      const manyIDs = Array.from({ length: 20 }, (_, index) =>
+        index.toString(16).padStart(24, "0")
+      )
+
+      const { artworksLoader } = await cardsFor(manyIDs)
+
+      expect(artworksLoader).toHaveBeenCalledWith({ ids: manyIDs, size: 20 })
     })
 
     it("renders one card per work, however many times the model cites it", async () => {
