@@ -12,6 +12,8 @@ interface InputProps {
   citySlug?: string
   startAt?: string
   endAt?: string
+  displayStartAt?: string | null
+  displayEndAt?: string | null
   subtitle?: string
   description?: string
   timeZone?: string
@@ -44,6 +46,14 @@ export const updateCityGuideEventMutation = mutationWithClientMutationId<
       description: "ISO 8601 datetime. Must not be before `startAt`.",
     },
     subtitle: { type: GraphQLString },
+    displayStartAt: {
+      type: GraphQLString,
+      description: "Display from (ISO 8601). Null defaults to startAt.",
+    },
+    displayEndAt: {
+      type: GraphQLString,
+      description: "Display until (ISO 8601). Null defaults to endAt.",
+    },
     description: { type: GraphQLString },
     timeZone: {
       type: GraphQLString,

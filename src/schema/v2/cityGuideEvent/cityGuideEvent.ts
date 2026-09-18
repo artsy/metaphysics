@@ -52,6 +52,8 @@ export const CityGuideEventType = new GraphQLObjectType<
     },
     startAt: date(({ start_at }) => start_at, true),
     endAt: date(({ end_at }) => end_at, true),
+    displayStartAt: date(({ display_start_at }) => display_start_at),
+    displayEndAt: date(({ display_end_at }) => display_end_at),
     timeZone: {
       type: GraphQLString,
       resolve: ({ time_zone }) => time_zone,

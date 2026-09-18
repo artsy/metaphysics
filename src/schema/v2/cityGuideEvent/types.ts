@@ -46,6 +46,8 @@ export interface GravityCityGuideEvent {
   city_slug: string
   start_at: string
   end_at: string
+  display_start_at?: string | null
+  display_end_at?: string | null
   time_zone: string | null
   published_at: string | null
   published_by_id: string | null

@@ -129,6 +129,77 @@ const notFoundError = new HTTPError("Not Found", 404, {
 })
 
 describe("createCityGuideEvent", () => {
+  it("passes display dates through and resolves them for admin", async () => {
+    const loader = jest.fn().mockResolvedValue(
+      gravityCityGuideEvent({
+        display_start_at: "2026-09-01T00:00:00Z",
+        display_end_at: "2026-10-20T00:00:00Z",
+      })
+    )
+    const result = await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createCityGuideEvent(
+            input: {
+              title: "London Art Week"
+              citySlug: "london-united-kingdom"
+              startAt: "2026-10-05T00:00:00Z"
+              endAt: "2026-10-12T00:00:00Z"
+              displayStartAt: "2026-09-01T00:00:00Z"
+              displayEndAt: "2026-10-20T00:00:00Z"
+            }
+          ) {
+            responseOrError {
+              ... on CityGuideEventMutationSuccess {
+                cityGuideEvent {
+                  displayStartAt
+                  displayEndAt
+                }
+              }
+            }
+          }
+        }
+      `,
+      withLoader(loader)
+    )
+    expect(loader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        display_start_at: "2026-09-01T00:00:00Z",
+        display_end_at: "2026-10-20T00:00:00Z",
+      })
+    )
+    expect(result.createCityGuideEvent.responseOrError.cityGuideEvent).toEqual({
+      displayStartAt: "2026-09-01T00:00:00Z",
+      displayEndAt: "2026-10-20T00:00:00Z",
+    })
+  })
+
+  it("passes explicit nulls through when clearing display dates", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityCityGuideEvent())
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateCityGuideEvent(
+            input: { id: "event-id", displayStartAt: null, displayEndAt: null }
+          ) {
+            responseOrError {
+              ... on CityGuideEventMutationSuccess {
+                cityGuideEvent {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `,
+      withLoader(loader)
+    )
+    expect(loader).toHaveBeenCalledWith("event-id", {
+      display_start_at: null,
+      display_end_at: null,
+    })
+  })
+
   const mutation = gql`
     mutation {
       createCityGuideEvent(

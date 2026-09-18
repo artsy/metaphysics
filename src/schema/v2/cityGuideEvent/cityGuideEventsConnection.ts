@@ -9,12 +9,11 @@ import { ResolverContext } from "types/graphql"
 import type { TCity } from "schema/v2/city"
 import { CityGuideEventType } from "./cityGuideEvent"
 
-// Mirrors Gravity's CityGuideEvent::STATUS values verbatim (current/upcoming/closed) —
-// the enum values below are exactly the strings sent as Gravity's `status` param.
+// CURRENT uses the display window so existing app queries include previews and recaps.
 export const CityGuideEventStatusEnum = new GraphQLEnumType({
   name: "CityGuideEventStatus",
   values: {
-    CURRENT: { value: "current", description: "Started, hasn't ended" },
+    CURRENT: { value: "visible", description: "Within the event's display window" },
     UPCOMING: { value: "upcoming", description: "Hasn't started yet" },
     CLOSED: { value: "closed", description: "Already ended" },
   },
