@@ -80,7 +80,7 @@ export const ItineraryType = new GraphQLObjectType<
         "Whether the requesting user owns this itinerary. False for a curated guide, " +
         "and for another user's personal itinerary opened via a share link.",
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({ user_id }, _args, { userID }) => user_id === userID,
+      resolve: ({ user_id }, _args, { userID }) => !!userID && user_id === userID,
     },
     featured: {
       description:
