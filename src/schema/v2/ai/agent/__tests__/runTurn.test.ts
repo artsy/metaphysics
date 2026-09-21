@@ -841,4 +841,145 @@ describe("runTurn", () => {
       expect(context.aiPromptTemplatesLoader).not.toHaveBeenCalled()
     })
   })
+  describe("prompt caching", () => {
+    // What the Anthropic provider turns into `cache_control` breakpoints:
+    // message-level `providerOptions.anthropic.cacheControl`, applied to that
+    // message's last content part. Reported as roles so a failure says which
+    // message moved rather than which index.
+    const cachedRolesOnCall = (callIndex: number) =>
+      mockModel.doStreamCalls[callIndex].prompt
+        .filter(
+          (entry: any) => entry.providerOptions?.anthropic?.cacheControl != null
+        )
+        .map((entry: any) => entry.role)
+
+    const singleStepModel = () =>
+      new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            {
+              type: "text-delta",
+              id: "1",
+              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+            },
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+
+    it("caches the system prompt and the new message on a first turn", async () => {
+      mockModel = singleStepModel()
+
+      await collectEvents({ conversationID: "c1", message: "Find Warhol" })
+
+      // No history, so no history breakpoint: just the static system one and
+      // the rolling tail, which on step 1 is the new user message.
+      expect(cachedRolesOnCall(0)).toEqual(["system", "user"])
+    })
+
+    it("caches the replayed history as its own prefix, excluding the new message", async () => {
+      mockModel = singleStepModel()
+
+      await collectEvents({
+        conversationID: "c1",
+        message: "And cheaper?",
+        history: [
+          { role: "user", content: "Show me Warhol prints" },
+          { role: "assistant", content: "Here are a few.", artworkIDs: [ID_A] },
+        ],
+      })
+
+      // The breakpoint sits on the last *history* message, not the new one:
+      // system + history is the prefix every later turn in this conversation
+      // shares byte for byte, so it reads back instead of being resent.
+      const prompt = mockModel.doStreamCalls[0].prompt
+      expect(prompt.map((entry: any) => entry.role)).toEqual([
+        "system",
+        "user",
+        "assistant",
+        "user",
+      ])
+      expect(prompt[2].providerOptions?.anthropic?.cacheControl).toEqual({
+        type: "ephemeral",
+      })
+      expect(cachedRolesOnCall(0)).toEqual(["system", "assistant", "user"])
+    })
+
+    it("rolls the breakpoint onto the tool result so the next step reads it back", async () => {
+      // The regression this guards: without a breakpoint past the system
+      // prompt, step 2 resends step 1's whole tool result (up to
+      // MAX_TOOL_RESULT_BYTES) as uncached input, and so does every step after.
+      mockModel = new MockLanguageModelV3({
+        doStream: stepsWithOffset([
+          {
+            stream: convertArrayToReadableStream([
+              { type: "stream-start", warnings: [] },
+              {
+                type: "tool-call",
+                toolCallId: "call-1",
+                toolName: "query_artsy",
+                input: JSON.stringify({
+                  query: '{ artist(id: "andy-warhol") { name } }',
+                }),
+              },
+              {
+                type: "finish",
+                finishReason: { unified: "tool-calls", raw: "tool_use" },
+                usage: FAKE_USAGE,
+              },
+            ]),
+          },
+          {
+            stream: convertArrayToReadableStream([
+              { type: "stream-start", warnings: [] },
+              { type: "text-start", id: "2" },
+              {
+                type: "text-delta",
+                id: "2",
+                delta: JSON.stringify({ message: "Found.", artworkIDs: [] }),
+              },
+              { type: "text-end", id: "2" },
+              {
+                type: "finish",
+                finishReason: { unified: "stop", raw: "end_turn" },
+                usage: FAKE_USAGE,
+              },
+            ]),
+          },
+        ]),
+      })
+
+      await collectEvents({ conversationID: "c1", message: "Find Warhol" })
+
+      expect(mockModel.doStreamCalls).toHaveLength(2)
+      // Step 2 appends the tool call and its result; the breakpoint follows
+      // the tail, so everything before it is a cache read.
+      const secondPrompt = mockModel.doStreamCalls[1].prompt
+      expect(secondPrompt[secondPrompt.length - 1].role).toBe("tool")
+      expect(cachedRolesOnCall(1)).toContain("tool")
+    })
+
+    it("stays within Anthropic's four-breakpoint budget", async () => {
+      mockModel = singleStepModel()
+
+      await collectEvents({
+        conversationID: "c1",
+        message: "And cheaper?",
+        history: Array.from({ length: 20 }, (_, index) => ({
+          role: index % 2 === 0 ? "user" : "assistant",
+          content: `turn ${index}`,
+        })),
+      })
+
+      // Over four and the provider silently drops the extras with a warning.
+      expect(cachedRolesOnCall(0).length).toBeLessThanOrEqual(4)
+    })
+  })
 })
