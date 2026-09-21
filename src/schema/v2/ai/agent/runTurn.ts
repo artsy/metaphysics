@@ -449,7 +449,13 @@ const EPHEMERAL_CACHE_CONTROL = {
 function withCacheBreakpoint(message: ModelMessage): ModelMessage {
   return {
     ...message,
-    providerOptions: { ...message.providerOptions, ...EPHEMERAL_CACHE_CONTROL },
+    providerOptions: {
+      ...message.providerOptions,
+      anthropic: {
+        ...message.providerOptions?.anthropic,
+        ...EPHEMERAL_CACHE_CONTROL.anthropic,
+      },
+    },
   } as ModelMessage
 }
 
