@@ -1522,6 +1522,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    addItineraryStopsLoader: gravityLoader(
+      (id) => `itinerary/${id}/stops`,
+      {},
+      { method: "POST" }
+    ),
     updateItineraryStopLoader: gravityLoader(
       (id) => `itinerary_stop/${id}`,
       {},

@@ -376,6 +376,7 @@ import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMuta
 import { Itinerary } from "./itinerary"
 import { ItineraryStop } from "./itinerary/itineraryStopField"
 import { ItinerariesConnectionField } from "./itinerary/itinerariesConnection"
+import { addItineraryStopsMutation } from "./itinerary/mutations/addItineraryStopsMutation"
 import { copyItineraryMutation } from "./itinerary/mutations/copyItineraryMutation"
 import { createItineraryMutation } from "./itinerary/mutations/createItineraryMutation"
 import { createItinerarySectionMutation } from "./itinerary/mutations/createItinerarySectionMutation"
@@ -667,6 +668,7 @@ export default new GraphQLSchema({
       addArtworkToPartnerList: addArtworkToPartnerListMutation,
       addArtworkToPartnerShow: addArtworkToPartnerShowMutation,
       addInstallShotToPartnerShow: addInstallShotToPartnerShowMutation,
+      addItineraryStops: addItineraryStopsMutation,
       createBuyerOffer: createBuyerOfferMutation,
       updateBuyerOffer: updateBuyerOfferMutation,
       acceptSellerOffer: acceptSellerOfferMutation,
