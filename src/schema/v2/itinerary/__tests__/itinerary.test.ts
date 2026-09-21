@@ -472,6 +472,19 @@ describe("Itinerary", () => {
     expect(signedOut.itinerary.isMine).toBe(false)
   })
 
+  it("is false when signed out, even if the itinerary has no owner", async () => {
+    const query = `{ itinerary(id: "chill-vibes-only") { isMine } }`
+
+    const data = await runQuery(query, {
+      ...loaders(),
+      itineraryLoader: jest
+        .fn()
+        .mockResolvedValue({ ...gravityItinerary, user_id: null }),
+    })
+
+    expect(data.itinerary.isMine).toBe(false)
+  })
+
   it("maps a non-public Gravity visibility value", async () => {
     const query = `
       {
