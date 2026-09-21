@@ -75,6 +75,14 @@ export const ItineraryType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_curated }) => is_curated,
     },
+    isMine: {
+      description:
+        "Whether the requesting user owns this itinerary. False for a curated guide, " +
+        "and for another user's personal itinerary opened via a share link.",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ user_id }, _args, { userID }) =>
+        !!userID && user_id === userID,
+    },
     featured: {
       description:
         "Whether the guide is editorially featured, to be surfaced ahead of its peers.",
