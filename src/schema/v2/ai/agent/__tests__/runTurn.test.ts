@@ -874,6 +874,50 @@ describe("runTurn", () => {
         },
       })
 
+    // One tool-call step, then the structured-output answer -- the shape that
+    // makes the rolling breakpoint matter, since step 2 resends step 1's tool
+    // result.
+    const twoStepModel = () =>
+      new MockLanguageModelV3({
+        doStream: stepsWithOffset([
+          {
+            stream: convertArrayToReadableStream([
+              { type: "stream-start", warnings: [] },
+              {
+                type: "tool-call",
+                toolCallId: "call-1",
+                toolName: "query_artsy",
+                input: JSON.stringify({
+                  query: '{ artist(id: "andy-warhol") { name } }',
+                }),
+              },
+              {
+                type: "finish",
+                finishReason: { unified: "tool-calls", raw: "tool_use" },
+                usage: FAKE_USAGE,
+              },
+            ]),
+          },
+          {
+            stream: convertArrayToReadableStream([
+              { type: "stream-start", warnings: [] },
+              { type: "text-start", id: "2" },
+              {
+                type: "text-delta",
+                id: "2",
+                delta: JSON.stringify({ message: "Found.", artworkIDs: [] }),
+              },
+              { type: "text-end", id: "2" },
+              {
+                type: "finish",
+                finishReason: { unified: "stop", raw: "end_turn" },
+                usage: FAKE_USAGE,
+              },
+            ]),
+          },
+        ]),
+      })
+
     it("caches the system prompt and the new message on a first turn", async () => {
       mockModel = singleStepModel()
 
@@ -916,45 +960,7 @@ describe("runTurn", () => {
       // The regression this guards: without a breakpoint past the system
       // prompt, step 2 resends step 1's whole tool result (up to
       // MAX_TOOL_RESULT_BYTES) as uncached input, and so does every step after.
-      mockModel = new MockLanguageModelV3({
-        doStream: stepsWithOffset([
-          {
-            stream: convertArrayToReadableStream([
-              { type: "stream-start", warnings: [] },
-              {
-                type: "tool-call",
-                toolCallId: "call-1",
-                toolName: "query_artsy",
-                input: JSON.stringify({
-                  query: '{ artist(id: "andy-warhol") { name } }',
-                }),
-              },
-              {
-                type: "finish",
-                finishReason: { unified: "tool-calls", raw: "tool_use" },
-                usage: FAKE_USAGE,
-              },
-            ]),
-          },
-          {
-            stream: convertArrayToReadableStream([
-              { type: "stream-start", warnings: [] },
-              { type: "text-start", id: "2" },
-              {
-                type: "text-delta",
-                id: "2",
-                delta: JSON.stringify({ message: "Found.", artworkIDs: [] }),
-              },
-              { type: "text-end", id: "2" },
-              {
-                type: "finish",
-                finishReason: { unified: "stop", raw: "end_turn" },
-                usage: FAKE_USAGE,
-              },
-            ]),
-          },
-        ]),
-      })
+      mockModel = twoStepModel()
 
       await collectEvents({ conversationID: "c1", message: "Find Warhol" })
 
@@ -980,6 +986,32 @@ describe("runTurn", () => {
 
       // Over four and the provider silently drops the extras with a warning.
       expect(cachedRolesOnCall(0).length).toBeLessThanOrEqual(4)
+    })
+
+    it("keeps all three breakpoints in budget on a later step of a turn with history", async () => {
+      // The case where every source of a breakpoint is live at once: a
+      // replayed history *and* a rolling tail several steps in. The count
+      // holds at three only because `prepareStep` moves its breakpoint rather
+      // than adding one per step -- change that and this is what catches it,
+      // since the provider drops a fifth breakpoint with a warning rather
+      // than an error.
+      mockModel = twoStepModel()
+
+      await collectEvents({
+        conversationID: "c1",
+        message: "And cheaper?",
+        history: [
+          { role: "user", content: "Show me Warhol prints" },
+          { role: "assistant", content: "Here are a few.", artworkIDs: [ID_A] },
+        ],
+      })
+
+      expect(mockModel.doStreamCalls).toHaveLength(2)
+      expect(cachedRolesOnCall(0).length).toBeLessThanOrEqual(4)
+      expect(cachedRolesOnCall(1).length).toBeLessThanOrEqual(4)
+      // The history breakpoint survives into step 2 rather than being
+      // displaced by the rolling one, so the cross-turn prefix stays cached.
+      expect(cachedRolesOnCall(1)).toEqual(["system", "assistant", "tool"])
     })
   })
 })

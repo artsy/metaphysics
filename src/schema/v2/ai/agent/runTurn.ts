@@ -566,9 +566,7 @@ export async function* runTurn(
       system: {
         role: "system",
         content: system,
-        providerOptions: {
-          anthropic: { cacheControl: { type: "ephemeral" } },
-        },
+        providerOptions: EPHEMERAL_CACHE_CONTROL,
       },
       messages,
       tools,
