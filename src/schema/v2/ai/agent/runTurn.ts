@@ -1,5 +1,5 @@
 import { streamText, stepCountIs, parsePartialJson, Output } from "ai"
-import type { ModelMessage } from "ai"
+import type { ModelMessage, PrepareStepFunction } from "ai"
 import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
@@ -435,6 +435,33 @@ function annotateWithShownArtworks(
   return content.length > 0 ? `${content}\n\n${note}` : note
 }
 
+/**
+ * Anthropic caches the request prefix up to each breakpoint, and reads it back
+ * at 0.1x on any later request sharing those exact bytes. Marking a message
+ * puts a breakpoint at the end of it; the provider applies message-level
+ * cacheControl to that message's last content part, for every role.
+ *
+ * Budget is four breakpoints per request across tools + system + messages
+ * (the provider drops the rest with a warning). We spend three: the system
+ * prompt, the end of the replayed history, and a rolling one on the tail.
+ */
+const EPHEMERAL_CACHE_CONTROL = {
+  anthropic: { cacheControl: { type: "ephemeral" } },
+}
+
+function withCacheBreakpoint(message: ModelMessage): ModelMessage {
+  return {
+    ...message,
+    providerOptions: {
+      ...message.providerOptions,
+      anthropic: {
+        ...message.providerOptions?.anthropic,
+        ...EPHEMERAL_CACHE_CONTROL.anthropic,
+      },
+    },
+  } as ModelMessage
+}
+
 function buildMessages(
   history: AIAgentHistoryEntry[] | null | undefined,
   message: string
@@ -451,7 +478,39 @@ function buildMessages(
       : { role: "user", content: entry.content }
   )
 
+  // Breakpoint after the history, so the prefix every turn in a conversation
+  // shares -- system plus every prior message, replayed verbatim by the client
+  // -- is a cache read rather than fresh input on the second turn onwards. The
+  // new message stays outside it: it's the only part that isn't already cached.
+  if (priorMessages.length > 0) {
+    const last = priorMessages.length - 1
+    priorMessages[last] = withCacheBreakpoint(priorMessages[last])
+  }
+
   return [...priorMessages, { role: "user", content: message }]
+}
+
+/**
+ * Rolling breakpoint on the last message of each step.
+ *
+ * A turn is up to AI_AGENT_MAX_ITERATIONS model calls, and every one resends
+ * the whole conversation so far -- including each previous tool result, which
+ * serializeToolResult caps at 48KB (~12k tokens). Uncached, that tail is
+ * re-billed at full rate once per remaining step, so input cost grows with the
+ * square of the step count.
+ *
+ * Marking the tail makes step k's prefix a cache read for step k+1. The
+ * breakpoint moves each step, but Anthropic also probes ~20 blocks back from
+ * it for an earlier write, and a step only appends two (the tool call and its
+ * result) -- so one rolling breakpoint keeps the chain hitting, and the only
+ * thing billed at the write rate is that step's new bytes.
+ */
+const prepareStep: PrepareStepFunction = ({ messages }) => {
+  if (messages.length === 0) return {}
+  const last = messages.length - 1
+  return {
+    messages: [...messages.slice(0, last), withCacheBreakpoint(messages[last])],
+  }
 }
 
 /**
@@ -509,18 +568,18 @@ export async function* runTurn(
 
     const result = streamText({
       model: provider(config.AI_AGENT_MODEL),
-      // Cache breakpoint on the system prompt: it's byte-stable across steps
-      // and turns (fixed tool order, no timestamps/request IDs), so this
-      // prefix is a cache hit on every follow-up call.
+      // First cache breakpoint (see withCacheBreakpoint): the tool definitions
+      // and system prompt are byte-stable across steps and turns (fixed tool
+      // order, no timestamps/request IDs), so this prefix is a cache hit on
+      // every follow-up call.
       system: {
         role: "system",
         content: system,
-        providerOptions: {
-          anthropic: { cacheControl: { type: "ephemeral" } },
-        },
+        providerOptions: EPHEMERAL_CACHE_CONTROL,
       },
       messages,
       tools,
+      prepareStep,
       stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
