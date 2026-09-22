@@ -28155,6 +28155,13 @@ type Mutation {
   updateArtist(input: UpdateArtistMutationInput!): UpdateArtistMutationPayload
 
   """
+  Update an artist's social handles. Unlike updateArtist, this is permitted for a partner that Artsy has verified as representing the artist.
+  """
+  updateArtistSocials(
+    input: UpdateArtistSocialsMutationInput!
+  ): UpdateArtistSocialsMutationPayload
+
+  """
   Updates an artwork.
   """
   updateArtwork(
@@ -39743,11 +39750,6 @@ input UpdateArtistMutationInput {
   groupIndicator: ArtistGroupIndicator
   hometown: String
   id: String!
-
-  """
-  Artist's Instagram handle. A leading @ or a profile URL is accepted.
-  """
-  instagramHandle: String
   last: String
   location: String
   middle: String
@@ -39770,6 +39772,36 @@ type UpdateArtistMutationPayload {
 }
 
 union UpdateArtistResponseOrError = UpdateArtistFailure | UpdateArtistSuccess
+
+type UpdateArtistSocialsFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtistSocialsMutationInput {
+  clientMutationId: String
+  id: String!
+
+  """
+  Artist's Instagram handle. A leading @ or a profile URL is accepted. Pass an empty string to clear it.
+  """
+  instagramHandle: String
+}
+
+type UpdateArtistSocialsMutationPayload {
+  """
+  On success: the updated artist
+  """
+  artistOrError: UpdateArtistSocialsResponseOrError
+  clientMutationId: String
+}
+
+union UpdateArtistSocialsResponseOrError =
+    UpdateArtistSocialsFailure
+  | UpdateArtistSocialsSuccess
+
+type UpdateArtistSocialsSuccess {
+  artist: Artist
+}
 
 type UpdateArtistSuccess {
   artist: Artist

@@ -41,7 +41,6 @@ interface Input {
   groupIndicator?: ArtistGroupIndicator
   hometown?: string
   id: string
-  instagramHandle?: string
   last?: string
   location?: string
   middle?: string
@@ -71,11 +70,6 @@ const inputFields = {
   groupIndicator: { type: ArtistGroupIndicatorEnum },
   hometown: { type: GraphQLString },
   id: { type: new GraphQLNonNull(GraphQLString) },
-  instagramHandle: {
-    type: GraphQLString,
-    description:
-      "Artist's Instagram handle. A leading @ or a profile URL is accepted.",
-  },
   last: { type: GraphQLString },
   location: { type: GraphQLString },
   middle: { type: GraphQLString },
@@ -105,7 +99,6 @@ interface GravityInput {
   group_indicator?: string
   hometown?: string
   id: string
-  instagram_handle?: string
   last?: string
   location?: string
   middle?: string

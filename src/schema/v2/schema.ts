@@ -83,6 +83,7 @@ import MatchArtist from "./match/artist"
 import Partner from "schema/v2/partner/partner"
 import Conversation from ".//conversation"
 import { updateArtistMutation } from "./artist/updateArtistMutation"
+import { updateArtistSocialsMutation } from "./artist/updateArtistSocialsMutation"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import SendConversationMessageMutation from "./conversation/send_message_mutation"
 import { submitInquiryRequestMutation } from "./conversation/submit_inquiry_request_mutation"
@@ -892,6 +893,7 @@ export default new GraphQLSchema({
       updateAlert: updateAlertMutation,
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
+      updateArtistSocials: updateArtistSocialsMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityGuideEvent: updateCityGuideEventMutation,
