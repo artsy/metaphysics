@@ -1602,6 +1602,34 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    cityArticlesLoader: gravityLoader("city_articles"),
+    createCityArticleLoader: gravityLoader(
+      "city_article",
+      {},
+      { method: "POST" }
+    ),
+    updateCityArticleLoader: gravityLoader(
+      (id) => `city_article/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCityArticleLoader: gravityLoader(
+      (id) => `city_article/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    cityVideosLoader: gravityLoader("city_videos"),
+    createCityVideoLoader: gravityLoader("city_video", {}, { method: "POST" }),
+    updateCityVideoLoader: gravityLoader(
+      (id) => `city_video/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCityVideoLoader: gravityLoader(
+      (id) => `city_video/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     partnerShowLoader: gravityLoader<
       any,

@@ -124,7 +124,7 @@ describe("DisplaySellerTexts", () => {
 
       expect(result.me.order.displaySellerTexts).toEqual({
         conversationStateTitle: "Counteroffer sent",
-        stateName: "Offer sent",
+        stateName: "Counteroffer sent",
         actionPrompt: "View Offer Details",
         icon: "PendingStrokeIcon",
         isPrimaryAction: false,
@@ -244,7 +244,7 @@ describe("DisplaySellerTexts", () => {
 
       expect(result.me.order.displaySellerTexts).toEqual({
         conversationStateTitle: "Order approved",
-        stateName: "Approved artsy full service",
+        stateName: "Hold for ARTA",
         actionPrompt: "View Order Details",
         icon: "CheckmarkIcon",
         isPrimaryAction: false,
@@ -283,8 +283,8 @@ describe("DisplaySellerTexts", () => {
       const result = await runAuthenticatedQuery(query, context)
 
       expect(result.me.order.displaySellerTexts).toEqual({
-        conversationStateTitle: "Completed",
-        stateName: "Completed",
+        conversationStateTitle: "Complete",
+        stateName: "Complete",
         actionPrompt: "View Order Details",
         icon: "CheckmarkIcon",
         isPrimaryAction: false,

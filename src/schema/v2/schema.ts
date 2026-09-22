@@ -33,6 +33,12 @@ import { deleteCityGuideEventMutation } from "./cityGuideEvent/mutations/deleteC
 import { deleteCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventArticleMutation"
 import { deleteCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventItineraryMutation"
 import { publishCityGuideEventMutation } from "./cityGuideEvent/mutations/publishCityGuideEventMutation"
+import { createCityArticleMutation } from "./cityContent/mutations/createCityArticleMutation"
+import { updateCityArticleMutation } from "./cityContent/mutations/updateCityArticleMutation"
+import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArticleMutation"
+import { createCityVideoMutation } from "./cityContent/mutations/createCityVideoMutation"
+import { updateCityVideoMutation } from "./cityContent/mutations/updateCityVideoMutation"
+import { deleteCityVideoMutation } from "./cityContent/mutations/deleteCityVideoMutation"
 import { removeCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/removeCityGuideEventVideoMutation"
 import { setCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/setCityGuideEventVideoMutation"
 import { unpublishCityGuideEventMutation } from "./cityGuideEvent/mutations/unpublishCityGuideEventMutation"
@@ -711,9 +717,11 @@ export default new GraphQLSchema({
       createCanonicalArtist: createCanonicalArtistMutation,
       createCareerHighlight: createCareerHighlightMutation,
       createCatalogArtworkDocument: createCatalogArtworkDocumentMutation,
+      createCityArticle: createCityArticleMutation,
       createCityGuideEvent: createCityGuideEventMutation,
       createCityGuideEventArticle: createCityGuideEventArticleMutation,
       createCityGuideEventItinerary: createCityGuideEventItineraryMutation,
+      createCityVideo: createCityVideoMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createConversationMessageTemplate: createConversationMessageTemplateMutation,
@@ -790,9 +798,11 @@ export default new GraphQLSchema({
       deleteBankAccount: deleteBankAccountMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
       deleteCatalogArtworkDocument: deleteCatalogArtworkDocumentMutation,
+      deleteCityArticle: deleteCityArticleMutation,
       deleteCityGuideEvent: deleteCityGuideEventMutation,
       deleteCityGuideEventArticle: deleteCityGuideEventArticleMutation,
       deleteCityGuideEventItinerary: deleteCityGuideEventItineraryMutation,
+      deleteCityVideo: deleteCityVideoMutation,
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
@@ -896,9 +906,11 @@ export default new GraphQLSchema({
       updateArtistSocials: updateArtistSocialsMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
+      updateCityArticle: updateCityArticleMutation,
       updateCityGuideEvent: updateCityGuideEventMutation,
       updateCityGuideEventArticle: updateCityGuideEventArticleMutation,
       updateCityGuideEventItinerary: updateCityGuideEventItineraryMutation,
+      updateCityVideo: updateCityVideoMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,
       generateArtworkDescription: generateArtworkDescriptionMutation,
