@@ -74,7 +74,7 @@ const inputFields = {
   instagramHandle: {
     type: GraphQLString,
     description:
-      "Artist's Instagram handle. A leading @ or a profile URL is accepted. Prefer updateArtistSocials, which is also permitted for verified representatives.",
+      "Artist's Instagram handle. A leading @ or a profile URL is accepted. `updateArtistSocials` updates the same field and is additionally permitted for verified representatives.",
   },
   last: { type: GraphQLString },
   location: { type: GraphQLString },
