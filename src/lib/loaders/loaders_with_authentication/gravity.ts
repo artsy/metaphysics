@@ -1911,6 +1911,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateArtistSocialsLoader: gravityLoader(
+      (id) => `artist/${id}/socials`,
+      {},
+      { method: "PUT" }
+    ),
     verifyAddressLoader: gravityLoader(
       "address_verification",
       {},
