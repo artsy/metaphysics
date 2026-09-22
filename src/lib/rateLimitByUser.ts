@@ -40,7 +40,7 @@ const ALLOW_UNKNOWN: RateLimitResult = { allowed: true, count: null }
  * side effects, and those hold open sockets. A top-level import here would pull
  * them into the import graph of every consumer — including `schema/v2`, and so
  * `scripts/dump-schema.ts`, which has no `process.exit()` and would therefore
- * hang forever waiting for the event loop to drain (breaking `yarn dump:staging`
+ * hang forever waiting for the event loop to drain (breaking `yarn dump:local`
  * and the pre-commit hook).
  */
 let sharedClient: CounterClient | undefined
