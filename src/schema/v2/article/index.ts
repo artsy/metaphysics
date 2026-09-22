@@ -16,6 +16,7 @@ import cached from "schema/v2/fields/cached"
 import { date } from "schema/v2/fields/date"
 import Image, { ImageType, normalizeImageData } from "schema/v2/image"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
+import { ArticleSectionArtworkGrid } from "./sections/ArticleSectionArtworkGrid"
 import { ArticleSectionImageCollection } from "./sections/ArticleSectionImageCollection"
 import { ArticleSectionText } from "./sections/ArticleSectionText"
 import { ArticleSectionVideo } from "./sections/ArticleSectionVideo"
@@ -303,6 +304,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
             new GraphQLUnionType({
               name: "ArticleSections",
               types: [
+                ArticleSectionArtworkGrid,
                 ArticleSectionCallout,
                 ArticleSectionEmbed,
                 ArticleSectionImageCollection,
@@ -320,6 +322,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
           ? // Filter out any unsupported sections
             sections.filter((section) => {
               return [
+                "artwork_grid",
                 "callout",
                 "embed",
                 "image_collection",
