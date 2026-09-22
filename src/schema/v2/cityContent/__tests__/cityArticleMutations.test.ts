@@ -1,4 +1,5 @@
 import { runQuery } from "schema/v2/test/utils"
+import { HTTPError } from "lib/HTTPError"
 
 const gravityJoin = {
   id: "article-join-1",
@@ -9,106 +10,155 @@ const gravityJoin = {
   updated_at: "2026-09-01T09:00:00Z",
 }
 
+const mutationQuery = (mutation: string, input: string) => `
+  mutation {
+    ${mutation}(input: ${input}) {
+      responseOrError {
+        ... on CityArticleMutationSuccess {
+          citySlug
+          articles {
+            position
+            article { internalID title }
+          }
+        }
+        ... on CityArticleMutationFailure {
+          mutationError { message }
+        }
+      }
+    }
+  }
+`
+
 describe("createCityArticle", () => {
-  it("attaches an article to a city", async () => {
+  it("attaches an article and returns the city's refreshed article list", async () => {
     const createCityArticleLoader = jest.fn().mockResolvedValue(gravityJoin)
+    const cityArticlesLoader = jest.fn().mockResolvedValue([gravityJoin])
     const articlesLoader = jest.fn().mockResolvedValue({
       results: [{ id: "article-1", title: "London Art Week Guide" }],
     })
 
-    const mutation = `
-      mutation {
-        createCityArticle(
-          input: { citySlug: "london-united-kingdom", articleID: "article-1" }
-        ) {
-          responseOrError {
-            ... on CityArticleMutationSuccess {
-              cityArticle {
-                position
-                article { internalID title }
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(mutation, {
-      createCityArticleLoader,
-      articlesLoader,
-    })
+    const data = await runQuery(
+      mutationQuery(
+        "createCityArticle",
+        '{ citySlug: "london-united-kingdom", articleID: "article-1" }'
+      ),
+      { createCityArticleLoader, cityArticlesLoader, articlesLoader }
+    )
 
     expect(createCityArticleLoader).toHaveBeenCalledWith({
       city_slug: "london-united-kingdom",
       article_id: "article-1",
     })
-    expect(data.createCityArticle.responseOrError.cityArticle).toEqual({
-      position: 0,
-      article: { internalID: "article-1", title: "London Art Week Guide" },
+    expect(cityArticlesLoader).toHaveBeenCalledWith({
+      city_slug: "london-united-kingdom",
     })
+    expect(data.createCityArticle.responseOrError).toEqual({
+      citySlug: "london-united-kingdom",
+      articles: [
+        {
+          position: 0,
+          article: { internalID: "article-1", title: "London Art Week Guide" },
+        },
+      ],
+    })
+  })
+
+  it("succeeds even when the attached article isn't published yet", async () => {
+    const createCityArticleLoader = jest.fn().mockResolvedValue(gravityJoin)
+    const cityArticlesLoader = jest.fn().mockResolvedValue([gravityJoin])
+    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
+
+    const data = await runQuery(
+      mutationQuery(
+        "createCityArticle",
+        '{ citySlug: "london-united-kingdom", articleID: "article-1" }'
+      ),
+      { createCityArticleLoader, cityArticlesLoader, articlesLoader }
+    )
+
+    expect(data.createCityArticle.responseOrError).toEqual({
+      citySlug: "london-united-kingdom",
+      articles: [],
+    })
+  })
+
+  it("returns a mutation error when the loader is unavailable", async () => {
+    await expect(
+      runQuery(
+        mutationQuery(
+          "createCityArticle",
+          '{ citySlug: "london-united-kingdom", articleID: "article-1" }'
+        ),
+        {}
+      )
+    ).rejects.toThrow("You need to be signed in to perform this action")
+  })
+
+  it("returns a GravityMutationError when gravity rejects the attach", async () => {
+    const createCityArticleLoader = jest
+      .fn()
+      .mockRejectedValue(
+        new HTTPError(
+          "Article ID has already been taken",
+          400,
+          JSON.stringify({ error: "Article ID has already been taken" })
+        )
+      )
+
+    const data = await runQuery(
+      mutationQuery(
+        "createCityArticle",
+        '{ citySlug: "london-united-kingdom", articleID: "article-1" }'
+      ),
+      { createCityArticleLoader }
+    )
+
+    expect(
+      data.createCityArticle.responseOrError.mutationError.message
+    ).toEqual("Article ID has already been taken")
   })
 })
 
 describe("updateCityArticle", () => {
-  it("moves an article within its city's list", async () => {
+  it("moves an article and returns the city's refreshed article list", async () => {
     const updateCityArticleLoader = jest.fn().mockResolvedValue(gravityJoin)
+    const cityArticlesLoader = jest.fn().mockResolvedValue([gravityJoin])
     const articlesLoader = jest.fn().mockResolvedValue({
       results: [{ id: "article-1", title: "London Art Week Guide" }],
     })
 
-    const mutation = `
-      mutation {
-        updateCityArticle(input: { id: "article-join-1", position: 0 }) {
-          responseOrError {
-            ... on CityArticleMutationSuccess {
-              cityArticle { position }
-            }
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(mutation, {
-      updateCityArticleLoader,
-      articlesLoader,
-    })
+    const data = await runQuery(
+      mutationQuery(
+        "updateCityArticle",
+        '{ id: "article-join-1", position: 0 }'
+      ),
+      { updateCityArticleLoader, cityArticlesLoader, articlesLoader }
+    )
 
     expect(updateCityArticleLoader).toHaveBeenCalledWith("article-join-1", {
       position: 0,
     })
-    expect(data.updateCityArticle.responseOrError.cityArticle.position).toEqual(
-      0
+    expect(data.updateCityArticle.responseOrError.citySlug).toEqual(
+      "london-united-kingdom"
     )
   })
 })
 
 describe("deleteCityArticle", () => {
-  it("detaches an article from a city", async () => {
+  it("detaches an article and returns the city's remaining article list", async () => {
     const deleteCityArticleLoader = jest.fn().mockResolvedValue(gravityJoin)
-    const articlesLoader = jest.fn().mockResolvedValue({
-      results: [{ id: "article-1", title: "London Art Week Guide" }],
-    })
+    const cityArticlesLoader = jest.fn().mockResolvedValue([])
+    const articlesLoader = jest.fn().mockResolvedValue({ results: [] })
 
-    const mutation = `
-      mutation {
-        deleteCityArticle(input: { id: "article-join-1" }) {
-          responseOrError {
-            ... on CityArticleMutationSuccess {
-              cityArticle { internalID }
-            }
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(mutation, {
-      deleteCityArticleLoader,
-      articlesLoader,
-    })
+    const data = await runQuery(
+      mutationQuery("deleteCityArticle", '{ id: "article-join-1" }'),
+      { deleteCityArticleLoader, cityArticlesLoader, articlesLoader }
+    )
 
     expect(deleteCityArticleLoader).toHaveBeenCalledWith("article-join-1", {})
-    expect(
-      data.deleteCityArticle.responseOrError.cityArticle.internalID
-    ).toEqual("article-join-1")
+    expect(data.deleteCityArticle.responseOrError).toEqual({
+      citySlug: "london-united-kingdom",
+      articles: [],
+    })
   })
 })

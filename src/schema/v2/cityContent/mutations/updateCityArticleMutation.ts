@@ -3,6 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { CityArticleMutationResponseOrErrorType } from "./cityArticleMutationResponseOrError"
+import { refreshCityArticles } from "../resolveCityArticleJoins"
 
 interface InputProps {
   clientMutationId?: string
@@ -16,7 +17,9 @@ export const updateCityArticleMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "updateCityArticle",
-  description: "Move an article within its city's list.",
+  description:
+    "Move an article within its city's list. Needs the editorial or " +
+    "content_manager role.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -36,7 +39,7 @@ export const updateCityArticleMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { id, position },
-    { updateCityArticleLoader, articlesLoader }
+    { updateCityArticleLoader, cityArticlesLoader, articlesLoader }
   ) => {
     if (!updateCityArticleLoader) {
       throw new Error("You need to be signed in to perform this action")
@@ -44,11 +47,12 @@ export const updateCityArticleMutation = mutationWithClientMutationId<
 
     try {
       const join = await updateCityArticleLoader(id, { position })
-      const { results } = await articlesLoader({
-        ids: [join.article_id],
-        limit: 1,
+      const articles = await refreshCityArticles(join.city_slug, {
+        cityArticlesLoader,
+        articlesLoader,
       })
-      return { ...join, article: results[0] }
+
+      return { citySlug: join.city_slug, articles }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 

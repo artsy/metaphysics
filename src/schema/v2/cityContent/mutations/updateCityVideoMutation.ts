@@ -16,7 +16,9 @@ export const updateCityVideoMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "updateCityVideo",
-  description: "Move a video within its city's list.",
+  description:
+    "Move a video within its city's list. Needs the editorial or " +
+    "content_manager role.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -34,13 +36,19 @@ export const updateCityVideoMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ id, position }, { updateCityVideoLoader }) => {
+  mutateAndGetPayload: async (
+    { id, position },
+    { updateCityVideoLoader, cityVideosLoader }
+  ) => {
     if (!updateCityVideoLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await updateCityVideoLoader(id, { position })
+      const join = await updateCityVideoLoader(id, { position })
+      const videos = await cityVideosLoader({ city_slug: join.city_slug })
+
+      return { citySlug: join.city_slug, videos }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 

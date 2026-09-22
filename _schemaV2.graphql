@@ -8816,7 +8816,11 @@ union CityArticleMutationResponseOrError =
   | CityArticleMutationSuccess
 
 type CityArticleMutationSuccess {
-  cityArticle: CityArticle
+  """
+  The city's articles, in their new order.
+  """
+  articles: [CityArticle!]!
+  citySlug: String!
 }
 
 type CityGuideEvent {
@@ -9019,7 +9023,12 @@ union CityVideoMutationResponseOrError =
   | CityVideoMutationSuccess
 
 type CityVideoMutationSuccess {
-  cityVideo: CityVideo
+  citySlug: String!
+
+  """
+  The city's videos, in their new order.
+  """
+  videos: [CityVideo!]!
 }
 
 """
@@ -27089,7 +27098,7 @@ type Mutation {
   ): CreateCatalogArtworkDocumentMutationPayload
 
   """
-  Attach an editorial article to a city, at the end of its list.
+  Attach an editorial article to a city, at the end of its list. Needs the editorial or content_manager role.
   """
   createCityArticle(input: createCityArticleInput!): createCityArticlePayload
 
@@ -27115,7 +27124,7 @@ type Mutation {
   ): createCityGuideEventItineraryPayload
 
   """
-  Attach a video to a city, at the end of its list.
+  Attach a video to a city, at the end of its list. Needs the editorial or content_manager role.
   """
   createCityVideo(input: createCityVideoInput!): createCityVideoPayload
 
@@ -27489,7 +27498,7 @@ type Mutation {
   ): DeleteCatalogArtworkDocumentMutationPayload
 
   """
-  Detach an article from a city.
+  Detach an article from a city. Needs the editorial or content_manager role.
   """
   deleteCityArticle(input: deleteCityArticleInput!): deleteCityArticlePayload
 
@@ -27515,7 +27524,7 @@ type Mutation {
   ): deleteCityGuideEventItineraryPayload
 
   """
-  Detach a video from a city.
+  Detach a video from a city. Needs the editorial or content_manager role.
   """
   deleteCityVideo(input: deleteCityVideoInput!): deleteCityVideoPayload
 
@@ -28307,7 +28316,7 @@ type Mutation {
   ): UpdateCatalogEditionSetPayload
 
   """
-  Move an article within its city's list.
+  Move an article within its city's list. Needs the editorial or content_manager role.
   """
   updateCityArticle(input: updateCityArticleInput!): updateCityArticlePayload
 
@@ -28333,7 +28342,7 @@ type Mutation {
   ): updateCityGuideEventItineraryPayload
 
   """
-  Move a video within its city's list.
+  Move a video within its city's list. Needs the editorial or content_manager role.
   """
   updateCityVideo(input: updateCityVideoInput!): updateCityVideoPayload
 

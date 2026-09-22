@@ -89,6 +89,85 @@ describe("City.cityArticles", () => {
 
     expect(data.city.cityArticles).toEqual([])
   })
+
+  it("never calls the Positron loader when the city has no articles", async () => {
+    const cityArticlesLoader = jest.fn().mockResolvedValue([])
+    const articlesLoader = jest.fn()
+
+    const query = gql`
+      {
+        city(slug: "london-united-kingdom") {
+          cityArticles {
+            position
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...MOCK_CONTEXT,
+      cityArticlesLoader,
+      articlesLoader,
+    })
+
+    expect(data.city.cityArticles).toEqual([])
+    expect(articlesLoader).not.toHaveBeenCalled()
+  })
+
+  it("re-matches articles by id, not by Positron's return order", async () => {
+    const cityArticlesLoader = jest.fn().mockResolvedValue([
+      {
+        id: "article-join-1",
+        city_slug: "london-united-kingdom",
+        article_id: "article-1",
+        position: 0,
+      },
+      {
+        id: "article-join-2",
+        city_slug: "london-united-kingdom",
+        article_id: "article-2",
+        position: 1,
+      },
+    ])
+    // Positron returns them in the opposite order from how they were requested.
+    const articlesLoader = jest.fn().mockResolvedValue({
+      results: [
+        { id: "article-2", title: "Second Article" },
+        { id: "article-1", title: "First Article" },
+      ],
+    })
+
+    const query = gql`
+      {
+        city(slug: "london-united-kingdom") {
+          cityArticles {
+            position
+            article {
+              internalID
+              title
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...MOCK_CONTEXT,
+      cityArticlesLoader,
+      articlesLoader,
+    })
+
+    expect(data.city.cityArticles).toEqual([
+      {
+        position: 0,
+        article: { internalID: "article-1", title: "First Article" },
+      },
+      {
+        position: 1,
+        article: { internalID: "article-2", title: "Second Article" },
+      },
+    ])
+  })
 })
 
 describe("City.cityVideos", () => {
@@ -127,5 +206,23 @@ describe("City.cityVideos", () => {
     expect(data.city.cityVideos).toEqual([
       { position: 0, video: { title: "London Art Week Recap" } },
     ])
+  })
+
+  it("returns an empty list when the city has no videos", async () => {
+    const cityVideosLoader = jest.fn().mockResolvedValue([])
+
+    const query = gql`
+      {
+        city(slug: "london-united-kingdom") {
+          cityVideos {
+            position
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, { ...MOCK_CONTEXT, cityVideosLoader })
+
+    expect(data.city.cityVideos).toEqual([])
   })
 })

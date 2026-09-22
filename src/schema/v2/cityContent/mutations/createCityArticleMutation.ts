@@ -4,6 +4,7 @@ import { snakeCaseKeys } from "lib/helpers"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { CityArticleMutationResponseOrErrorType } from "./cityArticleMutationResponseOrError"
+import { refreshCityArticles } from "../resolveCityArticleJoins"
 
 interface InputProps {
   clientMutationId?: string
@@ -17,7 +18,9 @@ export const createCityArticleMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "createCityArticle",
-  description: "Attach an editorial article to a city, at the end of its list.",
+  description:
+    "Attach an editorial article to a city, at the end of its list. " +
+    "Needs the editorial or content_manager role.",
   inputFields: {
     citySlug: {
       type: new GraphQLNonNull(GraphQLString),
@@ -36,7 +39,7 @@ export const createCityArticleMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { clientMutationId: _clientMutationId, ...attributes },
-    { createCityArticleLoader, articlesLoader }
+    { createCityArticleLoader, cityArticlesLoader, articlesLoader }
   ) => {
     if (!createCityArticleLoader) {
       throw new Error("You need to be signed in to perform this action")
@@ -44,11 +47,12 @@ export const createCityArticleMutation = mutationWithClientMutationId<
 
     try {
       const join = await createCityArticleLoader(snakeCaseKeys(attributes))
-      const { results } = await articlesLoader({
-        ids: [join.article_id],
-        limit: 1,
+      const articles = await refreshCityArticles(join.city_slug, {
+        cityArticlesLoader,
+        articlesLoader,
       })
-      return { ...join, article: results[0] }
+
+      return { citySlug: join.city_slug, articles }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
