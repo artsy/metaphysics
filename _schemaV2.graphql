@@ -39750,6 +39750,11 @@ input UpdateArtistMutationInput {
   groupIndicator: ArtistGroupIndicator
   hometown: String
   id: String!
+
+  """
+  Artist's Instagram handle. A leading @ or a profile URL is accepted. Prefer updateArtistSocials, which is also permitted for verified representatives.
+  """
+  instagramHandle: String
   last: String
   location: String
   middle: String
