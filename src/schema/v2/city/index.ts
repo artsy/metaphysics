@@ -31,6 +31,8 @@ import { sponsoredContentForCity } from "lib/sponsoredContent"
 import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
 import { CityGuideEventsConnectionField } from "../cityGuideEvent/cityGuideEventsConnection"
+import { CityArticlesField } from "../cityContent/cityArticles"
+import { CityVideosField } from "../cityContent/cityVideos"
 
 export interface TCity {
   slug: string
@@ -141,6 +143,8 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           }),
       },
       cityGuideEventsConnection: CityGuideEventsConnectionField,
+      cityArticles: CityArticlesField,
+      cityVideos: CityVideosField,
       sponsoredContent: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "CitySponsoredContent",

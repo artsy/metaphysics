@@ -345,6 +345,8 @@ export default (opts) => {
       {},
       { headers: true }
     ),
+    cityArticlesLoader: gravityLoader("city_articles"),
+    cityVideosLoader: gravityLoader("city_videos"),
     fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
     partnerLocationsByIdsLoader: gravityLoader("partner_locations"),
     showsLoader: gravityLoader("shows"),
