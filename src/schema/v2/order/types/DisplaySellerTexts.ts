@@ -78,7 +78,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
         actionPrompt: "View Offer Details",
         icon: "PendingStrokeIcon",
         isPrimaryAction: false,
-        stateName: "Offer sent",
+        stateName: "Counteroffer sent",
         conversationStateTitle: "Counteroffer sent",
       }
     case "payment_failed":
@@ -126,7 +126,7 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
         actionPrompt: "View Order Details",
         icon: "CheckmarkIcon",
         isPrimaryAction: false,
-        stateName: "Approved artsy full service",
+        stateName: "Hold for ARTA",
         conversationStateTitle: "Order approved",
       }
     case "in_transit":
@@ -142,8 +142,8 @@ const resolveDisplaySellerTexts = (order: OrderJSON) => {
         actionPrompt: "View Order Details",
         icon: "CheckmarkIcon",
         isPrimaryAction: false,
-        stateName: "Completed",
-        conversationStateTitle: "Completed",
+        stateName: "Complete",
+        conversationStateTitle: "Complete",
       }
     case "refunded":
       return {
