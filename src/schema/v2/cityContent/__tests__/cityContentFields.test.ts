@@ -225,4 +225,42 @@ describe("City.cityVideos", () => {
 
     expect(data.city.cityVideos).toEqual([])
   })
+
+  it("drops a join whose video isn't embedded", async () => {
+    const cityVideosLoader = jest.fn().mockResolvedValue([
+      {
+        id: "video-join-1",
+        city_slug: "london-united-kingdom",
+        video_id: "video-1",
+        position: 0,
+        video: null,
+      },
+      {
+        id: "video-join-2",
+        city_slug: "london-united-kingdom",
+        video_id: "video-2",
+        position: 1,
+        video: { _id: "video-2", title: "London Art Week Recap" },
+      },
+    ])
+
+    const query = gql`
+      {
+        city(slug: "london-united-kingdom") {
+          cityVideos {
+            position
+            video {
+              title
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, { ...MOCK_CONTEXT, cityVideosLoader })
+
+    expect(data.city.cityVideos).toEqual([
+      { position: 1, video: { title: "London Art Week Recap" } },
+    ])
+  })
 })

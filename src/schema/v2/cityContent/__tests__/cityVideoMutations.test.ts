@@ -56,6 +56,26 @@ describe("createCityVideo", () => {
     })
   })
 
+  it("drops a join whose video isn't embedded from the returned list", async () => {
+    const createCityVideoLoader = jest.fn().mockResolvedValue(gravityJoin)
+    const cityVideosLoader = jest
+      .fn()
+      .mockResolvedValue([{ ...gravityJoin, video: null }])
+
+    const data = await runQuery(
+      mutationQuery(
+        "createCityVideo",
+        '{ citySlug: "london-united-kingdom", videoID: "video-1" }'
+      ),
+      { createCityVideoLoader, cityVideosLoader }
+    )
+
+    expect(data.createCityVideo.responseOrError).toEqual({
+      citySlug: "london-united-kingdom",
+      videos: [],
+    })
+  })
+
   it("returns a mutation error when the loader is unavailable", async () => {
     await expect(
       runQuery(

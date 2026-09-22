@@ -45,14 +45,9 @@ export const updateCityArticleMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    let join
     try {
-      const join = await updateCityArticleLoader(id, { position })
-      const articles = await refreshCityArticles(join.city_slug, {
-        cityArticlesLoader,
-        articlesLoader,
-      })
-
-      return { citySlug: join.city_slug, articles }
+      join = await updateCityArticleLoader(id, { position })
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -62,5 +57,15 @@ export const updateCityArticleMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // The move already succeeded by this point, so a failure refreshing
+    // the list surfaces as a plain error rather than a GravityMutationError
+    // — it isn't the write that failed.
+    const articles = await refreshCityArticles(join.city_slug, {
+      cityArticlesLoader,
+      articlesLoader,
+    })
+
+    return { citySlug: join.city_slug, articles }
   },
 })
