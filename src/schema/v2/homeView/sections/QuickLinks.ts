@@ -5,6 +5,7 @@ import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import { ResolverContext } from "types/graphql"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { priceBucketBasedOnPricePreference } from "../helpers/priceBucketBasedOnPricePreference"
+import { resolveFeaturedCityGuidePill } from "../helpers/resolveFeaturedCityGuidePill"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
@@ -17,26 +18,40 @@ export const QuickLinks: HomeViewSection = {
     links = await maybeInsertArtworksWithinPriceBudgetLink(links, context)
     links = await maybeInsertYourBidsLink(links, context)
 
+    if (
+      isEigenVersionSatisfied(CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION, context)
+    ) {
+      const cityGuidePill = await resolveFeaturedCityGuidePill(context)
+      if (cityGuidePill.isFeatured) {
+        links.unshift(cityGuidePill)
+      } else {
+        links.push(cityGuidePill)
+      }
+    }
+
     return links
   },
+}
+
+const CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION = { major: 9, minor: 18, patch: 0 }
+
+function isEigenVersionSatisfied(
+  minimumEigenVersion: NavigationPill["minimumEigenVersion"],
+  context: ResolverContext
+) {
+  const actualEigenVersion = getEigenVersionNumber(context.userAgent as string)
+
+  if (!actualEigenVersion || !minimumEigenVersion) return true
+
+  return isAtLeastVersion(actualEigenVersion, minimumEigenVersion)
 }
 
 function getDisplayableQuickLinks(context: ResolverContext) {
   const quickLinks = QUICK_LINKS
 
-  return quickLinks.filter((quickLink) => {
-    let isDisplayable = true
-    const actualEigenVersion = getEigenVersionNumber(
-      context.userAgent as string
-    )
-    if (actualEigenVersion && quickLink.minimumEigenVersion) {
-      isDisplayable = isAtLeastVersion(
-        actualEigenVersion,
-        quickLink.minimumEigenVersion
-      )
-    }
-    return isDisplayable
-  })
+  return quickLinks.filter((quickLink) =>
+    isEigenVersionSatisfied(quickLink.minimumEigenVersion, context)
+  )
 }
 
 export const QUICK_LINKS: Array<NavigationPill> = [
