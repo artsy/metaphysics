@@ -26,8 +26,7 @@ const inputFields = {
   id: { type: new GraphQLNonNull(GraphQLString) },
   instagramHandle: {
     type: GraphQLString,
-    description:
-      "Artist's Instagram handle. A leading @ or a profile URL is accepted. Pass an empty string to clear it.",
+    description: "Artist's Instagram handle.",
   },
 }
 
@@ -64,8 +63,7 @@ export const updateArtistSocialsMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdateArtistSocialsMutation",
-  description:
-    "Update an artist's social handles. Unlike updateArtist, this is permitted for a partner that Artsy has verified as representing the artist.",
+  description: "Update an artist's social handles.",
   inputFields,
   outputFields: {
     artistOrError: {

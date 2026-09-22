@@ -28155,7 +28155,7 @@ type Mutation {
   updateArtist(input: UpdateArtistMutationInput!): UpdateArtistMutationPayload
 
   """
-  Update an artist's social handles. Unlike updateArtist, this is permitted for a partner that Artsy has verified as representing the artist.
+  Update an artist's social handles.
   """
   updateArtistSocials(
     input: UpdateArtistSocialsMutationInput!
@@ -39782,7 +39782,7 @@ input UpdateArtistSocialsMutationInput {
   id: String!
 
   """
-  Artist's Instagram handle. A leading @ or a profile URL is accepted. Pass an empty string to clear it.
+  Artist's Instagram handle.
   """
   instagramHandle: String
 }
