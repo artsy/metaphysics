@@ -16,15 +16,7 @@ export const FEATURED_CITY_GUIDES: FeaturedCityGuide[] = [
     citySlug: "london-united-kingdom",
     title: "London City Guide",
     href: "/city-guide?citySlug=london-united-kingdom",
-    displayStartAt: "2026-09-22T00:00:00Z",
-    displayEndAt: "2026-10-26T00:00:00Z",
-  },
-  {
-    // Frieze Berlin
-    citySlug: "berlin-germany",
-    title: "Berlin City Guide",
-    href: "/city-guide?citySlug=berlin-germany",
-    displayStartAt: "2026-09-21T00:00:00Z",
-    displayEndAt: "2026-10-26T00:00:00Z",
+    displayStartAt: "2026-10-05T00:00:00Z",
+    displayEndAt: "2026-10-25T00:00:00Z",
   },
 ]
