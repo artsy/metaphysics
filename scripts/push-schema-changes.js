@@ -124,7 +124,7 @@ function getRepoSubset(repos, totalNodes, nodeIndex) {
 
 async function main() {
   try {
-    execSync("yarn dump:staging")
+    execSync("yarn dump:local")
 
     const repos = Object.keys(supportedRepos)
 

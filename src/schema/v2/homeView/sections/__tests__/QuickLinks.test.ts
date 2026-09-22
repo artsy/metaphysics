@@ -144,6 +144,12 @@ describe("QuickLinks", () => {
             "ownerType": "featuredFairs",
             "title": "Featured Fairs",
           },
+          {
+            "href": "/city-guide",
+            "icon": "MapPinIcon",
+            "ownerType": "cityGuideGuide",
+            "title": "City Guide",
+          },
         ],
         "ownerType": "quickLinks",
       }
@@ -202,6 +208,62 @@ describe("QuickLinks", () => {
         )
 
         expect(discoverDailyLink).toBeDefined()
+      })
+    })
+  })
+
+  describe("The city guide pill", () => {
+    describe("When Eigen is below the minimum version", () => {
+      it("is not returned", async () => {
+        const contextWithOldEigen = {
+          userAgent: "Artsy-Mobile/9.17.0 Eigen/9.17.0",
+        }
+
+        const { homeView } = await runAuthenticatedQuery(
+          query,
+          contextWithOldEigen
+        )
+
+        const cityGuideLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "City Guide"
+        )
+
+        expect(cityGuideLink).toBeUndefined()
+      })
+    })
+
+    describe("When Eigen is at or above the minimum version", () => {
+      it("is returned", async () => {
+        const contextWithNewEigen = {
+          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
+        }
+
+        const { homeView } = await runAuthenticatedQuery(
+          query,
+          contextWithNewEigen
+        )
+
+        const cityGuideLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "City Guide"
+        )
+
+        expect(cityGuideLink).toBeDefined()
+      })
+    })
+
+    describe("When the request is not from Eigen", () => {
+      it("is returned", async () => {
+        const contextFromWeb = {
+          userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ...",
+        }
+
+        const { homeView } = await runAuthenticatedQuery(query, contextFromWeb)
+
+        const cityGuideLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "City Guide"
+        )
+
+        expect(cityGuideLink).toBeDefined()
       })
     })
   })

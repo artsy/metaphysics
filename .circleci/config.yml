@@ -48,7 +48,6 @@ commands:
             pip install hokusai
       - hokusai/configure-hokusai
   fix_corepack_permissions:
-    # Only needed for jobs that don't use setup_hokusai (which already fixes /usr/local/bin permissions)
     steps:
       - run:
           name: Fix permissions for corepack
@@ -84,7 +83,7 @@ jobs:
       tag: "22.5"
     steps:
       - checkout
-      - setup_hokusai
+      - fix_corepack_permissions
       - node/install-packages:
           pkg-manager: yarn-berry
       - run: scripts/ensure-schema-update.sh
@@ -95,7 +94,7 @@ jobs:
     parallelism: 6
     steps:
       - checkout
-      - setup_hokusai
+      - fix_corepack_permissions
       - node/install-packages:
           pkg-manager: yarn-berry
       - run:
@@ -134,7 +133,6 @@ workflows:
           <<: *not_staging_or_release
 
       - ensure-schema-update:
-          context: hokusai
           <<: *only_development
 
       # staging

@@ -21,11 +21,10 @@ After tests pass and the staging deployment completes, the schema update process
 
 ### 3. Schema Generation
 
-The automation runs `yarn dump:staging` to create the latest schema from the staging environment.
+The automation runs `yarn dump:local` to generate the schema from the checked-out code. The schema is fully determined by the source (stitched service schemas live in `src/data/*.graphql`), so no environment access is needed.
 
 **Key Files:**
 
-- [`scripts/dump-staging-schema.js`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/dump-staging-schema.js) - Pulls staging environment variables and generates schema
 - [`scripts/dump-schema.ts`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/dump-schema.ts) - Core schema generation logic
 - `_schemaV2.graphql` - The generated schema file (644KB+ in size)
 
@@ -72,9 +71,9 @@ While the main automation handles schema updates when code merges to `main`, the
 - Runs on non-main branches in CI (see `ensure-schema-update` job in [.circleci/config.yml](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/.circleci/config.yml#L107-L110))
 - Validates that developers have updated the schema if needed
 - **Process**:
-  1. Runs `yarn dump:staging`
+  1. Runs `yarn dump:local`
   2. Checks if `_schemaV2.graphql` has changes
-  3. Fails CI if schema is outdated with message: "Schema is outdated. You might want to run `yarn dump:staging` and commit the changes."
+  3. Fails CI if schema is outdated with message: "Schema is outdated. You might want to run `yarn dump:local` and commit the changes."
 
 ## File Locations
 
@@ -88,7 +87,6 @@ Reference guide to the key files and scripts involved in the automated schema up
 ### Scripts
 
 - [`scripts/push-schema-changes.js`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/push-schema-changes.js) - Main automation script for PR creation
-- [`scripts/dump-staging-schema.js`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/dump-staging-schema.js) - Staging environment schema generation
 - [`scripts/dump-schema.ts`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/dump-schema.ts) - Core schema generation logic
 - [`scripts/ensure-schema-update.sh`](https://github.com/artsy/metaphysics/blob/7a68c5fda8878db3d6035196f45b7fb9cb9bdfb6/scripts/ensure-schema-update.sh) - Development schema validation
 
@@ -103,8 +101,7 @@ These are commands and tools available for developers to work with schemas local
 ### Generate Schema Locally
 
 ```bash
-yarn dump:local    # From local environment
-yarn dump:staging  # From staging environment (recommended)
+yarn dump:local
 ```
 
 ### Pre-commit Hook
@@ -112,7 +109,7 @@ yarn dump:staging  # From staging environment (recommended)
 The repository includes a Git pre-commit hook that automatically updates the schema during development:
 
 ```json
-"pre-commit": "lint-staged; yarn dump:staging; git add _schemaV2.graphql"
+"pre-commit": "lint-staged && yarn dump:local && git add _schemaV2.graphql"
 ```
 
 This ensures the schema is always up-to-date when developers commit changes.
@@ -128,13 +125,11 @@ git status _schemaV2.graphql  # Check if schema has uncommitted changes
 If the automated process fails:
 
 1. Check CircleCI build logs for the `push-schema-changes` job
-2. Verify staging environment is accessible
-3. Manually run `yarn dump:staging` to test schema generation
-4. Check dependent repositories for any integration issues
+2. Manually run `yarn dump:local` to test schema generation
+3. Check dependent repositories for any integration issues
 
 ## Architecture Notes
 
-- **Environment Variables**: Staging environment variables are pulled via `hokusai staging env get`
 - **Parallel Processing**: Schema updates are distributed across multiple CI nodes for efficiency
 - **Error Handling**: Process exits with error code 1 on failures to prevent incomplete deployments
 - **Security**: Uses Artsy's `@artsy/update-repo` package for secure GitHub API interactions

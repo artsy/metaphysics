@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -17,6 +18,7 @@ export interface NavigationPill {
   href: string
   ownerType: OwnerType
   icon?: string
+  isFeatured?: boolean
 
   /**
    * The implementing section must enforce this check.
@@ -46,6 +48,11 @@ const NavigationPillType = new GraphQLObjectType<
     icon: {
       type: GraphQLString,
       description: "Icon file name",
+    },
+    isFeatured: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Whether this link should be displayed as featured",
+      resolve: ({ isFeatured }) => !!isFeatured,
     },
   }),
 })
