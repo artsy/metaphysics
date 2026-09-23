@@ -216,6 +216,15 @@ export const CITIES_WITH_GUIDES = [
       ne: { lat: 46.036, lng: -72.802 },
     },
   },
+  {
+    slug: "venice-italy",
+    name: "Venice",
+    coordinates: { lat: 45.44, lng: 12.34 },
+    maxBounds: {
+      sw: { lat: 44.899, lng: 11.572 },
+      ne: { lat: 45.981, lng: 13.108 },
+    },
+  },
 ] as const
 
 /** The set of city slugs a FeaturedCityGuide.citySlug is allowed to reference */
