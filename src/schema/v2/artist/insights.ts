@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
@@ -78,10 +79,15 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
       description: "The specific insights to return.",
       defaultValue: ARTIST_INSIGHT_KINDS,
     },
+    excludeBlanks: {
+      type: GraphQLBoolean,
+      description: "Whether to exclude insights with no data.",
+      defaultValue: false,
+    },
   },
   resolve: async (
     artist,
-    { kind },
+    { kind, excludeBlanks },
     { auctionLotsLoader, artistCareerHighlightsLoader }
   ) => {
     if (kind.includes("HIGH_AUCTION_RECORD")) {
@@ -99,8 +105,21 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
       artistCareerHighlightsLoader
     )
 
-    const insights = getArtistInsights(artist)
+    const allInsights = getArtistInsights(artist)
+
+    const insights = excludeBlanks
+      ? allInsights.filter(isNotBlank)
+      : allInsights
 
     return insights.filter((insight) => kind.includes(insight.type))
   },
+}
+
+// Predicate for filtering out insights which are considered "no data",
+// i.e. that have no description and no entities.
+export const isNotBlank = (insight: {
+  description?: string | null
+  entities?: string[] | null
+}): boolean => {
+  return !!insight.description || (insight.entities?.length ?? 0) > 0
 }

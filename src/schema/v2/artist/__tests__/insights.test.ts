@@ -211,6 +211,88 @@ describe("ArtistInsights type", () => {
     })
   })
 
+  it("returns all insights (with or without descriptions or entities) by default", () => {
+    artistCareerHighlightsLoader
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ venue: "Metropolitan Museum of Art" }])
+
+    artist.critically_acclaimed = true
+
+    const query = `
+          {
+            artist(id: "foo-bar") {
+              insights(kind: [CRITICALLY_ACCLAIMED, SOLO_SHOW, GROUP_SHOW]) {
+                type
+                description
+                count
+                entities
+              }
+            }
+          }
+        `
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.artist.insights).toEqual([
+        {
+          type: "CRITICALLY_ACCLAIMED",
+          description: "Recognized by major institutions and publications",
+          count: 0,
+          entities: [],
+        },
+        {
+          type: "SOLO_SHOW", // a "blank" insight: no description & no entities
+          description: null,
+          count: 0,
+          entities: [],
+        },
+        {
+          type: "GROUP_SHOW",
+          description: null,
+          count: 1,
+          entities: ["Metropolitan Museum of Art"],
+        },
+      ])
+    })
+  })
+
+  it("omits insights with no description or entities when excludeBlanks is true", () => {
+    artistCareerHighlightsLoader
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ venue: "Metropolitan Museum of Art" }])
+
+    artist.critically_acclaimed = true
+
+    const query = `
+          {
+            artist(id: "foo-bar") {
+              insights(kind: [CRITICALLY_ACCLAIMED, SOLO_SHOW, GROUP_SHOW], excludeBlanks: true) {
+                type
+                description
+                count
+                entities
+              }
+            }
+          }
+        `
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.artist.insights).toEqual([
+        {
+          type: "CRITICALLY_ACCLAIMED",
+          description: "Recognized by major institutions and publications",
+          count: 0,
+          entities: [],
+        },
+        {
+          type: "GROUP_SHOW",
+          description: null,
+          count: 1,
+          entities: ["Metropolitan Museum of Art"],
+        },
+      ])
+    })
+  })
+
   it("returns formatted insights", () => {
     artist.active_secondary_market = true
     artist.curated_trending_weekly = true
