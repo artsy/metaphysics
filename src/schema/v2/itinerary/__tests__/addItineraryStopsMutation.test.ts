@@ -122,6 +122,49 @@ describe("addItineraryStops", () => {
     })
   })
 
+  it("maps each stop's openingHours to opening_hours, and omits it when not given", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue([gravityStop(), gravityStop({ id: "stop-2" })])
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          addItineraryStops(
+            input: {
+              itineraryID: "itinerary-id"
+              stops: [
+                {
+                  title: "Cafe"
+                  openingHours: [{ days: "Sat - Thurs", hours: "10am-5pm" }]
+                }
+                { title: "Bar", openingHours: [] }
+                { title: "Museum" }
+              ]
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", {
+      stops: [
+        {
+          title: "Cafe",
+          opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+        },
+        { title: "Bar", opening_hours: [] },
+        { title: "Museum" },
+      ],
+    })
+  })
+
   it("does not forward clientMutationId to Gravity", async () => {
     const loader = jest
       .fn()

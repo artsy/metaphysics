@@ -4,7 +4,7 @@ const mockRequest = (request as any) as jest.Mock
 
 import fetch from "../../apis/fetch"
 import { constructUrlAndParams } from "../../apis/fetch"
-import { toQueryString } from "../../helpers"
+import { toKey, toQueryString } from "../../helpers"
 import { parse } from "qs"
 
 declare const expectPromiseRejectionToMatch: any
@@ -302,5 +302,17 @@ describe("constructUrlAndParams", () => {
         { id: "img2", position: { bar: ["1", { a: "hi" }] } },
       ],
     })
+  })
+
+  it("keeps `null` in the body, but drops an empty array entirely (ljharb/qs#362)", () => {
+    const nullKey = toKey("itinerary_stop/stop-id", { opening_hours: null })
+    const { body: nullBody } = constructUrlAndParams("PUT", nullKey)
+    expect(nullBody).toEqual({ opening_hours: null })
+
+    const emptyArrayKey = toKey("itinerary_stop/stop-id", {
+      opening_hours: [],
+    })
+    const { body: emptyArrayBody } = constructUrlAndParams("PUT", emptyArrayKey)
+    expect(emptyArrayBody).toBeUndefined()
   })
 })
