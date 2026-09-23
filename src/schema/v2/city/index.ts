@@ -9,7 +9,7 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { LatLngType } from "../location"
-import ShowSorts from "schema/v2/sorts/show_sorts"
+import ShowSorts, { ShowSortsType } from "schema/v2/sorts/show_sorts"
 import FairSorts from "schema/v2/sorts/fair_sorts"
 import EventStatus, {
   EventStatusEnums,
@@ -32,6 +32,8 @@ import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
 import { CityArticlesField } from "../cityContent/cityArticles"
 import { CityVideosField } from "../cityContent/cityVideos"
+
+const START_AT_ASC: ShowSortsType = "start_at"
 
 export interface TCity {
   slug: string
@@ -99,11 +101,20 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
               "Caps number of shows per partner (may result in uneven page sizes)",
             type: GraphQLInt,
           },
+          forYou: {
+            type: GraphQLBoolean,
+            description:
+              "Rank shows by the signed-in user's taste, ignoring `sort`. Signed-out requests, and requests Gravity can't rank, fall back to `sort`, or START_AT_ASC if `sort` is not set.",
+          },
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
         }),
-        resolve: async (city: TCity, args, { showsWithHeadersLoader }) => {
-          return loadData(args, showsWithHeadersLoader, {
+        resolve: async (
+          city: TCity,
+          args,
+          { showsWithHeadersLoader, meCityShowsLoader }
+        ) => {
+          const buildParams = (sort?: string | null) => ({
             ...(city.slug === "online"
               ? { has_location: false }
               : {
@@ -114,17 +125,41 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             at_a_fair: false,
             ...(args.partnerType && { partner_types: args.partnerType }),
             ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
-            sort: args.sort,
+            ...(sort !== undefined && { sort }),
             // default Enum value for status is not properly resolved
             // so we have to manually resolve it by lowercasing the value
             // https://github.com/apollographql/graphql-tools/issues/715
             ...(args.status && { status: args.status.toLowerCase() }),
             displayable: true,
-            include_local_discovery:
-              args.includeStubShows || args.discoverable === true,
+            include_local_discovery: args.includeStubShows || false,
             include_discovery_blocked: false,
             max_per_partner: args.maxPerPartner,
           })
+
+          if (!args.forYou) {
+            return loadData(
+              args,
+              showsWithHeadersLoader,
+              buildParams(args.sort)
+            )
+          }
+
+          const fallback = () =>
+            loadData(
+              args,
+              showsWithHeadersLoader,
+              buildParams(args.sort ?? START_AT_ASC)
+            )
+
+          if (!meCityShowsLoader) return fallback()
+
+          try {
+            return await loadData(args, meCityShowsLoader, buildParams())
+          } catch (error) {
+            // Gravity 404s until me/city_shows is deployed.
+            if (error?.statusCode === 404) return fallback()
+            throw error
+          }
         },
       },
       fairsConnection: {

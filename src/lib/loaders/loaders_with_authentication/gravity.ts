@@ -970,6 +970,7 @@ export default (accessToken, userID, opts) => {
     ),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meCityShowsLoader: gravityLoader("me/city_shows", {}, { headers: true }),
     meUpdateCollectionsLoader: gravityLoader(
       "me/collections",
       {},

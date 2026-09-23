@@ -8747,6 +8747,11 @@ type City {
     first: Int
 
     """
+    Rank shows by the signed-in user's taste, ignoring `sort`. Signed-out requests, and requests Gravity can't rank, fall back to `sort`, or START_AT_ASC if `sort` is not set.
+    """
+    forYou: Boolean
+
+    """
     Whether to include local discovery stubs
     """
     includeStubShows: Boolean
