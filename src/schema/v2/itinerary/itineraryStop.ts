@@ -35,6 +35,14 @@ export const ItineraryStopCategory = new GraphQLEnumType({
     GALLERY: { value: "GALLERY" },
     SHOW: { value: "SHOW" },
     FAIR: { value: "FAIR" },
+    CAFE: { value: "CAFE" },
+    RESTAURANT: { value: "RESTAURANT" },
+    BAR: { value: "BAR" },
+    HOTEL: { value: "HOTEL" },
+    SHOP: { value: "SHOP" },
+    PARK: { value: "PARK" },
+    LANDMARK: { value: "LANDMARK" },
+    OTHER: { value: "OTHER" },
   },
 })
 
