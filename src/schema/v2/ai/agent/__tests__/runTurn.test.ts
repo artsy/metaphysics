@@ -82,6 +82,8 @@ function fakeContext(
     accessToken: "token",
     aiPromptTemplatesLoader: jest.fn().mockResolvedValue({ body: [] }),
     artworksLoader: overrides.artworksLoader ?? jest.fn().mockResolvedValue([]),
+    // Gravity's /artists?ids[]= loader is declared with `headers: true`, so it
+    // resolves with `{ body, headers }` rather than a bare array.
   } as unknown) as ResolverContext
 }
 
@@ -99,7 +101,12 @@ async function collectEvents(
       role: string
       content: string
       artworkIDs?: string[] | null
+      displayedSections?: Array<{
+        entityType: "ARTWORK"
+        internalIDs: string[]
+      }> | null
     }>
+    supportedSections?: Array<"ARTWORKS"> | null
     includeDebugToolCalls?: boolean | null
   },
   context: ResolverContext = fakeContext()
@@ -133,7 +140,7 @@ describe("runTurn", () => {
     // whatever the loader returns, not what the model claimed.
     const finalJson = JSON.stringify({
       message: "Found Andy Warhol.",
-      artworkIDs: [ID_A],
+      section: { type: "ARTWORKS", internalIDs: [ID_A] },
     })
     const artworksLoader = jest
       .fn()
@@ -210,7 +217,14 @@ describe("runTurn", () => {
     // Real streaming delivers the final JSON in many small text-delta
     // chunks, not one shot — split mid-field-name and mid-string-value to
     // exercise `parsePartialJson`'s partial-buffer handling for real.
-    const chunks = ['{"mess', 'age":"Hello ', "there", '!","artworkIDs":[]}']
+    const chunks = [
+      '{"mess',
+      'age":"Hello ',
+      "there",
+      '!","section":{"type":"ART',
+      'WORKS","internalIDs":["',
+      `${ID_A}"]}}`,
+    ]
     mockModel = new MockLanguageModelV3({
       doStream: {
         stream: convertArrayToReadableStream([
@@ -239,7 +253,7 @@ describe("runTurn", () => {
     const deltas = events.filter((e) => e.__typename === "AIAgentTextDelta")
     expect(deltas.map((d) => d.text).join("")).toBe("Hello there!")
     const complete = events.find((e) => e.__typename === "AIAgentTurnComplete")
-    expect(complete).toMatchObject({ message: "Hello there!", artworks: [] })
+    expect(complete).toMatchObject({ message: "Hello there!" })
   })
 
   it("emits no text-delta for a chunk that never resolves to parseable JSON", async () => {
@@ -307,7 +321,7 @@ describe("runTurn", () => {
               id: "1",
               delta: JSON.stringify({
                 message: "I couldn't complete that search.",
-                artworkIDs: [],
+                section: null,
               }),
             },
             { type: "text-end", id: "1" },
@@ -346,8 +360,8 @@ describe("runTurn", () => {
   })
 
   describe("artwork cards", () => {
-    // One text-only step whose structured output cites `artworkIDs`.
-    const modelCiting = (artworkIDs: string[]) =>
+    // One text-only step whose structured output carries `section`.
+    const modelReturning = (output: Record<string, unknown>) =>
       new MockLanguageModelV3({
         doStream: {
           stream: convertArrayToReadableStream([
@@ -356,7 +370,7 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Here you go.", artworkIDs }),
+              delta: JSON.stringify({ message: "Here you go.", ...output }),
             },
             { type: "text-end", id: "1" },
             {
@@ -367,6 +381,9 @@ describe("runTurn", () => {
           ]),
         },
       })
+
+    const modelCiting = (internalIDs: string[]) =>
+      modelReturning({ section: { type: "ARTWORKS", internalIDs } })
 
     // `batch` is what /artworks?ids[]= returns: internalID matches only, in
     // Gravity's own order.
@@ -380,7 +397,11 @@ describe("runTurn", () => {
       const complete = events.find(
         (e) => e.__typename === "AIAgentTurnComplete"
       )
-      return { artworks: complete.artworks, artworksLoader }
+      return {
+        artworks: complete.artworks,
+        sections: complete.sections,
+        artworksLoader,
+      }
     }
 
     it("renders cards in the model's order, not Gravity's", async () => {
@@ -433,19 +454,6 @@ describe("runTurn", () => {
       expect(artworks.map((a) => a._id)).toEqual([ID_A, ID_B])
     })
 
-    it("asks for as many works as it cited, since fetching by id still paginates", async () => {
-      // Gravity's default page is 10, so a batch of 20 comes back halved
-      // unless `size` says otherwise -- and the missing cards look exactly
-      // like ids the model never cited.
-      const manyIDs = Array.from({ length: 20 }, (_, index) =>
-        index.toString(16).padStart(24, "0")
-      )
-
-      const { artworksLoader } = await cardsFor(manyIDs)
-
-      expect(artworksLoader).toHaveBeenCalledWith({ ids: manyIDs, size: 20 })
-    })
-
     it("renders one card per work, however many times the model cites it", async () => {
       const { artworks } = await cardsFor(
         [ID_A, ID_A, ID_A],
@@ -453,6 +461,193 @@ describe("runTurn", () => {
       )
 
       expect(artworks).toHaveLength(1)
+    })
+
+    describe("response sections", () => {
+      const turnFor = async (
+        output: Record<string, unknown>,
+        {
+          supportedSections,
+        }: {
+          // Omitted means the client said nothing, which is the `[ARTWORKS]`
+          // default -- the same thing today's beta builds send.
+          supportedSections?: Array<"ARTWORKS"> | null
+        } = {}
+      ) => {
+        mockModel = modelReturning(output)
+        const artworksLoader = jest.fn().mockResolvedValue([])
+        const events = await collectEvents(
+          {
+            conversationID: "c1",
+            message: "Find something",
+            ...(supportedSections !== undefined && { supportedSections }),
+          },
+          fakeContext({ artworksLoader })
+        )
+        return {
+          complete: events.find((e) => e.__typename === "AIAgentTurnComplete"),
+          artworksLoader,
+          systemPrompt: mockModel.doStreamCalls[0].prompt.find(
+            (entry: any) => entry.role === "system"
+          )?.content as string,
+        }
+      }
+
+      it("carries the cards as an artworks section, and the same works in legacy `artworks`", async () => {
+        const { artworks, sections } = await cardsFor(
+          [ID_B, ID_A],
+          [
+            { _id: ID_A, id: "slug-a" },
+            { _id: ID_B, id: "slug-b" },
+          ]
+        )
+
+        expect(sections).toHaveLength(1)
+        expect(sections[0].__typename).toBe("AIAgentArtworksSection")
+        expect(sections[0].artworks.map((a) => a._id)).toEqual([ID_B, ID_A])
+        // Old and new clients must be looking at the same works, not two
+        // independently-resolved sets.
+        expect(sections[0].artworks).toEqual(artworks)
+      })
+
+      it("has no section for a text-only answer", async () => {
+        const { complete, artworksLoader } = await turnFor({ section: null })
+
+        expect(artworksLoader).not.toHaveBeenCalled()
+        // The distinction the legacy field draws -- `[]` meaning "answered,
+        // no cards" -- lives on in `artworks`; `sections` is simply empty.
+        expect(complete).toMatchObject({ artworks: [], sections: [] })
+      })
+
+      it("has no section when nothing the model cited hydrated", async () => {
+        // An empty section would render as an empty rail with a header.
+        const { sections } = await cardsFor([ID_A], [])
+
+        expect(sections).toEqual([])
+      })
+
+      it("has no section when the model returns one with no ids in it", async () => {
+        const { complete, artworksLoader } = await turnFor({
+          section: { type: "ARTWORKS", internalIDs: [] },
+        })
+
+        expect(artworksLoader).not.toHaveBeenCalled()
+        expect(complete).toMatchObject({
+          message: "Here you go.",
+          artworks: [],
+          sections: [],
+        })
+      })
+
+      it("keeps the prose when a section's loader fails", async () => {
+        // A section is the optional half of an answer: losing the cards must
+        // not lose the text, and must not change how the turn ended.
+        const captureException = jest
+          .spyOn(Sentry, "captureException")
+          .mockImplementation(() => "test-event-id")
+
+        mockModel = modelCiting([ID_A])
+        const artworksLoader = jest
+          .fn()
+          .mockRejectedValue(new Error("Gravity is down"))
+        const events = await collectEvents(
+          { conversationID: "c1", message: "Find artworks" },
+          fakeContext({ artworksLoader })
+        )
+        const complete = events.find(
+          (e) => e.__typename === "AIAgentTurnComplete"
+        )
+
+        expect(complete).toMatchObject({
+          stopReason: "stop",
+          message: "Here you go.",
+          sections: [],
+        })
+        expect(captureException).toHaveBeenCalledWith(
+          expect.objectContaining({ message: "Gravity is down" }),
+          expect.objectContaining({ tags: { ai_agent_section: "ARTWORKS" } })
+        )
+
+        captureException.mockRestore()
+      })
+
+      it("reads the section and ignores a model that also sends the old field", async () => {
+        // `section` is singular by construction, so an answer carries one
+        // group of cards; a stray `artworkIDs` from a model still primed on
+        // the old schema is not a second one.
+        const { artworksLoader } = await turnFor({
+          section: { type: "ARTWORKS", internalIDs: [ID_A] },
+          artworkIDs: [ID_B],
+        })
+
+        expect(artworksLoader).toHaveBeenCalledWith({ ids: [ID_A], size: 1 })
+      })
+
+      describe("client capability", () => {
+        // The generated tail of the system prompt. Asserting on the whole
+        // prompt would also catch a section type named where it means
+        // something else -- a history label, say -- so the check is scoped to
+        // the block that decides what the model may produce.
+        const cardsBlock = (systemPrompt: string) =>
+          systemPrompt.slice(
+            systemPrompt.indexOf("## Cards available this turn")
+          )
+
+        it("tells the model only about the section types the client can render", async () => {
+          // The prompt and the output schema are built from the same list. A
+          // type named in the prompt but missing from the schema is a direct
+          // route to an answer that can't be parsed, so this is checked
+          // pointedly rather than by snapshotting the whole prompt.
+          const { systemPrompt } = await turnFor({ section: null })
+
+          expect(systemPrompt).toContain("## Cards available this turn")
+          expect(cardsBlock(systemPrompt)).toContain("`ARTWORKS`")
+        })
+
+        it("answers in prose when the client can render nothing", async () => {
+          // There is no `section` field in the schema at all here, so the
+          // model has nothing to fill in and the prompt says so.
+          const { complete, systemPrompt, artworksLoader } = await turnFor(
+            {},
+            { supportedSections: [] }
+          )
+
+          expect(cardsBlock(systemPrompt)).toContain("None.")
+          expect(cardsBlock(systemPrompt)).not.toContain("`ARTWORKS`")
+          expect(artworksLoader).not.toHaveBeenCalled()
+          expect(complete).toMatchObject({
+            stopReason: "stop",
+            message: "Here you go.",
+            artworks: [],
+            sections: [],
+          })
+        })
+      })
+
+      it("keeps the turn intact when the model names a section type we don't support", async () => {
+        // Structured output makes this near-impossible -- the provider
+        // constrains generation to the schema -- so the reachable failure mode
+        // is the schema rejecting the output wholesale: the prose the user
+        // already saw streamed is lost from the terminal event, but the turn
+        // still ends cleanly and the cause is reported.
+        const captureException = jest
+          .spyOn(Sentry, "captureException")
+          .mockImplementation(() => "test-event-id")
+
+        const { complete } = await turnFor({
+          section: { type: "SHOWS", internalIDs: [ID_A] },
+        })
+
+        expect(complete).toMatchObject({
+          stopReason: "stop",
+          message: null,
+          artworks: null,
+          sections: [],
+        })
+        expect(captureException).toHaveBeenCalled()
+
+        captureException.mockRestore()
+      })
     })
   })
 
@@ -494,7 +689,7 @@ describe("runTurn", () => {
               id: "1",
               delta: JSON.stringify({
                 message: "I couldn't run that query.",
-                artworkIDs: [],
+                section: null,
               }),
             },
             { type: "text-end", id: "1" },
@@ -558,6 +753,7 @@ describe("runTurn", () => {
       __typename: "AIAgentTurnComplete",
       stopReason: "error",
       message: null,
+      sections: [],
     })
   })
 
@@ -570,7 +766,7 @@ describe("runTurn", () => {
           {
             type: "text-delta",
             id: "1",
-            delta: JSON.stringify({ message: "Hello!", artworkIDs: [] }),
+            delta: JSON.stringify({ message: "Hello!", section: null }),
           },
           { type: "text-end", id: "1" },
           {
@@ -641,6 +837,7 @@ describe("runTurn", () => {
     expect(complete).toMatchObject({
       stopReason: "max_iterations",
       message: null,
+      sections: [],
     })
     expect(mockModel.doStreamCalls).toHaveLength(config.AI_AGENT_MAX_ITERATIONS)
   })
@@ -691,7 +888,7 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+              delta: JSON.stringify({ message: "Sure.", section: null }),
             },
             { type: "text-end", id: "1" },
             {
@@ -725,7 +922,9 @@ describe("runTurn", () => {
       expect(conversation).toHaveLength(3)
       expect(conversation[1].role).toBe("assistant")
       expect(conversation[1].text).toContain("Here are a few.")
-      expect(conversation[1].text).toContain(`1. ${ID_A} 2. ${ID_B}`)
+      expect(conversation[1].text).toContain(
+        `Section 1 — ARTWORKS: 1. ${ID_A} 2. ${ID_B}`
+      )
       expect(conversation[2]).toMatchObject({
         role: "user",
         text: "How much is the second one?",
@@ -800,6 +999,136 @@ describe("runTurn", () => {
       expect(text).toContain(`20. ${manyIDs[19]}`)
       expect(text).not.toContain(manyIDs[20])
     })
+
+    describe("displayed sections", () => {
+      const replay = async (
+        entry: {
+          role: string
+          content: string
+          artworkIDs?: string[] | null
+          displayedSections?: Array<{
+            entityType: "ARTWORK"
+            internalIDs: string[]
+          }> | null
+        },
+        message = "And the second one?"
+      ) => {
+        await collectEvents({ conversationID: "c1", message, history: [entry] })
+        return conversationSentToModel()[0].text as string
+      }
+
+      it("folds a replayed artworks section back into that assistant turn", async () => {
+        const text = await replay({
+          role: "assistant",
+          content: "Here are a few.",
+          displayedSections: [
+            { entityType: "ARTWORK", internalIDs: [ID_A, ID_B] },
+          ],
+        })
+
+        expect(text).toContain("Here are a few.")
+        expect(text).toContain(`Section 1 — ARTWORKS: 1. ${ID_A} 2. ${ID_B}`)
+      })
+
+      it("shows a work replayed in both formats only once", async () => {
+        // A client mid-migration may well send both; the model must not read
+        // one card as two.
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          artworkIDs: [ID_A],
+          displayedSections: [
+            { entityType: "ARTWORK", internalIDs: [ID_A, ID_B] },
+          ],
+        })
+
+        expect(text).toContain(`1. ${ID_A} 2. ${ID_B}`)
+        expect(text).not.toContain("3.")
+        expect(text.split(ID_A)).toHaveLength(2)
+      })
+
+      it("keeps legacy ids the new section didn't carry", async () => {
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          artworkIDs: [ID_C],
+          displayedSections: [{ entityType: "ARTWORK", internalIDs: [ID_A] }],
+        })
+
+        expect(text).toContain(`1. ${ID_A} 2. ${ID_C}`)
+      })
+
+      it("reads only the first section of a turn that replays several", async () => {
+        // One answer carries at most one section today, so a second one
+        // describes an answer this server could not have produced. Dropping it
+        // keeps the prose (and the first section) rather than failing the turn.
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          displayedSections: [
+            { entityType: "ARTWORK", internalIDs: [ID_A] },
+            { entityType: "ARTWORK", internalIDs: [ID_B] },
+          ],
+        })
+
+        expect(text).toContain(`Section 1 — ARTWORKS: 1. ${ID_A}`)
+        expect(text).not.toContain("Section 2")
+        expect(text).not.toContain(ID_B)
+      })
+
+      it("ignores sections replayed on a user turn, which never rendered cards", async () => {
+        const text = await replay({
+          role: "user",
+          content: "Show me Warhol",
+          displayedSections: [{ entityType: "ARTWORK", internalIDs: [ID_A] }],
+        })
+
+        expect(text).toBe("Show me Warhol")
+      })
+
+      it("drops a replayed id that isn't an internalID", async () => {
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          displayedSections: [
+            {
+              entityType: "ARTWORK",
+              internalIDs: ["andy-warhol", ID_A],
+            },
+          ],
+        })
+
+        expect(text).toContain(`1. ${ID_A}`)
+        expect(text).not.toContain("andy-warhol")
+      })
+
+      it("caps a replayed section at the number of cards that can be shown", async () => {
+        const manyIDs = Array.from({ length: 25 }, (_, index) =>
+          index.toString(16).padStart(24, "0")
+        )
+
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          displayedSections: [{ entityType: "ARTWORK", internalIDs: manyIDs }],
+        })
+
+        expect(text).toContain(`20. ${manyIDs[19]}`)
+        expect(text).not.toContain(manyIDs[20])
+      })
+
+      it("leaves the turn unannotated when a section carries nothing usable", async () => {
+        const text = await replay({
+          role: "assistant",
+          content: "Here you go.",
+          displayedSections: [
+            { entityType: "ARTWORK", internalIDs: ["not-an-internal-id"] },
+          ],
+        })
+
+        expect(text).toBe("Here you go.")
+      })
+    })
   })
 
   describe("per-user rate limiting", () => {
@@ -839,6 +1168,7 @@ describe("runTurn", () => {
           __typename: "AIAgentTurnComplete",
           message: null,
           artworks: null,
+          sections: [],
           stopReason: "rate_limited",
           toolCallCount: 0,
         },
