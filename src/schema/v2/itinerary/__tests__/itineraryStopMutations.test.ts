@@ -1,6 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
+import { FormattedDaySchedules } from "schema/v2/types/formattedDaySchedules"
 
 // Mirrors Gravity's single itinerary_stop JSON, pointing at a `PartnerShow`
 // so `item` has something to resolve.
@@ -36,6 +37,10 @@ const successFragment = gql`
       title
       category
       isFreeAdmission
+      openingHours {
+        days
+        hours
+      }
       timeZone
       item {
         __typename
@@ -185,6 +190,76 @@ describe("createItineraryStop", () => {
     expect(loader).not.toHaveBeenCalled()
   })
 
+  it("maps openingHours to opening_hours, and omits it when not given", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(
+            input: {
+              itinerarySectionID: "section-id"
+              openingHours: [{ days: "Sat - Thurs", hours: "10am-5pm" }]
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      itinerary_section_id: "section-id",
+      opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+    })
+
+    loader.mockClear()
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(input: { itinerarySectionID: "section-id" }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][0]).not.toHaveProperty("opening_hours")
+  })
+
+  it("accepts an empty openingHours list", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(
+            input: { itinerarySectionID: "section-id", openingHours: [] }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      itinerary_section_id: "section-id",
+      opening_hours: [],
+    })
+  })
+
   it("returns the success payload with the resolved item", async () => {
     const loader = jest.fn().mockResolvedValue(gravityStop())
     const context = withShowsLoader(loader)
@@ -197,6 +272,7 @@ describe("createItineraryStop", () => {
       internalID: "stop-id",
       category: "SHOW",
       isFreeAdmission: true,
+      openingHours: [],
       timeZone: "America/New_York",
       item: { __typename: "Show", internalID: "show-id" },
     })
@@ -278,6 +354,141 @@ describe("createItineraryStop", () => {
   })
 })
 
+describe("ItineraryStop.displayOpeningHours", () => {
+  const daySchedules = [
+    { day_of_week: "Monday", start_time: 36000, end_time: 64800 },
+  ]
+  const formattedDaySchedules = FormattedDaySchedules.resolve(
+    daySchedules as any
+  )
+
+  const query = gql`
+    mutation {
+      createItineraryStop(input: { itinerarySectionID: "section-id" }) {
+        responseOrError {
+          ... on ItineraryStopMutationSuccess {
+            itineraryStop {
+              openingHours {
+                days
+                hours
+              }
+              displayOpeningHours {
+                days
+                hours
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const create = (context: Record<string, unknown>) =>
+    runAuthenticatedQuery(query, context).then(
+      (result) => result.createItineraryStop.responseOrError.itineraryStop
+    )
+
+  it("prefers the stop's own lines over the linked item's schedule", async () => {
+    const loader = jest.fn().mockResolvedValue(
+      gravityStop({
+        item_type: "PartnerShow",
+        opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+      })
+    )
+    const stop = await create({
+      ...withShowsLoader(loader),
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", location: { day_schedules: daySchedules } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.openingHours).toEqual([
+      { days: "Sat - Thurs", hours: "10am-5pm" },
+    ])
+    expect(stop.displayOpeningHours).toEqual([
+      { days: "Sat - Thurs", hours: "10am-5pm" },
+    ])
+  })
+
+  it("falls back to the linked PartnerLocation's schedule", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerLocation", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      partnerLocationsByIdsLoader: jest
+        .fn()
+        .mockResolvedValue([{ id: "show-id", day_schedules: daySchedules }]),
+    })
+
+    expect(stop.openingHours).toEqual([])
+    expect(stop.displayOpeningHours).toEqual(formattedDaySchedules)
+  })
+
+  it("falls back to a PartnerShow's location schedule", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerShow", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", location: { day_schedules: daySchedules } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual(formattedDaySchedules)
+  })
+
+  it("yields [] for a show whose location has no schedule (e.g. a fair location)", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerShow", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", fair_location: { city: "Basel" } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual([])
+  })
+
+  it("yields [] for a fair stop", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(gravityStop({ item_type: "Fair", opening_hours: [] }))
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual([])
+  })
+
+  it("yields [] for a stop with no item", async () => {
+    const loader = jest.fn().mockResolvedValue(
+      gravityStop({
+        item_type: null,
+        item_id: null,
+        title: "Cafe",
+        opening_hours: [],
+      })
+    )
+    const stop = await create({ createItineraryStopLoader: loader })
+
+    expect(stop.displayOpeningHours).toEqual([])
+  })
+})
+
 describe("updateItineraryStop", () => {
   const mutation = gql`
     mutation {
@@ -354,6 +565,71 @@ describe("updateItineraryStop", () => {
     )
 
     expect(loader.mock.calls[0][1]).not.toHaveProperty("client_mutation_id")
+  })
+
+  it("maps openingHours to opening_hours, and omits it when not given", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(
+            input: {
+              id: "stop-id"
+              openingHours: [{ days: "Sat - Thurs", hours: "10am-5pm" }]
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("stop-id", {
+      opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+    })
+
+    loader.mockClear()
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(input: { id: "stop-id" }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][1]).not.toHaveProperty("opening_hours")
+  })
+
+  it("sends an empty openingHours list as null so the clear reaches Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(input: { id: "stop-id", openingHours: [] }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    // qs drops empty arrays from the request body; see fetch.test.ts.
+    expect(loader).toHaveBeenCalledWith("stop-id", { opening_hours: null })
   })
 
   it("returns the success payload with the resolved item", async () => {

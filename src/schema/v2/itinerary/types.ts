@@ -26,8 +26,15 @@ export interface GravityItineraryStop {
   category: string | null
   is_free_admission: boolean | null
   source_url: string | null
+  /** Absent from older Gravity responses; defaults to `[]`. */
+  opening_hours?: GravityItineraryStopOpeningHours[]
   created_at: string
   updated_at: string
+}
+
+export interface GravityItineraryStopOpeningHours {
+  days: string
+  hours: string
 }
 
 export interface GravityItinerarySection {

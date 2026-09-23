@@ -118,13 +118,11 @@ describe("itineraryStop", () => {
         }
       `,
       {
-        itineraryStopLoader: jest
-          .fn()
-          .mockResolvedValue({
-            ...stop,
-            event_type: "PartnerShowEvent",
-            event_id: "event-1",
-          }),
+        itineraryStopLoader: jest.fn().mockResolvedValue({
+          ...stop,
+          event_type: "PartnerShowEvent",
+          event_id: "event-1",
+        }),
         showsLoader: jest
           .fn()
           .mockResolvedValue([
@@ -134,5 +132,114 @@ describe("itineraryStop", () => {
     )
     expect(data.itineraryStop.item).toEqual({ internalID: "show-1" })
     expect(data.itineraryStop.event).toEqual({ title: "Opening" })
+  })
+
+  it("hydrates the linked item's schedule for displayOpeningHours even without item or event selected", async () => {
+    const data = await runQuery(
+      gql`
+        {
+          itineraryStop(id: "stop-1") {
+            openingHours {
+              days
+              hours
+            }
+            displayOpeningHours {
+              days
+              hours
+            }
+          }
+        }
+      `,
+      {
+        itineraryStopLoader: jest.fn().mockResolvedValue({
+          id: "stop-1",
+          item_type: "PartnerLocation",
+          item_id: "location-1",
+          title: "A gallery",
+          position: 0,
+          opening_hours: [],
+        }),
+        partnerLocationsByIdsLoader: jest.fn().mockResolvedValue([
+          {
+            id: "location-1",
+            day_schedules: [
+              { day_of_week: "Monday", start_time: 36000, end_time: 64800 },
+            ],
+          },
+        ]),
+      }
+    )
+    expect(data.itineraryStop.openingHours).toEqual([])
+    expect(data.itineraryStop.displayOpeningHours).toEqual([
+      { days: "Monday", hours: "10am–6pm" },
+      { days: "Tuesday–Sunday", hours: "Closed" },
+    ])
+  })
+
+  it("hydrates nested myItineraries stops for displayOpeningHours without item selected", async () => {
+    const fetch = jest.fn().mockResolvedValue([
+      {
+        is_on_my_itineraries: true,
+        my_itineraries: [
+          {
+            id: "mine",
+            sections: [
+              {
+                id: "section-1",
+                stops: [
+                  {
+                    id: "nested-stop",
+                    item_type: "PartnerLocation",
+                    item_id: "location-1",
+                    title: "A gallery",
+                    position: 0,
+                    opening_hours: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+    const data = await runQuery(
+      gql`
+        {
+          itineraryStop(id: "stop-1") {
+            myItineraries {
+              sections {
+                stops {
+                  displayOpeningHours {
+                    days
+                    hours
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      {
+        itineraryStopLoader: jest.fn().mockResolvedValue(stop),
+        itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+          fetch
+        ),
+        partnerLocationsByIdsLoader: jest.fn().mockResolvedValue([
+          {
+            id: "location-1",
+            day_schedules: [
+              { day_of_week: "Monday", start_time: 36000, end_time: 64800 },
+            ],
+          },
+        ]),
+      }
+    )
+    expect(
+      data.itineraryStop.myItineraries[0].sections[0].stops[0]
+        .displayOpeningHours
+    ).toEqual([
+      { days: "Monday", hours: "10am–6pm" },
+      { days: "Tuesday–Sunday", hours: "Closed" },
+    ])
   })
 })

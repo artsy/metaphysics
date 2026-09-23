@@ -63,6 +63,7 @@ const gravityItinerary = {
           category: "SHOW",
           is_free_admission: true,
           source_url: "https://example.com/source",
+          opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
           created_at: "2026-08-01T09:00:00Z",
           updated_at: "2026-08-01T09:00:00Z",
         },
@@ -415,6 +416,10 @@ describe("Itinerary", () => {
               address
               category
               isFreeAdmission
+              openingHours {
+                days
+                hours
+              }
               timeZone
               sourceURL
               itemType
@@ -449,11 +454,16 @@ describe("Itinerary", () => {
     expect(show.itemType).toEqual("SHOW")
     expect(show.eventType).toEqual("SHOW_EVENT")
     expect(show.eventID).toEqual("event-1")
+    expect(show.openingHours).toEqual([
+      { days: "Sat - Thurs", hours: "10am-5pm" },
+    ])
     expect(gallery.category).toEqual("GALLERY")
+    expect(gallery.openingHours).toEqual([])
     expect(custom.title).toEqual("Coffee at Monmouth")
     expect(custom.address).toEqual("2 Park Street, London SE1 9AB")
     expect(custom.itemType).toBeNull()
     expect(custom.eventType).toBeNull()
+    expect(custom.openingHours).toEqual([])
   })
 
   it("resolves isMine by comparing the viewer's id to the itinerary's owner", async () => {

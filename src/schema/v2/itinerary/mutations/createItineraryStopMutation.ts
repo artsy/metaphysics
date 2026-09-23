@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFloat,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from "graphql"
@@ -13,8 +14,12 @@ import {
   ItineraryStopCategory,
   ItineraryStopItemType,
   ItineraryStopEventType,
+  ItineraryStopOpeningHoursInputType,
 } from "../itineraryStop"
-import { GravityItineraryStop } from "../types"
+import {
+  GravityItineraryStop,
+  GravityItineraryStopOpeningHours,
+} from "../types"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
 interface InputProps {
@@ -38,6 +43,7 @@ interface InputProps {
   category?: string
   isFreeAdmission?: boolean
   sourceURL?: string
+  openingHours?: GravityItineraryStopOpeningHours[]
 }
 
 export const createItineraryStopMutation = mutationWithClientMutationId<
@@ -86,6 +92,12 @@ export const createItineraryStopMutation = mutationWithClientMutationId<
     category: { type: ItineraryStopCategory },
     isFreeAdmission: { type: GraphQLBoolean },
     sourceURL: { type: GraphQLString },
+    openingHours: {
+      description: "The stop's opening hours.",
+      type: new GraphQLList(
+        new GraphQLNonNull(ItineraryStopOpeningHoursInputType)
+      ),
+    },
   },
   outputFields: {
     responseOrError: {
