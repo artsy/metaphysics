@@ -117,6 +117,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
+    const { CityType, cityGuideCityForCoordinates } = require("./city")
 
     return {
       ...SlugAndInternalIDFields,
@@ -261,6 +262,18 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             return location.city
           }
           return existyValue(partner_city)
+        },
+      },
+      cityGuideCity: {
+        description:
+          "The City Guide city nearest to this show's location (fair location, then show location), if one is within range",
+        type: CityType,
+        resolve: ({ fair, location }, _args, { geodataCitiesLoader }) => {
+          const coordinates =
+            (fair && fair.location && fair.location.coordinates) ||
+            (location && location.coordinates)
+
+          return cityGuideCityForCoordinates(coordinates, geodataCitiesLoader)
         },
       },
       coverImage: {

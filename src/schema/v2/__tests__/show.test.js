@@ -428,6 +428,113 @@ describe("Show type", () => {
     })
   })
 
+  describe("cityGuideCity", () => {
+    const MOCK_CITY = {
+      slug: "sacramende-ca-usa",
+      name: "Sacramende",
+      full_name: "Sacramende, CA, USA",
+      coords: [38.5, -121.8],
+    }
+
+    beforeEach(() => {
+      context.geodataCitiesLoader = sinon
+        .stub()
+        .returns(Promise.resolve([MOCK_CITY]))
+    })
+
+    it("returns the city guide city nearest to the fair location", async () => {
+      showData.fair = {
+        location: {
+          coordinates: { lat: 38.5, lng: -121.8 },
+        },
+      }
+      showData.location = {
+        coordinates: { lat: 0, lng: 0 },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+              name
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          cityGuideCity: {
+            slug: "sacramende-ca-usa",
+            name: "Sacramende",
+          },
+        },
+      })
+    })
+
+    it("falls back to the show location when there is no fair location", async () => {
+      showData.location = {
+        coordinates: { lat: 38.5, lng: -121.8 },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          cityGuideCity: {
+            slug: "sacramende-ca-usa",
+          },
+        },
+      })
+    })
+
+    it("returns null when the location is outside the City Guide threshold", async () => {
+      showData.location = {
+        coordinates: { lat: 40, lng: -100 },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          cityGuideCity: null,
+        },
+      })
+    })
+
+    it("returns null when the show has no coordinates", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data).toEqual({
+        show: {
+          cityGuideCity: null,
+        },
+      })
+    })
+  })
+
   describe("kind", () => {
     it("returns fair when a fair booth", async () => {
       showData.fair = {
