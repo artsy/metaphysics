@@ -8736,6 +8736,11 @@ type City {
   ): FairConnection
   fullName: String!
   name: String!
+
+  """
+  Recent editorial articles about artists showing in this city now, ranked by the signed-in user's taste. Excludes the city's curated articles. Empty when signed out.
+  """
+  recommendedArticlesConnection(first: Int = 4): ArticleConnection
   showsConnection(
     after: String
     before: String
