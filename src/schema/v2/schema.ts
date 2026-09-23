@@ -25,26 +25,12 @@ import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import { City } from "./city"
-import { CityGuideEvent } from "./cityGuideEvent"
-import { createCityGuideEventMutation } from "./cityGuideEvent/mutations/createCityGuideEventMutation"
-import { createCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/createCityGuideEventArticleMutation"
-import { createCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/createCityGuideEventItineraryMutation"
-import { deleteCityGuideEventMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventMutation"
-import { deleteCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventArticleMutation"
-import { deleteCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/deleteCityGuideEventItineraryMutation"
-import { publishCityGuideEventMutation } from "./cityGuideEvent/mutations/publishCityGuideEventMutation"
 import { createCityArticleMutation } from "./cityContent/mutations/createCityArticleMutation"
 import { updateCityArticleMutation } from "./cityContent/mutations/updateCityArticleMutation"
 import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArticleMutation"
 import { createCityVideoMutation } from "./cityContent/mutations/createCityVideoMutation"
 import { updateCityVideoMutation } from "./cityContent/mutations/updateCityVideoMutation"
 import { deleteCityVideoMutation } from "./cityContent/mutations/deleteCityVideoMutation"
-import { removeCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/removeCityGuideEventVideoMutation"
-import { setCityGuideEventVideoMutation } from "./cityGuideEvent/mutations/setCityGuideEventVideoMutation"
-import { unpublishCityGuideEventMutation } from "./cityGuideEvent/mutations/unpublishCityGuideEventMutation"
-import { updateCityGuideEventMutation } from "./cityGuideEvent/mutations/updateCityGuideEventMutation"
-import { updateCityGuideEventArticleMutation } from "./cityGuideEvent/mutations/updateCityGuideEventArticleMutation"
-import { updateCityGuideEventItineraryMutation } from "./cityGuideEvent/mutations/updateCityGuideEventItineraryMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -542,7 +528,6 @@ const rootFields = {
   channel,
   cities,
   city: City,
-  cityGuideEvent: CityGuideEvent,
   collection: Collection,
   collectorProfile: CollectorProfileForUser,
   collectorProfilesConnection: CollectorProfilesConnection,
@@ -718,9 +703,6 @@ export default new GraphQLSchema({
       createCareerHighlight: createCareerHighlightMutation,
       createCatalogArtworkDocument: createCatalogArtworkDocumentMutation,
       createCityArticle: createCityArticleMutation,
-      createCityGuideEvent: createCityGuideEventMutation,
-      createCityGuideEventArticle: createCityGuideEventArticleMutation,
-      createCityGuideEventItinerary: createCityGuideEventItineraryMutation,
       createCityVideo: createCityVideoMutation,
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
@@ -799,9 +781,6 @@ export default new GraphQLSchema({
       deleteCareerHighlight: deleteCareerHighlightMutation,
       deleteCatalogArtworkDocument: deleteCatalogArtworkDocumentMutation,
       deleteCityArticle: deleteCityArticleMutation,
-      deleteCityGuideEvent: deleteCityGuideEventMutation,
-      deleteCityGuideEventArticle: deleteCityGuideEventArticleMutation,
-      deleteCityGuideEventItinerary: deleteCityGuideEventItineraryMutation,
       deleteCityVideo: deleteCityVideoMutation,
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
@@ -859,14 +838,12 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
-      publishCityGuideEvent: publishCityGuideEventMutation,
       publishItinerary: publishItineraryMutation,
       publishNavigationDraft: publishNavigationDraftMutation,
       publishViewingRoom: publishViewingRoomMutation,
       reopenArtworkDuplicatePair: reopenArtworkDuplicatePairMutation,
       removeArtworkFromPartnerList: removeArtworkFromPartnerListMutation,
       removeArtworkFromPartnerShow: removeArtworkFromPartnerShowMutation,
-      removeCityGuideEventVideo: removeCityGuideEventVideoMutation,
       removeInstallShotFromPartnerShow: removeInstallShotFromPartnerShowMutation,
       repositionArtworkImages: repositionArtworkImagesMutation,
       repositionViewingRoomArtworks: repositionViewingRoomArtworksMutation,
@@ -885,7 +862,6 @@ export default new GraphQLSchema({
       sendConversationMessage: SendConversationMessageMutation,
       sendFeedback: sendFeedbackMutation,
       sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
-      setCityGuideEventVideo: setCityGuideEventVideoMutation,
       setOrderFulfillmentOption: setOrderFulfillmentOptionMutation,
       setOrderPayment: setOrderPaymentMutation,
       startIdentityVerification: startIdentityVerificationMutation,
@@ -895,7 +871,6 @@ export default new GraphQLSchema({
       transferMyCollection: transferMyCollectionMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
-      unpublishCityGuideEvent: unpublishCityGuideEventMutation,
       unpublishItinerary: unpublishItineraryMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
       unsetOrderFulfillmentOption: unsetOrderFulfillmentOptionMutation,
@@ -907,9 +882,6 @@ export default new GraphQLSchema({
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityArticle: updateCityArticleMutation,
-      updateCityGuideEvent: updateCityGuideEventMutation,
-      updateCityGuideEventArticle: updateCityGuideEventArticleMutation,
-      updateCityGuideEventItinerary: updateCityGuideEventItineraryMutation,
       updateCityVideo: updateCityVideoMutation,
       updateConversationMessageTemplate: updateConversationMessageTemplateMutation,
       updateArtwork: updateArtworkMutation,

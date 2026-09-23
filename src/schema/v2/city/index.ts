@@ -30,7 +30,6 @@ import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
 import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
-import { CityGuideEventsConnectionField } from "../cityGuideEvent/cityGuideEventsConnection"
 import { CityArticlesField } from "../cityContent/cityArticles"
 import { CityVideosField } from "../cityContent/cityVideos"
 
@@ -142,7 +141,6 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             status: args.status,
           }),
       },
-      cityGuideEventsConnection: CityGuideEventsConnectionField,
       cityArticles: CityArticlesField,
       cityVideos: CityVideosField,
       sponsoredContent: {

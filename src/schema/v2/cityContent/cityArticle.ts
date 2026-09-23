@@ -7,7 +7,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { GlobalIDField } from "schema/v2/object_identification"
 import { ArticleType } from "schema/v2/article"
-import { PositronArticle } from "schema/v2/cityGuideEvent/cityGuideEventArticle"
+import { PositronArticle } from "schema/v2/article/types"
 import { GravityCityArticle } from "./types"
 
 export interface CityArticleProps extends GravityCityArticle {

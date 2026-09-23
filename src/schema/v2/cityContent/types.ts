@@ -1,4 +1,4 @@
-import { GravityVideo } from "schema/v2/cityGuideEvent/types"
+import { GravityVideo } from "schema/v2/types/Video"
 
 export interface GravityCityArticle {
   id: string
