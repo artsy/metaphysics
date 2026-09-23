@@ -142,7 +142,8 @@ export const ItineraryStopType = new GraphQLObjectType<
         const itineraries = result.my_itineraries ?? []
         if (
           isFieldRequested("sections.stops.item", info) ||
-          isFieldRequested("sections.stops.event", info)
+          isFieldRequested("sections.stops.event", info) ||
+          isFieldRequested("sections.stops.displayOpeningHours", info)
         ) {
           return attachMembershipStopItems(itineraries, context)
         }

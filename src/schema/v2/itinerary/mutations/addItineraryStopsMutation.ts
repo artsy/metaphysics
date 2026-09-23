@@ -93,9 +93,7 @@ export const ItineraryStopInput = new GraphQLInputObjectType({
     isFreeAdmission: { type: GraphQLBoolean },
     sourceURL: { type: GraphQLString },
     openingHours: {
-      description:
-        "Replaces the stop's opening hours. Omit to leave them " +
-        "unchanged; pass `[]` to clear them.",
+      description: "The stop's opening hours.",
       type: new GraphQLList(
         new GraphQLNonNull(ItineraryStopOpeningHoursInputType)
       ),

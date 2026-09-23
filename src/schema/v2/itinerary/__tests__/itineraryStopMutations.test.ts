@@ -235,7 +235,7 @@ describe("createItineraryStop", () => {
     expect(loader.mock.calls[0][0]).not.toHaveProperty("opening_hours")
   })
 
-  it("clears openingHours when given an empty list", async () => {
+  it("accepts an empty openingHours list", async () => {
     const loader = jest.fn().mockResolvedValue(gravityStop())
     const context = withShowsLoader(loader)
 
@@ -611,7 +611,7 @@ describe("updateItineraryStop", () => {
     expect(loader.mock.calls[0][1]).not.toHaveProperty("opening_hours")
   })
 
-  it("clears openingHours when given an empty list", async () => {
+  it("sends an empty openingHours list as null so the clear reaches Gravity", async () => {
     const loader = jest.fn().mockResolvedValue(gravityStop())
     const context = withShowsLoader(loader)
 
@@ -628,7 +628,8 @@ describe("updateItineraryStop", () => {
       context
     )
 
-    expect(loader).toHaveBeenCalledWith("stop-id", { opening_hours: [] })
+    // qs drops empty arrays from the request body; see fetch.test.ts.
+    expect(loader).toHaveBeenCalledWith("stop-id", { opening_hours: null })
   })
 
   it("returns the success payload with the resolved item", async () => {

@@ -28,7 +28,11 @@ export const ItineraryStop: GraphQLFieldConfig<void, ResolverContext> = {
       })
     if (!stop) return null
 
-    if (isFieldRequested("item", info) || isFieldRequested("event", info)) {
+    if (
+      isFieldRequested("item", info) ||
+      isFieldRequested("event", info) ||
+      isFieldRequested("displayOpeningHours", info)
+    ) {
       await attachItemsToStops([stop], context)
     }
     return stop

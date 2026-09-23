@@ -43,8 +43,14 @@ interface InputProps {
   isFreeAdmission?: boolean
   sourceURL?: string
   position?: number
-  openingHours?: GravityItineraryStopOpeningHours[]
+  openingHours?: GravityItineraryStopOpeningHours[] | null
 }
+
+// qs.stringify drops empty arrays, so send a clear as null (ljharb/qs#362).
+const sendClearAsNull = (attributes: Omit<InputProps, "id">) =>
+  attributes.openingHours?.length === 0
+    ? { ...attributes, openingHours: null }
+    : attributes
 
 export const updateItineraryStopMutation = mutationWithClientMutationId<
   InputProps,
@@ -115,7 +121,7 @@ export const updateItineraryStopMutation = mutationWithClientMutationId<
     try {
       stop = await context.updateItineraryStopLoader(
         id,
-        snakeCaseKeys(attributes)
+        snakeCaseKeys(sendClearAsNull(attributes))
       )
     } catch (error) {
       const formattedErr = formatGravityError(error)
