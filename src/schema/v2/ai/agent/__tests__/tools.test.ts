@@ -60,6 +60,111 @@ describe("buildAgentTools", () => {
       expect(description).not.toContain(field)
     })
   })
+
+  it("keeps the availability instruments it recommends reachable", async () => {
+    const { description } = buildAgentTools(
+      schema,
+      {} as ResolverContext
+    ).query_artsy
+
+    expect(description).toContain("forSale: true")
+    expect(description).toContain("counts { total }")
+    expect(description).toContain("forSaleArtworks")
+
+    const queries = [
+      `{ artist(id: "banksy") { counts { artworks forSaleArtworks } } }`,
+      `{ artworksConnection(artistIDs: ["x"], forSale: true, first: 20) {
+          counts { total }
+          edges { node { internalID saleMessage } }
+        } }`,
+      `{ gene(id: "g") { filterArtworksConnection(forSale: true, first: 20) {
+          counts { total }
+          edges { node { internalID } }
+        } } }`,
+    ]
+
+    queries.forEach((query) => {
+      expect(
+        validate(narrowSchemaFor(schema), parse(query), specifiedRules)
+      ).toEqual([])
+    })
+
+    // ...and cheap enough to survive the complexity cap, so asking for the
+    // total alongside the page is never the thing that fails the query.
+    for (const query of queries) {
+      const result = await runQueryArtsyTool(
+        { query },
+        schema,
+        {} as ResolverContext
+      )
+      expect(result.content).not.toContain("too expensive")
+    }
+  })
+
+  // "Any open shows in Berlin?" is only answerable through `city` --
+  // `showsConnection` takes no place, and its `term` search drops `status`
+  // server-side, so a city passed as a term returns closed shows.
+  it("keeps the city-scoped shows and fairs path reachable", async () => {
+    const narrow = narrowSchemaFor(schema)
+    const query = narrow.getQueryType()!.getFields()
+
+    expect(query.city).toBeDefined()
+    expect(query.cities).toBeDefined()
+
+    const cityShowsAndFairs = `{ city(slug: "berlin-germany") {
+        name
+        showsConnection(status: RUNNING, sort: END_AT_ASC, first: 20) {
+          edges { node { internalID slug name startAt endAt
+            partner { ... on Partner { name } ... on ExternalPartner { name } }
+          } }
+        }
+        fairsConnection(status: RUNNING, first: 20) {
+          edges { node { internalID slug name startAt endAt } }
+        }
+      } }`
+
+    // Works hang off a show under `filterArtworksConnection`, and a couple of
+    // shows' worth has to stay affordable -- otherwise the turn ends on a list
+    // of venue names with no art attached.
+    const worksInShows = `{ city(slug: "berlin-germany") {
+        showsConnection(status: RUNNING, first: 2) {
+          edges { node { internalID name
+            filterArtworksConnection(forSale: true, first: 20) {
+              counts { total }
+              edges { node { internalID slug title artistNames saleMessage } }
+            }
+          } }
+        }
+      } }`
+
+    for (const query of [cityShowsAndFairs, worksInShows]) {
+      expect(validate(narrow, parse(query), specifiedRules)).toEqual([])
+      const result = await runQueryArtsyTool(
+        { query },
+        schema,
+        {} as ResolverContext
+      )
+      expect(result.content).not.toContain("too expensive")
+    }
+  })
+
+  // `cities` is the one allowed list field with no page-size argument, so
+  // without `unpagedListEstimator` it scores 1 and a shows-per-city fan-out
+  // (one Gravity call per city) passes the complexity budget.
+  it("prices `cities` as a list so nesting under it cannot fan out", async () => {
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ cities { name showsConnection(status: RUNNING, first: 20) {
+          edges { node { internalID name } }
+        } } }`,
+      },
+      schema,
+      {} as ResolverContext
+    )
+
+    expect(result.ok).toBe(false)
+    expect(result.content).toContain("too expensive")
+  })
 })
 
 describe("runQueryArtsyTool", () => {
@@ -304,6 +409,8 @@ describe("the root field allowlist", () => {
       "artistsConnection",
       "artwork",
       "artworksConnection",
+      "cities",
+      "city",
       "fair",
       "fairs",
       "gene",

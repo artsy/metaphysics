@@ -854,6 +854,63 @@ describe("runTurn", () => {
       expect(context.aiPromptTemplatesLoader).not.toHaveBeenCalled()
     })
   })
+  describe("today's date", () => {
+    const systemPromptOnCall = (callIndex: number) =>
+      mockModel.doStreamCalls[callIndex].prompt.find(
+        (entry: any) => entry.role === "system"
+      )!.content as string
+
+    const singleStep = () =>
+      new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            {
+              type: "text-delta",
+              id: "1",
+              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+            },
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+
+    // Without a date in the prompt the model dates the world from its training
+    // data, and reports a fair Gravity returned as RUNNING as one that "doesn't
+    // open until next year".
+    it("tells the model what day it is", async () => {
+      mockModel = singleStep()
+      jest.useFakeTimers().setSystemTime(new Date("2026-09-23T11:30:00Z"))
+
+      try {
+        await collectEvents({ conversationID: "c1", message: "Any fairs on?" })
+      } finally {
+        jest.useRealTimers()
+      }
+
+      const system = systemPromptOnCall(0)
+      expect(system).toContain("2026-09-23")
+      expect(system).toContain("Wednesday, September 23, 2026")
+    })
+
+    // Day granularity, not second: the system prompt carries a cache
+    // breakpoint and is resent on every step of a turn.
+    it("stamps the day only, so the cached prefix survives a multi-step turn", async () => {
+      mockModel = singleStep()
+
+      await collectEvents({ conversationID: "c1", message: "Any fairs on?" })
+
+      const system = systemPromptOnCall(0)
+      expect(system).not.toMatch(/\d{2}:\d{2}/)
+    })
+  })
+
   describe("prompt caching", () => {
     // What the Anthropic provider turns into `cache_control` breakpoints:
     // message-level `providerOptions.anthropic.cacheControl`, applied to that
