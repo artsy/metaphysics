@@ -12,7 +12,7 @@ import { CityArticleType } from "../cityArticle"
 // Returns the city's full, refreshed article list rather than the single
 // join row: a single row can't satisfy CityArticleType.article (GraphQLNonNull)
 // once Positron drops it (unpublished, or deleted concurrently), and there's
-// no "City" GraphQL object here to refetch through, unlike CityGuideEvent.
+// no "City" GraphQL object here to refetch through.
 export const CityArticleMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext

@@ -1,4 +1,4 @@
-import { PositronArticle } from "schema/v2/cityGuideEvent/cityGuideEventArticle"
+import { PositronArticle } from "schema/v2/article/types"
 import { GravityCityArticle } from "./types"
 
 interface ArticlesLoader {

@@ -14,6 +14,19 @@ import { markdown } from "../fields/markdown"
 import { toGlobalId } from "graphql-relay"
 import { extractEmbed } from "../article/lib/extractEmbed"
 
+// Matches Gravity's Video#json_properties (app/models/video.rb), as embedded in other payloads.
+export interface GravityVideo {
+  _id: string
+  player_embed_url: string
+  title: string
+  description: string | null
+  width: number
+  height: number
+  aspect_ratio: number | null
+  created_at: string
+  updated_at: string
+}
+
 interface VideoTypeProps {
   _id: string
   title: string
