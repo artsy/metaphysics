@@ -255,6 +255,23 @@ const lookupCity = (slug: string, cities: TCity[]) => {
   return city
 }
 
+/**
+ * Finds the City Guide city matching a coordinate, for use by other types
+ * (e.g. Show, Fair) that want to offer their own location as a City Guide
+ * entry point without going through the `city(near:)` root field.
+ */
+export const cityGuideCityForCoordinates = async (
+  coordinates: LatLng | null | undefined,
+  geodataCitiesLoader: () => Promise<TCity[]>
+): Promise<TCity | null> => {
+  if (!coordinates || coordinates.lat == null || coordinates.lng == null) {
+    return null
+  }
+
+  const allCities = await geodataCitiesLoader()
+  return nearestCity(coordinates, allCities)
+}
+
 const nearestCity = (latLng: LatLng, cities: TCity[]) => {
   const orderedCities = citiesOrderedByDistance(latLng, cities)
   const closestCity = orderedCities[0]

@@ -62,6 +62,8 @@ const ALLOWED_ROOT_FIELDS = new Set([
   "showsConnection",
   "matchConnection",
   "trendingSearches",
+  "city",
+  "cities",
   "me",
 ])
 
@@ -296,9 +298,30 @@ const leafFieldEstimator: ComplexityEstimator = ({ field }) => {
   return undefined
 }
 
+/**
+ * `paginationEstimator` prices a list by the page size the query asked for,
+ * which leaves a hole: `cities` is the one allowed root field that returns a
+ * list with no page-size argument at all, so it scores 1 no matter what hangs
+ * off it. `cities { showsConnection(first: 20) { ... } }` then passes the
+ * budget while firing one Gravity shows call per city, and nesting artworks
+ * under that multiplies again. Price it as a full page so it is charged like
+ * every other list.
+ */
+const UNPAGED_LIST_SIZES: Record<string, number> = { cities: MAX_PAGE_SIZE }
+
+const unpagedListEstimator: ComplexityEstimator = ({
+  field,
+  childComplexity,
+}) => {
+  const size = field?.name && UNPAGED_LIST_SIZES[field.name]
+  if (!size) return undefined
+  return childComplexity * size + 1
+}
+
 const COMPLEXITY_ESTIMATORS = [
   paginationEstimator,
   leafFieldEstimator,
+  unpagedListEstimator,
   simpleEstimator({ defaultComplexity: 1 }),
 ]
 
@@ -487,7 +510,8 @@ export function buildAgentTools(
         "artistSeries, artistSeriesConnection, gene, genes (styles and " +
         "movements), marketingCollection, marketingCollections (curated " +
         "collections), fair, fairs, showsConnection, matchConnection, " +
-        "trendingSearches (for trending/most-popular rankings), and me (the " +
+        "trendingSearches (for trending/most-popular rankings), cities and " +
+        "city (local discovery — the only geographic entry point), and me (the " +
         "signed-in collector's own saves, follows and recommendations — " +
         "`me` is null when signed out, and only its personalization fields " +
         "are reachable). Auctions are reachable as " +
@@ -497,15 +521,29 @@ export function buildAgentTools(
         'and add `variant: "hybrid", hybridWeights: [0.3, 0.7]` to blend ' +
         "semantic search into the keyword one; if that call fails, re-run it " +
         "once without those two arguments. " +
-        "Note gene, artistSeries and fair expose their works as " +
+        "Note gene, artistSeries, fair and show expose their works as " +
         "`filterArtworksConnection`, while marketingCollection uses " +
-        "`artworksConnection`. Use " +
+        "`artworksConnection`. " +
+        "For shows or fairs in a place, go through " +
+        '`city(slug: "<city-slug>") { showsConnection(status: RUNNING) ' +
+        "fairsConnection(status: RUNNING) }` — resolve the slug with " +
+        "`cities { slug name }` first, and select nothing but slug/name on " +
+        "`cities`. Do NOT pass a city name as `showsConnection(term:)`: " +
+        "`term` searches show titles and silently ignores `status` and " +
+        "`sort`, so it returns closed shows. Use " +
         "GraphQL introspection (e.g. " +
         '`{ __type(name: "Artwork") { fields { name description } } }`) to ' +
         "discover the fields and args available on any type — one type at a " +
         "time, as `__schema` is not available. Always " +
         "request `internalID` and `slug` for anything you might reference " +
         `again. \`first\`/\`last\`/\`size\` are capped at ${MAX_PAGE_SIZE}. ` +
+        "Pass `forSale: true` on artwork searches unless the question is " +
+        "explicitly about work that cannot be bought now (auction results, " +
+        "an artist's back catalogue, one named work), and select " +
+        "`counts { total }` before saying anything about how many works " +
+        "exist or have sold — a page of results is not a count. " +
+        "`artist { counts { artworks forSaleArtworks } }` gives an " +
+        "artist's real availability. " +
         "Never pass mode: INTERNAL_AUTOSUGGEST to matchConnection — it " +
         "requires a signed-in session and will error. `saleMessage` is the " +
         "only price an artwork exposes and it is a plain String — the " +
@@ -547,6 +585,7 @@ const ACTIVITY_BY_FIELD = new Map<string, AIAgentActivity>([
   ["showsConnection", "SEARCHING_SHOWS"],
   ["fair", "SEARCHING_FAIRS"],
   ["fairs", "SEARCHING_FAIRS"],
+  ["fairsConnection", "SEARCHING_FAIRS"],
   ["matchConnection", "SEARCHING_ARTSY"],
   ["basedOnUserSaves", "FINDING_RECOMMENDATIONS"],
   ["artworkRecommendations", "FINDING_RECOMMENDATIONS"],

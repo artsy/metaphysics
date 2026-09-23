@@ -71,6 +71,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
   },
   fields: () => {
     const { filterArtworksConnection } = require("./filterArtworksConnection")
+    const { CityType, cityGuideCityForCoordinates } = require("./city")
     return {
       ...SlugAndInternalIDFields,
       ...itemItineraryMembershipFields("Fair"),
@@ -270,6 +271,27 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             })
           }
           return null
+        },
+      },
+      cityGuideCity: {
+        description:
+          "The City Guide city nearest to this fair's location, if one is within range",
+        type: CityType,
+        resolve: async (
+          { id, location, published },
+          options,
+          { fairLoader, geodataCitiesLoader }
+        ) => {
+          const resolvedLocation = location
+            ? location
+            : published
+            ? await fairLoader(id, options).then((fair) => fair.location)
+            : null
+
+          return cityGuideCityForCoordinates(
+            resolvedLocation && resolvedLocation.coordinates,
+            geodataCitiesLoader
+          )
         },
       },
       name: {

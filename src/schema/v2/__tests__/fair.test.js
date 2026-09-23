@@ -851,7 +851,6 @@ describe("Fair", () => {
         })
       })
     })
-
   })
 
   describe("formattedOpeningHours", () => {
@@ -1025,7 +1024,6 @@ describe("Fair", () => {
     })
   })
 
-
   describe("isEvergreen", () => {
     it("returns false when evergreen is not set", async () => {
       const mockFair = {
@@ -1187,6 +1185,94 @@ describe("Fair", () => {
         fair: {
           isActive: true,
           marketingCollections: marketingCollectionsPayload,
+        },
+      })
+    })
+  })
+
+  describe("cityGuideCity", () => {
+    const MOCK_CITY = {
+      slug: "sacramende-ca-usa",
+      name: "Sacramende",
+      full_name: "Sacramende, CA, USA",
+      coords: [38.5, -121.8],
+    }
+
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          cityGuideCity {
+            slug
+            name
+          }
+        }
+      }
+    `
+
+    it("returns the city guide city nearest to the fair's own location", async () => {
+      context = {
+        fairLoader: sinon.stub().returns(
+          Promise.resolve({
+            id: "aqua-art-miami-2018",
+            location: {
+              coordinates: { lat: 38.5, lng: -121.8 },
+            },
+          })
+        ),
+        geodataCitiesLoader: sinon.stub().returns(Promise.resolve([MOCK_CITY])),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          cityGuideCity: {
+            slug: "sacramende-ca-usa",
+            name: "Sacramende",
+          },
+        },
+      })
+    })
+
+    it("returns null when the fair's location is outside the City Guide threshold", async () => {
+      context = {
+        fairLoader: sinon.stub().returns(
+          Promise.resolve({
+            id: "aqua-art-miami-2018",
+            location: {
+              coordinates: { lat: 40, lng: -100 },
+            },
+          })
+        ),
+        geodataCitiesLoader: sinon.stub().returns(Promise.resolve([MOCK_CITY])),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          cityGuideCity: null,
+        },
+      })
+    })
+
+    it("returns null when the fair has no location", async () => {
+      context = {
+        fairLoader: sinon.stub().returns(
+          Promise.resolve({
+            id: "aqua-art-miami-2018",
+            location: null,
+            published: false,
+          })
+        ),
+        geodataCitiesLoader: sinon.stub().returns(Promise.resolve([MOCK_CITY])),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          cityGuideCity: null,
         },
       })
     })

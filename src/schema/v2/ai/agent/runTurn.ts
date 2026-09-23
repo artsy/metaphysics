@@ -398,7 +398,7 @@ async function resolveArtworks(
   }
 }
 
-async function loadSystemPrompt(context: ResolverContext): Promise<string> {
+async function loadPromptTemplate(context: ResolverContext): Promise<string> {
   try {
     const { body } = await context.aiPromptTemplatesLoader({
       name: AI_PROMPT_TEMPLATE_NAME,
@@ -413,6 +413,43 @@ async function loadSystemPrompt(context: ResolverContext): Promise<string> {
     Sentry.captureException(error)
     return FALLBACK_SYSTEM_PROMPT
   }
+}
+
+function currentDateNote(now: Date = new Date()): string {
+  const date = now.toISOString().slice(0, 10)
+  const spelled = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  })
+
+  return `
+## Today
+
+Today is ${spelled} — ${date}. A date at or before that has already passed; a
+date after it is still to come. This is the only clock you have, so never
+reason about what is on now from your own sense of the year, and never call
+something upcoming, past or "next year" without checking it against this date.
+
+You rarely need to: \`status\` does the comparison for you, upstream and
+against this same today. \`RUNNING\` is open right now, \`CLOSING_SOON\` ends
+shortly, \`UPCOMING\` has not opened, \`CURRENT\` is running or upcoming,
+\`CLOSED\` is over. So a fair or show that came back under \`RUNNING\` is open
+today — say so plainly, and never contradict it by reading \`startAt\` or
+\`endAt\` back and deciding otherwise.
+
+Read those dates yourself only where nothing filtered them for you: a show
+found by \`showsConnection(term:)\`, which ignores \`status\`. Then compare to
+the date above, and phrase it as a date ("through 14 November") rather than a
+countdown you would have to calculate.
+`.trim()
+}
+
+async function loadSystemPrompt(context: ResolverContext): Promise<string> {
+  const template = await loadPromptTemplate(context)
+  return `${template}\n\n${currentDateNote()}`
 }
 
 // An answer's `message` never names the works it showed, so without this a
@@ -569,9 +606,10 @@ export async function* runTurn(
     const result = streamText({
       model: provider(config.AI_AGENT_MODEL),
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
-      // and system prompt are byte-stable across steps and turns (fixed tool
-      // order, no timestamps/request IDs), so this prefix is a cache hit on
-      // every follow-up call.
+      // and system prompt are byte-stable across the steps of a turn (fixed
+      // tool order, and the only clock in there is today's date, not a
+      // timestamp), so this prefix is a cache hit on every follow-up call.
+      // It does miss once a day, when the date rolls over.
       system: {
         role: "system",
         content: system,
