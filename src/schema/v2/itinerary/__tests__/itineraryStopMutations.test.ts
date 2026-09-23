@@ -1,6 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
+import { FormattedDaySchedules } from "schema/v2/types/formattedDaySchedules"
 
 // Mirrors Gravity's single itinerary_stop JSON, pointing at a `PartnerShow`
 // so `item` has something to resolve.
@@ -350,6 +351,141 @@ describe("createItineraryStop", () => {
     await expect(runQuery(mutation, {})).rejects.toThrow(
       "You need to be signed in"
     )
+  })
+})
+
+describe("ItineraryStop.displayOpeningHours", () => {
+  const daySchedules = [
+    { day_of_week: "Monday", start_time: 36000, end_time: 64800 },
+  ]
+  const formattedDaySchedules = FormattedDaySchedules.resolve(
+    daySchedules as any
+  )
+
+  const query = gql`
+    mutation {
+      createItineraryStop(input: { itinerarySectionID: "section-id" }) {
+        responseOrError {
+          ... on ItineraryStopMutationSuccess {
+            itineraryStop {
+              openingHours {
+                days
+                hours
+              }
+              displayOpeningHours {
+                days
+                hours
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const create = (context: Record<string, unknown>) =>
+    runAuthenticatedQuery(query, context).then(
+      (result) => result.createItineraryStop.responseOrError.itineraryStop
+    )
+
+  it("prefers the stop's own lines over the linked item's schedule", async () => {
+    const loader = jest.fn().mockResolvedValue(
+      gravityStop({
+        item_type: "PartnerShow",
+        opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+      })
+    )
+    const stop = await create({
+      ...withShowsLoader(loader),
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", location: { day_schedules: daySchedules } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.openingHours).toEqual([
+      { days: "Sat - Thurs", hours: "10am-5pm" },
+    ])
+    expect(stop.displayOpeningHours).toEqual([
+      { days: "Sat - Thurs", hours: "10am-5pm" },
+    ])
+  })
+
+  it("falls back to the linked PartnerLocation's schedule", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerLocation", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      partnerLocationsByIdsLoader: jest
+        .fn()
+        .mockResolvedValue([{ id: "show-id", day_schedules: daySchedules }]),
+    })
+
+    expect(stop.openingHours).toEqual([])
+    expect(stop.displayOpeningHours).toEqual(formattedDaySchedules)
+  })
+
+  it("falls back to a PartnerShow's location schedule", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerShow", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", location: { day_schedules: daySchedules } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual(formattedDaySchedules)
+  })
+
+  it("yields [] for a show whose location has no schedule (e.g. a fair location)", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(
+        gravityStop({ item_type: "PartnerShow", opening_hours: [] })
+      )
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      showsLoader: jest.fn().mockResolvedValue({
+        body: [{ _id: "show-id", fair_location: { city: "Basel" } }],
+        headers: {},
+      }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual([])
+  })
+
+  it("yields [] for a fair stop", async () => {
+    const loader = jest
+      .fn()
+      .mockResolvedValue(gravityStop({ item_type: "Fair", opening_hours: [] }))
+    const stop = await create({
+      createItineraryStopLoader: loader,
+      fairsLoader: jest.fn().mockResolvedValue({ body: [], headers: {} }),
+    })
+
+    expect(stop.displayOpeningHours).toEqual([])
+  })
+
+  it("yields [] for a stop with no item", async () => {
+    const loader = jest.fn().mockResolvedValue(
+      gravityStop({
+        item_type: null,
+        item_id: null,
+        title: "Cafe",
+        opening_hours: [],
+      })
+    )
+    const stop = await create({ createItineraryStopLoader: loader })
+
+    expect(stop.displayOpeningHours).toEqual([])
   })
 })
 

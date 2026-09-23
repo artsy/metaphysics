@@ -28,6 +28,10 @@ import {
   ItineraryStopMembershipType,
   itineraryStopMemberships,
 } from "./itineraryStopMembership"
+import {
+  FormattedDaySchedules,
+  formatDaySchedules,
+} from "schema/v2/types/formattedDaySchedules"
 
 export const ItineraryStopCategory = new GraphQLEnumType({
   name: "ItineraryStopCategory",
@@ -44,14 +48,6 @@ export const ItineraryStopCategory = new GraphQLEnumType({
     PARK: { value: "PARK" },
     LANDMARK: { value: "LANDMARK" },
     OTHER: { value: "OTHER" },
-  },
-})
-
-export const ItineraryStopOpeningHoursType = new GraphQLObjectType({
-  name: "ItineraryStopOpeningHours",
-  fields: {
-    days: { type: new GraphQLNonNull(GraphQLString) },
-    hours: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -220,10 +216,39 @@ export const ItineraryStopType = new GraphQLObjectType<
       resolve: ({ is_free_admission }) => is_free_admission,
     },
     openingHours: {
+      description:
+        "The stop's own editor-entered opening hours; empty unless the " +
+        "curator set them, even when the linked item has its own schedule.",
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ItineraryStopOpeningHoursType))
+        new GraphQLList(new GraphQLNonNull(FormattedDaySchedules.type))
       ),
       resolve: ({ opening_hours }) => opening_hours ?? [],
+    },
+    displayOpeningHours: {
+      description:
+        "Opening hours to display: the editor's lines, else the linked " +
+        "show's or location's schedules",
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(FormattedDaySchedules.type))
+      ),
+      resolve: ({ opening_hours, item_type, _resolvedItem }) => {
+        if (opening_hours && opening_hours.length > 0) {
+          return opening_hours
+        }
+
+        if (item_type === "PartnerLocation") {
+          return formatDaySchedules((_resolvedItem?.day_schedules as any) ?? [])
+        }
+
+        if (item_type === "PartnerShow") {
+          const location = _resolvedItem?.location as
+            | { day_schedules?: unknown }
+            | undefined
+          return formatDaySchedules((location?.day_schedules as any) ?? [])
+        }
+
+        return []
+      },
     },
     itemType: {
       description: "What kind of item this stop points at, if any",

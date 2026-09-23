@@ -23931,6 +23931,11 @@ type ItinerarySectionMutationSuccess {
 type ItineraryStop {
   address: String
   category: ItineraryStopCategory
+
+  """
+  Opening hours to display: the editor's lines, else the linked show's or location's schedules
+  """
+  displayOpeningHours: [FormattedDaySchedules!]!
   endAt(
     format: String
 
@@ -23990,7 +23995,11 @@ type ItineraryStop {
   """
   myItineraryStopMemberships: [ItineraryStopMembership!]
   note: String
-  openingHours: [ItineraryStopOpeningHours!]!
+
+  """
+  The stop's own editor-entered opening hours; empty unless the curator set them, even when the linked item has its own schedule.
+  """
+  openingHours: [FormattedDaySchedules!]!
   position: Int!
 
   """
@@ -24113,11 +24122,6 @@ union ItineraryStopMutationResponseOrError =
 
 type ItineraryStopMutationSuccess {
   itineraryStop: ItineraryStop
-}
-
-type ItineraryStopOpeningHours {
-  days: String!
-  hours: String!
 }
 
 input ItineraryStopOpeningHoursInput {
