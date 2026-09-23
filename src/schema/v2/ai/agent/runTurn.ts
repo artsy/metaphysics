@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/node"
 import config from "config"
 import { z } from "zod"
 import { anthropicProvider } from "lib/apis/anthropic"
+import { agentTracer } from "lib/apis/agentTracing"
 import { rateLimitByUser } from "lib/rateLimitByUser"
 import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
@@ -603,6 +604,8 @@ export async function* runTurn(
     const messages = buildMessages(input.history, input.message)
     const tools = buildAgentTools(schema, context)
 
+    const tracer = agentTracer()
+
     const result = streamText({
       model: provider(config.AI_AGENT_MODEL),
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
@@ -622,6 +625,19 @@ export async function* runTurn(
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
       output: Output.object({ schema: AgentOutputSchema }),
+      // Off unless AI_AGENT_OTLP_ENDPOINT is set. `conversationID` becomes
+      // `gen_ai.conversation.id`, which groups turns in Sentry; recordInputs
+      // sends real user messages and the model's GraphQL to Sentry.
+      experimental_telemetry: tracer
+        ? {
+            isEnabled: true,
+            tracer,
+            functionId: "ai_agent_turn",
+            metadata: { conversationID: input.conversationID },
+            recordInputs: true,
+            recordOutputs: true,
+          }
+        : undefined,
       providerOptions: {
         anthropic: {
           thinking: { type: "adaptive" },
