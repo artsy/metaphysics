@@ -1469,12 +1469,6 @@ export default (accessToken, userID, opts) => {
       gravityLoader("itinerary_stop_memberships")
     ),
     itinerariesLoader: gravityLoader("itineraries", {}, { headers: true }),
-    cityGuideEventLoader: gravityLoader((id) => `city_guide_event/${id}`),
-    cityGuideEventsLoader: gravityLoader(
-      "city_guide_events",
-      {},
-      { headers: true }
-    ),
     fairEventsLoader: gravityLoader((id) => `fair/${id}/fair_events`),
     createItineraryLoader: gravityLoader("itinerary", {}, { method: "POST" }),
     updateItineraryLoader: gravityLoader(
@@ -1534,71 +1528,6 @@ export default (accessToken, userID, opts) => {
     ),
     deleteItineraryStopLoader: gravityLoader(
       (id) => `itinerary_stop/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    createCityGuideEventLoader: gravityLoader(
-      "city_guide_event",
-      {},
-      { method: "POST" }
-    ),
-    updateCityGuideEventLoader: gravityLoader(
-      (id) => `city_guide_event/${id}`,
-      {},
-      { method: "PUT" }
-    ),
-    deleteCityGuideEventLoader: gravityLoader(
-      (id) => `city_guide_event/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    publishCityGuideEventLoader: gravityLoader(
-      (id) => `city_guide_event/${id}/publish`,
-      {},
-      { method: "POST" }
-    ),
-    unpublishCityGuideEventLoader: gravityLoader(
-      (id) => `city_guide_event/${id}/unpublish`,
-      {},
-      { method: "POST" }
-    ),
-    createCityGuideEventItineraryLoader: gravityLoader(
-      "city_guide_event_itinerary",
-      {},
-      { method: "POST" }
-    ),
-    updateCityGuideEventItineraryLoader: gravityLoader(
-      (id) => `city_guide_event_itinerary/${id}`,
-      {},
-      { method: "PUT" }
-    ),
-    deleteCityGuideEventItineraryLoader: gravityLoader(
-      (id) => `city_guide_event_itinerary/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    createCityGuideEventArticleLoader: gravityLoader(
-      "city_guide_event_article",
-      {},
-      { method: "POST" }
-    ),
-    updateCityGuideEventArticleLoader: gravityLoader(
-      (id) => `city_guide_event_article/${id}`,
-      {},
-      { method: "PUT" }
-    ),
-    deleteCityGuideEventArticleLoader: gravityLoader(
-      (id) => `city_guide_event_article/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    setCityGuideEventVideoLoader: gravityLoader(
-      (id) => `city_guide_event/${id}/video`,
-      {},
-      { method: "PUT" }
-    ),
-    removeCityGuideEventVideoLoader: gravityLoader(
-      (id) => `city_guide_event/${id}/video`,
       {},
       { method: "DELETE" }
     ),

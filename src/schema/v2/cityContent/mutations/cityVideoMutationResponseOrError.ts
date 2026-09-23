@@ -11,7 +11,7 @@ import { CityVideoType } from "../cityVideo"
 
 // Returns the city's full, refreshed video list, mirroring
 // cityArticleMutationResponseOrError.ts — there's no "City" GraphQL object
-// here to refetch through, unlike CityGuideEvent.
+// here to refetch through.
 export const CityVideoMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
