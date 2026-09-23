@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFloat,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -43,6 +44,22 @@ export const ItineraryStopCategory = new GraphQLEnumType({
     PARK: { value: "PARK" },
     LANDMARK: { value: "LANDMARK" },
     OTHER: { value: "OTHER" },
+  },
+})
+
+export const ItineraryStopOpeningHoursType = new GraphQLObjectType({
+  name: "ItineraryStopOpeningHours",
+  fields: {
+    days: { type: new GraphQLNonNull(GraphQLString) },
+    hours: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
+export const ItineraryStopOpeningHoursInputType = new GraphQLInputObjectType({
+  name: "ItineraryStopOpeningHoursInput",
+  fields: {
+    days: { type: new GraphQLNonNull(GraphQLString) },
+    hours: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -201,6 +218,12 @@ export const ItineraryStopType = new GraphQLObjectType<
     isFreeAdmission: {
       type: GraphQLBoolean,
       resolve: ({ is_free_admission }) => is_free_admission,
+    },
+    openingHours: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ItineraryStopOpeningHoursType))
+      ),
+      resolve: ({ opening_hours }) => opening_hours ?? [],
     },
     itemType: {
       description: "What kind of item this stop points at, if any",

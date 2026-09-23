@@ -15,8 +15,12 @@ import {
   ItineraryStopCategory,
   ItineraryStopItemType,
   ItineraryStopEventType,
+  ItineraryStopOpeningHoursInputType,
 } from "../itineraryStop"
-import { GravityItineraryStop } from "../types"
+import {
+  GravityItineraryStop,
+  GravityItineraryStopOpeningHours,
+} from "../types"
 import { AddItineraryStopsMutationResponseOrErrorType } from "./addItineraryStopsMutationResponseOrError"
 
 interface StopInputProps {
@@ -38,6 +42,7 @@ interface StopInputProps {
   category?: string
   isFreeAdmission?: boolean
   sourceURL?: string
+  openingHours?: GravityItineraryStopOpeningHours[]
 }
 
 interface InputProps {
@@ -87,6 +92,14 @@ export const ItineraryStopInput = new GraphQLInputObjectType({
     category: { type: ItineraryStopCategory },
     isFreeAdmission: { type: GraphQLBoolean },
     sourceURL: { type: GraphQLString },
+    openingHours: {
+      description:
+        "Replaces the stop's opening hours. Omit to leave them " +
+        "unchanged; pass `[]` to clear them.",
+      type: new GraphQLList(
+        new GraphQLNonNull(ItineraryStopOpeningHoursInputType)
+      ),
+    },
   },
 })
 

@@ -36,6 +36,10 @@ const successFragment = gql`
       title
       category
       isFreeAdmission
+      openingHours {
+        days
+        hours
+      }
       timeZone
       item {
         __typename
@@ -185,6 +189,76 @@ describe("createItineraryStop", () => {
     expect(loader).not.toHaveBeenCalled()
   })
 
+  it("maps openingHours to opening_hours, and omits it when not given", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(
+            input: {
+              itinerarySectionID: "section-id"
+              openingHours: [{ days: "Sat - Thurs", hours: "10am-5pm" }]
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      itinerary_section_id: "section-id",
+      opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+    })
+
+    loader.mockClear()
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(input: { itinerarySectionID: "section-id" }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][0]).not.toHaveProperty("opening_hours")
+  })
+
+  it("clears openingHours when given an empty list", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItineraryStop(
+            input: { itinerarySectionID: "section-id", openingHours: [] }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      itinerary_section_id: "section-id",
+      opening_hours: [],
+    })
+  })
+
   it("returns the success payload with the resolved item", async () => {
     const loader = jest.fn().mockResolvedValue(gravityStop())
     const context = withShowsLoader(loader)
@@ -197,6 +271,7 @@ describe("createItineraryStop", () => {
       internalID: "stop-id",
       category: "SHOW",
       isFreeAdmission: true,
+      openingHours: [],
       timeZone: "America/New_York",
       item: { __typename: "Show", internalID: "show-id" },
     })
@@ -354,6 +429,70 @@ describe("updateItineraryStop", () => {
     )
 
     expect(loader.mock.calls[0][1]).not.toHaveProperty("client_mutation_id")
+  })
+
+  it("maps openingHours to opening_hours, and omits it when not given", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(
+            input: {
+              id: "stop-id"
+              openingHours: [{ days: "Sat - Thurs", hours: "10am-5pm" }]
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("stop-id", {
+      opening_hours: [{ days: "Sat - Thurs", hours: "10am-5pm" }],
+    })
+
+    loader.mockClear()
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(input: { id: "stop-id" }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader.mock.calls[0][1]).not.toHaveProperty("opening_hours")
+  })
+
+  it("clears openingHours when given an empty list", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItineraryStop(input: { id: "stop-id", openingHours: [] }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("stop-id", { opening_hours: [] })
   })
 
   it("returns the success payload with the resolved item", async () => {

@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from "graphql"
@@ -14,8 +15,12 @@ import {
   ItineraryStopCategory,
   ItineraryStopItemType,
   ItineraryStopEventType,
+  ItineraryStopOpeningHoursInputType,
 } from "../itineraryStop"
-import { GravityItineraryStop } from "../types"
+import {
+  GravityItineraryStop,
+  GravityItineraryStopOpeningHours,
+} from "../types"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
 interface InputProps {
@@ -38,6 +43,7 @@ interface InputProps {
   isFreeAdmission?: boolean
   sourceURL?: string
   position?: number
+  openingHours?: GravityItineraryStopOpeningHours[]
 }
 
 export const updateItineraryStopMutation = mutationWithClientMutationId<
@@ -75,6 +81,14 @@ export const updateItineraryStopMutation = mutationWithClientMutationId<
     category: { type: ItineraryStopCategory },
     isFreeAdmission: { type: GraphQLBoolean },
     sourceURL: { type: GraphQLString },
+    openingHours: {
+      description:
+        "Replaces the stop's opening hours. Omit to leave them " +
+        "unchanged; pass `[]` to clear them.",
+      type: new GraphQLList(
+        new GraphQLNonNull(ItineraryStopOpeningHoursInputType)
+      ),
+    },
     position: {
       description:
         "Reorders the stop among its section's stops via acts_as_list's " +
