@@ -273,20 +273,36 @@ const lookupCity = (slug: string, cities: TCity[]) => {
 }
 
 /**
- * Finds the City Guide city matching a coordinate, for use by other types
- * (e.g. Show, Fair) that want to offer their own location as a City Guide
- * entry point without going through the `city(near:)` root field.
+ * Finds the City Guide city for a location, for use by other types (e.g.
+ * Show, Fair) that want to offer their own location as a City Guide entry
+ * point without going through the `city(near:)` root field. Coordinates win;
+ * without them, the city name must match exactly one City Guide city.
  */
-export const cityGuideCityForCoordinates = async (
-  coordinates: LatLng | null | undefined,
+export const cityGuideCityFor = async (
+  {
+    coordinates,
+    cityName,
+  }: { coordinates?: LatLng | null; cityName?: string | null },
   geodataCitiesLoader: () => Promise<TCity[]>
 ): Promise<TCity | null> => {
-  if (!coordinates || coordinates.lat == null || coordinates.lng == null) {
+  const hasCoordinates =
+    !!coordinates && coordinates.lat != null && coordinates.lng != null
+  const normalizedName = cityName?.trim().toLowerCase()
+
+  if (!hasCoordinates && !normalizedName) {
     return null
   }
 
   const allCities = await geodataCitiesLoader()
-  return nearestCity(coordinates, allCities)
+
+  if (hasCoordinates) {
+    return nearestCity(coordinates as LatLng, allCities)
+  }
+
+  const matches = allCities.filter(
+    (city) => city.name?.trim().toLowerCase() === normalizedName
+  )
+  return matches.length === 1 ? matches[0] : null
 }
 
 const nearestCity = (latLng: LatLng, cities: TCity[]) => {

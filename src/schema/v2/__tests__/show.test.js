@@ -533,6 +533,106 @@ describe("Show type", () => {
         },
       })
     })
+
+    describe("without coordinates", () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+
+      const OTHER_CITY = {
+        slug: "gotham-nj-usa",
+        name: "Gotham",
+        full_name: "Gotham, NJ, USA",
+        coords: [40.7, -74.0],
+      }
+
+      it("matches the show location's city name", async () => {
+        showData.location = { city: "Sacramende", coordinates: null }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({ slug: "sacramende-ca-usa" })
+      })
+
+      it("matches ignoring case and surrounding whitespace", async () => {
+        showData.location = { city: "  sACRAMENDE ", coordinates: null }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({ slug: "sacramende-ca-usa" })
+      })
+
+      it("prefers the fair location's city name over the show's", async () => {
+        context.geodataCitiesLoader = sinon
+          .stub()
+          .returns(Promise.resolve([MOCK_CITY, OTHER_CITY]))
+        showData.fair = { location: { city: "Gotham" } }
+        showData.location = { city: "Sacramende" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({ slug: "gotham-nj-usa" })
+      })
+
+      it("falls back to the partner city", async () => {
+        showData.partner_city = "Sacramende"
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({ slug: "sacramende-ca-usa" })
+      })
+
+      it("returns null for an unknown city name", async () => {
+        showData.location = { city: "Sacramende City" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toBeNull()
+      })
+
+      it("returns null when several City Guide cities share the name", async () => {
+        context.geodataCitiesLoader = sinon
+          .stub()
+          .returns(
+            Promise.resolve([
+              MOCK_CITY,
+              {
+                ...MOCK_CITY,
+                slug: "sacramende-oh-usa",
+                coords: [39.9, -83.4],
+              },
+            ])
+          )
+        showData.location = { city: "Sacramende" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toBeNull()
+      })
+    })
+
+    it("uses the coordinates over the city name when both are present", async () => {
+      context.geodataCitiesLoader = sinon.stub().returns(
+        Promise.resolve([
+          MOCK_CITY,
+          {
+            slug: "gotham-nj-usa",
+            name: "Gotham",
+            full_name: "Gotham, NJ, USA",
+            coords: [40.7, -74.0],
+          },
+        ])
+      )
+      showData.location = {
+        city: "Gotham",
+        coordinates: { lat: 38.5, lng: -121.8 },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data.show.cityGuideCity).toEqual({ slug: "sacramende-ca-usa" })
+    })
   })
 
   describe("kind", () => {
