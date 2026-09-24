@@ -1098,14 +1098,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       show: {
         type: ShowType,
         description:
-          "A Show belonging to this partner, scoped so it can only resolve shows owned by this partner.",
+          "A Show belonging to this partner, scoped so it can only resolve shows owned by this partner. Requires authentication.",
         args: {
           id: {
             type: new GraphQLNonNull(GraphQLString),
             description: "The ID of the Show",
           },
         },
-        resolve: ({ id: partner_id }, { id }, { partnerShowLoader }) => {
+        resolve: ({ id: partner_id }, { id }, { authenticatedLoaders }) => {
+          const partnerShowLoader = authenticatedLoaders?.partnerShowLoader
+
+          if (!partnerShowLoader) return null
+
           return partnerShowLoader({ partner_id, show_id: id }).catch(
             () => null
           )

@@ -2630,11 +2630,13 @@ describe("Partner type", () => {
   })
 
   describe("show field", () => {
-    it("returns the show scoped to this partner", async () => {
-      context.partnerShowLoader = sinon
-        .stub()
-        .withArgs({ partner_id: partnerData.id, show_id: "the-show-id" })
-        .returns(Promise.resolve({ id: "the-show-id", name: "The Show" }))
+    it("returns the show scoped to this partner when authenticated", async () => {
+      context.authenticatedLoaders = {
+        partnerShowLoader: sinon
+          .stub()
+          .withArgs({ partner_id: partnerData.id, show_id: "the-show-id" })
+          .returns(Promise.resolve({ id: "the-show-id", name: "The Show" })),
+      }
 
       const query = gql`
         {
@@ -2657,13 +2659,35 @@ describe("Partner type", () => {
     })
 
     it("returns null when the show does not belong to this partner", async () => {
-      context.partnerShowLoader = () =>
-        Promise.reject(new Error("Show Not Found"))
+      context.authenticatedLoaders = {
+        partnerShowLoader: () => Promise.reject(new Error("Show Not Found")),
+      }
 
       const query = gql`
         {
           partner(id: "catty-partner") {
             show(id: "someone-elses-show") {
+              name
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          show: null,
+        },
+      })
+    })
+
+    it("returns null for an unauthenticated request, without calling Gravity", async () => {
+      context.authenticatedLoaders = {}
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            show(id: "the-show-id") {
               name
             }
           }
