@@ -1256,6 +1256,66 @@ describe("Fair", () => {
       })
     })
 
+    const contextWithLocation = (location, cities = [MOCK_CITY]) => ({
+      fairLoader: sinon
+        .stub()
+        .returns(Promise.resolve({ id: "aqua-art-miami-2018", location })),
+      geodataCitiesLoader: sinon.stub().returns(Promise.resolve(cities)),
+    })
+
+    it("matches the fair's city name when it has no coordinates", async () => {
+      context = contextWithLocation({ city: "Sacramende", coordinates: null })
+      const data = await runQuery(query, context)
+      expect(data.fair.cityGuideCity).toEqual({
+        slug: "sacramende-ca-usa",
+        name: "Sacramende",
+      })
+    })
+
+    it("matches the city name ignoring case and surrounding whitespace", async () => {
+      context = contextWithLocation({ city: " sacramende  " })
+      const data = await runQuery(query, context)
+      expect(data.fair.cityGuideCity).toEqual({
+        slug: "sacramende-ca-usa",
+        name: "Sacramende",
+      })
+    })
+
+    it("returns null for an unknown city name", async () => {
+      context = contextWithLocation({ city: "Nowhere" })
+      const data = await runQuery(query, context)
+      expect(data.fair.cityGuideCity).toBeNull()
+    })
+
+    it("returns null when several City Guide cities share the name", async () => {
+      context = contextWithLocation({ city: "Sacramende" }, [
+        MOCK_CITY,
+        { ...MOCK_CITY, slug: "sacramende-oh-usa", coords: [39.9, -83.4] },
+      ])
+      const data = await runQuery(query, context)
+      expect(data.fair.cityGuideCity).toBeNull()
+    })
+
+    it("uses the coordinates over the city name when both are present", async () => {
+      context = contextWithLocation(
+        { city: "Gotham", coordinates: { lat: 38.5, lng: -121.8 } },
+        [
+          MOCK_CITY,
+          {
+            slug: "gotham-nj-usa",
+            name: "Gotham",
+            full_name: "Gotham, NJ, USA",
+            coords: [40.7, -74.0],
+          },
+        ]
+      )
+      const data = await runQuery(query, context)
+      expect(data.fair.cityGuideCity).toEqual({
+        slug: "sacramende-ca-usa",
+        name: "Sacramende",
+      })
+    })
+
     it("returns null when the fair has no location", async () => {
       context = {
         fairLoader: sinon.stub().returns(
