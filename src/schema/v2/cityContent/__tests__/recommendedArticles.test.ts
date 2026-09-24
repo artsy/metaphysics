@@ -45,6 +45,7 @@ describe("City.recommendedArticlesConnection", () => {
   let meCityArtistsLoader: jest.Mock
   let cityArticlesLoader: jest.Mock
   let articlesByArtist: Record<string, any[] | Error>
+  let publishedArticles: Record<string, any>
   let articlesLoader: jest.Mock
 
   const context = () => ({
@@ -64,7 +65,15 @@ describe("City.recommendedArticlesConnection", () => {
       "artist-a": [article("a-old", 10), article("a-new", 1)],
       "artist-b": [article("b-newest", 0)],
     }
-    articlesLoader = jest.fn(({ artist_id }) => {
+    publishedArticles = {}
+    articlesLoader = jest.fn(({ artist_id, ids }) => {
+      if (ids) {
+        return Promise.resolve({
+          results: ids.flatMap((id) =>
+            publishedArticles[id] ? [publishedArticles[id]] : []
+          ),
+        })
+      }
       const result = articlesByArtist[artist_id]
       return result instanceof Error
         ? Promise.reject(result)
@@ -222,5 +231,174 @@ describe("City.recommendedArticlesConnection", () => {
       expectEmpty(await runQuery(query, context()))
       expect(articlesLoader).not.toHaveBeenCalled()
     })
+  })
+  describe("with includeFeatured", () => {
+    const featuredQuery = (args = "includeFeatured: true, first: 10") => gql`
+      {
+        city(slug: "london-united-kingdom") {
+          recommendedArticlesConnection(${args}) {
+            totalCount
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            pageCursors {
+              around {
+                page
+                isCurrent
+              }
+            }
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const join = (article_id: string, position: number) => ({
+      id: `join-${article_id}`,
+      city_slug: "london-united-kingdom",
+      article_id,
+      position,
+    })
+
+    beforeEach(() => {
+      publishedArticles = {
+        "curated-1": article("curated-1", 40),
+        "curated-2": article("curated-2", 3),
+      }
+      cityArticlesLoader.mockResolvedValue([
+        join("curated-2", 2),
+        join("unpublished", 1),
+        join("curated-1", 0),
+      ])
+    })
+
+    it("lists the curated articles by position, then the recommendations", async () => {
+      const data = await runQuery(featuredQuery(), context())
+
+      expect(ids(data)).toEqual([
+        "curated-1",
+        "curated-2",
+        "a-new",
+        "a-old",
+        "b-newest",
+      ])
+      expect(data.city.recommendedArticlesConnection.totalCount).toEqual(5)
+      expect(articlesLoader).toHaveBeenCalledWith({
+        ids: ["curated-2", "unpublished", "curated-1"],
+        published: true,
+        limit: 3,
+      })
+    })
+
+    it("lists an article that is both curated and recommended once, as curated", async () => {
+      publishedArticles["b-newest"] = article("b-newest", 0)
+      cityArticlesLoader.mockResolvedValue([join("b-newest", 0)])
+
+      const data = await runQuery(featuredQuery(), context())
+
+      expect(ids(data)).toEqual(["b-newest", "a-new", "a-old"])
+    })
+
+    it("returns only the curated articles when signed out", async () => {
+      const data = await runQuery(featuredQuery(), {
+        ...context(),
+        meCityArtistsLoader: undefined,
+      })
+
+      expect(ids(data)).toEqual(["curated-1", "curated-2"])
+      expect(data.city.recommendedArticlesConnection.totalCount).toEqual(2)
+    })
+
+    it("returns only the curated articles when Gravity returns 404", async () => {
+      meCityArtistsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+
+      const data = await runQuery(featuredQuery(), context())
+
+      expect(ids(data)).toEqual(["curated-1", "curated-2"])
+    })
+
+    it("returns only the curated articles when Gravity errors", async () => {
+      meCityArtistsLoader.mockRejectedValue(
+        new HTTPError("Internal Server Error", 500)
+      )
+
+      const data = await runQuery(featuredQuery(), context())
+
+      expect(ids(data)).toEqual(["curated-1", "curated-2"])
+    })
+
+    it("paginates across the curated and recommended articles", async () => {
+      const page1 = await runQuery(
+        featuredQuery("includeFeatured: true, first: 3"),
+        context()
+      )
+      const connection1 = page1.city.recommendedArticlesConnection
+
+      expect(ids(page1)).toEqual(["curated-1", "curated-2", "a-new"])
+      expect(connection1.totalCount).toEqual(5)
+      expect(connection1.pageInfo.hasNextPage).toBe(true)
+      expect(connection1.pageCursors.around).toEqual([
+        { page: 1, isCurrent: true },
+        { page: 2, isCurrent: false },
+      ])
+
+      const page2 = await runQuery(
+        featuredQuery(
+          `includeFeatured: true, first: 3, after: "${connection1.pageInfo.endCursor}"`
+        ),
+        context()
+      )
+      const connection2 = page2.city.recommendedArticlesConnection
+
+      expect(ids(page2)).toEqual(["a-old", "b-newest"])
+      expect(connection2.totalCount).toEqual(5)
+      expect(connection2.pageInfo.hasNextPage).toBe(false)
+      expect(connection2.pageCursors.around).toEqual([
+        { page: 1, isCurrent: false },
+        { page: 2, isCurrent: true },
+      ])
+    })
+  })
+
+  it("paginates the recommendations with after when includeFeatured is false", async () => {
+    const pageQuery = (args: string) => gql`
+      {
+        city(slug: "london-united-kingdom") {
+          recommendedArticlesConnection(${args}) {
+            totalCount
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const page1 = await runQuery(pageQuery("first: 2"), context())
+    const { pageInfo, totalCount } = page1.city.recommendedArticlesConnection
+
+    expect(ids(page1)).toEqual(["a-new", "a-old"])
+    expect(totalCount).toEqual(3)
+    expect(pageInfo.hasNextPage).toBe(true)
+
+    const page2 = await runQuery(
+      pageQuery(`first: 2, after: "${pageInfo.endCursor}"`),
+      context()
+    )
+
+    expect(ids(page2)).toEqual(["b-newest"])
+    expect(page2.city.recommendedArticlesConnection.pageInfo.hasNextPage).toBe(
+      false
+    )
   })
 })
