@@ -10,12 +10,14 @@ export default (opts) => {
     geodataLoaderWithoutAuthenticationFactory: geodataLoader,
   } = factories(opts)
 
+  // Built once per request so repeat calls, one per show in a list, share one fetch.
+  const citiesLoader = geodataLoader<Response>("partner-cities/cities.json")
+  const featuredCitiesLoader = geodataLoader<Response>(
+    "partner-cities/featured-cities.json"
+  )
+
   return {
-    geodataCitiesLoader: () =>
-      geodataLoader<Response>("partner-cities/cities.json")().then(compact),
-    geodataFeaturedCitiesLoader: () =>
-      geodataLoader<Response>("partner-cities/featured-cities.json")().then(
-        compact
-      ),
+    geodataCitiesLoader: () => citiesLoader().then(compact),
+    geodataFeaturedCitiesLoader: () => featuredCitiesLoader().then(compact),
   }
 }

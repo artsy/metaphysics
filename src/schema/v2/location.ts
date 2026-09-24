@@ -15,6 +15,11 @@ import {
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { compact } from "lodash"
+import { CityNeighborhoodType } from "./city/neighborhoods/CityNeighborhoodType"
+import {
+  matchCityNeighborhood,
+  normalizePostalCode,
+} from "./city/neighborhoods/matchCityNeighborhood"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -185,6 +190,29 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     postalCode: {
       type: GraphQLString,
       resolve: ({ postal_code }) => postal_code,
+    },
+    cityGuideNeighborhood: {
+      description:
+        "The City Guide neighborhood this location's postcode falls in. The city comes from the location's coordinates, or its city name without them. Null outside a City Guide city or when no neighborhood matches.",
+      type: CityNeighborhoodType,
+      resolve: async (
+        { coordinates, city, postal_code },
+        _args,
+        { geodataCitiesLoader }
+      ) => {
+        if (!normalizePostalCode(postal_code)) return null
+
+        // Lazy because `city/index.ts` imports `LatLngType` from this module.
+        const { cityGuideCityFor } = require("./city")
+        const guideCity = await cityGuideCityFor(
+          { coordinates, cityName: city },
+          geodataCitiesLoader
+        )
+
+        return guideCity
+          ? matchCityNeighborhood(guideCity.slug, postal_code)
+          : null
+      },
     },
     state: {
       type: GraphQLString,
