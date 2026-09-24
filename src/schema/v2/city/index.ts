@@ -34,6 +34,8 @@ import { CityArticlesField } from "../cityContent/cityArticles"
 import { CityVideosField } from "../cityContent/cityVideos"
 import { RecommendedArticlesConnectionField } from "../cityContent/recommendedArticles"
 import { cityShowsParams } from "./cityShowsParams"
+import { CityNeighborhoodType } from "./neighborhoods/CityNeighborhoodType"
+import { cityNeighborhoodsFor } from "./neighborhoods/matchCityNeighborhood"
 
 const START_AT_ASC: ShowSortsType = "start_at"
 
@@ -73,6 +75,14 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             lng: coords[1],
           }
         },
+      },
+      neighborhoods: {
+        description:
+          "The City Guide neighborhoods for this city, in display order. Empty when the city has none.",
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(CityNeighborhoodType))
+        ),
+        resolve: ({ slug }) => cityNeighborhoodsFor(slug),
       },
       showsConnection: {
         type: ShowsConnection.connectionType,
