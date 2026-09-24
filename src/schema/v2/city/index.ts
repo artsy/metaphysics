@@ -32,6 +32,8 @@ import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
 import { CityArticlesField } from "../cityContent/cityArticles"
 import { CityVideosField } from "../cityContent/cityVideos"
+import { RecommendedArticlesConnectionField } from "../cityContent/recommendedArticles"
+import { cityShowsParams } from "./cityShowsParams"
 
 const START_AT_ASC: ShowSortsType = "start_at"
 
@@ -114,27 +116,8 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           args,
           { showsWithHeadersLoader, meCityShowsLoader }
         ) => {
-          const buildParams = (sort?: string | null) => ({
-            ...(city.slug === "online"
-              ? { has_location: false }
-              : {
-                  near: city.coords.join(","),
-                  max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-                  has_location: true,
-                }),
-            at_a_fair: false,
-            ...(args.partnerType && { partner_types: args.partnerType }),
-            ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
-            ...(sort !== undefined && { sort }),
-            // default Enum value for status is not properly resolved
-            // so we have to manually resolve it by lowercasing the value
-            // https://github.com/apollographql/graphql-tools/issues/715
-            ...(args.status && { status: args.status.toLowerCase() }),
-            displayable: true,
-            include_local_discovery: args.includeStubShows || false,
-            include_discovery_blocked: false,
-            max_per_partner: args.maxPerPartner,
-          })
+          const buildParams = (sort?: string | null) =>
+            cityShowsParams(city, args, sort)
 
           if (!args.forYou) {
             return loadData(
@@ -178,6 +161,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
       },
       cityArticles: CityArticlesField,
       cityVideos: CityVideosField,
+      recommendedArticlesConnection: RecommendedArticlesConnectionField,
       sponsoredContent: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "CitySponsoredContent",
