@@ -30566,7 +30566,7 @@ type Partner implements Node {
   ): ShippingPresetConnection
 
   """
-  A Show belonging to this partner, scoped so it can only resolve shows owned by this partner.
+  A Show belonging to this partner, scoped so it can only resolve shows owned by this partner. Requires authentication.
   """
   show(
     """
