@@ -2,6 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
 import { TCity } from "../city"
+import { HTTPError } from "lib/HTTPError"
 
 const MOCK_CITIES: TCity[] = [
   {
@@ -195,31 +196,6 @@ describe("City", () => {
       expect(gravityOptions).toMatchObject({ at_a_fair: false })
     })
 
-    // FIXME: discoverable not a property argument of shows?
-    it.skip("can filter by discoverable shows", async () => {
-      query = gql`
-        {
-          city(slug: "sacramende-ca-usa") {
-            name
-            showsConnection(first: 1, discoverable: true) {
-              edges {
-                node {
-                  slug
-                }
-              }
-            }
-          }
-        }
-      `
-      await runQuery(query, context)
-      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
-
-      expect(gravityOptions).toMatchObject({
-        include_local_discovery: true,
-        displayable: true,
-      })
-    })
-
     it("can ask for including stubbed shows", async () => {
       query = gql`
         {
@@ -377,6 +353,134 @@ describe("City", () => {
         const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
         expect(gravityOptions.partner_types).toBeUndefined()
+      })
+    })
+
+    describe("ranking for you", () => {
+      const forYouQuery = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            showsConnection(
+              first: 2
+              after: "YXJyYXljb25uZWN0aW9uOjE="
+              forYou: true
+              status: RUNNING
+              dayThreshold: 14
+              maxPerPartner: 1
+            ) {
+              totalCount
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const rankedShows = [{ id: "ranked-show" }, { id: "another-show" }]
+      let meCityShowsLoader
+
+      beforeEach(() => {
+        meCityShowsLoader = jest.fn(() =>
+          Promise.resolve({
+            body: rankedShows,
+            headers: { "x-total-count": "5" },
+          })
+        )
+      })
+
+      it("uses me/city_shows for a signed-in user, without a sort", async () => {
+        const result = await runQuery(forYouQuery, {
+          ...context,
+          meCityShowsLoader,
+        })
+
+        expect(mockShowsLoader).not.toHaveBeenCalled()
+        expect(meCityShowsLoader).toHaveBeenCalledWith({
+          near: "38.5,-121.8",
+          max_distance: 25,
+          has_location: true,
+          at_a_fair: false,
+          day_threshold: 14,
+          status: "running",
+          displayable: true,
+          include_local_discovery: false,
+          include_discovery_blocked: false,
+          max_per_partner: 1,
+          page: 2,
+          size: 2,
+          total_count: true,
+        })
+        expect(result.city.showsConnection).toEqual({
+          totalCount: 5,
+          pageInfo: { hasNextPage: true },
+          edges: [
+            { node: { slug: "ranked-show" } },
+            { node: { slug: "another-show" } },
+          ],
+        })
+      })
+
+      it("falls back to start_at order when signed out", async () => {
+        await runQuery(forYouQuery, context)
+
+        expect(mockShowsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({ sort: "start_at", status: "running" })
+        )
+      })
+
+      it("falls back to start_at order when Gravity returns 404", async () => {
+        meCityShowsLoader = jest.fn(() =>
+          Promise.reject(new HTTPError("Not Found", 404))
+        )
+
+        const result = await runQuery(forYouQuery, {
+          ...context,
+          meCityShowsLoader,
+        })
+
+        const { sort, ...fallbackParams } = mockShowsLoader.mock.calls[0][0]
+        expect(sort).toEqual("start_at")
+        expect(fallbackParams).toEqual(meCityShowsLoader.mock.calls[0][0])
+        expect(result.city.showsConnection.totalCount).toEqual(1)
+      })
+
+      it("surfaces other Gravity errors", async () => {
+        meCityShowsLoader = jest.fn(() =>
+          Promise.reject(new HTTPError("Internal Server Error", 500))
+        )
+
+        await expect(
+          runQuery(forYouQuery, { ...context, meCityShowsLoader })
+        ).rejects.toThrow("Internal Server Error")
+        expect(mockShowsLoader).not.toHaveBeenCalled()
+      })
+
+      it("keeps the requested sort for other requests", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              showsConnection(first: 1, sort: PARTNER_ASC) {
+                edges {
+                  node {
+                    slug
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, { ...context, meCityShowsLoader })
+
+        expect(meCityShowsLoader).not.toHaveBeenCalled()
+        expect(mockShowsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({ sort: "fully_qualified_name" })
+        )
       })
     })
 
