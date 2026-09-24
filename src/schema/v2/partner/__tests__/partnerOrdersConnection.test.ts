@@ -325,6 +325,31 @@ describe("partner.ordersConnection", () => {
     )
   })
 
+  it("passes the CREATED_AT_DESC sort param through to the loader", async () => {
+    const query = gql`
+      {
+        partner(id: "partner-id") {
+          ordersConnection(first: 5, sort: CREATED_AT_DESC) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-internal-id",
+      expect.objectContaining({
+        sort: "CREATED_AT_DESC",
+      })
+    )
+  })
+
   it("returns hasNextPage=true when first is below total", async () => {
     const query = gql`
       {
