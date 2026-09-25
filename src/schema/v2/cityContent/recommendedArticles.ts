@@ -23,7 +23,8 @@ const MAX_FAIRS = 3
 const ARTICLES_PER_SOURCE = 3
 const RECENCY_MONTHS = 24
 
-// Gravity's show and fair payloads; Positron keys its show and fair links on the Mongo `_id`.
+// Gravity's show and fair payloads. Positron validates `show_id` and `fair_id` as Mongo ids and
+// matches them against an article's `show_ids` / `fair_ids`.
 interface GravityEvent {
   _id: string
 }
@@ -103,6 +104,7 @@ const runningFairs = async (
       near: city.coords.join(","),
       max_distance: LOCAL_DISCOVERY_RADIUS_KM,
       status: "running",
+      sort: "-start_at",
       size: MAX_FAIRS,
     })
     return body.slice(0, MAX_FAIRS)
@@ -129,7 +131,13 @@ const recommendedArticles = async (
     ] = await Promise.all([
       rankedShows(city, context),
       runningFairs(city, context),
-      context.cityArticlesLoader({ city_slug: city.slug }),
+      // The curated joins only filter articles out, so an outage here shouldn't empty the list.
+      context
+        .cityArticlesLoader({ city_slug: city.slug })
+        .catch((err) => {
+          error("recommendedArticlesConnection: curated", err)
+          return []
+        }),
     ])
 
     const sources = [

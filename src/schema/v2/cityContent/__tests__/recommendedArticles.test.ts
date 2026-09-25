@@ -57,14 +57,14 @@ describe("City.recommendedArticlesConnection", () => {
     articlesLoader,
   })
 
-  const shows = (...showIds: string[]) => ({
-    body: showIds.map((_id) => ({ _id })),
-    headers: { "x-total-count": `${showIds.length}` },
+  const gravityPage = (...ids: string[]) => ({
+    body: ids.map((_id) => ({ _id })),
+    headers: { "x-total-count": `${ids.length}` },
   })
 
   beforeEach(() => {
-    meCityShowsLoader = jest.fn().mockResolvedValue(shows("show-a", "show-b"))
-    fairsLoader = jest.fn().mockResolvedValue(shows())
+    meCityShowsLoader = jest.fn().mockResolvedValue(gravityPage("show-a", "show-b"))
+    fairsLoader = jest.fn().mockResolvedValue(gravityPage())
     cityArticlesLoader = jest.fn().mockResolvedValue([])
     articlesBySource = {
       "show-a": [article("a-old", 10), article("a-new", 1)],
@@ -87,7 +87,7 @@ describe("City.recommendedArticlesConnection", () => {
   })
 
   it("asks Gravity for the user's ranked running shows and the city's running fairs, and Positron for their articles", async () => {
-    fairsLoader.mockResolvedValue(shows("fair-a"))
+    fairsLoader.mockResolvedValue(gravityPage("fair-a"))
 
     await runQuery(query, context())
 
@@ -107,6 +107,7 @@ describe("City.recommendedArticlesConnection", () => {
       near: "51.5,-0.12",
       max_distance: 25,
       status: "running",
+      sort: "-start_at",
       size: 3,
     })
     expect(articlesLoader).toHaveBeenCalledWith({
@@ -156,7 +157,7 @@ describe("City.recommendedArticlesConnection", () => {
 
   it("fetches articles for the top 10 shows at most", async () => {
     meCityShowsLoader.mockResolvedValue(
-      shows(...Array.from({ length: 12 }, (_, i) => `show-${i}`))
+      gravityPage(...Array.from({ length: 12 }, (_, i) => `show-${i}`))
     )
 
     await runQuery(query, context())
@@ -165,7 +166,7 @@ describe("City.recommendedArticlesConnection", () => {
   })
 
   it("lists fair articles after every show article, newest first", async () => {
-    fairsLoader.mockResolvedValue(shows("fair-a", "fair-b"))
+    fairsLoader.mockResolvedValue(gravityPage("fair-a", "fair-b"))
     articlesBySource["fair-a"] = [article("fair-a-old", 5)]
     articlesBySource["fair-b"] = [article("fair-b-new", 0)]
 
@@ -197,12 +198,39 @@ describe("City.recommendedArticlesConnection", () => {
 
   it("lists fair articles alone when Gravity can't rank shows", async () => {
     meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
-    fairsLoader.mockResolvedValue(shows("fair-a"))
+    fairsLoader.mockResolvedValue(gravityPage("fair-a"))
     articlesBySource["fair-a"] = [article("fair-a-old", 5)]
 
     const data = await runQuery(query, context())
 
     expect(ids(data)).toEqual(["fair-a-old"])
+  })
+
+  it("doesn't look for fairs in the online city", async () => {
+    await runQuery(
+      gql`
+        {
+          city(slug: "online") {
+            recommendedArticlesConnection {
+              totalCount
+            }
+          }
+        }
+      `,
+      context()
+    )
+
+    expect(fairsLoader).not.toHaveBeenCalled()
+  })
+
+  it("keeps the recommendations when the curated articles fail to load", async () => {
+    cityArticlesLoader.mockRejectedValue(
+      new HTTPError("Internal Server Error", 500)
+    )
+
+    const data = await runQuery(query, context())
+
+    expect(ids(data)).toEqual(["a-new", "a-old", "b-newest"])
   })
 
   it("keeps the show articles when the fairs fetch fails", async () => {
@@ -230,7 +258,7 @@ describe("City.recommendedArticlesConnection", () => {
     articlesBySource["show-b"] = [article("b-newest", 0), article("a-old", 10)]
     articlesBySource["show-c"] = [article("shared", 2)]
     articlesBySource["show-a"] = [article("shared", 2)]
-    meCityShowsLoader.mockResolvedValue(shows("show-a", "show-b", "show-c"))
+    meCityShowsLoader.mockResolvedValue(gravityPage("show-a", "show-b", "show-c"))
 
     const data = await runQuery(query, context())
 
@@ -285,7 +313,7 @@ describe("City.recommendedArticlesConnection", () => {
     })
 
     it("when the city has no running shows or fairs", async () => {
-      meCityShowsLoader.mockResolvedValue(shows())
+      meCityShowsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
       expect(articlesLoader).not.toHaveBeenCalled()
