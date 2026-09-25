@@ -329,6 +329,7 @@ import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocum
 import { createCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/createCatalogArtworkDocumentMutation"
 import { deleteCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/deleteCatalogArtworkDocumentMutation"
 import { createPartnerListMutation } from "./partner/Mutations/PartnerList/createPartnerListMutation"
+import { createPartnerListFromShowMutation } from "./partner/Mutations/PartnerList/createPartnerListFromShowMutation"
 import { updatePartnerListMutation } from "./partner/Mutations/PartnerList/updatePartnerListMutation"
 import { deletePartnerListMutation } from "./partner/Mutations/PartnerList/deletePartnerListMutation"
 import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/distributePartnerListMutation"
@@ -727,6 +728,7 @@ export default new GraphQLSchema({
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerArtworksExport: createPartnerArtworksExportMutation,
       createPartnerList: createPartnerListMutation,
+      createPartnerListFromShow: createPartnerListFromShowMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,

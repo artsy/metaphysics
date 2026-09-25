@@ -20,6 +20,7 @@ import { markdown } from "./fields/markdown"
 import Artist from "./artist"
 import { PartnerType } from "schema/v2/partner/partner"
 import { ExternalPartnerType } from "./external_partner"
+import { PartnerListType } from "./partnerList"
 import Fair from "./fair"
 import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
@@ -740,6 +741,28 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (galaxy_partner_id) {
             return galaxyGalleryLoader(galaxy_partner_id)
+          }
+        },
+      },
+      partnerList: {
+        description:
+          "The ArtOS collection linked to this show, if one exists. Null if there's no linked collection or the current user can't manage the show's partner.",
+        type: PartnerListType,
+        resolve: async ({ _id, partner }, _args, { partnerListsLoader }) => {
+          if (!partnerListsLoader || !partner?.id) return null
+
+          try {
+            const { body } = await partnerListsLoader({
+              partner_id: partner.id,
+              partner_show_id: _id,
+              size: 1,
+            })
+            return body?.[0] ?? null
+          } catch (error) {
+            if (error.statusCode === 403 || error.statusCode === 404) {
+              return null
+            }
+            throw error
           }
         },
       },
