@@ -132,12 +132,10 @@ const recommendedArticles = async (
       rankedShows(city, context),
       runningFairs(city, context),
       // The curated joins only filter articles out, so an outage here shouldn't empty the list.
-      context
-        .cityArticlesLoader({ city_slug: city.slug })
-        .catch((err) => {
-          error("recommendedArticlesConnection: curated", err)
-          return []
-        }),
+      context.cityArticlesLoader({ city_slug: city.slug }).catch((err) => {
+        error("recommendedArticlesConnection: curated", err)
+        return []
+      }),
     ])
 
     const sources = [

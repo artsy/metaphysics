@@ -63,7 +63,9 @@ describe("City.recommendedArticlesConnection", () => {
   })
 
   beforeEach(() => {
-    meCityShowsLoader = jest.fn().mockResolvedValue(gravityPage("show-a", "show-b"))
+    meCityShowsLoader = jest
+      .fn()
+      .mockResolvedValue(gravityPage("show-a", "show-b"))
     fairsLoader = jest.fn().mockResolvedValue(gravityPage())
     cityArticlesLoader = jest.fn().mockResolvedValue([])
     articlesBySource = {
@@ -196,6 +198,20 @@ describe("City.recommendedArticlesConnection", () => {
     ])
   })
 
+  it("fetches articles for the first 3 fairs at most", async () => {
+    meCityShowsLoader.mockResolvedValue(gravityPage())
+    fairsLoader.mockResolvedValue(
+      gravityPage("fair-0", "fair-1", "fair-2", "fair-3", "fair-4")
+    )
+
+    await runQuery(query, context())
+
+    expect(articlesLoader).toHaveBeenCalledTimes(3)
+    expect(articlesLoader).not.toHaveBeenCalledWith(
+      expect.objectContaining({ fair_id: "fair-3" })
+    )
+  })
+
   it("lists fair articles alone when Gravity can't rank shows", async () => {
     meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
     fairsLoader.mockResolvedValue(gravityPage("fair-a"))
@@ -258,7 +274,9 @@ describe("City.recommendedArticlesConnection", () => {
     articlesBySource["show-b"] = [article("b-newest", 0), article("a-old", 10)]
     articlesBySource["show-c"] = [article("shared", 2)]
     articlesBySource["show-a"] = [article("shared", 2)]
-    meCityShowsLoader.mockResolvedValue(gravityPage("show-a", "show-b", "show-c"))
+    meCityShowsLoader.mockResolvedValue(
+      gravityPage("show-a", "show-b", "show-c")
+    )
 
     const data = await runQuery(query, context())
 
@@ -298,16 +316,18 @@ describe("City.recommendedArticlesConnection", () => {
       expect(articlesLoader).not.toHaveBeenCalled()
     })
 
-    it("when Gravity returns 404", async () => {
+    it("when Gravity can't rank shows (404) and the city has no running fairs", async () => {
       meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+      fairsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
     })
 
-    it("when Gravity errors", async () => {
+    it("when Gravity errors on shows and the city has no running fairs", async () => {
       meCityShowsLoader.mockRejectedValue(
         new HTTPError("Internal Server Error", 500)
       )
+      fairsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
     })
