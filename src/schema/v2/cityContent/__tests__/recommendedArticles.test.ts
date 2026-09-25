@@ -42,31 +42,38 @@ const ids = (data) =>
   )
 
 describe("City.recommendedArticlesConnection", () => {
-  let meCityArtistsLoader: jest.Mock
+  let meCityShowsLoader: jest.Mock
+  let fairsLoader: jest.Mock
   let cityArticlesLoader: jest.Mock
-  let articlesByArtist: Record<string, any[] | Error>
+  let articlesBySource: Record<string, any[] | Error>
   let publishedArticles: Record<string, any>
   let articlesLoader: jest.Mock
 
   const context = () => ({
     geodataCitiesLoader: () => Promise.resolve(MOCK_CITIES),
-    meCityArtistsLoader,
+    meCityShowsLoader,
+    fairsLoader,
     cityArticlesLoader,
     articlesLoader,
   })
 
+  const gravityPage = (...ids: string[]) => ({
+    body: ids.map((_id) => ({ _id })),
+    headers: { "x-total-count": `${ids.length}` },
+  })
+
   beforeEach(() => {
-    meCityArtistsLoader = jest.fn().mockResolvedValue([
-      { artist_id: "artist-a", score: 0.9 },
-      { artist_id: "artist-b", score: 0.5 },
-    ])
+    meCityShowsLoader = jest
+      .fn()
+      .mockResolvedValue(gravityPage("show-a", "show-b"))
+    fairsLoader = jest.fn().mockResolvedValue(gravityPage())
     cityArticlesLoader = jest.fn().mockResolvedValue([])
-    articlesByArtist = {
-      "artist-a": [article("a-old", 10), article("a-new", 1)],
-      "artist-b": [article("b-newest", 0)],
+    articlesBySource = {
+      "show-a": [article("a-old", 10), article("a-new", 1)],
+      "show-b": [article("b-newest", 0)],
     }
     publishedArticles = {}
-    articlesLoader = jest.fn(({ artist_id, ids }) => {
+    articlesLoader = jest.fn(({ show_id, fair_id, ids }) => {
       if (ids) {
         return Promise.resolve({
           results: ids.flatMap((id) =>
@@ -74,17 +81,19 @@ describe("City.recommendedArticlesConnection", () => {
           ),
         })
       }
-      const result = articlesByArtist[artist_id]
+      const result = articlesBySource[show_id ?? fair_id]
       return result instanceof Error
         ? Promise.reject(result)
         : Promise.resolve({ results: result ?? [] })
     })
   })
 
-  it("asks Gravity for the city's running-show artists, and Positron for their articles", async () => {
+  it("asks Gravity for the user's ranked running shows and the city's running fairs, and Positron for their articles", async () => {
+    fairsLoader.mockResolvedValue(gravityPage("fair-a"))
+
     await runQuery(query, context())
 
-    expect(meCityArtistsLoader).toHaveBeenCalledWith({
+    expect(meCityShowsLoader).toHaveBeenCalledWith({
       near: "51.5,-0.12",
       max_distance: 25,
       has_location: true,
@@ -94,19 +103,33 @@ describe("City.recommendedArticlesConnection", () => {
       include_local_discovery: false,
       include_discovery_blocked: false,
       max_per_partner: undefined,
-      limit: 10,
+      size: 10,
+    })
+    expect(fairsLoader).toHaveBeenCalledWith({
+      near: "51.5,-0.12",
+      max_distance: 25,
+      status: "running",
+      sort: "-start_at",
+      size: 3,
     })
     expect(articlesLoader).toHaveBeenCalledWith({
-      artist_id: "artist-a",
+      show_id: "show-a",
       published: true,
       in_editorial_feed: true,
       sort: "-published_at",
       limit: 3,
     })
-    expect(articlesLoader).toHaveBeenCalledTimes(2)
+    expect(articlesLoader).toHaveBeenCalledWith({
+      fair_id: "fair-a",
+      published: true,
+      in_editorial_feed: true,
+      sort: "-published_at",
+      limit: 3,
+    })
+    expect(articlesLoader).toHaveBeenCalledTimes(3)
   })
 
-  it("ranks by artist score, then by newest first", async () => {
+  it("ranks by the show's rank for the user, then by newest first", async () => {
     const data = await runQuery(query, context())
 
     expect(ids(data)).toEqual(["a-new", "a-old", "b-newest"])
@@ -134,17 +157,104 @@ describe("City.recommendedArticlesConnection", () => {
     expect(ids(data)).toEqual(["a-new", "a-old"])
   })
 
-  it("fetches articles for the top 10 artists at most", async () => {
-    meCityArtistsLoader.mockResolvedValue(
-      Array.from({ length: 12 }, (_, i) => ({
-        artist_id: `artist-${i}`,
-        score: 1 - i / 100,
-      }))
+  it("fetches articles for the top 10 shows at most", async () => {
+    meCityShowsLoader.mockResolvedValue(
+      gravityPage(...Array.from({ length: 12 }, (_, i) => `show-${i}`))
     )
 
     await runQuery(query, context())
 
     expect(articlesLoader).toHaveBeenCalledTimes(10)
+  })
+
+  it("lists fair articles after every show article, newest first", async () => {
+    fairsLoader.mockResolvedValue(gravityPage("fair-a", "fair-b"))
+    articlesBySource["fair-a"] = [article("fair-a-old", 5)]
+    articlesBySource["fair-b"] = [article("fair-b-new", 0)]
+
+    const data = await runQuery(
+      gql`
+        {
+          city(slug: "london-united-kingdom") {
+            recommendedArticlesConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `,
+      context()
+    )
+
+    expect(ids(data)).toEqual([
+      "a-new",
+      "a-old",
+      "b-newest",
+      "fair-b-new",
+      "fair-a-old",
+    ])
+  })
+
+  it("fetches articles for the first 3 fairs at most", async () => {
+    meCityShowsLoader.mockResolvedValue(gravityPage())
+    fairsLoader.mockResolvedValue(
+      gravityPage("fair-0", "fair-1", "fair-2", "fair-3", "fair-4")
+    )
+
+    await runQuery(query, context())
+
+    expect(articlesLoader).toHaveBeenCalledTimes(3)
+    expect(articlesLoader).not.toHaveBeenCalledWith(
+      expect.objectContaining({ fair_id: "fair-3" })
+    )
+  })
+
+  it("lists fair articles alone when Gravity can't rank shows", async () => {
+    meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+    fairsLoader.mockResolvedValue(gravityPage("fair-a"))
+    articlesBySource["fair-a"] = [article("fair-a-old", 5)]
+
+    const data = await runQuery(query, context())
+
+    expect(ids(data)).toEqual(["fair-a-old"])
+  })
+
+  it("doesn't look for fairs in the online city", async () => {
+    await runQuery(
+      gql`
+        {
+          city(slug: "online") {
+            recommendedArticlesConnection {
+              totalCount
+            }
+          }
+        }
+      `,
+      context()
+    )
+
+    expect(fairsLoader).not.toHaveBeenCalled()
+  })
+
+  it("keeps the recommendations when the curated articles fail to load", async () => {
+    cityArticlesLoader.mockRejectedValue(
+      new HTTPError("Internal Server Error", 500)
+    )
+
+    const data = await runQuery(query, context())
+
+    expect(ids(data)).toEqual(["a-new", "a-old", "b-newest"])
+  })
+
+  it("keeps the show articles when the fairs fetch fails", async () => {
+    fairsLoader.mockRejectedValue(new HTTPError("Internal Server Error", 500))
+
+    const data = await runQuery(query, context())
+
+    expect(ids(data)).toEqual(["a-new", "a-old", "b-newest"])
   })
 
   it("excludes the city's curated articles", async () => {
@@ -160,18 +270,13 @@ describe("City.recommendedArticlesConnection", () => {
     expect(ids(data)).toEqual(["a-old", "b-newest"])
   })
 
-  it("lists an article about several artists once, at its best artist's rank", async () => {
-    articlesByArtist["artist-b"] = [
-      article("b-newest", 0),
-      article("a-old", 10),
-    ]
-    articlesByArtist["artist-c"] = [article("shared", 2)]
-    articlesByArtist["artist-a"] = [article("shared", 2)]
-    meCityArtistsLoader.mockResolvedValue([
-      { artist_id: "artist-c", score: 0.1 },
-      { artist_id: "artist-b", score: 0.5 },
-      { artist_id: "artist-a", score: 0.9 },
-    ])
+  it("lists an article about several shows once, at its best show's rank", async () => {
+    articlesBySource["show-b"] = [article("b-newest", 0), article("a-old", 10)]
+    articlesBySource["show-c"] = [article("shared", 2)]
+    articlesBySource["show-a"] = [article("shared", 2)]
+    meCityShowsLoader.mockResolvedValue(
+      gravityPage("show-a", "show-b", "show-c")
+    )
 
     const data = await runQuery(query, context())
 
@@ -179,15 +284,15 @@ describe("City.recommendedArticlesConnection", () => {
   })
 
   it("drops articles published more than 24 months ago", async () => {
-    articlesByArtist["artist-a"] = [article("a-new", 1), article("ancient", 30)]
+    articlesBySource["show-a"] = [article("a-new", 1), article("ancient", 30)]
 
     const data = await runQuery(query, context())
 
     expect(ids(data)).toEqual(["a-new", "b-newest"])
   })
 
-  it("keeps the other artists' articles when one artist's fetch fails", async () => {
-    articlesByArtist["artist-a"] = new Error("Positron is down")
+  it("keeps the other shows' articles when one show's fetch fails", async () => {
+    articlesBySource["show-a"] = new Error("Positron is down")
 
     const data = await runQuery(query, context())
 
@@ -204,29 +309,31 @@ describe("City.recommendedArticlesConnection", () => {
     it("when signed out", async () => {
       const data = await runQuery(query, {
         ...context(),
-        meCityArtistsLoader: undefined,
+        meCityShowsLoader: undefined,
       })
 
       expectEmpty(data)
       expect(articlesLoader).not.toHaveBeenCalled()
     })
 
-    it("when Gravity returns 404", async () => {
-      meCityArtistsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+    it("when Gravity can't rank shows (404) and the city has no running fairs", async () => {
+      meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+      fairsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
     })
 
-    it("when Gravity errors", async () => {
-      meCityArtistsLoader.mockRejectedValue(
+    it("when Gravity errors on shows and the city has no running fairs", async () => {
+      meCityShowsLoader.mockRejectedValue(
         new HTTPError("Internal Server Error", 500)
       )
+      fairsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
     })
 
-    it("when Gravity has no artists", async () => {
-      meCityArtistsLoader.mockResolvedValue([])
+    it("when the city has no running shows or fairs", async () => {
+      meCityShowsLoader.mockResolvedValue(gravityPage())
 
       expectEmpty(await runQuery(query, context()))
       expect(articlesLoader).not.toHaveBeenCalled()
@@ -307,7 +414,7 @@ describe("City.recommendedArticlesConnection", () => {
     it("returns only the curated articles when signed out", async () => {
       const data = await runQuery(featuredQuery(), {
         ...context(),
-        meCityArtistsLoader: undefined,
+        meCityShowsLoader: undefined,
       })
 
       expect(ids(data)).toEqual(["curated-1", "curated-2"])
@@ -315,7 +422,7 @@ describe("City.recommendedArticlesConnection", () => {
     })
 
     it("returns only the curated articles when Gravity returns 404", async () => {
-      meCityArtistsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
+      meCityShowsLoader.mockRejectedValue(new HTTPError("Not Found", 404))
 
       const data = await runQuery(featuredQuery(), context())
 
@@ -323,7 +430,7 @@ describe("City.recommendedArticlesConnection", () => {
     })
 
     it("returns only the curated articles when Gravity errors", async () => {
-      meCityArtistsLoader.mockRejectedValue(
+      meCityShowsLoader.mockRejectedValue(
         new HTTPError("Internal Server Error", 500)
       )
 
