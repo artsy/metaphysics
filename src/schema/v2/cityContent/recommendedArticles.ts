@@ -9,6 +9,7 @@ import { CursorPageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import type { TCity } from "schema/v2/city"
 import { cityShowsParams } from "schema/v2/city/cityShowsParams"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "schema/v2/city/constants"
 import { articleConnection } from "schema/v2/article"
 import { PositronArticle } from "schema/v2/article/types"
 import { paginationResolver } from "schema/v2/fields/pagination"
@@ -17,20 +18,21 @@ import { error } from "lib/loggers"
 import { GravityCityArticle } from "./types"
 import { resolveCityArticleJoins } from "./resolveCityArticleJoins"
 
-const MAX_ARTISTS = 10
-const ARTICLES_PER_ARTIST = 3
+const MAX_SHOWS = 10
+const MAX_FAIRS = 3
+const ARTICLES_PER_SOURCE = 3
 const RECENCY_MONTHS = 24
 
-interface ScoredArtist {
-  artist_id: string
-  score: number
+// Gravity's show and fair payloads; Positron keys its show and fair links on the Mongo `_id`.
+interface GravityEvent {
+  _id: string
 }
 
 type RecommendedArticle = PositronArticle & { published_at?: string }
 
 interface RankedArticle {
   article: RecommendedArticle
-  score: number
+  rank: number
 }
 
 const featuredArticles = async (
@@ -49,57 +51,110 @@ const featuredArticles = async (
   }
 }
 
-const recommendedArticles = async (
+const articlesFor = (
+  source: "show_id" | "fair_id",
+  id: string,
+  { articlesLoader }: ResolverContext
+): Promise<RecommendedArticle[]> =>
+  articlesLoader({
+    [source]: id,
+    published: true,
+    in_editorial_feed: true,
+    sort: "-published_at",
+    limit: ARTICLES_PER_SOURCE,
+  })
+    .then(({ results }) => results)
+    .catch((err) => {
+      error(`recommendedArticlesConnection: ${source} ${id}`, err)
+      return []
+    })
+
+// The city's running shows, best match for the user first: Gravity ranks them by the user's
+// LightFM taste for their artists.
+const rankedShows = async (
   city: TCity,
-  { meCityArtistsLoader, cityArticlesLoader, articlesLoader }: ResolverContext
-): Promise<RecommendedArticle[]> => {
-  if (!meCityArtistsLoader) return []
+  { meCityShowsLoader }: ResolverContext
+): Promise<GravityEvent[]> => {
+  if (!meCityShowsLoader) return []
 
   try {
-    const [scoredArtists, curatedJoins]: [
-      ScoredArtist[],
+    const { body } = await meCityShowsLoader({
+      ...cityShowsParams(city, { status: "running" }),
+      size: MAX_SHOWS,
+    })
+    return body.slice(0, MAX_SHOWS)
+  } catch (err) {
+    // Gravity 404s until me/city_shows is deployed.
+    if (err?.statusCode !== 404) {
+      error("recommendedArticlesConnection: shows", err)
+    }
+    return []
+  }
+}
+
+const runningFairs = async (
+  city: TCity,
+  { fairsLoader }: ResolverContext
+): Promise<GravityEvent[]> => {
+  if (city.slug === "online") return []
+
+  try {
+    const { body } = await fairsLoader({
+      near: city.coords.join(","),
+      max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+      status: "running",
+      size: MAX_FAIRS,
+    })
+    return body.slice(0, MAX_FAIRS)
+  } catch (err) {
+    error("recommendedArticlesConnection: fairs", err)
+    return []
+  }
+}
+
+// Articles written about the shows and fairs happening in the city now, so every one is about
+// the city. Show articles come first, in the order Gravity ranked their shows for the user;
+// fair articles follow, since they carry no taste signal.
+const recommendedArticles = async (
+  city: TCity,
+  context: ResolverContext
+): Promise<RecommendedArticle[]> => {
+  if (!context.meCityShowsLoader) return []
+
+  try {
+    const [shows, fairs, curatedJoins]: [
+      GravityEvent[],
+      GravityEvent[],
       GravityCityArticle[]
     ] = await Promise.all([
-      meCityArtistsLoader({
-        ...cityShowsParams(city, { status: "running" }),
-        limit: MAX_ARTISTS,
-      }),
-      cityArticlesLoader({ city_slug: city.slug }),
+      rankedShows(city, context),
+      runningFairs(city, context),
+      context.cityArticlesLoader({ city_slug: city.slug }),
     ])
 
-    const topArtists = scoredArtists.slice(0, MAX_ARTISTS)
-    if (topArtists.length === 0) return []
+    const sources = [
+      ...shows.map((show) => articlesFor("show_id", show._id, context)),
+      ...fairs.map((fair) => articlesFor("fair_id", fair._id, context)),
+    ]
+    if (sources.length === 0) return []
 
-    const articlesByArtist: RecommendedArticle[][] = await Promise.all(
-      topArtists.map(({ artist_id }) =>
-        articlesLoader({
-          artist_id,
-          published: true,
-          in_editorial_feed: true,
-          sort: "-published_at",
-          limit: ARTICLES_PER_ARTIST,
-        })
-          .then(({ results }) => results)
-          .catch((err) => {
-            error(`recommendedArticlesConnection: artist ${artist_id}`, err)
-            return []
-          })
-      )
-    )
+    const articlesBySource = await Promise.all(sources)
 
     const curatedIds = new Set(curatedJoins.map((join) => join.article_id))
     const cutoff = moment().subtract(RECENCY_MONTHS, "months")
     const byId = new Map<string, RankedArticle>()
 
-    topArtists.forEach(({ score }, index) => {
-      articlesByArtist[index].forEach((article) => {
+    // A fair's articles all share one rank below every show, so they sort by recency alone.
+    articlesBySource.forEach((articles, index) => {
+      const rank = Math.min(index, shows.length)
+      articles.forEach((article) => {
         if (curatedIds.has(article.id)) return
         if (!article.published_at) return
         if (moment(article.published_at).isBefore(cutoff)) return
 
         const existing = byId.get(article.id)
-        if (!existing || score > existing.score) {
-          byId.set(article.id, { article, score })
+        if (!existing || rank < existing.rank) {
+          byId.set(article.id, { article, rank })
         }
       })
     })
@@ -107,16 +162,13 @@ const recommendedArticles = async (
     return [...byId.values()]
       .sort(
         (a, b) =>
-          b.score - a.score ||
+          a.rank - b.rank ||
           moment(b.article.published_at).valueOf() -
             moment(a.article.published_at).valueOf()
       )
       .map(({ article }) => article)
   } catch (err) {
-    // Gravity 404s until me/city_artists is deployed.
-    if (err?.statusCode !== 404) {
-      error("recommendedArticlesConnection", err)
-    }
+    error("recommendedArticlesConnection", err)
     return []
   }
 }
@@ -128,7 +180,7 @@ export const RecommendedArticlesConnectionField: GraphQLFieldConfig<
 > = {
   type: articleConnection.connectionType,
   description:
-    "Recent editorial articles about artists showing in this city now, ranked by the signed-in user's taste. With `includeFeatured`, the city's curated articles come first; without it, they are left out. Signed out, only the curated articles are returned.",
+    "Recent editorial articles about the shows and fairs running in this city now. Show articles come first, ranked by the signed-in user's taste for the shows' artists, then fair articles. With `includeFeatured`, the city's curated articles come first; without it, they are left out. Signed out, only the curated articles are returned.",
   args: {
     after: { type: GraphQLString },
     first: { type: GraphQLInt, defaultValue: 4 },
