@@ -9,7 +9,7 @@ export interface CityShowsFilters {
   maxPerPartner?: number | null
 }
 
-// The Gravity params for a city's shows, shared by /shows, me/city_shows and me/city_artists.
+// The Gravity params for a city's shows, shared by /shows and me/city_shows.
 export const cityShowsParams = (
   city: TCity,
   filters: CityShowsFilters,
