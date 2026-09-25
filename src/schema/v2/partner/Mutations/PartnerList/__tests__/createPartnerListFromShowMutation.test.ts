@@ -103,6 +103,46 @@ describe("CreatePartnerListFromShowMutation", () => {
     })
   })
 
+  it.each([
+    [400, "Show has no artworks"],
+    [404, "Partner Show Not Found"],
+  ])(
+    "returns a mutation error when Gravity responds with %i",
+    async (statusCode, message) => {
+      const context = {
+        createPartnerListFromShowLoader: jest.fn().mockRejectedValue({
+          statusCode,
+          body: { message },
+        }),
+      }
+
+      const result = await runAuthenticatedQuery(mutation, context)
+
+      expect(result).toEqual({
+        createPartnerListFromShow: {
+          partnerListOrError: {
+            __typename: "CreatePartnerListFromShowFailure",
+            mutationError: { message, statusCode },
+          },
+        },
+      })
+    }
+  )
+
+  it("returns a null show when the list isn't linked to a show", async () => {
+    const context = {
+      createPartnerListFromShowLoader: jest
+        .fn()
+        .mockResolvedValue({ ...partnerListData, partner_show_id: null }),
+      partnerShowLoader: jest.fn(),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(context.partnerShowLoader).not.toHaveBeenCalled()
+    expect(result.createPartnerListFromShow.partnerListOrError.show).toBeNull()
+  })
+
   it("throws when not authenticated", async () => {
     await expect(
       runAuthenticatedQuery(mutation, {

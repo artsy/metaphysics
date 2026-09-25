@@ -757,7 +757,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
               partner_show_id: _id,
               size: 1,
             })
-            return body?.[0] ?? null
+            // Guard against a Gravity that doesn't support the
+            // `partner_show_id` filter yet (Grape drops unknown params), which
+            // would return the partner's first list for every show.
+            const [partnerList] = body ?? []
+            return partnerList?.partner_show_id === _id ? partnerList : null
           } catch (error) {
             if (error.statusCode === 403 || error.statusCode === 404) {
               return null

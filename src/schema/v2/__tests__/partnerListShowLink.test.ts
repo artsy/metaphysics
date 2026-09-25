@@ -22,9 +22,10 @@ describe("Show.partnerList", () => {
   it("returns the list linked to the show", async () => {
     const context = {
       showLoader: jest.fn().mockResolvedValue(showData),
-      partnerListsLoader: jest
-        .fn()
-        .mockResolvedValue({ body: [{ id: "list-abc" }], headers: {} }),
+      partnerListsLoader: jest.fn().mockResolvedValue({
+        body: [{ id: "list-abc", partner_show_id: "show-456" }],
+        headers: {},
+      }),
     }
 
     const result = await runAuthenticatedQuery(query, context)
@@ -50,6 +51,20 @@ describe("Show.partnerList", () => {
     expect(result.show.partnerList).toBeNull()
   })
 
+  it("returns null when the returned list is linked to a different show", async () => {
+    const context = {
+      showLoader: jest.fn().mockResolvedValue(showData),
+      partnerListsLoader: jest.fn().mockResolvedValue({
+        body: [{ id: "list-other", partner_show_id: "another-show" }],
+        headers: {},
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(query, context)
+
+    expect(result.show.partnerList).toBeNull()
+  })
+
   it("returns null when the user can't manage the partner", async () => {
     const context = {
       showLoader: jest.fn().mockResolvedValue(showData),
@@ -59,6 +74,19 @@ describe("Show.partnerList", () => {
     const result = await runAuthenticatedQuery(query, context)
 
     expect(result.show.partnerList).toBeNull()
+  })
+
+  it("surfaces unexpected Gravity errors", async () => {
+    const context = {
+      showLoader: jest.fn().mockResolvedValue(showData),
+      partnerListsLoader: jest
+        .fn()
+        .mockRejectedValue(new Error("Internal Server Error")),
+    }
+
+    await expect(runAuthenticatedQuery(query, context)).rejects.toThrow(
+      "Internal Server Error"
+    )
   })
 
   it("returns null for a show without an Artsy partner", async () => {

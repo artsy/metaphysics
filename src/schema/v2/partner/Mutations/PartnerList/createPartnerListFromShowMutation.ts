@@ -34,7 +34,11 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         { partner_id, partner_show_id },
         _args,
         { partnerShowLoader }
-      ) => partnerShowLoader({ partner_id, show_id: partner_show_id }),
+      ) => {
+        if (!partner_show_id) return null
+
+        return partnerShowLoader({ partner_id, show_id: partner_show_id })
+      },
     },
   }),
 })
