@@ -5,6 +5,46 @@ import gql from "lib/gql"
 const encodeToken = (roles: string) => jwt.encode({ roles }, "test-secret")
 
 describe("Article", () => {
+  describe("sections", () => {
+    const query = gql`
+      {
+        article(id: "example") {
+          sections {
+            __typename
+          }
+        }
+      }
+    `
+
+    it("returns only supported section types, in order", async () => {
+      const articleLoader = jest.fn(() =>
+        Promise.resolve({
+          sections: [
+            { type: "text", body: "<p>Hello</p>" },
+            { type: "unknown_future_section" },
+            { type: "artwork_grid", columns: 2, artworks: [] },
+            { type: "callout" },
+          ],
+        })
+      )
+
+      const { article } = await runQuery(query, { articleLoader })
+
+      expect(article.sections).toEqual([
+        { __typename: "ArticleSectionText" },
+        { __typename: "ArticleSectionArtworkGrid" },
+        { __typename: "ArticleSectionCallout" },
+      ])
+    })
+
+    it("returns an empty list when sections is missing", async () => {
+      const articleLoader = jest.fn(() => Promise.resolve({}))
+
+      const { article } = await runQuery(query, { articleLoader })
+
+      expect(article.sections).toEqual([])
+    })
+  })
   describe("loader selection", () => {
     const query = gql`
       {
