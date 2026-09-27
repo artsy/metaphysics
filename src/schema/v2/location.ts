@@ -9,6 +9,7 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLNonNull,
   GraphQLUnionType,
   GraphQLBoolean,
 } from "graphql"
@@ -508,4 +509,16 @@ export const COUNTRIES = {
   ZM: "Zambia",
   ZW: "Zimbabwe",
   ZZ: "Unknown Region",
+}
+
+export const Location: GraphQLFieldConfig<void, ResolverContext> = {
+  type: LocationType,
+  description: "A partner's location",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the location",
+    },
+  },
+  resolve: (_root, { id }, { locationLoader }) => locationLoader(id),
 }

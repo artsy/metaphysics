@@ -58,6 +58,7 @@ import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
 import FilterPartners from "./filter_partners"
 import { filterArtworksConnection } from "./filterArtworksConnection"
+import { Location } from "./location"
 import Gene from "./gene"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
@@ -570,6 +571,7 @@ const rootFields = {
   jobs,
   saleAgreement: SaleAgreement,
   saleAgreementsConnection: SaleAgreementsConnection,
+  location: Location,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
   matchPartner: PartnerMatch,

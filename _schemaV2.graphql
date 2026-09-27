@@ -34848,6 +34848,16 @@ type Query {
   jobs: [Job!]!
 
   """
+  A partner's location
+  """
+  location(
+    """
+    The ID of the location
+    """
+    id: String!
+  ): Location
+
+  """
   A Mailchimp campaign by ID
   """
   mailchimpCampaign(
@@ -44756,6 +44766,16 @@ type Viewer {
   ): ItineraryStop
   job(id: ID!): Job!
   jobs: [Job!]!
+
+  """
+  A partner's location
+  """
+  location(
+    """
+    The ID of the location
+    """
+    id: String!
+  ): Location
 
   """
   A Mailchimp campaign by ID
