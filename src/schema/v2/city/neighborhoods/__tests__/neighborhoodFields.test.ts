@@ -218,6 +218,47 @@ describe("Location.cityGuideCity", () => {
     })
   })
 
+  it("skips geodata cities that have no City Guide", async () => {
+    const jerseyCity: TCity = {
+      slug: "jersey-city-nj-usa",
+      name: "Jersey City",
+      full_name: "Jersey City, NJ, USA",
+      coords: [40.72, -74.04],
+    }
+    const newYork: TCity = {
+      slug: "new-york-ny-usa",
+      name: "New York",
+      full_name: "New York, NY, USA",
+      coords: [40.71, -74.01],
+    }
+    const { partner } = await runQuery(
+      gql`
+        {
+          partner(id: "a-gallery") {
+            locations {
+              cityGuideCity {
+                slug
+              }
+            }
+          }
+        }
+      `,
+      {
+        partnerLoader: () => Promise.resolve({ id: "a-gallery" }),
+        partnerLocationsLoader: () =>
+          Promise.resolve([
+            // 555 West 24th Street, a little nearer Jersey City's geodata centre than New York's.
+            { coordinates: { lat: 40.749446, lng: -74.005898 } },
+          ]),
+        geodataCitiesLoader: () => Promise.resolve([jerseyCity, newYork]),
+      }
+    )
+
+    expect(partner.locations[0].cityGuideCity).toEqual({
+      slug: "new-york-ny-usa",
+    })
+  })
+
   it("returns null outside a City Guide city", async () => {
     expect(
       await cityFor({
