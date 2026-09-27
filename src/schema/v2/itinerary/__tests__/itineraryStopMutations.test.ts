@@ -717,6 +717,42 @@ describe("deleteItineraryStop", () => {
     })
   })
 
+  it("resolves the deleted stop's item", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = withShowsLoader(loader)
+
+    const result = await runAuthenticatedQuery(
+      gql`
+        mutation {
+          deleteItineraryStop(input: { id: "stop-id" }) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(
+      result.deleteItineraryStop.responseOrError.itineraryStop.item
+    ).toEqual({ __typename: "Show", internalID: "show-id" })
+  })
+
+  it("still returns success when item enrichment fails", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityStop())
+    const context = {
+      ...withShowsLoader(loader),
+      showsLoader: jest.fn().mockRejectedValue(new Error("Gravity is down")),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(
+      result.deleteItineraryStop.responseOrError.itineraryStop
+    ).toMatchObject({ internalID: "stop-id" })
+  })
+
   it("returns the failure member on a Gravity validation error", async () => {
     const loader = jest.fn().mockRejectedValue(paramError)
     const context = withShowsLoader(loader)

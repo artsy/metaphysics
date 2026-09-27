@@ -36,6 +36,7 @@ import { RecommendedArticlesConnectionField } from "../cityContent/recommendedAr
 import { cityShowsParams } from "./cityShowsParams"
 import { CityNeighborhoodType } from "./neighborhoods/CityNeighborhoodType"
 import { cityNeighborhoodsFor } from "./neighborhoods/matchCityNeighborhood"
+import { CITIES_WITH_GUIDES } from "schema/v2/homeView/sections/citiesWithGuides"
 
 const START_AT_ASC: ShowSortsType = "start_at"
 
@@ -288,6 +289,10 @@ const lookupCity = (slug: string, cities: TCity[]) => {
  * point without going through the `city(near:)` root field. Coordinates win;
  * without them, the city name must match exactly one City Guide city.
  */
+const CITY_GUIDE_SLUGS = new Set<string>(
+  CITIES_WITH_GUIDES.map(({ slug }) => slug)
+)
+
 export const cityGuideCityFor = async (
   {
     coordinates,
@@ -303,13 +308,16 @@ export const cityGuideCityFor = async (
     return null
   }
 
-  const allCities = await geodataCitiesLoader()
+  // Geodata lists every partner city, so without this a Chelsea gallery lands in Jersey City.
+  const guideCities = (await geodataCitiesLoader()).filter((city) =>
+    CITY_GUIDE_SLUGS.has(city.slug)
+  )
 
   if (hasCoordinates) {
-    return nearestCity(coordinates as LatLng, allCities)
+    return nearestCity(coordinates as LatLng, guideCities)
   }
 
-  const matches = allCities.filter(
+  const matches = guideCities.filter(
     (city) => city.name?.trim().toLowerCase() === normalizedName
   )
   return matches.length === 1 ? matches[0] : null
@@ -319,7 +327,7 @@ const nearestCity = (latLng: LatLng, cities: TCity[]) => {
   const orderedCities = citiesOrderedByDistance(latLng, cities)
   const closestCity = orderedCities[0]
 
-  if (isCloseEnough(latLng, closestCity)) {
+  if (closestCity && isCloseEnough(latLng, closestCity)) {
     return closestCity
   }
 

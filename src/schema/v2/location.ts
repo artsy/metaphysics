@@ -9,6 +9,7 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLNonNull,
   GraphQLUnionType,
   GraphQLBoolean,
 } from "graphql"
@@ -20,6 +21,7 @@ import {
   matchCityNeighborhood,
   normalizePostalCode,
 } from "./city/neighborhoods/matchCityNeighborhood"
+import { itemItineraryMembershipFields } from "./itinerary/itemItineraryMembershipFields"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -68,6 +70,7 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "Location",
   fields: () => ({
     ...IDFields,
+    ...itemItineraryMembershipFields("PartnerLocation"),
     cached,
     // Only present when the location was loaded in its own right — Gravity
     // serialises a partner reference on `PartnerLocation`, but an embedded
@@ -212,6 +215,19 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
         return guideCity
           ? matchCityNeighborhood(guideCity.slug, postal_code)
           : null
+      },
+    },
+    cityGuideCity: {
+      description:
+        "The City Guide city nearest to this location, if one is within range. Without coordinates, the City Guide city whose name exactly matches the location's city.",
+      // Lazy because `city/index.ts` imports `LatLngType` from this module.
+      type: require("./city").CityType,
+      resolve: ({ coordinates, city }, _args, { geodataCitiesLoader }) => {
+        const { cityGuideCityFor } = require("./city")
+        return cityGuideCityFor(
+          { coordinates, cityName: city },
+          geodataCitiesLoader
+        )
       },
     },
     state: {
@@ -493,4 +509,16 @@ export const COUNTRIES = {
   ZM: "Zambia",
   ZW: "Zimbabwe",
   ZZ: "Unknown Region",
+}
+
+export const Location: GraphQLFieldConfig<void, ResolverContext> = {
+  type: LocationType,
+  description: "A partner's location",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the location",
+    },
+  },
+  resolve: (_root, { id }, { locationLoader }) => locationLoader(id),
 }

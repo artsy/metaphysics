@@ -1192,9 +1192,9 @@ describe("Fair", () => {
 
   describe("cityGuideCity", () => {
     const MOCK_CITY = {
-      slug: "sacramende-ca-usa",
-      name: "Sacramende",
-      full_name: "Sacramende, CA, USA",
+      slug: "san-francisco-ca-usa",
+      name: "San Francisco",
+      full_name: "San Francisco, CA, USA",
       coords: [38.5, -121.8],
     }
 
@@ -1227,8 +1227,8 @@ describe("Fair", () => {
       expect(data).toEqual({
         fair: {
           cityGuideCity: {
-            slug: "sacramende-ca-usa",
-            name: "Sacramende",
+            slug: "san-francisco-ca-usa",
+            name: "San Francisco",
           },
         },
       })
@@ -1264,20 +1264,23 @@ describe("Fair", () => {
     })
 
     it("matches the fair's city name when it has no coordinates", async () => {
-      context = contextWithLocation({ city: "Sacramende", coordinates: null })
+      context = contextWithLocation({
+        city: "San Francisco",
+        coordinates: null,
+      })
       const data = await runQuery(query, context)
       expect(data.fair.cityGuideCity).toEqual({
-        slug: "sacramende-ca-usa",
-        name: "Sacramende",
+        slug: "san-francisco-ca-usa",
+        name: "San Francisco",
       })
     })
 
     it("matches the city name ignoring case and surrounding whitespace", async () => {
-      context = contextWithLocation({ city: " sacramende  " })
+      context = contextWithLocation({ city: " san francisco  " })
       const data = await runQuery(query, context)
       expect(data.fair.cityGuideCity).toEqual({
-        slug: "sacramende-ca-usa",
-        name: "Sacramende",
+        slug: "san-francisco-ca-usa",
+        name: "San Francisco",
       })
     })
 
@@ -1288,9 +1291,9 @@ describe("Fair", () => {
     })
 
     it("returns null when several City Guide cities share the name", async () => {
-      context = contextWithLocation({ city: "Sacramende" }, [
+      context = contextWithLocation({ city: "San Francisco" }, [
         MOCK_CITY,
-        { ...MOCK_CITY, slug: "sacramende-oh-usa", coords: [39.9, -83.4] },
+        { ...MOCK_CITY, slug: "los-angeles-ca-usa", coords: [39.9, -83.4] },
       ])
       const data = await runQuery(query, context)
       expect(data.fair.cityGuideCity).toBeNull()
@@ -1298,21 +1301,21 @@ describe("Fair", () => {
 
     it("uses the coordinates over the city name when both are present", async () => {
       context = contextWithLocation(
-        { city: "Gotham", coordinates: { lat: 38.5, lng: -121.8 } },
+        { city: "New York", coordinates: { lat: 38.5, lng: -121.8 } },
         [
           MOCK_CITY,
           {
-            slug: "gotham-nj-usa",
-            name: "Gotham",
-            full_name: "Gotham, NJ, USA",
+            slug: "new-york-ny-usa",
+            name: "New York",
+            full_name: "New York, NY, USA",
             coords: [40.7, -74.0],
           },
         ]
       )
       const data = await runQuery(query, context)
       expect(data.fair.cityGuideCity).toEqual({
-        slug: "sacramende-ca-usa",
-        name: "Sacramende",
+        slug: "san-francisco-ca-usa",
+        name: "San Francisco",
       })
     })
 

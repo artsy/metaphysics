@@ -2,6 +2,7 @@ import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { attachItemsToStops } from "../stopItems"
 import { ItineraryStopMutationResponseOrErrorType } from "./itineraryStopMutationResponseOrError"
 
 interface InputProps {
@@ -31,8 +32,10 @@ export const deleteItineraryStopMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    let stop
+
     try {
-      return await context.deleteItineraryStopLoader(id, {})
+      stop = await context.deleteItineraryStopLoader(id, {})
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
@@ -42,5 +45,11 @@ export const deleteItineraryStopMutation = mutationWithClientMutationId<
         throw error
       }
     }
+
+    // Lets a client read the item's `isOnMyItineraries` after the delete. Enrichment failing
+    // must not report a committed delete as failed.
+    await attachItemsToStops([stop], context).catch(() => undefined)
+
+    return stop
   },
 })

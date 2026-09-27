@@ -17,7 +17,7 @@ interface ItemIdentity {
 
 /** Uses the same request-scoped batch as stop memberships, including across item types. */
 export const itemItineraryMembershipFields = (
-  itemType: "PartnerShow" | "Fair"
+  itemType: "PartnerShow" | "Fair" | "PartnerLocation"
 ): GraphQLFieldConfigMap<ItemIdentity, ResolverContext> => {
   const identity = (item: ItemIdentity) => ({
     item_type: itemType,
