@@ -179,3 +179,51 @@ describe("Location.cityGuideNeighborhood", () => {
     })
   })
 })
+
+describe("Location.cityGuideCity", () => {
+  const cityFor = async (location: Record<string, unknown>) => {
+    const { partner } = await runQuery(
+      gql`
+        {
+          partner(id: "a-gallery") {
+            locations {
+              cityGuideCity {
+                slug
+                name
+              }
+            }
+          }
+        }
+      `,
+      {
+        partnerLoader: () => Promise.resolve({ id: "a-gallery" }),
+        partnerLocationsLoader: () => Promise.resolve([location]),
+        geodataCitiesLoader: () => Promise.resolve([LONDON, DUBAI]),
+      }
+    )
+    return partner.locations[0].cityGuideCity
+  }
+
+  it("returns the nearest City Guide city to the location's coordinates", async () => {
+    expect(await cityFor({ coordinates: { lat: 51.51, lng: -0.14 } })).toEqual({
+      slug: "london-united-kingdom",
+      name: "London",
+    })
+  })
+
+  it("matches the city name when there are no coordinates", async () => {
+    expect(await cityFor({ city: "Dubai" })).toEqual({
+      slug: "dubai-united-arab-emirates",
+      name: "Dubai",
+    })
+  })
+
+  it("returns null outside a City Guide city", async () => {
+    expect(
+      await cityFor({
+        coordinates: { lat: 40.7, lng: -74.0 },
+        city: "New York",
+      })
+    ).toBeNull()
+  })
+})
