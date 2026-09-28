@@ -48,8 +48,24 @@ const ids = (data) =>
   )
 
 describe("cityTitlePattern", () => {
-  it("is the city's name", () => {
-    expect(cityTitlePattern(MOCK_CITIES[0])).toEqual("London")
+  it("is the city's name, anchored to the start of a word", () => {
+    expect(cityTitlePattern(MOCK_CITIES[0])).toEqual("\\b(?:London)")
+  })
+
+  it("matches the name at the start of a word only", () => {
+    const paris = new RegExp(
+      cityTitlePattern({
+        slug: "paris-france",
+        name: "Paris",
+        full_name: "Paris, France",
+        coords: [48.9, 2.35],
+      }),
+      "i"
+    )
+
+    expect(paris.test("Paris Photo 2026 Opens")).toBe(true)
+    expect(paris.test("Meet the Parisian Dealers")).toBe(true)
+    expect(paris.test("A Comparison of Two Auction Seasons")).toBe(false)
   })
 
   it("adds the city's aliases, regex-escaped", () => {
@@ -60,7 +76,7 @@ describe("cityTitlePattern", () => {
         full_name: "Los Angeles, CA, USA",
         coords: [34, -118],
       })
-    ).toEqual("Los Angeles|L\\.A\\.")
+    ).toEqual("\\b(?:Los Angeles|L\\.A\\.)")
     expect(
       cityTitlePattern({
         slug: "new-york-ny-usa",
@@ -68,7 +84,7 @@ describe("cityTitlePattern", () => {
         full_name: "New York, NY, USA",
         coords: [40.7, -74],
       })
-    ).toEqual("New York|NYC")
+    ).toEqual("\\b(?:New York|NYC)")
   })
 })
 
@@ -132,7 +148,7 @@ describe("City.recommendedArticlesConnection", () => {
     await runQuery(query, context())
 
     expect(articlesLoader).toHaveBeenCalledWith({
-      q: "London",
+      q: "\\b(?:London)",
       published: true,
       in_editorial_feed: true,
       sort: "-published_at",
