@@ -258,6 +258,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetArtworkBatchLoader: gravityLoader(
+      "artnet_artwork_batch",
+      {},
+      { method: "POST" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
     artnetImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artnet_import/${id}/unmatched_artist_names`
