@@ -87,14 +87,14 @@ export const createPartnerListFromShowMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { partnerID, showID },
-    { createPartnerListFromShowLoader }
+    { createPartnerListLoader }
   ) => {
-    if (!createPartnerListFromShowLoader) {
+    if (!createPartnerListLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await createPartnerListFromShowLoader({
+      return await createPartnerListLoader({
         partner_id: partnerID,
         partner_show_id: showID,
       })

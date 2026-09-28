@@ -2021,11 +2021,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    createPartnerListFromShowLoader: gravityLoader(
-      "partner_list/from_show",
-      {},
-      { method: "POST" }
-    ),
     updatePartnerListLoader: gravityLoader(
       (id) => `partner_list/${id}`,
       {},

@@ -44,15 +44,13 @@ describe("CreatePartnerListFromShowMutation", () => {
 
   it("creates a partner list from the show", async () => {
     const context = {
-      createPartnerListFromShowLoader: jest
-        .fn()
-        .mockResolvedValue(partnerListData),
+      createPartnerListLoader: jest.fn().mockResolvedValue(partnerListData),
       partnerShowLoader: jest.fn().mockResolvedValue({ _id: "show-456" }),
     }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(context.createPartnerListFromShowLoader).toHaveBeenCalledWith({
+    expect(context.createPartnerListLoader).toHaveBeenCalledWith({
       partner_id: "partner-123",
       partner_show_id: "show-456",
     })
@@ -82,7 +80,7 @@ describe("CreatePartnerListFromShowMutation", () => {
 
   it("returns a mutation error when the show was already added", async () => {
     const context = {
-      createPartnerListFromShowLoader: jest.fn().mockRejectedValue({
+      createPartnerListLoader: jest.fn().mockRejectedValue({
         statusCode: 409,
         body: { message: "Show has already been added to inventory" },
       }),
@@ -110,7 +108,7 @@ describe("CreatePartnerListFromShowMutation", () => {
     "returns a mutation error when Gravity responds with %i",
     async (statusCode, message) => {
       const context = {
-        createPartnerListFromShowLoader: jest.fn().mockRejectedValue({
+        createPartnerListLoader: jest.fn().mockRejectedValue({
           statusCode,
           body: { message },
         }),
@@ -131,7 +129,7 @@ describe("CreatePartnerListFromShowMutation", () => {
 
   it("returns a null show when the list isn't linked to a show", async () => {
     const context = {
-      createPartnerListFromShowLoader: jest
+      createPartnerListLoader: jest
         .fn()
         .mockResolvedValue({ ...partnerListData, partner_show_id: null }),
       partnerShowLoader: jest.fn(),
@@ -146,7 +144,7 @@ describe("CreatePartnerListFromShowMutation", () => {
   it("throws when not authenticated", async () => {
     await expect(
       runAuthenticatedQuery(mutation, {
-        createPartnerListFromShowLoader: undefined,
+        createPartnerListLoader: undefined,
       })
     ).rejects.toThrow("You need to be signed in to perform this action")
   })
