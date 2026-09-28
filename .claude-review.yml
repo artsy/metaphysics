@@ -31,3 +31,10 @@ context: |
   - Error unions (Success/Failure) for mutation responses
 
   See CLAUDE.md for additional coding conventions.
+
+# Repos the experimental AI review can read for context (artsy/duchamp#128).
+related_repos:
+  - artsy/gravity
+  - artsy/eigen
+  - artsy/force
+  - artsy/volt
