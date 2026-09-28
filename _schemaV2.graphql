@@ -3940,6 +3940,28 @@ type ArtnetArtwork {
   ): String
 }
 
+enum ArtnetArtworkBatchActionType {
+  CREATE
+  DELETE
+  EDIT
+  PUBLISH
+  UNPUBLISH
+}
+
+input ArtnetArtworkBatchOperationInput {
+  actionType: ArtnetArtworkBatchActionType!
+
+  """
+  Artnet's artwork guid; required for every action type except Create
+  """
+  artworkID: String
+
+  """
+  Gravity's own snake_case fields for the operation (see ArtnetBulkUploadService::BuildWireOperation on the Gravity side for the exact mapping to Artnet's wire shape); ignored for Delete/Publish/Unpublish.
+  """
+  payload: JSON
+}
+
 """
 An Artnet edition set.
 """
@@ -14749,6 +14771,41 @@ type CreateArtistSuccess {
 }
 
 union CreateArtistSuccessOrErrorType = CreateArtistFailure | CreateArtistSuccess
+
+type CreateArtnetArtworkBatchFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateArtnetArtworkBatchMutationInput {
+  clientMutationId: String
+
+  """
+  The gallery-artwork operations to submit
+  """
+  operations: [ArtnetArtworkBatchOperationInput!]!
+
+  """
+  The ID of the partner these operations are being submitted for
+  """
+  partnerID: String!
+}
+
+type CreateArtnetArtworkBatchMutationPayload {
+  """
+  On success: the submitted batch and task ids. On error: the error that occurred.
+  """
+  artnetArtworkBatchOrError: CreateArtnetArtworkBatchResponseOrError
+  clientMutationId: String
+}
+
+union CreateArtnetArtworkBatchResponseOrError =
+    CreateArtnetArtworkBatchFailure
+  | CreateArtnetArtworkBatchSuccess
+
+type CreateArtnetArtworkBatchSuccess {
+  batchID: String!
+  taskIDs: [String!]!
+}
 
 type CreateArtnetImportArtistAssignmentFailure {
   mutationError: GravityMutationError
@@ -26965,6 +27022,13 @@ type Mutation {
   Create an artist, used for MyCollection. use CreateCanonicalArtistMutation for all other cases
   """
   createArtist(input: CreateArtistMutationInput!): CreateArtistMutationPayload
+
+  """
+  Submits a batch of gallery-artwork edit/delete/publish/unpublish operations to Artnet.
+  """
+  createArtnetArtworkBatch(
+    input: CreateArtnetArtworkBatchMutationInput!
+  ): CreateArtnetArtworkBatchMutationPayload
 
   """
   Kicks off a background job to pull a gallery's Artnet inventory and create corresponding Artsy artwork records.

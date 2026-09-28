@@ -167,6 +167,7 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtnetImportMutation } from "./artnet/artnetImportMutation"
 import { ArtnetImport } from "./artnet/artnetImport"
 import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
+import { createArtnetArtworkBatchMutation } from "./artnet/createArtnetArtworkBatchMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -693,6 +694,7 @@ export default new GraphQLSchema({
       createAlert: createAlertMutation,
       createArtnetImport: createArtnetImportMutation,
       createArtnetImportArtistAssignment: CreateArtnetImportArtistAssignmentMutation,
+      createArtnetArtworkBatch: createArtnetArtworkBatchMutation,
       createArtwork: createArtworkMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
