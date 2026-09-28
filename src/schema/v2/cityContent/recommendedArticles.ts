@@ -9,7 +9,6 @@ import { CursorPageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import type { TCity } from "schema/v2/city"
 import { cityShowsParams } from "schema/v2/city/cityShowsParams"
-import { LOCAL_DISCOVERY_RADIUS_KM } from "schema/v2/city/constants"
 import { articleConnection } from "schema/v2/article"
 import { PositronArticle } from "schema/v2/article/types"
 import { paginationResolver } from "schema/v2/fields/pagination"
@@ -17,19 +16,24 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
 import { GravityCityArticle } from "./types"
 import { resolveCityArticleJoins } from "./resolveCityArticleJoins"
+import { cityTitlePattern } from "./cityTitlePattern"
 
 const MAX_SHOWS = 10
-const MAX_FAIRS = 3
-const ARTICLES_PER_SOURCE = 3
+const TITLE_MATCH_LIMIT = 30
+const ARTICLES_PER_PARTNER = 2
+// Fetch a few more than the cap, since fair recaps get dropped below.
+const PARTNER_FETCH_LIMIT = 6
 const RECENCY_MONTHS = 24
 
-// Gravity's show and fair payloads. Positron validates `show_id` and `fair_id` as Mongo ids and
-// matches them against an article's `show_ids` / `fair_ids`.
-interface GravityEvent {
+interface GravityShow {
   _id: string
+  partner?: { _id: string } | null
 }
 
-type RecommendedArticle = PositronArticle & { published_at?: string }
+type RecommendedArticle = PositronArticle & {
+  published_at?: string
+  fair_ids?: string[] | null
+}
 
 interface RankedArticle {
   article: RecommendedArticle
@@ -52,30 +56,47 @@ const featuredArticles = async (
   }
 }
 
-const articlesFor = (
-  source: "show_id" | "fair_id",
-  id: string,
+const fetchArticles = (
+  label: string,
+  params: Record<string, unknown>,
   { articlesLoader }: ResolverContext
 ): Promise<RecommendedArticle[]> =>
   articlesLoader({
-    [source]: id,
+    ...params,
     published: true,
     in_editorial_feed: true,
     sort: "-published_at",
-    limit: ARTICLES_PER_SOURCE,
   })
     .then(({ results }) => results)
     .catch((err) => {
-      error(`recommendedArticlesConnection: ${source} ${id}`, err)
+      error(`recommendedArticlesConnection: ${label}`, err)
       return []
     })
 
+// Articles whose title names the city. The online city has no name worth matching.
+const titleMatches = (
+  city: TCity,
+  publishedSince: string,
+  context: ResolverContext
+): Promise<RecommendedArticle[]> =>
+  city.slug === "online"
+    ? Promise.resolve([])
+    : fetchArticles(
+        "title",
+        {
+          q: cityTitlePattern(city),
+          published_since: publishedSince,
+          limit: TITLE_MATCH_LIMIT,
+        },
+        context
+      )
+
 // The city's running shows, best match for the user first: Gravity ranks them by the user's
-// LightFM taste for their artists.
+// LightFM taste for their artists. Signed out, there is no ranking and no shows.
 const rankedShows = async (
   city: TCity,
   { meCityShowsLoader }: ResolverContext
-): Promise<GravityEvent[]> => {
+): Promise<GravityShow[]> => {
   if (!meCityShowsLoader) return []
 
   try {
@@ -93,44 +114,49 @@ const rankedShows = async (
   }
 }
 
-const runningFairs = async (
-  city: TCity,
-  { fairsLoader }: ResolverContext
-): Promise<GravityEvent[]> => {
-  if (city.slug === "online") return []
+// The galleries behind the ranked shows, in the order of their best show.
+const rankedPartnerIds = (shows: GravityShow[]): string[] => [
+  ...new Set(
+    shows.flatMap((show) => (show.partner?._id ? [show.partner._id] : []))
+  ),
+]
 
-  try {
-    const { body } = await fairsLoader({
-      near: city.coords.join(","),
-      max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-      status: "running",
-      sort: "-start_at",
-      size: MAX_FAIRS,
-    })
-    return body.slice(0, MAX_FAIRS)
-  } catch (err) {
-    error("recommendedArticlesConnection: fairs", err)
-    return []
-  }
-}
+// Articles editors linked to the city's galleries, minus fair recaps: a "What Sold at Art Basel"
+// piece is linked to every exhibiting gallery, and is about the fair's city, not this one.
+const partnerArticles = (
+  partnerId: string,
+  publishedSince: string,
+  context: ResolverContext
+): Promise<RecommendedArticle[]> =>
+  fetchArticles(
+    `partner ${partnerId}`,
+    {
+      partner_id: partnerId,
+      published_since: publishedSince,
+      limit: PARTNER_FETCH_LIMIT,
+    },
+    context
+  ).then((articles) => articles.filter((article) => !article.fair_ids?.length))
 
-// Articles written about the shows and fairs happening in the city now, so every one is about
-// the city. Show articles come first, in the order Gravity ranked their shows for the user;
-// fair articles follow, since they carry no taste signal.
+// Title matches come first, newest first. Gallery articles follow in the order Gravity ranked
+// the galleries' shows for the user, capped per gallery so one gallery can't fill the list.
 const recommendedArticles = async (
   city: TCity,
   context: ResolverContext
 ): Promise<RecommendedArticle[]> => {
-  if (!context.meCityShowsLoader) return []
-
   try {
-    const [shows, fairs, curatedJoins]: [
-      GravityEvent[],
-      GravityEvent[],
+    // Rounded to the day so the Positron query strings, and with them the memcache keys, hold
+    // steady across requests.
+    const cutoff = moment().subtract(RECENCY_MONTHS, "months").startOf("day")
+    const publishedSince = cutoff.toISOString()
+
+    const [matches, shows, curatedJoins]: [
+      RecommendedArticle[],
+      GravityShow[],
       GravityCityArticle[]
     ] = await Promise.all([
+      titleMatches(city, publishedSince, context),
       rankedShows(city, context),
-      runningFairs(city, context),
       // The curated joins only filter articles out, so an outage here shouldn't empty the list.
       context.cityArticlesLoader({ city_slug: city.slug }).catch((err) => {
         error("recommendedArticlesConnection: curated", err)
@@ -138,32 +164,31 @@ const recommendedArticles = async (
       }),
     ])
 
-    const sources = [
-      ...shows.map((show) => articlesFor("show_id", show._id, context)),
-      ...fairs.map((fair) => articlesFor("fair_id", fair._id, context)),
-    ]
-    if (sources.length === 0) return []
-
-    const articlesBySource = await Promise.all(sources)
+    const articlesByPartner = await Promise.all(
+      rankedPartnerIds(shows).map((partnerId) =>
+        partnerArticles(partnerId, publishedSince, context)
+      )
+    )
 
     const curatedIds = new Set(curatedJoins.map((join) => join.article_id))
-    const cutoff = moment().subtract(RECENCY_MONTHS, "months")
+    const eligible = (article: RecommendedArticle) =>
+      !curatedIds.has(article.id) &&
+      !!article.published_at &&
+      !moment(article.published_at).isBefore(cutoff)
+
     const byId = new Map<string, RankedArticle>()
-
-    // A fair's articles all share one rank below every show, so they sort by recency alone.
-    articlesBySource.forEach((articles, index) => {
-      const rank = Math.min(index, shows.length)
+    const add = (articles: RecommendedArticle[], rank: number) =>
       articles.forEach((article) => {
-        if (curatedIds.has(article.id)) return
-        if (!article.published_at) return
-        if (moment(article.published_at).isBefore(cutoff)) return
-
         const existing = byId.get(article.id)
         if (!existing || rank < existing.rank) {
           byId.set(article.id, { article, rank })
         }
       })
-    })
+
+    add(matches.filter(eligible), 0)
+    articlesByPartner.forEach((articles, index) =>
+      add(articles.filter(eligible).slice(0, ARTICLES_PER_PARTNER), index + 1)
+    )
 
     return [...byId.values()]
       .sort(
@@ -186,7 +211,7 @@ export const RecommendedArticlesConnectionField: GraphQLFieldConfig<
 > = {
   type: articleConnection.connectionType,
   description:
-    "Recent editorial articles about the shows and fairs running in this city now. Show articles come first, ranked by the signed-in user's taste for the shows' artists, then fair articles. With `includeFeatured`, the city's curated articles come first; without it, they are left out. Signed out, only the curated articles are returned.",
+    "Recent editorial articles about this city. Articles whose title names the city come first, newest first. Then, for a signed-in user, articles about the galleries showing in the city now, ranked by the user's taste for the galleries' shows, at most two per gallery and leaving out fair recaps. With `includeFeatured`, the city's curated articles come first; without it, they are left out.",
   args: {
     after: { type: GraphQLString },
     first: { type: GraphQLInt, defaultValue: 4 },
