@@ -11,4 +11,6 @@ const escapeRegExp = (text: string) =>
 
 // Positron builds a case-insensitive RegExp from `q` and matches it against the thumbnail title.
 export const cityTitlePattern = (city: TCity) =>
-  [city.name, ...(CITY_ALIASES[city.slug] ?? [])].map(escapeRegExp).join("|")
+  `\\b(?:${[city.name, ...(CITY_ALIASES[city.slug] ?? [])]
+    .map(escapeRegExp)
+    .join("|")})`
