@@ -34,7 +34,5 @@ context: |
 
 # Repos the experimental AI review can read for context (artsy/duchamp#128).
 related_repos:
-  - artsy/gravity
   - artsy/eigen
   - artsy/force
-  - artsy/volt
