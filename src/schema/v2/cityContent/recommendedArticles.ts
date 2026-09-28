@@ -145,7 +145,9 @@ const recommendedArticles = async (
   context: ResolverContext
 ): Promise<RecommendedArticle[]> => {
   try {
-    const cutoff = moment().subtract(RECENCY_MONTHS, "months")
+    // Rounded to the day so the Positron query strings, and with them the memcache keys, hold
+    // steady across requests.
+    const cutoff = moment().subtract(RECENCY_MONTHS, "months").startOf("day")
     const publishedSince = cutoff.toISOString()
 
     const [matches, shows, curatedJoins]: [

@@ -182,6 +182,19 @@ describe("City.recommendedArticlesConnection", () => {
     expect(monthsBack).toBeLessThan(24.1)
   })
 
+  it("rounds the cutoff to the day, so the Positron queries cache across requests", async () => {
+    await runQuery(query, context())
+
+    const cutoffs = articlesLoader.mock.calls.map(
+      ([params]) => params.published_since
+    )
+
+    expect(new Set(cutoffs).size).toEqual(1)
+    expect(moment(cutoffs[0]).isSame(moment(cutoffs[0]).startOf("day"))).toBe(
+      true
+    )
+  })
+
   it("lists title matches newest first, then gallery articles by the show's rank, newest first", async () => {
     const data = await runQuery(query, context())
 
