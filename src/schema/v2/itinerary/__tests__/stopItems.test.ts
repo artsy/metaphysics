@@ -52,6 +52,8 @@ const buildItinerary = (
   share_token: null,
   published_at: null,
   published_by_id: null,
+  display_start_at: null,
+  display_end_at: null,
   image_url: null,
   image_urls: null,
   created_at: "2026-09-01T00:00:00Z",
