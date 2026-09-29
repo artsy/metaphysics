@@ -34878,6 +34878,11 @@ type Query {
     first: Int
 
     """
+    Include guides outside their display window. Only editors can use this.
+    """
+    ignoreDisplayWindow: Boolean
+
+    """
     Only curated (editorial) or only personal itineraries
     """
     isCurated: Boolean
@@ -44801,6 +44806,11 @@ type Viewer {
     """
     featured: Boolean
     first: Int
+
+    """
+    Include guides outside their display window. Only editors can use this.
+    """
+    ignoreDisplayWindow: Boolean
 
     """
     Only curated (editorial) or only personal itineraries
