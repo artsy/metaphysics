@@ -430,9 +430,9 @@ describe("Show type", () => {
 
   describe("cityGuideCity", () => {
     const MOCK_CITY = {
-      slug: "sacramende-ca-usa",
-      name: "Sacramende",
-      full_name: "Sacramende, CA, USA",
+      slug: "san-francisco-ca-usa",
+      name: "San Francisco",
+      full_name: "San Francisco, CA, USA",
       coords: [38.5, -121.8],
     }
 
@@ -465,8 +465,8 @@ describe("Show type", () => {
       expect(data).toEqual({
         show: {
           cityGuideCity: {
-            slug: "sacramende-ca-usa",
-            name: "Sacramende",
+            slug: "san-francisco-ca-usa",
+            name: "San Francisco",
           },
         },
       })
@@ -489,7 +489,7 @@ describe("Show type", () => {
       expect(data).toEqual({
         show: {
           cityGuideCity: {
-            slug: "sacramende-ca-usa",
+            slug: "san-francisco-ca-usa",
           },
         },
       })
@@ -532,6 +532,110 @@ describe("Show type", () => {
           cityGuideCity: null,
         },
       })
+    })
+
+    describe("without coordinates", () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+
+      const OTHER_CITY = {
+        slug: "new-york-ny-usa",
+        name: "New York",
+        full_name: "New York, NY, USA",
+        coords: [40.7, -74.0],
+      }
+
+      it("matches the show location's city name", async () => {
+        showData.location = { city: "San Francisco", coordinates: null }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({
+          slug: "san-francisco-ca-usa",
+        })
+      })
+
+      it("matches ignoring case and surrounding whitespace", async () => {
+        showData.location = { city: "  sAN FRANCISCO ", coordinates: null }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({
+          slug: "san-francisco-ca-usa",
+        })
+      })
+
+      it("prefers the fair location's city name over the show's", async () => {
+        context.geodataCitiesLoader = sinon
+          .stub()
+          .returns(Promise.resolve([MOCK_CITY, OTHER_CITY]))
+        showData.fair = { location: { city: "New York" } }
+        showData.location = { city: "San Francisco" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({ slug: "new-york-ny-usa" })
+      })
+
+      it("falls back to the partner city", async () => {
+        showData.partner_city = "San Francisco"
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toEqual({
+          slug: "san-francisco-ca-usa",
+        })
+      })
+
+      it("returns null for an unknown city name", async () => {
+        showData.location = { city: "San Francisco City" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toBeNull()
+      })
+
+      it("returns null when several City Guide cities share the name", async () => {
+        context.geodataCitiesLoader = sinon.stub().returns(
+          Promise.resolve([
+            MOCK_CITY,
+            {
+              ...MOCK_CITY,
+              slug: "los-angeles-ca-usa",
+              coords: [39.9, -83.4],
+            },
+          ])
+        )
+        showData.location = { city: "San Francisco" }
+        const data = await runQuery(query, context)
+        expect(data.show.cityGuideCity).toBeNull()
+      })
+    })
+
+    it("uses the coordinates over the city name when both are present", async () => {
+      context.geodataCitiesLoader = sinon.stub().returns(
+        Promise.resolve([
+          MOCK_CITY,
+          {
+            slug: "new-york-ny-usa",
+            name: "New York",
+            full_name: "New York, NY, USA",
+            coords: [40.7, -74.0],
+          },
+        ])
+      )
+      showData.location = {
+        city: "New York",
+        coordinates: { lat: 38.5, lng: -121.8 },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            cityGuideCity {
+              slug
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+      expect(data.show.cityGuideCity).toEqual({ slug: "san-francisco-ca-usa" })
     })
   })
 

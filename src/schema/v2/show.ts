@@ -20,6 +20,7 @@ import { markdown } from "./fields/markdown"
 import Artist from "./artist"
 import { PartnerType } from "schema/v2/partner/partner"
 import { ExternalPartnerType } from "./external_partner"
+import { PartnerListType } from "./partnerList"
 import Fair from "./fair"
 import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
@@ -89,6 +90,16 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
   }
 }
 
+const showCity = ({ fair, location, partner_city }) => {
+  if (fair && fair.location && fair.location.city) {
+    return fair.location.city
+  }
+  if (location && isExisty(location.city)) {
+    return location.city
+  }
+  return existyValue(partner_city)
+}
+
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   exclude: {
     type: new GraphQLList(GraphQLString),
@@ -117,7 +128,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
-    const { CityType, cityGuideCityForCoordinates } = require("./city")
+    const { CityType, cityGuideCityFor } = require("./city")
 
     return {
       ...SlugAndInternalIDFields,
@@ -254,26 +265,22 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The general city, derived from a fair location, a show location or a potential city",
         type: GraphQLString,
-        resolve: ({ fair, location, partner_city }) => {
-          if (fair && fair.location && fair.location.city) {
-            return fair.location.city
-          }
-          if (location && isExisty(location.city)) {
-            return location.city
-          }
-          return existyValue(partner_city)
-        },
+        resolve: showCity,
       },
       cityGuideCity: {
         description:
-          "The City Guide city nearest to this show's location (fair location, then show location), if one is within range",
+          "The City Guide city nearest to this show's location (fair location, then show location), if one is within range. Without coordinates, the City Guide city whose name exactly matches the show's city",
         type: CityType,
-        resolve: ({ fair, location }, _args, { geodataCitiesLoader }) => {
+        resolve: (show, _args, { geodataCitiesLoader }) => {
+          const { fair, location } = show
           const coordinates =
             (fair && fair.location && fair.location.coordinates) ||
             (location && location.coordinates)
 
-          return cityGuideCityForCoordinates(coordinates, geodataCitiesLoader)
+          return cityGuideCityFor(
+            { coordinates, cityName: showCity(show) },
+            geodataCitiesLoader
+          )
         },
       },
       coverImage: {
@@ -734,6 +741,32 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (galaxy_partner_id) {
             return galaxyGalleryLoader(galaxy_partner_id)
+          }
+        },
+      },
+      partnerList: {
+        description:
+          "The ArtOS collection linked to this show, if one exists. Null if there's no linked collection or the current user can't manage the show's partner.",
+        type: PartnerListType,
+        resolve: async ({ _id, partner }, _args, { partnerListsLoader }) => {
+          if (!partnerListsLoader || !partner?.id) return null
+
+          try {
+            const { body } = await partnerListsLoader({
+              partner_id: partner.id,
+              partner_show_id: _id,
+              size: 1,
+            })
+            // Guard against a Gravity that doesn't support the
+            // `partner_show_id` filter yet (Grape drops unknown params), which
+            // would return the partner's first list for every show.
+            const [partnerList] = body ?? []
+            return partnerList?.partner_show_id === _id ? partnerList : null
+          } catch (error) {
+            if (error.statusCode === 403 || error.statusCode === 404) {
+              return null
+            }
+            throw error
           }
         },
       },

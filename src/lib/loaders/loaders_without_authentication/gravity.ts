@@ -150,6 +150,7 @@ export default (opts) => {
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     invoicesLoader: gravityUncachedLoader("invoice"),
+    locationLoader: gravityLoader((id) => `partner_location/${id}`),
     marketingCollectionLoader: gravityLoader(
       (id) => `marketing_collections/${id}`
     ),

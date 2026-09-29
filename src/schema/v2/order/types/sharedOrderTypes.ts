@@ -221,6 +221,8 @@ export const OrderSellerStateEnum = new GraphQLEnumType({
 export const PartnerOrdersSortEnum = new GraphQLEnumType({
   name: "PartnerOrdersSortEnum",
   values: {
+    CREATED_AT_ASC: { value: "CREATED_AT_ASC" },
+    CREATED_AT_DESC: { value: "CREATED_AT_DESC" },
     STATE_EXPIRES_AT_ASC: { value: "STATE_EXPIRES_AT_ASC" },
     STATE_EXPIRES_AT_DESC: { value: "STATE_EXPIRES_AT_DESC" },
     STATE_UPDATED_AT_ASC: { value: "STATE_UPDATED_AT_ASC" },

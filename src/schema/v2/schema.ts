@@ -25,6 +25,7 @@ import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import { City } from "./city"
+import { CityGuideCities } from "./city/cityGuideCities"
 import { createCityArticleMutation } from "./cityContent/mutations/createCityArticleMutation"
 import { updateCityArticleMutation } from "./cityContent/mutations/updateCityArticleMutation"
 import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArticleMutation"
@@ -57,6 +58,7 @@ import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
 import FilterPartners from "./filter_partners"
 import { filterArtworksConnection } from "./filterArtworksConnection"
+import { Location } from "./location"
 import Gene from "./gene"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
@@ -329,6 +331,7 @@ import { updatePartnerShowDocumentMutation } from "./Show/updatePartnerShowDocum
 import { createCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/createCatalogArtworkDocumentMutation"
 import { deleteCatalogArtworkDocumentMutation } from "./partner/Mutations/CatalogArtwork/deleteCatalogArtworkDocumentMutation"
 import { createPartnerListMutation } from "./partner/Mutations/PartnerList/createPartnerListMutation"
+import { createPartnerListFromShowMutation } from "./partner/Mutations/PartnerList/createPartnerListFromShowMutation"
 import { updatePartnerListMutation } from "./partner/Mutations/PartnerList/updatePartnerListMutation"
 import { deletePartnerListMutation } from "./partner/Mutations/PartnerList/deletePartnerListMutation"
 import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/distributePartnerListMutation"
@@ -528,6 +531,7 @@ const rootFields = {
   channel,
   cities,
   city: City,
+  cityGuideCities: CityGuideCities,
   collection: Collection,
   collectorProfile: CollectorProfileForUser,
   collectorProfilesConnection: CollectorProfilesConnection,
@@ -568,6 +572,7 @@ const rootFields = {
   jobs,
   saleAgreement: SaleAgreement,
   saleAgreementsConnection: SaleAgreementsConnection,
+  location: Location,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
   matchPartner: PartnerMatch,
@@ -727,6 +732,7 @@ export default new GraphQLSchema({
       createPartnerArtistDocument: createPartnerArtistDocumentMutation,
       createPartnerArtworksExport: createPartnerArtworksExportMutation,
       createPartnerList: createPartnerListMutation,
+      createPartnerListFromShow: createPartnerListFromShowMutation,
       createPartnerShow: createPartnerShowMutation,
       createPartnerShowDocument: createPartnerShowDocumentMutation,
       createPartnerShowEvent: createPartnerShowEventMutation,

@@ -9,7 +9,7 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { LatLngType } from "../location"
-import ShowSorts from "schema/v2/sorts/show_sorts"
+import ShowSorts, { ShowSortsType } from "schema/v2/sorts/show_sorts"
 import FairSorts from "schema/v2/sorts/fair_sorts"
 import EventStatus, {
   EventStatusEnums,
@@ -32,6 +32,13 @@ import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
 import { CityArticlesField } from "../cityContent/cityArticles"
 import { CityVideosField } from "../cityContent/cityVideos"
+import { RecommendedArticlesConnectionField } from "../cityContent/recommendedArticles"
+import { cityShowsParams } from "./cityShowsParams"
+import { CityNeighborhoodType } from "./neighborhoods/CityNeighborhoodType"
+import { cityNeighborhoodsFor } from "./neighborhoods/matchCityNeighborhood"
+import { CITIES_WITH_GUIDES } from "schema/v2/homeView/sections/citiesWithGuides"
+
+const START_AT_ASC: ShowSortsType = "start_at"
 
 export interface TCity {
   slug: string
@@ -70,6 +77,14 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           }
         },
       },
+      neighborhoods: {
+        description:
+          "The City Guide neighborhoods for this city, in display order. Empty when the city has none.",
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(CityNeighborhoodType))
+        ),
+        resolve: ({ slug }) => cityNeighborhoodsFor(slug),
+      },
       showsConnection: {
         type: ShowsConnection.connectionType,
         args: pageable({
@@ -99,32 +114,46 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
               "Caps number of shows per partner (may result in uneven page sizes)",
             type: GraphQLInt,
           },
+          forYou: {
+            type: GraphQLBoolean,
+            description:
+              "Rank shows by the signed-in user's taste, ignoring `sort`. Signed-out requests, and requests Gravity can't rank, fall back to `sort`, or START_AT_ASC if `sort` is not set.",
+          },
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
         }),
-        resolve: async (city: TCity, args, { showsWithHeadersLoader }) => {
-          return loadData(args, showsWithHeadersLoader, {
-            ...(city.slug === "online"
-              ? { has_location: false }
-              : {
-                  near: city.coords.join(","),
-                  max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-                  has_location: true,
-                }),
-            at_a_fair: false,
-            ...(args.partnerType && { partner_types: args.partnerType }),
-            ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
-            sort: args.sort,
-            // default Enum value for status is not properly resolved
-            // so we have to manually resolve it by lowercasing the value
-            // https://github.com/apollographql/graphql-tools/issues/715
-            ...(args.status && { status: args.status.toLowerCase() }),
-            displayable: true,
-            include_local_discovery:
-              args.includeStubShows || args.discoverable === true,
-            include_discovery_blocked: false,
-            max_per_partner: args.maxPerPartner,
-          })
+        resolve: async (
+          city: TCity,
+          args,
+          { showsWithHeadersLoader, meCityShowsLoader }
+        ) => {
+          const buildParams = (sort?: string | null) =>
+            cityShowsParams(city, args, sort)
+
+          if (!args.forYou) {
+            return loadData(
+              args,
+              showsWithHeadersLoader,
+              buildParams(args.sort)
+            )
+          }
+
+          const fallback = () =>
+            loadData(
+              args,
+              showsWithHeadersLoader,
+              buildParams(args.sort ?? START_AT_ASC)
+            )
+
+          if (!meCityShowsLoader) return fallback()
+
+          try {
+            return await loadData(args, meCityShowsLoader, buildParams())
+          } catch (error) {
+            // Gravity 404s until me/city_shows is deployed.
+            if (error?.statusCode === 404) return fallback()
+            throw error
+          }
         },
       },
       fairsConnection: {
@@ -143,6 +172,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
       },
       cityArticles: CityArticlesField,
       cityVideos: CityVideosField,
+      recommendedArticlesConnection: RecommendedArticlesConnectionField,
       sponsoredContent: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "CitySponsoredContent",
@@ -254,27 +284,50 @@ const lookupCity = (slug: string, cities: TCity[]) => {
 }
 
 /**
- * Finds the City Guide city matching a coordinate, for use by other types
- * (e.g. Show, Fair) that want to offer their own location as a City Guide
- * entry point without going through the `city(near:)` root field.
+ * Finds the City Guide city for a location, for use by other types (e.g.
+ * Show, Fair) that want to offer their own location as a City Guide entry
+ * point without going through the `city(near:)` root field. Coordinates win;
+ * without them, the city name must match exactly one City Guide city.
  */
-export const cityGuideCityForCoordinates = async (
-  coordinates: LatLng | null | undefined,
+const CITY_GUIDE_SLUGS = new Set<string>(
+  CITIES_WITH_GUIDES.map(({ slug }) => slug)
+)
+
+export const cityGuideCityFor = async (
+  {
+    coordinates,
+    cityName,
+  }: { coordinates?: LatLng | null; cityName?: string | null },
   geodataCitiesLoader: () => Promise<TCity[]>
 ): Promise<TCity | null> => {
-  if (!coordinates || coordinates.lat == null || coordinates.lng == null) {
+  const hasCoordinates =
+    !!coordinates && coordinates.lat != null && coordinates.lng != null
+  const normalizedName = cityName?.trim().toLowerCase()
+
+  if (!hasCoordinates && !normalizedName) {
     return null
   }
 
-  const allCities = await geodataCitiesLoader()
-  return nearestCity(coordinates, allCities)
+  // Geodata lists every partner city, so without this a Chelsea gallery lands in Jersey City.
+  const guideCities = (await geodataCitiesLoader()).filter((city) =>
+    CITY_GUIDE_SLUGS.has(city.slug)
+  )
+
+  if (hasCoordinates) {
+    return nearestCity(coordinates as LatLng, guideCities)
+  }
+
+  const matches = guideCities.filter(
+    (city) => city.name?.trim().toLowerCase() === normalizedName
+  )
+  return matches.length === 1 ? matches[0] : null
 }
 
 const nearestCity = (latLng: LatLng, cities: TCity[]) => {
   const orderedCities = citiesOrderedByDistance(latLng, cities)
   const closestCity = orderedCities[0]
 
-  if (isCloseEnough(latLng, closestCity)) {
+  if (closestCity && isCloseEnough(latLng, closestCity)) {
     return closestCity
   }
 

@@ -9,12 +9,19 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLNonNull,
   GraphQLUnionType,
   GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { compact } from "lodash"
+import { CityNeighborhoodType } from "./city/neighborhoods/CityNeighborhoodType"
+import {
+  matchCityNeighborhood,
+  normalizePostalCode,
+} from "./city/neighborhoods/matchCityNeighborhood"
+import { itemItineraryMembershipFields } from "./itinerary/itemItineraryMembershipFields"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -63,6 +70,7 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "Location",
   fields: () => ({
     ...IDFields,
+    ...itemItineraryMembershipFields("PartnerLocation"),
     cached,
     // Only present when the location was loaded in its own right — Gravity
     // serialises a partner reference on `PartnerLocation`, but an embedded
@@ -185,6 +193,42 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     postalCode: {
       type: GraphQLString,
       resolve: ({ postal_code }) => postal_code,
+    },
+    cityGuideNeighborhood: {
+      description:
+        "The City Guide neighborhood this location's postcode falls in. The city comes from the location's coordinates, or its city name without them. Null outside a City Guide city or when no neighborhood matches.",
+      type: CityNeighborhoodType,
+      resolve: async (
+        { coordinates, city, postal_code },
+        _args,
+        { geodataCitiesLoader }
+      ) => {
+        if (!normalizePostalCode(postal_code)) return null
+
+        // Lazy because `city/index.ts` imports `LatLngType` from this module.
+        const { cityGuideCityFor } = require("./city")
+        const guideCity = await cityGuideCityFor(
+          { coordinates, cityName: city },
+          geodataCitiesLoader
+        )
+
+        return guideCity
+          ? matchCityNeighborhood(guideCity.slug, postal_code)
+          : null
+      },
+    },
+    cityGuideCity: {
+      description:
+        "The City Guide city nearest to this location, if one is within range. Without coordinates, the City Guide city whose name exactly matches the location's city.",
+      // Lazy because `city/index.ts` imports `LatLngType` from this module.
+      type: require("./city").CityType,
+      resolve: ({ coordinates, city }, _args, { geodataCitiesLoader }) => {
+        const { cityGuideCityFor } = require("./city")
+        return cityGuideCityFor(
+          { coordinates, cityName: city },
+          geodataCitiesLoader
+        )
+      },
     },
     state: {
       type: GraphQLString,
@@ -465,4 +509,16 @@ export const COUNTRIES = {
   ZM: "Zambia",
   ZW: "Zimbabwe",
   ZZ: "Unknown Region",
+}
+
+export const Location: GraphQLFieldConfig<void, ResolverContext> = {
+  type: LocationType,
+  description: "A partner's location",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the location",
+    },
+  },
+  resolve: (_root, { id }, { locationLoader }) => locationLoader(id),
 }

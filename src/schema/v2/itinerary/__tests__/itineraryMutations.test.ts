@@ -219,6 +219,38 @@ describe("createItinerary", () => {
     })
   })
 
+  it("forwards the display window to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createItinerary(
+            input: {
+              citySlug: "new-york"
+              title: "A day in Chelsea"
+              displayStartAt: "2026-09-01T09:00:00Z"
+              displayEndAt: "2026-09-30T09:00:00Z"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith({
+      city_slug: "new-york",
+      title: "A day in Chelsea",
+      display_start_at: "2026-09-01T09:00:00Z",
+      display_end_at: "2026-09-30T09:00:00Z",
+    })
+  })
+
   it("returns the success payload with the resolved stop item", async () => {
     const loader = jest.fn().mockResolvedValue(gravityItinerary())
     const context = withShowsLoader(loader)
@@ -412,6 +444,64 @@ describe("updateItinerary", () => {
     )
 
     expect(loader).toHaveBeenCalledWith("itinerary-id", { image_url: null })
+  })
+
+  it("forwards the display window to Gravity", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(
+            input: {
+              id: "itinerary-id"
+              displayStartAt: "2026-09-01T09:00:00Z"
+              displayEndAt: "2026-09-30T09:00:00Z"
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", {
+      display_start_at: "2026-09-01T09:00:00Z",
+      display_end_at: "2026-09-30T09:00:00Z",
+    })
+  })
+
+  it("passes explicit null display window bounds through to Gravity, to clear them", async () => {
+    const loader = jest.fn().mockResolvedValue(gravityItinerary())
+    const context = withShowsLoader(loader)
+
+    await runAuthenticatedQuery(
+      gql`
+        mutation {
+          updateItinerary(
+            input: {
+              id: "itinerary-id"
+              displayStartAt: null
+              displayEndAt: null
+            }
+          ) {
+            responseOrError {
+              ${successFragment}
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    expect(loader).toHaveBeenCalledWith("itinerary-id", {
+      display_start_at: null,
+      display_end_at: null,
+    })
   })
 
   it("returns the success payload with the resolved stop item", async () => {

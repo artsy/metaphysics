@@ -104,3 +104,54 @@ describe("Show and Fair itinerary memberships", () => {
     expect(fetchMemberships.mock.calls[0][0].include_itineraries).toBe(true)
   })
 })
+
+describe("Location itinerary memberships", () => {
+  it("looks a partner location up as a PartnerLocation by its ID", async () => {
+    const fetchMemberships = jest.fn().mockResolvedValue([
+      {
+        is_on_my_itineraries: true,
+        my_itineraries: [
+          {
+            id: "itinerary-id",
+            sections: [
+              {
+                stops: [
+                  {
+                    id: "stop-id",
+                    item_type: "PartnerLocation",
+                    item_id: "location-id",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+    const { partner } = await runQuery(
+      `{ partner(id: "a-gallery") { locations {
+        isOnMyItineraries myItineraryStopMemberships { itineraryID stopIDs }
+      } } }`,
+      {
+        partnerLoader: jest.fn().mockResolvedValue({ id: "a-gallery" }),
+        partnerLocationsLoader: jest
+          .fn()
+          .mockResolvedValue([{ id: "location-id" }]),
+        itineraryStopMembershipsLoader: createBatchItineraryStopMembershipsLoader(
+          fetchMemberships
+        ),
+      }
+    )
+    expect(partner.locations).toEqual([
+      {
+        isOnMyItineraries: true,
+        myItineraryStopMemberships: [
+          { itineraryID: "itinerary-id", stopIDs: ["stop-id"] },
+        ],
+      },
+    ])
+    expect(JSON.parse(fetchMemberships.mock.calls[0][0].stops)).toEqual([
+      { item_type: "PartnerLocation", item_id: "location-id" },
+    ])
+  })
+})
