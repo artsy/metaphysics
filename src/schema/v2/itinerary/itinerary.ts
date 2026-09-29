@@ -103,6 +103,16 @@ export const ItineraryType = new GraphQLObjectType<
         imageFromGravity(image_url, image_urls),
     },
     publishedAt: date(({ published_at }) => published_at),
+    displayStartAt: {
+      ...date(({ display_start_at }) => display_start_at),
+      description:
+        "Start of the window the guide is listed in, inclusive. Null means unbounded.",
+    },
+    displayEndAt: {
+      ...date(({ display_end_at }) => display_end_at),
+      description:
+        "End of the window the guide is listed in, exclusive. Null means unbounded.",
+    },
     updatedAt: date(({ updated_at }) => updated_at),
     sectionsCount: {
       type: new GraphQLNonNull(GraphQLInt),

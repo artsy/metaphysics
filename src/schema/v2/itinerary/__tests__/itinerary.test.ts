@@ -19,6 +19,8 @@ const gravityItinerary = {
   visibility: "public",
   published_at: "2026-08-01T09:00:00Z",
   published_by_id: "editor-1",
+  display_start_at: "2026-09-01T09:00:00Z",
+  display_end_at: "2026-09-30T09:00:00Z",
   share_token: null,
   sections_count: 1,
   stops_count: 3,
@@ -464,6 +466,61 @@ describe("Itinerary", () => {
     expect(custom.itemType).toBeNull()
     expect(custom.eventType).toBeNull()
     expect(custom.openingHours).toEqual([])
+  })
+
+  it("resolves the display window", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          displayStartAt
+          displayEndAt
+        }
+      }
+    `
+
+    const data = await runQuery(query, loaders())
+
+    expect(data.itinerary.displayStartAt).toEqual("2026-09-01T09:00:00Z")
+    expect(data.itinerary.displayEndAt).toEqual("2026-09-30T09:00:00Z")
+  })
+
+  it("is null when the display window is unbounded", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          displayStartAt
+          displayEndAt
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      ...loaders(),
+      itineraryLoader: jest.fn().mockResolvedValue({
+        ...gravityItinerary,
+        display_start_at: null,
+        display_end_at: null,
+      }),
+    })
+
+    expect(data.itinerary.displayStartAt).toBeNull()
+    expect(data.itinerary.displayEndAt).toBeNull()
+  })
+
+  it("honours format and timezone args", async () => {
+    const query = `
+      {
+        itinerary(id: "chill-vibes-only") {
+          displayStartAt(format: "M/D/YYYY h:mm", timezone: "America/New_York")
+          displayEndAt(format: "M/D/YYYY h:mm", timezone: "America/New_York")
+        }
+      }
+    `
+
+    const data = await runQuery(query, loaders())
+
+    expect(data.itinerary.displayStartAt).toEqual("9/1/2026 5:00")
+    expect(data.itinerary.displayEndAt).toEqual("9/30/2026 5:00")
   })
 
   it("resolves isMine by comparing the viewer's id to the itinerary's owner", async () => {
