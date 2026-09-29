@@ -19,6 +19,8 @@ interface InputProps {
   generateShareToken?: boolean
   revokeShareToken?: boolean
   imageURL?: string | null
+  displayStartAt?: string | null
+  displayEndAt?: string | null
 }
 
 export const updateItineraryMutation = mutationWithClientMutationId<
@@ -58,6 +60,18 @@ export const updateItineraryMutation = mutationWithClientMutationId<
         "URL of an image already uploaded to S3, from which Gravity " +
         "builds the itinerary's hero `ArImage`. Pass `null` to clear the " +
         "current hero image.",
+      type: GraphQLString,
+    },
+    displayStartAt: {
+      description:
+        "ISO 8601 UTC start of the window the guide is listed in, inclusive. " +
+        "Pass `null` to make it unbounded.",
+      type: GraphQLString,
+    },
+    displayEndAt: {
+      description:
+        "ISO 8601 UTC end of the window the guide is listed in, exclusive. " +
+        "Pass `null` to make it unbounded.",
       type: GraphQLString,
     },
   },
