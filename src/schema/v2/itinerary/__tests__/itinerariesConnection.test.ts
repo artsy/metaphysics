@@ -117,6 +117,35 @@ describe("itinerariesConnection (root field)", () => {
     )
   })
 
+  it("passes ignoreDisplayWindow through to gravity", async () => {
+    const context = loadersReturning([])
+
+    await runAuthenticatedQuery(
+      gql`
+        {
+          itinerariesConnection(first: 10, ignoreDisplayWindow: true) {
+            totalCount
+          }
+        }
+      `,
+      context
+    )
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ ignore_display_window: true })
+    )
+  })
+
+  it("sends no ignore_display_window by default", async () => {
+    const context = loadersReturning([])
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.not.objectContaining({ ignore_display_window: expect.anything() })
+    )
+  })
+
   it("sends no owner filter on the root field", async () => {
     const context = loadersReturning([])
 

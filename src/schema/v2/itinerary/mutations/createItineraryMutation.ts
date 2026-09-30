@@ -16,6 +16,8 @@ interface InputProps {
   isCurated?: boolean
   featured?: boolean
   imageURL?: string
+  displayStartAt?: string
+  displayEndAt?: string
 }
 
 export const createItineraryMutation = mutationWithClientMutationId<
@@ -41,6 +43,16 @@ export const createItineraryMutation = mutationWithClientMutationId<
       description:
         "URL of an image already uploaded to S3, from which Gravity " +
         "builds the itinerary's hero `ArImage`",
+      type: GraphQLString,
+    },
+    displayStartAt: {
+      description:
+        "ISO 8601 UTC start of the window the guide is listed in, inclusive.",
+      type: GraphQLString,
+    },
+    displayEndAt: {
+      description:
+        "ISO 8601 UTC end of the window the guide is listed in, exclusive.",
       type: GraphQLString,
     },
   },

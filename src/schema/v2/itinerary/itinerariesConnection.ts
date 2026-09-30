@@ -23,6 +23,7 @@ interface ItinerariesConnectionArgs extends CursorPageable {
   citySlug?: string
   isCurated?: boolean
   featured?: boolean
+  ignoreDisplayWindow?: boolean
   page?: number
   size?: number
 }
@@ -50,6 +51,7 @@ export const resolveItinerariesConnection = async (
       ? { is_curated: args.isCurated }
       : {}),
     ...(typeof args.featured === "boolean" ? { featured: args.featured } : {}),
+    ...(args.ignoreDisplayWindow ? { ignore_display_window: true } : {}),
     ...(options.onlyOwnedBy ? { user_id: options.onlyOwnedBy } : {}),
   })
 
@@ -85,6 +87,11 @@ export const ItinerariesConnectionField: GraphQLFieldConfig<
     featured: {
       type: GraphQLBoolean,
       description: "Only featured, or only unfeatured, itineraries",
+    },
+    ignoreDisplayWindow: {
+      type: GraphQLBoolean,
+      description:
+        "Include guides outside their display window. Only editors can use this.",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },

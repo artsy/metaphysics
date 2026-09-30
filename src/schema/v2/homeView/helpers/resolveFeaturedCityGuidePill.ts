@@ -6,23 +6,22 @@ import { NEAREST_CITY_THRESHOLD_KM } from "schema/v2/city/constants"
 import { ResolverContext } from "types/graphql"
 import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import {
-  FEATURED_CITY_GUIDES,
+  FEATURED_CITY_GUIDE,
   FeaturedCityGuide,
 } from "../sections/featuredCityGuides"
 import { CITIES_WITH_GUIDES, CityWithGuide } from "../sections/citiesWithGuides"
 
-const nearestWithinThreshold = <T>(
+const nearestCityWithinThreshold = (
   latLng: LatLng,
-  items: readonly T[],
-  getCoordinates: (item: T) => LatLng
-): T | null => {
-  let closest: T | null = null
+  cities: readonly CityWithGuide[]
+): CityWithGuide | null => {
+  let closest: CityWithGuide | null = null
   let closestDistance = Infinity
 
-  for (const item of items) {
-    const metersAway = distance(latLng, getCoordinates(item))
+  for (const city of cities) {
+    const metersAway = distance(latLng, city.coordinates)
     if (metersAway < closestDistance) {
-      closest = item
+      closest = city
       closestDistance = metersAway
     }
   }
@@ -34,17 +33,14 @@ const nearestWithinThreshold = <T>(
   return null
 }
 
-const activeGuides = (guides: FeaturedCityGuide[]): FeaturedCityGuide[] => {
+const isActive = (guide: FeaturedCityGuide): boolean => {
   const now = moment.utc()
+  const start = moment.utc(guide.displayStartAt)
+  const end = moment.utc(guide.displayEndAt)
 
-  return guides.filter((guide) => {
-    const start = moment.utc(guide.displayStartAt)
-    const end = moment.utc(guide.displayEndAt)
+  if (!start.isValid() || !end.isValid()) return false
 
-    if (!start.isValid() || !end.isValid()) return false
-
-    return now.isSameOrAfter(start) && now.isBefore(end)
-  })
+  return now.isSameOrAfter(start) && now.isBefore(end)
 }
 
 const resolveViewerCoordinates = async (
@@ -71,51 +67,29 @@ const resolveViewerCoordinates = async (
 
 export const resolveFeaturedCityGuidePill = async (
   context: ResolverContext,
-  guides: FeaturedCityGuide[] = FEATURED_CITY_GUIDES,
+  guide: FeaturedCityGuide = FEATURED_CITY_GUIDE,
   citiesWithGuides: readonly CityWithGuide[] = CITIES_WITH_GUIDES
 ): Promise<NavigationPill> => {
-  const viewerCoordinates = await resolveViewerCoordinates(context)
-
-  if (viewerCoordinates) {
-    const guidesWithCities = activeGuides(guides)
-      .map((guide) => ({
-        guide,
-        city: citiesWithGuides.find((city) => city.slug === guide.citySlug),
-      }))
-      .filter(
-        (entry): entry is { guide: FeaturedCityGuide; city: CityWithGuide } =>
-          !!entry.city
-      )
-
-    const nearest = nearestWithinThreshold(
-      viewerCoordinates,
-      guidesWithCities,
-      (entry) => entry.city.coordinates
-    )
-
-    if (nearest) {
-      return {
-        title: nearest.guide.title,
-        href: nearest.guide.href,
-        ownerType: OwnerType.cityGuideGuide,
-        icon: "MapPinIcon",
-        isFeatured: true,
-      }
+  if (isActive(guide)) {
+    return {
+      title: guide.title,
+      href: `/city-guide?citySlug=${guide.citySlug}`,
+      ownerType: OwnerType.cityGuideGuide,
+      icon: "MapPinIcon",
+      isFeatured: true,
     }
   }
 
+  const viewerCoordinates = await resolveViewerCoordinates(context)
   const nearestCity = viewerCoordinates
-    ? nearestWithinThreshold(
-        viewerCoordinates,
-        citiesWithGuides,
-        (city) => city.coordinates
-      )
+    ? nearestCityWithinThreshold(viewerCoordinates, citiesWithGuides)
     : null
-  const nearestSlug = nearestCity?.slug ?? null
 
   return {
     title: "City Guide",
-    href: nearestSlug ? `/city-guide?citySlug=${nearestSlug}` : "/city-guide",
+    href: nearestCity
+      ? `/city-guide?citySlug=${nearestCity.slug}`
+      : "/city-guide",
     ownerType: OwnerType.cityGuideGuide,
     icon: "MapPinIcon",
     isFeatured: false,

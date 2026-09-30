@@ -66,6 +66,9 @@ export interface GravityItinerary {
   visibility: "private" | "unlisted" | "public"
   published_at: string | null
   published_by_id: string | null
+  /** Bounds the window a curated guide is listed in; null means unbounded. */
+  display_start_at: string | null
+  display_end_at: string | null
   share_token: string | null
   sections_count: number
   /** Absent from older Gravity responses; the listing endpoint only began sending it recently. */
