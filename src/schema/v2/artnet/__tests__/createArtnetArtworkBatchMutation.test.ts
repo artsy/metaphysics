@@ -96,6 +96,9 @@ describe("createArtnetArtworkBatch mutation", () => {
       await runAuthenticatedQuery(
         mutationWithPayload(
           `{
+            title: "Untitled"
+            artistID: 501
+            workYearFrom: 2020
             published: false
             priceCurrencyCode: "USD"
             priceFrom: 100.5
@@ -113,6 +116,9 @@ describe("createArtnetArtworkBatch mutation", () => {
             action_type: "Create",
             artwork_id: undefined,
             payload: {
+              title: "Untitled",
+              artist_id: 501,
+              work_year_from: 2020,
               published: false,
               price_currency_code: "USD",
               price_from: 100.5,
@@ -142,10 +148,13 @@ describe("createArtnetArtworkBatch mutation", () => {
       const createArtnetArtworkBatchLoader = successfulLoader()
 
       await expect(
-        runAuthenticatedQuery(mutationWithPayload(`{ title: "Untitled" }`), {
-          createArtnetArtworkBatchLoader,
-        })
-      ).rejects.toThrow(/title/)
+        runAuthenticatedQuery(
+          mutationWithPayload(`{ provenance: "Private" }`),
+          {
+            createArtnetArtworkBatchLoader,
+          }
+        )
+      ).rejects.toThrow(/provenance/)
       expect(createArtnetArtworkBatchLoader).not.toHaveBeenCalled()
     })
   })
