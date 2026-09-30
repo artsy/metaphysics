@@ -2631,12 +2631,10 @@ describe("Partner type", () => {
 
   describe("show field", () => {
     it("returns the show scoped to this partner when authenticated", async () => {
-      context.authenticatedLoaders = {
-        partnerShowLoader: sinon
-          .stub()
-          .withArgs({ partner_id: partnerData.id, show_id: "the-show-id" })
-          .returns(Promise.resolve({ id: "the-show-id", name: "The Show" })),
-      }
+      const partnerShowLoader = jest
+        .fn()
+        .mockResolvedValue({ id: "the-show-id", name: "The Show" })
+      context.authenticatedLoaders = { partnerShowLoader }
 
       const query = gql`
         {
@@ -2649,6 +2647,10 @@ describe("Partner type", () => {
       `
       const data = await runQuery(query, context)
 
+      expect(partnerShowLoader).toHaveBeenCalledWith({
+        partner_id: "catty-partner",
+        show_id: "the-show-id",
+      })
       expect(data).toEqual({
         partner: {
           show: {
@@ -2659,9 +2661,11 @@ describe("Partner type", () => {
     })
 
     it("returns null when the show does not belong to this partner", async () => {
-      context.authenticatedLoaders = {
-        partnerShowLoader: () => Promise.reject(new Error("Show Not Found")),
-      }
+      const notFoundError = new Error("Show Not Found")
+      // @ts-ignore
+      notFoundError.statusCode = 404
+      const partnerShowLoader = jest.fn().mockRejectedValue(notFoundError)
+      context.authenticatedLoaders = { partnerShowLoader }
 
       const query = gql`
         {
@@ -2674,11 +2678,36 @@ describe("Partner type", () => {
       `
       const data = await runQuery(query, context)
 
+      expect(partnerShowLoader).toHaveBeenCalledWith({
+        partner_id: "catty-partner",
+        show_id: "someone-elses-show",
+      })
       expect(data).toEqual({
         partner: {
           show: null,
         },
       })
+    })
+
+    it("propagates unexpected errors instead of swallowing them as not-found", async () => {
+      const serverError = new Error("Internal Server Error")
+      // @ts-ignore
+      serverError.statusCode = 500
+      const partnerShowLoader = jest.fn().mockRejectedValue(serverError)
+      context.authenticatedLoaders = { partnerShowLoader }
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            show(id: "the-show-id") {
+              name
+            }
+          }
+        }
+      `
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "Internal Server Error"
+      )
     })
 
     it("returns null for an unauthenticated request, without calling Gravity", async () => {

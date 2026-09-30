@@ -1105,14 +1105,23 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             description: "The ID of the Show",
           },
         },
-        resolve: ({ id: partner_id }, { id }, { authenticatedLoaders }) => {
+        resolve: async (
+          { id: partner_id },
+          { id },
+          { authenticatedLoaders }
+        ) => {
           const partnerShowLoader = authenticatedLoaders?.partnerShowLoader
 
           if (!partnerShowLoader) return null
 
-          return partnerShowLoader({ partner_id, show_id: id }).catch(
-            () => null
-          )
+          try {
+            return await partnerShowLoader({ partner_id, show_id: id })
+          } catch (error) {
+            if (error.statusCode === 403 || error.statusCode === 404) {
+              return null
+            }
+            throw error
+          }
         },
       },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
