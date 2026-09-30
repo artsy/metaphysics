@@ -3985,6 +3985,11 @@ The ArtnetArtwork fields to set on a Create or change on an Edit. On Edit, omitt
 """
 input ArtnetArtworkBatchOperationPayloadInput {
   """
+  Artnet's own artist id (not a Gravity id). Edit and Create.
+  """
+  artistID: Int
+
+  """
   Currency code for the price range, e.g. USD. Create only.
   """
   priceCurrencyCode: String
@@ -4003,6 +4008,16 @@ input ArtnetArtworkBatchOperationPayloadInput {
   Whether the artwork should be published. Edit and Create.
   """
   published: Boolean
+
+  """
+  Edit and Create.
+  """
+  title: String
+
+  """
+  Create only.
+  """
+  workYearFrom: Int
 }
 
 """

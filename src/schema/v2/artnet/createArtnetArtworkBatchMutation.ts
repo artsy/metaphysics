@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFloat,
+  GraphQLInt,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -29,6 +30,9 @@ export const ArtnetArtworkBatchActionType = new GraphQLEnumType({
 })
 
 interface ArtnetArtworkBatchPayloadProps {
+  title?: string | null
+  artistID?: number | null
+  workYearFrom?: number | null
   published?: boolean | null
   priceCurrencyCode?: string | null
   priceFrom?: number | null
@@ -36,13 +40,26 @@ interface ArtnetArtworkBatchPayloadProps {
 }
 
 // Limited to the fields Gravity persists on an ArtnetArtwork (published, price currency and
-// range). Gravity's BuildWireOperation accepts more, but those fields are intentionally not
-// exposed here.
+// range), plus the minimal content a Create needs (title, artist, year). Gravity's
+// BuildWireOperation accepts more, but those fields are intentionally not exposed here.
 const ArtnetArtworkBatchOperationPayloadInputType = new GraphQLInputObjectType({
   name: "ArtnetArtworkBatchOperationPayloadInput",
   description:
     "The ArtnetArtwork fields to set on a Create or change on an Edit. On Edit, omitted fields are left untouched. Ignored for Delete/Publish/Unpublish.",
   fields: {
+    title: {
+      type: GraphQLString,
+      description: "Edit and Create.",
+    },
+    artistID: {
+      type: GraphQLInt,
+      description:
+        "Artnet's own artist id (not a Gravity id). Edit and Create.",
+    },
+    workYearFrom: {
+      type: GraphQLInt,
+      description: "Create only.",
+    },
     published: {
       type: GraphQLBoolean,
       description: "Whether the artwork should be published. Edit and Create.",
