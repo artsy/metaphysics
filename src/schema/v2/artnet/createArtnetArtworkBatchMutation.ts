@@ -1,4 +1,6 @@
 import {
+  GraphQLBoolean,
+  GraphQLFloat,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -8,17 +10,13 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import GraphQLJSON from "graphql-type-json"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 
-// Create is included here for schema parity with Gravity's own action_type vocabulary,
-// but Gravity's endpoint still rejects any batch containing a Create operation with a
-// 400 until it has a way to persist the resulting artnet artwork id (see
-// ArtnetArtworkBatchesEndpoint on the Gravity side) — sending CREATE will not work yet.
 export const ArtnetArtworkBatchActionType = new GraphQLEnumType({
   name: "ArtnetArtworkBatchActionType",
   values: {
@@ -27,6 +25,40 @@ export const ArtnetArtworkBatchActionType = new GraphQLEnumType({
     DELETE: { value: "Delete" },
     PUBLISH: { value: "Publish" },
     UNPUBLISH: { value: "Unpublish" },
+  },
+})
+
+interface ArtnetArtworkBatchPayloadProps {
+  published?: boolean | null
+  priceCurrencyCode?: string | null
+  priceFrom?: number | null
+  priceTo?: number | null
+}
+
+// Limited to the fields Gravity persists on an ArtnetArtwork (published, price currency and
+// range). Gravity's BuildWireOperation accepts more, but those fields are intentionally not
+// exposed here.
+const ArtnetArtworkBatchOperationPayloadInputType = new GraphQLInputObjectType({
+  name: "ArtnetArtworkBatchOperationPayloadInput",
+  description:
+    "The ArtnetArtwork fields to set on a Create or change on an Edit. On Edit, omitted fields are left untouched. Ignored for Delete/Publish/Unpublish.",
+  fields: {
+    published: {
+      type: GraphQLBoolean,
+      description: "Whether the artwork should be published. Edit and Create.",
+    },
+    priceCurrencyCode: {
+      type: GraphQLString,
+      description: "Currency code for the price range, e.g. USD. Create only.",
+    },
+    priceFrom: {
+      type: GraphQLFloat,
+      description: "Low end of the price range, in major units. Create only.",
+    },
+    priceTo: {
+      type: GraphQLFloat,
+      description: "High end of the price range, in major units. Create only.",
+    },
   },
 })
 
@@ -42,9 +74,8 @@ const ArtnetArtworkBatchOperationInputType = new GraphQLInputObjectType({
         "Artnet's artwork guid; required for every action type except Create",
     },
     payload: {
-      type: GraphQLJSON,
-      description:
-        "Gravity's own snake_case fields for the operation (see ArtnetBulkUploadService::BuildWireOperation on the Gravity side for the exact mapping to Artnet's wire shape); ignored for Delete/Publish/Unpublish.",
+      type: ArtnetArtworkBatchOperationPayloadInputType,
+      description: "The artwork fields; only used by CREATE and EDIT.",
     },
   },
 })
@@ -54,7 +85,7 @@ interface CreateArtnetArtworkBatchMutationInputProps {
   operations: Array<{
     actionType: string
     artworkID?: string
-    payload?: Record<string, unknown>
+    payload?: ArtnetArtworkBatchPayloadProps | null
   }>
 }
 
@@ -96,7 +127,7 @@ export const createArtnetArtworkBatchMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtnetArtworkBatchMutation",
   description:
-    "Submits a batch of gallery-artwork edit/delete/publish/unpublish operations to Artnet.",
+    "Submits a batch of gallery-artwork create/edit/delete/publish/unpublish operations to Artnet.",
   inputFields: {
     partnerID: {
       type: new GraphQLNonNull(GraphQLString),
@@ -134,7 +165,7 @@ export const createArtnetArtworkBatchMutation = mutationWithClientMutationId<
         operations: operations.map(({ actionType, artworkID, payload }) => ({
           action_type: actionType,
           artwork_id: artworkID,
-          payload,
+          payload: payload ? snakeCaseKeys(payload) : undefined,
         })),
       })
 

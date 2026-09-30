@@ -3957,9 +3957,34 @@ input ArtnetArtworkBatchOperationInput {
   artworkID: String
 
   """
-  Gravity's own snake_case fields for the operation (see ArtnetBulkUploadService::BuildWireOperation on the Gravity side for the exact mapping to Artnet's wire shape); ignored for Delete/Publish/Unpublish.
+  The artwork fields; only used by CREATE and EDIT.
   """
-  payload: JSON
+  payload: ArtnetArtworkBatchOperationPayloadInput
+}
+
+"""
+The ArtnetArtwork fields to set on a Create or change on an Edit. On Edit, omitted fields are left untouched. Ignored for Delete/Publish/Unpublish.
+"""
+input ArtnetArtworkBatchOperationPayloadInput {
+  """
+  Currency code for the price range, e.g. USD. Create only.
+  """
+  priceCurrencyCode: String
+
+  """
+  Low end of the price range, in major units. Create only.
+  """
+  priceFrom: Float
+
+  """
+  High end of the price range, in major units. Create only.
+  """
+  priceTo: Float
+
+  """
+  Whether the artwork should be published. Edit and Create.
+  """
+  published: Boolean
 }
 
 """
@@ -27024,7 +27049,7 @@ type Mutation {
   createArtist(input: CreateArtistMutationInput!): CreateArtistMutationPayload
 
   """
-  Submits a batch of gallery-artwork edit/delete/publish/unpublish operations to Artnet.
+  Submits a batch of gallery-artwork create/edit/delete/publish/unpublish operations to Artnet.
   """
   createArtnetArtworkBatch(
     input: CreateArtnetArtworkBatchMutationInput!
