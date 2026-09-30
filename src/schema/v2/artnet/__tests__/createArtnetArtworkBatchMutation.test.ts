@@ -67,6 +67,89 @@ describe("createArtnetArtworkBatch mutation", () => {
     })
   })
 
+  describe("payload", () => {
+    const mutationWithPayload = (payload: string, actionType = "EDIT") => `
+      mutation {
+        createArtnetArtworkBatch(
+          input: {
+            partnerID: "some-gallery"
+            operations: [
+              { actionType: ${actionType}, payload: ${payload} }
+            ]
+          }
+        ) {
+          artnetArtworkBatchOrError {
+            ... on CreateArtnetArtworkBatchSuccess {
+              batchID
+            }
+          }
+        }
+      }
+    `
+
+    const successfulLoader = () =>
+      jest.fn().mockResolvedValue({ batch_id: "batch-1", task_ids: ["task-1"] })
+
+    it("maps a Create payload to Gravity's snake_case keys", async () => {
+      const createArtnetArtworkBatchLoader = successfulLoader()
+
+      await runAuthenticatedQuery(
+        mutationWithPayload(
+          `{
+            published: false
+            priceCurrencyCode: "USD"
+            priceFrom: 100.5
+            priceTo: 200
+          }`,
+          "CREATE"
+        ),
+        { createArtnetArtworkBatchLoader }
+      )
+
+      expect(createArtnetArtworkBatchLoader).toHaveBeenCalledWith({
+        partner_id: "some-gallery",
+        operations: [
+          {
+            action_type: "Create",
+            artwork_id: undefined,
+            payload: {
+              published: false,
+              price_currency_code: "USD",
+              price_from: 100.5,
+              price_to: 200,
+            },
+          },
+        ],
+      })
+    })
+
+    it("omits fields that were not sent and keeps explicit nulls", async () => {
+      const createArtnetArtworkBatchLoader = successfulLoader()
+
+      await runAuthenticatedQuery(
+        mutationWithPayload(`{ published: true, priceTo: null }`),
+        { createArtnetArtworkBatchLoader }
+      )
+
+      const [{ operations }] = createArtnetArtworkBatchLoader.mock.calls[0]
+      expect(operations[0].payload).toStrictEqual({
+        published: true,
+        price_to: null,
+      })
+    })
+
+    it("rejects fields that are not part of the typed payload", async () => {
+      const createArtnetArtworkBatchLoader = successfulLoader()
+
+      await expect(
+        runAuthenticatedQuery(mutationWithPayload(`{ title: "Untitled" }`), {
+          createArtnetArtworkBatchLoader,
+        })
+      ).rejects.toThrow(/title/)
+      expect(createArtnetArtworkBatchLoader).not.toHaveBeenCalled()
+    })
+  })
+
   it("returns a mutation error on failure", async () => {
     const context = {
       createArtnetArtworkBatchLoader: () =>
