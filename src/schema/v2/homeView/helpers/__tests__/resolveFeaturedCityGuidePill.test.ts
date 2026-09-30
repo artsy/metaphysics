@@ -10,18 +10,9 @@ jest.mock("config", () => ({
 const LONDON = { lat: 51.5072, lng: -0.1276 }
 const NEW_YORK = { lat: 40.7128, lng: -74.006 }
 
-const londonGuide: FeaturedCityGuide = {
+const activeGuide: FeaturedCityGuide = {
   citySlug: "london-united-kingdom",
   title: "London Art Week",
-  href: "/city-guide?citySlug=london-united-kingdom",
-  displayStartAt: moment.utc().subtract(1, "day").toISOString(),
-  displayEndAt: moment.utc().add(1, "day").toISOString(),
-}
-
-const newYorkGuide: FeaturedCityGuide = {
-  citySlug: "new-york-ny-usa",
-  title: "New York Art Week",
-  href: "/city-guide?citySlug=new-york-ny-usa",
   displayStartAt: moment.utc().subtract(1, "day").toISOString(),
   displayEndAt: moment.utc().add(1, "day").toISOString(),
 }
@@ -54,114 +45,125 @@ const buildContext = (overrides: Record<string, any> = {}) => ({
 })
 
 describe("resolveFeaturedCityGuidePill", () => {
-  it("returns a featured pill when the viewer is near an active guide's city", async () => {
-    const context = buildContext() as any
+  describe("while the guide is active", () => {
+    it("returns the featured pill", async () => {
+      const context = buildContext() as any
 
-    const pill = await resolveFeaturedCityGuidePill(
-      context,
-      [londonGuide],
-      citiesWithGuidesFixture
-    )
+      const pill = await resolveFeaturedCityGuidePill(
+        context,
+        activeGuide,
+        citiesWithGuidesFixture
+      )
 
-    expect(pill).toMatchObject({
-      title: "London Art Week",
-      href: "/city-guide?citySlug=london-united-kingdom",
-      isFeatured: true,
+      expect(pill).toMatchObject({
+        title: "London Art Week",
+        href: "/city-guide?citySlug=london-united-kingdom",
+        isFeatured: true,
+      })
     })
-  })
 
-  it("picks the nearest active guide, not the first one in the array", async () => {
-    const context = buildContext({
-      requestLocationLoader: jest.fn().mockResolvedValue({
-        body: {
-          data: {
-            location: { latitude: NEW_YORK.lat, longitude: NEW_YORK.lng },
+    it("returns the featured pill to a viewer far from the guide's city", async () => {
+      const context = buildContext({
+        requestLocationLoader: jest.fn().mockResolvedValue({
+          body: {
+            data: {
+              location: { latitude: NEW_YORK.lat, longitude: NEW_YORK.lng },
+            },
           },
-        },
-      }),
-    }) as any
+        }),
+      }) as any
 
-    // londonGuide is listed first, but the viewer is near New York
-    const pill = await resolveFeaturedCityGuidePill(
-      context,
-      [londonGuide, newYorkGuide],
-      citiesWithGuidesFixture
-    )
+      const pill = await resolveFeaturedCityGuidePill(
+        context,
+        activeGuide,
+        citiesWithGuidesFixture
+      )
 
-    expect(pill).toMatchObject({
-      title: "New York Art Week",
-      href: "/city-guide?citySlug=new-york-ny-usa",
-      isFeatured: true,
+      expect(pill).toMatchObject({
+        href: "/city-guide?citySlug=london-united-kingdom",
+        isFeatured: true,
+      })
+    })
+
+    it("returns the featured pill when the viewer's location is unknown", async () => {
+      const context = buildContext({ ipAddress: undefined }) as any
+
+      const pill = await resolveFeaturedCityGuidePill(
+        context,
+        activeGuide,
+        citiesWithGuidesFixture
+      )
+
+      expect(pill).toMatchObject({ isFeatured: true })
+    })
+
+    it("does not look up the viewer's location", async () => {
+      const context = buildContext() as any
+
+      await resolveFeaturedCityGuidePill(
+        context,
+        activeGuide,
+        citiesWithGuidesFixture
+      )
+
+      expect(context.requestLocationLoader).not.toHaveBeenCalled()
     })
   })
 
-  it("returns a default pill when the viewer is far from the active guide's city", async () => {
-    const context = buildContext({
-      requestLocationLoader: jest.fn().mockResolvedValue({
-        body: {
-          data: {
-            location: { latitude: NEW_YORK.lat, longitude: NEW_YORK.lng },
-          },
-        },
-      }),
-    }) as any
-
-    const pill = await resolveFeaturedCityGuidePill(
-      context,
-      [londonGuide],
-      citiesWithGuidesFixture
-    )
-
-    expect(pill).toMatchObject({
-      isFeatured: false,
-      href: "/city-guide?citySlug=new-york-ny-usa",
-    })
-  })
-
-  it("returns a default pill when the active guide's city isn't in the candidate list", async () => {
-    const context = buildContext() as any
-
-    const pill = await resolveFeaturedCityGuidePill(context, [londonGuide], [])
-
-    expect(pill).toMatchObject({ isFeatured: false, href: "/city-guide" })
-  })
-
-  it("returns a default pill with a nearby city slug when no guide is active", async () => {
-    const inactiveGuide: FeaturedCityGuide = {
-      ...londonGuide,
+  describe("outside the guide's window", () => {
+    const upcomingGuide: FeaturedCityGuide = {
+      ...activeGuide,
+      displayStartAt: moment.utc().add(1, "day").toISOString(),
+      displayEndAt: moment.utc().add(2, "days").toISOString(),
+    }
+    const endedGuide: FeaturedCityGuide = {
+      ...activeGuide,
       displayStartAt: moment.utc().subtract(2, "days").toISOString(),
       displayEndAt: moment.utc().subtract(1, "day").toISOString(),
     }
 
-    const context = buildContext() as any
+    it.each([
+      ["before it starts", upcomingGuide],
+      ["after it ends", endedGuide],
+    ])(
+      "returns a default pill with a nearby city slug %s",
+      async (_label, guide) => {
+        const context = buildContext() as any
 
-    const pill = await resolveFeaturedCityGuidePill(
-      context,
-      [inactiveGuide],
-      citiesWithGuidesFixture
+        const pill = await resolveFeaturedCityGuidePill(
+          context,
+          guide,
+          citiesWithGuidesFixture
+        )
+
+        expect(pill).toMatchObject({
+          title: "City Guide",
+          isFeatured: false,
+          href: "/city-guide?citySlug=london-united-kingdom",
+        })
+      }
     )
 
-    expect(pill).toMatchObject({
-      isFeatured: false,
-      href: "/city-guide?citySlug=london-united-kingdom",
+    it("returns a bare /city-guide link when no city is near the viewer", async () => {
+      const context = buildContext() as any
+
+      const pill = await resolveFeaturedCityGuidePill(context, endedGuide, [])
+
+      expect(pill).toMatchObject({ isFeatured: false, href: "/city-guide" })
     })
-  })
 
-  it("falls back to a default pill without crashing when the location loader rejects", async () => {
-    const context = buildContext({
-      requestLocationLoader: jest.fn().mockRejectedValue(new Error("boom")),
-    }) as any
+    it("falls back to a default pill without crashing when the location loader rejects", async () => {
+      const context = buildContext({
+        requestLocationLoader: jest.fn().mockRejectedValue(new Error("boom")),
+      }) as any
 
-    const pill = await resolveFeaturedCityGuidePill(context, [londonGuide], [])
+      const pill = await resolveFeaturedCityGuidePill(
+        context,
+        endedGuide,
+        citiesWithGuidesFixture
+      )
 
-    expect(pill).toMatchObject({ isFeatured: false, href: "/city-guide" })
-  })
-
-  it("returns a default pill when there are no active guides configured", async () => {
-    const context = buildContext() as any
-
-    const pill = await resolveFeaturedCityGuidePill(context, [], [])
-
-    expect(pill).toMatchObject({ isFeatured: false, href: "/city-guide" })
+      expect(pill).toMatchObject({ isFeatured: false, href: "/city-guide" })
+    })
   })
 })
