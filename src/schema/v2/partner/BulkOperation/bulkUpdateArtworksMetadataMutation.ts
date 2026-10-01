@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLInt,
@@ -58,10 +59,12 @@ interface Input {
     offer: boolean
     pickupAvailable?: boolean
     priceAdjustment?: number
+    priceAdjustmentAmount?: number
     priceCurrency?: string
     priceHidden?: boolean
     priceListed?: number
     priceMinor?: number
+    priceRounding?: string
     privateNotes?: string
     provenance?: string
     published?: boolean
@@ -80,6 +83,17 @@ interface Input {
     published?: boolean
   }
 }
+
+const BulkUpdatePriceRoundingEnum = new GraphQLEnumType({
+  name: "BulkUpdatePriceRoundingEnum",
+  description:
+    "Rounding applied to adjusted prices, to the nearest 10 major units",
+  values: {
+    UP: { value: "up" },
+    DOWN: { value: "down" },
+    NONE: { value: "none" },
+  },
+})
 
 const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
   name: "BulkUpdateArtworksMetadataInput",
@@ -211,10 +225,15 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       description:
         "Adjusts the artworks' prices according to the value passed (percentage).",
     },
+    priceAdjustmentAmount: {
+      type: GraphQLFloat,
+      description:
+        "Adjusts the artworks' catalog prices by a signed flat amount in major units (500 = £500). Negative decreases. Requires priceCurrency; only artworks whose catalog price currency matches are changed.",
+    },
     priceCurrency: {
       type: GraphQLString,
       description:
-        "The currency for the artworks. Required when setting flat shipping fees.",
+        "The currency for the artworks. Required when setting flat shipping fees or priceAdjustmentAmount.",
     },
     priceHidden: {
       type: GraphQLBoolean,
@@ -228,6 +247,11 @@ const BulkUpdateArtworksMetadataInput = new GraphQLInputObjectType({
       type: GraphQLInt,
       description:
         "The price in minor units, targeting the catalog artwork field",
+    },
+    priceRounding: {
+      type: BulkUpdatePriceRoundingEnum,
+      description:
+        "Rounds adjusted prices to the nearest 10 major units. Only valid with priceAdjustment or priceAdjustmentAmount.",
     },
     privateNotes: {
       type: GraphQLString,
@@ -407,10 +431,12 @@ export const bulkUpdateArtworksMetadataMutation = mutationWithClientMutationId<
         pickup_available: metadata.pickupAvailable,
         display_price_range: metadata.displayPriceRange,
         price_adjustment: metadata.priceAdjustment,
+        price_adjustment_amount: metadata.priceAdjustmentAmount,
         price_currency: metadata.priceCurrency,
         price_hidden: metadata.priceHidden,
         price_listed: metadata.priceListed,
         price_minor: metadata.priceMinor,
+        price_rounding: metadata.priceRounding,
         private_notes: metadata.privateNotes,
         provenance: metadata.provenance,
         published: metadata.published,
