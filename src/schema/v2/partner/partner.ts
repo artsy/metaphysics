@@ -847,7 +847,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
-            ...(args.sources
+            ...(args.sources?.length
               ? { sources: args.sources }
               : args.source
               ? { source: args.source }
