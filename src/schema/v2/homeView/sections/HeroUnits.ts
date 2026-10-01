@@ -1,6 +1,9 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
-import { withFeaturedCityGuideHeroUnit } from "../helpers/withFeaturedCityGuideHeroUnit"
+import {
+  HeroUnitsConnection,
+  withFeaturedCityGuideHeroUnit,
+} from "../helpers/withFeaturedCityGuideHeroUnit"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { heroUnitsConnection } from "schema/v2/HeroUnit/heroUnitsConnection"
@@ -19,6 +22,6 @@ export const HeroUnits: HomeViewSection = {
       info
     )
 
-    return withFeaturedCityGuideHeroUnit(result, args)
+    return withFeaturedCityGuideHeroUnit(result as HeroUnitsConnection, args)
   }),
 }

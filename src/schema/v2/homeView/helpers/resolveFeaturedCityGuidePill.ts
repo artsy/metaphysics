@@ -62,7 +62,7 @@ export const resolveFeaturedCityGuidePill = async (
 ): Promise<NavigationPill> => {
   if (isFeaturedCityGuideActive(guide)) {
     return {
-      title: guide.title,
+      title: guide.pill.title,
       href: `/city-guide?citySlug=${guide.citySlug}`,
       ownerType: OwnerType.cityGuideGuide,
       icon: "MapPinIcon",

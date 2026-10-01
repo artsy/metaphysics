@@ -1,3 +1,4 @@
+import { offsetToCursor } from "graphql-relay"
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
@@ -115,11 +116,16 @@ describe("HeroUnits", () => {
 
   describe("featured city guide hero unit", () => {
     const query = gql`
-      query($first: Int, $after: String) {
+      query($first: Int, $after: String, $last: Int, $before: String) {
         homeView {
           section(id: "home-view-section-hero-units") {
             ... on HomeViewSectionHeroUnits {
-              heroUnitsConnection(first: $first, after: $after) {
+              heroUnitsConnection(
+                first: $first
+                after: $after
+                last: $last
+                before: $before
+              ) {
                 totalCount
                 pageInfo {
                   hasNextPage
@@ -140,6 +146,7 @@ describe("HeroUnits", () => {
                       url
                       width
                       height
+                      aspectRatio
                     }
                   }
                 }
@@ -150,7 +157,7 @@ describe("HeroUnits", () => {
       }
     `
 
-    const gravityUnits = ["A", "B"].map((title) => ({
+    const gravityUnits = ["A", "B", "C", "D", "E", "F"].map((title) => ({
       id: title.toLowerCase(),
       title,
       body: `${title} body`,
@@ -158,27 +165,37 @@ describe("HeroUnits", () => {
       link_url: "/go",
     }))
 
-    const buildContext = () => ({
-      heroUnitsLoader: jest.fn().mockResolvedValue({
-        body: gravityUnits,
-        headers: { "x-total-count": "2" },
-      }),
+    // Serves pages the way Gravity does, from `page` and `size`
+    const buildContext = (units = gravityUnits) => ({
+      heroUnitsLoader: jest.fn(({ page, size }) =>
+        Promise.resolve({
+          body: units.slice((page - 1) * size, page * size),
+          headers: { "x-total-count": String(units.length) },
+        })
+      ),
     })
+
+    const fetchPage = async (variables, context = buildContext()) => {
+      const { homeView } = await runQuery(query, context, variables)
+      return homeView.section.heroUnitsConnection
+    }
 
     const titles = (connection) => connection.edges.map((e) => e.node.title)
 
     it("puts the London Art Week unit first while the window is open", async () => {
       setNow(IN_WINDOW)
 
-      const { homeView } = await runQuery(query, buildContext(), { first: 5 })
-      const connection = homeView.section.heroUnitsConnection
+      const connection = await fetchPage({ first: 5 })
 
       expect(titles(connection)).toEqual([
         "Your Guide to London Art Week",
         "A",
         "B",
+        "C",
+        "D",
+        "E",
       ])
-      expect(connection.totalCount).toBe(3)
+      expect(connection.totalCount).toBe(7)
       expect(connection.edges[0].node).toMatchObject({
         internalID: "london-art-week-2026",
         body: "All the art highlights between Oct. 14–19.",
@@ -191,36 +208,64 @@ describe("HeroUnits", () => {
             "https://files.artsy.net/images/e7697c5f36292b4d34bc00d0e46e22d44966284b.png",
           width: 2880,
           height: 1200,
+          aspectRatio: 2.4,
         },
       })
       expect(connection.pageInfo.startCursor).toBe(connection.edges[0].cursor)
     })
 
-    it("keeps the page within `first` and reports a next page", async () => {
+    it("returns every Gravity unit exactly once across pages", async () => {
       setNow(IN_WINDOW)
 
-      const { homeView } = await runQuery(query, buildContext(), { first: 2 })
-      const connection = homeView.section.heroUnitsConnection
+      const seen: string[] = []
+      let after: string | undefined
+      let hasNextPage = true
 
-      expect(titles(connection)).toEqual(["Your Guide to London Art Week", "A"])
-      expect(connection.pageInfo.hasNextPage).toBe(true)
-      expect(connection.pageInfo.endCursor).toBe(connection.edges[1].cursor)
+      while (hasNextPage) {
+        const connection = await fetchPage({ first: 2, after })
+        seen.push(...titles(connection))
+        after = connection.pageInfo.endCursor
+        hasNextPage = connection.pageInfo.hasNextPage
+      }
+
+      expect(seen).toEqual([
+        "Your Guide to London Art Week",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+      ])
     })
 
-    it("does not add the unit to later pages", async () => {
+    it("returns just the unit when Gravity has none", async () => {
       setNow(IN_WINDOW)
 
-      const first = await runQuery(query, buildContext(), { first: 2 })
-      const { endCursor } = first.homeView.section.heroUnitsConnection.pageInfo
+      const connection = await fetchPage({ first: 5 }, buildContext([]))
 
-      const { homeView } = await runQuery(query, buildContext(), {
-        first: 2,
-        after: endCursor,
+      expect(titles(connection)).toEqual(["Your Guide to London Art Week"])
+      expect(connection.pageInfo.hasNextPage).toBe(false)
+      expect(connection.pageInfo.endCursor).toBe(connection.edges[0].cursor)
+    })
+
+    it("leaves backward paging alone", async () => {
+      setNow(IN_WINDOW)
+
+      const connection = await fetchPage({
+        last: 2,
+        before: offsetToCursor(4),
       })
 
-      expect(titles(homeView.section.heroUnitsConnection)).not.toContain(
-        "Your Guide to London Art Week"
-      )
+      expect(titles(connection)).not.toContain("Your Guide to London Art Week")
+    })
+
+    it("adds nothing when no items are requested", async () => {
+      setNow(IN_WINDOW)
+
+      const connection = await fetchPage({ first: 0 })
+
+      expect(connection.edges).toEqual([])
     })
 
     it.each([
@@ -229,11 +274,10 @@ describe("HeroUnits", () => {
     ])("is not shown %s the window", async (_label, now) => {
       setNow(now)
 
-      const { homeView } = await runQuery(query, buildContext(), { first: 5 })
-      const connection = homeView.section.heroUnitsConnection
+      const connection = await fetchPage({ first: 5 })
 
-      expect(titles(connection)).toEqual(["A", "B"])
-      expect(connection.totalCount).toBe(2)
+      expect(titles(connection)).toEqual(["A", "B", "C", "D", "E"])
+      expect(connection.totalCount).toBe(6)
     })
   })
 })

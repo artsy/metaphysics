@@ -3,19 +3,42 @@ import { CityWithGuideSlug } from "./citiesWithGuides"
 
 export interface FeaturedCityGuide {
   citySlug: CityWithGuideSlug
-  title: string
   /** Start of the promotion window (ISO 8601, e.g. one week before the event) */
   displayStartAt: string
   /** End of the promotion window (ISO 8601, exclusive) */
   displayEndAt: string
+  pill: {
+    title: string
+  }
+  heroUnit: {
+    id: string
+    title: string
+    body: string
+    ctaText: string
+    image: { url: string; width: number; height: number }
+  }
 }
 
 export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
   // Frieze London
   citySlug: "london-united-kingdom",
-  title: "London City Guide",
   displayStartAt: "2026-10-05T00:00:00Z",
   displayEndAt: "2026-10-25T00:00:00Z",
+  pill: {
+    title: "London City Guide",
+  },
+  heroUnit: {
+    id: "london-art-week-2026",
+    title: "Your Guide to London Art Week",
+    body: "All the art highlights between Oct. 14–19.",
+    ctaText: "Explore Now",
+    image: {
+      url:
+        "https://files.artsy.net/images/e7697c5f36292b4d34bc00d0e46e22d44966284b.png",
+      width: 2880,
+      height: 1200,
+    },
+  },
 }
 
 export const isFeaturedCityGuideActive = (

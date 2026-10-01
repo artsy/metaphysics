@@ -1,46 +1,62 @@
 import { offsetToCursor } from "graphql-relay"
+import { paginationResolver } from "schema/v2/fields/pagination"
 import {
   FEATURED_CITY_GUIDE,
+  FeaturedCityGuide,
   isFeaturedCityGuideActive,
 } from "../sections/featuredCityGuides"
 
-const buildHeroUnit = () => ({
-  id: "london-art-week-2026",
-  title: "Your Guide to London Art Week",
-  body: "All the art highlights between Oct. 14–19.",
-  link_text: "Explore Now",
-  link_url: `/city-guide?citySlug=${FEATURED_CITY_GUIDE.citySlug}`,
+export type HeroUnitsConnection = ReturnType<typeof paginationResolver>
+
+const buildHeroUnit = ({
+  citySlug,
+  displayStartAt,
+  displayEndAt,
+  heroUnit: { id, title, body, ctaText, image },
+}: FeaturedCityGuide) => ({
+  id,
+  title,
+  body,
+  link_text: ctaText,
+  link_url: `/city-guide?citySlug=${citySlug}`,
   position: 0,
-  start_at: FEATURED_CITY_GUIDE.displayStartAt,
-  end_at: FEATURED_CITY_GUIDE.displayEndAt,
+  start_at: displayStartAt,
+  end_at: displayEndAt,
   image: {
-    image_url:
-      "https://files.artsy.net/images/e7697c5f36292b4d34bc00d0e46e22d44966284b.png",
-    original_width: 2880,
-    original_height: 1200,
+    image_url: image.url,
+    original_width: image.width,
+    original_height: image.height,
+    aspect_ratio: image.width / image.height,
   },
 })
 
+/**
+ * Adds the featured guide's hero unit to the front of the first page. The page
+ * grows by one, so the end cursor stays aligned with Gravity's page offsets.
+ */
 export const withFeaturedCityGuideHeroUnit = (
-  connection: any,
-  args: { first?: number; after?: string }
-) => {
-  if (args.after || !isFeaturedCityGuideActive()) return connection
+  connection: HeroUnitsConnection,
+  args: {
+    first?: number | null
+    after?: string | null
+    last?: number | null
+    before?: string | null
+  },
+  guide: FeaturedCityGuide = FEATURED_CITY_GUIDE
+): HeroUnitsConnection => {
+  const isFirstPage = !!args.first && !args.after && !args.last && !args.before
+  if (!isFirstPage || !isFeaturedCityGuideActive(guide)) return connection
 
-  const edge = { cursor: offsetToCursor(-1), node: buildHeroUnit() }
-  const edges = [edge, ...connection.edges]
-  const isOverPageSize = !!args.first && edges.length > args.first
-  const pageEdges = isOverPageSize ? edges.slice(0, args.first) : edges
+  const edge = { cursor: offsetToCursor(-1), node: buildHeroUnit(guide) }
 
   return {
     ...connection,
     totalCount: connection.totalCount + 1,
-    edges: pageEdges,
+    edges: [edge, ...connection.edges],
     pageInfo: {
       ...connection.pageInfo,
       startCursor: edge.cursor,
-      endCursor: pageEdges[pageEdges.length - 1].cursor,
-      hasNextPage: connection.pageInfo.hasNextPage || isOverPageSize,
+      endCursor: connection.pageInfo.endCursor ?? edge.cursor,
     },
   }
 }
