@@ -24,6 +24,7 @@ interface ItinerariesConnectionArgs extends CursorPageable {
   isCurated?: boolean
   featured?: boolean
   ignoreDisplayWindow?: boolean
+  includeDrafts?: boolean
   page?: number
   size?: number
 }
@@ -52,6 +53,7 @@ export const resolveItinerariesConnection = async (
       : {}),
     ...(typeof args.featured === "boolean" ? { featured: args.featured } : {}),
     ...(args.ignoreDisplayWindow ? { ignore_display_window: true } : {}),
+    ...(args.includeDrafts ? { include_drafts: true } : {}),
     ...(options.onlyOwnedBy ? { user_id: options.onlyOwnedBy } : {}),
   })
 
@@ -92,6 +94,11 @@ export const ItinerariesConnectionField: GraphQLFieldConfig<
       type: GraphQLBoolean,
       description:
         "Include guides outside their display window. Only editors can use this.",
+    },
+    includeDrafts: {
+      type: GraphQLBoolean,
+      description:
+        "Include every unpublished curated guide, not only your own. Only editors can use this.",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },

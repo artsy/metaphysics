@@ -146,6 +146,35 @@ describe("itinerariesConnection (root field)", () => {
     )
   })
 
+  it("passes includeDrafts through to gravity", async () => {
+    const context = loadersReturning([])
+
+    await runAuthenticatedQuery(
+      gql`
+        {
+          itinerariesConnection(first: 10, includeDrafts: true) {
+            totalCount
+          }
+        }
+      `,
+      context
+    )
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ include_drafts: true })
+    )
+  })
+
+  it("sends no include_drafts by default", async () => {
+    const context = loadersReturning([])
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.itinerariesLoader).toHaveBeenCalledWith(
+      expect.not.objectContaining({ include_drafts: expect.anything() })
+    )
+  })
+
   it("sends no owner filter on the root field", async () => {
     const context = loadersReturning([])
 
