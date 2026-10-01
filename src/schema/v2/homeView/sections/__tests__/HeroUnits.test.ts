@@ -204,11 +204,10 @@ describe("HeroUnits", () => {
           url: "/city-guide?citySlug=london-united-kingdom",
         },
         image: {
-          url:
-            "https://files.artsy.net/images/e7697c5f36292b4d34bc00d0e46e22d44966284b.png",
-          width: 2880,
-          height: 1200,
-          aspectRatio: 2.4,
+          url: "https://files.artsy.net/images/image-1-1.png",
+          width: 360,
+          height: 630,
+          aspectRatio: 360 / 630,
         },
       })
       expect(connection.pageInfo.startCursor).toBe(connection.edges[0].cursor)

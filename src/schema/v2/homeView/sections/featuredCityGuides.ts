@@ -33,10 +33,9 @@ export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
     body: "All the art highlights between Oct. 14–19.",
     ctaText: "Explore Now",
     image: {
-      url:
-        "https://files.artsy.net/images/e7697c5f36292b4d34bc00d0e46e22d44966284b.png",
-      width: 2880,
-      height: 1200,
+      url: "https://files.artsy.net/images/image-1-1.png",
+      width: 360,
+      height: 630,
     },
   },
 }

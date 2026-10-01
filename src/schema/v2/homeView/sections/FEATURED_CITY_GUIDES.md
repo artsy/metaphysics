@@ -18,8 +18,8 @@ export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
     ctaText: "Explore Now",
     image: {
       url: "https://files.artsy.net/images/...png",
-      width: 2880,
-      height: 1200,
+      width: 360,
+      height: 630,
     },
   },
 }
