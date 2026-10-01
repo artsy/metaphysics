@@ -38,6 +38,11 @@ export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
   suggests the city nearest to the viewer's IP location — see
   [`citiesWithGuides.ts`](./citiesWithGuides.ts) for the list of cities that
   fallback can suggest.
+- The same window controls a hero unit in the home view's hero units section.
+  While the guide is active, the unit is added as the first item of the first
+  page. Its copy and image live in
+  [`withFeaturedCityGuideHeroUnit.ts`](../helpers/withFeaturedCityGuideHeroUnit.ts).
+  Update them when you replace the guide.
 - The pill only shows for Eigen `>= 9.19.0` (or non-Eigen clients); see
   `CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION` in
   [`QuickLinks.ts`](./QuickLinks.ts).

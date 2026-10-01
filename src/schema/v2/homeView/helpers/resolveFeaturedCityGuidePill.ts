@@ -1,6 +1,5 @@
 import { OwnerType } from "@artsy/cohesion"
 import config from "config"
-import moment from "moment"
 import { distance, LatLng } from "lib/geospatial"
 import { NEAREST_CITY_THRESHOLD_KM } from "schema/v2/city/constants"
 import { ResolverContext } from "types/graphql"
@@ -8,6 +7,7 @@ import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import {
   FEATURED_CITY_GUIDE,
   FeaturedCityGuide,
+  isFeaturedCityGuideActive,
 } from "../sections/featuredCityGuides"
 import { CITIES_WITH_GUIDES, CityWithGuide } from "../sections/citiesWithGuides"
 
@@ -31,16 +31,6 @@ const nearestCityWithinThreshold = (
   }
 
   return null
-}
-
-const isActive = (guide: FeaturedCityGuide): boolean => {
-  const now = moment.utc()
-  const start = moment.utc(guide.displayStartAt)
-  const end = moment.utc(guide.displayEndAt)
-
-  if (!start.isValid() || !end.isValid()) return false
-
-  return now.isSameOrAfter(start) && now.isBefore(end)
 }
 
 const resolveViewerCoordinates = async (
@@ -70,7 +60,7 @@ export const resolveFeaturedCityGuidePill = async (
   guide: FeaturedCityGuide = FEATURED_CITY_GUIDE,
   citiesWithGuides: readonly CityWithGuide[] = CITIES_WITH_GUIDES
 ): Promise<NavigationPill> => {
-  if (isActive(guide)) {
+  if (isFeaturedCityGuideActive(guide)) {
     return {
       title: guide.title,
       href: `/city-guide?citySlug=${guide.citySlug}`,
