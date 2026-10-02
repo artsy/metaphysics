@@ -53,6 +53,7 @@ import { CreditCard } from "./credit_card"
 import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
 import { ReprocessArtworkImageMutation } from "./reprocessArtworkImageMutation"
 import { OrderPartyUnionType } from "./ecommerce/types/order_party_union"
+import { ExchangeRates } from "./exchangeRates"
 import Fair from "./fair"
 import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
@@ -544,6 +545,7 @@ const rootFields = {
   discoveryCategoryConnection,
   discoveryCategoryArtworksConnection,
   departments,
+  exchangeRates: ExchangeRates,
   external: externalField,
   fair: Fair,
   fairOrganizer: FairOrganizer,
