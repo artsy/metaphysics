@@ -822,7 +822,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           source: {
             type: GraphQLString,
             description:
-              "Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.",
+              "Filter by import source: 'bulk_import', 'multi_add', or 'partner_conversion'.",
+            deprecationReason: "Use `sources` instead.",
+          },
+          sources: {
+            type: new GraphQLList(GraphQLString),
+            description:
+              "Filter by one or more import sources: 'bulk_import', 'multi_add', 'partner_conversion'. Defaults to 'bulk_import' and 'partner_conversion' if omitted.",
           },
           includeInactive: {
             type: GraphQLBoolean,
@@ -841,7 +847,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
-            ...(args.source && { source: args.source }),
+            ...(args.sources?.length
+              ? { sources: args.sources }
+              : args.source
+              ? { source: args.source }
+              : {}),
             ...(args.includeInactive && { include_inactive: true }),
           })
 
