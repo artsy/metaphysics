@@ -74,11 +74,21 @@ describe("QuickLinks", () => {
     }
   `
 
+  let dateNowSpy: jest.SpyInstance
+
   beforeEach(() => {
+    // Before the featured city guide window, so the generic City Guide pill shows
+    dateNowSpy = jest
+      .spyOn(Date, "now")
+      .mockReturnValue(Date.parse("2026-10-04T12:00:00Z"))
     mockIsFeatureFlagEnabled.mockImplementation(() => false)
     // Setup the mock resolver responses
     mockMyBidsResolve.mockResolvedValue({ active: [] })
     mockUserPricePreferenceResolve.mockResolvedValue(null)
+  })
+
+  afterEach(() => {
+    dateNowSpy.mockRestore()
   })
 
   it("returns the section's data", async () => {

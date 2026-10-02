@@ -12,9 +12,16 @@ const NEW_YORK = { lat: 40.7128, lng: -74.006 }
 
 const activeGuide: FeaturedCityGuide = {
   citySlug: "london-united-kingdom",
-  title: "London Art Week",
   displayStartAt: moment.utc().subtract(1, "day").toISOString(),
   displayEndAt: moment.utc().add(1, "day").toISOString(),
+  pill: { title: "London Art Week" },
+  heroUnit: {
+    id: "london-art-week",
+    title: "Your Guide to London Art Week",
+    body: "All the art highlights",
+    ctaText: "Explore Now",
+    image: { url: "https://example.com/london.png", width: 2880, height: 1200 },
+  },
 }
 
 const citiesWithGuidesFixture: CityWithGuide[] = [
