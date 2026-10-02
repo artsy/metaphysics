@@ -631,6 +631,108 @@ describe("BulkUpdateArtworksMetadataMutation", () => {
     )
   })
 
+  it("passes flat price adjustment, currency and rounding to gravity", async () => {
+    const flatAdjustmentMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            updateCatalog: true
+            metadata: {
+              priceAdjustmentAmount: -250.5
+              priceCurrency: "GBP"
+              priceRounding: UP
+            }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(flatAdjustmentMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      expect.objectContaining({
+        update_catalog: true,
+        metadata: expect.objectContaining({
+          price_adjustment_amount: -250.5,
+          price_currency: "GBP",
+          price_rounding: "up",
+        }),
+      })
+    )
+  })
+
+  it.each([
+    ["DOWN", "down"],
+    ["NONE", "none"],
+  ])("maps priceRounding %s to %s", async (graphqlValue, gravityValue) => {
+    const roundingMutation = gql`
+      mutation {
+        bulkUpdateArtworksMetadata(
+          input: {
+            id: "partner123"
+            updateCatalog: true
+            metadata: { priceAdjustment: 10, priceRounding: ${graphqlValue} }
+          }
+        ) {
+          bulkUpdateArtworksMetadataOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(roundingMutation, context)
+
+    expect(context.updatePartnerArtworksMetadataLoader).toHaveBeenCalledWith(
+      "partner123",
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          price_adjustment: 10,
+          price_rounding: gravityValue,
+        }),
+      })
+    )
+  })
+
+  it("omits the new price fields from the gravity payload when not provided", async () => {
+    const context = {
+      updatePartnerArtworksMetadataLoader: jest.fn().mockResolvedValue({
+        success: 1,
+        errors: { count: 0, ids: [] },
+      }),
+    }
+
+    await runAuthenticatedQuery(mutation, context)
+
+    const [
+      ,
+      payload,
+    ] = context.updatePartnerArtworksMetadataLoader.mock.calls[0]
+    const serialized = JSON.parse(JSON.stringify(payload))
+    expect(serialized.metadata).not.toHaveProperty("price_adjustment_amount")
+    expect(serialized.metadata).not.toHaveProperty("price_rounding")
+  })
+
   it("updates artworks with dimension fields", async () => {
     const dimensionMutation = gql`
       mutation {
