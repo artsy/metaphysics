@@ -1095,6 +1095,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           return shows[0]
         },
       },
+      show: {
+        type: ShowType,
+        description:
+          "A Show belonging to this partner, scoped so it can only resolve shows owned by this partner. Requires authentication.",
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The ID of the Show",
+          },
+        },
+        resolve: async (
+          { id: partner_id },
+          { id },
+          { authenticatedLoaders }
+        ) => {
+          const partnerShowLoader = authenticatedLoaders?.partnerShowLoader
+
+          if (!partnerShowLoader) return null
+
+          try {
+            return await partnerShowLoader({ partner_id, show_id: id })
+          } catch (error) {
+            if (error.statusCode === 403 || error.statusCode === 404) {
+              return null
+            }
+            throw error
+          }
+        },
+      },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
       vatNumber: {
         type: GraphQLString,
