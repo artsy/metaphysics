@@ -27,6 +27,7 @@ import { ViewingRooms } from "../sections/ViewingRooms"
 import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
+import { HomeFeedSimplificationRule } from "../mixer/rules/HomeFeedSimplificationRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 
 const SECTIONS: HomeViewSection[] = [
@@ -64,6 +65,9 @@ export async function getSections(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new AuctionEngagementRule(),
+    // Runs last: for enrolled users the arm recipe defines the final order,
+    // intentionally overriding AuctionEngagementRule's reordering.
+    new HomeFeedSimplificationRule(),
   ])
 
   return await mixer.mix(SECTIONS, context)
