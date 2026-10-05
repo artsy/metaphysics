@@ -33,7 +33,7 @@ export const QuickLinks: HomeViewSection = {
   },
 }
 
-const CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION = { major: 9, minor: 18, patch: 0 }
+const CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION = { major: 9, minor: 19, patch: 0 }
 
 function isEigenVersionSatisfied(
   minimumEigenVersion: NavigationPill["minimumEigenVersion"],
