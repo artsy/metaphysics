@@ -5,7 +5,9 @@ import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 describe("updateArtistSocialsMutation", () => {
   const mutation = gql`
     mutation {
-      updateArtistSocials(input: { id: "3", instagramHandle: "@artsy" }) {
+      updateArtistSocials(
+        input: { id: "3", partnerId: "partner-1", instagramHandle: "@artsy" }
+      ) {
         artistOrError {
           __typename
           ... on UpdateArtistSocialsSuccess {
@@ -38,6 +40,7 @@ describe("updateArtistSocialsMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(mockUpdateArtistSocialsLoader).toBeCalledWith("3", {
+      partner_id: "partner-1",
       instagram_handle: "@artsy",
     })
 
@@ -53,10 +56,49 @@ describe("updateArtistSocialsMutation", () => {
     })
   })
 
+  it("passes the Instagram handle acknowledgment through to gravity", async () => {
+    const acknowledgedMutation = gql`
+      mutation {
+        updateArtistSocials(
+          input: {
+            id: "3"
+            partnerId: "partner-1"
+            instagramHandle: "@artsy"
+            instagramHandleAcknowledged: true
+          }
+        ) {
+          artistOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const mockUpdateArtistSocialsLoader = jest.fn(() =>
+      Promise.resolve({
+        id: "foo",
+        instagram_handle: "artsy",
+      })
+    )
+
+    const context = {
+      updateArtistSocialsLoader: mockUpdateArtistSocialsLoader,
+    }
+    await runAuthenticatedQuery(acknowledgedMutation, context)
+
+    expect(mockUpdateArtistSocialsLoader).toBeCalledWith("3", {
+      partner_id: "partner-1",
+      instagram_handle: "@artsy",
+      instagram_handle_acknowledged: true,
+    })
+  })
+
   it("sends an empty string when clearing the handle", async () => {
     const clearMutation = gql`
       mutation {
-        updateArtistSocials(input: { id: "3", instagramHandle: null }) {
+        updateArtistSocials(
+          input: { id: "3", partnerId: "partner-1", instagramHandle: null }
+        ) {
           artistOrError {
             ... on UpdateArtistSocialsSuccess {
               artist {
@@ -81,6 +123,7 @@ describe("updateArtistSocialsMutation", () => {
     const result = await runAuthenticatedQuery(clearMutation, context)
 
     expect(mockUpdateArtistSocialsLoader).toBeCalledWith("3", {
+      partner_id: "partner-1",
       instagram_handle: "",
     })
 
