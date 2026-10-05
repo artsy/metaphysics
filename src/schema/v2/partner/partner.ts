@@ -1,6 +1,7 @@
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import {
   GraphQLEnumType,
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -1852,7 +1853,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           "A Viewing Room belonging to this partner, scoped so it can only resolve viewing rooms this partner owns and the current user can manage. Requires authentication.",
         args: {
           id: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: new GraphQLNonNull(GraphQLID),
             description: "The ID of the Viewing Room",
           },
         },

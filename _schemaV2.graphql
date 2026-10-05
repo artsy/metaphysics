@@ -30821,7 +30821,7 @@ type Partner implements Node {
     """
     The ID of the Viewing Room
     """
-    id: String!
+    id: ID!
   ): ViewingRoom
   viewingRoomsConnection(
     after: String
