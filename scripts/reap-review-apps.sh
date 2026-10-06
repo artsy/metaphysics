@@ -74,20 +74,32 @@ for ns in $namespaces; do
   [ -z "$branch" ] && branch="review-app-$ns"
 
   reason=""
-  if ! git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-    reason="branch $branch deleted"
-  else
-    git fetch --depth=1 origin "$branch" >/dev/null 2>&1
-    last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null)
-    if [ -n "$last" ]; then
-      age_days=$(( (now - last) / 86400 ))
-      if [ "$age_days" -gt "$TTL_DAYS" ]; then
-        reason="branch $branch idle ${age_days}d (> ${TTL_DAYS}d)"
-      elif [ "$(( TTL_DAYS - age_days ))" -le "$WARN_WITHIN_DAYS" ]; then
-        expiring+=("$ns (idle ${age_days}d, expires in $(( TTL_DAYS - age_days ))d)")
+  # --exit-code: 0 = ref exists, 2 = no such ref (deleted), anything else
+  # (e.g. 128) = network/auth error. Only 2 is safe to treat as deleted —
+  # otherwise a transient failure would reap a live app once armed.
+  git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1
+  rc=$?
+  case $rc in
+    0)
+      git fetch --depth=1 origin "$branch" >/dev/null 2>&1
+      last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null)
+      if [ -n "$last" ]; then
+        age_days=$(( (now - last) / 86400 ))
+        if [ "$age_days" -gt "$TTL_DAYS" ]; then
+          reason="branch $branch idle ${age_days}d (> ${TTL_DAYS}d)"
+        elif [ "$(( TTL_DAYS - age_days ))" -le "$WARN_WITHIN_DAYS" ]; then
+          expiring+=("$ns (idle ${age_days}d, expires in $(( TTL_DAYS - age_days ))d)")
+        fi
       fi
-    fi
-  fi
+      ;;
+    2)
+      reason="branch $branch deleted"
+      ;;
+    *)
+      echo "[reap]   WARNING: ls-remote failed for $branch (exit $rc), skipping"
+      continue
+      ;;
+  esac
 
   if [ -n "$reason" ]; then
     if [ "$DRY_RUN" = "false" ]; then
