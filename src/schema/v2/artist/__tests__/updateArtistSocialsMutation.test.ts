@@ -93,12 +93,10 @@ describe("updateArtistSocialsMutation", () => {
     })
   })
 
-  it("sends an empty string when clearing the handle", async () => {
+  it("sends an empty string when clearing the handle without a partner", async () => {
     const clearMutation = gql`
       mutation {
-        updateArtistSocials(
-          input: { id: "3", partnerId: "partner-1", instagramHandle: null }
-        ) {
+        updateArtistSocials(input: { id: "3", instagramHandle: null }) {
           artistOrError {
             ... on UpdateArtistSocialsSuccess {
               artist {
@@ -123,7 +121,6 @@ describe("updateArtistSocialsMutation", () => {
     const result = await runAuthenticatedQuery(clearMutation, context)
 
     expect(mockUpdateArtistSocialsLoader).toBeCalledWith("3", {
-      partner_id: "partner-1",
       instagram_handle: "",
     })
 

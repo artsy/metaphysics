@@ -39891,9 +39891,9 @@ input UpdateArtistSocialsMutationInput {
   instagramHandleAcknowledged: Boolean
 
   """
-  Partner the user is acting on behalf of. Must be a verified representative of the artist.
+  Partner the user is acting on behalf of. Required, as a verified representative of the artist, when setting a handle.
   """
-  partnerId: String!
+  partnerId: String
 }
 
 type UpdateArtistSocialsMutationPayload {

@@ -16,13 +16,13 @@ import {
 
 interface Input {
   id: string
-  partnerId: string
+  partnerId?: string | null
   instagramHandle?: string | null
   instagramHandleAcknowledged?: boolean | null
 }
 
 interface GravityInput {
-  partner_id: string
+  partner_id?: string | null
   instagram_handle?: string | null
   instagram_handle_acknowledged?: boolean | null
 }
@@ -30,9 +30,9 @@ interface GravityInput {
 const inputFields = {
   id: { type: new GraphQLNonNull(GraphQLString) },
   partnerId: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLString,
     description:
-      "Partner the user is acting on behalf of. Must be a verified representative of the artist.",
+      "Partner the user is acting on behalf of. Required, as a verified representative of the artist, when setting a handle.",
   },
   instagramHandle: {
     type: GraphQLString,
