@@ -51,7 +51,7 @@ kubectl --context staging label namespace "$NAME" artsy.io/review-app=true --ove
 kubectl --context staging annotate namespace "$NAME" \
   artsy.io/review-app-branch="review-app-$NAME" \
   artsy.io/review-app-deployed-at="$(date +%s)" --overwrite || true
-  artsy.io/review-app-deployed-at="$(date +%s)" --overwrite
+  artsy.io/review-app-deployed-at="$(date +%s)" --overwrite || true
 
 # Metaphysics is a stateless GraphQL API and inherits staging's env via
 # `review_app setup`, so no custom env is set here (unlike Force).
