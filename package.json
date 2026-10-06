@@ -16,6 +16,7 @@
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
     "ci": "yarn test",
+    "delete-review-app": "./scripts/delete-review-app.sh",
     "deploy-cloudflare-workers:staging": "yarn wrangler deploy --keep-vars --config=workers/caching/metaphysics-cdn.toml --env staging",
     "deploy-cloudflare-workers": "yarn wrangler deploy --keep-vars --config=workers/caching/metaphysics-cdn.toml --env production",
     "dev": "DEBUG=info,warn,error babel-node --extensions '.ts,.js' --inspect index.js",
