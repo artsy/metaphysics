@@ -81,8 +81,15 @@ for ns in $namespaces; do
   rc=$?
   case $rc in
     0)
-      git fetch --depth=1 origin "$branch" >/dev/null 2>&1
-      last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null)
+      # Prefer the last-deploy time we stamp on every build/update — it tracks
+      # "when CI last deployed this app", which is what the lease is really about.
+      # Fall back to the branch HEAD commit date only for apps stamped before this
+      # annotation existed.
+      last=$($KUBECTL get namespace "$ns" -o jsonpath='{.metadata.annotations.artsy\.io/review-app-deployed-at}' 2>/dev/null)
+      if [ -z "$last" ]; then
+        git fetch --depth=1 origin "$branch" >/dev/null 2>&1
+        last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null)
+      fi
       if [ -n "$last" ]; then
         age_days=$(( (now - last) / 86400 ))
         if [ "$age_days" -gt "$TTL_DAYS" ]; then

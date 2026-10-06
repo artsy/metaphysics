@@ -24,7 +24,9 @@ hokusai review_app create-yaml "$NAME"
 
 hokusai review_app deploy "$NAME" "$NAME"
 
-# Backfill the reaper label/annotation in case this app predates it (idempotent).
+# Restamp the deploy time (this push renews the lease) and backfill the
+# label/branch annotation in case this app predates them (idempotent).
 kubectl --context staging label namespace "$NAME" artsy.io/review-app=true --overwrite
 kubectl --context staging annotate namespace "$NAME" \
-  artsy.io/review-app-branch="review-app-$NAME" --overwrite
+  artsy.io/review-app-branch="review-app-$NAME" \
+  artsy.io/review-app-deployed-at="$(date +%s)" --overwrite
