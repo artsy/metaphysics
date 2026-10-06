@@ -409,4 +409,67 @@ describe("CreateArtworkMutation", () => {
       )
     })
   })
+
+  describe("partnerListId field", () => {
+    it("passes partner_list_id to the loader when provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      const partnerListMutation = gql`
+        mutation {
+          createArtwork(
+            input: {
+              partnerId: "partner123"
+              artistIds: ["artist123"]
+              partnerListId: "list123"
+            }
+          ) {
+            artworkOrError {
+              __typename
+              ... on CreateArtworkSuccess {
+                artwork {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(partnerListMutation, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_list_id: "list123",
+        })
+      )
+    })
+
+    it("does not pass partner_list_id when not provided", async () => {
+      const mockArtwork = { _id: "artwork123" }
+      const createArtworkLoaderMock = jest.fn().mockResolvedValue(mockArtwork)
+
+      const context = {
+        artworkLoader: () => Promise.resolve(mockArtwork),
+        createArtworkLoader: createArtworkLoaderMock,
+        addImageToArtworkLoader: jest.fn(),
+        addArtworkToPartnerShowLoader: jest.fn(),
+      }
+
+      await runAuthenticatedQuery(mutationWithoutImage, context)
+
+      expect(createArtworkLoaderMock).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          partner_list_id: expect.anything(),
+        })
+      )
+    })
+  })
 })
