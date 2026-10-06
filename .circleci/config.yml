@@ -149,9 +149,7 @@ jobs:
             set -x
             review_app_name=$(echo $CIRCLE_BRANCH | sed 's/review-app-//')
             kubectl config use-context staging
-            namespaces=$(kubectl get namespace)
-            echo
-            if echo "$namespaces" | grep -qi "$review_app_name"; then
+            if kubectl get namespace "$review_app_name" >/dev/null 2>&1; then
               ./scripts/update_review_app.sh $review_app_name
             else
               ./scripts/build_review_app.sh $review_app_name

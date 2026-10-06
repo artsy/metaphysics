@@ -33,7 +33,6 @@ hokusai registry push --force --skip-latest --overwrite --verbose --tag "$NAME"
 # Point the generated YAML at this review app's image and ingress hosts.
 ./scripts/rewrite_review_app_yaml.sh "$NAME"
 
-# Provision the review app.
 # Clean up the namespace if creation fails partway, so the next CI run doesn't
 # mistake a partially-created app for a fully running one.
 cleanup_on_failure() {
