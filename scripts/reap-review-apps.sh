@@ -63,6 +63,12 @@ reap() {
 }
 
 namespaces=$($KUBECTL get namespace -l artsy.io/review-app=true -o jsonpath='{.items[*].metadata.name}')
+rc=$?
+if [ "$rc" -ne 0 ]; then
+  # A listing failure (auth/network) must not look like an empty, healthy sweep.
+  echo "[reap] ERROR: failed to list review-app namespaces (kubectl exit $rc). Aborting."
+  exit 1
+fi
 
 if [ -z "$namespaces" ]; then
   echo "[reap] No review-app namespaces found. Nothing to do."
