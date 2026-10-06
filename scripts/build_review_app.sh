@@ -34,15 +34,16 @@ hokusai registry push --force --skip-latest --overwrite --verbose --tag "$NAME"
 ./scripts/rewrite_review_app_yaml.sh "$NAME"
 
 # Provision the review app.
-hokusai review_app create "$NAME" --verbose
-
-# Clean up the namespace if a subsequent step fails, so the next CI run doesn't
+# Clean up the namespace if creation fails partway, so the next CI run doesn't
 # mistake a partially-created app for a fully running one.
 cleanup_on_failure() {
   echo "[build_review_app.sh] Creation failed after namespace was created. Cleaning up namespace $NAME..."
   kubectl --context staging delete namespace "$NAME" || true
 }
 trap cleanup_on_failure ERR
+
+# Provision the review app.
+hokusai review_app create "$NAME" --verbose
 
 # Metaphysics is a stateless GraphQL API and inherits staging's env via
 # `review_app setup`, so no custom env is set here (unlike Force).
