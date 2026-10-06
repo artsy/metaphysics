@@ -277,9 +277,13 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     // Headers to be threaded through to downstream services
     // and used to authenticate with Artnet services.
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
-    const xArtnetUserID = req.headers["x-artnet-user-id"] as
-      | string
-      | undefined
+    const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
+
+    // Dev/QA only: force a home-feed-simplification arm, bypassing Unleash
+    // assignment. Never honored in production so it can't skew live exposure.
+    const xHomeFeedArm = !PRODUCTION_ENV
+      ? (req.headers["x-home-feed-arm"] as string | undefined)
+      : undefined
 
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
@@ -317,6 +321,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       appToken,
       ipAddress,
       xImpersonateUserID,
+      xHomeFeedArm,
       isCMSRequest,
       _req: req,
       _requestID: requestID,

@@ -30,6 +30,8 @@ export interface ResolverContextValues {
 
   ipAddress: string
   xImpersonateUserID?: string
+  /** Dev/QA only: forces a home-feed-simplification arm. Non-production only. */
+  xHomeFeedArm?: string
   isCMSRequest: boolean
 }
 

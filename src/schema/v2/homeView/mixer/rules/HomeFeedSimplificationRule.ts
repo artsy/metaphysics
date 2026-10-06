@@ -25,6 +25,12 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   }
 
   private resolveArm(context: ResolverContext): Arm | null {
+    // Dev/QA override (plumbed from the x-home-feed-arm header, non-prod only).
+    // Forces composition without affecting the variant reported for tracking.
+    if (context.xHomeFeedArm && isArm(context.xHomeFeedArm)) {
+      return context.xHomeFeedArm
+    }
+
     const variant = getExperimentVariant(HOME_FEED_SIMPLIFICATION_FLAG, {
       userId: context.userID,
     })
