@@ -1155,14 +1155,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           if (!partnerShowLoader) return null
 
-          try {
-            return await partnerShowLoader({ partner_id, show_id: id })
-          } catch (error) {
-            if (error.statusCode === 403 || error.statusCode === 404) {
-              return null
-            }
-            throw error
-          }
+          return nullIfForbiddenOrNotFound(() => {
+            return partnerShowLoader({ partner_id, show_id: id })
+          })
         },
       },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
