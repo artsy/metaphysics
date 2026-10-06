@@ -8,6 +8,27 @@ jest.mock("lib/featureFlags", () => ({
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
+// The real featured city guide is only promoted inside a date window, so the
+// real clock would change what these tests see. Pin it to a window in the past
+// (not featured) by default; individual tests can move it.
+const NOT_FEATURED_WINDOW = {
+  displayStartAt: "2000-01-01T00:00:00Z",
+  displayEndAt: "2000-01-02T00:00:00Z",
+}
+
+const mockFeaturedCityGuide = {
+  citySlug: "london-united-kingdom",
+  title: "London City Guide",
+  ...NOT_FEATURED_WINDOW,
+}
+
+jest.mock("schema/v2/homeView/sections/featuredCityGuides", () => ({
+  // A getter, so the (hoisted) mock reads the variable at call time.
+  get FEATURED_CITY_GUIDE() {
+    return mockFeaturedCityGuide
+  },
+}))
+
 // Mock the resolver functions - these will be accessed via require() inside QuickLinks resolver
 const mockMyBidsResolve = jest.fn()
 const mockUserPricePreferenceResolve = jest.fn()
@@ -75,6 +96,7 @@ describe("QuickLinks", () => {
   `
 
   beforeEach(() => {
+    Object.assign(mockFeaturedCityGuide, NOT_FEATURED_WINDOW)
     mockIsFeatureFlagEnabled.mockImplementation(() => false)
     // Setup the mock resolver responses
     mockMyBidsResolve.mockResolvedValue({ active: [] })
@@ -216,7 +238,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is below the minimum version", () => {
       it("is not returned", async () => {
         const contextWithOldEigen = {
-          userAgent: "Artsy-Mobile/9.17.0 Eigen/9.17.0",
+          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
         }
 
         const { homeView } = await runAuthenticatedQuery(
@@ -235,7 +257,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is at or above the minimum version", () => {
       it("is returned", async () => {
         const contextWithNewEigen = {
-          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
+          userAgent: "Artsy-Mobile/9.19.0 Eigen/9.19.0",
         }
 
         const { homeView } = await runAuthenticatedQuery(
@@ -264,6 +286,34 @@ describe("QuickLinks", () => {
         )
 
         expect(cityGuideLink).toBeDefined()
+      })
+    })
+
+    describe("When a featured city guide is active", () => {
+      it("is promoted to the front with the featured title", async () => {
+        const dayMs = 24 * 60 * 60 * 1000
+        Object.assign(mockFeaturedCityGuide, {
+          displayStartAt: new Date(Date.now() - dayMs).toISOString(),
+          displayEndAt: new Date(Date.now() + dayMs).toISOString(),
+        })
+
+        const { homeView } = await runAuthenticatedQuery(query, {
+          userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ...",
+        })
+
+        const [firstPill] = homeView.section.navigationPills
+
+        expect(firstPill).toEqual({
+          href: "/city-guide?citySlug=london-united-kingdom",
+          icon: "MapPinIcon",
+          ownerType: "cityGuideGuide",
+          title: "London City Guide",
+        })
+        expect(
+          homeView.section.navigationPills.filter(
+            (pill) => pill.ownerType === "cityGuideGuide"
+          )
+        ).toHaveLength(1)
       })
     })
   })
