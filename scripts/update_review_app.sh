@@ -23,3 +23,8 @@ hokusai review_app create-yaml "$NAME"
 ./scripts/rewrite_review_app_yaml.sh "$NAME"
 
 hokusai review_app deploy "$NAME" "$NAME"
+
+# Backfill the reaper label/annotation in case this app predates it (idempotent).
+kubectl --context staging label namespace "$NAME" artsy.io/review-app=true --overwrite
+kubectl --context staging annotate namespace "$NAME" \
+  artsy.io/review-app-branch="review-app-$NAME" --overwrite

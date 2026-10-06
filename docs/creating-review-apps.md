@@ -76,9 +76,21 @@ hokusai review_app env set <name> SOME_ENV_VAR=true
 hokusai review_app refresh <name>
 ```
 
-## Deleting a review app
+## Lifecycle & automatic cleanup
 
-Delete review apps as soon as QA is complete — they don't get cleaned up automatically.
+Review apps are leased, not permanent. A daily CircleCI job
+([`reap-review-apps`](../.circleci/config.yml), [`scripts/reap-review-apps.sh`](../scripts/reap-review-apps.sh))
+reaps a review app — its namespace, CNAME, and ECR image — once its branch is **deleted** or hasn't
+been pushed to in **21 days** (`REVIEW_APP_TTL_DAYS`). Pushing to the branch redeploys the app and
+renews the lease, so active apps stay up and abandoned ones clean themselves up.
+
+The reaper only ever touches namespaces labelled `artsy.io/review-app=true` (applied at creation), so
+it can't affect staging, production, or system namespaces. It ships in **dry-run** (reports only);
+arm it by setting `DRY_RUN=false` in the `reap_review_apps` job.
+
+## Deleting a review app manually
+
+To tear down immediately rather than waiting for the reaper:
 
 ```sh
 yarn delete-review-app hello-world
