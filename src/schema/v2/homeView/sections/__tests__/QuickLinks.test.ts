@@ -238,7 +238,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is below the minimum version", () => {
       it("is not returned", async () => {
         const contextWithOldEigen = {
-          userAgent: "Artsy-Mobile/9.17.0 Eigen/9.17.0",
+          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
         }
 
         const { homeView } = await runAuthenticatedQuery(
@@ -257,7 +257,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is at or above the minimum version", () => {
       it("is returned", async () => {
         const contextWithNewEigen = {
-          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
+          userAgent: "Artsy-Mobile/9.19.0 Eigen/9.19.0",
         }
 
         const { homeView } = await runAuthenticatedQuery(

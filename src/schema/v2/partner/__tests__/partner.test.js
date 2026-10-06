@@ -2629,6 +2629,141 @@ describe("Partner type", () => {
     })
   })
 
+  describe("artwork field", () => {
+    const run = (id = "the-artwork-id") => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artwork(id: "${id}") {
+              title
+            }
+          }
+        }
+      `
+      return runQuery(query, context)
+    }
+
+    it("returns the artwork scoped to this partner when authenticated", async () => {
+      const partnerArtworkLoader = jest
+        .fn()
+        .mockResolvedValue({ id: "the-artwork-id", title: "The Artwork" })
+      context.authenticatedLoaders = { partnerArtworkLoader }
+
+      const data = await run()
+
+      expect(partnerArtworkLoader).toHaveBeenCalledWith({
+        partner_id: "catty-partner",
+        artwork_id: "the-artwork-id",
+      })
+      expect(data).toEqual({
+        partner: { artwork: { title: "The Artwork" } },
+      })
+    })
+
+    it.each([404, 403])(
+      "returns null when Gravity responds %i",
+      async (statusCode) => {
+        const error = Object.assign(new Error("nope"), { statusCode })
+        const partnerArtworkLoader = jest.fn().mockRejectedValue(error)
+        context.authenticatedLoaders = { partnerArtworkLoader }
+
+        const data = await run("someone-elses-artwork")
+
+        expect(partnerArtworkLoader).toHaveBeenCalledWith({
+          partner_id: "catty-partner",
+          artwork_id: "someone-elses-artwork",
+        })
+        expect(data).toEqual({ partner: { artwork: null } })
+      }
+    )
+
+    it("propagates unexpected errors instead of swallowing them as not-found", async () => {
+      const error = Object.assign(new Error("Internal Server Error"), {
+        statusCode: 500,
+      })
+      const partnerArtworkLoader = jest.fn().mockRejectedValue(error)
+      context.authenticatedLoaders = { partnerArtworkLoader }
+
+      await expect(run()).rejects.toThrow("Internal Server Error")
+    })
+
+    it("returns null for an unauthenticated request, without calling Gravity", async () => {
+      context.authenticatedLoaders = {}
+
+      const data = await run()
+
+      expect(data).toEqual({ partner: { artwork: null } })
+    })
+  })
+
+  describe("viewingRoom field", () => {
+    const run = (id = "the-viewing-room-id") => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            viewingRoom(id: "${id}") {
+              title
+            }
+          }
+        }
+      `
+      return runQuery(query, context)
+    }
+
+    it("returns the viewingRoom scoped to this partner when authenticated", async () => {
+      const partnerViewingRoomLoader = jest.fn().mockResolvedValue({
+        id: "the-viewing-room-id",
+        title: "The Viewing Room",
+      })
+      context.authenticatedLoaders = { partnerViewingRoomLoader }
+
+      const data = await run()
+
+      expect(partnerViewingRoomLoader).toHaveBeenCalledWith({
+        partner_id: "catty-partner",
+        viewing_room_id: "the-viewing-room-id",
+      })
+      expect(data).toEqual({
+        partner: { viewingRoom: { title: "The Viewing Room" } },
+      })
+    })
+
+    it.each([404, 403])(
+      "returns null when Gravity responds %i",
+      async (statusCode) => {
+        const error = Object.assign(new Error("nope"), { statusCode })
+        const partnerViewingRoomLoader = jest.fn().mockRejectedValue(error)
+        context.authenticatedLoaders = { partnerViewingRoomLoader }
+
+        const data = await run("someone-elses-viewingRoom")
+
+        expect(partnerViewingRoomLoader).toHaveBeenCalledWith({
+          partner_id: "catty-partner",
+          viewing_room_id: "someone-elses-viewingRoom",
+        })
+        expect(data).toEqual({ partner: { viewingRoom: null } })
+      }
+    )
+
+    it("propagates unexpected errors instead of swallowing them as not-found", async () => {
+      const error = Object.assign(new Error("Internal Server Error"), {
+        statusCode: 500,
+      })
+      const partnerViewingRoomLoader = jest.fn().mockRejectedValue(error)
+      context.authenticatedLoaders = { partnerViewingRoomLoader }
+
+      await expect(run()).rejects.toThrow("Internal Server Error")
+    })
+
+    it("returns null for an unauthenticated request, without calling Gravity", async () => {
+      context.authenticatedLoaders = {}
+
+      const data = await run()
+
+      expect(data).toEqual({ partner: { viewingRoom: null } })
+    })
+  })
+
   describe("show field", () => {
     it("returns the show scoped to this partner when authenticated", async () => {
       const partnerShowLoader = jest

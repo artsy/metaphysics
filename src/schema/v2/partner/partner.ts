@@ -1,6 +1,7 @@
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import {
   GraphQLEnumType,
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -28,7 +29,7 @@ import {
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
-import Artwork, { artworkConnection } from "schema/v2/artwork"
+import Artwork, { ArtworkType, artworkConnection } from "schema/v2/artwork"
 import numeral from "schema/v2/fields/numeral"
 import { ShowsConnection, ShowType } from "schema/v2/show"
 import { ArtistType } from "schema/v2/artist"
@@ -74,6 +75,7 @@ import {
   ViewingRoomsConnection,
   ViewingRoomStatusEnum,
 } from "../viewingRoomConnection"
+import { ViewingRoomType } from "schema/v2/viewingRoom"
 import { ShippingPresetsConnection } from "schema/v2/shippingPreset"
 import { contactsConnection, ContactType } from "schema/v2/Contacts"
 import { ConversationMessageTemplatesConnection } from "schema/v2/conversationMessageTemplate/conversationMessageTemplatesConnection"
@@ -85,6 +87,20 @@ import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTem
 import { ArtworkDuplicatePairsConnection } from "schema/v2/artworkDuplicatePair/artworkDuplicatePairs"
 import { BrandKitType } from "./brandKit"
 import { bulkUpdateMetadataPreview } from "./BulkOperation/bulkUpdateMetadataPreview"
+
+// Partner-scoped loaders answer 403 (user cannot manage the partner) and 404
+// (resource missing, deleted, or owned by another partner) for anything the
+// current partner may not see. Both resolve to null; other errors propagate.
+const nullIfForbiddenOrNotFound = async <T>(load: () => Promise<T>) => {
+  try {
+    return await load()
+  } catch (error) {
+    if (error.statusCode === 403 || error.statusCode === 404) {
+      return null
+    }
+    throw error
+  }
+}
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -707,6 +723,31 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artistsSearchConnection: partnerArtistsMatchConnection,
+      artwork: {
+        type: ArtworkType,
+        description:
+          "An Artwork belonging to this partner, scoped so it can only resolve artworks this partner owns and the current user can manage. Requires authentication.",
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The slug or ID of the Artwork",
+          },
+        },
+        resolve: async (
+          { id: partner_id },
+          { id },
+          { authenticatedLoaders }
+        ) => {
+          const partnerArtworkLoader =
+            authenticatedLoaders?.partnerArtworkLoader
+
+          if (!partnerArtworkLoader) return null
+
+          return nullIfForbiddenOrNotFound(() => {
+            return partnerArtworkLoader({ partner_id, artwork_id: id })
+          })
+        },
+      },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
@@ -1833,6 +1874,34 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             partnerId,
             ...response,
           }
+        },
+      },
+      viewingRoom: {
+        type: ViewingRoomType,
+        description:
+          "A Viewing Room belonging to this partner, scoped so it can only resolve viewing rooms this partner owns and the current user can manage. Requires authentication.",
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLID),
+            description: "The ID of the Viewing Room",
+          },
+        },
+        resolve: async (
+          { id: partner_id },
+          { id },
+          { authenticatedLoaders }
+        ) => {
+          const partnerViewingRoomLoader =
+            authenticatedLoaders?.partnerViewingRoomLoader
+
+          if (!partnerViewingRoomLoader) return null
+
+          return nullIfForbiddenOrNotFound(() => {
+            return partnerViewingRoomLoader({
+              partner_id,
+              viewing_room_id: id,
+            })
+          })
         },
       },
       viewingRoomsConnection: {
