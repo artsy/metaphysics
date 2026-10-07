@@ -32,6 +32,8 @@ export interface ResolverContextValues {
   xImpersonateUserID?: string
   /** Dev/QA only: forces a home-feed-simplification arm. Non-production only. */
   xHomeFeedArm?: string
+  /** Set by HomeFeedSimplificationRule; surfaced in extensions for debugging. */
+  homeViewAppliedArm?: { arm: string | null; source: "override" | "unleash" }
   isCMSRequest: boolean
 }
 

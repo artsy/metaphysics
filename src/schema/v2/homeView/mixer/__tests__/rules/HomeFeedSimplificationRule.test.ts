@@ -100,4 +100,45 @@ describe("HomeFeedSimplificationRule", () => {
       expect(mockGetVariant).toHaveBeenCalled()
     })
   })
+
+  describe("homeViewAppliedArm (debug stash)", () => {
+    it("records the override arm and source", async () => {
+      mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
+      const ctx = {
+        userID: "123",
+        xHomeFeedArm: "reduced_current",
+      } as ResolverContext
+
+      await rule.apply(sections, ctx)
+
+      expect(ctx.homeViewAppliedArm).toEqual({
+        arm: "reduced_current",
+        source: "override",
+      })
+    })
+
+    it("records the Unleash arm and source", async () => {
+      mockGetVariant.mockReturnValue({
+        enabled: true,
+        name: "hierarchy_breadth",
+      })
+      const ctx = { userID: "123" } as ResolverContext
+
+      await rule.apply(sections, ctx)
+
+      expect(ctx.homeViewAppliedArm).toEqual({
+        arm: "hierarchy_breadth",
+        source: "unleash",
+      })
+    })
+
+    it("records a null arm when not enrolled", async () => {
+      mockGetVariant.mockReturnValue(false)
+      const ctx = { userID: "123" } as ResolverContext
+
+      await rule.apply(sections, ctx)
+
+      expect(ctx.homeViewAppliedArm).toEqual({ arm: null, source: "unleash" })
+    })
+  })
 })

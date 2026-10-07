@@ -193,13 +193,24 @@ const extensionsPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
           return
         }
         const ctx = args.contextValue as YogaInternalContext
-        const extensions = createExtensions(
-          args.document,
-          result,
-          ctx._requestID,
-          ctx._userAgent
-        )
-        if (extensions) {
+        const extensions = {
+          ...createExtensions(
+            args.document,
+            result,
+            ctx._requestID,
+            ctx._userAgent
+          ),
+          // Dev/QA: surface which home-feed arm actually shaped this response.
+          ...(SYSTEM_ENVIRONMENT !== "production" && ctx.homeViewAppliedArm
+            ? {
+                homeViewSimplification: {
+                  appliedArm: ctx.homeViewAppliedArm.arm ?? "control",
+                  source: ctx.homeViewAppliedArm.source,
+                },
+              }
+            : {}),
+        }
+        if (Object.keys(extensions).length) {
           setResult({
             ...(result as any),
             extensions: {
