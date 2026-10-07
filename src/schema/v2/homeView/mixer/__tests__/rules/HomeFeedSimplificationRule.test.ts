@@ -70,4 +70,34 @@ describe("HomeFeedSimplificationRule", () => {
       RecommendedArtworks.id,
     ])
   })
+
+  describe("x-home-feed-arm override", () => {
+    it("forces the arm from context, bypassing Unleash", async () => {
+      mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
+      const overrideContext = {
+        userID: "123",
+        xHomeFeedArm: "reduced_current",
+      } as ResolverContext
+
+      const out = await rule.apply(sections, overrideContext)
+
+      expect(out.map((s) => s.id)).toEqual([
+        QuickLinks.id,
+        NewWorksForYou.id,
+        RecommendedArtworks.id,
+      ])
+      expect(mockGetVariant).not.toHaveBeenCalled()
+    })
+
+    it("ignores an invalid override and falls back to Unleash", async () => {
+      mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
+      const overrideContext = {
+        userID: "123",
+        xHomeFeedArm: "not_an_arm",
+      } as ResolverContext
+
+      expect(await rule.apply(sections, overrideContext)).toBe(sections)
+      expect(mockGetVariant).toHaveBeenCalled()
+    })
+  })
 })

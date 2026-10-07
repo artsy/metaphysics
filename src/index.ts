@@ -50,6 +50,7 @@ const {
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
+  SYSTEM_ENVIRONMENT,
   INTROSPECT_TOKEN,
 } = config
 
@@ -277,9 +278,15 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     // Headers to be threaded through to downstream services
     // and used to authenticate with Artnet services.
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
-    const xArtnetUserID = req.headers["x-artnet-user-id"] as
-      | string
-      | undefined
+    const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
+
+    // Dev/QA only: force a home-feed-simplification arm, bypassing Unleash
+    // assignment. Honored everywhere except real production — staging/review
+    // apps run NODE_ENV=production, so gate on SYSTEM_ENVIRONMENT, not PRODUCTION_ENV.
+    const xHomeFeedArm =
+      SYSTEM_ENVIRONMENT !== "production"
+        ? (req.headers["x-home-feed-arm"] as string | undefined)
+        : undefined
 
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
@@ -317,6 +324,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       appToken,
       ipAddress,
       xImpersonateUserID,
+      xHomeFeedArm,
       isCMSRequest,
       _req: req,
       _requestID: requestID,
