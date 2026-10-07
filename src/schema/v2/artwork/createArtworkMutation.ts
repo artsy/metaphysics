@@ -24,6 +24,7 @@ interface CreateArtworkMutationInputProps {
   imageS3Buckets?: string[]
   imageS3Keys?: string[]
   partnerShowId?: string
+  partnerListId?: string
   createdSurface?: string
 }
 
@@ -83,6 +84,11 @@ export const createArtworkMutation = mutationWithClientMutationId<
       description:
         "If present, the newly created artwork will be added to this show.",
     },
+    partnerListId: {
+      type: GraphQLString,
+      description:
+        "If present, the newly created artwork will be added to this partner list (collection).",
+    },
     imageS3Bucket: {
       type: GraphQLString,
       description: "The S3 bucket where the artwork image is stored.",
@@ -121,6 +127,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
       artsyListing,
       partnerId,
       partnerShowId,
+      partnerListId,
       imageS3Bucket,
       imageS3Key,
       imageS3Buckets,
@@ -170,6 +177,7 @@ export const createArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         artsy_listing: artsyListing,
         partner: partnerId,
+        partner_list_id: partnerListId,
         sync_to_search: true,
         created_surface: createdSurface,
       })
