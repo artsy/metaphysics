@@ -29,6 +29,7 @@ import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 import { HomeFeedSimplificationRule } from "../mixer/rules/HomeFeedSimplificationRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
+import { CurationArea } from "../sections/CurationArea"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -45,6 +46,7 @@ const SECTIONS: HomeViewSection[] = [
   HeroUnits,
   AuctionLotsForYou,
   Auctions,
+  CurationArea,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,

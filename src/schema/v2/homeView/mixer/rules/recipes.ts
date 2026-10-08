@@ -7,11 +7,11 @@ import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { AuctionLotsForYou } from "../../sections/AuctionLotsForYou"
-import { TrendingArtists } from "../../sections/TrendingArtists"
 import { LatestArticles } from "../../sections/LatestArticles"
 import { News } from "../../sections/News"
 import { ShowsForYou } from "../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../sections/FeaturedFairs"
+import { CurationArea } from "../../sections/CurationArea"
 
 /**
  * The home-feed-simplification arms. Single source of truth for the
@@ -61,9 +61,9 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
     News.id,
     ShowsForYou.id,
     FeaturedFairs.id,
-    // discover/curation grouped — TODO: likely a Discover *tabs* section later
-    CuratorsPicksEmerging.id,
-    TrendingArtists.id,
+    // Consolidated discovery block: one lead rail (Curators' Picks) + entry
+    // chips absorbing Recommended/Trending Artists and Collections.
+    CurationArea.id,
     RecommendedArtworks.id,
   ],
 

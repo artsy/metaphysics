@@ -11,6 +11,7 @@ import { News } from "../../../sections/News"
 import { ShowsForYou } from "../../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../../sections/FeaturedFairs"
 import { Tasks } from "../../../sections/Tasks"
+import { CurationArea } from "../../../sections/CurationArea"
 
 describe("composeForArm", () => {
   // A representative superset of the sections the arms reference.
@@ -26,6 +27,7 @@ describe("composeForArm", () => {
     News,
     ShowsForYou,
     FeaturedFairs,
+    CurationArea,
   ] as HomeViewSection[]
 
   it("returns sections unchanged for control", () => {
@@ -59,8 +61,7 @@ describe("composeForArm", () => {
       News.id,
       ShowsForYou.id,
       FeaturedFairs.id,
-      CuratorsPicksEmerging.id,
-      TrendingArtists.id,
+      CurationArea.id,
       RecommendedArtworks.id,
     ])
   })

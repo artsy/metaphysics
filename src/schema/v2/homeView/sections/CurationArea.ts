@@ -19,6 +19,11 @@ import { TrendingArtists } from "./TrendingArtists"
 export const CurationArea: HomeViewCurationAreaSection = {
   id: "home-view-section-curation-area",
   type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
+  // Gate behind the experiment flag so it stays out of the production feed
+  // until launch (flag is off in prod, on in staging/review). String literal
+  // rather than importing HOME_FEED_SIMPLIFICATION_FLAG to avoid a cycle
+  // (recipes -> this section -> rule -> recipes).
+  featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "Chosen by our curators",
     // Presentation variant (e.g. 2 large chips vs 3 compact). Client switches
