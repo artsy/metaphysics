@@ -91,11 +91,11 @@ describe("searchDropdown", () => {
       expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "1d" })
     })
 
-    it("asks Vortex for the requested window", async () => {
+    it("asks Vortex for the one day window when requested explicitly", async () => {
       const query = gql`
         {
           searchDropdown {
-            trending(period: THIRTY_DAYS) {
+            trending(period: ONE_DAY) {
               period
               label
             }
@@ -105,9 +105,61 @@ describe("searchDropdown", () => {
 
       const { searchDropdown } = await runQuery(query, context)
 
-      expect(searchDropdown.trending.period).toEqual("THIRTY_DAYS")
-      expect(searchDropdown.trending.label).toEqual("Past 30 Days")
-      expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "30d" })
+      expect(searchDropdown.trending).toEqual({
+        period: "ONE_DAY",
+        label: "Today",
+      })
+      expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "1d" })
+    })
+
+    describe.each([
+      ["SEVEN_DAYS", "Past 7 Days"],
+      ["THIRTY_DAYS", "Past 30 Days"],
+    ])("deprecated %s", (period, label) => {
+      const query = gql`
+        {
+          searchDropdown {
+            trending(period: ${period}) {
+              period
+              label
+              artists {
+                internalID
+              }
+            }
+          }
+        }
+      `
+
+      it("serves today's ranking", async () => {
+        const { searchDropdown } = await runQuery(query, context)
+
+        expect(trendingSearchesLoader).toHaveBeenCalledTimes(1)
+        expect(trendingSearchesLoader).toHaveBeenCalledWith({ period: "1d" })
+        expect(
+          searchDropdown.trending.artists.map(({ internalID }) => internalID)
+        ).toEqual(ARTIST_IDS)
+      })
+
+      it("echoes the requested period and keeps its label", async () => {
+        // Older Eigen builds still render these tabs; distinct periods keep
+        // their cache entries apart and the copy unchanged.
+        const { searchDropdown } = await runQuery(query, context)
+
+        expect(searchDropdown.trending.period).toEqual(period)
+        expect(searchDropdown.trending.label).toEqual(label)
+      })
+    })
+
+    it("marks the longer windows as deprecated", () => {
+      const { schema } = require("schema/v2")
+      const values = schema.getType("TrendingSearchPeriod").getValues()
+      const reasons = Object.fromEntries(
+        values.map(({ name, deprecationReason }) => [name, deprecationReason])
+      )
+
+      expect(reasons.ONE_DAY).toBeUndefined()
+      expect(reasons.SEVEN_DAYS).toMatch(/Only ONE_DAY is served/)
+      expect(reasons.THIRTY_DAYS).toMatch(/Only ONE_DAY is served/)
     })
 
     it("serves a signed in visitor the same rails as a logged out one", async () => {
