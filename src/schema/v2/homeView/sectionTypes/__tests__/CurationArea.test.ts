@@ -42,11 +42,13 @@ describe("HomeViewSectionCurationArea", () => {
       expect(chips).toEqual([
         {
           title: "Recommended Artists",
+          href: `home-view/sections/${RecommendedArtists.id}?sectionType=${RecommendedArtists.type}`,
           entityType: "HomeViewSection",
           entityID: RecommendedArtists.id,
         },
         {
           title: "Trending Artists",
+          href: `home-view/sections/${TrendingArtists.id}?sectionType=${TrendingArtists.type}`,
           entityType: "HomeViewSection",
           entityID: TrendingArtists.id,
         },

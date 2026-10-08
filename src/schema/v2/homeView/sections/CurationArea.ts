@@ -1,4 +1,5 @@
 import { connectionFromArray } from "graphql-relay"
+import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomeViewCurationAreaSection } from "../sectionTypes/CurationArea"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
@@ -6,16 +7,19 @@ import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
 
 /**
- * Chip target contract (resolved on the client):
- *   1. If `href` is present, deep-link to it.
- *   2. Otherwise, if `entityType === "HomeViewSection"`, fetch the target rail
- *      via `homeView.section(id: entityID)` and present it.
- * A chip may carry both; `href` wins. We keep both while we confirm which
- * curation areas have dedicated landing pages, then trim the unused path.
+ * Chip navigation: every chip carries an `href`, so the client is uniformly
+ * href-based (`RouterLink to={chip.href}`). For chips that point at another
+ * home-view section, the href is the lazy section screen route — built here
+ * because it needs the target's section id + type. `entityType`/`entityID` are
+ * retained for analytics.
  *
  * TODO: finalize chip images (imageURL) and the "Collections" target once design
  * and the collections landing route are confirmed.
  */
+
+// Mirrors Eigen's getHomeViewSectionHref output for the section-detail screen.
+const sectionScreenHref = (section: HomeViewSection): string =>
+  `home-view/sections/${section.id}?sectionType=${section.type}`
 export const CurationArea: HomeViewCurationAreaSection = {
   id: "home-view-section-curation-area",
   type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
@@ -40,11 +44,13 @@ export const CurationArea: HomeViewCurationAreaSection = {
     const chips = [
       {
         title: "Recommended Artists",
+        href: sectionScreenHref(RecommendedArtists),
         entityType: "HomeViewSection",
         entityID: RecommendedArtists.id,
       },
       {
         title: "Trending Artists",
+        href: sectionScreenHref(TrendingArtists),
         entityType: "HomeViewSection",
         entityID: TrendingArtists.id,
       },
