@@ -33,6 +33,26 @@ describe("extractEmbed", () => {
     )
   })
 
+  it("extracts a youtube shorts embed", () => {
+    expect(
+      extractEmbed("https://www.youtube.com/shorts/-Jkcx0Q8X3I?si=abc123")
+    ).toEqual(
+      '<iframe src="https://www.youtube.com/embed/-Jkcx0Q8X3I?title=0&portrait=0&badge=0&byline=0&showinfo=0&rel=0&controls=2&modestbranding=1&iv_load_policy=3&color=E5E5E5" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>'
+    )
+  })
+
+  it("extracts a youtu.be share link with params", () => {
+    expect(extractEmbed("https://youtu.be/QWtsV50_-p4?si=abc123")).toEqual(
+      '<iframe src="https://www.youtube.com/embed/QWtsV50_-p4?title=0&portrait=0&badge=0&byline=0&showinfo=0&rel=0&controls=2&modestbranding=1&iv_load_policy=3&color=E5E5E5" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>'
+    )
+  })
+
+  it("extracts a vimeo embed with a trailing slash", () => {
+    expect(extractEmbed("https://vimeo.com/265111898/")).toEqual(
+      '<iframe src="https://player.vimeo.com/video/265111898?" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>'
+    )
+  })
+
   it("adds the autoplay param", () => {
     expect(
       extractEmbed("https://www.youtube.com/watch?v=QWtsV50_-p4", {
