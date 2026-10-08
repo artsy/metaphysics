@@ -860,12 +860,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkImportsConnectionType,
         args: {
           ...pageable(),
-          source: {
-            type: GraphQLString,
-            description:
-              "Filter by import source: 'bulk_import', 'multi_add', or 'partner_conversion'.",
-            deprecationReason: "Use `sources` instead.",
-          },
           sources: {
             type: new GraphQLList(GraphQLString),
             description:
@@ -888,11 +882,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
-            ...(args.sources?.length
-              ? { sources: args.sources }
-              : args.source
-              ? { source: args.source }
-              : {}),
+            ...(args.sources?.length && { sources: args.sources }),
             ...(args.includeInactive && { include_inactive: true }),
           })
 
