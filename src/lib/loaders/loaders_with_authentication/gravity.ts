@@ -258,6 +258,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetArtworkLoader: gravityLoader(
+      "artnet_artwork",
+      {},
+      { method: "POST" }
+    ),
+    updateArtnetArtworkLoader: gravityLoader(
+      (id) => `artnet_artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
     artnetImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artnet_import/${id}/unmatched_artist_names`
