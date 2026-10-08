@@ -137,7 +137,7 @@ describe("ArtworkImport", () => {
     })
   })
 
-  it("forwards the sources argument to Gravity, taking precedence over the deprecated source argument", async () => {
+  it("forwards the sources argument to Gravity", async () => {
     const artworkImportsLoader = jest.fn().mockResolvedValue({
       body: [],
       headers: { "x-total-count": "0" },
@@ -151,7 +151,6 @@ describe("ArtworkImport", () => {
         partner(id: "partner-1") {
           artworkImportsConnection(
             first: 10
-            source: "multi_add"
             sources: ["bulk_import", "partner_conversion"]
           ) {
             totalCount
@@ -167,36 +166,6 @@ describe("ArtworkImport", () => {
       expect.objectContaining({
         sources: ["bulk_import", "partner_conversion"],
       })
-    )
-    expect(artworkImportsLoader).not.toHaveBeenCalledWith(
-      expect.objectContaining({ source: expect.anything() })
-    )
-  })
-
-  it("falls back to the deprecated source argument when sources is omitted", async () => {
-    const artworkImportsLoader = jest.fn().mockResolvedValue({
-      body: [],
-      headers: { "x-total-count": "0" },
-    })
-    const partnerLoader = jest.fn().mockResolvedValue({
-      id: "partner-1",
-    })
-
-    const query = gql`
-      query {
-        partner(id: "partner-1") {
-          artworkImportsConnection(first: 10, source: "multi_add") {
-            totalCount
-          }
-        }
-      }
-    `
-
-    const context = { artworkImportsLoader, partnerLoader }
-    await runAuthenticatedQuery(query, context)
-
-    expect(artworkImportsLoader).toHaveBeenCalledWith(
-      expect.objectContaining({ source: "multi_add" })
     )
   })
 
