@@ -110,7 +110,7 @@ type AIAgentTurnComplete {
   stopReason: String!
 
   """
-  Follow-ups the collector can tap to continue the conversation. Null when the turn did not finish with an answer.
+  Follow-ups the collector can tap to continue the conversation. Null when suggested replies are disabled or the turn did not finish with an answer.
   """
   suggestedReplies: [AIAgentSuggestedReply!]
   toolCallCount: Int!

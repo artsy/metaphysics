@@ -157,13 +157,63 @@ describe("AIAgentTurn", () => {
     try {
       callSubscribe(input, context)
       expect(mockRunTurn).toHaveBeenCalledWith(
-        input,
+        { ...input, includeSuggestedReplies: true },
         expect.anything(),
         context
       )
     } finally {
       config.NODE_ENV = originalNodeEnv
     }
+  })
+
+  describe("suggested replies", () => {
+    const suggestedRepliesFlag = (enabled: boolean) =>
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) =>
+        flag === "onyx_ai_agent-suggested-replies" ? enabled : true
+      )
+
+    const includeSuggestedRepliesPassedToRunTurn = () =>
+      mockRunTurn.mock.calls[0][0].includeSuggestedReplies
+
+    it("follows the feature flag", () => {
+      suggestedRepliesFlag(true)
+      callSubscribe(
+        { conversationID: "c1", message: "hi" },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_ai_agent-suggested-replies"
+      )
+    })
+
+    it("are off when the feature flag is disabled", () => {
+      suggestedRepliesFlag(false)
+      callSubscribe(
+        { conversationID: "c1", message: "hi" },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(false)
+    })
+
+    it("are on in development regardless of the flag", () => {
+      suggestedRepliesFlag(false)
+      const originalNodeEnv = config.NODE_ENV
+      config.NODE_ENV = "development"
+
+      try {
+        callSubscribe(
+          { conversationID: "c1", message: "hi" },
+          { userID: "user-42", accessToken: "token" }
+        )
+      } finally {
+        config.NODE_ENV = originalNodeEnv
+      }
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
+    })
   })
 
   it("rejects a history longer than the message cap", () => {
@@ -218,7 +268,7 @@ describe("AIAgentTurn", () => {
     callSubscribe(input, context, schema)
 
     expect(mockRunTurn).toHaveBeenCalledWith(
-      { ...input, includeDebugToolCalls: false },
+      { ...input, includeDebugToolCalls: false, includeSuggestedReplies: true },
       schema,
       context
     )

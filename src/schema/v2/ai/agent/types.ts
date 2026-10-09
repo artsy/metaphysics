@@ -214,7 +214,7 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
     suggestedReplies: {
       type: new GraphQLList(new GraphQLNonNull(AIAgentSuggestedReplyType)),
       description:
-        "Follow-ups the collector can tap to continue the conversation. Null when the turn did not finish with an answer.",
+        "Follow-ups the collector can tap to continue the conversation. Null when suggested replies are disabled or the turn did not finish with an answer.",
     },
     stopReason: { type: new GraphQLNonNull(GraphQLString) },
     toolCallCount: { type: new GraphQLNonNull(GraphQLInt) },

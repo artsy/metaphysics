@@ -332,6 +332,9 @@ const AgentOutputSchema = z.object({
         "question -- `message` deliberately does not name them. Empty only " +
         "when no artworks were found, or the question isn't about artworks."
     ),
+})
+
+const AgentOutputWithSuggestedRepliesSchema = AgentOutputSchema.extend({
   suggestedReplies: z
     .array(z.string())
     .describe(
@@ -340,6 +343,9 @@ const AgentOutputSchema = z.object({
         "section of the system prompt."
     ),
 })
+
+type AgentOutput = z.infer<typeof AgentOutputSchema> &
+  Partial<z.infer<typeof AgentOutputWithSuggestedRepliesSchema>>
 
 /**
  * Gravity's /artworks?ids[]= neither guarantees response order nor returns a
@@ -484,9 +490,18 @@ Don't suggest the request you just answered. Leave the list empty when you
 asked them a clarifying question or couldn't answer.
 `.trim()
 
-async function loadSystemPrompt(context: ResolverContext): Promise<string> {
+async function loadSystemPrompt(
+  context: ResolverContext,
+  includeSuggestedReplies: boolean
+): Promise<string> {
   const template = await loadPromptTemplate(context)
-  return `${template}\n\n${SUGGESTED_REPLIES_NOTE}\n\n${currentDateNote()}`
+  return [
+    template,
+    includeSuggestedReplies ? SUGGESTED_REPLIES_NOTE : null,
+    currentDateNote(),
+  ]
+    .filter(Boolean)
+    .join("\n\n")
 }
 
 function sanitizeSuggestedReplies(
@@ -621,6 +636,7 @@ export async function* runTurn(
     message: string
     history?: AIAgentHistoryEntry[] | null
     includeDebugToolCalls?: boolean | null
+    includeSuggestedReplies?: boolean
   },
   schema: GraphQLSchema,
   context: ResolverContext
@@ -656,9 +672,10 @@ export async function* runTurn(
   )
 
   let toolCallCount = 0
+  const includeSuggestedReplies = !!input.includeSuggestedReplies
 
   try {
-    const system = await loadSystemPrompt(context)
+    const system = await loadSystemPrompt(context, includeSuggestedReplies)
     const messages = buildMessages(input.history, input.message)
     const tools = buildAgentTools(schema, context)
 
@@ -682,7 +699,11 @@ export async function* runTurn(
       stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
-      output: Output.object({ schema: AgentOutputSchema }),
+      output: Output.object({
+        schema: includeSuggestedReplies
+          ? AgentOutputWithSuggestedRepliesSchema
+          : AgentOutputSchema,
+      }),
       // Off unless AI_AGENT_OTLP_ENDPOINT is set. `conversationID` becomes
       // `gen_ai.conversation.id`, which groups turns in Sentry; recordInputs
       // sends real user messages and the model's GraphQL to Sentry.
@@ -823,7 +844,7 @@ export async function* runTurn(
           // case the model never produced a final structured answer, so
           // there's nothing to await from `result.output`.
           const hitCap = part.finishReason === "tool-calls"
-          const finalOutput = hitCap
+          const finalOutput: AgentOutput | null = hitCap
             ? null
             : await Promise.resolve(result.output).catch((error) => {
                 Sentry.captureException(error)
@@ -836,9 +857,10 @@ export async function* runTurn(
             __typename: "AIAgentTurnComplete",
             message: finalOutput?.message ?? null,
             artworks,
-            suggestedReplies: finalOutput
-              ? sanitizeSuggestedReplies(finalOutput.suggestedReplies)
-              : null,
+            suggestedReplies:
+              includeSuggestedReplies && finalOutput
+                ? sanitizeSuggestedReplies(finalOutput.suggestedReplies ?? [])
+                : null,
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
           }
