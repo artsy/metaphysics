@@ -13,6 +13,7 @@ import { FeaturedFairs } from "../../../sections/FeaturedFairs"
 import { Tasks } from "../../../sections/Tasks"
 import { CurationArea } from "../../../sections/CurationArea"
 import { EditorialCurationArea } from "../../../sections/EditorialCurationArea"
+import { WhatsHappeningCurationArea } from "../../../sections/WhatsHappeningCurationArea"
 
 describe("composeForArm", () => {
   // A representative superset of the sections the arms reference.
@@ -30,6 +31,7 @@ describe("composeForArm", () => {
     FeaturedFairs,
     CurationArea,
     EditorialCurationArea,
+    WhatsHappeningCurationArea,
   ] as HomeViewSection[]
 
   it("returns sections unchanged for control", () => {
@@ -60,17 +62,18 @@ describe("composeForArm", () => {
       QuickLinks.id,
       NewWorksForYou.id,
       EditorialCurationArea.id,
-      ShowsForYou.id,
-      FeaturedFairs.id,
+      WhatsHappeningCurationArea.id,
       CurationArea.id,
       RecommendedArtworks.id,
     ])
   })
 
-  it("drops the standalone editorial + news rails from hierarchy_breadth", () => {
+  it("drops the standalone rails the curation areas consolidate from hierarchy_breadth", () => {
     const out = composeForArm("hierarchy_breadth", sections).map((s) => s.id)
     expect(out).not.toContain(LatestArticles.id)
     expect(out).not.toContain(News.id)
+    expect(out).not.toContain(ShowsForYou.id)
+    expect(out).not.toContain(FeaturedFairs.id)
   })
 
   it("composes merchandising with the same order as reduced_current", () => {

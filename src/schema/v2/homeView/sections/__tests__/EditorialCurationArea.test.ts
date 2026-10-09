@@ -4,16 +4,18 @@ import { LatestArticles } from "../LatestArticles"
 
 describe("EditorialCurationArea", () => {
   it("leads with the editorial rail and labels its sub-sections", () => {
-    expect(EditorialCurationArea.leadSectionID).toEqual(LatestArticles.id)
-    expect(EditorialCurationArea.leadTitle).toEqual("Editorial")
+    expect(EditorialCurationArea.rails).toEqual([
+      { sectionID: LatestArticles.id, title: "Editorial" },
+    ])
     expect(EditorialCurationArea.chipsTitle).toEqual("Art News")
     expect(EditorialCurationArea.chipsHref).toEqual("/news")
+    expect(EditorialCurationArea.chipsOwnerType).toEqual("marketNews")
   })
 
   it("maps news articles to chips with a thumbnail and href", async () => {
     const context = ({
       articlesLoader: jest.fn().mockResolvedValue({
-        count: 2,
+        count: 3,
         results: [
           {
             id: "a1",
@@ -26,6 +28,16 @@ describe("EditorialCurationArea", () => {
             slug: "news-two",
             title: "News Two",
             thumbnail_image: { image_url: "https://ex.com/2.jpg" },
+          },
+          {
+            id: "a3",
+            slug: "news-three",
+            title: "News Three",
+            // `:version`-templated URL — must resolve to a concrete version.
+            thumbnail_image: {
+              image_url: "https://ex.com/:version.jpg",
+              image_versions: ["small", "large"],
+            },
           },
         ],
       }),
@@ -54,6 +66,13 @@ describe("EditorialCurationArea", () => {
         imageURL: "https://ex.com/2.jpg",
         entityType: "Article",
         entityID: "a2",
+      },
+      {
+        title: "News Three",
+        href: "/article/news-three",
+        imageURL: "https://ex.com/large.jpg",
+        entityType: "Article",
+        entityID: "a3",
       },
     ])
   })

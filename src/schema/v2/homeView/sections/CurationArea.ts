@@ -36,8 +36,10 @@ export const CurationArea: HomeViewCurationAreaSection = {
   },
   requiresAuthentication: false,
 
-  // Lead rail shown inside the container; resolved by reference (stays lazy).
-  leadSectionID: CuratorsPicksEmerging.id,
+  // One rail (Curators' Picks) + entry chips. TODO: the redesigned "Curated"
+  // area drops the rail and is chips-only — flip to `rails: []` + the new large
+  // chip set once that design's chip list is finalized.
+  rails: [{ sectionID: CuratorsPicksEmerging.id }],
 
   // Entry chips to the other curation areas this block consolidates.
   resolver: (_parent, args) => {

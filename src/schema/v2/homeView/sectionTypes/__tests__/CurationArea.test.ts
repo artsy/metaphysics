@@ -8,23 +8,42 @@ import { TrendingArtists } from "../../sections/TrendingArtists"
 describe("HomeViewSectionCurationArea", () => {
   const info = {} as any
 
-  describe("leadSection resolver", () => {
-    const resolve = HomeViewCurationAreaSectionType.getFields().leadSection
+  describe("rails resolver", () => {
+    const resolve = HomeViewCurationAreaSectionType.getFields().rails
       .resolve! as any
 
-    it("resolves the referenced lead section from the registry", () => {
+    it("resolves each referenced rail section with its title override", () => {
       const result = resolve(
-        { leadSectionID: CuratorsPicksEmerging.id },
+        {
+          rails: [
+            { sectionID: CuratorsPicksEmerging.id },
+            { sectionID: RecommendedArtists.id, title: "Featured Artists" },
+          ],
+        },
+        {},
+        // authenticated so the auth-gated RecommendedArtists rail survives
+        { accessToken: "a-token" } as ResolverContext,
+        info
+      )
+      expect(result).toEqual([
+        { title: undefined, section: CuratorsPicksEmerging },
+        { title: "Featured Artists", section: RecommendedArtists },
+      ])
+    })
+
+    it("drops non-displayable rails", () => {
+      // RecommendedArtists requires auth; an unauthenticated context drops it.
+      const result = resolve(
+        { rails: [{ sectionID: RecommendedArtists.id }] },
         {},
         {} as ResolverContext,
         info
       )
-      expect(result.id).toEqual(CuratorsPicksEmerging.id)
+      expect(result).toEqual([])
     })
 
-    it("returns null when no lead section is referenced", () => {
-      const result = resolve({}, {}, {} as ResolverContext, info)
-      expect(result).toBeNull()
+    it("returns [] when no rails are referenced", () => {
+      expect(resolve({}, {}, {} as ResolverContext, info)).toEqual([])
     })
   })
 

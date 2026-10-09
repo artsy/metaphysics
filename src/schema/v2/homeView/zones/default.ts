@@ -31,6 +31,7 @@ import { HomeFeedSimplificationRule } from "../mixer/rules/HomeFeedSimplificatio
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
 import { CurationArea } from "../sections/CurationArea"
 import { EditorialCurationArea } from "../sections/EditorialCurationArea"
+import { WhatsHappeningCurationArea } from "../sections/WhatsHappeningCurationArea"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -49,6 +50,7 @@ const SECTIONS: HomeViewSection[] = [
   Auctions,
   CurationArea,
   EditorialCurationArea,
+  WhatsHappeningCurationArea,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,

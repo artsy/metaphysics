@@ -6,9 +6,20 @@ import { News } from "./News"
 import ArticlesConnection from "schema/v2/articlesConnection"
 import ArticleSorts from "schema/v2/sorts/article_sorts"
 import { ArticleLayoutEnum } from "schema/v2/article/models"
+import { normalize, setVersion } from "schema/v2/image/normalize"
 
 // How many news articles surface as chips below the editorial lead rail.
 const NEWS_CHIP_COUNT = 6
+
+// Preferred thumbnail versions for a news chip; setVersion falls back to the
+// largest available if none match.
+const CHIP_IMAGE_VERSIONS = ["large", "larger", "main", "medium"]
+
+// Resolve an article's (possibly `:version`-templated) thumbnail to a concrete URL.
+const articleThumbnailURL = (thumbnailImage: any): string | undefined => {
+  const normalized = thumbnailImage && normalize(thumbnailImage)
+  return normalized ? setVersion(normalized, CHIP_IMAGE_VERSIONS) : undefined
+}
 
 /**
  * "Artsy Editorial" curation area: the existing editorial articles rail shown as
@@ -30,13 +41,15 @@ export const EditorialCurationArea: HomeViewCurationAreaSection = {
   },
   requiresAuthentication: false,
 
-  // Lead = the existing editorial rail, rendered inline (resolved by reference).
-  leadSectionID: LatestArticles.id,
-  leadTitle: "Editorial",
+  // One rail: the existing editorial rail, relabeled "Editorial" (its standalone
+  // title is "Artsy Editorial", which the container header already uses).
+  rails: [{ sectionID: LatestArticles.id, title: "Editorial" }],
   chipsTitle: "Art News",
-  // "View all" for the chips group follows the News rail's own destination,
-  // so the two stay in sync (relative href; Eigen resolves the env host).
+  // "View all" for the chips group follows the News rail's own destination +
+  // owner type, so the two stay in sync (relative href; Eigen resolves the env
+  // host and fires the view-all tracking with chipsOwnerType).
   chipsHref: News.component?.behaviors?.viewAll?.href ?? undefined,
+  chipsOwnerType: News.component?.behaviors?.viewAll?.ownerType ?? undefined,
 
   // Chips = latest News-layout articles mapped to cards. Reuses ArticlesConnection
   // (and thus News's exact filter mapping); articles already carry a thumbnail
@@ -57,8 +70,7 @@ export const EditorialCurationArea: HomeViewCurationAreaSection = {
     const chips = (connection?.edges ?? []).map(({ node }) => ({
       title: node.title,
       href: `/article/${node.slug}`,
-      // TODO: confirm sizing/version handling for the article thumbnail URL.
-      imageURL: node.thumbnail_image?.image_url,
+      imageURL: articleThumbnailURL(node.thumbnail_image),
       entityType: "Article",
       entityID: node.id,
     }))

@@ -28,6 +28,7 @@ import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtwor
 import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
+import { WhatsHappeningCurationArea } from "./WhatsHappeningCurationArea"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
 import { QuickLinks } from "./QuickLinks"
@@ -85,6 +86,7 @@ const sections: HomeViewSection[] = [
   Tasks,
   TrendingArtists,
   ViewingRooms,
+  WhatsHappeningCurationArea,
 ]
 
 export const registry = sections.reduce(

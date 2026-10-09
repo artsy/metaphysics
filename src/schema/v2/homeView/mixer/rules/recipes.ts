@@ -12,6 +12,7 @@ import { ShowsForYou } from "../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../sections/FeaturedFairs"
 import { CurationArea } from "../../sections/CurationArea"
 import { EditorialCurationArea } from "../../sections/EditorialCurationArea"
+import { WhatsHappeningCurationArea } from "../../sections/WhatsHappeningCurationArea"
 
 /**
  * The home-feed-simplification arms. Single source of truth for the
@@ -56,13 +57,14 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   hierarchy_breadth: [
     QuickLinks.id,
     NewWorksForYou.id,
-    // Consolidated editorial block: the editorial rail as lead + News as chips.
+    // Consolidated editorial block: the editorial rail + News as chips.
     // Replaces the standalone LatestArticles + News rails in this arm.
     EditorialCurationArea.id,
-    ShowsForYou.id,
-    FeaturedFairs.id,
-    // Consolidated discovery block: one lead rail (Curators' Picks) + entry
-    // chips absorbing Recommended/Trending Artists and Collections.
+    // Consolidated events block: Featured Fairs + Shows rails, no chips.
+    // Replaces the standalone ShowsForYou + FeaturedFairs rails in this arm.
+    WhatsHappeningCurationArea.id,
+    // Consolidated discovery block: Curators' Picks rail + entry chips absorbing
+    // Recommended/Trending Artists and Collections.
     CurationArea.id,
     RecommendedArtworks.id,
   ],
