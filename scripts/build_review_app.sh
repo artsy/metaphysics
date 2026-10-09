@@ -44,6 +44,15 @@ trap cleanup_on_failure ERR
 # Provision the review app.
 hokusai review_app create "$NAME" --verbose
 
+# Mark the namespace so the scheduled reaper (scripts/reap-review-apps.sh) can
+# find review apps safely, know which branch owns this one, and measure staleness
+# from the last deploy (restamped on every push) rather than the HEAD commit date.
+kubectl --context staging label namespace "$NAME" artsy.io/review-app=true --overwrite || true
+kubectl --context staging annotate namespace "$NAME" \
+  artsy.io/review-app-branch="review-app-$NAME" \
+  artsy.io/review-app-deployed-at="$(date +%s)" --overwrite || true
+  artsy.io/review-app-deployed-at="$(date +%s)" --overwrite || true
+
 # Metaphysics is a stateless GraphQL API and inherits staging's env via
 # `review_app setup`, so no custom env is set here (unlike Force).
 

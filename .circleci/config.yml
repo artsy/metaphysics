@@ -163,6 +163,25 @@ jobs:
           name: Create Cloudflare DNS record
           command: node scripts/create-review-app-subdomain.js
 
+  reap_review_apps:
+    executor: hokusai/beta
+    steps:
+      - checkout
+      - hokusai/install-aws-iam-authenticator
+      - hokusai/configure-hokusai
+      - run:
+          name: Install jq
+          command: curl -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 > /usr/local/bin/jq
+      - run:
+          name: Make jq executable
+          command: chmod u+x /usr/local/bin/jq
+      - run:
+          name: Reap stale review apps
+          command: |
+            kubectl config use-context staging
+            # Ship in dry-run; arm by setting DRY_RUN=false here.
+            ./scripts/reap-review-apps.sh
+
 workflows:
   default:
     jobs:
@@ -237,3 +256,17 @@ workflows:
               only: /^review-app-.*/
           requires:
             - create_or_update_review_app
+
+  # Daily reaper for stale review apps (dry-run until armed via DRY_RUN=false).
+  reap-review-apps:
+    triggers:
+      - schedule:
+          cron: "0 14 * * *" # Daily at 9am NY time (14:00 UTC)
+          filters:
+            branches:
+              only: main
+    jobs:
+      - reap_review_apps:
+          context:
+            - hokusai
+            - cloudflare
