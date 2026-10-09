@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, GraphQLString } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { emptyConnection } from "../../fields/pagination"
@@ -15,6 +15,13 @@ import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 export interface HomeViewCurationAreaSection extends HomeViewSection {
   /** Internal id of the section rendered as the lead rail inside the container. */
   leadSectionID?: string
+  /** Sub-label for the lead rail; overrides the lead section's own title so copy
+   * can diverge from the standalone rail (e.g. "Editorial" vs "Artsy Editorial"). */
+  leadTitle?: string
+  /** Header for the chips group (e.g. "Art News"). */
+  chipsTitle?: string
+  /** "View all" href for the chips group (e.g. "/news"). */
+  chipsHref?: string
 }
 
 /**
@@ -33,6 +40,23 @@ export const HomeViewCurationAreaSectionType = new GraphQLObjectType<
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+
+    // Instance-owned sub-labels, so the curation area's copy can be edited
+    // without touching the standalone rails it references. Null for areas that
+    // just reuse the lead section's own title and show no chips header.
+    leadTitle: {
+      type: GraphQLString,
+      resolve: (parent) => parent.leadTitle,
+    },
+    chipsTitle: {
+      type: GraphQLString,
+      resolve: (parent) => parent.chipsTitle,
+    },
+    chipsHref: {
+      type: GraphQLString,
+      description: "'View all' destination for the chips group.",
+      resolve: (parent) => parent.chipsHref,
+    },
 
     // The prominent lead rail shown inside the container (e.g. Curators' Picks).
     // Returned by reference so the lead section's own resolver (artworks, etc.)

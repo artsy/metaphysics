@@ -8,10 +8,10 @@ import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { AuctionLotsForYou } from "../../sections/AuctionLotsForYou"
 import { LatestArticles } from "../../sections/LatestArticles"
-import { News } from "../../sections/News"
 import { ShowsForYou } from "../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../sections/FeaturedFairs"
 import { CurationArea } from "../../sections/CurationArea"
+import { EditorialCurationArea } from "../../sections/EditorialCurationArea"
 
 /**
  * The home-feed-simplification arms. Single source of truth for the
@@ -56,9 +56,9 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   hierarchy_breadth: [
     QuickLinks.id,
     NewWorksForYou.id,
-    // editorial raised for "breadth" — TODO: likely an Editorial *tabs* section later
-    LatestArticles.id,
-    News.id,
+    // Consolidated editorial block: the editorial rail as lead + News as chips.
+    // Replaces the standalone LatestArticles + News rails in this arm.
+    EditorialCurationArea.id,
     ShowsForYou.id,
     FeaturedFairs.id,
     // Consolidated discovery block: one lead rail (Curators' Picks) + entry

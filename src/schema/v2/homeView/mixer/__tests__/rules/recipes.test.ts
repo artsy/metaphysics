@@ -12,6 +12,7 @@ import { ShowsForYou } from "../../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../../sections/FeaturedFairs"
 import { Tasks } from "../../../sections/Tasks"
 import { CurationArea } from "../../../sections/CurationArea"
+import { EditorialCurationArea } from "../../../sections/EditorialCurationArea"
 
 describe("composeForArm", () => {
   // A representative superset of the sections the arms reference.
@@ -28,6 +29,7 @@ describe("composeForArm", () => {
     ShowsForYou,
     FeaturedFairs,
     CurationArea,
+    EditorialCurationArea,
   ] as HomeViewSection[]
 
   it("returns sections unchanged for control", () => {
@@ -57,13 +59,18 @@ describe("composeForArm", () => {
     expect(out.map((s) => s.id)).toEqual([
       QuickLinks.id,
       NewWorksForYou.id,
-      LatestArticles.id,
-      News.id,
+      EditorialCurationArea.id,
       ShowsForYou.id,
       FeaturedFairs.id,
       CurationArea.id,
       RecommendedArtworks.id,
     ])
+  })
+
+  it("drops the standalone editorial + news rails from hierarchy_breadth", () => {
+    const out = composeForArm("hierarchy_breadth", sections).map((s) => s.id)
+    expect(out).not.toContain(LatestArticles.id)
+    expect(out).not.toContain(News.id)
   })
 
   it("composes merchandising with the same order as reduced_current", () => {

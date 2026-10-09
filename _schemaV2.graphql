@@ -22439,6 +22439,12 @@ type HomeViewSectionCurationArea implements HomeViewSectionGeneric & Node {
   ): HomeViewCardConnection
 
   """
+  'View all' destination for the chips group.
+  """
+  chipsHref: String
+  chipsTitle: String
+
+  """
   Component prescription for this section, for overriding or customizing presentation and behavior
   """
   component: HomeViewComponent
@@ -22458,6 +22464,7 @@ type HomeViewSectionCurationArea implements HomeViewSectionGeneric & Node {
   """
   internalID: ID!
   leadSection: HomeViewSectionGeneric
+  leadTitle: String
 
   """
   [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)

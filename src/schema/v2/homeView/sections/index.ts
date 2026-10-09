@@ -9,6 +9,7 @@ import { Auctions } from "./Auctions"
 import { CurationArea } from "./CurationArea"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
+import { EditorialCurationArea } from "./EditorialCurationArea"
 import { ExploreByCategory } from "./ExploreByCategory"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { GalleriesNearYou } from "./GalleriesNearYou"
@@ -63,6 +64,7 @@ const sections: HomeViewSection[] = [
   CurationArea,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,
+  EditorialCurationArea,
   ExploreByCategory,
   FeaturedFairs,
   GalleriesNearYou,
