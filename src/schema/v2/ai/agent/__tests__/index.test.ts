@@ -175,7 +175,7 @@ describe("AIAgentTurn", () => {
     const includeSuggestedRepliesPassedToRunTurn = () =>
       mockRunTurn.mock.calls[0][0].includeSuggestedReplies
 
-    it("follows the feature flag", () => {
+    it("follows the feature flag for this user", () => {
       suggestedRepliesFlag(true)
       callSubscribe(
         { conversationID: "c1", message: "hi" },
@@ -184,7 +184,10 @@ describe("AIAgentTurn", () => {
 
       expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
       expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
-        "onyx_ai_agent-suggested-replies"
+        "onyx_ai_agent-suggested-replies",
+        {
+          userId: "user-42",
+        }
       )
     })
 

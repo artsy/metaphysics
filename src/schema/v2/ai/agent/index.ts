@@ -80,7 +80,10 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
 
     const debugAvailable = isDevelopment || config.ENABLE_AI_AGENT_DEBUG
     const includeSuggestedReplies =
-      isDevelopment || isFeatureFlagEnabled("onyx_ai_agent-suggested-replies")
+      isDevelopment ||
+      isFeatureFlagEnabled("onyx_ai_agent-suggested-replies", {
+        userId: context.userID,
+      })
 
     return runTurn(
       {
