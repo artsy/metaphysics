@@ -17,6 +17,8 @@ export const ArtnetImportStateType = new GraphQLEnumType({
     PENDING: { value: "pending" },
     PROCESSING: { value: "processing" },
     COMPLETED: { value: "completed" },
+    FINALIZING: { value: "finalizing" },
+    FINALIZED: { value: "finalized" },
     FAILED: { value: "failed" },
   },
 })
@@ -56,6 +58,7 @@ export const ArtnetImportType = new GraphQLObjectType<any, ResolverContext>({
     },
     createdAt: date(),
     completedAt: date(),
+    finalizedAt: date(),
     unmatchedArtistNames: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
