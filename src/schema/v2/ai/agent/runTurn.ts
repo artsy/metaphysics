@@ -17,6 +17,7 @@ import {
 import {
   AIAgentEventPayload,
   AIAgentHistoryEntry,
+  AIAgentSuggestedReply,
   AIAgentTextDeltaPayload,
   AIAgentToolCallPayload,
   AIAgentToolResultPayload,
@@ -310,6 +311,8 @@ of the question as your other tool calls did cover.
 const AI_PROMPT_TEMPLATE_NAME = "agent_assistant_system_prompt"
 const MAX_TOKENS = 8000
 const MAX_ARTWORK_IDS = 20
+const MAX_SUGGESTED_REPLIES = 3
+const MAX_SUGGESTED_REPLY_LENGTH = 80
 
 // Structured final output: `message` is the prose answer (streamed to the
 // client incrementally, see the text-delta case below); `artworkIDs` names
@@ -328,6 +331,13 @@ const AgentOutputSchema = z.object({
         "this whenever a tool call surfaced artworks that answer the " +
         "question -- `message` deliberately does not name them. Empty only " +
         "when no artworks were found, or the question isn't about artworks."
+    ),
+  suggestedReplies: z
+    .array(z.string())
+    .describe(
+      "Up to three short follow-ups the collector can tap to send as their " +
+        "next message, written in their voice. See the Suggested replies " +
+        "section of the system prompt."
     ),
 })
 
@@ -448,9 +458,56 @@ countdown you would have to calculate.
 `.trim()
 }
 
+const SUGGESTED_REPLIES_NOTE = `
+## Suggested replies
+
+\`suggestedReplies\` are shown as tappable chips under your answer; tapping one
+sends it to you, verbatim, as the collector's next message. Offer up to three,
+and only things you can actually answer in one turn with the data you have:
+
+- a refinement of the search you just ran: a price ceiling, a medium, a size,
+  "show me more";
+- going deeper on what you just showed: the artist, the series, the fair, one
+  of the works;
+- a pivot you can serve: trending works, recommendations from their saves, the
+  works of an artist they follow.
+
+Write each one as the collector would type it — "Show me cheaper ones", "Only
+paintings", "Tell me about the artist" — never as an offer from you ("Would you
+like…?"). Keep each to a few words, under 50 characters. They can point at what
+is on screen ("More like the second one"), and the same rule as \`message\`
+applies: no ids and nothing about how you look things up.
+
+Never suggest something we can't do here: buying, making an offer, contacting a
+gallery, anything about their account or orders, or a price we don't publish.
+Don't suggest the request you just answered. Leave the list empty when you
+asked them a clarifying question or couldn't answer.
+`.trim()
+
 async function loadSystemPrompt(context: ResolverContext): Promise<string> {
   const template = await loadPromptTemplate(context)
-  return `${template}\n\n${currentDateNote()}`
+  return `${template}\n\n${SUGGESTED_REPLIES_NOTE}\n\n${currentDateNote()}`
+}
+
+function sanitizeSuggestedReplies(
+  replies: readonly string[]
+): AIAgentSuggestedReply[] {
+  const seen = new Set<string>()
+  const sanitized: AIAgentSuggestedReply[] = []
+
+  for (const reply of replies) {
+    const text = reply.replace(/\s+/g, " ").trim()
+    const key = text.toLowerCase()
+    if (!text || text.length > MAX_SUGGESTED_REPLY_LENGTH || seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    sanitized.push({ text })
+    if (sanitized.length === MAX_SUGGESTED_REPLIES) break
+  }
+
+  return sanitized
 }
 
 // An answer's `message` never names the works it showed, so without this a
@@ -583,6 +640,7 @@ export async function* runTurn(
       __typename: "AIAgentTurnComplete",
       message: null,
       artworks: null,
+      suggestedReplies: null,
       stopReason: "rate_limited",
       toolCallCount: 0,
     }
@@ -736,6 +794,7 @@ export async function* runTurn(
             __typename: "AIAgentTurnComplete",
             message: null,
             artworks: null,
+            suggestedReplies: null,
             stopReason: "aborted",
             toolCallCount,
           }
@@ -749,6 +808,7 @@ export async function* runTurn(
             __typename: "AIAgentTurnComplete",
             message: null,
             artworks: null,
+            suggestedReplies: null,
             stopReason: "error",
             toolCallCount,
           }
@@ -776,6 +836,9 @@ export async function* runTurn(
             __typename: "AIAgentTurnComplete",
             message: finalOutput?.message ?? null,
             artworks,
+            suggestedReplies: finalOutput
+              ? sanitizeSuggestedReplies(finalOutput.suggestedReplies)
+              : null,
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
           }
@@ -790,6 +853,7 @@ export async function* runTurn(
       __typename: "AIAgentTurnComplete",
       message: null,
       artworks: null,
+      suggestedReplies: null,
       stopReason: "error",
       toolCallCount,
     }

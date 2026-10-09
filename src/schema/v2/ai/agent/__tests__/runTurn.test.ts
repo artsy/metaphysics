@@ -134,6 +134,7 @@ describe("runTurn", () => {
     const finalJson = JSON.stringify({
       message: "Found Andy Warhol.",
       artworkIDs: [ID_A],
+      suggestedReplies: [],
     })
     const artworksLoader = jest
       .fn()
@@ -210,7 +211,12 @@ describe("runTurn", () => {
     // Real streaming delivers the final JSON in many small text-delta
     // chunks, not one shot — split mid-field-name and mid-string-value to
     // exercise `parsePartialJson`'s partial-buffer handling for real.
-    const chunks = ['{"mess', 'age":"Hello ', "there", '!","artworkIDs":[]}']
+    const chunks = [
+      '{"mess',
+      'age":"Hello ',
+      "there",
+      '!","artworkIDs":[],"suggestedReplies":[]}',
+    ]
     mockModel = new MockLanguageModelV3({
       doStream: {
         stream: convertArrayToReadableStream([
@@ -308,6 +314,7 @@ describe("runTurn", () => {
               delta: JSON.stringify({
                 message: "I couldn't complete that search.",
                 artworkIDs: [],
+                suggestedReplies: [],
               }),
             },
             { type: "text-end", id: "1" },
@@ -356,7 +363,11 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Here you go.", artworkIDs }),
+              delta: JSON.stringify({
+                message: "Here you go.",
+                artworkIDs,
+                suggestedReplies: [],
+              }),
             },
             { type: "text-end", id: "1" },
             {
@@ -495,6 +506,7 @@ describe("runTurn", () => {
               delta: JSON.stringify({
                 message: "I couldn't run that query.",
                 artworkIDs: [],
+                suggestedReplies: [],
               }),
             },
             { type: "text-end", id: "1" },
@@ -558,6 +570,7 @@ describe("runTurn", () => {
       __typename: "AIAgentTurnComplete",
       stopReason: "error",
       message: null,
+      suggestedReplies: null,
     })
   })
 
@@ -570,7 +583,11 @@ describe("runTurn", () => {
           {
             type: "text-delta",
             id: "1",
-            delta: JSON.stringify({ message: "Hello!", artworkIDs: [] }),
+            delta: JSON.stringify({
+              message: "Hello!",
+              artworkIDs: [],
+              suggestedReplies: [],
+            }),
           },
           { type: "text-end", id: "1" },
           {
@@ -596,6 +613,7 @@ describe("runTurn", () => {
       toolCallCount: 0,
       message: "Hello!",
       artworks: [],
+      suggestedReplies: [],
     })
   })
 
@@ -641,6 +659,7 @@ describe("runTurn", () => {
     expect(complete).toMatchObject({
       stopReason: "max_iterations",
       message: null,
+      suggestedReplies: null,
     })
     expect(mockModel.doStreamCalls).toHaveLength(config.AI_AGENT_MAX_ITERATIONS)
   })
@@ -669,6 +688,122 @@ describe("runTurn", () => {
     const signal = mockModel.doStreamCalls[0].abortSignal
     expect(signal?.aborted).toBe(true)
   })
+
+  describe("suggested replies", () => {
+    const modelAnswering = (chunks: string[]) =>
+      new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            ...chunks.map((delta) => ({
+              type: "text-delta" as const,
+              id: "1",
+              delta,
+            })),
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+
+    const suggestedRepliesFor = async (suggestedReplies: string[]) => {
+      mockModel = modelAnswering([
+        JSON.stringify({
+          message: "Here you go.",
+          artworkIDs: [],
+          suggestedReplies,
+        }),
+      ])
+      const events = await collectEvents({
+        conversationID: "c1",
+        message: "Hi",
+      })
+      return events.find((e) => e.__typename === "AIAgentTurnComplete")
+        .suggestedReplies
+    }
+
+    it("returns the model's suggestions in order", async () => {
+      expect(
+        await suggestedRepliesFor(["Show me cheaper ones", "Only paintings"])
+      ).toEqual([{ text: "Show me cheaper ones" }, { text: "Only paintings" }])
+    })
+
+    it("returns an empty list when the model offers none", async () => {
+      expect(await suggestedRepliesFor([])).toEqual([])
+    })
+
+    it("normalizes whitespace and drops blank, duplicate and overlong suggestions", async () => {
+      expect(
+        await suggestedRepliesFor([
+          "  Show me   cheaper\nones ",
+          "show me cheaper ones",
+          "   ",
+          "x".repeat(81),
+          "Only paintings",
+        ])
+      ).toEqual([{ text: "Show me cheaper ones" }, { text: "Only paintings" }])
+    })
+
+    it("caps the list at three", async () => {
+      expect(
+        await suggestedRepliesFor(["One", "Two", "Three", "Four"])
+      ).toEqual([{ text: "One" }, { text: "Two" }, { text: "Three" }])
+    })
+
+    it("never streams suggestion text as part of the message", async () => {
+      mockModel = modelAnswering([
+        '{"message":"Here you go.","artworkIDs":[],',
+        '"suggestedReplies":["Only ',
+        'paintings"]}',
+      ])
+
+      const events = await collectEvents({
+        conversationID: "c1",
+        message: "Hi",
+      })
+
+      const deltas = events.filter((e) => e.__typename === "AIAgentTextDelta")
+      expect(deltas.map((d) => d.text).join("")).toBe("Here you go.")
+    })
+
+    it("tells the model how to write them, with or without a Gravity template", async () => {
+      const systemPrompt = () =>
+        mockModel.doStreamCalls[0].prompt.find(
+          (entry: any) => entry.role === "system"
+        )!.content as string
+
+      mockModel = modelAnswering([
+        JSON.stringify({
+          message: "Hi.",
+          artworkIDs: [],
+          suggestedReplies: [],
+        }),
+      ])
+      await collectEvents({ conversationID: "c1", message: "Hi" })
+      expect(systemPrompt()).toContain("## Suggested replies")
+
+      mockModel = modelAnswering([
+        JSON.stringify({
+          message: "Hi.",
+          artworkIDs: [],
+          suggestedReplies: [],
+        }),
+      ])
+      const context = fakeContext()
+      ;(context.aiPromptTemplatesLoader as jest.Mock).mockResolvedValue({
+        body: [{ system_prompt: "Template from Gravity." }],
+      })
+      await collectEvents({ conversationID: "c1", message: "Hi" }, context)
+      expect(systemPrompt()).toContain("Template from Gravity.")
+      expect(systemPrompt()).toContain("## Suggested replies")
+    })
+  })
+
   describe("replayed history", () => {
     // What the provider actually receives: the system prompt, then one entry
     // per conversation message, each with its content as an array of parts.
@@ -691,7 +826,11 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+              delta: JSON.stringify({
+                message: "Sure.",
+                artworkIDs: [],
+                suggestedReplies: [],
+              }),
             },
             { type: "text-end", id: "1" },
             {
@@ -839,6 +978,7 @@ describe("runTurn", () => {
           __typename: "AIAgentTurnComplete",
           message: null,
           artworks: null,
+          suggestedReplies: null,
           stopReason: "rate_limited",
           toolCallCount: 0,
         },
@@ -869,7 +1009,11 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+              delta: JSON.stringify({
+                message: "Sure.",
+                artworkIDs: [],
+                suggestedReplies: [],
+              }),
             },
             { type: "text-end", id: "1" },
             {
@@ -932,7 +1076,11 @@ describe("runTurn", () => {
             {
               type: "text-delta",
               id: "1",
-              delta: JSON.stringify({ message: "Sure.", artworkIDs: [] }),
+              delta: JSON.stringify({
+                message: "Sure.",
+                artworkIDs: [],
+                suggestedReplies: [],
+              }),
             },
             { type: "text-end", id: "1" },
             {
@@ -975,7 +1123,11 @@ describe("runTurn", () => {
               {
                 type: "text-delta",
                 id: "2",
-                delta: JSON.stringify({ message: "Found.", artworkIDs: [] }),
+                delta: JSON.stringify({
+                  message: "Found.",
+                  artworkIDs: [],
+                  suggestedReplies: [],
+                }),
               },
               { type: "text-end", id: "2" },
               {
