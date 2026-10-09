@@ -60,7 +60,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
     // Read fresh per call (not hoisted) so tests can toggle it.
     const isDevelopment = config.NODE_ENV === "development"
 
-    // Dev convenience, scoped to just this one flag — not a general dev
+    // Dev convenience, scoped to the agent's flags — not a general dev
     // override for feature flags, which real Unleash still gates everywhere else.
     if (
       !isDevelopment &&
@@ -79,11 +79,17 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
     assertInputWithinLimits(input)
 
     const debugAvailable = isDevelopment || config.ENABLE_AI_AGENT_DEBUG
+    const includeSuggestedReplies =
+      isDevelopment ||
+      isFeatureFlagEnabled("onyx_ai_agent-suggested-replies", {
+        userId: context.userID,
+      })
 
     return runTurn(
       {
         ...input,
         includeDebugToolCalls: debugAvailable && !!input.includeDebugToolCalls,
+        includeSuggestedReplies,
       },
       info.schema,
       context

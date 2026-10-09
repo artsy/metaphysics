@@ -112,6 +112,10 @@ export interface AIAgentToolResultPayload {
   debugSummary: string | null
 }
 
+export interface AIAgentSuggestedReply {
+  text: string
+}
+
 export interface AIAgentTurnCompletePayload {
   __typename: "AIAgentTurnComplete"
   message: string | null
@@ -120,6 +124,7 @@ export interface AIAgentTurnCompletePayload {
   // loader-verified rather than model-transcribed. Same shape ArtworkType's
   // own resolvers expect elsewhere in the schema.
   artworks: any[] | null
+  suggestedReplies: AIAgentSuggestedReply[] | null
   stopReason: string
   toolCallCount: number
 }
@@ -182,6 +187,19 @@ const AIAgentToolResultType = new GraphQLObjectType<
   },
 })
 
+const AIAgentSuggestedReplyType = new GraphQLObjectType<
+  AIAgentSuggestedReply,
+  ResolverContext
+>({
+  name: "AIAgentSuggestedReply",
+  fields: {
+    text: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Sent verbatim as the next turn's `message` when tapped.",
+    },
+  },
+})
+
 const AIAgentTurnCompleteType = new GraphQLObjectType<
   AIAgentTurnCompletePayload,
   ResolverContext
@@ -192,6 +210,11 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
     artworks: {
       type: new GraphQLList(new GraphQLNonNull(Artwork.type)),
       description: "Artworks referenced in the answer, for rendering as cards.",
+    },
+    suggestedReplies: {
+      type: new GraphQLList(new GraphQLNonNull(AIAgentSuggestedReplyType)),
+      description:
+        "Follow-ups the collector can tap to continue the conversation. Null when suggested replies are disabled or the turn did not finish with an answer.",
     },
     stopReason: { type: new GraphQLNonNull(GraphQLString) },
     toolCallCount: { type: new GraphQLNonNull(GraphQLInt) },

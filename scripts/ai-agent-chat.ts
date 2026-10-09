@@ -54,6 +54,7 @@ const QUERY = `
         stopReason
         toolCallCount
         artworks { internalID slug title artistNames saleMessage }
+        suggestedReplies { text }
       }
     }
   }
@@ -262,6 +263,12 @@ async function sendTurn(
               process.stdout.write(
                 dim(`  • ${artist}${artwork.title}${price}\n`)
               )
+            }
+          }
+          if (event.suggestedReplies?.length) {
+            process.stdout.write(`\n${dim("Suggested replies:")}\n`)
+            for (const reply of event.suggestedReplies) {
+              process.stdout.write(dim(`  › ${reply.text}\n`))
             }
           }
           process.stdout.write(
