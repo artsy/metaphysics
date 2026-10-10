@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLFloat,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -8,6 +9,8 @@ import {
 import { ImageType } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
 import { extractEmbed } from "../lib/extractEmbed"
+
+const DEFAULT_ASPECT_RATIO = 16 / 9
 
 export const ArticleSectionVideo = new GraphQLObjectType<any, ResolverContext>({
   name: "ArticleSectionVideo",
@@ -41,6 +44,15 @@ export const ArticleSectionVideo = new GraphQLObjectType<any, ResolverContext>({
           FILLWIDTH: { value: "fillwidth" },
         },
       }),
+    },
+    aspectRatio: {
+      description:
+        "Width divided by height (e.g. 0.5625 for a 9:16 portrait video). Defaults to 16:9.",
+      type: new GraphQLNonNull(GraphQLFloat),
+      resolve: ({ aspect_ratio }) => {
+        const ratio = Number(aspect_ratio)
+        return aspect_ratio && ratio > 0 ? ratio : DEFAULT_ASPECT_RATIO
+      },
     },
     backgroundColor: {
       type: GraphQLString,
