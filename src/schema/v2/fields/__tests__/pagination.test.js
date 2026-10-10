@@ -1,4 +1,8 @@
-import { createPageCursors } from "schema/v2/fields/pagination"
+import {
+  createPageCursors,
+  paginationResolver,
+  paginationResolverLazy,
+} from "schema/v2/fields/pagination"
 import { fromGlobalId } from "graphql-relay"
 
 function offsetFromCursor({ cursor }) {
@@ -137,5 +141,158 @@ describe("createPageCursors", () => {
     )
 
     expect(pageCursors.last.page).toBe(totalPages)
+  })
+})
+
+describe("paginationResolver", () => {
+  const baseArgs = { first: 10 }
+
+  it("sets hasNextPage to true when there are more items", () => {
+    const result = paginationResolver({
+      totalCount: 25,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(true)
+    expect(result.totalCount).toBe(25)
+  })
+
+  it("sets hasNextPage to false on the last page", () => {
+    const result = paginationResolver({
+      totalCount: 25,
+      offset: 20,
+      page: 3,
+      size: 10,
+      body: Array(5).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(false)
+    expect(result.totalCount).toBe(25)
+  })
+
+  it("sets hasNextPage to false when total equals page size exactly", () => {
+    const result = paginationResolver({
+      totalCount: 10,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(false)
+    expect(result.totalCount).toBe(10)
+  })
+})
+
+describe("paginationResolverLazy", () => {
+  const baseArgs = { first: 10 }
+
+  it("infers hasNextPage as true when body fills the page", () => {
+    const result = paginationResolverLazy({
+      totalCount: undefined,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(true)
+    expect(result.totalCount).toBeNull()
+    expect(result.pageCursors).toBeDefined()
+  })
+
+  it("infers hasNextPage as false when body is smaller than page size", () => {
+    const result = paginationResolverLazy({
+      totalCount: undefined,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(7).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(false)
+    expect(result.totalCount).toBeNull()
+  })
+
+  it("infers hasNextPage as false when body is empty", () => {
+    const result = paginationResolverLazy({
+      totalCount: undefined,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: [],
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(false)
+    expect(result.edges.length).toBe(0)
+  })
+
+  // The exact-boundary edge case: 10 items total, requesting 10.
+  // We get a full page so we report hasNextPage: true.
+  // Client fetches page 2, gets 0 results, stops.
+  it("reports hasNextPage true on exact page boundary (the expected tradeoff)", () => {
+    // Page 1: full page, we infer there might be more
+    const page1 = paginationResolverLazy({
+      totalCount: undefined,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(page1.pageInfo.hasNextPage).toBe(true)
+
+    // Page 2: empty, client stops
+    const page2 = paginationResolverLazy({
+      totalCount: undefined,
+      offset: 10,
+      page: 2,
+      size: 10,
+      body: [],
+      args: baseArgs,
+    })
+
+    expect(page2.pageInfo.hasNextPage).toBe(false)
+    expect(page2.edges.length).toBe(0)
+  })
+
+  it("uses real totalCount and pageCursors when provided", () => {
+    const result = paginationResolverLazy({
+      totalCount: 25,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(true)
+    expect(result.totalCount).toBe(25)
+    expect(result.pageCursors).not.toBeNull()
+    expect(result.pageCursors.around.length).toBeGreaterThan(0)
+  })
+
+  it("computes correct hasNextPage with totalCount on exact boundary", () => {
+    const result = paginationResolverLazy({
+      totalCount: 10,
+      offset: 0,
+      page: 1,
+      size: 10,
+      body: Array(10).fill({ id: "x" }),
+      args: baseArgs,
+    })
+
+    expect(result.pageInfo.hasNextPage).toBe(false)
+    expect(result.totalCount).toBe(10)
   })
 })
