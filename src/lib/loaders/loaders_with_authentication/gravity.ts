@@ -258,7 +258,22 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetArtworkLoader: gravityLoader(
+      "artnet_artwork",
+      {},
+      { method: "POST" }
+    ),
+    updateArtnetArtworkLoader: gravityLoader(
+      (id) => `artnet_artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
+    updateArtnetImportLoader: gravityLoader(
+      (id) => `artnet_import/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artnet_import/${id}/unmatched_artist_names`
     ),
@@ -1162,6 +1177,13 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworkLoader: gravityLoader<
+      any,
+      { partner_id: string; artwork_id: string }
+    >(
+      ({ partner_id, artwork_id }) =>
+        `partner/${partner_id}/artwork/${artwork_id}`
+    ),
     partnerArtworkOfferableActivityLoader: gravityLoader<
       any,
       { id: string; artworkId: string }
@@ -1898,6 +1920,13 @@ export default (accessToken, userID, opts) => {
     ),
     viewingRoomArtworksLoader: gravityLoader(
       (id) => `viewing_room/${id}/viewing_room_artworks`
+    ),
+    partnerViewingRoomLoader: gravityLoader<
+      any,
+      { partner_id: string; viewing_room_id: string }
+    >(
+      ({ partner_id, viewing_room_id }) =>
+        `partner/${partner_id}/viewing_room/${viewing_room_id}`
     ),
     viewingRoomsLoader: gravityLoader("viewing_rooms", {}, { headers: true }),
 

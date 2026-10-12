@@ -27,6 +27,7 @@ import {
   AIAgentHistoryEntry,
   AIAgentSectionType,
   REPLAYABLE_ENTITY_TYPE,
+  AIAgentSuggestedReply,
   AIAgentTextDeltaPayload,
   AIAgentToolCallPayload,
   AIAgentToolResultPayload,
@@ -481,6 +482,8 @@ making claims about their account or history you cannot verify.
 
 const AI_PROMPT_TEMPLATE_NAME = "agent_assistant_system_prompt_v2"
 const MAX_TOKENS = 8000
+const MAX_SUGGESTED_REPLIES = 3
+const MAX_SUGGESTED_REPLY_LENGTH = 80
 
 // Structured final output: `message` is the prose answer (streamed to the
 // client incrementally, see the text-delta case below); `section` names which
@@ -489,6 +492,7 @@ const MAX_TOKENS = 8000
 interface AgentOutput {
   message: string
   section?: AIAgentModelSection | null
+  suggestedReplies?: string[]
 }
 
 function sectionSchemaFor(sectionType: AIAgentSectionType) {
@@ -530,33 +534,52 @@ function sectionSchemaFor(sectionType: AIAgentSectionType) {
  * schema subset covers `anyOf`/`const` and not `oneOf`. The AI SDK forwards
  * this schema verbatim, so the emitted keywords are ours to get right.
  */
+const SuggestedRepliesSchema = z
+  .array(z.string())
+  .describe(
+    "Up to three short follow-ups the collector can tap to send as their " +
+      "next message, written in their voice. See the Suggested replies " +
+      "section of the system prompt."
+  )
+
 function buildOutputSchema(
-  supportedSections: readonly AIAgentSectionType[]
+  supportedSections: readonly AIAgentSectionType[],
+  includeSuggestedReplies: boolean
 ): z.ZodType<AgentOutput> {
   const message = z.string().describe("The prose answer to show the user.")
+  const withSuggestedReplies = <T extends z.ZodRawShape>(
+    schema: z.ZodObject<T>
+  ) =>
+    includeSuggestedReplies
+      ? schema.extend({ suggestedReplies: SuggestedRepliesSchema })
+      : schema
 
   // No renderable type means the field isn't there at all -- the one shape in
   // which the model cannot offer a section.
-  if (supportedSections.length === 0) return z.object({ message })
+  if (supportedSections.length === 0) {
+    return withSuggestedReplies(z.object({ message }))
+  }
 
   const variants = supportedSections.map(sectionSchemaFor)
   // A union of one would emit a pointless `anyOf` nested inside the
   // nullable's own.
   const section = variants.length === 1 ? variants[0] : z.union(variants)
 
-  return z.object({
-    message,
-    section: section
-      .nullable()
-      .describe(
-        "The cards to show alongside `message` -- one homogeneous group of " +
-          "entities, and the only way the user sees them, so fill this in " +
-          "whenever a tool call surfaced results that answer the question. " +
-          "`null` only when nothing was found, when what you found is not " +
-          "one of the available types, or when the question is not about " +
-          "art objects at all."
-      ),
-  })
+  return withSuggestedReplies(
+    z.object({
+      message,
+      section: section
+        .nullable()
+        .describe(
+          "The cards to show alongside `message` -- one homogeneous group of " +
+            "entities, and the only way the user sees them, so fill this in " +
+            "whenever a tool call surfaced results that answer the question. " +
+            "`null` only when nothing was found, when what you found is not " +
+            "one of the available types, or when the question is not about " +
+            "art objects at all."
+        ),
+    })
+  )
 }
 
 // Appended to the system prompt rather than spliced into it, so the remote
@@ -571,33 +594,29 @@ const SECTION_TYPE_BLURBS: Record<AIAgentSectionType, string> = {
     "a recommendation feed, one specific work the collector asked about.",
 }
 
-function buildSystemPrompt(
-  template: string,
+function cardsAvailableNote(
   supportedSections: readonly AIAgentSectionType[]
 ): string {
-  const block =
-    supportedSections.length === 0
-      ? [
-          "## Cards available this turn",
-          "",
-          "None. There is no `section` field to fill in, and the collector " +
-            "will see nothing but your `message` — so this is the one time " +
-            "to name in the text what you found, since no cards will show it " +
-            "for you.",
-        ].join("\n")
-      : [
-          "## Cards available this turn",
-          "",
-          ...supportedSections.map(
-            (sectionType) => `- ${SECTION_TYPE_BLURBS[sectionType]}`
-          ),
-          "",
-          "These are the only types that exist for this answer. If what you " +
-            "found isn't one of them, describe it in `message` with " +
-            "`section: null` rather than naming a type that doesn't exist.",
-        ].join("\n")
-
-  return `${template}\n\n${block}`
+  return supportedSections.length === 0
+    ? [
+        "## Cards available this turn",
+        "",
+        "None. There is no `section` field to fill in, and the collector " +
+          "will see nothing but your `message` — so this is the one time " +
+          "to name in the text what you found, since no cards will show it " +
+          "for you.",
+      ].join("\n")
+    : [
+        "## Cards available this turn",
+        "",
+        ...supportedSections.map(
+          (sectionType) => `- ${SECTION_TYPE_BLURBS[sectionType]}`
+        ),
+        "",
+        "These are the only types that exist for this answer. If what you " +
+          "found isn't one of them, describe it in `message` with " +
+          "`section: null` rather than naming a type that doesn't exist.",
+      ].join("\n")
 }
 
 async function loadPromptTemplate(context: ResolverContext): Promise<string> {
@@ -649,9 +668,72 @@ countdown you would have to calculate.
 `.trim()
 }
 
-async function loadSystemPrompt(context: ResolverContext): Promise<string> {
+const SUGGESTED_REPLIES_NOTE = `
+## Suggested replies
+
+\`suggestedReplies\` are shown as tappable chips under your answer; tapping one
+sends it to you, verbatim, as the collector's next message. Offer up to three,
+and only things you can actually answer in one turn with the data you have:
+
+- a refinement of the search you just ran: a price ceiling, a medium, a size,
+  "show me more";
+- going deeper on what you just showed: the artist, the series, the fair, one
+  of the works;
+- a pivot you can serve: trending works, recommendations from their saves, the
+  works of an artist they follow.
+
+Write each one as the collector would type it — "Show me cheaper ones", "Only
+paintings", "Tell me about the artist" — never as an offer from you ("Would you
+like…?"). Keep each to a few words, under 50 characters. They can point at what
+is on screen ("More like the second one"), and the same rule as \`message\`
+applies: no ids and nothing about how you look things up.
+
+Never suggest something we can't do here: buying, making an offer, contacting a
+gallery, anything about their account or orders, or a price we don't publish.
+Don't suggest the request you just answered. Leave the list empty when you
+asked them a clarifying question or couldn't answer.
+`.trim()
+
+async function loadSystemPrompt(
+  context: ResolverContext,
+  {
+    supportedSections,
+    includeSuggestedReplies,
+  }: {
+    supportedSections: readonly AIAgentSectionType[]
+    includeSuggestedReplies: boolean
+  }
+): Promise<string> {
   const template = await loadPromptTemplate(context)
-  return `${template}\n\n${currentDateNote()}`
+  return [
+    template,
+    cardsAvailableNote(supportedSections),
+    includeSuggestedReplies ? SUGGESTED_REPLIES_NOTE : null,
+    currentDateNote(),
+  ]
+    .filter(Boolean)
+    .join("\n\n")
+}
+
+function sanitizeSuggestedReplies(
+  replies: readonly string[]
+): AIAgentSuggestedReply[] {
+  const seen = new Set<string>()
+  const sanitized: AIAgentSuggestedReply[] = []
+
+  for (const reply of replies) {
+    const text = reply.replace(/\s+/g, " ").trim()
+    const key = text.toLowerCase()
+    if (!text || text.length > MAX_SUGGESTED_REPLY_LENGTH || seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    sanitized.push({ text })
+    if (sanitized.length === MAX_SUGGESTED_REPLIES) break
+  }
+
+  return sanitized
 }
 
 // How a replayed section is labelled for the model. Derived from
@@ -824,6 +906,7 @@ export async function* runTurn(
     history?: AIAgentHistoryEntry[] | null
     supportedSections?: AIAgentSectionType[] | null
     includeDebugToolCalls?: boolean | null
+    includeSuggestedReplies?: boolean
   },
   schema: GraphQLSchema,
   context: ResolverContext
@@ -844,6 +927,7 @@ export async function* runTurn(
       message: null,
       artworks: null,
       sections: [],
+      suggestedReplies: null,
       stopReason: "rate_limited",
       toolCallCount: 0,
     }
@@ -859,6 +943,7 @@ export async function* runTurn(
   )
 
   let toolCallCount = 0
+  const includeSuggestedReplies = !!input.includeSuggestedReplies
 
   try {
     // Resolved before the prompt and the output schema, which both depend on
@@ -866,17 +951,17 @@ export async function* runTurn(
     // that can't be parsed.
     const supportedSections = resolveSupportedSections(input.supportedSections)
     info(
-      `[aiAgentTurn] cards offered to the model: ${
-        JSON.stringify(supportedSections) || "[]"
-      }` +
+      `[aiAgentTurn] cards offered to the model: ${JSON.stringify(
+        supportedSections
+      )}` +
         (input.supportedSections
           ? ""
           : " (client sent no supportedSections, using the default)")
     )
-    const system = buildSystemPrompt(
-      await loadSystemPrompt(context),
-      supportedSections
-    )
+    const system = await loadSystemPrompt(context, {
+      supportedSections,
+      includeSuggestedReplies,
+    })
     const messages = buildMessages(input.history, input.message)
     const tools = buildAgentTools(schema, context)
 
@@ -902,7 +987,9 @@ export async function* runTurn(
       stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
-      output: Output.object({ schema: buildOutputSchema(supportedSections) }),
+      output: Output.object({
+        schema: buildOutputSchema(supportedSections, includeSuggestedReplies),
+      }),
       // Off unless AI_AGENT_OTLP_ENDPOINT is set. `conversationID` becomes
       // `gen_ai.conversation.id`, which groups turns in Sentry; recordInputs
       // sends real user messages and the model's GraphQL to Sentry.
@@ -1015,6 +1102,7 @@ export async function* runTurn(
             message: null,
             artworks: null,
             sections: [],
+            suggestedReplies: null,
             stopReason: "aborted",
             toolCallCount,
           }
@@ -1029,6 +1117,7 @@ export async function* runTurn(
             message: null,
             artworks: null,
             sections: [],
+            suggestedReplies: null,
             stopReason: "error",
             toolCallCount,
           }
@@ -1043,7 +1132,7 @@ export async function* runTurn(
           // case the model never produced a final structured answer, so
           // there's nothing to await from `result.output`.
           const hitCap = part.finishReason === "tool-calls"
-          const finalOutput = hitCap
+          const finalOutput: AgentOutput | null = hitCap
             ? null
             : await Promise.resolve(result.output).catch((error) => {
                 Sentry.captureException(error)
@@ -1065,6 +1154,10 @@ export async function* runTurn(
                 : []
               : null,
             sections: section ? [section] : [],
+            suggestedReplies:
+              includeSuggestedReplies && finalOutput
+                ? sanitizeSuggestedReplies(finalOutput.suggestedReplies ?? [])
+                : null,
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
           }
@@ -1080,6 +1173,7 @@ export async function* runTurn(
       message: null,
       artworks: null,
       sections: [],
+      suggestedReplies: null,
       stopReason: "error",
       toolCallCount,
     }

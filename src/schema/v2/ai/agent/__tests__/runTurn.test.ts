@@ -111,6 +111,7 @@ async function collectEvents(
     }>
     supportedSections?: Array<"ARTWORKS" | "ARTISTS"> | null
     includeDebugToolCalls?: boolean | null
+    includeSuggestedReplies?: boolean
   },
   context: ResolverContext = fakeContext()
 ) {
@@ -859,6 +860,7 @@ describe("runTurn", () => {
       stopReason: "error",
       message: null,
       sections: [],
+      suggestedReplies: null,
     })
   })
 
@@ -943,6 +945,7 @@ describe("runTurn", () => {
       stopReason: "max_iterations",
       message: null,
       sections: [],
+      suggestedReplies: null,
     })
     expect(mockModel.doStreamCalls).toHaveLength(config.AI_AGENT_MAX_ITERATIONS)
   })
@@ -971,6 +974,215 @@ describe("runTurn", () => {
     const signal = mockModel.doStreamCalls[0].abortSignal
     expect(signal?.aborted).toBe(true)
   })
+
+  describe("suggested replies", () => {
+    const modelAnswering = (chunks: string[]) =>
+      new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream([
+            { type: "stream-start", warnings: [] },
+            { type: "text-start", id: "1" },
+            ...chunks.map((delta) => ({
+              type: "text-delta" as const,
+              id: "1",
+              delta,
+            })),
+            { type: "text-end", id: "1" },
+            {
+              type: "finish",
+              finishReason: { unified: "stop", raw: "end_turn" },
+              usage: FAKE_USAGE,
+            },
+          ]),
+        },
+      })
+
+    const answerWith = (suggestedReplies: string[]) =>
+      modelAnswering([
+        JSON.stringify({
+          message: "Here you go.",
+          section: null,
+          suggestedReplies,
+        }),
+      ])
+
+    const systemPrompt = () =>
+      mockModel.doStreamCalls[0].prompt.find(
+        (entry: any) => entry.role === "system"
+      )!.content as string
+
+    const outputProperties = () =>
+      Object.keys(
+        (mockModel.doStreamCalls[0].responseFormat as any).schema.properties
+      )
+
+    const turnComplete = (events: any[]) =>
+      events.find((e) => e.__typename === "AIAgentTurnComplete")
+
+    describe("when enabled", () => {
+      const enabled = {
+        conversationID: "c1",
+        message: "Hi",
+        includeSuggestedReplies: true,
+      }
+
+      const suggestedRepliesFor = async (suggestedReplies: string[]) => {
+        mockModel = answerWith(suggestedReplies)
+        return turnComplete(await collectEvents(enabled)).suggestedReplies
+      }
+
+      it("returns the model's suggestions in order", async () => {
+        expect(
+          await suggestedRepliesFor(["Show me cheaper ones", "Only paintings"])
+        ).toEqual([
+          { text: "Show me cheaper ones" },
+          { text: "Only paintings" },
+        ])
+      })
+
+      it("returns an empty list when the model offers none", async () => {
+        expect(await suggestedRepliesFor([])).toEqual([])
+      })
+
+      it("normalizes whitespace and drops blank, duplicate and overlong suggestions", async () => {
+        expect(
+          await suggestedRepliesFor([
+            "  Show me   cheaper\nones ",
+            "show me cheaper ones",
+            "   ",
+            "x".repeat(81),
+            "Only paintings",
+          ])
+        ).toEqual([
+          { text: "Show me cheaper ones" },
+          { text: "Only paintings" },
+        ])
+      })
+
+      it("caps the list at three", async () => {
+        expect(
+          await suggestedRepliesFor(["One", "Two", "Three", "Four"])
+        ).toEqual([{ text: "One" }, { text: "Two" }, { text: "Three" }])
+      })
+
+      it("never streams suggestion text as part of the message", async () => {
+        mockModel = modelAnswering([
+          '{"message":"Here you go.","section":null,',
+          '"suggestedReplies":["Only ',
+          'paintings"]}',
+        ])
+
+        const events = await collectEvents(enabled)
+
+        const deltas = events.filter((e) => e.__typename === "AIAgentTextDelta")
+        expect(deltas.map((d) => d.text).join("")).toBe("Here you go.")
+      })
+
+      it("asks the model for them, with or without a Gravity template", async () => {
+        mockModel = answerWith([])
+        await collectEvents(enabled)
+        expect(systemPrompt()).toContain("## Suggested replies")
+        expect(outputProperties()).toContain("suggestedReplies")
+
+        mockModel = answerWith([])
+        const context = fakeContext()
+        ;(context.aiPromptTemplatesLoader as jest.Mock).mockResolvedValue({
+          body: [{ system_prompt: "Template from Gravity." }],
+        })
+        await collectEvents(enabled, context)
+        expect(systemPrompt()).toContain("Template from Gravity.")
+        expect(systemPrompt()).toContain("## Suggested replies")
+      })
+
+      it("returns them alongside a section", async () => {
+        mockModel = modelAnswering([
+          JSON.stringify({
+            message: "A few artists to look at.",
+            section: { type: "ARTISTS", internalIDs: [ID_A] },
+            suggestedReplies: ["Show me their works"],
+          }),
+        ])
+        const context = fakeContext({
+          artistsLoader: jest
+            .fn()
+            .mockResolvedValue({ body: [{ _id: ID_A }], headers: {} }),
+        })
+
+        const events = await collectEvents(
+          { ...enabled, supportedSections: ["ARTWORKS", "ARTISTS"] },
+          context
+        )
+
+        expect(outputProperties()).toEqual(
+          expect.arrayContaining(["message", "section", "suggestedReplies"])
+        )
+        expect(turnComplete(events)).toMatchObject({
+          sections: [
+            { __typename: "AIAgentArtistsSection", artists: [{ _id: ID_A }] },
+          ],
+          suggestedReplies: [{ text: "Show me their works" }],
+        })
+      })
+
+      it("returns them on a prose-only turn", async () => {
+        mockModel = modelAnswering([
+          JSON.stringify({
+            message: "Here you go.",
+            suggestedReplies: ["Only paintings"],
+          }),
+        ])
+
+        const events = await collectEvents({
+          ...enabled,
+          supportedSections: [],
+        })
+
+        expect(outputProperties()).toEqual(["message", "suggestedReplies"])
+        expect(turnComplete(events)).toMatchObject({
+          sections: [],
+          suggestedReplies: [{ text: "Only paintings" }],
+        })
+      })
+
+      it("places the note after the available cards and before today's date", async () => {
+        mockModel = answerWith([])
+        await collectEvents(enabled)
+
+        const prompt = systemPrompt()
+        const cards = prompt.indexOf("## Cards available this turn")
+        const replies = prompt.indexOf("## Suggested replies")
+        expect(cards).toBeGreaterThan(-1)
+        expect(replies).toBeGreaterThan(cards)
+        expect(prompt.indexOf("## Today")).toBeGreaterThan(replies)
+      })
+    })
+
+    describe("when disabled", () => {
+      it("does not ask the model for them", async () => {
+        mockModel = answerWith([])
+
+        await collectEvents({ conversationID: "c1", message: "Hi" })
+
+        expect(systemPrompt()).not.toContain("## Suggested replies")
+        expect(outputProperties()).not.toContain("suggestedReplies")
+      })
+
+      it("returns null even if the model offers some", async () => {
+        mockModel = answerWith(["Only paintings"])
+
+        const events = await collectEvents({
+          conversationID: "c1",
+          message: "Hi",
+        })
+
+        expect(turnComplete(events)).toMatchObject({
+          message: "Here you go.",
+          suggestedReplies: null,
+        })
+      })
+    })
+  })
+
   describe("replayed history", () => {
     // What the provider actually receives: the system prompt, then one entry
     // per conversation message, each with its content as an array of parts.
@@ -1290,6 +1502,7 @@ describe("runTurn", () => {
           message: null,
           artworks: null,
           sections: [],
+          suggestedReplies: null,
           stopReason: "rate_limited",
           toolCallCount: 0,
         },

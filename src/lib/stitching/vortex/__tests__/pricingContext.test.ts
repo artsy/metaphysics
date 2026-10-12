@@ -142,8 +142,8 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       {
+        "_analyticsPricingContext_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
         "artistId": "artist-id",
-        "category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
         "sizeScore": 225,
       }
     `)
@@ -175,8 +175,8 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       {
+        "_analyticsPricingContext_category": "PAINTING",
         "artistId": "artist-id",
-        "category": "PAINTING",
         "sizeScore": 10300,
       }
     `)
@@ -206,8 +206,8 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       {
+        "_analyticsPricingContext_category": "PAINTING",
         "artistId": "artist-id",
-        "category": "PAINTING",
         "sizeScore": 3000,
       }
     `)

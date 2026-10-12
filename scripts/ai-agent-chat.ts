@@ -64,6 +64,7 @@ const QUERY = `
         }
         # Only to check the dual write below -- a real client picks one.
         artworks { internalID }
+        suggestedReplies { text }
       }
     }
   }
@@ -351,6 +352,12 @@ async function sendTurn(
           displayedSections = describeSections(event.sections ?? [])
           printSections(event.sections ?? [])
           warnOnLegacyDrift(event)
+          if (event.suggestedReplies?.length) {
+            process.stdout.write(`\n${dim("Suggested replies:")}\n`)
+            for (const reply of event.suggestedReplies) {
+              process.stdout.write(dim(`  › ${reply.text}\n`))
+            }
+          }
           process.stdout.write(
             `\n${dim(
               `(stopReason: ${event.stopReason}, ${event.toolCallCount} tool call(s))`

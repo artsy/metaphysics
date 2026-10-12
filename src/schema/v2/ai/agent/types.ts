@@ -225,6 +225,10 @@ export type AIAgentResponseSectionPayload =
   | AIAgentArtworksSectionPayload
   | AIAgentArtistsSectionPayload
 
+export interface AIAgentSuggestedReply {
+  text: string
+}
+
 export interface AIAgentTurnCompletePayload {
   __typename: "AIAgentTurnComplete"
   message: string | null
@@ -237,6 +241,7 @@ export interface AIAgentTurnCompletePayload {
   // for clients that predate it.
   artworks: any[] | null
   sections: AIAgentResponseSectionPayload[]
+  suggestedReplies: AIAgentSuggestedReply[] | null
   stopReason: string
   toolCallCount: number
 }
@@ -295,6 +300,19 @@ const AIAgentToolResultType = new GraphQLObjectType<
       type: GraphQLString,
       description:
         "Developer-facing failure detail, populated only when debug mode is enabled.",
+    },
+  },
+})
+
+const AIAgentSuggestedReplyType = new GraphQLObjectType<
+  AIAgentSuggestedReply,
+  ResolverContext
+>({
+  name: "AIAgentSuggestedReply",
+  fields: {
+    text: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Sent verbatim as the next turn's `message` when tapped.",
     },
   },
 })
@@ -360,6 +378,11 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
         "entity type in the order it should be displayed. Empty for a " +
         "text-only answer or a turn that produced no answer at all. " +
         "Currently at most one section per answer.",
+    },
+    suggestedReplies: {
+      type: new GraphQLList(new GraphQLNonNull(AIAgentSuggestedReplyType)),
+      description:
+        "Follow-ups the collector can tap to continue the conversation. Null when suggested replies are disabled or the turn did not finish with an answer.",
     },
     stopReason: { type: new GraphQLNonNull(GraphQLString) },
     toolCallCount: { type: new GraphQLNonNull(GraphQLInt) },
