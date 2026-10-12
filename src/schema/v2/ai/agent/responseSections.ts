@@ -135,6 +135,12 @@ export async function hydrateSection(
           ? { __typename: "AIAgentArtworksSection", artworks }
           : null
       }
+      default: {
+        // A section type added without a case here fails to compile rather
+        // than silently rendering nothing.
+        const unhandled: never = section
+        throw new Error(`Unhandled section type: ${JSON.stringify(unhandled)}`)
+      }
     }
   } catch (error) {
     Sentry.captureException(error, {

@@ -164,9 +164,9 @@ type AIAgentTurnComplete {
   message: String
 
   """
-  The entity cards accompanying `message`, each section holding one entity type in the order it should be displayed. Empty for a text-only answer or a turn that produced no answer at all. Currently at most one section per answer.
+  The entity cards accompanying `message`, each section holding one entity type in the order it should be displayed. Empty for a text-only answer or a turn that produced no answer at all; null only when the cards themselves failed to resolve. Currently at most one section per answer.
   """
-  sections: [AIAgentResponseSection!]!
+  sections: [AIAgentResponseSection!]
   stopReason: String!
 
   """

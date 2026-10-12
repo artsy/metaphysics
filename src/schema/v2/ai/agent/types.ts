@@ -369,15 +369,17 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
         "always the same works as the artworks section, for clients that " +
         "predate it.",
     },
+    // Nullable on purpose: the cards are the optional half of an answer, so
+    // a card that fails to resolve should cost the cards rather than null the
+    // whole event, `message` and `suggestedReplies` with it.
     sections: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(AIAgentResponseSectionType))
-      ),
+      type: new GraphQLList(new GraphQLNonNull(AIAgentResponseSectionType)),
       description:
         "The entity cards accompanying `message`, each section holding one " +
         "entity type in the order it should be displayed. Empty for a " +
-        "text-only answer or a turn that produced no answer at all. " +
-        "Currently at most one section per answer.",
+        "text-only answer or a turn that produced no answer at all; null " +
+        "only when the cards themselves failed to resolve. Currently at " +
+        "most one section per answer.",
     },
     suggestedReplies: {
       type: new GraphQLList(new GraphQLNonNull(AIAgentSuggestedReplyType)),

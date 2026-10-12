@@ -165,6 +165,60 @@ describe("aiAgentTurn sections", () => {
     expect(complete.artworks).toBeNull()
   })
 
+  it("keeps the answer when a card fails to resolve, losing only the cards", async () => {
+    mockRunTurn.mockReturnValue(
+      (async function* () {
+        yield {
+          __typename: "AIAgentTurnComplete",
+          message: "Artists you might like.",
+          artworks: null,
+          // No `_id`, so the artist's non-null `internalID` fails to resolve.
+          sections: [
+            { __typename: "AIAgentArtistsSection", artists: [{ id: "x" }] },
+          ],
+          suggestedReplies: [{ text: "Show me their works" }],
+          stopReason: "stop",
+          toolCallCount: 1,
+        }
+      })()
+    )
+
+    const result = (await subscribe({
+      schema: v2Schema(),
+      document: parse(gql`
+        subscription {
+          aiAgentTurn(input: { conversationID: "c1", message: "Hi" }) {
+            ... on AIAgentTurnComplete {
+              message
+              suggestedReplies {
+                text
+              }
+              sections {
+                ... on AIAgentArtistsSection {
+                  artists {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `),
+      contextValue: { userID: "user-42", accessToken: "token" },
+    })) as AsyncIterable<ExecutionResult>
+
+    const values: ExecutionResult[] = []
+    for await (const value of result) values.push(value)
+
+    expect(values).toHaveLength(1)
+    expect(values[0].errors).toHaveLength(1)
+    expect((values[0].data as any).aiAgentTurn).toEqual({
+      message: "Artists you might like.",
+      suggestedReplies: [{ text: "Show me their works" }],
+      sections: null,
+    })
+  })
+
   it("resolves an empty section list for a text-only answer", async () => {
     const [complete] = await collectTurn([
       {

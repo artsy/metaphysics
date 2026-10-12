@@ -524,6 +524,14 @@ function sectionSchemaFor(sectionType: AIAgentSectionType) {
   }
 }
 
+const SuggestedRepliesSchema = z
+  .array(z.string())
+  .describe(
+    "Up to three short follow-ups the collector can tap to send as their " +
+      "next message, written in their voice. See the Suggested replies " +
+      "section of the system prompt."
+  )
+
 /**
  * Built per turn from what the client said it can render, since the prose is
  * written in anticipation of the cards and filtering the payload afterwards
@@ -534,14 +542,6 @@ function sectionSchemaFor(sectionType: AIAgentSectionType) {
  * schema subset covers `anyOf`/`const` and not `oneOf`. The AI SDK forwards
  * this schema verbatim, so the emitted keywords are ours to get right.
  */
-const SuggestedRepliesSchema = z
-  .array(z.string())
-  .describe(
-    "Up to three short follow-ups the collector can tap to send as their " +
-      "next message, written in their voice. See the Suggested replies " +
-      "section of the system prompt."
-  )
-
 function buildOutputSchema(
   supportedSections: readonly AIAgentSectionType[],
   includeSuggestedReplies: boolean
@@ -561,23 +561,24 @@ function buildOutputSchema(
   }
 
   const variants = supportedSections.map(sectionSchemaFor)
-  // A union of one would emit a pointless `anyOf` nested inside the
-  // nullable's own.
-  const section = variants.length === 1 ? variants[0] : z.union(variants)
+  // `null` joins the variants in one flat `anyOf`, rather than wrapping a
+  // union of the variants in a nullable's own `anyOf`.
+  const section =
+    variants.length === 1
+      ? variants[0].nullable()
+      : z.union([...variants, z.null()])
 
   return withSuggestedReplies(
     z.object({
       message,
-      section: section
-        .nullable()
-        .describe(
-          "The cards to show alongside `message` -- one homogeneous group of " +
-            "entities, and the only way the user sees them, so fill this in " +
-            "whenever a tool call surfaced results that answer the question. " +
-            "`null` only when nothing was found, when what you found is not " +
-            "one of the available types, or when the question is not about " +
-            "art objects at all."
-        ),
+      section: section.describe(
+        "The cards to show alongside `message` -- one homogeneous group of " +
+          "entities, and the only way the user sees them, so fill this in " +
+          "whenever a tool call surfaced results that answer the question. " +
+          "`null` only when nothing was found, when what you found is not " +
+          "one of the available types, or when the question is not about " +
+          "art objects at all."
+      ),
     })
   )
 }
