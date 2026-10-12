@@ -26,6 +26,13 @@ export const TRENDING_LABELS = {
   "30d": "Past 30 Days",
 }
 
+/**
+ * The only window Vortex still publishes. Every requested period reads this
+ * ranking, while `period` and `label` echo the request so older clients keep
+ * distinct cache entries and their existing tab copy.
+ */
+export const SERVED_PERIOD = "1d"
+
 const entityIDs = (rows: any): string[] =>
   (rows ?? []).map(({ entity_id }) => entity_id).filter(Boolean)
 
@@ -37,7 +44,9 @@ export const trendingWindowFor = async (
   // same for everyone.
   const { trendingSearchesLoader } = context.unauthenticatedLoaders
 
-  const { data } = await trendingSearchesLoader({ period })
+  const { data } = await trendingSearchesLoader({
+    period: SERVED_PERIOD,
+  })
 
   return {
     period,
