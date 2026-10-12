@@ -14,15 +14,20 @@ import { ArtworkType } from "schema/v2/artwork"
 import { isFieldRequested } from "lib/isFieldRequested"
 import { TrendingWindow, trendingWindowFor } from "./trendingData"
 
-// Values are the periods Vortex publishes, so one passes straight through as a
-// request param.
+// Values match Vortex's period names. Only "1d" is still published; the longer
+// windows stay in the enum because older Eigen builds request them through
+// persisted queries, and dropping a value would fail validation for the whole
+// dropdown.
+const DEPRECATED_PERIOD_REASON =
+  "Only ONE_DAY is served; other periods return today's ranking."
+
 const TrendingSearchPeriodEnum = new GraphQLEnumType({
   name: "TrendingSearchPeriod",
   description: "The rolling window a trending ranking was computed over.",
   values: {
     ONE_DAY: { value: "1d" },
-    SEVEN_DAYS: { value: "7d" },
-    THIRTY_DAYS: { value: "30d" },
+    SEVEN_DAYS: { value: "7d", deprecationReason: DEPRECATED_PERIOD_REASON },
+    THIRTY_DAYS: { value: "30d", deprecationReason: DEPRECATED_PERIOD_REASON },
   },
 })
 
