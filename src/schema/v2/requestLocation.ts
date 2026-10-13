@@ -43,8 +43,23 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLString,
     },
   },
-  resolve: async (_root, args, { requestLocationLoader, ipAddress }) => {
+  resolve: async (_root, args, { requestLocationLoader, ipAddress, cfGeo }) => {
     const ip = args.ip || ipAddress
+
+    // Prefer Cloudflare edge geo for the viewer's own request (no explicit ip
+    // arg), avoiding an IPBase call. `country` (full name) isn't in CF headers.
+    if (!args.ip && cfGeo?.countryCode) {
+      return {
+        id: base64(ip),
+        cached: true,
+        countryCode: cfGeo.countryCode,
+        city: cfGeo.city,
+        coordinates:
+          cfGeo.lat != null && cfGeo.lng != null
+            ? { lat: cfGeo.lat, lng: cfGeo.lng }
+            : undefined,
+      }
+    }
 
     try {
       const {
