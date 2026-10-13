@@ -34875,6 +34875,11 @@ type Query {
     ids: [String]
     last: Int
     near: Near
+
+    """
+    Only return published fairs, even for admins and partners. Only applies when a term is provided.
+    """
+    published: Boolean
     sort: FairSorts
     status: EventStatus
 
@@ -44869,6 +44874,11 @@ type Viewer {
     ids: [String]
     last: Int
     near: Near
+
+    """
+    Only return published fairs, even for admins and partners. Only applies when a term is provided.
+    """
+    published: Boolean
     sort: FairSorts
     status: EventStatus
 
