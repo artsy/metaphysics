@@ -9,6 +9,7 @@ import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
   paginationResolver,
+  paginationResolverLazy,
 } from "../fields/pagination"
 import { ArtworkType } from "../artwork"
 import { pageable } from "relay-cursor-paging"
@@ -17,6 +18,8 @@ import {
   CatchCollectionNotFoundException,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
+import { needsTotalCount } from "lib/needsTotalCount"
+import config from "config"
 
 export const COLLECTION_ID = "saved-artwork"
 
@@ -53,17 +56,20 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
   }),
-  resolve: async (_source, args, { collectionArtworksLoader }) => {
+  resolve: async (_source, args, { collectionArtworksLoader }, info) => {
     if (!collectionArtworksLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const wantsTotalCount =
+      !config.ENABLE_LAZY_TOTAL_COUNT || needsTotalCount(info)
 
     const gravityOptions = {
       page,
       size,
       private: args.private,
       sort: args.sort,
-      total_count: true,
+      total_count: wantsTotalCount,
     }
 
     try {
@@ -72,10 +78,20 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
         gravityOptions
       )
 
-      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+      if (wantsTotalCount) {
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return paginationResolver({
-        totalCount,
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      }
+
+      return paginationResolverLazy({
         offset,
         page,
         size,
