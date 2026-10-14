@@ -83,6 +83,30 @@ describe("fairsConnection", () => {
     expect(fairsLoader).not.toBeCalled()
   })
 
+  it("passes published to matchFairsLoader when provided", async () => {
+    await runQuery(
+      gql`
+        {
+          fairsConnection(first: 5, term: "art", published: true) {
+            totalCount
+          }
+        }
+      `,
+      {
+        unauthenticatedLoaders: { fairsLoader },
+        authenticatedLoaders: { matchFairsLoader },
+      }
+    )
+
+    expect(matchFairsLoader).toBeCalledWith({
+      term: "art",
+      published: true,
+      page: 1,
+      size: 5,
+      total_count: true,
+    })
+  })
+
   it("throws error when term is provided but user is not authenticated", async () => {
     await expect(
       runQuery(queryWithTerm, {
