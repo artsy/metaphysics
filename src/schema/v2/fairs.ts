@@ -97,6 +97,7 @@ export const fairsConnection: GraphQLFieldConfig<
     hasListing?: boolean
     ids?: string[]
     near?: NearType
+    published?: boolean
     sort?: FairSortsType
     status?: EventStatusType
     term?: string
@@ -114,6 +115,11 @@ export const fairsConnection: GraphQLFieldConfig<
         "Only return fairs matching specified IDs. Accepts list of IDs.",
     },
     near: { type: Near },
+    published: {
+      type: GraphQLBoolean,
+      description:
+        "Only return published fairs, even for admins and partners. Only applies when a term is provided.",
+    },
     sort: FairSorts,
     status: EventStatus,
     term: {
@@ -140,6 +146,7 @@ export const fairsConnection: GraphQLFieldConfig<
 
       const { body, headers } = await matchFairsLoader({
         term: args.term,
+        published: args.published,
         page,
         size,
         total_count: true,
