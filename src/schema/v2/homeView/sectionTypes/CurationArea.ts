@@ -34,6 +34,8 @@ export interface HomeViewCurationAreaSection extends HomeViewSection {
   chipsHref?: string
   /** [Analytics] owner type for the chips group's "view all" tap. */
   chipsOwnerType?: string
+  /** Background tint for the whole area (raw hex; null → untinted). */
+  backgroundColor?: string
 }
 
 /**
@@ -113,6 +115,16 @@ export const HomeViewCurationAreaSectionType = new GraphQLObjectType<
       description:
         "[Analytics] `owner type` for the chips group's 'view all' tap.",
       resolve: (parent) => parent.chipsOwnerType,
+    },
+
+    // TODO: emit a palette token (dark-mode-safe) rather than raw hex once
+    // design-system tokens are exposed over the API — raw hex won't adapt to
+    // dark mode, and can't be expressed as a token for custom tints (e.g. cream).
+    backgroundColor: {
+      type: GraphQLString,
+      description:
+        "Background tint for the whole area as a raw hex string (null → untinted).",
+      resolve: (parent) => parent.backgroundColor,
     },
 
     // Entry chips. Reuses HomeViewCard (renders as "Chips" on the client). Each

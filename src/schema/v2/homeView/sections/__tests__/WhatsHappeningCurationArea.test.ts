@@ -20,4 +20,8 @@ describe("WhatsHappeningCurationArea", () => {
       "onyx_home-feed-simplification"
     )
   })
+
+  it("tints its background", () => {
+    expect(WhatsHappeningCurationArea.backgroundColor).toEqual("#F7F7F7")
+  })
 })

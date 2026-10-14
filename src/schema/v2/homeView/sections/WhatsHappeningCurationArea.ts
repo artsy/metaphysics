@@ -22,6 +22,8 @@ export const WhatsHappeningCurationArea: HomeViewCurationAreaSection = {
     type: "CurationArea",
   },
   requiresAuthentication: false,
+  // Spec Greys/Mono5. TODO: palette token once available.
+  backgroundColor: "#F7F7F7",
 
   rails: [
     { sectionID: FeaturedFairs.id },

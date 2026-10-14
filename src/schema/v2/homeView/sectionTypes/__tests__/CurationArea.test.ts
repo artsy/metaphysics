@@ -48,30 +48,64 @@ describe("HomeViewSectionCurationArea", () => {
   })
 
   describe("chips (section resolver)", () => {
-    it("returns a chip per curation area with its target", async () => {
+    it("returns artist chips + marketing-collection chips", async () => {
+      const context = ({
+        marketingCollectionsLoader: jest.fn().mockResolvedValue({
+          body: [
+            {
+              id: "ml",
+              slug: "most-loved",
+              title: "Most Loved",
+              description: "The most-saved works on Artsy.",
+              thumbnail: "https://ex.com/most-loved.jpg",
+            },
+            {
+              id: "bci",
+              slug: "blue-chip-icons",
+              title: "Blue-Chip Icons",
+              description: "Works by the market's established names.",
+              thumbnail: "https://ex.com/blue-chip-icons.jpg",
+            },
+          ],
+        }),
+      } as unknown) as ResolverContext
+
       const resolve = CurationArea.resolver! as any
-      const connection = await resolve(
-        CurationArea,
-        {},
-        {} as ResolverContext,
-        info
-      )
+      const connection = await resolve(CurationArea, {}, context, info)
       const chips = connection.edges.map((e) => e.node)
 
       expect(chips).toEqual([
         {
           title: "Recommended Artists",
+          subtitle:
+            "Explore a curated selection of the most exciting artists working today.",
           href: `home-view/sections/${RecommendedArtists.id}?sectionType=${RecommendedArtists.type}`,
           entityType: "HomeViewSection",
           entityID: RecommendedArtists.id,
         },
         {
           title: "Trending Artists",
+          subtitle: "See the works boundary pushing artists are creating.",
           href: `home-view/sections/${TrendingArtists.id}?sectionType=${TrendingArtists.type}`,
           entityType: "HomeViewSection",
           entityID: TrendingArtists.id,
         },
-        { title: "Collections", href: "/collections" },
+        {
+          title: "Most Loved",
+          subtitle: "The most-saved works on Artsy.",
+          href: "/collection/most-loved",
+          imageURL: "https://ex.com/most-loved.jpg",
+          entityType: "MarketingCollection",
+          entityID: "ml",
+        },
+        {
+          title: "Blue-Chip Icons",
+          subtitle: "Works by the market's established names.",
+          href: "/collection/blue-chip-icons",
+          imageURL: "https://ex.com/blue-chip-icons.jpg",
+          entityType: "MarketingCollection",
+          entityID: "bci",
+        },
       ])
     })
   })

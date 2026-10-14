@@ -40,6 +40,8 @@ export const EditorialCurationArea: HomeViewCurationAreaSection = {
     type: "CurationArea",
   },
   requiresAuthentication: false,
+  // Cream tint (not a palette token). TODO: palette token once available.
+  backgroundColor: "#FEF8ED",
 
   // One rail: the existing editorial rail, relabeled "Editorial" (its standalone
   // title is "Artsy Editorial", which the container header already uses).

@@ -10,6 +10,7 @@ describe("EditorialCurationArea", () => {
     expect(EditorialCurationArea.chipsTitle).toEqual("Art News")
     expect(EditorialCurationArea.chipsHref).toEqual("/news")
     expect(EditorialCurationArea.chipsOwnerType).toEqual("marketNews")
+    expect(EditorialCurationArea.backgroundColor).toEqual("#FEF8ED")
   })
 
   it("maps news articles to chips with a thumbnail and href", async () => {
