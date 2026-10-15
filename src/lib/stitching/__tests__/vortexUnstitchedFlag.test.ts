@@ -3,6 +3,8 @@ import type { GraphQLObjectType, GraphQLSchema } from "graphql"
 const loadWithFlag = (useUnstitchedVortex: boolean) => {
   let mergedSchema: GraphQLSchema | undefined
   let metaphysicsService: Record<string, unknown> | undefined
+  // From the same module registry as the schema, or graphql-js rejects it.
+  let graphql: typeof import("graphql").graphql | undefined
 
   jest.isolateModules(() => {
     const actualConfig = jest.requireActual("config").default
@@ -11,6 +13,7 @@ const loadWithFlag = (useUnstitchedVortex: boolean) => {
       default: { ...actualConfig, USE_UNSTITCHED_VORTEX: useUnstitchedVortex },
     }))
 
+    graphql = require("graphql").graphql
     const localSchema = require("schema/v2/schema").default
     const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
     mergedSchema = incrementalMergeSchemas(localSchema)
@@ -20,6 +23,7 @@ const loadWithFlag = (useUnstitchedVortex: boolean) => {
   return {
     mergedSchema: mergedSchema as GraphQLSchema,
     metaphysicsService: metaphysicsService as Record<string, unknown>,
+    graphql: graphql as typeof import("graphql").graphql,
   }
 }
 
@@ -62,12 +66,55 @@ describe("USE_UNSTITCHED_VORTEX", () => {
   })
 
   describe("when true", () => {
-    const { mergedSchema, metaphysicsService } = loadWithFlag(true)
+    const { mergedSchema, metaphysicsService, graphql } = loadWithFlag(true)
 
     it("does not stitch the Vortex subschema", () => {
       expect(mergedSchema.getType("AnalyticsPricingContext")).toBeUndefined()
-      expect(rootFieldNames(mergedSchema)).not.toContain(
-        "analyticsLastUpdatedAt"
+    })
+
+    it("serves price insights from the native fields", async () => {
+      const marketPriceInsightsLoader = jest
+        .fn()
+        .mockResolvedValue({ data: { id: "1" } })
+      const priceInsightsLoader = jest
+        .fn()
+        .mockResolvedValue({ data: [{ id: "1" }] })
+
+      // Diffusion's schema also declares these root fields, so this would
+      // reach Diffusion if they weren't filtered out of it.
+      const result = await graphql({
+        schema: mergedSchema,
+        source: `{
+          marketPriceInsights(artistId: "artist-1", medium: "Painting") { id }
+          priceInsights(artistId: "artist-1") { totalCount }
+        }`,
+        contextValue: {
+          requestIDs: {},
+          unauthenticatedLoaders: {
+            marketPriceInsightsLoader,
+            priceInsightsLoader,
+          },
+        },
+      })
+
+      expect(result).toEqual({
+        data: {
+          marketPriceInsights: { id: "1" },
+          priceInsights: { totalCount: 1 },
+        },
+      })
+    })
+
+    it("mounts every price insight root field", () => {
+      expect(rootFieldNames(mergedSchema)).toEqual(
+        expect.arrayContaining([
+          "analyticsArtistSparklines",
+          "analyticsCalendarYearMarketPriceInsights",
+          "analyticsCalendarYearPriceInsights",
+          "analyticsLastUpdatedAt",
+          "marketPriceInsights",
+          "priceInsights",
+        ])
       )
     })
 
