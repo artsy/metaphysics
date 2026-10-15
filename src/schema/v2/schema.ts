@@ -360,6 +360,8 @@ import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/Partner
 import { assignArtistToPartnerMutation } from "./partner/Mutations/PartnerArtist/assignArtistToPartnerMutation"
 import { updatePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistMutation"
 import { VerifyUser } from "./verifyUser"
+import { priceInsightsRootFields } from "./analytics/priceInsights"
+import config from "config"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
 import { CacheableDirective } from "directives/cacheableDirective"
@@ -482,6 +484,12 @@ import { discardNavigationDraftMutation } from "./Navigation/mutations/discardNa
 import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
 import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
 import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
+
+// Served natively once Vortex is unstitched; until then the stitched Vortex
+// schema provides these root fields. Query only: they were never on Viewer.
+const vortexUnstitchedRootFields = config.USE_UNSTITCHED_VORTEX
+  ? priceInsightsRootFields
+  : {}
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -966,6 +974,7 @@ export default new GraphQLSchema({
     name: "Query",
     fields: {
       ...rootFields,
+      ...vortexUnstitchedRootFields,
       viewer: Viewer,
     },
   }),

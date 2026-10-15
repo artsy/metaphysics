@@ -10,7 +10,24 @@ export default (opts) => {
     opts
   )
 
+  // Warehouse data is the same for every user and reloaded once a day, at a
+  // time the cache isn't aligned with. A day-long throttle could serve the
+  // previous load for most of a day; an hour bounds that, matching Vortex's
+  // own `expires_in`.
+  const warehouseLoader = (path: string) =>
+    vortexLoader(path, {}, { requestThrottleMs: 3600000 }) // 1 hour throttle
+
   return {
+    artistSparklinesLoader: warehouseLoader("artist_sparklines"),
+    calendarYearMarketPriceInsightsLoader: warehouseLoader(
+      "calendar_year_market_price_insights"
+    ),
+    calendarYearPriceInsightsLoader: warehouseLoader(
+      "calendar_year_price_insights"
+    ),
+    marketPriceInsightsLoader: warehouseLoader("market_price_insights"),
+    priceInsightsLoader: warehouseLoader("price_insights"),
+    warehouseMetadataLoader: warehouseLoader("warehouse_metadata"),
     vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoader(
         "/graphql",
