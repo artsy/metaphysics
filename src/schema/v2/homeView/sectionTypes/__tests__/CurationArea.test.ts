@@ -1,9 +1,53 @@
 import { ResolverContext } from "types/graphql"
 import { HomeViewCurationAreaSectionType } from "../CurationArea"
-import { CurationArea } from "../../sections/CurationArea"
+import { CurationArea, artistChipStackURLs } from "../../sections/CurationArea"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { RecommendedArtists } from "../../sections/RecommendedArtists"
 import { TrendingArtists } from "../../sections/TrendingArtists"
+
+describe("artistChipStackURLs", () => {
+  it("returns the first 3 artists' cover images from the rail", async () => {
+    const section = {
+      resolver: async () => ({
+        edges: [1, 2, 3, 4].map((i) => ({
+          node: { image_url: `https://ex.com/artist-${i}.jpg` },
+        })),
+      }),
+    } as any
+
+    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([
+      "https://ex.com/artist-1.jpg",
+      "https://ex.com/artist-2.jpg",
+      "https://ex.com/artist-3.jpg",
+    ])
+  })
+
+  it("skips artists without a cover image", async () => {
+    const section = {
+      resolver: async () => ({
+        edges: [
+          { node: { image_url: "https://ex.com/a.jpg" } },
+          { node: {} },
+          { node: { image_url: "https://ex.com/c.jpg" } },
+        ],
+      }),
+    } as any
+
+    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([
+      "https://ex.com/a.jpg",
+      "https://ex.com/c.jpg",
+    ])
+  })
+
+  it("degrades to [] on resolver failure", async () => {
+    const section = {
+      resolver: async () => {
+        throw new Error("boom")
+      },
+    } as any
+    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([])
+  })
+})
 
 describe("HomeViewSectionCurationArea", () => {
   const info = {} as any

@@ -15,7 +15,8 @@ import { getDefault } from "schema/v2/image"
  * chips point at `/collection/<slug>`. `entityType`/`entityID` are for analytics.
  *
  * Artist chips have no model-derived subtitle (an Artists rail is a connection,
- * not a single entity), so their copy is hardcoded. Collection chips derive
+ * not a single entity), so their copy is hardcoded; their stack image is a
+ * stopgap of the rail's first 3 artists' cover images. Collection chips derive
  * subtitle + image from the marketing-collection model.
  */
 
@@ -53,6 +54,39 @@ const collectionStackImageURLs = async (
   })
   return hits.map(artworkImageURL).filter(Boolean).slice(0, CHIP_STACK_SIZE)
 }
+
+const ARTIST_IMAGE_VERSIONS = ["large", "square", "medium"]
+
+const artistCoverURL = (artist: any): string | undefined =>
+  artist?.image_url ? setVersion(artist, ARTIST_IMAGE_VERSIONS) : undefined
+
+// STOPGAP: an artist chip's stack = the referenced rail's first 3 artists' cover
+// images, via that rail's own resolver. Section-level (fixed 2 artist chips), not
+// an N+1. Degrades to no images on any failure. Superseded by the Gravity field.
+export const artistChipStackURLs = async (
+  section: HomeViewSection,
+  parent: any,
+  context: any,
+  info: any
+): Promise<string[]> => {
+  if (!section.resolver) return []
+  try {
+    const connection: any = await section.resolver(
+      parent,
+      { first: CHIP_STACK_SIZE },
+      context,
+      info
+    )
+    return (connection?.edges ?? [])
+      .map((edge: any) => edge.node)
+      .map(artistCoverURL)
+      .filter(Boolean)
+      .slice(0, CHIP_STACK_SIZE)
+  } catch {
+    return []
+  }
+}
+
 export const CurationArea: HomeViewCurationAreaSection = {
   id: "home-view-section-curation-area",
   type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
@@ -77,7 +111,20 @@ export const CurationArea: HomeViewCurationAreaSection = {
   rails: [{ sectionID: CuratorsPicksEmerging.id }],
 
   // Entry chips: two artist curation areas + two marketing collections.
-  resolver: async (_parent, args, context) => {
+  resolver: async (parent, args, context, info) => {
+    const [
+      recommendedImages,
+      trendingImages,
+      { body = [] },
+    ] = await Promise.all([
+      artistChipStackURLs(RecommendedArtists, parent, context, info),
+      artistChipStackURLs(TrendingArtists, parent, context, info),
+      context.marketingCollectionsLoader({
+        slugs: COLLECTION_CHIP_SLUGS,
+        size: COLLECTION_CHIP_SLUGS.length,
+      }),
+    ])
+
     const artistChips = [
       {
         title: "Recommended Artists",
@@ -85,6 +132,8 @@ export const CurationArea: HomeViewCurationAreaSection = {
         subtitle:
           "Explore a curated selection of the most exciting artists working today.",
         href: sectionScreenHref(RecommendedArtists),
+        // STOPGAP stack (first 3 artists' covers); omitted if unavailable.
+        ...(recommendedImages.length ? { imageURLs: recommendedImages } : {}),
         entityType: "HomeViewSection",
         entityID: RecommendedArtists.id,
       },
@@ -93,15 +142,12 @@ export const CurationArea: HomeViewCurationAreaSection = {
         // TODO: confirm copy — may be placeholder.
         subtitle: "See the works boundary pushing artists are creating.",
         href: sectionScreenHref(TrendingArtists),
+        ...(trendingImages.length ? { imageURLs: trendingImages } : {}),
         entityType: "HomeViewSection",
         entityID: TrendingArtists.id,
       },
     ]
 
-    const { body = [] } = await context.marketingCollectionsLoader({
-      slugs: COLLECTION_CHIP_SLUGS,
-      size: COLLECTION_CHIP_SLUGS.length,
-    })
     const collections: any[] = body
 
     // Preserve the configured slug order (the loader may not).

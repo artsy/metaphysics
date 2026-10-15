@@ -48,9 +48,39 @@ loader and exposed as a lazily-resolved (`MaybeResolved`) component field. See
 5. Does this generalize beyond chips — i.e. should _any_ section's thumbnail/background
    use the same "override-or-derive, materialized" mechanism?
 
-**Status:** open / punted. Leaning toward reusing the siteHeroUnit (CMS hero-unit)
-pattern for the override, since it already exists and is content-editable; the
-"derived default, materialized at update time" piece is the net-new part to design.
+**Status:** in progress — now load-bearing (design adopted a fanned **3-image
+stack** for cards, aggressively). Owned by a Gravity handoff:
+`gravity/HOME_FEED_REPRESENTATIVE_IMAGES_HANDOFF.md` (materialized, overridable
+`representative_preview_images` per entity).
+
+Per-entity state:
+
+- **Marketing collections** (Curated chips): MP **stopgap** derives the 3 stack
+  images from the collection's top artworks — `collectionStackImageURLs` in
+  `sections/CurationArea.ts`. Cheap (2 chips, section-level). Superseded when the
+  Gravity field lands.
+- **Fairs** (Featured Fairs rail): **blocked on Gravity.** Deriving per fair card
+  across the rail is an N+1 (no image set on the fair), so MP does **not** derive —
+  **fairs render with their single hero `image` (no 3-stack) until the Gravity field
+  exists.**
+- **Shows** (Shows rail): **blocked on Gravity.** A show _has_ an image set
+  (installation shots) but only via a per-show loader (`partnerShowImagesLoader`) —
+  off the list payload → same N+1. MP renders shows with their single **cover image**
+  until Gravity surfaces the set on the shows list response (denormalize, not derive).
+- **Auctions** (Auctions rail): **blocked on Gravity.** A sale has a single
+  `coverImage` and no image set; lots are only reachable per-sale (`saleArtworksLoader`)
+  → same N+1. MP renders sales with their single cover image until the Gravity field
+  (derive from the sale's top lots).
+- **Artists** (Recommended/Trending chips): **stopgap in place** — stack = the
+  rail's first 3 artists' cover images (`artistChipStackURLs` in
+  `sections/CurationArea.ts`, via the rail resolver; section-level, not an N+1).
+  Crude "first 3" default; the Gravity field is still wanted for a curated
+  override and consistency with the other entities.
+
+The standard invariant across all of these: **representative images must be on the
+entity's list/connection payload** (O(1) per card, no per-item calls). Source varies
+(derive vs. denormalize); the on-the-list guarantee is uniform. Note collections are
+only "safe" while the chip list is hardcoded-small — a dynamic list makes them N+1 too.
 
 ---
 
