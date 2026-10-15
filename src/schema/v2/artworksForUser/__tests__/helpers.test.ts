@@ -1,3 +1,4 @@
+import config from "config"
 import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import { HTTPError } from "lib/HTTPError"
 import {
@@ -325,6 +326,63 @@ describe("getNewForYouArtworkIDs", () => {
 
       expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
       expect(artworkIds).toEqual(["lot-1"])
+    })
+  })
+
+  describe("with USE_UNSTITCHED_VORTEX", () => {
+    beforeEach(() => {
+      config.USE_UNSTITCHED_VORTEX = true
+    })
+
+    afterEach(() => {
+      config.USE_UNSTITCHED_VORTEX = false
+    })
+
+    const newForYouRecommendations = {
+      data: [{ artwork_id: "artwork-1" }, { artwork_id: "artwork-2" }],
+    }
+
+    it("loads the artwork ids from Vortex's REST API", async () => {
+      const userLoader = jest.fn().mockResolvedValue(newForYouRecommendations)
+      const vortexGraphqlLoader = jest.fn()
+      const context = {
+        authenticatedLoaders: {
+          vortexGraphqlLoader,
+          vortexNewForYouRecommendationsLoader: userLoader,
+        },
+        unauthenticatedLoaders: {},
+      } as any
+
+      const artworkIds = await getNewForYouArtworkIDs(
+        { excludeArtworkIds: [], version: "C", maxWorksPerArtist: 3 } as any,
+        context
+      )
+
+      expect(artworkIds).toEqual(["artwork-1", "artwork-2"])
+      expect(userLoader).toHaveBeenCalledWith({
+        version: "C",
+        max_works_per_artist: 3,
+        limit: 50,
+      })
+      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+    })
+
+    it("uses the app loader with the user id for impersonated requests", async () => {
+      const appLoader = jest.fn().mockResolvedValue(newForYouRecommendations)
+      const context = {
+        xImpersonateUserID: "user-1",
+        authenticatedLoaders: {
+          vortexGraphqlLoader: jest.fn(),
+          vortexNewForYouRecommendationsLoader: jest.fn(),
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: appLoader,
+        },
+      } as any
+
+      await getNewForYouArtworkIDs({ excludeArtworkIds: [] } as any, context)
+
+      expect(appLoader).toHaveBeenCalledWith({ user_id: "user-1", limit: 50 })
     })
   })
 })

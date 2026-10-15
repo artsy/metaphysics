@@ -6,6 +6,8 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "schema/v2/artwork"
 import gql from "lib/gql"
+import config from "config"
+import { loadVortexForUser } from "lib/loadVortexForUser"
 
 const MAX_ARTISTS = 50
 const MAX_ARTWORKS = 100
@@ -21,21 +23,16 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   args: pageable({
     page: { type: GraphQLInt },
   }),
-  resolve: async (
-    _root,
-    args: CursorPageable,
-    {
+  resolve: async (_root, args: CursorPageable, context) => {
+    const {
       authenticatedLoaders: {
         vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
       },
       artworksLoader,
       xImpersonateUserID,
       userID,
-    }
-  ) => {
+    } = context
+
     if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -43,34 +40,20 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
     // Fetch artist IDs from Vortex
     const userId = userID || xImpersonateUserID
 
-    const query = {
-      query: gql`
-        query artistAffinitiesQuery {
-          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}, userId: "${userId}") {
-            totalCount
-            edges {
-              node {
-                artistId
-                score
-              }
-            }
-          }
-        }
-      `,
-    }
-
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphQLUnauthenticatedLoader(query)()
-      : await vortexGraphQLAuthenticatedLoader(query)()
-
-    const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
-      (node: any) => node?.artistId
-    )
+    const artistIds = config.USE_UNSTITCHED_VORTEX
+      ? (
+          await loadVortexForUser(context, "vortexUserArtistAffinitiesLoader", {
+            user_id: userId,
+            min_score: MIN_AFFINITY_SCORE,
+            limit: MAX_ARTISTS,
+          })
+        ).map(({ artist_id }) => artist_id)
+      : await fetchArtistIdsFromVortexGraphql(context, userId)
 
     // Fetch artworks from ArtworksLoader if the user interacted with any artists
     let artworks = []
 
-    if (artistIds?.length) {
+    if (artistIds.length) {
       artworks = await artworksLoader({
         artist_ids: artistIds,
         sort: "-published_at",
@@ -92,4 +75,41 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       }),
     }
   },
+}
+
+const fetchArtistIdsFromVortexGraphql = async (
+  {
+    authenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+    },
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+    },
+    xImpersonateUserID,
+  }: ResolverContext,
+  userId: string | undefined
+): Promise<string[]> => {
+  const query = {
+    query: gql`
+        query artistAffinitiesQuery {
+          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}, userId: "${userId}") {
+            totalCount
+            edges {
+              node {
+                artistId
+                score
+              }
+            }
+          }
+        }
+      `,
+  }
+
+  const vortexResult = xImpersonateUserID
+    ? await vortexGraphQLUnauthenticatedLoader(query)()
+    : await vortexGraphQLAuthenticatedLoader!(query)()
+
+  return extractNodes(vortexResult.data?.artistAffinities).map(
+    (node: any) => node?.artistId
+  )
 }

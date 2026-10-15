@@ -5,6 +5,8 @@ import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
+import config from "config"
+import { loadVortexForUser } from "lib/loadVortexForUser"
 import { artistConnection } from "schema/v2/artist"
 
 // This limits the maximum number of artists we receive from Vortex and is related to how we implement the Connection in this resolver.
@@ -71,9 +73,6 @@ const fetchHybridRecommendations = async (
     authenticatedLoaders: {
       vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
     } = {},
-    unauthenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-    } = {},
     xImpersonateUserID,
     userID,
   } = context
@@ -83,6 +82,39 @@ const fetchHybridRecommendations = async (
   const userId = userID || xImpersonateUserID
 
   // Fetch artist IDs from Vortex
+  const artistIds = config.USE_UNSTITCHED_VORTEX
+    ? (
+        await loadVortexForUser(context, "vortexArtistRecommendationsLoader", {
+          user_id: userId,
+          limit: MAX_ARTISTS,
+        })
+      ).map(({ artist_id }) => artist_id)
+    : await fetchArtistIdsFromVortexGraphql(context, userId)
+
+  // Fetch artist details from Gravity
+  const artists = artistIds.length
+    ? (await artistsLoader({ ids: artistIds })).body
+    : []
+
+  return {
+    totalCount: artists.length,
+    pageCursors: createPageCursors({ ...args, page, size }, artists.length),
+    ...connectionFromArray(artists, args),
+  }
+}
+
+const fetchArtistIdsFromVortexGraphql = async (
+  {
+    authenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+    } = {},
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+    },
+    xImpersonateUserID,
+  }: ResolverContext,
+  userId: string | undefined
+) => {
   const query = {
     query: gql`
         query artistRecommendationsQuery {
@@ -103,24 +135,13 @@ const fetchHybridRecommendations = async (
     ? vortexGraphQLUnauthenticatedLoader
     : vortexGraphQLAuthenticatedLoader
 
-  if (!vortexLoader) return
+  if (!vortexLoader) return []
 
   const vortexResult = await vortexLoader(query)()
 
-  const artistIds = extractNodes(vortexResult.data?.artistRecommendations).map(
+  return extractNodes(vortexResult.data?.artistRecommendations).map(
     (node: any) => node?.artistId
   )
-
-  // Fetch artist details from Gravity
-  const artists = artistIds?.length
-    ? (await artistsLoader({ ids: artistIds })).body
-    : []
-
-  return {
-    totalCount: artists.length,
-    pageCursors: createPageCursors({ ...args, page, size }, artists.length),
-    ...connectionFromArray(artists, args),
-  }
 }
 
 export const ArtistRecommendations: GraphQLFieldConfig<
