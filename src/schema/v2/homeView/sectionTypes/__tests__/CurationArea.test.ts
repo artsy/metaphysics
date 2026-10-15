@@ -68,6 +68,15 @@ describe("HomeViewSectionCurationArea", () => {
             },
           ],
         }),
+        // Each collection's top 3 artworks → the 3-image stack.
+        filterArtworksLoader: jest.fn(({ marketing_collection_id }) => {
+          const tag = marketing_collection_id === "most-loved" ? "ml" : "bci"
+          return Promise.resolve({
+            hits: [1, 2, 3].map((i) => ({
+              images: [{ image_url: `https://ex.com/${tag}-${i}.jpg` }],
+            })),
+          })
+        }),
       } as unknown) as ResolverContext
 
       const resolve = CurationArea.resolver! as any
@@ -94,7 +103,11 @@ describe("HomeViewSectionCurationArea", () => {
           title: "Most Loved",
           subtitle: "The most-saved works on Artsy.",
           href: "/collection/most-loved",
-          imageURL: "https://ex.com/most-loved.jpg",
+          imageURLs: [
+            "https://ex.com/ml-1.jpg",
+            "https://ex.com/ml-2.jpg",
+            "https://ex.com/ml-3.jpg",
+          ],
           entityType: "MarketingCollection",
           entityID: "ml",
         },
@@ -102,7 +115,11 @@ describe("HomeViewSectionCurationArea", () => {
           title: "Blue-Chip Icons",
           subtitle: "Works by the market's established names.",
           href: "/collection/blue-chip-icons",
-          imageURL: "https://ex.com/blue-chip-icons.jpg",
+          imageURLs: [
+            "https://ex.com/bci-1.jpg",
+            "https://ex.com/bci-2.jpg",
+            "https://ex.com/bci-3.jpg",
+          ],
           entityType: "MarketingCollection",
           entityID: "bci",
         },

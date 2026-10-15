@@ -5,6 +5,8 @@ import { HomeViewCurationAreaSection } from "../sectionTypes/CurationArea"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
+import { setVersion } from "schema/v2/image/normalize"
+import { getDefault } from "schema/v2/image"
 
 /**
  * Chip navigation: every chip carries an `href`, so the client is uniformly
@@ -24,6 +26,33 @@ const sectionScreenHref = (section: HomeViewSection): string =>
 // Marketing-collection chips, in display order after the artist chips.
 // TODO: confirm "blue-chip-icons" is the correct prod slug (verified on staging).
 const COLLECTION_CHIP_SLUGS = ["most-loved", "blue-chip-icons"]
+
+// The card renders a fanned stack of this many images (design's "3-stack").
+const CHIP_STACK_SIZE = 3
+const STACK_IMAGE_VERSIONS = ["square", "large", "medium"]
+
+const artworkImageURL = (artwork: any): string | undefined => {
+  const image = artwork?.images && getDefault(artwork.images)
+  return image ? setVersion(image, STACK_IMAGE_VERSIONS) : undefined
+}
+
+// STOPGAP: derive the 3 stack images from a collection's top artworks. This is
+// per-area (the chips resolver runs once per curation area, not per feed node),
+// so a couple of extra loader calls is fine — NOT an N+1. The durable source is
+// a materialized, overridable "representative images" field per entity owned by
+// Gravity (see the Gravity handoff); this derive goes away once that lands, and
+// it doesn't cover the artist chips (no natural artworks source).
+const collectionStackImageURLs = async (
+  slug: string,
+  context: any
+): Promise<string[]> => {
+  const { hits = [] } = await context.filterArtworksLoader({
+    marketing_collection_id: slug,
+    size: CHIP_STACK_SIZE,
+    sort: "-decayed_merch",
+  })
+  return hits.map(artworkImageURL).filter(Boolean).slice(0, CHIP_STACK_SIZE)
+}
 export const CurationArea: HomeViewCurationAreaSection = {
   id: "home-view-section-curation-area",
   type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
@@ -77,18 +106,28 @@ export const CurationArea: HomeViewCurationAreaSection = {
 
     // Preserve the configured slug order (the loader may not).
     const bySlug = new Map<string, any>(collections.map((c) => [c.slug, c]))
-    const collectionChips = COLLECTION_CHIP_SLUGS.map((slug) =>
-      bySlug.get(slug)
+    const collectionChips = await Promise.all(
+      COLLECTION_CHIP_SLUGS.map((slug) => bySlug.get(slug))
+        .filter(Boolean)
+        .map(async (collection) => {
+          const imageURLs = await collectionStackImageURLs(
+            collection.slug,
+            context
+          )
+          return {
+            title: collection.title,
+            subtitle: collection.description,
+            href: `/collection/${collection.slug}`,
+            // 3-image stack when we have artworks; else the single thumbnail.
+            // HomeViewCard allows only one of imageURL / imageURLs.
+            ...(imageURLs.length
+              ? { imageURLs }
+              : { imageURL: collection.thumbnail }),
+            entityType: "MarketingCollection",
+            entityID: collection.id,
+          }
+        })
     )
-      .filter(Boolean)
-      .map((collection) => ({
-        title: collection.title,
-        subtitle: collection.description,
-        href: `/collection/${collection.slug}`,
-        imageURL: collection.thumbnail,
-        entityType: "MarketingCollection",
-        entityID: collection.id,
-      }))
 
     return connectionFromArray([...artistChips, ...collectionChips], args)
   },
