@@ -1,5 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
+import config from "config"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
@@ -7,6 +8,7 @@ import { CursorPageable, pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
+import { loadVortexForUser } from "lib/loadVortexForUser"
 
 // This limits the maximum number of artworks we receive from the recommendation
 // backend and is related to how we implement the Connection in this resolver.
@@ -30,6 +32,16 @@ const getArtworkIdsFromVortex = async (
   userId: string | undefined,
   context: ResolverContext
 ): Promise<string[]> => {
+  if (config.USE_UNSTITCHED_VORTEX) {
+    const recommendations = await loadVortexForUser(
+      context,
+      "vortexArtworkRecommendationsLoader",
+      { user_id: userId, limit: MAX_ARTWORKS }
+    )
+
+    return recommendations.map(({ artwork_id }) => artwork_id)
+  }
+
   const {
     authenticatedLoaders: {
       vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,

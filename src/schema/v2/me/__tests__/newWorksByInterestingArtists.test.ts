@@ -1,3 +1,4 @@
+import config from "config"
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
@@ -116,6 +117,76 @@ describe("newWorksByInterestingArtists", () => {
 
     expect(vortexGraphqlLoader).toHaveBeenCalled()
     expect(artworksLoader).not.toHaveBeenCalled()
+  })
+
+  describe("with USE_UNSTITCHED_VORTEX", () => {
+    beforeEach(() => {
+      config.USE_UNSTITCHED_VORTEX = true
+    })
+
+    afterEach(() => {
+      config.USE_UNSTITCHED_VORTEX = false
+    })
+
+    it("uses the app loader with the impersonated user's id", async () => {
+      const appLoader = jest.fn().mockResolvedValue({
+        data: [{ artist_id: "artist-1", score: 0.9 }],
+      })
+      const userLoader = jest.fn()
+
+      const context: any = {
+        artworksLoader: jest.fn(async () => mockArtworksResponse),
+        meLoader: () => Promise.resolve({}),
+        // As in production: userID = xUserID || xImpersonateUserID
+        userID: "impersonated-user-id",
+        xImpersonateUserID: "impersonated-user-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader: jest.fn(),
+          vortexUserArtistAffinitiesLoader: userLoader,
+        },
+        unauthenticatedLoaders: { vortexUserArtistAffinitiesLoader: appLoader },
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(appLoader).toHaveBeenCalledWith({
+        user_id: "impersonated-user-id",
+        min_score: 0.5,
+        limit: 50,
+      })
+      expect(userLoader).not.toHaveBeenCalled()
+    })
+
+    it("loads the artist ids from Vortex's affinities REST API", async () => {
+      const vortexUserArtistAffinitiesLoader = jest.fn().mockResolvedValue({
+        data: [{ artist_id: "artist-1", score: 0.9 }],
+      })
+      const vortexGraphqlLoader = jest.fn()
+      const artworksLoader = jest.fn(async () => mockArtworksResponse)
+
+      const context: any = {
+        artworksLoader,
+        meLoader: () => Promise.resolve({}),
+        userID: "vortex-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader,
+          vortexUserArtistAffinitiesLoader,
+        },
+        unauthenticatedLoaders: {},
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(vortexUserArtistAffinitiesLoader).toHaveBeenCalledWith({
+        user_id: "vortex-id",
+        min_score: 0.5,
+        limit: 50,
+      })
+      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+      expect(artworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ artist_ids: ["artist-1"] })
+      )
+    })
   })
 })
 

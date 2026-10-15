@@ -33,5 +33,27 @@ export default (opts) => {
       {},
       { requestThrottleMs: 3600000 } // 1 hour throttle
     ),
+    // Per-user data for impersonated requests (e.g. Braze), so never shared
+    // through the cache.
+    vortexArtistRecommendationsLoader: vortexLoader(
+      "artist_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexArtworkRecommendationsLoader: vortexLoader(
+      "artwork_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexNewForYouRecommendationsLoader: vortexLoader(
+      "new_for_you_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexUserArtistAffinitiesLoader: vortexLoader(
+      "user_artist_affinities",
+      {},
+      { method: "POST" }
+    ),
   }
 }

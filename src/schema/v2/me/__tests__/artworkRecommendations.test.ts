@@ -1,3 +1,4 @@
+import config from "config"
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
@@ -360,6 +361,79 @@ describe("artworkRecommendations", () => {
 
       expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
       expect(vortexGraphqlLoader).toHaveBeenCalled()
+    })
+  })
+
+  describe("with USE_UNSTITCHED_VORTEX", () => {
+    beforeEach(() => {
+      config.USE_UNSTITCHED_VORTEX = true
+    })
+
+    afterEach(() => {
+      config.USE_UNSTITCHED_VORTEX = false
+    })
+
+    it("uses the app loader with the impersonated user's id", async () => {
+      const appLoader = jest.fn().mockResolvedValue({
+        data: [{ artwork_id: "608a7417bdfbd1a789ba092a", score: 0.9 }],
+      })
+      const userLoader = jest.fn()
+
+      const context: any = {
+        artworksLoader: jest.fn(async () => artworksResponse),
+        meLoader: () => Promise.resolve({}),
+        // As in production: userID = xUserID || xImpersonateUserID
+        userID: "impersonated-user-id",
+        xImpersonateUserID: "impersonated-user-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader: jest.fn(),
+          vortexArtworkRecommendationsLoader: userLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexArtworkRecommendationsLoader: appLoader,
+        },
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(appLoader).toHaveBeenCalledWith({
+        user_id: "impersonated-user-id",
+        limit: 50,
+      })
+      expect(userLoader).not.toHaveBeenCalled()
+    })
+
+    it("loads the artwork ids from Vortex's REST API", async () => {
+      const vortexArtworkRecommendationsLoader = jest.fn().mockResolvedValue({
+        data: [
+          { artwork_id: "608a7417bdfbd1a789ba092a", score: 0.9 },
+          { artwork_id: "308a7416bdfbd1a789ba0911", score: 0.5 },
+        ],
+      })
+      const vortexGraphqlLoader = jest.fn()
+      const artworksLoader = jest.fn(async () => artworksResponse)
+
+      const context: any = {
+        artworksLoader,
+        meLoader: () => Promise.resolve({}),
+        userID: "vortex-user-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader,
+          vortexArtworkRecommendationsLoader,
+        },
+        unauthenticatedLoaders: {},
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(vortexArtworkRecommendationsLoader).toHaveBeenCalledWith({
+        user_id: "vortex-user-id",
+        limit: 50,
+      })
+      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+      expect(artworksLoader).toHaveBeenCalledWith({
+        ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
+      })
     })
   })
 })

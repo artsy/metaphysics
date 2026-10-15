@@ -118,6 +118,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               CACHE_DISABLED ||
               (apiOptions.method &&
                 ["PUT", "POST", "DELETE"].includes(apiOptions.method)) ||
+              apiOptions.skipCache ||
               apiOptions.isMutation
 
             if (skipCache) {
