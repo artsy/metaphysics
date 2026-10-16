@@ -1,8 +1,10 @@
+import config from "config"
 import gql from "lib/gql"
 import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable } from "relay-cursor-paging"
+import { loadVortexForUser } from "lib/loadVortexForUser"
 import { ResolverContext } from "types/graphql"
 
 // Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
@@ -121,6 +123,21 @@ export const getNewForYouArtworkIDs = async (
 
   if (!vortexGraphQLAuthenticatedLoader)
     throw new Error("Authentication failed: User is not authenticated.")
+
+  if (config.USE_UNSTITCHED_VORTEX) {
+    const recommendations = await loadVortexForUser(
+      context,
+      "vortexNewForYouRecommendationsLoader",
+      {
+        user_id: userID || undefined,
+        version: args.version || undefined,
+        max_works_per_artist: args.maxWorksPerArtist || undefined,
+        limit: MAX_ARTWORKS,
+      }
+    )
+
+    return recommendations.map(({ artwork_id }) => artwork_id)
+  }
 
   const userIdArgument = userID ? `userId: "${userID}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""

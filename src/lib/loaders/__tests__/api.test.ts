@@ -127,6 +127,19 @@ describe("API loaders", () => {
           })
       })
     })
+
+    it("doesnt read or write memcache with skipCache", async () => {
+      const getSpy = jest.spyOn(cache, "get")
+      const setSpy = jest.spyOn(cache, "set")
+      getSpy.mockClear()
+      setSpy.mockClear()
+
+      loader = apiLoader("some/per-user/path", {}, { skipCache: true })
+      await loader()
+
+      expect(getSpy).not.toHaveBeenCalled()
+      expect(setSpy).not.toHaveBeenCalled()
+    })
   })
 
   describe("with authentication", () => {

@@ -10,7 +10,24 @@ export default (opts) => {
     opts
   )
 
+  // Warehouse data is the same for every user and reloaded once a day, at a
+  // time the cache isn't aligned with. A day-long throttle could serve the
+  // previous load for most of a day; an hour bounds that, matching Vortex's
+  // own `expires_in`.
+  const warehouseLoader = (path: string) =>
+    vortexLoader(path, {}, { requestThrottleMs: 3600000 }) // 1 hour throttle
+
   return {
+    artistSparklinesLoader: warehouseLoader("artist_sparklines"),
+    calendarYearMarketPriceInsightsLoader: warehouseLoader(
+      "calendar_year_market_price_insights"
+    ),
+    calendarYearPriceInsightsLoader: warehouseLoader(
+      "calendar_year_price_insights"
+    ),
+    marketPriceInsightsLoader: warehouseLoader("market_price_insights"),
+    priceInsightsLoader: warehouseLoader("price_insights"),
+    warehouseMetadataLoader: warehouseLoader("warehouse_metadata"),
     vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoader(
         "/graphql",
@@ -32,6 +49,28 @@ export default (opts) => {
       "trending_searches",
       {},
       { requestThrottleMs: 3600000 } // 1 hour throttle
+    ),
+    // Per-user data for impersonated requests (e.g. Braze), so never shared
+    // through the cache.
+    vortexArtistRecommendationsLoader: vortexLoader(
+      "artist_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexArtworkRecommendationsLoader: vortexLoader(
+      "artwork_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexNewForYouRecommendationsLoader: vortexLoader(
+      "new_for_you_recommendations",
+      {},
+      { skipCache: true }
+    ),
+    vortexUserArtistAffinitiesLoader: vortexLoader(
+      "user_artist_affinities",
+      {},
+      { method: "POST" }
     ),
   }
 }

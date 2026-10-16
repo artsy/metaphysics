@@ -108,6 +108,16 @@ export default (accessToken, opts) => {
     similarGalleriesInteractionsLoader: vortexLoader(
       "similar_galleries_interactions"
     ),
+    vortexArtistRecommendationsLoader: vortexLoader("artist_recommendations"),
+    vortexArtworkRecommendationsLoader: vortexLoader("artwork_recommendations"),
+    vortexNewForYouRecommendationsLoader: vortexLoader(
+      "new_for_you_recommendations"
+    ),
+    vortexUserArtistAffinitiesLoader: vortexLoader(
+      "user_artist_affinities",
+      {},
+      { method: "POST" }
+    ),
   }
 }
 

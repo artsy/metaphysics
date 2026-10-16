@@ -1,6 +1,7 @@
 import { readFileSync } from "fs"
 import {
   FilterRootFields,
+  FilterTypes,
   RenameRootFields,
   RenameTypes,
   wrapSchema,
@@ -13,11 +14,21 @@ const removeRootFieldList = [
   "BigInt",
   "artistAffinities",
   "artistRecommendations",
+  "artworkRecommendations",
   "marketPriceInsightsBatch",
   "newForYouRecommendations",
-  "partnerStat",
+  "partnerStats",
   "pricingContext",
-  "userStat",
+  "userStats",
+]
+
+// Types only reachable from the root fields above. Vortex still serves them
+// over GraphQL for the loaders in `loaders_*/vortex.ts`, they just have no
+// place in the merged schema.
+const removeTypeList = [
+  "ArtworkRecommendation",
+  "ArtworkRecommendationConnection",
+  "ArtworkRecommendationEdge",
 ]
 
 export const transformsForVortex = ({ removeRootFields = true } = {}) => [
@@ -31,6 +42,10 @@ export const transformsForVortex = ({ removeRootFields = true } = {}) => [
           }
           return !removeRootFieldList.includes(name)
         }),
+        // Must stay paired with the root field filtering above: with the root
+        // fields kept, these types are still reachable and dropping them would
+        // leave an invalid schema.
+        new FilterTypes((type) => !removeTypeList.includes(type.name)),
       ]
     : []),
   new RenameTypes((name) => {
