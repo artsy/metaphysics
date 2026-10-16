@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -25,6 +26,53 @@ export const PartnerListTypeEnum = new GraphQLEnumType({
     FAIR: { value: "fair" },
     PRIVATE_VIEWING_ROOM: { value: "private_viewing_room" },
     OTHER: { value: "other" },
+  },
+})
+
+export const PartnerListVisibilityStatusEnum = new GraphQLEnumType({
+  name: "PartnerListVisibilityStatusEnum",
+  values: {
+    PRIVATE: {
+      value: "private",
+      description: "Only in ArtOS, not synced.",
+    },
+    DISTRIBUTED: {
+      value: "distributed",
+      description: "Synced with a draft show or fair in the CMS.",
+    },
+    LISTED: {
+      value: "listed",
+      description: "Synced with a show or fair that is live on Artsy.",
+    },
+  },
+})
+
+const PartnerListArtworkImpactType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "PartnerListArtworkImpact",
+  description:
+    "What adding artworks to a list would publish, used to warn before adding.",
+  fields: {
+    visibilityStatus: {
+      type: new GraphQLNonNull(PartnerListVisibilityStatusEnum),
+      resolve: ({ visibility_status }) => visibility_status,
+    },
+    privateCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ private_count }) => private_count,
+    },
+    unlistedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ unlisted_count }) => unlisted_count,
+    },
+    affectedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        "Artworks that will be listed (listed show) or added to the platform (distributed show). Zero for private lists.",
+      resolve: ({ affected_count }) => affected_count,
+    },
   },
 })
 
@@ -73,6 +121,47 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       distributedAt: date(({ distributed_at }) => distributed_at),
+      fairID: {
+        type: GraphQLString,
+        resolve: ({ fair_id }) => fair_id,
+      },
+      visibilityStatus: {
+        type: new GraphQLNonNull(PartnerListVisibilityStatusEnum),
+        description:
+          "Private, Distributed (draft in the CMS) or Listed (live on Artsy). Derived from the linked show.",
+        resolve: ({ visibility_status }) => visibility_status ?? "private",
+      },
+      syncConfirmationDismissed: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "Whether the one-time confirmation before pushing edits to a listed show was dismissed.",
+        resolve: ({ sync_confirmation_dismissed }) =>
+          sync_confirmation_dismissed ?? false,
+      },
+      lastSyncedAt: date(({ last_synced_at }) => last_synced_at),
+      artworkImpact: {
+        type: PartnerListArtworkImpactType,
+        description:
+          "Previews what adding the given artworks would publish. Not resolvable through partnerListsConnection.",
+        args: {
+          artworkIDs: {
+            type: new GraphQLNonNull(
+              new GraphQLList(new GraphQLNonNull(GraphQLString))
+            ),
+          },
+        },
+        resolve: async (
+          { id, _fromConnection },
+          { artworkIDs },
+          { partnerListArtworkImpactLoader }
+        ) => {
+          if (!partnerListArtworkImpactLoader || _fromConnection) return null
+
+          return partnerListArtworkImpactLoader(id, {
+            artwork_ids: artworkIDs,
+          })
+        },
+      },
       createdAt: date(),
       updatedAt: date(),
       // published/passcodeProtected read from the `partner_list_publication`

@@ -18787,6 +18787,36 @@ type DismissArtworkDuplicatePairSuccess {
   artworkDuplicatePair: ArtworkDuplicatePair
 }
 
+type DismissPartnerListSyncConfirmationFailure {
+  mutationError: GravityMutationError
+}
+
+input DismissPartnerListSyncConfirmationMutationInput {
+  clientMutationId: String
+
+  """
+  The ID of the partner list.
+  """
+  id: String!
+}
+
+type DismissPartnerListSyncConfirmationMutationPayload {
+  clientMutationId: String
+
+  """
+  On success: the updated partner list. On error: the error that occurred.
+  """
+  partnerListOrError: DismissPartnerListSyncConfirmationResponseOrError
+}
+
+union DismissPartnerListSyncConfirmationResponseOrError =
+    DismissPartnerListSyncConfirmationFailure
+  | DismissPartnerListSyncConfirmationSuccess
+
+type DismissPartnerListSyncConfirmationSuccess {
+  partnerList: PartnerList
+}
+
 type DismissTaskFailure {
   mutationError: GravityMutationError!
 }
@@ -27944,6 +27974,13 @@ type Mutation {
   ): DismissArtworkDuplicatePairMutationPayload
 
   """
+  Dismisses the one-time confirmation shown before pushing edits to a listed show.
+  """
+  dismissPartnerListSyncConfirmation(
+    input: DismissPartnerListSyncConfirmationMutationInput!
+  ): DismissPartnerListSyncConfirmationMutationPayload
+
+  """
   Updates a Task on the logged in User
   """
   dismissTask(input: DismissTaskMutationInput!): DismissTaskMutationPayload
@@ -28322,6 +28359,13 @@ type Mutation {
   Triggers a campaign send.
   """
   triggerCampaign(input: TriggerCampaignInput!): TriggerCampaignPayload
+
+  """
+  Returns a distributed partner list to private, deleting its Artsy show. Artworks stay in inventory.
+  """
+  undistributePartnerList(
+    input: UndistributePartnerListMutationInput!
+  ): UndistributePartnerListMutationPayload
 
   """
   Unlinks a 3rd party account
@@ -32140,6 +32184,10 @@ type PartnerInquiryRequest {
 }
 
 type PartnerList {
+  """
+  Previews what adding the given artworks would publish. Not resolvable through partnerListsConnection.
+  """
+  artworkImpact(artworkIDs: [String!]!): PartnerListArtworkImpact
   artworksConnection(
     after: String
     before: String
@@ -32172,6 +32220,7 @@ type PartnerList {
     timezone: String
   ): String
   fair: Fair
+  fairID: String
 
   """
   A globally unique ID.
@@ -32182,6 +32231,14 @@ type PartnerList {
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
+  lastSyncedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
   listType: PartnerListTypeEnum!
   name: String!
   partnerShowID: String
@@ -32208,6 +32265,11 @@ type PartnerList {
     """
     timezone: String
   ): String
+
+  """
+  Whether the one-time confirmation before pushing edits to a listed show was dismissed.
+  """
+  syncConfirmationDismissed: Boolean!
   updatedAt(
     format: String
 
@@ -32216,6 +32278,11 @@ type PartnerList {
     """
     timezone: String
   ): String
+
+  """
+  Private, Distributed (draft in the CMS) or Listed (live on Artsy). Derived from the linked show.
+  """
+  visibilityStatus: PartnerListVisibilityStatusEnum!
 }
 
 """
@@ -32249,6 +32316,19 @@ type PartnerListArtworkEdge {
   """
   node: Artwork
   position: Int!
+}
+
+"""
+What adding artworks to a list would publish, used to warn before adding.
+"""
+type PartnerListArtworkImpact {
+  """
+  Artworks that will be listed (listed show) or added to the platform (distributed show). Zero for private lists.
+  """
+  affectedCount: Int!
+  privateCount: Int!
+  unlistedCount: Int!
+  visibilityStatus: PartnerListVisibilityStatusEnum!
 }
 
 """
@@ -32369,6 +32449,23 @@ enum PartnerListTypeEnum {
   OTHER
   PRIVATE_VIEWING_ROOM
   SHOW
+}
+
+enum PartnerListVisibilityStatusEnum {
+  """
+  Synced with a draft show or fair in the CMS.
+  """
+  DISTRIBUTED
+
+  """
+  Synced with a show or fair that is live on Artsy.
+  """
+  LISTED
+
+  """
+  Only in ArtOS, not synced.
+  """
+  PRIVATE
 }
 
 type PartnerMerchantAccount {
@@ -39919,6 +40016,36 @@ type USBankAccount {
 }
 
 union UnderlyingCurrentEvent = Sale | Show
+
+type UndistributePartnerListFailure {
+  mutationError: GravityMutationError
+}
+
+input UndistributePartnerListMutationInput {
+  clientMutationId: String
+
+  """
+  The ID of the partner list.
+  """
+  id: String!
+}
+
+type UndistributePartnerListMutationPayload {
+  clientMutationId: String
+
+  """
+  On success: the un-distributed partner list. On error: the error that occurred.
+  """
+  partnerListOrError: UndistributePartnerListResponseOrError
+}
+
+union UndistributePartnerListResponseOrError =
+    UndistributePartnerListFailure
+  | UndistributePartnerListSuccess
+
+type UndistributePartnerListSuccess {
+  partnerList: PartnerList
+}
 
 input UnlinkAuthenticationMutationInput {
   clientMutationId: String

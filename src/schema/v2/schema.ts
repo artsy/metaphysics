@@ -338,6 +338,8 @@ import { createPartnerListFromShowMutation } from "./partner/Mutations/PartnerLi
 import { updatePartnerListMutation } from "./partner/Mutations/PartnerList/updatePartnerListMutation"
 import { deletePartnerListMutation } from "./partner/Mutations/PartnerList/deletePartnerListMutation"
 import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/distributePartnerListMutation"
+import { undistributePartnerListMutation } from "./partner/Mutations/PartnerList/undistributePartnerListMutation"
+import { dismissPartnerListSyncConfirmationMutation } from "./partner/Mutations/PartnerList/dismissPartnerListSyncConfirmationMutation"
 import { addArtworkToPartnerListMutation } from "./partner/Mutations/PartnerList/addArtworkToPartnerListMutation"
 import { removeArtworkFromPartnerListMutation } from "./partner/Mutations/PartnerList/removeArtworkFromPartnerListMutation"
 import { bulkAddArtworksToPartnerListMutation } from "./partner/Mutations/PartnerList/bulkAddArtworksToPartnerListMutation"
@@ -830,6 +832,8 @@ export default new GraphQLSchema({
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,
       distributePartnerList: distributePartnerListMutation,
+      undistributePartnerList: undistributePartnerListMutation,
+      dismissPartnerListSyncConfirmation: dismissPartnerListSyncConfirmationMutation,
       dislikeArtwork: dislikeArtworkMutation,
       dismissTask: dismissTaskMutation,
       enableSecondFactor: enableSecondFactorMutation,
