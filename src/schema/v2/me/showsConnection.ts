@@ -41,7 +41,7 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     args,
-    { ipAddress, meShowsLoader, requestLocationLoader }
+    { ipAddress, meShowsLoader, requestLocationLoader, cfGeo }
   ) => {
     if (!meShowsLoader) return null
 
@@ -69,6 +69,9 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       near,
       ip: userIP,
       requestLocationLoader,
+      // CF geo describes the request IP, so only use it for the viewer's
+      // own IP-based lookup, not an explicitly provided `ip`.
+      cfGeo: includeShowsNearIpBasedLocation && !ip ? cfGeo : null,
     })
 
     const gravityArgs = {

@@ -150,7 +150,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       partnerCategories,
       ..._options
     },
-    { ipAddress, partnersLoader, requestLocationLoader }
+    { ipAddress, partnersLoader, requestLocationLoader, cfGeo }
   ) => {
     if (near && includePartnersNearIpBasedLocation) {
       throw new Error(
@@ -163,6 +163,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       near,
       ip: includePartnersNearIpBasedLocation && ipAddress,
       requestLocationLoader,
+      cfGeo: includePartnersNearIpBasedLocation ? cfGeo : null,
     })
 
     const options: any = {
@@ -217,7 +218,7 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     args,
-    { ipAddress, partnersLoader, requestLocationLoader }
+    { ipAddress, partnersLoader, requestLocationLoader, cfGeo }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -232,6 +233,7 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       maxDistance: args.maxDistance,
       near: args.near,
       requestLocationLoader,
+      cfGeo: args.includePartnersNearIpBasedLocation ? cfGeo : null,
     })
 
     // Do not sort by distance if a location is not provided because it's not supported by Gravity
