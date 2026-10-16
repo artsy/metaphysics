@@ -110,6 +110,37 @@ describe("Image type", () => {
     })
   })
 
+  describe("#sourceURL", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image(includeAll: true) {
+          sourceURL
+        }
+      }
+    }`
+
+    it("returns the remote URL of an image that is still processing", () => {
+      assign(image, {
+        image_url: null,
+        image_versions: [],
+        gemini_token: null,
+        source_url: "https://partner-images.artnet.com/member-images/1/a.jpg",
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.sourceURL).toBe(
+          "https://partner-images.artnet.com/member-images/1/a.jpg"
+        )
+      })
+    })
+
+    it("is null when Gravity doesn't send one", () => {
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.sourceURL).toBeNull()
+      })
+    })
+  })
+
   describe("#placeholder", () => {
     const query = `{
       artwork(id: "richard-prince-untitled-portrait") {
