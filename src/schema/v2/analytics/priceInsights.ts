@@ -2,7 +2,6 @@ import {
   GraphQLEnumType,
   GraphQLEnumValueConfigMap,
   GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
   GraphQLFloat,
   GraphQLID,
   GraphQLInt,
@@ -20,6 +19,7 @@ import {
   analyticsConnectionType,
   BigIntType,
   ISO8601DateTimeType,
+  snakeCaseFields,
 } from "./shared"
 
 /**
@@ -30,16 +30,6 @@ import {
  * Vortex responds in snake_case with raw values, so each field reads its
  * snake_case key.
  */
-
-const snakeCaseFields = (
-  fields: Record<string, GraphQLFieldConfig<any, ResolverContext>>
-): GraphQLFieldConfigMap<any, ResolverContext> =>
-  Object.fromEntries(
-    Object.entries(fields).map(([name, config]) => {
-      const key = snakeCase(name)
-      return [name, { resolve: (source) => source[key], ...config }]
-    })
-  )
 
 const MARKET_PRICE_INSIGHT_FIELDS = {
   annualLotsSold: GraphQLInt,

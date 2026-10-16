@@ -16,6 +16,9 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
+import config from "config"
+import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
+import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
@@ -187,21 +190,9 @@ const ArtistAlertsSort = {
   }),
 }
 
+// The same instance as Partner.analytics' period arguments use.
 export const AnalyticsQueryPeriodEnum = {
-  type: new GraphQLEnumType({
-    name: "AnalyticsQueryPeriodEnum",
-    values: {
-      FOUR_WEEKS: {
-        value: "four_weeks",
-      },
-      SIXTEEN_WEEKS: {
-        value: "sixteen_weeks",
-      },
-      ONE_YEAR: {
-        value: "one_year",
-      },
-    },
-  }),
+  type: AnalyticsQueryPeriodEnumType,
 }
 
 // Confirmed-buyer inquirers are only counted within the most recent batch
@@ -309,6 +300,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      // Stitched from Vortex until it's unstitched.
+      ...(config.USE_UNSTITCHED_VORTEX
+        ? { analytics: PartnerAnalyticsField }
+        : {}),
       artistsWithAlertCountsConnection: {
         type: ArtistsWithAlertCountsConnectionType,
         args: pageable({
@@ -2068,7 +2063,8 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { partnerLoader }, info) => {
-    const fieldsNotRequireLoader = ["internalID"]
+    // Analytics only needs the partner's id.
+    const fieldsNotRequireLoader = ["internalID", "analytics"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity

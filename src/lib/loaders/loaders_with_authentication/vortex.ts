@@ -2,6 +2,10 @@ import config from "config"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
 import factories from "../api"
+import {
+  createPartnerStatsLoader,
+  PartnerStatsSection,
+} from "../vortexPartnerStatsLoader"
 
 const { VORTEX_APP_ID } = config
 
@@ -118,6 +122,14 @@ export default (accessToken, opts) => {
       {},
       { method: "POST" }
     ),
+    // Per partner, and Vortex authorizes them with the user's token, so the
+    // authenticated factory (no memcache) is the right one.
+    vortexPartnerStatsLoader: createPartnerStatsLoader(
+      vortexLoader<any, PartnerStatsSection>(
+        (section) => `partner_stats/${section}`
+      )
+    ),
+    vortexUserStatsLoader: vortexLoader("user_stats"),
   }
 }
 
