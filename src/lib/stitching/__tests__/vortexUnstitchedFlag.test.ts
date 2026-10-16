@@ -120,9 +120,59 @@ describe("USE_UNSTITCHED_VORTEX", () => {
 
     it("does not add the Vortex stitching extensions", () => {
       const artwork = mergedSchema.getType("Artwork") as GraphQLObjectType
-      const partner = mergedSchema.getType("Partner") as GraphQLObjectType
       expect(artwork.getFields().pricingContext).toBeUndefined()
-      expect(partner.getFields().analytics).toBeUndefined()
+    })
+
+    it("serves Partner.analytics and User.analytics natively", async () => {
+      const partner = mergedSchema.getType("Partner") as GraphQLObjectType
+      const user = mergedSchema.getType("User") as GraphQLObjectType
+      expect(partner.getFields().analytics.type.toString()).toEqual(
+        "AnalyticsPartnerStats"
+      )
+      expect(user.getFields().analytics.type.toString()).toEqual(
+        "AnalyticsUserStats"
+      )
+
+      const vortexPartnerStatsLoader = jest
+        .fn()
+        .mockResolvedValue({ total_cents: 100 })
+      const vortexUserStatsLoader = jest.fn().mockResolvedValue({
+        data: { user_id: "user-1", total_purchase_count: 2 },
+      })
+
+      const result = await graphql({
+        schema: mergedSchema,
+        source: `{
+          partner(id: "5748d153cd530e2d5100031c") {
+            analytics { sales(period: FOUR_WEEKS) { totalCents } }
+          }
+          user(id: "user-1") {
+            analytics { totalPurchaseCount }
+          }
+        }`,
+        contextValue: {
+          requestIDs: {},
+          userByIDLoader: jest.fn().mockResolvedValue({ id: "user-1" }),
+          authenticatedLoaders: {
+            vortexPartnerStatsLoader,
+            vortexUserStatsLoader,
+          },
+          unauthenticatedLoaders: {},
+        },
+      })
+
+      expect(result).toEqual({
+        data: {
+          partner: { analytics: { sales: { totalCents: 100 } } },
+          user: { analytics: { totalPurchaseCount: 2 } },
+        },
+      })
+      expect(vortexPartnerStatsLoader).toHaveBeenCalledWith({
+        partnerId: "5748d153cd530e2d5100031c",
+        section: "sales",
+        period: "FOUR_WEEKS",
+      })
+      expect(vortexUserStatsLoader).toHaveBeenCalledWith({ user_id: "user-1" })
     })
 
     it("still stitches the other services", () => {
