@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
-import { filtersDescription } from "../v2/stitching"
+import { filtersDescription } from "schema/v2/analytics/pricingContext"
 import config from "config"
 
 jest.mock("../link")

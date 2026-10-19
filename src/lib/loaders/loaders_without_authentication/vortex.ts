@@ -1,4 +1,8 @@
 import factories from "../api"
+import {
+  createPartnerStatsLoader,
+  PartnerStatsSection,
+} from "../vortexPartnerStatsLoader"
 
 interface GraphQLArgs {
   query: string
@@ -27,6 +31,7 @@ export default (opts) => {
     ),
     marketPriceInsightsLoader: warehouseLoader("market_price_insights"),
     priceInsightsLoader: warehouseLoader("price_insights"),
+    pricingContextLoader: warehouseLoader("pricing_context"),
     warehouseMetadataLoader: warehouseLoader("warehouse_metadata"),
     vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoader(
@@ -72,5 +77,16 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
+    // Partner and user stats for requests without a user (e.g. an email
+    // provider's app token). Per partner/user and authorized by the token, so
+    // never shared through the cache.
+    vortexPartnerStatsLoader: createPartnerStatsLoader(
+      vortexLoader<any, PartnerStatsSection>(
+        (section) => `partner_stats/${section}`,
+        {},
+        { skipCache: true }
+      )
+    ),
+    vortexUserStatsLoader: vortexLoader("user_stats", {}, { skipCache: true }),
   }
 }

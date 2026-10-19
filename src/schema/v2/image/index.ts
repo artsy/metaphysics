@@ -145,6 +145,12 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
         "Order position of the image, within the images array of the artwork. (1-indexed)",
     },
     resized: ResizedUrl,
+    sourceURL: {
+      type: GraphQLString,
+      description:
+        "Remote URL the image was created from (e.g. an Artnet import). Only present while the image is still processing.",
+      resolve: ({ source_url }) => source_url,
+    },
     tileBaseURL: {
       type: GraphQLString,
       resolve: ({ tile_base_url }) => tile_base_url,

@@ -1,6 +1,9 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLFieldConfigMap,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -10,6 +13,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { connectionFromArray, ConnectionArguments } from "graphql-relay"
+import { snakeCase } from "lodash"
 import { createPageCursors, PageCursorsType } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 
@@ -18,6 +22,43 @@ import { ResolverContext } from "types/graphql"
  * descriptions match what Vortex served, so clients see the same schema
  * whether `USE_UNSTITCHED_VORTEX` is on or off.
  */
+
+/**
+ * Vortex's REST API responds in snake_case, so each field reads its snake_case
+ * key unless it has its own resolver.
+ */
+export const snakeCaseFields = (
+  fields: Record<string, GraphQLFieldConfig<any, ResolverContext>>
+): GraphQLFieldConfigMap<any, ResolverContext> =>
+  Object.fromEntries(
+    Object.entries(fields).map(([name, config]) => {
+      const key = snakeCase(name)
+      return [name, { resolve: (source) => source[key], ...config }]
+    })
+  )
+
+/**
+ * Vortex's `QueryPeriodEnum`, also used by Gravity's
+ * `analytics_page_time_frame`, hence the lowercase internal values. Vortex's
+ * REST API takes and keys responses by the enum names.
+ */
+export const AnalyticsQueryPeriodEnumType = new GraphQLEnumType({
+  name: "AnalyticsQueryPeriodEnum",
+  values: {
+    FOUR_WEEKS: {
+      value: "four_weeks",
+      description: "Four weeks",
+    },
+    SIXTEEN_WEEKS: {
+      value: "sixteen_weeks",
+      description: "Sixteen weeks",
+    },
+    ONE_YEAR: {
+      value: "one_year",
+      description: "One year",
+    },
+  },
+})
 
 // Vortex returns these as JSON numbers; GraphQL clients have always received
 // them as strings.
@@ -28,6 +69,16 @@ export const BigIntType = new GraphQLScalarType({
   serialize: (value) => String(value),
   parseValue: (value) => String(value),
 })
+
+// The arguments the stitched `amount` SDL declared, without descriptions or
+// `disambiguate`.
+export const stitchedAmountArgs: GraphQLFieldConfigArgumentMap = {
+  decimal: { type: GraphQLString, defaultValue: "." },
+  format: { type: GraphQLString, defaultValue: "%s%v" },
+  precision: { type: GraphQLInt, defaultValue: 0 },
+  symbol: { type: GraphQLString },
+  thousand: { type: GraphQLString, defaultValue: "," },
+}
 
 const passThrough = (value) => value
 
@@ -94,19 +145,21 @@ export const analyticsConnectionArgs: GraphQLFieldConfigArgumentMap = {
 
 /**
  * The connection shape Vortex's graphql-ruby connections exposed (including
- * `nodes` and the graphql-page_cursors fields), for a node type and the
- * connection/edge type names Vortex used.
+ * `nodes` and, unless `pageCursors` is false, the graphql-page_cursors
+ * fields), for a node type and the connection/edge type names Vortex used.
  */
 export const analyticsConnectionType = ({
   connectionName,
   edgeName,
   nodeName,
   nodeType,
+  pageCursors = true,
 }: {
   connectionName: string
   edgeName: string
   nodeName: string
   nodeType: GraphQLOutputType
+  pageCursors?: boolean
 }) => {
   const edgeType = new GraphQLObjectType<any, ResolverContext>({
     name: edgeName,
@@ -136,13 +189,17 @@ export const analyticsConnectionType = ({
         description: "A list of nodes.",
         resolve: ({ edges }) => edges.map(({ node }) => node),
       },
-      pageCursors: { type: PageCursorsType },
       pageInfo: {
         type: new GraphQLNonNull(AnalyticsPageInfoType),
         description: "Information to aid in pagination.",
       },
-      totalCount: { type: GraphQLInt },
-      totalPages: { type: GraphQLInt },
+      ...(pageCursors
+        ? {
+            pageCursors: { type: PageCursorsType },
+            totalCount: { type: GraphQLInt },
+            totalPages: { type: GraphQLInt },
+          }
+        : {}),
     },
   })
 }
