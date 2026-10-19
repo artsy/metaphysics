@@ -1330,6 +1330,7 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
+    partnerOfferEligibilityLoader: gravityLoader("partner_offers/eligibility"),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
       {},
