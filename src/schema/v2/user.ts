@@ -8,6 +8,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
+import config from "config"
 import {
   CatchCollectionNotFoundException,
   convertConnectionArgsToGravityArgs,
@@ -21,6 +22,7 @@ import {
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { CollectorProfileType } from "./CollectorProfile/collectorProfile"
+import { UserAnalyticsField } from "./analytics/partnerStats"
 import { artistConnection } from "./artist"
 import { artworkConnection } from "./artwork"
 import cached from "./fields/cached"
@@ -136,6 +138,10 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...InternalIDFields,
       cached,
+      // Stitched from Vortex until it's unstitched.
+      ...(config.USE_UNSTITCHED_VORTEX
+        ? { analytics: UserAnalyticsField }
+        : {}),
       accessiblePropertiesConnection: {
         type: UserAccessiblePropertiesConnectionType,
         args: pageable({
