@@ -60,7 +60,7 @@ describe("Artwork.catalogArtwork", () => {
         catalogArtwork: {
           internalID: "catalog-artwork-id",
           artworkId: "some-artwork",
-          medium: "Oil on canvas",
+          medium: "Test Medium",
           availability: "for sale",
           priceCurrency: "USD",
           privateNotes: "private notes",

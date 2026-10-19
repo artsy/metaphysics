@@ -22,6 +22,8 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
     },
     medium: {
       type: GraphQLString,
+      // TEMPORARY: throwaway full-stack review app test, do not merge
+      resolve: () => "Test Medium",
     },
     syncedMedium: {
       type: GraphQLString,
