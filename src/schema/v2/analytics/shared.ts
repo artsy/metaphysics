@@ -70,6 +70,16 @@ export const BigIntType = new GraphQLScalarType({
   parseValue: (value) => String(value),
 })
 
+// The arguments the stitched `amount` SDL declared, without descriptions or
+// `disambiguate`.
+export const stitchedAmountArgs: GraphQLFieldConfigArgumentMap = {
+  decimal: { type: GraphQLString, defaultValue: "." },
+  format: { type: GraphQLString, defaultValue: "%s%v" },
+  precision: { type: GraphQLInt, defaultValue: 0 },
+  symbol: { type: GraphQLString },
+  thousand: { type: GraphQLString, defaultValue: "," },
+}
+
 const passThrough = (value) => value
 
 export const ISO8601DateTimeType = new GraphQLScalarType({
