@@ -31,6 +31,7 @@ export default (opts) => {
     ),
     marketPriceInsightsLoader: warehouseLoader("market_price_insights"),
     priceInsightsLoader: warehouseLoader("price_insights"),
+    pricingContextLoader: warehouseLoader("pricing_context"),
     warehouseMetadataLoader: warehouseLoader("warehouse_metadata"),
     vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoader(

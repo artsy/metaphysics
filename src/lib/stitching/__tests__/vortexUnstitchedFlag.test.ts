@@ -69,7 +69,8 @@ describe("USE_UNSTITCHED_VORTEX", () => {
     const { mergedSchema, metaphysicsService, graphql } = loadWithFlag(true)
 
     it("does not stitch the Vortex subschema", () => {
-      expect(mergedSchema.getType("AnalyticsPricingContext")).toBeUndefined()
+      // Only the stitched subschema brought this type, which no field uses.
+      expect(mergedSchema.getType("AnalyticsArtistAffinity")).toBeUndefined()
     })
 
     it("serves price insights from the native fields", async () => {
@@ -118,9 +119,73 @@ describe("USE_UNSTITCHED_VORTEX", () => {
       )
     })
 
-    it("does not add the Vortex stitching extensions", () => {
+    it("serves Artwork.pricingContext natively", async () => {
       const artwork = mergedSchema.getType("Artwork") as GraphQLObjectType
-      expect(artwork.getFields().pricingContext).toBeUndefined()
+      expect(artwork.getFields().pricingContext.type.toString()).toEqual(
+        "AnalyticsPricingContext"
+      )
+      for (const type of [
+        "AnalyticsPriceContextFilterType",
+        "AnalyticsPricingContextCategoryEnum",
+        "AnalyticsPricingContextDimensionEnum",
+        "AnalyticsHistogramBin",
+      ]) {
+        expect(mergedSchema.getType(type)).toBeDefined()
+      }
+
+      const pricingContextLoader = jest.fn().mockResolvedValue({
+        data: {
+          applied_filters: { category: "PAINTING", dimension: "SMALL" },
+          bins: [
+            { min_price_cents: 0, max_price_cents: 4500, num_artworks: 1 },
+          ],
+        },
+      })
+
+      const result = await graphql({
+        schema: mergedSchema,
+        source: `{
+          artwork(id: "artwork-1") {
+            pricingContext {
+              appliedFilters { category dimension }
+              appliedFiltersDisplay
+              bins { maxPrice minPriceCents numArtworks }
+            }
+          }
+        }`,
+        contextValue: {
+          requestIDs: {},
+          artworkLoader: jest.fn().mockResolvedValue({
+            artist: { id: "artist-slug" },
+            artists: [{ _id: "artist-id", name: "Good Artist" }],
+            category: "Painting",
+            size_score: 224.6,
+            forsale: true,
+            price_currency: "USD",
+            price_cents: [234],
+          }),
+          artistLoader: jest.fn().mockResolvedValue({ _id: "artist-id" }),
+          unauthenticatedLoaders: { pricingContextLoader },
+        },
+      })
+
+      expect(result).toEqual({
+        data: {
+          artwork: {
+            pricingContext: {
+              appliedFilters: { category: "PAINTING", dimension: "SMALL" },
+              appliedFiltersDisplay:
+                "Price ranges of small paintings by Good Artist",
+              bins: [{ maxPrice: "$45", minPriceCents: 0, numArtworks: 1 }],
+            },
+          },
+        },
+      })
+      expect(pricingContextLoader).toHaveBeenCalledWith({
+        artist_id: "artist-id",
+        category: "PAINTING",
+        size_score: 225,
+      })
     })
 
     it("serves Partner.analytics and User.analytics natively", async () => {

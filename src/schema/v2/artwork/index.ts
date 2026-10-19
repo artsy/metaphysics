@@ -92,6 +92,7 @@ import { ArtworkCompletenessTier } from "./artworkCompletenessTier"
 import { ArtworkConditionType } from "./artworkCondition"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
+import { ArtworkPricingContextField } from "schema/v2/analytics/pricingContext"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { CollectorSignals } from "./collectorSignals"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
@@ -1464,6 +1465,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       price: {
         type: GraphQLString,
       },
+      // Stitched from Vortex until it's unstitched.
+      ...(config.USE_UNSTITCHED_VORTEX
+        ? { pricingContext: ArtworkPricingContextField }
+        : {}),
       privateShortcutPath: {
         type: GraphQLString,
         description: "Private shortcut URL path for accessing the artwork",

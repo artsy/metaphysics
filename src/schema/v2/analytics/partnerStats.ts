@@ -33,6 +33,7 @@ import {
   analyticsConnectionType,
   AnalyticsQueryPeriodEnumType,
   snakeCaseFields,
+  stitchedAmountArgs,
 } from "./shared"
 
 /**
@@ -70,17 +71,9 @@ const periodField = {
 
 const partnerIdField = { type: new GraphQLNonNull(GraphQLString) }
 
-// The arguments the stitched `amount` SDL declared, without descriptions or
-// `disambiguate`.
 const totalField: GraphQLFieldConfig<any, ResolverContext> = {
   type: GraphQLString,
-  args: {
-    decimal: { type: GraphQLString, defaultValue: "." },
-    format: { type: GraphQLString, defaultValue: "%s%v" },
-    precision: { type: GraphQLInt, defaultValue: 0 },
-    symbol: { type: GraphQLString },
-    thousand: { type: GraphQLString, defaultValue: "," },
-  },
+  args: stitchedAmountArgs,
   resolve: ({ total_cents }, args) =>
     amount(() => total_cents).resolve({}, args),
 }
