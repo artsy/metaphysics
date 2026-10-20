@@ -26,9 +26,21 @@ const removeRootFieldList = [
 // over GraphQL for the loaders in `loaders_*/vortex.ts`, they just have no
 // place in the merged schema.
 const removeTypeList = [
+  "ArtistAffinity",
+  "ArtistAffinityConnection",
+  "ArtistAffinityEdge",
+  "ArtistIdMediumTupleType",
+  "ArtistRecommendation",
+  "ArtistRecommendationConnection",
+  "ArtistRecommendationEdge",
   "ArtworkRecommendation",
   "ArtworkRecommendationConnection",
   "ArtworkRecommendationEdge",
+  "MarketPriceInsightsConnection",
+  "MarketPriceInsightsEdge",
+  "NewForYouRecommendation",
+  "NewForYouRecommendationConnection",
+  "NewForYouRecommendationEdge",
 ]
 
 export const transformsForVortex = ({ removeRootFields = true } = {}) => [
