@@ -1,5 +1,6 @@
 import { GraphQLSchema } from "graphql/type"
 import { createLoaders } from "../lib/loaders"
+import { CloudflareGeo } from "../lib/cloudflareGeo"
 import { ImageData } from "schema/v2/image/normalize"
 
 export interface ResolverContextValues {
@@ -29,6 +30,8 @@ export interface ResolverContextValues {
   imageData?: ImageData
 
   ipAddress: string
+  /** Visitor geo from Cloudflare edge headers, when available */
+  cfGeo: CloudflareGeo | null
   xImpersonateUserID?: string
   isCMSRequest: boolean
 }

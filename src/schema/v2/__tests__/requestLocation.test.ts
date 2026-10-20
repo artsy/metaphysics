@@ -91,6 +91,65 @@ describe("requestLocation", () => {
       `)
     })
   })
+
+  describe("when Cloudflare geo is present", () => {
+    it("returns location from the edge headers without calling IPBase", async () => {
+      const query = gql`
+        {
+          requestLocation {
+            countryCode
+            city
+            coordinates {
+              lat
+              lng
+            }
+          }
+        }
+      `
+
+      const requestLocationLoader = jest.fn()
+
+      const context = {
+        requestLocationLoader,
+        ipAddress: "request-ip",
+        cfGeo: { countryCode: "US", city: "New York", lat: 40.7, lng: -74 },
+      }
+
+      const { requestLocation } = await runAuthenticatedQuery(query, context)
+
+      expect(requestLocationLoader).not.toHaveBeenCalled()
+      expect(requestLocation).toEqual({
+        countryCode: "US",
+        city: "New York",
+        coordinates: { lat: 40.7, lng: -74 },
+      })
+    })
+
+    it("falls back to IPBase when an explicit ip param is provided", async () => {
+      const query = gql`
+        {
+          requestLocation(ip: "param-ip") {
+            countryCode
+          }
+        }
+      `
+
+      const requestLocationLoader = jest
+        .fn()
+        .mockResolvedValue(locationResponse)
+
+      const context = {
+        requestLocationLoader,
+        ipAddress: "request-ip",
+        cfGeo: { countryCode: "US", lat: 40.7, lng: -74 },
+      }
+
+      const { requestLocation } = await runAuthenticatedQuery(query, context)
+
+      expect(requestLocationLoader).toHaveBeenCalledWith({ ip: "param-ip" })
+      expect(requestLocation.countryCode).toEqual("DE")
+    })
+  })
 })
 
 const locationResponse = {

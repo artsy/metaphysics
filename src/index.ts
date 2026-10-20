@@ -25,6 +25,7 @@ import {
   requestIPAddress,
 } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
+import { requestCloudflareGeo } from "lib/cloudflareGeo"
 import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 import { graphqlBatchHTTPWrapper } from "react-relay-network-modern"
@@ -273,13 +274,12 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       | undefined
     const isCMSRequest = req.headers["x-cms-request"] === "true"
     const ipAddress = requestIPAddress(req)
+    const cfGeo = requestCloudflareGeo(req)
 
     // Headers to be threaded through to downstream services
     // and used to authenticate with Artnet services.
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
-    const xArtnetUserID = req.headers["x-artnet-user-id"] as
-      | string
-      | undefined
+    const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
 
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
@@ -316,6 +316,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       userAgent,
       appToken,
       ipAddress,
+      cfGeo,
       xImpersonateUserID,
       isCMSRequest,
       _req: req,

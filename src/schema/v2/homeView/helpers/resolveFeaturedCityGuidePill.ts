@@ -46,6 +46,13 @@ const isActive = (guide: FeaturedCityGuide): boolean => {
 const resolveViewerCoordinates = async (
   context: ResolverContext
 ): Promise<{ lat: number; lng: number } | null> => {
+  const { cfGeo } = context
+
+  // Prefer Cloudflare edge coordinates, avoiding an IPBase call.
+  if (cfGeo?.lat != null && cfGeo?.lng != null) {
+    return { lat: cfGeo.lat, lng: cfGeo.lng }
+  }
+
   if (!config.ENABLE_IP_BASED_LOCATION || !context.ipAddress) return null
 
   try {
