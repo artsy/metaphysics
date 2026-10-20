@@ -180,10 +180,28 @@ export const MarketingCollectionType = new GraphQLObjectType<
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
+    const { ArtworkType } = require("./artwork")
     return {
       ...MarketingCollectionFields,
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
+      // Up to 3 representative artworks (ordered, by merchandisability). Resolved
+      // in one batched `/artworks` load; the plural of `representativeArtworkID`.
+      // `representative_artwork_id` (singular) equals the first of these.
+      representativeArtworks: {
+        type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
+        resolve: (
+          { representative_artwork_ids },
+          _args,
+          { artworksLoader }
+        ) => {
+          if (!representative_artwork_ids?.length) return []
+          return artworksLoader({
+            ids: representative_artwork_ids,
+            batched: true,
+          })
+        },
+      },
       artworksConnection: filterArtworksConnectionWithParams((args) => {
         const filterArtworksArgs = {
           marketing_collection_id: args.id,

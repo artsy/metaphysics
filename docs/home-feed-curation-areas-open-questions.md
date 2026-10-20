@@ -55,22 +55,29 @@ stack** for cards, aggressively). Owned by a Gravity handoff:
 
 Per-entity state:
 
-- **Marketing collections** (Curated chips): MP **stopgap** derives the 3 stack
-  images from the collection's top artworks — `collectionStackImageURLs` in
-  `sections/CurationArea.ts`. Cheap (2 chips, section-level). Superseded when the
-  Gravity field lands.
-- **Fairs** (Featured Fairs rail): **blocked on Gravity.** Deriving per fair card
-  across the rail is an N+1 (no image set on the fair), so MP does **not** derive —
-  **fairs render with their single hero `image` (no 3-stack) until the Gravity field
-  exists.**
-- **Shows** (Shows rail): **blocked on Gravity.** A show _has_ an image set
-  (installation shots) but only via a per-show loader (`partnerShowImagesLoader`) —
-  off the list payload → same N+1. MP renders shows with their single **cover image**
-  until Gravity surfaces the set on the shows list response (denormalize, not derive).
-- **Auctions** (Auctions rail): **blocked on Gravity.** A sale has a single
-  `coverImage` and no image set; lots are only reachable per-sale (`saleArtworksLoader`)
-  → same N+1. MP renders sales with their single cover image until the Gravity field
-  (derive from the sale's top lots).
+- **Marketing collections** (Curated chips): **done** — Gravity now returns
+  `representative_artwork_ids` on the collection payload. MP reads the ids off the
+  payload and resolves images in **one batched `artworksLoader` call**
+  (`collectionStackImageURLsBySlug` in `sections/CurationArea.ts`), and exposes a
+  generic `MarketingCollection.representativeArtworks: [Artwork]` field. The
+  per-collection `filterArtworks` derive stopgap is **retired**. (Remaining: the
+  `CriteriaMarketingCollection` subclass — not in the rail today.)
+- **Fairs** (Featured Fairs rail): **already render 3 images today** — but via a
+  **client-side per-item N+1**: Eigen's `FairCard` fragment selects
+  `filterArtworksConnection` per fair (`followedArtistArtworks` + `otherArtworks`), so
+  each fair node fans out ~2 `filterArtworks` calls. It ships (lazy per section, low-N,
+  parallel, memcached). So the Gravity field here is **cleanup of an existing N+1 +
+  overridability**, not unblocking — it would let us retire the per-fair fragment. No
+  MP change is needed just to show 3 fair images.
+- **Shows** (Shows rail): **genuinely blocked** — shows render **1 image** (`metaImage`)
+  today. A show _has_ an image set (installation shots) but only via a per-show loader
+  (`partnerShowImagesLoader`), off the list payload → a _new_ N+1. MP keeps shows
+  single-image until Gravity surfaces the set on the shows list response (denormalize,
+  not derive).
+- **Auctions** (Auctions rail): **already render 3 images today** — same shape as fairs:
+  Eigen's sales-item fragment selects `sale.artworksConnection(first:3)` per sale (a
+  client-side per-item N+1 that ships). Gravity field = cleanup + overridability, not
+  unblocking.
 - **Artists** (Recommended/Trending chips): **stopgap in place** — stack = the
   rail's first 3 artists' cover images (`artistChipStackURLs` in
   `sections/CurationArea.ts`, via the rail resolver; section-level, not an N+1).
@@ -79,8 +86,12 @@ Per-entity state:
 
 The standard invariant across all of these: **representative images must be on the
 entity's list/connection payload** (O(1) per card, no per-item calls). Source varies
-(derive vs. denormalize); the on-the-list guarantee is uniform. Note collections are
-only "safe" while the chip list is hardcoded-small — a dynamic list makes them N+1 too.
+(derive vs. denormalize); the on-the-list guarantee is uniform. Two caveats worth
+holding: collections are only "safe" while the chip list is hardcoded-small (a dynamic
+list makes them N+1 too); and **fairs/sales already violate this invariant today** via
+their client-side per-item fragments — so for them the field is a _cleanup_ that brings
+them into compliance, not a new capability. (Measured cost of the existing fan-out is
+an open question for the Eigen side — see `eigen/HOME_FEED_3STACK_IMAGE_SOURCING_HANDOFF.md`.)
 
 ---
 

@@ -37,22 +37,38 @@ const artworkImageURL = (artwork: any): string | undefined => {
   return image ? setVersion(image, STACK_IMAGE_VERSIONS) : undefined
 }
 
-// STOPGAP: derive the 3 stack images from a collection's top artworks. This is
-// per-area (the chips resolver runs once per curation area, not per feed node),
-// so a couple of extra loader calls is fine — NOT an N+1. The durable source is
-// a materialized, overridable "representative images" field per entity owned by
-// Gravity (see the Gravity handoff); this derive goes away once that lands, and
-// it doesn't cover the artist chips (no natural artworks source).
-const collectionStackImageURLs = async (
-  slug: string,
+// Resolve the stack images for the collection chips in ONE batched call. Gravity
+// now returns `representative_artwork_ids` (ordered, by merchandisability) on the
+// collection payload we already fetched, so we read the ids off it and resolve the
+// artworks via `artworksLoader({ ids })` — a single `/artworks` request that
+// collapses across all the collection chips (no per-collection fan-out). Returns a
+// slug → ordered image URLs map.
+const collectionStackImageURLsBySlug = async (
+  collections: any[],
   context: any
-): Promise<string[]> => {
-  const { hits = [] } = await context.filterArtworksLoader({
-    marketing_collection_id: slug,
-    size: CHIP_STACK_SIZE,
-    sort: "-decayed_merch",
+): Promise<Map<string, string[]>> => {
+  const ids = [
+    ...new Set(collections.flatMap((c) => c.representative_artwork_ids ?? [])),
+  ]
+  const artworks: any[] = ids.length
+    ? await context.artworksLoader({ ids, batched: true })
+    : []
+
+  const urlById = new Map<string, string>()
+  artworks.filter(Boolean).forEach((artwork) => {
+    const url = artworkImageURL(artwork)
+    if (url && artwork._id) urlById.set(artwork._id, url)
   })
-  return hits.map(artworkImageURL).filter(Boolean).slice(0, CHIP_STACK_SIZE)
+
+  return new Map(
+    collections.map((collection) => [
+      collection.slug,
+      ((collection.representative_artwork_ids ?? []) as string[])
+        .map((id) => urlById.get(id))
+        .filter((url): url is string => Boolean(url))
+        .slice(0, CHIP_STACK_SIZE),
+    ])
+  )
 }
 
 const ARTIST_IMAGE_VERSIONS = ["large", "square", "medium"]
@@ -148,32 +164,33 @@ export const CurationArea: HomeViewCurationAreaSection = {
       },
     ]
 
-    const collections: any[] = body
-
     // Preserve the configured slug order (the loader may not).
-    const bySlug = new Map<string, any>(collections.map((c) => [c.slug, c]))
-    const collectionChips = await Promise.all(
-      COLLECTION_CHIP_SLUGS.map((slug) => bySlug.get(slug))
-        .filter(Boolean)
-        .map(async (collection) => {
-          const imageURLs = await collectionStackImageURLs(
-            collection.slug,
-            context
-          )
-          return {
-            title: collection.title,
-            subtitle: collection.description,
-            href: `/collection/${collection.slug}`,
-            // 3-image stack when we have artworks; else the single thumbnail.
-            // HomeViewCard allows only one of imageURL / imageURLs.
-            ...(imageURLs.length
-              ? { imageURLs }
-              : { imageURL: collection.thumbnail }),
-            entityType: "MarketingCollection",
-            entityID: collection.id,
-          }
-        })
+    const bySlug = new Map<string, any>((body as any[]).map((c) => [c.slug, c]))
+    const collections = COLLECTION_CHIP_SLUGS.map((slug) =>
+      bySlug.get(slug)
+    ).filter(Boolean)
+
+    // One batched `/artworks` load for all collection stacks (ids off the payload).
+    const stackBySlug = await collectionStackImageURLsBySlug(
+      collections,
+      context
     )
+
+    const collectionChips = collections.map((collection) => {
+      const imageURLs = stackBySlug.get(collection.slug) ?? []
+      return {
+        title: collection.title,
+        subtitle: collection.description,
+        href: `/collection/${collection.slug}`,
+        // 3-image stack when we have representative artworks; else the single
+        // thumbnail. HomeViewCard allows only one of imageURL / imageURLs.
+        ...(imageURLs.length
+          ? { imageURLs }
+          : { imageURL: collection.thumbnail }),
+        entityType: "MarketingCollection",
+        entityID: collection.id,
+      }
+    })
 
     return connectionFromArray([...artistChips, ...collectionChips], args)
   },

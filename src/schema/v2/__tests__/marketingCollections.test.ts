@@ -71,6 +71,43 @@ describe("MarketingCollections", () => {
       marketingCollection: { ...expected, internalID: payload.id },
     })
   })
+  it("resolves representativeArtworks from representative_artwork_ids", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    const artworksLoader = jest.fn(({ ids }) =>
+      Promise.resolve(ids.map((id: string) => ({ _id: id, id })))
+    )
+    const context = {
+      marketingCollectionLoader: () =>
+        Promise.resolve({
+          ...marketingCollectionsData[0],
+          representative_artwork_ids: ["art-1", "art-2", "art-3"],
+        }),
+      artworksLoader,
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data.marketingCollection.representativeArtworks).toEqual([
+      { internalID: "art-1" },
+      { internalID: "art-2" },
+      { internalID: "art-3" },
+    ])
+    // One batched /artworks load, order preserved.
+    expect(artworksLoader).toHaveBeenCalledTimes(1)
+    expect(artworksLoader).toHaveBeenCalledWith({
+      ids: ["art-1", "art-2", "art-3"],
+      batched: true,
+    })
+  })
   it("return marketing collection artworks by partnerID", async () => {
     const query = gql`
       {

@@ -102,6 +102,7 @@ describe("HomeViewSectionCurationArea", () => {
               title: "Most Loved",
               description: "The most-saved works on Artsy.",
               thumbnail: "https://ex.com/most-loved.jpg",
+              representative_artwork_ids: ["ml-a1", "ml-a2", "ml-a3"],
             },
             {
               id: "bci",
@@ -109,18 +110,19 @@ describe("HomeViewSectionCurationArea", () => {
               title: "Blue-Chip Icons",
               description: "Works by the market's established names.",
               thumbnail: "https://ex.com/blue-chip-icons.jpg",
+              representative_artwork_ids: ["bci-a1", "bci-a2", "bci-a3"],
             },
           ],
         }),
-        // Each collection's top 3 artworks → the 3-image stack.
-        filterArtworksLoader: jest.fn(({ marketing_collection_id }) => {
-          const tag = marketing_collection_id === "most-loved" ? "ml" : "bci"
-          return Promise.resolve({
-            hits: [1, 2, 3].map((i) => ({
-              images: [{ image_url: `https://ex.com/${tag}-${i}.jpg` }],
-            })),
-          })
-        }),
+        // One batched /artworks load resolves every collection's stack ids.
+        artworksLoader: jest.fn(({ ids }) =>
+          Promise.resolve(
+            ids.map((id: string) => ({
+              _id: id,
+              images: [{ image_url: `https://ex.com/${id}.jpg` }],
+            }))
+          )
+        ),
       } as unknown) as ResolverContext
 
       const resolve = CurationArea.resolver! as any
@@ -148,9 +150,9 @@ describe("HomeViewSectionCurationArea", () => {
           subtitle: "The most-saved works on Artsy.",
           href: "/collection/most-loved",
           imageURLs: [
-            "https://ex.com/ml-1.jpg",
-            "https://ex.com/ml-2.jpg",
-            "https://ex.com/ml-3.jpg",
+            "https://ex.com/ml-a1.jpg",
+            "https://ex.com/ml-a2.jpg",
+            "https://ex.com/ml-a3.jpg",
           ],
           entityType: "MarketingCollection",
           entityID: "ml",
@@ -160,9 +162,9 @@ describe("HomeViewSectionCurationArea", () => {
           subtitle: "Works by the market's established names.",
           href: "/collection/blue-chip-icons",
           imageURLs: [
-            "https://ex.com/bci-1.jpg",
-            "https://ex.com/bci-2.jpg",
-            "https://ex.com/bci-3.jpg",
+            "https://ex.com/bci-a1.jpg",
+            "https://ex.com/bci-a2.jpg",
+            "https://ex.com/bci-a3.jpg",
           ],
           entityType: "MarketingCollection",
           entityID: "bci",
