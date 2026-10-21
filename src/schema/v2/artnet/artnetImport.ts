@@ -52,6 +52,24 @@ export const ArtnetImportType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
       resolve: ({ error_count }) => error_count,
     },
+    linkedCount: {
+      type: GraphQLInt,
+      description:
+        "Artnet works linked to an artwork the partner already had, without creating a new one.",
+      resolve: ({ linked_count }) => linked_count,
+    },
+    reviewCount: {
+      type: GraphQLInt,
+      description:
+        "Created artworks that might duplicate an existing artwork and need the partner's review.",
+      resolve: ({ review_count }) => review_count,
+    },
+    awaitingArtistCount: {
+      type: GraphQLInt,
+      description:
+        "Artnet works not yet created because their artist hasn't been assigned.",
+      resolve: ({ awaiting_artist_count }) => awaiting_artist_count,
+    },
     errorMessage: {
       type: GraphQLString,
       resolve: ({ error_message }) => error_message,

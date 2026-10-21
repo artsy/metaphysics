@@ -152,6 +152,47 @@ describe("artworkDuplicatePair", () => {
     expect(result.artworkDuplicatePair.existingArtworkAlsoImported).toBe(true)
   })
 
+  describe("existingArtworkLive", () => {
+    const query = gql`
+      query {
+        artworkDuplicatePair(id: "pair-1") {
+          existingArtworkLive
+        }
+      }
+    `
+
+    const run = (pair) =>
+      runAuthenticatedQuery(query, {
+        artworkDuplicatePairLoader: jest.fn().mockResolvedValue(pair),
+      })
+
+    it("is true when the existing artwork is live", async () => {
+      const result = await run({
+        ...mockPair,
+        imported_artwork_id: "artwork-1",
+        live_artwork_ids: ["artwork-2"],
+      })
+
+      expect(result.artworkDuplicatePair.existingArtworkLive).toBe(true)
+    })
+
+    it("is false when only the imported artwork is live", async () => {
+      const result = await run({
+        ...mockPair,
+        imported_artwork_id: "artwork-1",
+        live_artwork_ids: ["artwork-1"],
+      })
+
+      expect(result.artworkDuplicatePair.existingArtworkLive).toBe(false)
+    })
+
+    it("is false on an untagged pair", async () => {
+      const result = await run({ ...mockPair, live_artwork_ids: ["artwork-2"] })
+
+      expect(result.artworkDuplicatePair.existingArtworkLive).toBe(false)
+    })
+  })
+
   it("returns null for artnetImportID, importedArtwork, and existingArtwork on an untagged pair", async () => {
     const artworkDuplicatePairLoader = jest.fn().mockResolvedValue(mockPair)
     const artworkLoader = jest.fn().mockResolvedValue(mockArtwork)

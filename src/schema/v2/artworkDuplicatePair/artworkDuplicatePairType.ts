@@ -82,6 +82,22 @@ export const ArtworkDuplicatePairType = new GraphQLObjectType<
         return artworkLoader(existingArtworkID)
       },
     },
+    existingArtworkLive: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "True when the existing side of an import-scoped pair is live on Artsy, so a merge must keep it unchanged.",
+      resolve: ({
+        artwork_1_id,
+        artwork_2_id,
+        imported_artwork_id,
+        live_artwork_ids,
+      }) => {
+        if (!imported_artwork_id) return false
+        const existingArtworkID =
+          imported_artwork_id === artwork_1_id ? artwork_2_id : artwork_1_id
+        return (live_artwork_ids ?? []).includes(existingArtworkID)
+      },
+    },
     existingArtworkAlsoImported: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description:
