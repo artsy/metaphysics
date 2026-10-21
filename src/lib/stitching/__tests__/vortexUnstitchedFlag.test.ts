@@ -55,9 +55,16 @@ describe("USE_UNSTITCHED_VORTEX", () => {
       expect(roots).not.toContain("analyticsPartnerStats")
       expect(roots).not.toContain("analyticsUserStats")
       expect(roots).not.toContain("analyticsArtworkRecommendations")
-      expect(mergedSchema.getType("AnalyticsArtworkRecommendation")).toBe(
-        undefined
-      )
+      for (const type of [
+        "AnalyticsArtistAffinity",
+        "AnalyticsArtistIdMediumTupleType",
+        "AnalyticsArtistRecommendation",
+        "AnalyticsArtworkRecommendation",
+        "AnalyticsNewForYouRecommendation",
+        "MarketPriceInsightsConnection",
+      ]) {
+        expect(mergedSchema.getType(type)).toBeUndefined()
+      }
     })
 
     it("reports stitchingVortex as true", () => {
