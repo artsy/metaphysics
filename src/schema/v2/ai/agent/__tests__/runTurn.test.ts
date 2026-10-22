@@ -64,16 +64,6 @@ const FAKE_USAGE = {
   totalTokens: 20,
 }
 
-// MockLanguageModelV3's array form of `doStream` (installed ai@6.0.258) has
-// an off-by-one: it pushes onto `doStreamCalls` *before* indexing into the
-// array (`doStream[this.doStreamCalls.length]`), so the Nth call reads
-// index N, not N-1 — array[0] is never reachable. Duplicating the first step
-// into the unused slot 0 keeps the rest of the array at its natural,
-// readable 1:1 mapping to "step 1, step 2, ...".
-function stepsWithOffset<T>(steps: T[]): T[] {
-  return [steps[0], ...steps]
-}
-
 function fakeContext(
   overrides: { artworksLoader?: jest.Mock; artistsLoader?: jest.Mock } = {}
 ): ResolverContext {
@@ -152,7 +142,7 @@ describe("runTurn", () => {
         { _id: ID_A, id: "andy-warhol-flowers", title: "Flowers" },
       ])
     mockModel = new MockLanguageModelV3({
-      doStream: stepsWithOffset([
+      doStream: [
         {
           stream: convertArrayToReadableStream([
             { type: "stream-start", warnings: [] },
@@ -185,7 +175,7 @@ describe("runTurn", () => {
             },
           ]),
         },
-      ]),
+      ],
     })
 
     const events = await collectEvents(
@@ -296,7 +286,7 @@ describe("runTurn", () => {
     })
 
     mockModel = new MockLanguageModelV3({
-      doStream: stepsWithOffset([
+      doStream: [
         {
           stream: convertArrayToReadableStream([
             { type: "stream-start", warnings: [] },
@@ -336,7 +326,7 @@ describe("runTurn", () => {
             },
           ]),
         },
-      ]),
+      ],
     })
 
     const events = await collectEvents({
@@ -769,7 +759,7 @@ describe("runTurn", () => {
       new Error("AI_ToolExecutionError: /internal/path leaked ABC-SECRET-123")
     )
     mockModel = new MockLanguageModelV3({
-      doStream: stepsWithOffset([
+      doStream: [
         {
           stream: convertArrayToReadableStream([
             { type: "stream-start", warnings: [] },
@@ -806,7 +796,7 @@ describe("runTurn", () => {
             },
           ]),
         },
-      ]),
+      ],
     })
 
     const events = await collectEvents({
@@ -906,9 +896,7 @@ describe("runTurn", () => {
     // Every step keeps calling a tool, so the loop never reaches a natural
     // "stop" — it only ends because `stopWhen: stepCountIs(N)` truncates it,
     // leaving finishReason at "tool-calls". Each array entry needs its own
-    // ReadableStream (they're single-consumption), and — see
-    // `stepsWithOffset` — index 0 is never read, so this needs N+1 entries
-    // to cover N calls.
+    // ReadableStream (they're single-consumption).
     const buildStep = (): LanguageModelV3StreamResult => ({
       stream: convertArrayToReadableStream([
         { type: "stream-start", warnings: [] },
@@ -930,7 +918,7 @@ describe("runTurn", () => {
     })
     mockModel = new MockLanguageModelV3({
       doStream: Array.from(
-        { length: config.AI_AGENT_MAX_ITERATIONS + 1 },
+        { length: config.AI_AGENT_MAX_ITERATIONS },
         buildStep
       ),
     })
@@ -1613,7 +1601,7 @@ describe("runTurn", () => {
     // result.
     const twoStepModel = () =>
       new MockLanguageModelV3({
-        doStream: stepsWithOffset([
+        doStream: [
           {
             stream: convertArrayToReadableStream([
               { type: "stream-start", warnings: [] },
@@ -1649,7 +1637,7 @@ describe("runTurn", () => {
               },
             ]),
           },
-        ]),
+        ],
       })
 
     it("caches the system prompt and the new message on a first turn", async () => {
