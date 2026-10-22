@@ -2,6 +2,7 @@ import config from "config"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
 import factories from "../api"
+import { createMarketPriceInsightsBatchLoader } from "../vortexMarketPriceInsightsBatchLoader"
 import {
   createPartnerStatsLoader,
   PartnerStatsSection,
@@ -49,7 +50,7 @@ export default (accessToken, opts) => {
       }
     )
 
-  const marketPriceInsightsBatchLoader = async (
+  const stitchedMarketPriceInsightsBatchLoader = async (
     params: MarketPriceInsightsBatchLoaderParams
   ) => {
     const artistIDMediumTuples = params
@@ -95,6 +96,12 @@ export default (accessToken, opts) => {
     return priceInsightNodes
   }
 
+  const marketPriceInsightsBatchLoader = config.USE_UNSTITCHED_VORTEX
+    ? createMarketPriceInsightsBatchLoader(
+        vortexLoader("market_price_insights_batch", {}, { method: "POST" })
+      )
+    : stitchedMarketPriceInsightsBatchLoader
+
   return {
     vortexTokenLoader,
     vortexGraphqlLoader,
@@ -135,13 +142,18 @@ export default (accessToken, opts) => {
 
 const MAX_MARKET_PRICE_INSIGHTS = 50
 
+// Vortex's BigInt fields arrive as strings.
 export type MarketPriceInsight = {
+  annualLotsSold: number | null
+  annualValueSoldCents: string | null
   artistId: string
+  demandRank: number | null
+  lastAuctionResultDate: string | null
+  medianSalePriceLast36Months: string | null
   medium: string
-  demandRank: number
-  lastAuctionResultDate: string
-  annualLotsSold: number
-  annualValueSold: number
+  sellThroughRate: number | null
+  medianSaleOverEstimatePercentage: number | null
+  liquidityRank: number | null
 }
 
 export type MarketPriceInsightsBatchLoaderParams = {
