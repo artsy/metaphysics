@@ -46,6 +46,7 @@ describe("composeForArm", () => {
     const out = composeForArm("reduced_current", sections)
     expect(out.map((s) => s.id)).toEqual([
       QuickLinks.id,
+      Tasks.id,
       NewWorksForYou.id,
       RecommendedArtworks.id,
       CuratorsPicksEmerging.id,
@@ -60,6 +61,7 @@ describe("composeForArm", () => {
     const out = composeForArm("hierarchy_breadth", sections)
     expect(out.map((s) => s.id)).toEqual([
       QuickLinks.id,
+      Tasks.id,
       NewWorksForYou.id,
       EditorialCurationArea.id,
       WhatsHappeningCurationArea.id,
@@ -84,7 +86,7 @@ describe("composeForArm", () => {
 
   it("drops ids present in input but absent from the arm recipe", () => {
     const out = composeForArm("reduced_current", sections)
-    expect(out.find((s) => s.id === Tasks.id)).toBeUndefined()
+    expect(out.find((s) => s.id === TrendingArtists.id)).toBeUndefined()
   })
 
   it("skips arm ids that are not in the (display-filtered) input", () => {

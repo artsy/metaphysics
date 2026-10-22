@@ -3,6 +3,7 @@ import { HomeViewSection } from "schema/v2/homeView/sections"
 // Existing section instances — arms are composed from these today.
 // Import the real instances so recipes use their `.id` and avoid stringly-typed drift.
 import { QuickLinks } from "../../sections/QuickLinks"
+import { Tasks } from "../../sections/Tasks"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
@@ -44,6 +45,7 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   // Variant 1: reduced content, current hierarchy (same relative order as prod)
   reduced_current: [
     QuickLinks.id,
+    Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
     NewWorksForYou.id,
     RecommendedArtworks.id,
     CuratorsPicksEmerging.id,
@@ -56,6 +58,7 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   // Variant 2: intentional hierarchy + breadth of content types (reorder)
   hierarchy_breadth: [
     QuickLinks.id,
+    Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
     NewWorksForYou.id,
     // Consolidated editorial block: the editorial rail + News as chips.
     // Replaces the standalone LatestArticles + News rails in this arm.
