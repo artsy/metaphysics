@@ -13,6 +13,7 @@ describe("ArtnetImport type", () => {
         errorCount
         linkedCount
         reviewCount
+        openReviewCount
         awaitingArtistCount
         unmatchedArtistNames
       }
@@ -32,6 +33,7 @@ describe("ArtnetImport type", () => {
           error_count: 1,
           linked_count: 5,
           review_count: 2,
+          open_review_count: 1,
           awaiting_artist_count: 3,
         }),
       artnetImportUnmatchedArtistNamesLoader: () =>
@@ -50,6 +52,7 @@ describe("ArtnetImport type", () => {
         errorCount: 1,
         linkedCount: 5,
         reviewCount: 2,
+        openReviewCount: 1,
         awaitingArtistCount: 3,
         unmatchedArtistNames: ["Foo Bar"],
       },

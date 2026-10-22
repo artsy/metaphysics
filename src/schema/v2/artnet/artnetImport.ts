@@ -64,6 +64,12 @@ export const ArtnetImportType = new GraphQLObjectType<any, ResolverContext>({
         "Created artworks that might duplicate an existing artwork and need the partner's review.",
       resolve: ({ review_count }) => review_count,
     },
+    openReviewCount: {
+      type: GraphQLInt,
+      description:
+        "Created artworks that still have at least one possible duplicate waiting for the partner's review.",
+      resolve: ({ open_review_count }) => open_review_count,
+    },
     awaitingArtistCount: {
       type: GraphQLInt,
       description:
