@@ -7,9 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { InternalIDFields } from "../object_identification"
+import { InternalIDFields, NodeInterface } from "../object_identification"
 import { ResolverContext } from "types/graphql"
 import { date } from "schema/v2/fields/date"
+import { ArtnetImportReviewArtworksConnection } from "./artnetImportReviewArtworks"
 
 export const ArtnetImportStateType = new GraphQLEnumType({
   name: "ArtnetImportState",
@@ -27,6 +28,7 @@ const IN_PROGRESS_STATES = ["pending", "processing"]
 
 export const ArtnetImportType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtnetImport",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
     state: {
@@ -83,6 +85,7 @@ export const ArtnetImportType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(),
     completedAt: date(),
     finalizedAt: date(),
+    reviewArtworksConnection: ArtnetImportReviewArtworksConnection,
     unmatchedArtistNames: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))

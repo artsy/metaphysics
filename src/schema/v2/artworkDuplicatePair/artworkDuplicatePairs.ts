@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLString,
@@ -16,18 +15,6 @@ import {
   ArtworkDuplicatePairType,
   ArtworkDuplicatePairStatusEnum,
 } from "./artworkDuplicatePairType"
-
-export const ArtworkDuplicatePairSortEnum = new GraphQLEnumType({
-  name: "ArtworkDuplicatePairSort",
-  values: {
-    SIMILARITY_SCORE_DESC: { value: "-similarity_score" },
-    IMPORTED_ARTWORK: {
-      value: "imported_artwork_id,-similarity_score,id",
-      description:
-        "Keeps each imported artwork's pairs next to each other, best match first.",
-    },
-  },
-})
 
 const ArtworkDuplicatePairConnection = connectionWithCursorInfo({
   nodeType: ArtworkDuplicatePairType,
@@ -61,9 +48,6 @@ export const artworkDuplicatePairsConnection: GraphQLFieldConfig<
       type: GraphQLString,
       description: "Filter to pairs found by an import-scoped detection run",
     },
-    sort: {
-      type: ArtworkDuplicatePairSortEnum,
-    },
   }),
   resolve: async (_root, args, { artworkDuplicatePairsLoader }) => {
     if (!artworkDuplicatePairsLoader) {
@@ -93,10 +77,6 @@ export const artworkDuplicatePairsConnection: GraphQLFieldConfig<
 
     if (args.artnetImportID) {
       gravityArgs.artnet_import_id = args.artnetImportID
-    }
-
-    if (args.sort) {
-      gravityArgs.sort = args.sort
     }
 
     const { body, headers } = await artworkDuplicatePairsLoader(gravityArgs)
@@ -138,9 +118,6 @@ export const ArtworkDuplicatePairsConnection: GraphQLFieldConfig<
       type: GraphQLString,
       description: "Filter to pairs found by an import-scoped detection run",
     },
-    sort: {
-      type: ArtworkDuplicatePairSortEnum,
-    },
   }),
   resolve: async ({ id }, args, { artworkDuplicatePairsLoader }) => {
     if (!artworkDuplicatePairsLoader) {
@@ -170,10 +147,6 @@ export const ArtworkDuplicatePairsConnection: GraphQLFieldConfig<
 
     if (args.artnetImportID) {
       gravityArgs.artnet_import_id = args.artnetImportID
-    }
-
-    if (args.sort) {
-      gravityArgs.sort = args.sort
     }
 
     const { body, headers } = await artworkDuplicatePairsLoader(gravityArgs)

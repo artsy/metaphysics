@@ -269,34 +269,6 @@ describe("artworkDuplicatePairsConnection", () => {
     })
   })
 
-  it("passes the sort through to Gravity", async () => {
-    const artworkDuplicatePairsLoader = jest.fn().mockResolvedValue({
-      body: [],
-      headers: { "x-total-count": "0" },
-    })
-
-    const query = gql`
-      query {
-        artworkDuplicatePairsConnection(
-          partnerId: "partner-1"
-          sort: IMPORTED_ARTWORK
-          first: 5
-        ) {
-          totalCount
-        }
-      }
-    `
-
-    await runAuthenticatedQuery(query, { artworkDuplicatePairsLoader })
-
-    expect(artworkDuplicatePairsLoader).toHaveBeenCalledWith(
-      expect.objectContaining({
-        partner_id: "partner-1",
-        sort: "imported_artwork_id,-similarity_score,id",
-      })
-    )
-  })
-
   it("passes optional filters", async () => {
     const artworkDuplicatePairsLoader = jest.fn().mockResolvedValue({
       body: [],
