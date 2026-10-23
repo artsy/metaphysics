@@ -166,6 +166,131 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe(`Similar artworks`, () => {
+    it("passes similarToArtworkID to gravity as similar_to_artwork_id", async () => {
+      const filterArtworksLoader = jest.fn().mockResolvedValue({
+        hits: [{ id: "similar-work", title: "Similar", artists: [] }],
+        aggregations: { total: { value: 1 } },
+      })
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: { filterArtworksLoader },
+      }
+      const query = gql`
+        {
+          artworksConnection(
+            similarToArtworkID: "source-work"
+            forSale: true
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          similar_to_artwork_id: "source-work",
+          for_sale: true,
+        })
+      )
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "similar-work" } },
+      ])
+    })
+  })
+
+  describe(`Similar artworks via input`, () => {
+    it("passes similarToArtworkID from input to gravity", async () => {
+      const filterArtworksLoader = jest.fn().mockResolvedValue({
+        hits: [],
+        aggregations: { total: { value: 0 } },
+      })
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: { filterArtworksLoader },
+      }
+      const query = gql`
+        {
+          artworksConnection(
+            input: { similarToArtworkID: "source-work" }
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ similar_to_artwork_id: "source-work" })
+      )
+    })
+
+    it("rejects similarToArtworkID combined with keyword", async () => {
+      const filterArtworksLoader = jest.fn()
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: { filterArtworksLoader },
+      }
+      const query = gql`
+        {
+          artworksConnection(
+            similarToArtworkID: "source-work"
+            keyword: "cat"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`similarToArtworkID` cannot be combined with `keyword`."
+      )
+      expect(filterArtworksLoader).not.toHaveBeenCalled()
+    })
+
+    it("rejects similarToArtworkID combined with an alert's keyword", async () => {
+      const filterArtworksLoader = jest.fn()
+      // Loaded after the schema (as runQuery does) to avoid circular imports.
+      require("schema/v2")
+      const { AlertType } = require("schema/v2/Alerts")
+      const field = AlertType.getFields().artworksConnection
+      const alert = { keyword: "cat" }
+
+      await expect(
+        field.resolve(
+          alert,
+          { similarToArtworkID: "source-work", first: 10 },
+          {
+            authenticatedLoaders: {},
+            unauthenticatedLoaders: { filterArtworksLoader },
+          },
+          {}
+        )
+      ).rejects.toThrow(
+        "`similarToArtworkID` cannot be combined with `keyword`."
+      )
+      expect(filterArtworksLoader).not.toHaveBeenCalled()
+    })
+  })
+
   describe(`Passes along an incoming page param over cursors`, () => {
     beforeEach(() => {
       context = {
