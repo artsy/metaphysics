@@ -321,6 +321,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
   },
+  similarToArtworkID: {
+    type: GraphQLString,
+    description:
+      "Artwork slug or ID. Image search using this artwork's stored image embedding: returns visually similar works (excluding this one), combined with the other filters and default ranking. Cannot be combined with `keyword`. An unknown or non-public artwork errors; an artwork without an embedding returns no results.",
+  },
   size: {
     type: GraphQLInt,
   },
@@ -554,6 +559,7 @@ const convertFilterArgs = ({
   priceRange,
   saleID,
   showID,
+  similarToArtworkID,
   sizes,
   tagID,
   variant,
@@ -607,6 +613,7 @@ const convertFilterArgs = ({
     partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
+    similar_to_artwork_id: similarToArtworkID,
     sizes: sizes,
     tag_id: tagID,
     variant: variant,
@@ -731,6 +738,11 @@ const filterArtworksConnectionTypeFactory = (
       ...mapRootToFilterParams(root),
       aggregations: aggregationOptions,
       disable_not_for_sale_sorting: options.disableNotForSaleSorting,
+    }
+
+    // Checked after `mapRootToFilterParams`, which can add a keyword (e.g. an alert's).
+    if (gravityOptions.similar_to_artwork_id && gravityOptions.keyword) {
+      throw new Error("`similarToArtworkID` cannot be combined with `keyword`.")
     }
 
     // We need to set `include_unpublished` when filtering for only unpublished works.
