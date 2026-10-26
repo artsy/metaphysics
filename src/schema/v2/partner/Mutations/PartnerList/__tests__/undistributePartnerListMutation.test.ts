@@ -55,8 +55,9 @@ describe("UndistributePartnerListMutation", () => {
 
     const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(
-      result.undistributePartnerList.partnerListOrError.__typename
-    ).toEqual("UndistributePartnerListFailure")
+    expect(result.undistributePartnerList.partnerListOrError).toEqual({
+      __typename: "UndistributePartnerListFailure",
+      mutationError: { message: "List has not been distributed" },
+    })
   })
 })

@@ -57,7 +57,7 @@ const PartnerListArtworkImpactType = new GraphQLObjectType<
   fields: {
     distributionStatus: {
       type: new GraphQLNonNull(PartnerListDistributionStatusEnum),
-      resolve: ({ distribution_status }) => distribution_status,
+      resolve: ({ distribution_status }) => distribution_status ?? "none",
     },
     privateCount: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -151,11 +151,25 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         resolve: async (
-          { id, _fromConnection },
+          { id, _fromConnection, distribution_status },
           { artworkIDs },
           { partnerListArtworkImpactLoader }
         ) => {
+          // Same N+1 guard as `publication` below — there's no batch endpoint
+          // for artwork impact, so this refuses to resolve per node inside
+          // partnerListsConnection.
           if (!partnerListArtworkImpactLoader || _fromConnection) return null
+
+          // An empty array would be dropped from the query string entirely,
+          // so answer locally rather than send Gravity a param-less request.
+          if (artworkIDs.length === 0) {
+            return {
+              distribution_status,
+              private_count: 0,
+              unlisted_count: 0,
+              affected_count: 0,
+            }
+          }
 
           return partnerListArtworkImpactLoader(id, {
             artwork_ids: artworkIDs,

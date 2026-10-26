@@ -12,6 +12,11 @@ describe("DismissPartnerListSyncConfirmationMutation", () => {
               syncConfirmationDismissed
             }
           }
+          ... on DismissPartnerListSyncConfirmationFailure {
+            mutationError {
+              message
+            }
+          }
         }
       }
     }
@@ -38,6 +43,23 @@ describe("DismissPartnerListSyncConfirmationMutation", () => {
     ).toEqual({
       __typename: "DismissPartnerListSyncConfirmationSuccess",
       partnerList: { syncConfirmationDismissed: true },
+    })
+  })
+
+  it("returns a mutation error on failure", async () => {
+    const context = {
+      dismissPartnerListSyncConfirmationLoader: jest.fn().mockRejectedValue({
+        body: { message: "Partner list not found" },
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(mutation, context)
+
+    expect(
+      result.dismissPartnerListSyncConfirmation.partnerListOrError
+    ).toEqual({
+      __typename: "DismissPartnerListSyncConfirmationFailure",
+      mutationError: { message: "Partner list not found" },
     })
   })
 })
