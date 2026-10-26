@@ -45,6 +45,29 @@ describe("PrivateViewingRoom", () => {
     })
   })
 
+  it("returns the gallery branding for a gated room so the passcode page can show the logo", async () => {
+    const context = {
+      privateViewingRoomLoader: jest.fn().mockResolvedValue({
+        passcode_required: true,
+        gallery_name: "Isabel Croxatto Galeria",
+        apply_brand: true,
+        brand_kit: { text_color: "#111111" },
+      }),
+    }
+
+    const result = await runQuery(query, context)
+
+    expect(result.privateViewingRoom).toEqual({
+      passcodeRequired: true,
+      galleryName: "Isabel Croxatto Galeria",
+      heading: null,
+      description: null,
+      applyBrand: true,
+      brandKit: { textColor: "#111111" },
+      artworks: null,
+    })
+  })
+
   it("returns room contents when no passcode is required", async () => {
     const context = {
       privateViewingRoomLoader: jest.fn().mockResolvedValue({

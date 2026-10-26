@@ -12,8 +12,7 @@ import { PrivateViewingRoomArtworkType } from "./privateViewingRoomArtwork"
 
 // Shared by PrivateViewingRoomType and PrivateViewingRoomContentsType — every
 // field Gravity's room_json actually returns, regardless of whether it's
-// reached via the plain GET (passcode_required: false branch) or via a
-// successful authenticate. Kept as one field map so the two types can't
+// reached via the plain GET or via a successful authenticate. Kept as one field map so the two types can't
 // silently drift apart.
 const contentFields = () => ({
   galleryName: {
@@ -47,10 +46,12 @@ const contentFields = () => ({
 // from the pre-existing, unrelated `ViewingRoom` type/model in this schema.
 //
 // Used only by the `privateViewingRoom` query below, where `passcodeRequired`
-// has one clear meaning: whether the room is gated at all. Gravity's GET
-// endpoint returns just `{passcode_required: true}` (no content fields) when
-// it's gated and unauthenticated, or `{passcode_required: false, ...content}`
-// otherwise — so every content field here is nullable.
+// has one clear meaning: whether the room is gated at all. When it's gated,
+// Gravity's GET endpoint returns only the branding (`gallery_name`,
+// `apply_brand`, `brand_kit`) so the passcode page can show the gallery's
+// logo; heading, description and artworks come only from a successful
+// authenticate. Otherwise it returns `{passcode_required: false, ...content}`
+// — so every content field here is nullable.
 export const PrivateViewingRoomType = new GraphQLObjectType<
   any,
   ResolverContext
@@ -89,7 +90,7 @@ export const PrivateViewingRoomContentsType = new GraphQLObjectType<
 export const PrivateViewingRoom: GraphQLFieldConfig<void, ResolverContext> = {
   type: PrivateViewingRoomType,
   description:
-    "Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; artwork/gallery data is omitted until authenticated via the authenticatePrivateViewingRoom mutation.",
+    "Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.",
   args: {
     slug: {
       type: new GraphQLNonNull(GraphQLString),
