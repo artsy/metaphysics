@@ -30871,14 +30871,14 @@ type Partner implements Node {
   name: String
 
   """
-  The partner's most recent inquiry that a personalized offer can still be sent from, or null if there isn't one. Only the 10 most recent inquiries inside the window are checked. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.
+  The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. Only the 10 most recent inquiries inside the window are checked, so this is capped at that many. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.
   """
-  offerEligibleConversation(
+  offerEligibleConversations(
     """
     Only consider inquiries started within this many days.
     """
     daysInPast: Int = 5
-  ): Conversation
+  ): [Conversation!]!
 
   """
   A single order for this partner.

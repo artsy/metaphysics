@@ -1,11 +1,11 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("Partner offerEligibleConversation", () => {
+describe("Partner offerEligibleConversations", () => {
   const query = gql`
     {
       partner(id: "example-partner") {
-        offerEligibleConversation {
+        offerEligibleConversations {
           internalID
         }
       }
@@ -30,7 +30,7 @@ describe("Partner offerEligibleConversation", () => {
     })
   }
 
-  it("returns the newest recent inquiry that is eligible", async () => {
+  it("returns every recent eligible inquiry, newest first", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [
         { id: "newest", created_at: daysAgo(1) },
@@ -63,7 +63,10 @@ describe("Partner offerEligibleConversation", () => {
         dismissed: false,
       })
     )
-    expect(partner.offerEligibleConversation).toEqual({ internalID: "middle" })
+    expect(partner.offerEligibleConversations).toEqual([
+      { internalID: "middle" },
+      { internalID: "oldest" },
+    ])
   })
 
   it("ignores inquiries older than the window without checking them", async () => {
@@ -86,10 +89,10 @@ describe("Partner offerEligibleConversation", () => {
     expect(partnerOfferEligibilityLoader).toHaveBeenCalledWith({
       impulse_conversation_id: "recent",
     })
-    expect(partner.offerEligibleConversation).toBeNull()
+    expect(partner.offerEligibleConversations).toEqual([])
   })
 
-  it("is null when no recent inquiry is eligible", async () => {
+  it("is empty when no recent inquiry is eligible", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "a", created_at: daysAgo(1) }],
     })
@@ -102,7 +105,7 @@ describe("Partner offerEligibleConversation", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.offerEligibleConversation).toBeNull()
+    expect(partner.offerEligibleConversations).toEqual([])
   })
 
   it("keeps looking when one eligibility check fails", async () => {
@@ -125,10 +128,10 @@ describe("Partner offerEligibleConversation", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.offerEligibleConversation).toEqual({ internalID: "fine" })
+    expect(partner.offerEligibleConversations).toEqual([{ internalID: "fine" }])
   })
 
-  it("is null when Impulse errors", async () => {
+  it("is empty when Impulse errors", async () => {
     const conversationsLoader = jest
       .fn()
       .mockRejectedValue(new Error("Impulse unavailable"))
@@ -140,13 +143,13 @@ describe("Partner offerEligibleConversation", () => {
     })
 
     expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
-    expect(partner.offerEligibleConversation).toBeNull()
+    expect(partner.offerEligibleConversations).toEqual([])
   })
 
-  it("is null when unauthenticated (no loaders available)", async () => {
+  it("is empty when unauthenticated (no loaders available)", async () => {
     const { partner } = await runQuery(query, { partnerLoader })
 
-    expect(partner.offerEligibleConversation).toBeNull()
+    expect(partner.offerEligibleConversations).toEqual([])
   })
 
   it("throws if selected under partnersConnection instead of a single partner", async () => {
@@ -155,7 +158,7 @@ describe("Partner offerEligibleConversation", () => {
         partnersConnection(first: 1) {
           edges {
             node {
-              offerEligibleConversation {
+              offerEligibleConversations {
                 internalID
               }
             }

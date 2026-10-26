@@ -1469,11 +1469,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      offerEligibleConversation: {
-        type: ConversationType,
+      offerEligibleConversations: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(ConversationType))
+        ),
         description:
-          "The partner's most recent inquiry that a personalized offer can still be sent from, or null if there isn't one. " +
-          `Only the ${OFFER_ELIGIBLE_SCAN_LIMIT} most recent inquiries inside the window are checked. ` +
+          "The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. " +
+          `Only the ${OFFER_ELIGIBLE_SCAN_LIMIT} most recent inquiries inside the window are checked, so this is capped at that many. ` +
           "Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.",
         args: {
           daysInPast: {
@@ -1493,7 +1495,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           info
         ) => {
           if (!conversationsLoader || !partnerOfferEligibilityLoader) {
-            return null
+            return []
           }
 
           // Same N+1 guard as `inquiryMetrics`: this makes several per-partner
@@ -1527,7 +1529,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               "[partner/offerEligibleConversation] Error fetching conversations:",
               error
             )
-            return null
+            return []
           }
 
           const cutoff = Date.now() - daysInPast * MS_PER_DAY
@@ -1553,8 +1555,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             })
           )
 
-          // Results keep Impulse's newest-first order.
-          return recentConversations[eligibilities.indexOf(true)] ?? null
+          // Keeps Impulse's newest-first order.
+          return recentConversations.filter((_conversation, index) => {
+            return eligibilities[index]
+          })
         },
       },
       isLinkable: {
