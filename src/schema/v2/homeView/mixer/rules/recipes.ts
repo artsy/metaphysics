@@ -105,19 +105,30 @@ export function applyComponentOverride(
   return { ...section, component: { ...section.component, type } }
 }
 
+// String literal (not the imported HOME_FEED_SIMPLIFICATION_FLAG) to avoid an
+// import cycle: recipes -> rule -> recipes. Keep in sync with the rule.
+const EXPERIMENT_FLAG = "onyx_home-feed-simplification"
+
+// Experiment-only sections are display-gated by EXPERIMENT_FLAG, whose toggle is
+// ALSO on for a flag-on "control" variant — so on the pass-through (control /
+// unenrolled) path they'd otherwise leak into the baseline feed in their default
+// positions. Drop them here so they surface ONLY via a treatment arm's allow-list.
+const withoutExperimentOnly = (sections: HomeViewSection[]) =>
+  sections.filter((section) => section.featureFlag !== EXPERIMENT_FLAG)
+
 /**
  * Pure: select + order `sections` according to the arm recipe, applying any
- * per-arm presentation overrides. Returns sections unchanged for `control` /
- * unknown arms.
+ * per-arm presentation overrides. For `control` / unknown arms, returns the
+ * baseline feed — i.e. sections minus the experiment-only ones (see above).
  */
 export function composeForArm(
   arm: Arm | null,
   sections: HomeViewSection[]
 ): HomeViewSection[] {
-  if (!arm || arm === "control") return sections
+  if (!arm || arm === "control") return withoutExperimentOnly(sections)
 
   const order = ARM_ORDER[arm]
-  if (!order) return sections
+  if (!order) return withoutExperimentOnly(sections)
 
   const overrides = ARM_COMPONENT_OVERRIDES[arm] ?? {}
   const byId = new Map(sections.map((s) => [s.id, s]))

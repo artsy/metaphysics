@@ -4,6 +4,7 @@ import { HomeFeedSimplificationRule } from "../../rules/HomeFeedSimplificationRu
 import { QuickLinks } from "../../../sections/QuickLinks"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
 import { RecommendedArtworks } from "../../../sections/RecommendedArtworks"
+import { CuratedGroup } from "../../../sections/CuratedGroup"
 
 jest.mock("lib/featureFlags", () => ({
   getExperimentVariant: jest.fn(),
@@ -24,22 +25,33 @@ describe("HomeFeedSimplificationRule", () => {
 
   it("is a no-op when the user is not enrolled (variant disabled)", async () => {
     mockGetVariant.mockReturnValue({ enabled: false, name: "disabled" })
-    expect(await rule.apply(sections, context)).toBe(sections)
+    expect(await rule.apply(sections, context)).toEqual(sections)
   })
 
   it("is a no-op for the control arm", async () => {
     mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
-    expect(await rule.apply(sections, context)).toBe(sections)
+    expect(await rule.apply(sections, context)).toEqual(sections)
+  })
+
+  // Regression: a flag-on "control" variant has the experiment toggle enabled, so
+  // experiment-only sections pass the display filter. The control arm must still
+  // strip them so they don't leak into the baseline feed.
+  it("strips experiment-only sections for a flag-on control variant", async () => {
+    mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
+    const withGroup = [...sections, CuratedGroup] as HomeViewSection[]
+    const out = await rule.apply(withGroup, context)
+    expect(out.find((s) => s.id === CuratedGroup.id)).toBeUndefined()
+    expect(out.map((s) => s.id)).toEqual(sections.map((s) => s.id))
   })
 
   it("is a no-op when Unleash is uninitialized (returns false)", async () => {
     mockGetVariant.mockReturnValue(false)
-    expect(await rule.apply(sections, context)).toBe(sections)
+    expect(await rule.apply(sections, context)).toEqual(sections)
   })
 
   it("is a no-op for an unknown variant name", async () => {
     mockGetVariant.mockReturnValue({ enabled: true, name: "not_an_arm" })
-    expect(await rule.apply(sections, context)).toBe(sections)
+    expect(await rule.apply(sections, context)).toEqual(sections)
   })
 
   it("keys the variant lookup on the user id", async () => {
@@ -96,7 +108,7 @@ describe("HomeFeedSimplificationRule", () => {
         xHomeFeedArm: "not_an_arm",
       } as ResolverContext
 
-      expect(await rule.apply(sections, overrideContext)).toBe(sections)
+      expect(await rule.apply(sections, overrideContext)).toEqual(sections)
       expect(mockGetVariant).toHaveBeenCalled()
     })
   })

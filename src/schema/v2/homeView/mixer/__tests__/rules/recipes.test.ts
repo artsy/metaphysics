@@ -34,12 +34,33 @@ describe("composeForArm", () => {
     WhatsHappeningGroup,
   ] as HomeViewSection[]
 
-  it("returns sections unchanged for control", () => {
-    expect(composeForArm("control", sections)).toBe(sections)
+  // The experiment-only (flag-gated) sections. On the pass-through path these
+  // must be stripped so a flag-on "control" variant doesn't leak them into the
+  // baseline feed in their default positions.
+  const experimentOnlyIds = [
+    CuratedGroup.id,
+    EditorialGroup.id,
+    WhatsHappeningGroup.id,
+  ]
+
+  it("returns the baseline feed (experiment-only sections stripped) for control", () => {
+    const out = composeForArm("control", sections)
+    expect(out.map((s) => s.id)).toEqual(
+      sections.filter((s) => !experimentOnlyIds.includes(s.id)).map((s) => s.id)
+    )
+    experimentOnlyIds.forEach((id) =>
+      expect(out.find((s) => s.id === id)).toBeUndefined()
+    )
   })
 
-  it("returns sections unchanged for null (not enrolled)", () => {
-    expect(composeForArm(null, sections)).toBe(sections)
+  it("returns the baseline feed (experiment-only sections stripped) for null (not enrolled)", () => {
+    const out = composeForArm(null, sections)
+    expect(out.map((s) => s.id)).toEqual(
+      sections.filter((s) => !experimentOnlyIds.includes(s.id)).map((s) => s.id)
+    )
+    experimentOnlyIds.forEach((id) =>
+      expect(out.find((s) => s.id === id)).toBeUndefined()
+    )
   })
 
   it("reduces + preserves current order for reduced_current", () => {
