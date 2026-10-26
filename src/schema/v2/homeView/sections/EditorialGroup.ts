@@ -46,37 +46,40 @@ export const EditorialGroup: HomeViewGroupSection = {
   // One rail: the existing editorial rail, relabeled "Editorial" (its standalone
   // title is "Artsy Editorial", which the container header already uses).
   rails: [{ sectionID: LatestArticles.id, title: "Editorial" }],
-  chipsTitle: "Art News",
-  // "View all" for the chips group follows the News rail's own destination +
-  // owner type, so the two stay in sync (relative href; Eigen resolves the env
-  // host and fires the view-all tracking with chipsOwnerType).
-  chipsHref: News.component?.behaviors?.viewAll?.href ?? undefined,
-  chipsOwnerType: News.component?.behaviors?.viewAll?.ownerType ?? undefined,
 
-  // Chips = latest News-layout articles mapped to cards. Reuses ArticlesConnection
-  // (and thus News's exact filter mapping); articles already carry a thumbnail
-  // and slug, so each chip gets an image + href with no new upstream plumbing.
-  resolver: async (parent, args, context, info) => {
-    const connection: any = await ArticlesConnection.resolve!(
-      parent,
-      {
-        published: true,
-        sort: ArticleSorts.type.getValue("PUBLISHED_AT_DESC")?.value,
-        layout: ArticleLayoutEnum.getValue("NEWS")?.value,
-        first: NEWS_CHIP_COUNT,
+  // One chips group ("Art News") today; the list supports more. Its "view all"
+  // follows the News rail's own destination + owner type so the two stay in sync
+  // (relative href; Eigen resolves the env host and tracks with ownerType).
+  // Chips = latest News-layout articles mapped to cards (reuses ArticlesConnection,
+  // and thus News's filter mapping); articles carry a thumbnail + slug already.
+  chipsGroups: [
+    {
+      title: "Art News",
+      href: News.component?.behaviors?.viewAll?.href ?? undefined,
+      ownerType: News.component?.behaviors?.viewAll?.ownerType ?? undefined,
+      resolver: async (parent, args, context, info) => {
+        const connection: any = await ArticlesConnection.resolve!(
+          parent,
+          {
+            published: true,
+            sort: ArticleSorts.type.getValue("PUBLISHED_AT_DESC")?.value,
+            layout: ArticleLayoutEnum.getValue("NEWS")?.value,
+            first: NEWS_CHIP_COUNT,
+          },
+          context,
+          info
+        )
+
+        const chips = (connection?.edges ?? []).map(({ node }) => ({
+          title: node.title,
+          href: `/article/${node.slug}`,
+          imageURL: articleThumbnailURL(node.thumbnail_image),
+          entityType: "Article",
+          entityID: node.id,
+        }))
+
+        return connectionFromArray(chips, args)
       },
-      context,
-      info
-    )
-
-    const chips = (connection?.edges ?? []).map(({ node }) => ({
-      title: node.title,
-      href: `/article/${node.slug}`,
-      imageURL: articleThumbnailURL(node.thumbnail_image),
-      entityType: "Article",
-      entityID: node.id,
-    }))
-
-    return connectionFromArray(chips, args)
-  },
+    },
+  ],
 }

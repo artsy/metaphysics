@@ -124,8 +124,13 @@ describe("HomeViewSectionGroup", () => {
         ),
       } as unknown) as ResolverContext
 
-      const resolve = CuratedGroup.resolver! as any
-      const connection = await resolve(CuratedGroup, {}, context, info)
+      const chipGroup = CuratedGroup.chipsGroups![0]
+      const connection = await (chipGroup.resolver as any)(
+        chipGroup,
+        {},
+        context,
+        info
+      )
       const chips = connection.edges.map((e) => e.node)
 
       expect(chips).toEqual([

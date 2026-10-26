@@ -7,9 +7,10 @@ describe("EditorialGroup", () => {
     expect(EditorialGroup.rails).toEqual([
       { sectionID: LatestArticles.id, title: "Editorial" },
     ])
-    expect(EditorialGroup.chipsTitle).toEqual("Art News")
-    expect(EditorialGroup.chipsHref).toEqual("/news")
-    expect(EditorialGroup.chipsOwnerType).toEqual("marketNews")
+    const [chipGroup] = EditorialGroup.chipsGroups!
+    expect(chipGroup.title).toEqual("Art News")
+    expect(chipGroup.href).toEqual("/news")
+    expect(chipGroup.ownerType).toEqual("marketNews")
     expect(EditorialGroup.backgroundColor).toEqual("#FEF8ED")
   })
 
@@ -44,9 +45,9 @@ describe("EditorialGroup", () => {
       }),
     } as unknown) as ResolverContext
 
-    const resolve = EditorialGroup.resolver! as any
-    const connection = await resolve(
-      EditorialGroup,
+    const chipGroup = EditorialGroup.chipsGroups![0]
+    const connection = await (chipGroup.resolver as any)(
+      chipGroup,
       { first: 10 },
       context,
       {} as any

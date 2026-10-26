@@ -126,72 +126,80 @@ export const CuratedGroup: HomeViewGroupSection = {
   // chip set once that design's chip list is finalized.
   rails: [{ sectionID: CuratorsPicksEmerging.id }],
 
-  // Entry chips: two artist section groups + two marketing collections.
-  resolver: async (parent, args, context, info) => {
-    const [
-      recommendedImages,
-      trendingImages,
-      { body = [] },
-    ] = await Promise.all([
-      artistChipStackURLs(RecommendedArtists, parent, context, info),
-      artistChipStackURLs(TrendingArtists, parent, context, info),
-      context.marketingCollectionsLoader({
-        slugs: COLLECTION_CHIP_SLUGS,
-        size: COLLECTION_CHIP_SLUGS.length,
-      }),
-    ])
+  // One chips group today (artists + collections). The list supports more.
+  chipsGroups: [
+    {
+      resolver: async (parent, args, context, info) => {
+        const [
+          recommendedImages,
+          trendingImages,
+          { body = [] },
+        ] = await Promise.all([
+          artistChipStackURLs(RecommendedArtists, parent, context, info),
+          artistChipStackURLs(TrendingArtists, parent, context, info),
+          context.marketingCollectionsLoader({
+            slugs: COLLECTION_CHIP_SLUGS,
+            size: COLLECTION_CHIP_SLUGS.length,
+          }),
+        ])
 
-    const artistChips = [
-      {
-        title: "Recommended Artists",
-        // TODO: confirm copy — may be placeholder.
-        subtitle:
-          "Explore a curated selection of the most exciting artists working today.",
-        href: sectionScreenHref(RecommendedArtists),
-        // STOPGAP stack (first 3 artists' covers); omitted if unavailable.
-        ...(recommendedImages.length ? { imageURLs: recommendedImages } : {}),
-        entityType: "HomeViewSection",
-        entityID: RecommendedArtists.id,
+        const artistChips = [
+          {
+            title: "Recommended Artists",
+            // TODO: confirm copy — may be placeholder.
+            subtitle:
+              "Explore a curated selection of the most exciting artists working today.",
+            href: sectionScreenHref(RecommendedArtists),
+            // STOPGAP stack (first 3 artists' covers); omitted if unavailable.
+            ...(recommendedImages.length
+              ? { imageURLs: recommendedImages }
+              : {}),
+            entityType: "HomeViewSection",
+            entityID: RecommendedArtists.id,
+          },
+          {
+            title: "Trending Artists",
+            // TODO: confirm copy — may be placeholder.
+            subtitle: "See the works boundary pushing artists are creating.",
+            href: sectionScreenHref(TrendingArtists),
+            ...(trendingImages.length ? { imageURLs: trendingImages } : {}),
+            entityType: "HomeViewSection",
+            entityID: TrendingArtists.id,
+          },
+        ]
+
+        // Preserve the configured slug order (the loader may not).
+        const bySlug = new Map<string, any>(
+          (body as any[]).map((c) => [c.slug, c])
+        )
+        const collections = COLLECTION_CHIP_SLUGS.map((slug) =>
+          bySlug.get(slug)
+        ).filter(Boolean)
+
+        // One batched `/artworks` load for all collection stacks (ids off the payload).
+        const stackBySlug = await collectionStackImageURLsBySlug(
+          collections,
+          context
+        )
+
+        const collectionChips = collections.map((collection) => {
+          const imageURLs = stackBySlug.get(collection.slug) ?? []
+          return {
+            title: collection.title,
+            subtitle: collection.description,
+            href: `/collection/${collection.slug}`,
+            // 3-image stack when we have representative artworks; else the single
+            // thumbnail. HomeViewCard allows only one of imageURL / imageURLs.
+            ...(imageURLs.length
+              ? { imageURLs }
+              : { imageURL: collection.thumbnail }),
+            entityType: "MarketingCollection",
+            entityID: collection.id,
+          }
+        })
+
+        return connectionFromArray([...artistChips, ...collectionChips], args)
       },
-      {
-        title: "Trending Artists",
-        // TODO: confirm copy — may be placeholder.
-        subtitle: "See the works boundary pushing artists are creating.",
-        href: sectionScreenHref(TrendingArtists),
-        ...(trendingImages.length ? { imageURLs: trendingImages } : {}),
-        entityType: "HomeViewSection",
-        entityID: TrendingArtists.id,
-      },
-    ]
-
-    // Preserve the configured slug order (the loader may not).
-    const bySlug = new Map<string, any>((body as any[]).map((c) => [c.slug, c]))
-    const collections = COLLECTION_CHIP_SLUGS.map((slug) =>
-      bySlug.get(slug)
-    ).filter(Boolean)
-
-    // One batched `/artworks` load for all collection stacks (ids off the payload).
-    const stackBySlug = await collectionStackImageURLsBySlug(
-      collections,
-      context
-    )
-
-    const collectionChips = collections.map((collection) => {
-      const imageURLs = stackBySlug.get(collection.slug) ?? []
-      return {
-        title: collection.title,
-        subtitle: collection.description,
-        href: `/collection/${collection.slug}`,
-        // 3-image stack when we have representative artworks; else the single
-        // thumbnail. HomeViewCard allows only one of imageURL / imageURLs.
-        ...(imageURLs.length
-          ? { imageURLs }
-          : { imageURL: collection.thumbnail }),
-        entityType: "MarketingCollection",
-        entityID: collection.id,
-      }
-    })
-
-    return connectionFromArray([...artistChips, ...collectionChips], args)
-  },
+    },
+  ],
 }

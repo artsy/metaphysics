@@ -1,4 +1,5 @@
 import {
+  GraphQLFieldResolver,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -25,15 +26,23 @@ export interface HomeViewGroupRailRef {
   title?: string
 }
 
+/** A labeled group of entry chips within a section group. */
+export interface HomeViewGroupChipGroup {
+  /** Header for this chips group (e.g. "Art News"). */
+  title?: string
+  /** "View all" href for this chips group (e.g. "/news"). */
+  href?: string
+  /** [Analytics] owner type for this chips group's "view all" tap. */
+  ownerType?: string
+  /** Resolves this group's cards (a HomeViewCard connection). */
+  resolver: GraphQLFieldResolver<any, ResolverContext>
+}
+
 export interface HomeViewGroupSection extends HomeViewSection {
   /** Ordered rails (0..N) rendered inside the container, each a referenced section. */
   rails?: HomeViewGroupRailRef[]
-  /** Header for the chips group (e.g. "Art News"). */
-  chipsTitle?: string
-  /** "View all" href for the chips group (e.g. "/news"). */
-  chipsHref?: string
-  /** [Analytics] owner type for the chips group's "view all" tap. */
-  chipsOwnerType?: string
+  /** Ordered groups of entry chips (0..N) shown below the rails. */
+  chipsGroups?: HomeViewGroupChipGroup[]
   /** Background tint for the whole area (raw hex; null → untinted). */
   backgroundColor?: string
 }
@@ -60,8 +69,41 @@ const HomeViewGroupRailType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 /**
+ * A single group of entry chips within a section group: an optional header +
+ * "view all", plus its own cards connection (mirrors HomeViewGroupRail).
+ */
+const HomeViewGroupChipGroupType = new GraphQLObjectType<any, ResolverContext>({
+  name: "HomeViewGroupChipGroup",
+  description: "A labeled group of entry chips within a section group",
+  fields: {
+    title: {
+      type: GraphQLString,
+      resolve: ({ title }) => title,
+    },
+    href: {
+      type: GraphQLString,
+      description: "'View all' destination for this chips group.",
+      resolve: ({ href }) => href,
+    },
+    ownerType: {
+      type: GraphQLString,
+      description:
+        "[Analytics] `owner type` for this chips group's 'view all' tap.",
+      resolve: ({ ownerType }) => ownerType,
+    },
+    // This group's chips. Reuses HomeViewCard (renders as "Chips" on the client).
+    cardsConnection: {
+      type: HomeViewCardConnectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+    },
+  },
+})
+
+/**
  * A "section group": a titled container holding an ordered set of rails
- * (0..N referenced sections) and/or an optional group of entry chips.
+ * (0..N referenced sections) and/or ordered groups of entry chips.
  * Consolidates several standalone rails into a single discovery block —
  * e.g. rails-only ("What's Happening"), one rail + chips ("Artsy Editorial"),
  * or chips-only ("Curated").
@@ -96,22 +138,14 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
       },
     },
 
-    // Instance-owned chips-group copy, so it can be edited without touching the
-    // standalone rails the chips are sourced from. Null for rails-only areas.
-    chipsTitle: {
-      type: GraphQLString,
-      resolve: (parent) => parent.chipsTitle,
-    },
-    chipsHref: {
-      type: GraphQLString,
-      description: "'View all' destination for the chips group.",
-      resolve: (parent) => parent.chipsHref,
-    },
-    chipsOwnerType: {
-      type: GraphQLString,
-      description:
-        "[Analytics] `owner type` for the chips group's 'view all' tap.",
-      resolve: (parent) => parent.chipsOwnerType,
+    // Ordered groups of entry chips shown below the rails. Each group owns its
+    // header/"view all" + cards, so a block can show more than one chip row.
+    // Empty for rails-only areas.
+    chipsGroups: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(HomeViewGroupChipGroupType))
+      ),
+      resolve: (parent) => parent.chipsGroups ?? [],
     },
 
     // TODO: emit a palette token (dark-mode-safe) rather than raw hex once
@@ -122,15 +156,6 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
       description:
         "Background tint for the whole area as a raw hex string (null → untinted).",
       resolve: (parent) => parent.backgroundColor,
-    },
-
-    // Entry chips. Reuses HomeViewCard (renders as "Chips" on the client). Each
-    // chip carries a deep-link `href`; see the section definition for details.
-    chipsConnection: {
-      type: HomeViewCardConnectionType,
-      args: pageable({}),
-      resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })

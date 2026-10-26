@@ -11,8 +11,7 @@ describe("WhatsHappeningGroup", () => {
   })
 
   it("has no chips", () => {
-    expect(WhatsHappeningGroup.chipsTitle).toBeUndefined()
-    expect(WhatsHappeningGroup.resolver).toBeUndefined()
+    expect(WhatsHappeningGroup.chipsGroups).toBeUndefined()
   })
 
   it("is gated behind the experiment flag", () => {
