@@ -8,27 +8,13 @@ import { TrendingArtists } from "./TrendingArtists"
 import { setVersion } from "schema/v2/image/normalize"
 import { getDefault } from "schema/v2/image"
 
-/**
- * Chip navigation: every chip carries an `href`, so the client is uniformly
- * href-based (`RouterLink to={chip.href}`). Artist chips point at the lazy
- * section-screen route (built here, needs the target's id + type); collection
- * chips point at `/collection/<slug>`. `entityType`/`entityID` are for analytics.
- *
- * Artist chips have no model-derived subtitle (an Artists rail is a connection,
- * not a single entity), so their copy is hardcoded; their stack image is a
- * stopgap of the rail's first 3 artists' cover images. Collection chips derive
- * subtitle + image from the marketing-collection model.
- */
-
 // Mirrors Eigen's getHomeViewSectionHref output for the section-detail screen.
 const sectionScreenHref = (section: HomeViewSection): string =>
   `home-view/sections/${section.id}?sectionType=${section.type}`
 
-// Marketing-collection chips, in display order after the artist chips.
 // TODO: confirm "blue-chip-icons" is the correct prod slug (verified on staging).
 const COLLECTION_CHIP_SLUGS = ["most-loved", "blue-chip-icons"]
 
-// The card renders a fanned stack of this many images (design's "3-stack").
 const CHIP_STACK_SIZE = 3
 const STACK_IMAGE_VERSIONS = ["square", "large", "medium"]
 
@@ -37,12 +23,8 @@ const artworkImageURL = (artwork: any): string | undefined => {
   return image ? setVersion(image, STACK_IMAGE_VERSIONS) : undefined
 }
 
-// Resolve the stack images for the collection chips in ONE batched call. Gravity
-// now returns `representative_artwork_ids` (ordered, by merchandisability) on the
-// collection payload we already fetched, so we read the ids off it and resolve the
-// artworks via `artworksLoader({ ids })` — a single `/artworks` request that
-// collapses across all the collection chips (no per-collection fan-out). Returns a
-// slug → ordered image URLs map.
+// Collection stack images in one batched `/artworks` call (ids come off each
+// collection's `representative_artwork_ids`), avoiding a per-collection fan-out.
 const collectionStackImageURLsBySlug = async (
   collections: any[],
   context: any
@@ -76,9 +58,8 @@ const ARTIST_IMAGE_VERSIONS = ["large", "square", "medium"]
 const artistCoverURL = (artist: any): string | undefined =>
   artist?.image_url ? setVersion(artist, ARTIST_IMAGE_VERSIONS) : undefined
 
-// STOPGAP: an artist chip's stack = the referenced rail's first 3 artists' cover
-// images, via that rail's own resolver. Section-level (fixed 2 artist chips), not
-// an N+1. Degrades to no images on any failure. Superseded by the Gravity field.
+// STOPGAP (superseded by the Gravity field): artist chip stack = the rail's first
+// 3 artists' covers. Section-level, not an N+1; degrades to no images on failure.
 export const artistChipStackURLs = async (
   section: HomeViewSection,
   parent: any,
@@ -106,27 +87,19 @@ export const artistChipStackURLs = async (
 export const CuratedGroup: HomeViewGroupSection = {
   id: "home-view-section-curated-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
-  // Gate behind the experiment flag so it stays out of the production feed
-  // until launch (flag is off in prod, on in staging/review). String literal
-  // rather than importing HOME_FEED_SIMPLIFICATION_FLAG to avoid a cycle
-  // (recipes -> this section -> rule -> recipes).
+  // String literal (not the imported flag constant) to avoid a recipes -> section -> rule -> recipes cycle.
   featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "Chosen by our curators",
-    // Presentation variant (e.g. 2 large chips vs 3 compact). Client switches
-    // on this; the data shape is identical across variants.
     type: "SectionGroup",
   },
   requiresAuthentication: false,
-  // Collection cards sit on gray (spec Greys/Mono5). TODO: palette token once available.
+  // TODO: palette token once available.
   backgroundColor: "#F7F7F7",
 
-  // One rail (Curators' Picks) + entry chips. TODO: the redesigned "Curated"
-  // area drops the rail and is chips-only — flip to `rails: []` + the new large
-  // chip set once that design's chip list is finalized.
+  // TODO: redesigned "Curated" is chips-only — flip to `rails: []` once finalized.
   rails: [{ sectionID: CuratorsPicksEmerging.id }],
 
-  // One chips group today (artists + collections). The list supports more.
   chipsGroups: [
     {
       resolver: async (parent, args, context, info) => {
@@ -176,7 +149,6 @@ export const CuratedGroup: HomeViewGroupSection = {
           bySlug.get(slug)
         ).filter(Boolean)
 
-        // One batched `/artworks` load for all collection stacks (ids off the payload).
         const stackBySlug = await collectionStackImageURLsBySlug(
           collections,
           context
@@ -188,8 +160,7 @@ export const CuratedGroup: HomeViewGroupSection = {
             title: collection.title,
             subtitle: collection.description,
             href: `/collection/${collection.slug}`,
-            // 3-image stack when we have representative artworks; else the single
-            // thumbnail. HomeViewCard allows only one of imageURL / imageURLs.
+            // HomeViewCard allows only one of imageURL / imageURLs.
             ...(imageURLs.length
               ? { imageURLs }
               : { imageURL: collection.thumbnail }),

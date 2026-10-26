@@ -9,12 +9,8 @@ import { Arm, composeForArm, isArm } from "./recipes"
 export const HOME_FEED_SIMPLIFICATION_FLAG: FeatureFlag =
   "onyx_home-feed-simplification"
 
-/**
- * Reshapes the home feed per the user's A/B/C arm for the home-feed
- * simplification experiment. No-op for users not enrolled (control/holdout).
- *
- * Mirrors AuctionEngagementRule: read a request-scoped signal, transform sections.
- */
+// Reshapes the feed per the user's experiment arm; no-op for control/unenrolled.
+// Mirrors AuctionEngagementRule: read a request-scoped signal, transform sections.
 export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
@@ -29,8 +25,7 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   private resolveArm(
     context: ResolverContext
   ): { arm: Arm | null; source: "override" | "unleash" } {
-    // Dev/QA override (plumbed from the x-home-feed-arm header, non-prod only).
-    // Forces composition without affecting the variant reported for tracking.
+    // Dev/QA override via x-home-feed-arm header (non-prod); doesn't affect tracked variant.
     if (context.xHomeFeedArm && isArm(context.xHomeFeedArm)) {
       return { arm: context.xHomeFeedArm, source: "override" }
     }

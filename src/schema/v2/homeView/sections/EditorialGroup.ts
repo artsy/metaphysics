@@ -11,8 +11,7 @@ import { normalize, setVersion } from "schema/v2/image/normalize"
 // How many news articles surface as chips below the editorial lead rail.
 const NEWS_CHIP_COUNT = 6
 
-// Preferred thumbnail versions for a news chip; setVersion falls back to the
-// largest available if none match.
+// Preferred chip thumbnail versions; setVersion falls back to largest if none match.
 const CHIP_IMAGE_VERSIONS = ["large", "larger", "main", "medium"]
 
 // Resolve an article's (possibly `:version`-templated) thumbnail to a concrete URL.
@@ -21,18 +20,9 @@ const articleThumbnailURL = (thumbnailImage: any): string | undefined => {
   return normalized ? setVersion(normalized, CHIP_IMAGE_VERSIONS) : undefined
 }
 
-/**
- * "Artsy Editorial" section group: the existing editorial articles rail shown as
- * the lead, with latest News-layout articles as entry chips below it. A second
- * instance of HomeViewSectionGroup — same shape, different content.
- *
- * Sub-labels ("Editorial", "Art News") live here so this block's copy can be
- * edited without affecting the standalone LatestArticles / News rails.
- */
 export const EditorialGroup: HomeViewGroupSection = {
   id: "home-view-section-editorial-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
-  // Gated behind the experiment flag (off in prod, on in staging/review).
   featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "Artsy Editorial",
@@ -40,18 +30,13 @@ export const EditorialGroup: HomeViewGroupSection = {
     type: "SectionGroup",
   },
   requiresAuthentication: false,
-  // Cream tint (not a palette token). TODO: palette token once available.
+  // TODO: palette token once available.
   backgroundColor: "#FEF8ED",
 
-  // One rail: the existing editorial rail, relabeled "Editorial" (its standalone
-  // title is "Artsy Editorial", which the container header already uses).
+  // Relabeled "Editorial" so it doesn't duplicate the container's "Artsy Editorial" header.
   rails: [{ sectionID: LatestArticles.id, title: "Editorial" }],
 
-  // One chips group ("Art News") today; the list supports more. Its "view all"
-  // follows the News rail's own destination + owner type so the two stay in sync
-  // (relative href; Eigen resolves the env host and tracks with ownerType).
-  // Chips = latest News-layout articles mapped to cards (reuses ArticlesConnection,
-  // and thus News's filter mapping); articles carry a thumbnail + slug already.
+  // "View all" follows the News rail's own href + ownerType so the two stay in sync.
   chipsGroups: [
     {
       title: "Art News",

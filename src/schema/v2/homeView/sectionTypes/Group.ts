@@ -47,10 +47,6 @@ export interface HomeViewGroupSection extends HomeViewSection {
   backgroundColor?: string
 }
 
-/**
- * A single rail within a section group: a referenced section plus an optional
- * label override so the container's copy can diverge from the standalone rail.
- */
 const HomeViewGroupRailType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeViewGroupRail",
   description: "A referenced section rendered as a rail inside a section group",
@@ -68,10 +64,6 @@ const HomeViewGroupRailType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-/**
- * A single group of entry chips within a section group: an optional header +
- * "view all", plus its own cards connection (mirrors HomeViewGroupRail).
- */
 const HomeViewGroupChipGroupType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeViewGroupChipGroup",
   description: "A labeled group of entry chips within a section group",
@@ -101,13 +93,6 @@ const HomeViewGroupChipGroupType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-/**
- * A "section group": a titled container holding an ordered set of rails
- * (0..N referenced sections) and/or ordered groups of entry chips.
- * Consolidates several standalone rails into a single discovery block —
- * e.g. rails-only ("What's Happening"), one rail + chips ("Artsy Editorial"),
- * or chips-only ("Curated").
- */
 export const HomeViewGroupSectionType = new GraphQLObjectType<
   HomeViewGroupSection,
   ResolverContext
@@ -119,10 +104,7 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
   fields: {
     ...standardSectionFields,
 
-    // Ordered rails shown inside the container. Each is a referenced section
-    // resolved by reference (its own resolver stays lazy), with an optional
-    // label override. Non-displayable members are dropped. Empty for chips-only
-    // areas. Instance-owned labels let copy diverge from the standalone rails.
+    // Referenced sections resolved lazily by id; non-displayable ones dropped.
     rails: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(HomeViewGroupRailType))
@@ -138,9 +120,7 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
       },
     },
 
-    // Ordered groups of entry chips shown below the rails. Each group owns its
-    // header/"view all" + cards, so a block can show more than one chip row.
-    // Empty for rails-only areas.
+    // Each group owns its header/"view all" + cards, so a block can have several rows.
     chipsGroups: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(HomeViewGroupChipGroupType))
@@ -148,9 +128,7 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
       resolve: (parent) => parent.chipsGroups ?? [],
     },
 
-    // TODO: emit a palette token (dark-mode-safe) rather than raw hex once
-    // design-system tokens are exposed over the API — raw hex won't adapt to
-    // dark mode, and can't be expressed as a token for custom tints (e.g. cream).
+    // TODO: emit a dark-mode-safe palette token rather than raw hex once exposed over the API.
     backgroundColor: {
       type: GraphQLString,
       description:
