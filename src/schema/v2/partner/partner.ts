@@ -200,6 +200,12 @@ export const AnalyticsQueryPeriodEnum = {
 // lookup. See the `confirmedBuyersWaitingCount` field description below.
 const UNANSWERED_CONVERSATIONS_SCAN_LIMIT = 50
 
+// Each eligibility check is a Gravity call that itself calls Impulse and
+// Exchange, so the lookup for `offerEligibleConversation` only considers the
+// most recent inquiries rather than every one in the window.
+const OFFER_ELIGIBLE_SCAN_LIMIT = 10
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
 // True when the current field is being resolved beneath a list index in the
 // response (e.g. `partnersConnection.edges[3].node.inquiryMetrics`). The
 // singular `partner(id:)` field never produces a numeric path segment, so
@@ -296,6 +302,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       OrderSellerStateEnum,
       PartnerOrdersSortEnum,
     } = require("../order/types/sharedOrderTypes")
+
+    const { ConversationType } = require("../conversation")
 
     return {
       ...SlugAndInternalIDFields,
@@ -1459,6 +1467,94 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             unanswered_count: total_count,
             confirmed_buyers_waiting_count: confirmedBuyersWaitingCount,
           }
+        },
+      },
+      offerEligibleConversation: {
+        type: ConversationType,
+        description:
+          "The partner's most recent inquiry that a personalized offer can still be sent from, or null if there isn't one. " +
+          `Only the ${OFFER_ELIGIBLE_SCAN_LIMIT} most recent inquiries inside the window are checked. ` +
+          "Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.",
+        args: {
+          daysInPast: {
+            type: GraphQLInt,
+            defaultValue: 5,
+            description:
+              "Only consider inquiries started within this many days.",
+          },
+        },
+        resolve: async (
+          { _id },
+          { daysInPast },
+          {
+            conversationsLoader,
+            partnerOfferEligibilityLoader,
+          }: ResolverContext,
+          info
+        ) => {
+          if (!conversationsLoader || !partnerOfferEligibilityLoader) {
+            return null
+          }
+
+          // Same N+1 guard as `inquiryMetrics`: this makes several per-partner
+          // REST calls, with no batch variant.
+          if (isUnderListPath(info)) {
+            throw new Error(
+              "[partner/offerEligibleConversation] This field cannot be queried under a list or connection " +
+                "(e.g. partnersConnection); it is only supported for a single partner via partner(id:)."
+            )
+          }
+
+          let conversations: { id: string; created_at?: string }[]
+
+          try {
+            // Same filters as the CMS inbox, minus orders: a conversation with
+            // an order is never eligible, so skip it before paying for the check.
+            ;({ conversations } = await conversationsLoader({
+              page: 1,
+              size: OFFER_ELIGIBLE_SCAN_LIMIT,
+              sort: "-created_at",
+              deleted: false,
+              intercepted: false,
+              to_id: _id,
+              to_type: "Partner",
+              has_message: true,
+              dismissed: false,
+              conversation_type: "inquiry",
+            }))
+          } catch (error) {
+            console.error(
+              "[partner/offerEligibleConversation] Error fetching conversations:",
+              error
+            )
+            return null
+          }
+
+          const cutoff = Date.now() - daysInPast * MS_PER_DAY
+          const recentConversations = (conversations ?? []).filter(
+            ({ created_at }) => !!created_at && Date.parse(created_at) >= cutoff
+          )
+
+          const eligibilities = await Promise.all(
+            recentConversations.map(async ({ id }) => {
+              try {
+                const eligibility = await partnerOfferEligibilityLoader({
+                  impulse_conversation_id: id,
+                })
+                return eligibility?.status === "eligible"
+              } catch (error) {
+                // One failed check shouldn't hide the others.
+                console.error(
+                  "[partner/offerEligibleConversation] Error checking eligibility:",
+                  error
+                )
+                return false
+              }
+            })
+          )
+
+          // Results keep Impulse's newest-first order.
+          return recentConversations[eligibilities.indexOf(true)] ?? null
         },
       },
       isLinkable: {
