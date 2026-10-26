@@ -55,15 +55,15 @@ describe("HomeFeedSimplificationRule", () => {
   })
 
   it("keys the variant lookup on the user id", async () => {
-    mockGetVariant.mockReturnValue({ enabled: true, name: "hierarchy_breadth" })
+    mockGetVariant.mockReturnValue({ enabled: true, name: "consolidated" })
     await rule.apply(sections, context)
     expect(mockGetVariant).toHaveBeenCalledWith(expect.any(String), {
       userId: "123",
     })
   })
 
-  it("composes the hierarchy_breadth arm with reordering", async () => {
-    mockGetVariant.mockReturnValue({ enabled: true, name: "hierarchy_breadth" })
+  it("composes the consolidated arm with reordering", async () => {
+    mockGetVariant.mockReturnValue({ enabled: true, name: "consolidated" })
     const out = await rule.apply(sections, context)
     // editorial/discover absent from input are skipped; NWFY leads the artworks
     expect(out.map((s) => s.id)).toEqual([
@@ -78,7 +78,7 @@ describe("HomeFeedSimplificationRule", () => {
       mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
       const overrideContext = {
         userID: "123",
-        xHomeFeedArm: "hierarchy_breadth",
+        xHomeFeedArm: "consolidated",
       } as ResolverContext
 
       const out = await rule.apply(sections, overrideContext)
@@ -108,13 +108,13 @@ describe("HomeFeedSimplificationRule", () => {
       mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
       const ctx = {
         userID: "123",
-        xHomeFeedArm: "hierarchy_breadth",
+        xHomeFeedArm: "consolidated",
       } as ResolverContext
 
       await rule.apply(sections, ctx)
 
       expect(ctx.homeViewAppliedArm).toEqual({
-        arm: "hierarchy_breadth",
+        arm: "consolidated",
         source: "override",
       })
     })
@@ -122,14 +122,14 @@ describe("HomeFeedSimplificationRule", () => {
     it("records the Unleash arm and source", async () => {
       mockGetVariant.mockReturnValue({
         enabled: true,
-        name: "hierarchy_breadth",
+        name: "consolidated",
       })
       const ctx = { userID: "123" } as ResolverContext
 
       await rule.apply(sections, ctx)
 
       expect(ctx.homeViewAppliedArm).toEqual({
-        arm: "hierarchy_breadth",
+        arm: "consolidated",
         source: "unleash",
       })
     })

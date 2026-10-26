@@ -14,7 +14,7 @@ import { WhatsHappeningGroup } from "../../sections/WhatsHappeningGroup"
  * The home-feed-simplification arms. Single source of truth for the
  * `variant.name` strings — these must match the Unleash flag config exactly.
  */
-export const ARMS = ["control", "hierarchy_breadth"] as const
+export const ARMS = ["control", "consolidated"] as const
 
 export type Arm = typeof ARMS[number]
 
@@ -26,13 +26,13 @@ export const isArm = (name: string): name is Arm =>
  * (drop ids not listed) + reorder (follow this order). Pass in the already
  * display-filtered sections; ids absent from `sections` are skipped safely.
  *
- * v1 is a 2-arm A/B: control vs the shipping treatment (`hierarchy_breadth`).
+ * v1 is a 2-arm A/B: control vs the shipping treatment (`consolidated`).
  * Additional arms for the planned multi-arm follow-up slot in alongside it.
  */
 const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   // The shipping treatment: intentional hierarchy + breadth of content types.
   // Consolidates standalone rails into section groups and reorders.
-  hierarchy_breadth: [
+  consolidated: [
     QuickLinks.id,
     Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
     NewWorksForYou.id,

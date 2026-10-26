@@ -63,8 +63,8 @@ describe("composeForArm", () => {
     )
   })
 
-  it("reorders for hierarchy_breadth", () => {
-    const out = composeForArm("hierarchy_breadth", sections)
+  it("reorders for consolidated", () => {
+    const out = composeForArm("consolidated", sections)
     expect(out.map((s) => s.id)).toEqual([
       QuickLinks.id,
       Tasks.id,
@@ -76,8 +76,8 @@ describe("composeForArm", () => {
     ])
   })
 
-  it("drops the standalone rails the section groups consolidate from hierarchy_breadth", () => {
-    const out = composeForArm("hierarchy_breadth", sections).map((s) => s.id)
+  it("drops the standalone rails the section groups consolidate, in the consolidated arm", () => {
+    const out = composeForArm("consolidated", sections).map((s) => s.id)
     expect(out).not.toContain(LatestArticles.id)
     expect(out).not.toContain(News.id)
     expect(out).not.toContain(ShowsForYou.id)
@@ -85,12 +85,12 @@ describe("composeForArm", () => {
   })
 
   it("drops ids present in input but absent from the arm recipe", () => {
-    const out = composeForArm("hierarchy_breadth", sections)
+    const out = composeForArm("consolidated", sections)
     expect(out.find((s) => s.id === TrendingArtists.id)).toBeUndefined()
   })
 
   it("skips arm ids that are not in the (display-filtered) input", () => {
-    const out = composeForArm("hierarchy_breadth", [
+    const out = composeForArm("consolidated", [
       NewWorksForYou,
     ] as HomeViewSection[])
     expect(out.map((s) => s.id)).toEqual([NewWorksForYou.id])
