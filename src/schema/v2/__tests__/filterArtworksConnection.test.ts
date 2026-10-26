@@ -1454,6 +1454,337 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("filter by image", () => {
+    const mockFilterArtworksLoader = jest.fn((_args) => {
+      return Promise.resolve({
+        hits: [{ id: "kaws-toys" }],
+        aggregations: { total: { value: 1 } },
+      })
+    })
+
+    beforeEach(() => {
+      mockFilterArtworksLoader.mockClear()
+    })
+
+    it("maps the image argument to snake-cased s3 key/bucket and keeps the `total` aggregation", async () => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {},
+        filterArtworksUncachedLoader: mockFilterArtworksLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            priceRange: "*-5000"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          image: { s3_key: "uploads/query.jpg", s3_bucket: "artsy-media" },
+          price_range: "*-5000",
+          aggregations: ["total"],
+        })
+      )
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
+      ])
+    })
+
+    it("uses the uncached loader for unauthenticated image search", async () => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [{ id: "cached-loader-artwork-id" }],
+              aggregations: { total: { value: 1 } },
+            }),
+        },
+        filterArtworksUncachedLoader: () =>
+          Promise.resolve({
+            hits: [{ id: "uncached-loader-artwork-id" }],
+            aggregations: { total: { value: 1 } },
+          }),
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "uncached-loader-artwork-id" } },
+      ])
+    })
+
+    it("uses the authenticated loader for image search when authorized filters are requested", async () => {
+      context = {
+        authenticatedLoaders: {
+          filterArtworksLoader: mockFilterArtworksLoader,
+        },
+        unauthenticatedLoaders: {},
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            includeUnpublished: true
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          image: { s3_key: "uploads/query.jpg", s3_bucket: "artsy-media" },
+        })
+      )
+    })
+
+    it("allows image search combined with an explicit -decayed_merch sort", async () => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {},
+        filterArtworksUncachedLoader: mockFilterArtworksLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            sort: "-decayed_merch"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).resolves.toBeTruthy()
+    })
+
+    it("throws when image is combined with keyword", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            keyword: "warhol"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`image` cannot be combined with `keyword`."
+      )
+    })
+
+    it("throws when image is combined with variant", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            variant: "hybrid"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`image` cannot be combined with `variant`."
+      )
+    })
+
+    it("throws when image is combined with similarToArtworkID", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            similarToArtworkID: "kaws-toys"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`image` cannot be combined with `similarToArtworkID`."
+      )
+    })
+
+    it("throws when image is combined with a sort other than -decayed_merch", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            sort: "prices"
+            first: 10
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "`image` search only supports the `-decayed_merch` sort."
+      )
+    })
+
+    it("throws when a parent injects a keyword alongside image", async () => {
+      // Required lazily: importing at the top creates a circular import.
+      const {
+        filterArtworksConnectionWithParams,
+      } = require("schema/v2/filterArtworksConnection")
+      // e.g. an alert's saved-search criteria include a keyword
+      const field = filterArtworksConnectionWithParams(() => ({
+        keyword: "warhol",
+      }))
+      const ctx = { unauthenticatedLoaders: {}, authenticatedLoaders: {} }
+
+      await expect(
+        field.resolve!(
+          {},
+          {
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" },
+            first: 10,
+          },
+          ctx as any,
+          {} as any
+        )
+      ).rejects.toThrow("`image` cannot be combined with `keyword`.")
+    })
+
+    it("includes the image in the connection ID", async () => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {},
+        filterArtworksUncachedLoader: mockFilterArtworksLoader,
+      }
+
+      const query = gql`
+        {
+          artworksConnection(
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-media" }
+            first: 10
+          ) {
+            id
+          }
+        }
+      `
+      const filterOptions = {
+        aggregations: ["total"],
+        image: { s3_key: "uploads/query.jpg", s3_bucket: "artsy-media" },
+        page: 1,
+        size: 10,
+      }
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.id).toEqual(
+        toGlobalId("filterArtworksConnection", JSON.stringify(filterOptions))
+      )
+    })
+
+    it("refetches an image search via the node root field", async () => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {},
+        filterArtworksUncachedLoader: mockFilterArtworksLoader,
+      }
+
+      const generatedId = toGlobalId(
+        "filterArtworksConnection",
+        JSON.stringify({
+          aggregations: ["total"],
+          image: { s3_key: "uploads/query.jpg", s3_bucket: "artsy-media" },
+          page: 1,
+          size: 10,
+        })
+      )
+
+      const query = gql`
+        {
+          node(id: "${generatedId}") {
+            ... on FilterArtworksConnection {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, context)
+
+      expect(mockFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          image: { s3_key: "uploads/query.jpg", s3_bucket: "artsy-media" },
+        })
+      )
+    })
+  })
+
   describe("CMS request filtering", () => {
     describe("simple CMS requests", () => {
       it("uses partnerArtworksAllLoader for simple CMS requests", async () => {
