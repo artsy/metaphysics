@@ -77,6 +77,7 @@ const {
   REQUEST_THROTTLE_MS,
   REQUEST_TIMEOUT_MS,
   RESOLVER_TIMEOUT_MS,
+  SEARCH_ARTWORK_IMAGE_BUCKETS,
   SENTRY_PRIVATE_DSN,
   STATSD_HOST,
   STATSD_PORT,
@@ -222,6 +223,12 @@ export default {
   SENTRY_PRIVATE_DSN,
   EXCHANGE_API_BASE,
   EXCHANGE_APP_ID,
+  // Mirrors Gravity's own allowlist, so the AI agent rejects an unsupported
+  // bucket before spending a model call on it.
+  SEARCH_ARTWORK_IMAGE_BUCKETS: (SEARCH_ARTWORK_IMAGE_BUCKETS || "")
+    .split(",")
+    .map((bucket) => bucket.trim())
+    .filter(Boolean),
   STATSD_HOST: STATSD_HOST || "localhost",
   STATSD_PORT: Number(STATSD_PORT) || 8125,
   SYSTEM_ENVIRONMENT: SYSTEM_ENVIRONMENT || "development",

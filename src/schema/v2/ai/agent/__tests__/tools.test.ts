@@ -1,5 +1,6 @@
 import { schema } from "schema/v2"
 import { ResolverContext } from "types/graphql"
+import * as Sentry from "@sentry/node"
 import {
   buildAgentTools,
   describeToolCall,
@@ -1193,5 +1194,212 @@ describe("upstream error sanitisation", () => {
     )
     expect(result.content).toBe("Could not resolve at `artist`")
     expect(result.content).not.toMatch(/ECONNREFUSED|10\.0\.1\.5/)
+  })
+})
+
+describe("image handles", () => {
+  const IMAGE = { s3Key: "uploads/query.jpg", s3Bucket: "image-uploads" }
+  const handles = new Map([["image_1", IMAGE]])
+  const NODES = "edges { node { internalID } }"
+
+  const imageSearchContext = () => {
+    const filterArtworksUncachedLoader = jest.fn().mockResolvedValue({
+      hits: [],
+      aggregations: { total: { value: 0 } },
+    })
+    const context = ({
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {},
+      filterArtworksUncachedLoader,
+    } as unknown) as ResolverContext
+    return { context, filterArtworksUncachedLoader }
+  }
+
+  it("resolves a handle literal to the attached image's S3 location", async () => {
+    const { context, filterArtworksUncachedLoader } = imageSearchContext()
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(image: "image_1", priceRange: "*-5000", first: 5) { ${NODES} } }`,
+      },
+      schema,
+      context,
+      handles
+    )
+
+    expect(result.ok).toBe(true)
+    expect(filterArtworksUncachedLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        image: { s3_key: "uploads/query.jpg", s3_bucket: "image-uploads" },
+        price_range: "*-5000",
+      })
+    )
+  })
+
+  it("resolves a handle passed as a variable", async () => {
+    const { context, filterArtworksUncachedLoader } = imageSearchContext()
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `query ($image: ArtworkImageSearchInput!) { artworksConnection(image: $image, first: 5) { ${NODES} } }`,
+        variables: { image: "image_1" },
+      },
+      schema,
+      context,
+      handles
+    )
+
+    expect(result.ok).toBe(true)
+    expect(filterArtworksUncachedLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        image: { s3_key: "uploads/query.jpg", s3_bucket: "image-uploads" },
+      })
+    )
+  })
+
+  it("rejects a handle the request didn't attach", async () => {
+    const { context, filterArtworksUncachedLoader } = imageSearchContext()
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(image: "image_7", first: 5) { ${NODES} } }`,
+      },
+      schema,
+      context,
+      handles
+    )
+
+    expect(result).toEqual({
+      ok: false,
+      content: 'Unknown image handle "image_7". Attached: image_1.',
+    })
+    expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+  })
+
+  it("rejects an image search when nothing is attached", async () => {
+    const { context } = imageSearchContext()
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(image: "image_1", first: 5) { ${NODES} } }`,
+      },
+      schema,
+      context
+    )
+
+    expect(result).toEqual({
+      ok: false,
+      content: "No image is attached to this conversation.",
+    })
+  })
+
+  it.each([
+    [
+      "an object literal",
+      `{ artworksConnection(image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" }, first: 5) { ${NODES} } }`,
+      undefined,
+    ],
+    [
+      "a variable holding an object",
+      `query ($image: ArtworkImageSearchInput!) { artworksConnection(image: $image, first: 5) { ${NODES} } }`,
+      { image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" } },
+    ],
+    [
+      "a variable default",
+      `query ($image: ArtworkImageSearchInput = { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" }) { artworksConnection(image: $image, first: 5) { ${NODES} } }`,
+      undefined,
+    ],
+    [
+      "a handle nested in a parent's connection, as an object",
+      `{ gene(id: "painting") { filterArtworksConnection(image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" }, first: 5) { ${NODES} } } }`,
+      undefined,
+    ],
+  ])(
+    "never searches a raw S3 location passed as %s",
+    async (_label, query, variables) => {
+      const { context, filterArtworksUncachedLoader } = imageSearchContext()
+
+      const result = await runQueryArtsyTool(
+        { query, variables },
+        schema,
+        context,
+        handles
+      )
+
+      expect(result.ok).toBe(false)
+      expect(result.content).toMatch(/only as its handle/)
+      expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+    }
+  )
+
+  it("tells the model why `image` can't be combined with `keyword`", async () => {
+    const { context, filterArtworksUncachedLoader } = imageSearchContext()
+    const captureException = jest.spyOn(Sentry, "captureException")
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(image: "image_1", keyword: "cat", first: 5) { ${NODES} } }`,
+      },
+      schema,
+      context,
+      handles
+    )
+
+    expect(result).toEqual({
+      ok: false,
+      content:
+        "Invalid arguments at `artworksConnection`: `image` cannot be combined with `keyword`.",
+    })
+    expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+    // The model's own mistake, not something to page anyone about.
+    expect(captureException).not.toHaveBeenCalled()
+    captureException.mockRestore()
+  })
+
+  it("reports a Gravity 400 as invalid arguments without its text", async () => {
+    const { context, filterArtworksUncachedLoader } = imageSearchContext()
+    filterArtworksUncachedLoader.mockRejectedValue(
+      new HTTPError(
+        'https://stagingapi.artsy.net/api/v1/filter/artworks?image[s3_key]=uploads/query.jpg - {"error":"Unsupported image bucket"}',
+        400
+      )
+    )
+
+    const result = await runQueryArtsyTool(
+      {
+        query: `{ artworksConnection(image: "image_1", first: 5) { ${NODES} } }`,
+      },
+      schema,
+      context,
+      handles
+    )
+
+    expect(result).toEqual({
+      ok: false,
+      content:
+        "Rejected as invalid at `artworksConnection` — check the arguments",
+    })
+  })
+
+  it("only adds image guidance when something is attached", () => {
+    const without = buildAgentTools(schema, {} as ResolverContext)
+    const withImage = buildAgentTools(schema, {} as ResolverContext, handles)
+
+    expect(Object.keys(without)).toEqual(["query_artsy"])
+    expect(without.query_artsy.description).not.toContain("image_N")
+    expect(Object.keys(withImage)).toEqual(["query_artsy"])
+    expect(withImage.query_artsy.description).toContain(
+      'artworksConnection(image: "image_1"'
+    )
+  })
+
+  it("describes an image search with its handle, never the S3 key", () => {
+    const description = describeToolCall({
+      query: `{ artworksConnection(image: "image_1", first: 5) { ${NODES} } }`,
+    })
+
+    expect(description.activity).toBe("SEARCHING_ARTWORKS")
+    expect(description.debugSummary).toContain('image: "image_1"')
+    expect(description.debugSummary).not.toContain("uploads/query.jpg")
   })
 })

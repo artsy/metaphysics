@@ -107,6 +107,24 @@ export const AIAgentDisplayedSectionInputType = new GraphQLInputObjectType({
   },
 })
 
+export const AIAgentImageInputType = new GraphQLInputObjectType({
+  name: "AIAgentImageInput",
+  description:
+    "An image the collector attached, already uploaded to S3 by the client.",
+  fields: {
+    s3Key: { type: new GraphQLNonNull(GraphQLString) },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Must be one of the buckets enabled for image search.",
+    },
+  },
+})
+
+export interface AIAgentImage {
+  s3Key: string
+  s3Bucket: string
+}
+
 export const AIAgentMessageInputType = new GraphQLInputObjectType({
   name: "AIAgentMessageInput",
   fields: {
@@ -128,6 +146,12 @@ export const AIAgentMessageInputType = new GraphQLInputObjectType({
         "resolve against. Meaningful only on an ASSISTANT message; ignored " +
         "on a USER one. At most one section is read per message today.",
     },
+    image: {
+      type: AIAgentImageInputType,
+      description:
+        "The image attached to this message, replayed as it was sent. " +
+        "Meaningful only on a USER message; ignored on an ASSISTANT one.",
+    },
   },
 })
 
@@ -141,6 +165,7 @@ export interface AIAgentHistoryEntry {
   content: string
   artworkIDs?: string[] | null
   displayedSections?: AIAgentDisplayedSection[] | null
+  image?: AIAgentImage | null
 }
 
 export const AIAgentTurnInputType = new GraphQLInputObjectType({
@@ -153,7 +178,13 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
     },
     message: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The new user message.",
+      description:
+        "The new user message. May be empty when `image` is attached.",
+    },
+    image: {
+      type: AIAgentImageInputType,
+      description:
+        "An image attached to the new message, to search by or ask about.",
     },
     history: {
       type: new GraphQLList(new GraphQLNonNull(AIAgentMessageInputType)),

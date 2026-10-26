@@ -15,6 +15,11 @@ import {
   AIAgentToolRunResult,
 } from "./tools"
 import {
+  AIAgentImageHandleAssignment,
+  assignImageHandles,
+  withImageHandleNote,
+} from "./images"
+import {
   AIAgentModelSection,
   hydrateSection,
   normalizeCitedIDs,
@@ -25,6 +30,7 @@ import {
   AIAgentEntityType,
   AIAgentEventPayload,
   AIAgentHistoryEntry,
+  AIAgentImage,
   AIAgentSectionType,
   REPLAYABLE_ENTITY_TYPE,
   AIAgentSuggestedReply,
@@ -204,6 +210,37 @@ not restarting from a bare keyword. For more artworks, use \`excludeArtworkIDs\`
 with the IDs already shown. Do not apply that artwork argument to artist
 searches; use supported pagination when available and avoid citing artists
 already shown as if they were new. Do not invent an artist exclusion argument.
+
+## Attached images
+
+A collector may attach an image. You never see it: their message carries a
+note such as “[Collector attached image_1]”, and \`image_1\` is the handle the
+artwork search takes. Handles count up through the conversation; never invent
+one, and never ask for or write an S3 key or URL.
+
+What you can do with it is find works that look like it, optionally narrowed
+by anything the artwork filters express: price, medium, size, colors, rarity,
+availability, artist, location, period. “Similar to this but under $5,000”,
+“like this, only prints”, “like this in blue”, or no text at all:
+\`artworksConnection(image: "image_1", forSale: true, priceRange: "*-5000", first: 5) { counts { total } edges { node { internalID slug title artistNames saleMessage } } }\`.
+Never combine \`image\` with \`keyword\` or \`variant\`, and pass no \`sort\`; the
+search ranks by visual similarity and availability itself. If you are unsure
+how to read the request, run this search.
+
+You cannot see what the image shows. When the collector wants something it
+doesn't contain — “similar, but the cat should be fatter”, “this scene at
+night” — or asks about the image itself — “what style is this?”, “who made
+this?” — say briefly that we can find works that look like their image, then
+show that search with any filters they gave. Never describe, name, or guess at
+the image's subject, style, or maker.
+
+If the image search fails, say the image search is unavailable right now
+instead of answering without it.
+
+A follow-up such as “cheaper”, “only paintings”, or “more like the second
+one” reruns the search with the most recent image and the changed filters,
+unless the collector clearly changes the subject. Return the results as an
+\`ARTWORKS\` section, as for any artwork search.
 
 ## Prices
 
@@ -842,11 +879,14 @@ function withCacheBreakpoint(message: ModelMessage): ModelMessage {
 
 function buildMessages(
   history: AIAgentHistoryEntry[] | null | undefined,
-  message: string
+  message: string,
+  { historyHandles, currentHandle }: AIAgentImageHandleAssignment
 ): ModelMessage[] {
   // Sections are read off assistant turns only: a user message never rendered
   // cards, so ids replayed on one describe nothing the collector is looking at.
-  const priorMessages: ModelMessage[] = (history ?? []).map((entry) =>
+  // An attached image is a text note naming its handle, never the pixels: the
+  // search resolves the handle itself.
+  const priorMessages: ModelMessage[] = (history ?? []).map((entry, index) =>
     entry.role === "assistant"
       ? {
           role: "assistant",
@@ -855,7 +895,10 @@ function buildMessages(
             normalizeDisplayedSections(entry)
           ),
         }
-      : { role: "user", content: entry.content }
+      : {
+          role: "user",
+          content: withImageHandleNote(entry.content, historyHandles[index]),
+        }
   )
 
   // Breakpoint after the history, so the prefix every turn in a conversation
@@ -867,7 +910,10 @@ function buildMessages(
     priorMessages[last] = withCacheBreakpoint(priorMessages[last])
   }
 
-  return [...priorMessages, { role: "user", content: message }]
+  return [
+    ...priorMessages,
+    { role: "user", content: withImageHandleNote(message, currentHandle) },
+  ]
 }
 
 /**
@@ -904,6 +950,7 @@ export async function* runTurn(
   input: {
     conversationID: string
     message: string
+    image?: AIAgentImage | null
     history?: AIAgentHistoryEntry[] | null
     supportedSections?: AIAgentSectionType[] | null
     includeDebugToolCalls?: boolean | null
@@ -963,8 +1010,9 @@ export async function* runTurn(
       supportedSections,
       includeSuggestedReplies,
     })
-    const messages = buildMessages(input.history, input.message)
-    const tools = buildAgentTools(schema, context)
+    const imageHandles = assignImageHandles(input.history, input.image)
+    const messages = buildMessages(input.history, input.message, imageHandles)
+    const tools = buildAgentTools(schema, context, imageHandles.handles)
 
     const tracer = agentTracer()
 
