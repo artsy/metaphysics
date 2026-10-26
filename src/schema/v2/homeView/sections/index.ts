@@ -6,10 +6,10 @@ import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { Auctions } from "./Auctions"
-import { CurationArea } from "./CurationArea"
+import { CuratedGroup } from "./CuratedGroup"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
-import { EditorialCurationArea } from "./EditorialCurationArea"
+import { EditorialGroup } from "./EditorialGroup"
 import { ExploreByCategory } from "./ExploreByCategory"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { GalleriesNearYou } from "./GalleriesNearYou"
@@ -28,7 +28,7 @@ import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtwor
 import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
-import { WhatsHappeningCurationArea } from "./WhatsHappeningCurationArea"
+import { WhatsHappeningGroup } from "./WhatsHappeningGroup"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
 import { QuickLinks } from "./QuickLinks"
@@ -62,10 +62,10 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   BasedOnYourRecentSaves,
-  CurationArea,
+  CuratedGroup,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,
-  EditorialCurationArea,
+  EditorialGroup,
   ExploreByCategory,
   FeaturedFairs,
   GalleriesNearYou,
@@ -86,7 +86,7 @@ const sections: HomeViewSection[] = [
   Tasks,
   TrendingArtists,
   ViewingRooms,
-  WhatsHappeningCurationArea,
+  WhatsHappeningGroup,
 ]
 
 export const registry = sections.reduce(

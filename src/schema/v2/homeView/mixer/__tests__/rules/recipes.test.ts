@@ -11,9 +11,9 @@ import { News } from "../../../sections/News"
 import { ShowsForYou } from "../../../sections/ShowsForYou"
 import { FeaturedFairs } from "../../../sections/FeaturedFairs"
 import { Tasks } from "../../../sections/Tasks"
-import { CurationArea } from "../../../sections/CurationArea"
-import { EditorialCurationArea } from "../../../sections/EditorialCurationArea"
-import { WhatsHappeningCurationArea } from "../../../sections/WhatsHappeningCurationArea"
+import { CuratedGroup } from "../../../sections/CuratedGroup"
+import { EditorialGroup } from "../../../sections/EditorialGroup"
+import { WhatsHappeningGroup } from "../../../sections/WhatsHappeningGroup"
 
 describe("composeForArm", () => {
   // A representative superset of the sections the arms reference.
@@ -29,9 +29,9 @@ describe("composeForArm", () => {
     News,
     ShowsForYou,
     FeaturedFairs,
-    CurationArea,
-    EditorialCurationArea,
-    WhatsHappeningCurationArea,
+    CuratedGroup,
+    EditorialGroup,
+    WhatsHappeningGroup,
   ] as HomeViewSection[]
 
   it("returns sections unchanged for control", () => {
@@ -63,14 +63,14 @@ describe("composeForArm", () => {
       QuickLinks.id,
       Tasks.id,
       NewWorksForYou.id,
-      EditorialCurationArea.id,
-      WhatsHappeningCurationArea.id,
-      CurationArea.id,
+      EditorialGroup.id,
+      WhatsHappeningGroup.id,
+      CuratedGroup.id,
       RecommendedArtworks.id,
     ])
   })
 
-  it("drops the standalone rails the curation areas consolidate from hierarchy_breadth", () => {
+  it("drops the standalone rails the section groups consolidate from hierarchy_breadth", () => {
     const out = composeForArm("hierarchy_breadth", sections).map((s) => s.id)
     expect(out).not.toContain(LatestArticles.id)
     expect(out).not.toContain(News.id)

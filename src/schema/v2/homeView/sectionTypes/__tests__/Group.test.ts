@@ -1,6 +1,6 @@
 import { ResolverContext } from "types/graphql"
-import { HomeViewCurationAreaSectionType } from "../CurationArea"
-import { CurationArea, artistChipStackURLs } from "../../sections/CurationArea"
+import { HomeViewGroupSectionType } from "../Group"
+import { CuratedGroup, artistChipStackURLs } from "../../sections/CuratedGroup"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { RecommendedArtists } from "../../sections/RecommendedArtists"
 import { TrendingArtists } from "../../sections/TrendingArtists"
@@ -49,12 +49,11 @@ describe("artistChipStackURLs", () => {
   })
 })
 
-describe("HomeViewSectionCurationArea", () => {
+describe("HomeViewSectionGroup", () => {
   const info = {} as any
 
   describe("rails resolver", () => {
-    const resolve = HomeViewCurationAreaSectionType.getFields().rails
-      .resolve! as any
+    const resolve = HomeViewGroupSectionType.getFields().rails.resolve! as any
 
     it("resolves each referenced rail section with its title override", () => {
       const result = resolve(
@@ -125,8 +124,8 @@ describe("HomeViewSectionCurationArea", () => {
         ),
       } as unknown) as ResolverContext
 
-      const resolve = CurationArea.resolver! as any
-      const connection = await resolve(CurationArea, {}, context, info)
+      const resolve = CuratedGroup.resolver! as any
+      const connection = await resolve(CuratedGroup, {}, context, info)
       const chips = connection.edges.map((e) => e.node)
 
       expect(chips).toEqual([

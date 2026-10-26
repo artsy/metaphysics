@@ -1,8 +1,8 @@
-# Home Feed — Curation Area rail mappings
+# Home Feed — Section Group rail mappings
 
-Working reference for the home-feed-simplification "Curation Area" section
-(`HomeViewSectionCurationArea`): which **existing** home-view rails each curation
-area maps to. A curation area = one **lead rail** (shown inline) + **entry chips**
+Working reference for the home-feed-simplification "Section Group" section
+(`HomeViewSectionGroup`): which **existing** home-view rails each section
+group maps to. A section group = one **lead rail** (shown inline) + **entry chips**
 to other rails it consolidates.
 
 Status: first-pass. Three mappings are obvious; "Collections" and thumbnails are
@@ -10,7 +10,7 @@ open (see below).
 
 ---
 
-## Curation Area #1 — "Chosen by our curators"
+## Section Group #1 — "Chosen by our curators"
 
 JTBD: _Discover when I don't know what I'm looking for_ → one entry point that
 absorbs four rails doing variations of the same job (human-curated + personalized
@@ -23,7 +23,7 @@ discovery). Figma: "Lead item with additional entry chips."
 | Trending Artists    | chip          | `home-view-section-trending-artists`        | `HomeViewSectionArtists`  | "Trending Artists"              | ✅ Obvious         |
 | Collections         | chip          | **ambiguous — see below**                   | —                         | —                               | ⚠️ Undecided       |
 
-This matches what's built in `src/schema/v2/homeView/sections/CurationArea.ts`
+This matches what's built in `src/schema/v2/homeView/sections/CuratedGroup.ts`
 today (lead = Curators' Picks; chips = Recommended Artists, Trending Artists,
 Collections), except the Collections chip currently points at a placeholder
 `/collections` href.
@@ -51,7 +51,7 @@ rail. Options, needs product/design input:
    or lean on `DiscoverSomethingNew`'s slug list) and point the chip at it via the
    section-screen route — but `DiscoverSomethingNew` is being retired, so this likely
    means a new/renamed section.
-3. **Drop "Collections"** from this curation area if it's not a distinct destination.
+3. **Drop "Collections"** from this section group if it's not a distinct destination.
 
 **Recommendation:** confirm with design/product whether "Collections" means
 _marketing collections_ (→ needs a real rail or the hub route) vs _browse by
@@ -73,8 +73,8 @@ is a _collection of items_, and none exposes a single canonical "rail thumbnail"
 
 So the chip thumbnail must be **decided**, three options:
 
-- **(A) Curated static asset per chip** — design ships a thumbnail per curation
-  area. Most control, matches the Figma mocks (which show specific imagery).
+- **(A) Curated static asset per chip** — design ships a thumbnail per section
+  group. Most control, matches the Figma mocks (which show specific imagery).
   Means MP serves a static/CMS image URL per chip. **Recommended.**
 - **(B) Derived from the target rail's first item** — dynamic (first artist's
   image, first collection's thumbnail). No design asset needed, but visually
@@ -97,12 +97,12 @@ intentional imagery and (B) risks ugly/mismatched thumbnails and a fan-out.
    hub deep-link. Drives the chip's `href`/target.
 2. **Thumbnail source** — curated static (A, recommended) vs derived (B) vs none (C).
 3. **`DiscoverSomethingNew` / `ExploreByCategory` deprecation** — both are
-   version-capped at 8.77.0; confirm whether the curation area supersedes them.
+   version-capped at 8.77.0; confirm whether the section group supersedes them.
 4. **Chip set per area** — is it exactly these three, or does the area also absorb
    e.g. `RecommendedArtworks` ("We Think You'll Love")?
 
 ## Reference
 
-- Section definition: `src/schema/v2/homeView/sections/CurationArea.ts`
-- Section type: `src/schema/v2/homeView/sectionTypes/CurationArea.ts`
+- Section definition: `src/schema/v2/homeView/sections/CuratedGroup.ts`
+- Section type: `src/schema/v2/homeView/sectionTypes/Group.ts`
 - Lead/chip targets: `sections/CuratorsPicksEmerging.ts`, `sections/RecommendedArtists.ts`, `sections/TrendingArtists.ts`, `sections/DiscoverSomethingNew.ts`, `sections/ExploreByCategory.ts`

@@ -17,17 +17,17 @@ import { HomeViewCardConnectionType } from "./Cards"
 import { HomeViewSection, registry } from "../sections"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 
-/** A reference to a section rendered as a rail inside a curation area. */
-export interface HomeViewCurationAreaRailRef {
+/** A reference to a section rendered as a rail inside a section group. */
+export interface HomeViewGroupRailRef {
   /** Internal id of the referenced section. */
   sectionID: string
   /** Optional label override; falls back to the section's own component.title. */
   title?: string
 }
 
-export interface HomeViewCurationAreaSection extends HomeViewSection {
+export interface HomeViewGroupSection extends HomeViewSection {
   /** Ordered rails (0..N) rendered inside the container, each a referenced section. */
-  rails?: HomeViewCurationAreaRailRef[]
+  rails?: HomeViewGroupRailRef[]
   /** Header for the chips group (e.g. "Art News"). */
   chipsTitle?: string
   /** "View all" href for the chips group (e.g. "/news"). */
@@ -39,15 +39,12 @@ export interface HomeViewCurationAreaSection extends HomeViewSection {
 }
 
 /**
- * A single rail within a curation area: a referenced section plus an optional
+ * A single rail within a section group: a referenced section plus an optional
  * label override so the container's copy can diverge from the standalone rail.
  */
-const HomeViewCurationAreaRailType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "HomeViewCurationAreaRail",
-  description: "A referenced section rendered as a rail inside a curation area",
+const HomeViewGroupRailType = new GraphQLObjectType<any, ResolverContext>({
+  name: "HomeViewGroupRail",
+  description: "A referenced section rendered as a rail inside a section group",
   fields: {
     title: {
       type: GraphQLString,
@@ -63,19 +60,19 @@ const HomeViewCurationAreaRailType = new GraphQLObjectType<
 })
 
 /**
- * A "curation area": a titled container holding an ordered set of rails
+ * A "section group": a titled container holding an ordered set of rails
  * (0..N referenced sections) and/or an optional group of entry chips.
  * Consolidates several standalone rails into a single discovery block —
  * e.g. rails-only ("What's Happening"), one rail + chips ("Artsy Editorial"),
  * or chips-only ("Curated").
  */
-export const HomeViewCurationAreaSectionType = new GraphQLObjectType<
-  HomeViewCurationAreaSection,
+export const HomeViewGroupSectionType = new GraphQLObjectType<
+  HomeViewGroupSection,
   ResolverContext
 >({
-  name: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
+  name: HomeViewSectionTypeNames.HomeViewSectionGroup,
   description:
-    "A curation area: an ordered set of rails and/or a group of entry chips",
+    "A section group: an ordered set of rails and/or a group of entry chips",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -86,7 +83,7 @@ export const HomeViewCurationAreaSectionType = new GraphQLObjectType<
     // areas. Instance-owned labels let copy diverge from the standalone rails.
     rails: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(HomeViewCurationAreaRailType))
+        new GraphQLList(new GraphQLNonNull(HomeViewGroupRailType))
       ),
       resolve: (parent, _args, context) => {
         return (parent.rails ?? [])

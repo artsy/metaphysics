@@ -1,7 +1,7 @@
 import { connectionFromArray } from "graphql-relay"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { HomeViewCurationAreaSection } from "../sectionTypes/CurationArea"
+import { HomeViewGroupSection } from "../sectionTypes/Group"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
@@ -103,9 +103,9 @@ export const artistChipStackURLs = async (
   }
 }
 
-export const CurationArea: HomeViewCurationAreaSection = {
-  id: "home-view-section-curation-area",
-  type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
+export const CuratedGroup: HomeViewGroupSection = {
+  id: "home-view-section-curated-group",
+  type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   // Gate behind the experiment flag so it stays out of the production feed
   // until launch (flag is off in prod, on in staging/review). String literal
   // rather than importing HOME_FEED_SIMPLIFICATION_FLAG to avoid a cycle
@@ -115,7 +115,7 @@ export const CurationArea: HomeViewCurationAreaSection = {
     title: "Chosen by our curators",
     // Presentation variant (e.g. 2 large chips vs 3 compact). Client switches
     // on this; the data shape is identical across variants.
-    type: "CurationArea",
+    type: "SectionGroup",
   },
   requiresAuthentication: false,
   // Collection cards sit on gray (spec Greys/Mono5). TODO: palette token once available.
@@ -126,7 +126,7 @@ export const CurationArea: HomeViewCurationAreaSection = {
   // chip set once that design's chip list is finalized.
   rails: [{ sectionID: CuratorsPicksEmerging.id }],
 
-  // Entry chips: two artist curation areas + two marketing collections.
+  // Entry chips: two artist section groups + two marketing collections.
   resolver: async (parent, args, context, info) => {
     const [
       recommendedImages,

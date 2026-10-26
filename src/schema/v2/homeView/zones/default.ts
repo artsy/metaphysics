@@ -29,9 +29,9 @@ import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 import { HomeFeedSimplificationRule } from "../mixer/rules/HomeFeedSimplificationRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
-import { CurationArea } from "../sections/CurationArea"
-import { EditorialCurationArea } from "../sections/EditorialCurationArea"
-import { WhatsHappeningCurationArea } from "../sections/WhatsHappeningCurationArea"
+import { CuratedGroup } from "../sections/CuratedGroup"
+import { EditorialGroup } from "../sections/EditorialGroup"
+import { WhatsHappeningGroup } from "../sections/WhatsHappeningGroup"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
@@ -48,9 +48,9 @@ const SECTIONS: HomeViewSection[] = [
   HeroUnits,
   AuctionLotsForYou,
   Auctions,
-  CurationArea,
-  EditorialCurationArea,
-  WhatsHappeningCurationArea,
+  CuratedGroup,
+  EditorialGroup,
+  WhatsHappeningGroup,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,

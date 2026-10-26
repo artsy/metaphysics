@@ -1,16 +1,16 @@
 import { ResolverContext } from "types/graphql"
-import { EditorialCurationArea } from "../EditorialCurationArea"
+import { EditorialGroup } from "../EditorialGroup"
 import { LatestArticles } from "../LatestArticles"
 
-describe("EditorialCurationArea", () => {
+describe("EditorialGroup", () => {
   it("leads with the editorial rail and labels its sub-sections", () => {
-    expect(EditorialCurationArea.rails).toEqual([
+    expect(EditorialGroup.rails).toEqual([
       { sectionID: LatestArticles.id, title: "Editorial" },
     ])
-    expect(EditorialCurationArea.chipsTitle).toEqual("Art News")
-    expect(EditorialCurationArea.chipsHref).toEqual("/news")
-    expect(EditorialCurationArea.chipsOwnerType).toEqual("marketNews")
-    expect(EditorialCurationArea.backgroundColor).toEqual("#FEF8ED")
+    expect(EditorialGroup.chipsTitle).toEqual("Art News")
+    expect(EditorialGroup.chipsHref).toEqual("/news")
+    expect(EditorialGroup.chipsOwnerType).toEqual("marketNews")
+    expect(EditorialGroup.backgroundColor).toEqual("#FEF8ED")
   })
 
   it("maps news articles to chips with a thumbnail and href", async () => {
@@ -44,9 +44,9 @@ describe("EditorialCurationArea", () => {
       }),
     } as unknown) as ResolverContext
 
-    const resolve = EditorialCurationArea.resolver! as any
+    const resolve = EditorialGroup.resolver! as any
     const connection = await resolve(
-      EditorialCurationArea,
+      EditorialGroup,
       { first: 10 },
       context,
       {} as any

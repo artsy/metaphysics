@@ -1,25 +1,25 @@
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { HomeViewCurationAreaSection } from "../sectionTypes/CurationArea"
+import { HomeViewGroupSection } from "../sectionTypes/Group"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { ShowsForYou } from "./ShowsForYou"
 
 /**
- * "What's Happening" curation area: a rails-only block consolidating the
+ * "What's Happening" section group: a rails-only block consolidating the
  * Featured Fairs and Shows rails under one header. No chips.
  *
  * "Shows Near You" is a label override of the Shows rail (whose standalone title
  * is "Shows for You"). ShowsForYou requires auth, so for logged-out users that
  * rail is dropped and only Featured Fairs shows — fine while the app is auth-only.
  */
-export const WhatsHappeningCurationArea: HomeViewCurationAreaSection = {
-  id: "home-view-section-whats-happening-curation-area",
-  type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
+export const WhatsHappeningGroup: HomeViewGroupSection = {
+  id: "home-view-section-whats-happening-group",
+  type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   // Gated behind the experiment flag (off in prod, on in staging/review).
   featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "What's Happening",
     description: "See art world events around the world",
-    type: "CurationArea",
+    type: "SectionGroup",
   },
   requiresAuthentication: false,
   // Spec Greys/Mono5. TODO: palette token once available.

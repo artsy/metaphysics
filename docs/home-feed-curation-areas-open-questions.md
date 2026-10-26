@@ -1,7 +1,7 @@
-# Home Feed — Curation Area open questions
+# Home Feed — Section Group open questions
 
-Parking lot for unresolved design/modeling questions on the "Curation Area"
-section (`HomeViewSectionCurationArea`). Companion to the rail mapping in
+Parking lot for unresolved design/modeling questions on the "Section Group"
+section (`HomeViewSectionGroup`). Companion to the rail mapping in
 [home-feed-curation-areas.md](./home-feed-curation-areas.md). Nothing here is
 decided — these are tracked so we can punt without losing them.
 
@@ -29,7 +29,7 @@ loader and exposed as a lazily-resolved (`MaybeResolved`) component field. See
 **Shape of the idea, concretely:**
 
 - Precedence: **override (curated/CMS) → derived default → none** (label-only).
-- The override lives in an editable entity (a siteHeroUnit slug per curation area?
+- The override lives in an editable entity (a siteHeroUnit slug per section group?
   a Gravity **Set**? the content team's existing hero-unit tooling?).
 - The derived default would come from the target rail's content (first/representative
   item image), computed **once at update time**, not per request.
@@ -37,12 +37,12 @@ loader and exposed as a lazily-resolved (`MaybeResolved`) component field. See
 **Sub-questions to resolve later:**
 
 1. **What entity backs the image + override?** Reuse the siteHeroUnit/CMS hero-unit
-   pattern (slug per curation area/chip)? A Gravity Set? Something new?
+   pattern (slug per section group/chip)? A Gravity Set? Something new?
 2. **What is "set update time" / what invalidates the cache?** A Gravity Set/hero-unit
    edit webhook? A cron re-materialization? A loader TTL? (siteHeroUnit today is just
    loader-cached per request lifecycle — "materialize on set change" would be new.)
 3. **Per-chip or per-area?** Is the editable image attached to each chip (→ target
-   rail), or to the curation area as a whole?
+   rail), or to the section group as a whole?
 4. **Who computes the derived default,** and where does it live so reads stay O(1)
    (precomputed field vs memcached vs stored on the Set)?
 5. Does this generalize beyond chips — i.e. should _any_ section's thumbnail/background
@@ -58,7 +58,7 @@ Per-entity state:
 - **Marketing collections** (Curated chips): **done** — Gravity now returns
   `representative_artwork_ids` on the collection payload. MP reads the ids off the
   payload and resolves images in **one batched `artworksLoader` call**
-  (`collectionStackImageURLsBySlug` in `sections/CurationArea.ts`), and exposes a
+  (`collectionStackImageURLsBySlug` in `sections/CuratedGroup.ts`), and exposes a
   generic `MarketingCollection.representativeArtworks: [Artwork]` field. The
   per-collection `filterArtworks` derive stopgap is **retired**. (Remaining: the
   `CriteriaMarketingCollection` subclass — not in the rail today.)
@@ -80,7 +80,7 @@ Per-entity state:
   unblocking.
 - **Artists** (Recommended/Trending chips): **stopgap in place** — stack = the
   rail's first 3 artists' cover images (`artistChipStackURLs` in
-  `sections/CurationArea.ts`, via the rail resolver; section-level, not an N+1).
+  `sections/CuratedGroup.ts`, via the rail resolver; section-level, not an N+1).
   Crude "first 3" default; the Gravity field is still wanted for a curated
   override and consistency with the other entities.
 
@@ -102,7 +102,7 @@ No live, non-deprecated "Collections" rail exists. Marketing-collections rail vs
 category-browse vs hub deep-link — needs product/design. Chip is a placeholder
 `/collections` href until resolved.
 
-## Q3. Chip set for curation area #1
+## Q3. Chip set for section group #1
 
 Is it exactly Curators' Picks (lead) + Recommended Artists + Trending Artists +
 Collections, or does it also absorb `RecommendedArtworks` ("We Think You'll Love")
@@ -112,10 +112,10 @@ discovery-artworks rail is a candidate. Needs product.
 ## Q4. Deprecation overlap
 
 `DiscoverSomethingNew` and `ExploreByCategory` are both version-capped at
-`maximumEigenVersion: 8.77.0` (retiring). Confirm the curation area supersedes
+`maximumEigenVersion: 8.77.0` (retiring). Confirm the section group supersedes
 them rather than duplicating.
 
 ---
 
 _When any of these resolve, fold the decision into the mapping doc + the section
-definition (`sections/CurationArea.ts`) and delete the entry here._
+definition (`sections/CuratedGroup.ts`) and delete the entry here._

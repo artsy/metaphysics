@@ -1,6 +1,6 @@
 import { connectionFromArray } from "graphql-relay"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { HomeViewCurationAreaSection } from "../sectionTypes/CurationArea"
+import { HomeViewGroupSection } from "../sectionTypes/Group"
 import { LatestArticles } from "./LatestArticles"
 import { News } from "./News"
 import ArticlesConnection from "schema/v2/articlesConnection"
@@ -22,22 +22,22 @@ const articleThumbnailURL = (thumbnailImage: any): string | undefined => {
 }
 
 /**
- * "Artsy Editorial" curation area: the existing editorial articles rail shown as
+ * "Artsy Editorial" section group: the existing editorial articles rail shown as
  * the lead, with latest News-layout articles as entry chips below it. A second
- * instance of HomeViewSectionCurationArea — same shape, different content.
+ * instance of HomeViewSectionGroup — same shape, different content.
  *
  * Sub-labels ("Editorial", "Art News") live here so this block's copy can be
  * edited without affecting the standalone LatestArticles / News rails.
  */
-export const EditorialCurationArea: HomeViewCurationAreaSection = {
-  id: "home-view-section-editorial-curation-area",
-  type: HomeViewSectionTypeNames.HomeViewSectionCurationArea,
+export const EditorialGroup: HomeViewGroupSection = {
+  id: "home-view-section-editorial-group",
+  type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   // Gated behind the experiment flag (off in prod, on in staging/review).
   featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "Artsy Editorial",
     description: "Your guide to the art world",
-    type: "CurationArea",
+    type: "SectionGroup",
   },
   requiresAuthentication: false,
   // Cream tint (not a palette token). TODO: palette token once available.
