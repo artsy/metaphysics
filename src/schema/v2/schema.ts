@@ -167,6 +167,9 @@ import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { createArtnetImportMutation } from "./artnet/artnetImportMutation"
 import { ArtnetImport } from "./artnet/artnetImport"
 import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
+import { createArtnetArtworkMutation } from "./artnet/createArtnetArtworkMutation"
+import { updateArtnetArtworkMutation } from "./artnet/updateArtnetArtworkMutation"
+import { finalizeArtnetImportMutation } from "./artnet/finalizeArtnetImportMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -357,6 +360,8 @@ import { updatePartnerArtistDocumentMutation } from "./partner/Mutations/Partner
 import { assignArtistToPartnerMutation } from "./partner/Mutations/PartnerArtist/assignArtistToPartnerMutation"
 import { updatePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistMutation"
 import { VerifyUser } from "./verifyUser"
+import { priceInsightsRootFields } from "./analytics/priceInsights"
+import config from "config"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
 import { CacheableDirective } from "directives/cacheableDirective"
@@ -479,6 +484,12 @@ import { discardNavigationDraftMutation } from "./Navigation/mutations/discardNa
 import { createNavigationItemMutation } from "./Navigation/mutations/createNavigationItemMutation"
 import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
 import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
+
+// Served natively once Vortex is unstitched; until then the stitched Vortex
+// schema provides these root fields. Query only: they were never on Viewer.
+const vortexUnstitchedRootFields = config.USE_UNSTITCHED_VORTEX
+  ? priceInsightsRootFields
+  : {}
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -691,6 +702,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createArtnetArtwork: createArtnetArtworkMutation,
       createArtnetImport: createArtnetImportMutation,
       createArtnetImportArtistAssignment: CreateArtnetImportArtistAssignmentMutation,
       createArtwork: createArtworkMutation,
@@ -830,6 +842,7 @@ export default new GraphQLSchema({
       dismissTask: dismissTaskMutation,
       enableSecondFactor: enableSecondFactorMutation,
       endSale: endSaleMutation,
+      finalizeArtnetImport: finalizeArtnetImportMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
       followProfile: FollowProfile,
@@ -885,6 +898,7 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
+      updateArtnetArtwork: updateArtnetArtworkMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityArticle: updateCityArticleMutation,
@@ -960,6 +974,7 @@ export default new GraphQLSchema({
     name: "Query",
     fields: {
       ...rootFields,
+      ...vortexUnstitchedRootFields,
       viewer: Viewer,
     },
   }),

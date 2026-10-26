@@ -96,6 +96,20 @@ export const FilterArtworksCounts = {
   resolve: (data) => data,
 }
 
+const ArtworkImageSearchInputType = new GraphQLInputObjectType({
+  name: "ArtworkImageSearchInput",
+  fields: {
+    s3Key: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 key of the uploaded query image.",
+    },
+    s3Bucket: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "S3 bucket of the uploaded query image.",
+    },
+  },
+})
+
 export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
     type: GraphQLBoolean,
@@ -297,6 +311,14 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   viewingRoomID: {
     type: GraphQLID,
   },
+  image: {
+    type: ArtworkImageSearchInputType,
+    description:
+      "Search by an uploaded query image: visual similarity blended with merchandising signals. " +
+      "Cannot be combined with `keyword`, `variant`, or `similarToArtworkID`, and only supports the `-decayed_merch` sort. " +
+      "Results are capped at a fixed window (200 by default), so `counts` and `aggregations` " +
+      "describe that window rather than the whole catalog.",
+  },
   variant: {
     type: GraphQLString,
     description:
@@ -320,6 +342,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   signed: {
     type: GraphQLBoolean,
     description: "When true, will only return signed artworks.",
+  },
+  similarToArtworkID: {
+    type: GraphQLString,
+    description:
+      "Artwork slug or ID. Image search using this artwork's stored image embedding: returns visually similar works (excluding this one), combined with the other filters and default ranking. Cannot be combined with `keyword`. An unknown or non-public artwork errors; an artwork without an embedding returns no results.",
   },
   size: {
     type: GraphQLInt,
@@ -496,9 +523,17 @@ const filterArtworksConnectionType = connectionDefinitions({
       description: "The ID of the object.",
       resolve: ({ gravityOptions }) => {
         const { offset, ...filterOptions } = gravityOptions
+        // Sort keys for a stable ID. Don't pass the keys as a JSON.stringify
+        // replacer: it filters keys at every depth and would serialize nested
+        // options (e.g. `image`) as `{}`.
+        const sortedFilterOptions = Object.fromEntries(
+          Object.keys(filterOptions)
+            .sort()
+            .map((key) => [key, filterOptions[key]])
+        )
         return toGlobalId(
           "filterArtworksConnection",
-          JSON.stringify(filterOptions, Object.keys(filterOptions).sort())
+          JSON.stringify(sortedFilterOptions)
         )
       },
     },
@@ -532,6 +567,7 @@ const convertFilterArgs = ({
   forSale,
   geneID,
   geneIDs,
+  image,
   importSources,
   includeAllJSON,
   includeArtworksByFollowedArtists,
@@ -554,6 +590,7 @@ const convertFilterArgs = ({
   priceRange,
   saleID,
   showID,
+  similarToArtworkID,
   sizes,
   tagID,
   variant,
@@ -584,6 +621,12 @@ const convertFilterArgs = ({
     for_sale: forSale,
     gene_id: geneID,
     gene_ids: geneIDs,
+    // Snake-cased keys arrive when refetching via `node(id:)`, which replays
+    // the Gravity options serialized into the connection ID.
+    image: image && {
+      s3_key: image.s3Key ?? image.s3_key,
+      s3_bucket: image.s3Bucket ?? image.s3_bucket,
+    },
     ids: artworkIDs,
     import_sources: importSources,
     include_all_json: includeAllJSON,
@@ -607,6 +650,7 @@ const convertFilterArgs = ({
     partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
+    similar_to_artwork_id: similarToArtworkID,
     sizes: sizes,
     tag_id: tagID,
     variant: variant,
@@ -675,6 +719,7 @@ const filterArtworksConnectionTypeFactory = (
       hybrid_neural_k,
       hybrid_weights,
       hybrid_pagination_depth,
+      image,
       aggregations: aggregationOptions = [],
     } = options
 
@@ -733,6 +778,28 @@ const filterArtworksConnectionTypeFactory = (
       disable_not_for_sale_sorting: options.disableNotForSaleSorting,
     }
 
+    // Checked after `mapRootToFilterParams`, which can add a keyword (e.g. an alert's).
+    if (gravityOptions.similar_to_artwork_id && gravityOptions.keyword) {
+      throw new Error("`similarToArtworkID` cannot be combined with `keyword`.")
+    }
+
+    if (image) {
+      if (gravityOptions.similar_to_artwork_id) {
+        throw new Error("`image` cannot be combined with `similarToArtworkID`.")
+      }
+      if (gravityOptions.keyword) {
+        throw new Error("`image` cannot be combined with `keyword`.")
+      }
+      if (gravityOptions.variant) {
+        throw new Error("`image` cannot be combined with `variant`.")
+      }
+      if (gravityOptions.sort && gravityOptions.sort !== "-decayed_merch") {
+        throw new Error(
+          "`image` search only supports the `-decayed_merch` sort."
+        )
+      }
+    }
+
     // We need to set `include_unpublished` when filtering for only unpublished works.
     if (gravityOptions.published === false) {
       gravityOptions.include_unpublished = true
@@ -788,6 +855,13 @@ const filterArtworksConnectionTypeFactory = (
       } else {
         loader = filterArtworksUnauthenticatedLoader
       }
+    }
+
+    // Gravity skips its own cache for image searches, and caching by a
+    // one-off s3 key would only pollute the cache. Use the uncached loader
+    // when we'd otherwise have picked the cached unauthenticated one.
+    if (image && loader === filterArtworksUnauthenticatedLoader) {
+      loader = filterArtworksUncachedLoader
     }
 
     // If only queried for id, can just return w/o fetching.

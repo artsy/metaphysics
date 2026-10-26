@@ -11,6 +11,10 @@ describe("ArtnetImport type", () => {
         skippedCount
         deletedCount
         errorCount
+        linkedCount
+        reviewCount
+        openReviewCount
+        awaitingArtistCount
         unmatchedArtistNames
       }
     }
@@ -27,6 +31,10 @@ describe("ArtnetImport type", () => {
           skipped_count: 1,
           deleted_count: 0,
           error_count: 1,
+          linked_count: 5,
+          review_count: 2,
+          open_review_count: 1,
+          awaiting_artist_count: 3,
         }),
       artnetImportUnmatchedArtistNamesLoader: () =>
         Promise.resolve({ unmatched_artist_names: ["Foo Bar"] }),
@@ -42,6 +50,10 @@ describe("ArtnetImport type", () => {
         skippedCount: 1,
         deletedCount: 0,
         errorCount: 1,
+        linkedCount: 5,
+        reviewCount: 2,
+        openReviewCount: 1,
+        awaitingArtistCount: 3,
         unmatchedArtistNames: ["Foo Bar"],
       },
     })

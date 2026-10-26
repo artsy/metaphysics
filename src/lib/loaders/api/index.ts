@@ -34,6 +34,9 @@ export interface APIOptions {
   /** This only applies to caching loaders */
   requestThrottleMs?: number
 
+  /** Never read or write the shared cache, e.g. for per-user data fetched with an app token. */
+  skipCache?: boolean
+
   // Is this loader being used during a request that includes a mutation?
   // If so, loaders can skip the cache (even if they typically would cache).
   // This is to ensure any fetched data in the mutation response is fresh.
@@ -234,7 +237,8 @@ export default (opts) => ({
   // For this reason, we can't use the standard apiLoaderWithAuthenticationFactory as that is access-token based.
   // Additionally, we do want to skip the cache for these loaders, and so `uncachedLoaderFactory` would be more
   // appropriate, but that is too brittle to use w/o more refactoring.
-  // We can take advantage of the fact that GraphQL requests are POSTs and so skip the cache anyway.
+  // We can take advantage of the fact that GraphQL requests are POSTs and so skip the cache anyway;
+  // GET loaders pass `skipCache: true`.
   vortexLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
     vortex,
     "vortex",

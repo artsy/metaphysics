@@ -258,7 +258,27 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtnetArtworkLoader: gravityLoader(
+      "artnet_artwork",
+      {},
+      { method: "POST" }
+    ),
+    updateArtnetArtworkLoader: gravityLoader(
+      (id) => `artnet_artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
+    updateArtnetImportLoader: gravityLoader(
+      (id) => `artnet_import/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    artnetImportReviewArtworksLoader: gravityLoader(
+      (id) => `artnet_import/${id}/review_artworks`,
+      {},
+      { headers: true }
+    ),
     artnetImportUnmatchedArtistNamesLoader: gravityLoader(
       (id) => `artnet_import/${id}/unmatched_artist_names`
     ),
@@ -1315,6 +1335,7 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
+    partnerOfferEligibilityLoader: gravityLoader("partner_offers/eligibility"),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
       {},

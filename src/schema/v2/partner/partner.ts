@@ -16,6 +16,9 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
+import config from "config"
+import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
+import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
@@ -187,21 +190,9 @@ const ArtistAlertsSort = {
   }),
 }
 
+// The same instance as Partner.analytics' period arguments use.
 export const AnalyticsQueryPeriodEnum = {
-  type: new GraphQLEnumType({
-    name: "AnalyticsQueryPeriodEnum",
-    values: {
-      FOUR_WEEKS: {
-        value: "four_weeks",
-      },
-      SIXTEEN_WEEKS: {
-        value: "sixteen_weeks",
-      },
-      ONE_YEAR: {
-        value: "one_year",
-      },
-    },
-  }),
+  type: AnalyticsQueryPeriodEnumType,
 }
 
 // Confirmed-buyer inquirers are only counted within the most recent batch
@@ -309,6 +300,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      // Stitched from Vortex until it's unstitched.
+      ...(config.USE_UNSTITCHED_VORTEX
+        ? { analytics: PartnerAnalyticsField }
+        : {}),
       artistsWithAlertCountsConnection: {
         type: ArtistsWithAlertCountsConnectionType,
         args: pageable({
@@ -860,10 +855,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkImportsConnectionType,
         args: {
           ...pageable(),
-          source: {
-            type: GraphQLString,
+          sources: {
+            type: new GraphQLList(GraphQLString),
             description:
-              "Filter by import source: 'bulk_import' or 'multi_add'. Returns all sources if omitted.",
+              "Filter by one or more import sources: 'bulk_import', 'multi_add', 'partner_conversion'. Defaults to 'bulk_import' and 'partner_conversion' if omitted.",
           },
           includeInactive: {
             type: GraphQLBoolean,
@@ -882,7 +877,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             partner_id: id,
-            ...(args.source && { source: args.source }),
+            ...(args.sources?.length && { sources: args.sources }),
             ...(args.includeInactive && { include_inactive: true }),
           })
 
@@ -1134,6 +1129,30 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           return shows[0]
+        },
+      },
+      show: {
+        type: ShowType,
+        description:
+          "A Show belonging to this partner, scoped so it can only resolve shows owned by this partner. Requires authentication.",
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The ID of the Show",
+          },
+        },
+        resolve: async (
+          { id: partner_id },
+          { id },
+          { authenticatedLoaders }
+        ) => {
+          const partnerShowLoader = authenticatedLoaders?.partnerShowLoader
+
+          if (!partnerShowLoader) return null
+
+          return nullIfForbiddenOrNotFound(() => {
+            return partnerShowLoader({ partner_id, show_id: id })
+          })
         },
       },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
@@ -2044,7 +2063,8 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { partnerLoader }, info) => {
-    const fieldsNotRequireLoader = ["internalID"]
+    // Analytics only needs the partner's id.
+    const fieldsNotRequireLoader = ["internalID", "analytics"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity

@@ -157,13 +157,66 @@ describe("AIAgentTurn", () => {
     try {
       callSubscribe(input, context)
       expect(mockRunTurn).toHaveBeenCalledWith(
-        input,
+        { ...input, includeSuggestedReplies: true },
         expect.anything(),
         context
       )
     } finally {
       config.NODE_ENV = originalNodeEnv
     }
+  })
+
+  describe("suggested replies", () => {
+    const suggestedRepliesFlag = (enabled: boolean) =>
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) =>
+        flag === "onyx_ai_agent-suggested-replies" ? enabled : true
+      )
+
+    const includeSuggestedRepliesPassedToRunTurn = () =>
+      mockRunTurn.mock.calls[0][0].includeSuggestedReplies
+
+    it("follows the feature flag for this user", () => {
+      suggestedRepliesFlag(true)
+      callSubscribe(
+        { conversationID: "c1", message: "hi" },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
+      expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
+        "onyx_ai_agent-suggested-replies",
+        {
+          userId: "user-42",
+        }
+      )
+    })
+
+    it("are off when the feature flag is disabled", () => {
+      suggestedRepliesFlag(false)
+      callSubscribe(
+        { conversationID: "c1", message: "hi" },
+        { userID: "user-42", accessToken: "token" }
+      )
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(false)
+    })
+
+    it("are on in development regardless of the flag", () => {
+      suggestedRepliesFlag(false)
+      const originalNodeEnv = config.NODE_ENV
+      config.NODE_ENV = "development"
+
+      try {
+        callSubscribe(
+          { conversationID: "c1", message: "hi" },
+          { userID: "user-42", accessToken: "token" }
+        )
+      } finally {
+        config.NODE_ENV = originalNodeEnv
+      }
+
+      expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
+    })
   })
 
   it("rejects a history longer than the message cap", () => {
@@ -210,6 +263,42 @@ describe("AIAgentTurn", () => {
     ).toThrow(/too large/)
   })
 
+  it("counts ids replayed as displayed sections against the byte cap", () => {
+    // Same reasoning as the legacy ids above: the new format reaches the model
+    // the same way, so it must be weighed the same way.
+    const history = [
+      {
+        role: "assistant",
+        content: "Here you go.",
+        displayedSections: [
+          {
+            entityType: "ARTWORK",
+            internalIDs: Array.from({ length: 5000 }, () => "x".repeat(24)),
+          },
+        ],
+      },
+    ]
+
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c1", message: "hi", history },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/too large/)
+  })
+
+  it("counts declared section types against the byte cap", () => {
+    // The enum bounds which values are legal, not how many arrive.
+    const supportedSections = Array.from({ length: 20_000 }, () => "ARTWORKS")
+
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c1", message: "hi", supportedSections },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/too large/)
+  })
+
   it("calls runTurn with the input and info.schema when all guards pass", () => {
     const schema = ({ marker: "the-schema" } as unknown) as GraphQLSchema
     const context = { userID: "user-42", accessToken: "token" }
@@ -218,7 +307,7 @@ describe("AIAgentTurn", () => {
     callSubscribe(input, context, schema)
 
     expect(mockRunTurn).toHaveBeenCalledWith(
-      { ...input, includeDebugToolCalls: false },
+      { ...input, includeDebugToolCalls: false, includeSuggestedReplies: true },
       schema,
       context
     )

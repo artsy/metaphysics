@@ -36,14 +36,16 @@ const detectProvider = ({ hostname }: URL): Provider | null => {
   }
 }
 
+// Handles watch?v=, youtu.be/, /shorts/ and /embed/ urls, including share
+// links that carry extra params such as ?si=
 const detectId = ({ pathname, search }: URL, provider: Provider): string => {
+  const lastSegment = pathname.split("/").filter(Boolean).pop() as string
+
   switch (provider) {
     case "youtube":
-      return search === ""
-        ? (pathname.split("/").pop() as string)
-        : parse(search.slice(1)).v
+      return (parse(search.slice(1)).v as string) || lastSegment
     case "vimeo":
-      return pathname.split("/").pop() as string
+      return lastSegment
   }
 }
 

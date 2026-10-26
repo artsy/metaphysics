@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -15,18 +16,32 @@ import {
 
 interface Input {
   id: string
+  partnerId?: string | null
   instagramHandle?: string | null
+  instagramHandleAcknowledged?: boolean | null
 }
 
 interface GravityInput {
+  partner_id?: string | null
   instagram_handle?: string | null
+  instagram_handle_acknowledged?: boolean | null
 }
 
 const inputFields = {
   id: { type: new GraphQLNonNull(GraphQLString) },
+  partnerId: {
+    type: GraphQLString,
+    description:
+      "Partner the user is acting on behalf of. Required, as a verified representative of the artist, when setting a handle.",
+  },
   instagramHandle: {
     type: GraphQLString,
     description: "Artist's Instagram handle.",
+  },
+  instagramHandleAcknowledged: {
+    type: GraphQLBoolean,
+    description:
+      "Confirms the user has rights to display content from the Instagram account. Required when setting a handle.",
   },
 }
 
@@ -82,7 +97,11 @@ export const updateArtistSocialsMutation = mutationWithClientMutationId<
     const updateArtistSocialsLoaderPayload = Object.keys(args)
       .filter((key) => key !== "id")
       .reduce(
-        (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] ?? "" }),
+        (acc, key) => ({
+          ...acc,
+          [snakeCase(key)]:
+            key === "instagramHandle" ? args[key] ?? "" : args[key],
+        }),
         {} as GravityInput
       )
 

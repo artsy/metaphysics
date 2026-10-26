@@ -5,6 +5,10 @@ import { GraphQLSchema } from "graphql/type/schema"
 import { OperationTypeNode } from "graphql"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
+import {
+  categoryMap,
+  filtersDescription,
+} from "schema/v2/analytics/pricingContext"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -333,65 +337,3 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
   },
 })
-
-export const filtersDescription = ({ dimension, category }, artistNames) =>
-  [
-    "Price ranges of",
-    dimensionStrings[dimension],
-    categoryPluralization[category],
-    category ? "by" : "works by",
-    artistNames,
-  ]
-    .filter(Boolean)
-    .join(" ")
-
-const categoryMap = {
-  Architecture: "ARCHITECTURE",
-  "Books and Portfolios": "BOOKS_AND_PORTFOLIOS",
-  "Design/Decorative Art": "DESIGN_DECORATIVE_ART",
-  "Drawing, Collage or other Work on Paper":
-    "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
-  "Fashion Design and Wearable Art": "FASHION",
-  Installation: "INSTALLATION",
-  Jewelry: "JEWELRY",
-  "Mixed Media": "MIXED_MEDIA",
-  Other: "OTHER",
-  Painting: "PAINTING",
-  "Performance Art": "PERFORMANCE",
-  Photography: "PHOTOGRAPHY",
-  Posters: "POSTERS",
-  Print: "PRINT",
-  Sculpture: "SCULPTURE",
-  Sound: "SOUND",
-  "Textile Arts": "TEXTILE",
-  "Video/Film/Animation": "VIDEO_FILM_ANIMATION",
-  "Work on Paper": "WORK_ON_PAPER",
-}
-
-const categoryPluralization = {
-  ARCHITECTURE: "architecture works",
-  BOOKS_AND_PORTFOLIOS: "books and portfolios",
-  DESIGN_DECORATIVE_ART: "design objects",
-  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER: "works on paper",
-  FASHION: "wearable art",
-  INSTALLATION: "installations",
-  JEWELRY: "jewelry",
-  MIXED_MEDIA: "mixed media",
-  OTHER: "works",
-  PAINTING: "paintings",
-  PERFORMANCE: "performance art",
-  PHOTOGRAPHY: "photographs",
-  POSTERS: "posters",
-  PRINT: "prints",
-  SCULPTURE: "sculptures",
-  SOUND: "sounds",
-  TEXTILE: "textile art",
-  VIDEO_FILM_ANIMATION: "video",
-  WORK_ON_PAPER: "works on paper",
-}
-
-const dimensionStrings = {
-  LARGE: "large",
-  MEDIUM: "medium-sized",
-  SMALL: "small",
-}

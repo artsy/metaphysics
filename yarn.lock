@@ -5,51 +5,51 @@ __metadata:
   version: 10
   cacheKey: 10c0
 
-"@ai-sdk/anthropic@npm:^3.0.111":
-  version: 3.0.111
-  resolution: "@ai-sdk/anthropic@npm:3.0.111"
+"@ai-sdk/anthropic@npm:^3.0.134":
+  version: 3.0.134
+  resolution: "@ai-sdk/anthropic@npm:3.0.134"
   dependencies:
-    "@ai-sdk/provider": "npm:3.0.15"
-    "@ai-sdk/provider-utils": "npm:4.0.46"
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/a4427e52e4c049a85ef489608471634c6af3972fc22ac9766658cf2b0ca9387902ed147c6106582bcedfe3b1bcbdcd307b979292d8459d1d210afaad153c081a
+  checksum: 10c0/529e19edb5964dd2c350c96b27079d2c4e4f20856b83b9de5c22b1bb12a7787169bed457063743b364d42b9ba0b2811b835f105d4709dbc6467037ceb3813273
   languageName: node
   linkType: hard
 
-"@ai-sdk/gateway@npm:3.0.176":
-  version: 3.0.176
-  resolution: "@ai-sdk/gateway@npm:3.0.176"
+"@ai-sdk/gateway@npm:3.0.218":
+  version: 3.0.218
+  resolution: "@ai-sdk/gateway@npm:3.0.218"
   dependencies:
-    "@ai-sdk/provider": "npm:3.0.15"
-    "@ai-sdk/provider-utils": "npm:4.0.46"
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
     "@vercel/oidc": "npm:3.2.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/c0990f8046f38e6733b0c5952ff3ff2aaaa664e3ebc580d53696ff86e2769fc69e68a052ad20d538fe0d0c89b5d32f15fa536eea7cfff1b481a785acb6314633
+  checksum: 10c0/0cc77f8c2c37daaed566aba92ebd8f5fd7c66af36cac3c7ebc53ef164fd1a8cb03e1f36f882428919645c694c4a7be03199fde9c8ec0f4a46541f8ffca238671
   languageName: node
   linkType: hard
 
-"@ai-sdk/provider-utils@npm:4.0.46":
-  version: 4.0.46
-  resolution: "@ai-sdk/provider-utils@npm:4.0.46"
+"@ai-sdk/provider-utils@npm:4.0.61":
+  version: 4.0.61
+  resolution: "@ai-sdk/provider-utils@npm:4.0.61"
   dependencies:
-    "@ai-sdk/provider": "npm:3.0.15"
+    "@ai-sdk/provider": "npm:3.0.19"
     "@standard-schema/spec": "npm:^1.1.0"
     eventsource-parser: "npm:^3.0.8"
     undici: "npm:^6.28.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/9155662185c9379d80e07fa959258ffb65249530da4371f2b187d07a8baa151905ef7e2c0661b10bc8d23ea7e646c4508ecca813a0d53e65c9f0b18ae6b93ff1
+  checksum: 10c0/dcef202c0e2417b0cf5cbd1d36a7fd33528786f4d5b895b0e7dd4b74426a59e8f776779e5d808d397e041971c90150092738590f575cc3fd0e5c53a3e4db6e6e
   languageName: node
   linkType: hard
 
-"@ai-sdk/provider@npm:3.0.15":
-  version: 3.0.15
-  resolution: "@ai-sdk/provider@npm:3.0.15"
+"@ai-sdk/provider@npm:3.0.19":
+  version: 3.0.19
+  resolution: "@ai-sdk/provider@npm:3.0.19"
   dependencies:
     json-schema: "npm:^0.4.0"
-  checksum: 10c0/0a17eca818c6d821e9488188cf02789502e426eff125d9c9572c2308baead3ed2e93ad53856887b207f287e6907441da81860e31350b12a11c91a6dfd1c6f344
+  checksum: 10c0/f77fcae35b7e388704a2594d59eb2d89bb2311c1b8c794937bcb2dfcd566fc83a870bbe0e03d96349539e465e69cce29ce9b3cdf32b708304a09830c0a459ea5
   languageName: node
   linkType: hard
 
@@ -5040,17 +5040,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ai@npm:6.0.258":
-  version: 6.0.258
-  resolution: "ai@npm:6.0.258"
+"ai@npm:6.0.311":
+  version: 6.0.311
+  resolution: "ai@npm:6.0.311"
   dependencies:
-    "@ai-sdk/gateway": "npm:3.0.176"
-    "@ai-sdk/provider": "npm:3.0.15"
-    "@ai-sdk/provider-utils": "npm:4.0.46"
+    "@ai-sdk/gateway": "npm:3.0.218"
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
     "@opentelemetry/api": "npm:^1.9.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/426eda1fd6109678327c5dd49f865d80dec3d05443e50767d328e77f04bfa752f47fcb3a450c3ab2a5d056f517b8850dae9ced58292ed745f3dafede7e78ddf8
+  checksum: 10c0/aff6ed9b74e3946dda450fd41aa27d5af8485d2945232a3efaf02c7c7b39c576584f149cea336bccfa3c93e4a7ac01aa57ec7cfaa7c20f06d8d3ddc6762a2b63
   languageName: node
   linkType: hard
 
@@ -11029,8 +11029,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "metaphysics@workspace:."
   dependencies:
-    "@ai-sdk/anthropic": "npm:^3.0.111"
-    "@ai-sdk/provider": "npm:3.0.15"
+    "@ai-sdk/anthropic": "npm:^3.0.134"
+    "@ai-sdk/provider": "npm:3.0.19"
     "@artsy/cohesion": "npm:^4.310.0"
     "@artsy/express-reloadable": "npm:1.8.1"
     "@artsy/img": "npm:1.1.3"
@@ -11078,7 +11078,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:4.8.1"
     "@typescript-eslint/parser": "npm:4.8.1"
     accounting: "npm:0.4.1"
-    ai: "npm:6.0.258"
+    ai: "npm:6.0.311"
     babel-jest: "npm:^29.7.0"
     babel-plugin-module-resolver: "npm:4.1.0"
     basic-auth: "npm:1.1.0"

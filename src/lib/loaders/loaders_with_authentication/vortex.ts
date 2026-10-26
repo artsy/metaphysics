@@ -2,6 +2,11 @@ import config from "config"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
 import factories from "../api"
+import { createMarketPriceInsightsBatchLoader } from "../vortexMarketPriceInsightsBatchLoader"
+import {
+  createPartnerStatsLoader,
+  PartnerStatsSection,
+} from "../vortexPartnerStatsLoader"
 
 const { VORTEX_APP_ID } = config
 
@@ -45,7 +50,7 @@ export default (accessToken, opts) => {
       }
     )
 
-  const marketPriceInsightsBatchLoader = async (
+  const stitchedMarketPriceInsightsBatchLoader = async (
     params: MarketPriceInsightsBatchLoaderParams
   ) => {
     const artistIDMediumTuples = params
@@ -91,6 +96,12 @@ export default (accessToken, opts) => {
     return priceInsightNodes
   }
 
+  const marketPriceInsightsBatchLoader = config.USE_UNSTITCHED_VORTEX
+    ? createMarketPriceInsightsBatchLoader(
+        vortexLoader("market_price_insights_batch", {}, { method: "POST" })
+      )
+    : stitchedMarketPriceInsightsBatchLoader
+
   return {
     vortexTokenLoader,
     vortexGraphqlLoader,
@@ -108,18 +119,41 @@ export default (accessToken, opts) => {
     similarGalleriesInteractionsLoader: vortexLoader(
       "similar_galleries_interactions"
     ),
+    vortexArtistRecommendationsLoader: vortexLoader("artist_recommendations"),
+    vortexArtworkRecommendationsLoader: vortexLoader("artwork_recommendations"),
+    vortexNewForYouRecommendationsLoader: vortexLoader(
+      "new_for_you_recommendations"
+    ),
+    vortexUserArtistAffinitiesLoader: vortexLoader(
+      "user_artist_affinities",
+      {},
+      { method: "POST" }
+    ),
+    // Per partner, and Vortex authorizes them with the user's token, so the
+    // authenticated factory (no memcache) is the right one.
+    vortexPartnerStatsLoader: createPartnerStatsLoader(
+      vortexLoader<any, PartnerStatsSection>(
+        (section) => `partner_stats/${section}`
+      )
+    ),
+    vortexUserStatsLoader: vortexLoader("user_stats"),
   }
 }
 
 const MAX_MARKET_PRICE_INSIGHTS = 50
 
+// Vortex's BigInt fields arrive as strings.
 export type MarketPriceInsight = {
+  annualLotsSold: number | null
+  annualValueSoldCents: string | null
   artistId: string
+  demandRank: number | null
+  lastAuctionResultDate: string | null
+  medianSalePriceLast36Months: string | null
   medium: string
-  demandRank: number
-  lastAuctionResultDate: string
-  annualLotsSold: number
-  annualValueSold: number
+  sellThroughRate: number | null
+  medianSaleOverEstimatePercentage: number | null
+  liquidityRank: number | null
 }
 
 export type MarketPriceInsightsBatchLoaderParams = {

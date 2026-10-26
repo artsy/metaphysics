@@ -6,6 +6,7 @@ import { runTurn } from "./runTurn"
 import {
   AIAgentEventType,
   AIAgentHistoryEntry,
+  AIAgentSectionType,
   AIAgentTurnInputType,
 } from "./types"
 
@@ -13,9 +14,30 @@ import {
 const MAX_HISTORY_MESSAGES = 40
 const MAX_HISTORY_BYTES = 100_000
 
+// Every client-supplied field reaches the model one way or another, so a
+// history that is small in prose but enormous in replayed ids can't slip past.
+function historyEntryBytes(entry: AIAgentHistoryEntry): number {
+  const sections = entry.displayedSections ?? []
+  const ids = [
+    ...(entry.artworkIDs ?? []),
+    ...sections.flatMap((section) => section.internalIDs ?? []),
+  ]
+
+  return (
+    Buffer.byteLength(entry.content ?? "", "utf8") +
+    sections.reduce(
+      (bytes, section) =>
+        bytes + Buffer.byteLength(section.entityType ?? "", "utf8"),
+      0
+    ) +
+    ids.reduce((bytes, id) => bytes + Buffer.byteLength(id ?? "", "utf8"), 0)
+  )
+}
+
 function assertInputWithinLimits(input: {
   message: string
   history?: Array<AIAgentHistoryEntry> | null
+  supportedSections?: Array<AIAgentSectionType> | null
 }) {
   const history = input.history ?? []
   if (history.length > MAX_HISTORY_MESSAGES) {
@@ -26,16 +48,12 @@ function assertInputWithinLimits(input: {
 
   const totalBytes =
     Buffer.byteLength(input.message, "utf8") +
-    history.reduce(
-      (sum, entry) =>
-        sum +
-        Buffer.byteLength(entry.content ?? "", "utf8") +
-        (entry.artworkIDs ?? []).reduce(
-          (bytes, id) => bytes + Buffer.byteLength(id ?? "", "utf8"),
-          0
-        ),
+    // The enum bounds the values, not how many arrive.
+    (input.supportedSections ?? []).reduce(
+      (bytes, sectionType) => bytes + Buffer.byteLength(sectionType, "utf8"),
       0
-    )
+    ) +
+    history.reduce((sum, entry) => sum + historyEntryBytes(entry), 0)
   if (totalBytes > MAX_HISTORY_BYTES) {
     throw new Error(
       `Conversation input is too large (max ${MAX_HISTORY_BYTES} bytes)`
@@ -60,7 +78,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
     // Read fresh per call (not hoisted) so tests can toggle it.
     const isDevelopment = config.NODE_ENV === "development"
 
-    // Dev convenience, scoped to just this one flag — not a general dev
+    // Dev convenience, scoped to the agent's flags — not a general dev
     // override for feature flags, which real Unleash still gates everywhere else.
     if (
       !isDevelopment &&
@@ -73,17 +91,24 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       conversationID: string
       message: string
       history?: Array<AIAgentHistoryEntry> | null
+      supportedSections?: Array<AIAgentSectionType> | null
       includeDebugToolCalls?: boolean | null
     }
 
     assertInputWithinLimits(input)
 
     const debugAvailable = isDevelopment || config.ENABLE_AI_AGENT_DEBUG
+    const includeSuggestedReplies =
+      isDevelopment ||
+      isFeatureFlagEnabled("onyx_ai_agent-suggested-replies", {
+        userId: context.userID,
+      })
 
     return runTurn(
       {
         ...input,
         includeDebugToolCalls: debugAvailable && !!input.includeDebugToolCalls,
+        includeSuggestedReplies,
       },
       info.schema,
       context

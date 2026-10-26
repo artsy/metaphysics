@@ -137,6 +137,65 @@ describe("ArtworkImport", () => {
     })
   })
 
+  it("forwards the sources argument to Gravity", async () => {
+    const artworkImportsLoader = jest.fn().mockResolvedValue({
+      body: [],
+      headers: { "x-total-count": "0" },
+    })
+    const partnerLoader = jest.fn().mockResolvedValue({
+      id: "partner-1",
+    })
+
+    const query = gql`
+      query {
+        partner(id: "partner-1") {
+          artworkImportsConnection(
+            first: 10
+            sources: ["bulk_import", "partner_conversion"]
+          ) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    const context = { artworkImportsLoader, partnerLoader }
+    await runAuthenticatedQuery(query, context)
+
+    expect(artworkImportsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sources: ["bulk_import", "partner_conversion"],
+      })
+    )
+  })
+
+  it("does not forward an empty sources array to Gravity", async () => {
+    const artworkImportsLoader = jest.fn().mockResolvedValue({
+      body: [],
+      headers: { "x-total-count": "0" },
+    })
+    const partnerLoader = jest.fn().mockResolvedValue({
+      id: "partner-1",
+    })
+
+    const query = gql`
+      query {
+        partner(id: "partner-1") {
+          artworkImportsConnection(first: 10, sources: []) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    const context = { artworkImportsLoader, partnerLoader }
+    await runAuthenticatedQuery(query, context)
+
+    expect(artworkImportsLoader).toHaveBeenCalledWith(
+      expect.not.objectContaining({ sources: expect.anything() })
+    )
+  })
+
   it("fetches date fields from artwork import rows", async () => {
     const artworkImportLoader = jest.fn().mockReturnValue({
       id: "artwork-import-1",
