@@ -63,21 +63,6 @@ describe("composeForArm", () => {
     )
   })
 
-  it("reduces + preserves current order for reduced_current", () => {
-    const out = composeForArm("reduced_current", sections)
-    expect(out.map((s) => s.id)).toEqual([
-      QuickLinks.id,
-      Tasks.id,
-      NewWorksForYou.id,
-      RecommendedArtworks.id,
-      CuratorsPicksEmerging.id,
-      AuctionLotsForYou.id,
-      LatestArticles.id,
-      ShowsForYou.id,
-      FeaturedFairs.id,
-    ])
-  })
-
   it("reorders for hierarchy_breadth", () => {
     const out = composeForArm("hierarchy_breadth", sections)
     expect(out.map((s) => s.id)).toEqual([
@@ -99,19 +84,13 @@ describe("composeForArm", () => {
     expect(out).not.toContain(FeaturedFairs.id)
   })
 
-  it("composes merchandising with the same order as reduced_current", () => {
-    expect(composeForArm("merchandising", sections).map((s) => s.id)).toEqual(
-      composeForArm("reduced_current", sections).map((s) => s.id)
-    )
-  })
-
   it("drops ids present in input but absent from the arm recipe", () => {
-    const out = composeForArm("reduced_current", sections)
+    const out = composeForArm("hierarchy_breadth", sections)
     expect(out.find((s) => s.id === TrendingArtists.id)).toBeUndefined()
   })
 
   it("skips arm ids that are not in the (display-filtered) input", () => {
-    const out = composeForArm("reduced_current", [
+    const out = composeForArm("hierarchy_breadth", [
       NewWorksForYou,
     ] as HomeViewSection[])
     expect(out.map((s) => s.id)).toEqual([NewWorksForYou.id])

@@ -6,11 +6,6 @@ import { QuickLinks } from "../../sections/QuickLinks"
 import { Tasks } from "../../sections/Tasks"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
-import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
-import { AuctionLotsForYou } from "../../sections/AuctionLotsForYou"
-import { LatestArticles } from "../../sections/LatestArticles"
-import { ShowsForYou } from "../../sections/ShowsForYou"
-import { FeaturedFairs } from "../../sections/FeaturedFairs"
 import { CuratedGroup } from "../../sections/CuratedGroup"
 import { EditorialGroup } from "../../sections/EditorialGroup"
 import { WhatsHappeningGroup } from "../../sections/WhatsHappeningGroup"
@@ -19,12 +14,7 @@ import { WhatsHappeningGroup } from "../../sections/WhatsHappeningGroup"
  * The home-feed-simplification arms. Single source of truth for the
  * `variant.name` strings — these must match the Unleash flag config exactly.
  */
-export const ARMS = [
-  "control",
-  "reduced_current",
-  "hierarchy_breadth",
-  "merchandising",
-] as const
+export const ARMS = ["control", "hierarchy_breadth"] as const
 
 export type Arm = typeof ARMS[number]
 
@@ -36,26 +26,12 @@ export const isArm = (name: string): name is Arm =>
  * (drop ids not listed) + reorder (follow this order). Pass in the already
  * display-filtered sections; ids absent from `sections` are skipped safely.
  *
- * TODO: these are first-pass placeholders built from EXISTING sections.
- * Replace with the agreed reduced-content baseline once design converges.
- * TODO: where a consolidated rail (e.g. Discover tabs, Editorial tabs) is
- * intended, a single new section id will slot in here later.
+ * v1 is a 2-arm A/B: control vs the shipping treatment (`hierarchy_breadth`).
+ * Additional arms for the planned multi-arm follow-up slot in alongside it.
  */
 const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
-  // Variant 1: reduced content, current hierarchy (same relative order as prod)
-  reduced_current: [
-    QuickLinks.id,
-    Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
-    NewWorksForYou.id,
-    RecommendedArtworks.id,
-    CuratorsPicksEmerging.id,
-    AuctionLotsForYou.id,
-    LatestArticles.id,
-    ShowsForYou.id,
-    FeaturedFairs.id,
-  ],
-
-  // Variant 2: intentional hierarchy + breadth of content types (reorder)
+  // The shipping treatment: intentional hierarchy + breadth of content types.
+  // Consolidates standalone rails into section groups and reorders.
   hierarchy_breadth: [
     QuickLinks.id,
     Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
@@ -71,25 +47,17 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
     CuratedGroup.id,
     RecommendedArtworks.id,
   ],
-
-  // Variant 3: same order as Variant 1; presentation differs via component overrides
-  merchandising: [], // mirrors reduced_current, assigned below
 }
-ARM_ORDER.merchandising = ARM_ORDER.reduced_current
 
 /**
- * Per-arm `component.type` overrides, keyed by section id. Only the
- * merchandising arm re-skins sections today; other arms reorder/reduce only.
- *
- * TODO: fill in the real presentation overrides once design converges, e.g.
- *   [NewWorksForYou.id]: "ArtworksRail",
+ * Per-arm `component.type` overrides, keyed by section id. No arm re-skins
+ * sections today; the hook is retained for future arms (e.g. a merchandising
+ * treatment that varies presentation without changing the section set).
  */
 const ARM_COMPONENT_OVERRIDES: Partial<Record<
   Exclude<Arm, "control">,
   Record<string, string>
->> = {
-  merchandising: {},
-}
+>> = {}
 
 /**
  * Return a section with its `component.type` overridden. Clones rather than

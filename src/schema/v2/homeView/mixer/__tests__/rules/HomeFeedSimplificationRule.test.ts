@@ -55,21 +55,11 @@ describe("HomeFeedSimplificationRule", () => {
   })
 
   it("keys the variant lookup on the user id", async () => {
-    mockGetVariant.mockReturnValue({ enabled: true, name: "reduced_current" })
+    mockGetVariant.mockReturnValue({ enabled: true, name: "hierarchy_breadth" })
     await rule.apply(sections, context)
     expect(mockGetVariant).toHaveBeenCalledWith(expect.any(String), {
       userId: "123",
     })
-  })
-
-  it("composes the reduced_current arm", async () => {
-    mockGetVariant.mockReturnValue({ enabled: true, name: "reduced_current" })
-    const out = await rule.apply(sections, context)
-    expect(out.map((s) => s.id)).toEqual([
-      QuickLinks.id,
-      NewWorksForYou.id,
-      RecommendedArtworks.id,
-    ])
   })
 
   it("composes the hierarchy_breadth arm with reordering", async () => {
@@ -88,7 +78,7 @@ describe("HomeFeedSimplificationRule", () => {
       mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
       const overrideContext = {
         userID: "123",
-        xHomeFeedArm: "reduced_current",
+        xHomeFeedArm: "hierarchy_breadth",
       } as ResolverContext
 
       const out = await rule.apply(sections, overrideContext)
@@ -118,13 +108,13 @@ describe("HomeFeedSimplificationRule", () => {
       mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
       const ctx = {
         userID: "123",
-        xHomeFeedArm: "reduced_current",
+        xHomeFeedArm: "hierarchy_breadth",
       } as ResolverContext
 
       await rule.apply(sections, ctx)
 
       expect(ctx.homeViewAppliedArm).toEqual({
-        arm: "reduced_current",
+        arm: "hierarchy_breadth",
         source: "override",
       })
     })
