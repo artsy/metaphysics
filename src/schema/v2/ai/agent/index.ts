@@ -81,6 +81,22 @@ function assertSupportedImages(input: {
   })
 }
 
+// Stands in for a dropped image on a message that had no text: sending a user
+// message with empty content fails the whole request upstream, and an
+// image-only message is the main way images arrive.
+export const UNAVAILABLE_IMAGE_NOTE =
+  "[Collector attached an image that isn't available right now]"
+
+function withoutImages(
+  history: Array<AIAgentHistoryEntry> | null | undefined
+): Array<AIAgentHistoryEntry> | null | undefined {
+  return history?.map(({ image, ...entry }) =>
+    image && entry.role !== "assistant" && entry.content.trim().length === 0
+      ? { ...entry, content: UNAVAILABLE_IMAGE_NOTE }
+      : entry
+  )
+}
+
 function assertInputWithinLimits(input: {
   message: string
   image?: AIAgentImage | null
@@ -160,12 +176,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
     }
     const input = imageInputEnabled
       ? rawInput
-      : {
-          ...rawInput,
-          history: rawInput.history?.map(
-            ({ image: _image, ...entry }) => entry
-          ),
-        }
+      : { ...rawInput, history: withoutImages(rawInput.history) }
 
     assertMessageOrImage(input)
     assertInputWithinLimits(input)

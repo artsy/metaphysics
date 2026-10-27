@@ -13,7 +13,7 @@ jest.mock("../runTurn", () => ({
   runTurn: (...args: any[]) => mockRunTurn(...args),
 }))
 
-import { AIAgentTurn } from "../index"
+import { AIAgentTurn, UNAVAILABLE_IMAGE_NOTE } from "../index"
 
 // `subscribe`/`resolve` are tested directly as plain functions rather than
 // through a full schema execution — graphql-js's `execute()` (which
@@ -458,6 +458,31 @@ describe("AIAgentTurn", () => {
         expect.objectContaining({
           history: [
             { role: "user", content: "like this" },
+            { role: "assistant", content: "Here you go." },
+          ],
+        }),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it("leaves a note in place of a dropped image when its message had no text", () => {
+      // An empty user message fails the whole request upstream, so an
+      // image-only message can't simply lose its image.
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+      const history = [
+        { role: "user", content: "", image },
+        { role: "assistant", content: "Here you go." },
+      ]
+
+      callSubscribe({ conversationID: "c1", message: "cheaper", history }, user)
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          history: [
+            { role: "user", content: UNAVAILABLE_IMAGE_NOTE },
             { role: "assistant", content: "Here you go." },
           ],
         }),
