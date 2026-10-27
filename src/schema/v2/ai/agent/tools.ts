@@ -8,13 +8,16 @@ import {
   GraphQLError,
   GraphQLSchema,
   isLeafType,
+  Kind,
   parse,
   specifiedRules,
+  TypeInfo,
   validate,
   valueFromASTUntyped,
   visit,
+  visitWithTypeInfo,
 } from "graphql"
-import type { ValidationRule } from "graphql"
+import type { ObjectValueNode, TypeNode, ValidationRule } from "graphql"
 import depthLimit from "graphql-depth-limit"
 import { createComplexityRule, simpleEstimator } from "graphql-query-complexity"
 import type { ComplexityEstimator } from "graphql-query-complexity"
@@ -22,12 +25,15 @@ import { filterSchema, pruneSchema } from "@graphql-tools/utils"
 import type { FieldFilter, RootFieldFilter } from "@graphql-tools/utils"
 import * as Sentry from "@sentry/node"
 import {
+  deepestOriginalError,
   flattenErrors,
   shouldReportError,
   statusCodeForError,
 } from "lib/graphqlErrorHandler"
+import { ArgumentError } from "lib/argumentError"
 import { ResolverContext } from "types/graphql"
-import type { AIAgentActivity } from "./types"
+import type { AIAgentImageHandles } from "./images"
+import type { AIAgentActivity, AIAgentImage } from "./types"
 
 /**
  * The AI agent's entire tool surface: one generic `query_artsy` tool that
@@ -146,6 +152,23 @@ const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
 const interfaceFieldFilter: FieldFilter = (typeName, fieldName) =>
   !DENIED_FIELDS_BY_TYPE[typeName]?.has(fieldName)
 
+export const IMAGE_INPUT_TYPE_NAME = "ArtworkImageSearchInput"
+
+/**
+ * An image may reach a query only as a direct argument, which is the one
+ * place `substituteImageHandles` resolves handles and rejects raw S3
+ * locations. Left in, `FilterArtworksInput.image` would let
+ * `artworksConnection(input: { image: { s3Key, s3Bucket } })` -- or the same
+ * through a variable -- search any object in an allowed bucket without ever
+ * passing through that check. Removing the field makes those queries fail
+ * validation instead.
+ */
+const inputObjectFieldFilter: FieldFilter = (
+  _typeName,
+  _fieldName,
+  inputField
+) => getNamedType(inputField.type).name !== IMAGE_INPUT_TYPE_NAME
+
 /**
  * The one way the allowlist above fails *open*: it keys on a type's name, so
  * renaming `Me` or `FollowsAndSaves` upstream stops the lookup matching, and
@@ -195,6 +218,7 @@ export function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
     rootFieldFilter,
     objectFieldFilter,
     interfaceFieldFilter,
+    inputObjectFieldFilter,
   })
   const pruned = pruneSchema(filtered)
 
@@ -360,11 +384,19 @@ function findOversizedPageArg(
  * field path is included because it's from the query the model itself wrote.
  */
 function describeExecutionError(error: GraphQLError): string {
+  const path = error.path?.length ? ` at \`${error.path.join(".")}\`` : ""
+  const original = deepestOriginalError(error)
+  if (original instanceof ArgumentError) {
+    return `Invalid arguments${path}: ${original.message}`
+  }
+
   const status = flattenErrors(error)
     .map((flattened) => statusCodeForError(flattened))
     .find((code) => typeof code === "number")
-  const path = error.path?.length ? ` at \`${error.path.join(".")}\`` : ""
 
+  if (status === 400) {
+    return `Rejected as invalid${path} — check the arguments`
+  }
   if (status === 404) return `No record found${path}`
   if (status === 401 || status === 403) return `Not authorized to read${path}`
   if (status === 429) {
@@ -380,10 +412,123 @@ function sanitizeExecutionErrors(errors: readonly GraphQLError[]): string {
   const categories = new Set<string>()
   errors.forEach((error) => {
     // Keep the real, unredacted error for us — only the model's copy is reduced.
-    if (shouldReportError(error)) Sentry.captureException(error)
+    // An ArgumentError is the model's own mistake, not ours to be alerted on.
+    if (
+      shouldReportError(error) &&
+      !(deepestOriginalError(error) instanceof ArgumentError)
+    ) {
+      Sentry.captureException(error)
+    }
     categories.add(describeExecutionError(error))
   })
   return Array.from(categories).join("; ")
+}
+
+const IMAGE_ARGUMENT_HINT =
+  "Pass an attached image only as its handle string, e.g. " +
+  '`artworksConnection(image: "image_3f9a2c1b", first: 10)`, or as a ' +
+  'variable whose value is the handle (`{ "image": "image_3f9a2c1b" }`).'
+
+function namedTypeName(type: TypeNode): string {
+  return type.kind === Kind.NAMED_TYPE
+    ? type.name.value
+    : namedTypeName(type.type)
+}
+
+function imageObjectValue(image: AIAgentImage): ObjectValueNode {
+  return {
+    kind: Kind.OBJECT,
+    fields: [
+      ["s3Key", image.s3Key],
+      ["s3Bucket", image.s3Bucket],
+    ].map(([name, value]) => ({
+      kind: Kind.OBJECT_FIELD,
+      name: { kind: Kind.NAME, value: name },
+      value: { kind: Kind.STRING, value },
+    })),
+  }
+}
+
+/**
+ * The model refers to an attached image by handle (`"image_3f9a2c1b"`), never by S3
+ * key, and this is the only place a handle becomes one: every value of the
+ * image input type is resolved against this request's attachments, and any
+ * other value -- an object literal, a variable holding an object, a default
+ * -- is rejected, so a query cannot search an S3 object the collector didn't
+ * attach. Runs before validation, because a handle string is not a valid
+ * value of the input type until it's been replaced.
+ */
+function substituteImageHandles(
+  document: DocumentNode,
+  variableValues: Record<string, unknown>,
+  schema: GraphQLSchema,
+  imageHandles: AIAgentImageHandles
+):
+  | { document: DocumentNode; variableValues: Record<string, unknown> }
+  | { error: string } {
+  let error: string | null = null
+  const resolvedVariables = { ...variableValues }
+
+  const resolveHandle = (value: unknown): AIAgentImage | null => {
+    if (typeof value !== "string") {
+      error = IMAGE_ARGUMENT_HINT
+      return null
+    }
+    const image = imageHandles.get(value)
+    if (!image) {
+      error =
+        imageHandles.size === 0
+          ? "No image is attached to this conversation."
+          : `Unknown image handle "${value}". Attached: ` +
+            `${Array.from(imageHandles.keys()).join(", ")}.`
+    }
+    return image ?? null
+  }
+
+  const typeInfo = new TypeInfo(schema)
+  const rewritten = visit(
+    document,
+    visitWithTypeInfo(typeInfo, {
+      VariableDefinition(node) {
+        if (namedTypeName(node.type) !== IMAGE_INPUT_TYPE_NAME) return
+        if (node.defaultValue) {
+          error = IMAGE_ARGUMENT_HINT
+          return
+        }
+        const name = node.variable.name.value
+        const value = variableValues[name]
+        if (value === undefined || value === null) return
+        const image = resolveHandle(value)
+        if (image) resolvedVariables[name] = image
+      },
+      Argument(node) {
+        const argumentType = typeInfo.getArgument()?.type
+        if (
+          !argumentType ||
+          getNamedType(argumentType).name !== IMAGE_INPUT_TYPE_NAME
+        ) {
+          return
+        }
+        // Variables are resolved at their definition, above.
+        if (
+          node.value.kind === Kind.VARIABLE ||
+          node.value.kind === Kind.NULL
+        ) {
+          return
+        }
+        if (node.value.kind !== Kind.STRING) {
+          error = IMAGE_ARGUMENT_HINT
+          return
+        }
+        const image = resolveHandle(node.value.value)
+        if (!image) return
+        return { ...node, value: imageObjectValue(image) }
+      },
+    })
+  )
+
+  if (error) return { error }
+  return { document: rewritten, variableValues: resolvedVariables }
 }
 
 export interface AIAgentToolRunResult {
@@ -400,7 +545,8 @@ export interface AIAgentToolRunResult {
 export async function runQueryArtsyTool(
   input: unknown,
   schema: GraphQLSchema,
-  context: ResolverContext
+  context: ResolverContext,
+  imageHandles: AIAgentImageHandles = new Map()
 ): Promise<AIAgentToolRunResult> {
   const { query, variables } = (input ?? {}) as {
     query?: unknown
@@ -424,12 +570,23 @@ export async function runQueryArtsyTool(
     return { ok: false, content: "The query could not be run." }
   }
 
-  let document: DocumentNode
+  let parsedDocument: DocumentNode
   try {
-    document = parse(query)
+    parsedDocument = parse(query)
   } catch (error) {
     return { ok: false, content: `Invalid GraphQL syntax: ${error}` }
   }
+
+  const substitution = substituteImageHandles(
+    parsedDocument,
+    (variables ?? {}) as Record<string, unknown>,
+    narrowSchema,
+    imageHandles
+  )
+  if ("error" in substitution) {
+    return { ok: false, content: substitution.error }
+  }
+  const { document, variableValues } = substitution
 
   // `validate`'s `rules` parameter REPLACES the standard rule set entirely
   // if provided, rather than adding to it — the standard rules (does this
@@ -447,7 +604,6 @@ export async function runQueryArtsyTool(
     }
   }
 
-  const variableValues = (variables ?? {}) as Record<string, unknown>
   const oversizedPageArg = findOversizedPageArg(document, variableValues)
   if (oversizedPageArg) {
     return { ok: false, content: `Page size too large — ${oversizedPageArg}` }
@@ -499,8 +655,13 @@ export async function runQueryArtsyTool(
  */
 export function buildAgentTools(
   schema: GraphQLSchema,
-  context: ResolverContext
+  context: ResolverContext,
+  imageHandles: AIAgentImageHandles = new Map()
 ): Record<string, Tool> {
+  // A conversation without images gets byte-identical tool definitions to
+  // one from before images existed, so its cached prompt prefix still hits.
+  const hasImages = imageHandles.size > 0
+
   return {
     query_artsy: tool({
       description:
@@ -551,7 +712,8 @@ export function buildAgentTools(
         "the `priceRange` argument. Other money-typed fields (e.g. " +
         "`estimate`, `fee`) return `Money`, not a scalar — select a " +
         "subfield, usually `display` for a formatted string or " +
-        "`major`/`minor` for a number.",
+        "`major`/`minor` for a number." +
+        (hasImages ? IMAGE_SEARCH_TOOL_NOTE : ""),
       inputSchema: jsonSchema({
         type: "object",
         properties: {
@@ -564,10 +726,17 @@ export function buildAgentTools(
         required: ["query"],
         additionalProperties: false,
       } as JSONSchema7),
-      execute: (input: unknown) => runQueryArtsyTool(input, schema, context),
+      execute: (input: unknown) =>
+        runQueryArtsyTool(input, schema, context, imageHandles),
     }),
   }
 }
+
+const IMAGE_SEARCH_TOOL_NOTE =
+  " The collector attached images, noted in their messages as " +
+  "`[Collector attached image_…]`. To find works that look like one, pass " +
+  'its handle as `artworksConnection(image: "image_…", ...)` alongside any ' +
+  "other filters; never combine `image` with `keyword`, `variant` or `sort`."
 
 const ACTIVITY_BY_FIELD = new Map<string, AIAgentActivity>([
   ["__type", "THINKING"],
