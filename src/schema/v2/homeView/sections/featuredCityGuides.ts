@@ -12,7 +12,7 @@ export interface FeaturedCityGuide {
 export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
   // New York, Nov 5-20 2026
   citySlug: "new-york-ny-usa",
-  title: "New York City Guide",
+  title: "NYC Guide",
   displayStartAt: "2026-11-05T00:00:00Z",
   displayEndAt: "2026-11-21T00:00:00Z",
 }
