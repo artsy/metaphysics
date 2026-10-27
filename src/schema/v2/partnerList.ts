@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -25,6 +26,53 @@ export const PartnerListTypeEnum = new GraphQLEnumType({
     FAIR: { value: "fair" },
     PRIVATE_VIEWING_ROOM: { value: "private_viewing_room" },
     OTHER: { value: "other" },
+  },
+})
+
+export const PartnerListDistributionStatusEnum = new GraphQLEnumType({
+  name: "PartnerListDistributionStatusEnum",
+  values: {
+    NONE: {
+      value: "none",
+      description: "Not linked to a show. Only in ArtOS, not synced.",
+    },
+    DRAFT: {
+      value: "draft",
+      description: "Linked to a show that is not live on Artsy.",
+    },
+    PUBLISHED: {
+      value: "published",
+      description: "Linked to a show that is live on Artsy.",
+    },
+  },
+})
+
+const PartnerListArtworkImpactType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "PartnerListArtworkImpact",
+  description:
+    "What adding artworks to a list would publish, used to warn before adding.",
+  fields: {
+    distributionStatus: {
+      type: new GraphQLNonNull(PartnerListDistributionStatusEnum),
+      resolve: ({ distribution_status }) => distribution_status ?? "none",
+    },
+    privateCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ private_count }) => private_count,
+    },
+    unlistedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ unlisted_count }) => unlisted_count,
+    },
+    affectedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        "Artworks that will be published (published show) or added to the platform (draft show). Zero when the list is not syncing.",
+      resolve: ({ affected_count }) => affected_count,
+    },
   },
 })
 
@@ -73,6 +121,61 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       distributedAt: date(({ distributed_at }) => distributed_at),
+      fairID: {
+        type: GraphQLString,
+        resolve: ({ fair_id }) => fair_id,
+      },
+      distributionStatus: {
+        type: new GraphQLNonNull(PartnerListDistributionStatusEnum),
+        description:
+          "State of the list's linked show: none, draft (not live) or published (live on Artsy).",
+        resolve: ({ distribution_status }) => distribution_status ?? "none",
+      },
+      syncConfirmationDismissed: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "Whether the one-time confirmation before pushing edits to a listed show was dismissed.",
+        resolve: ({ sync_confirmation_dismissed }) =>
+          sync_confirmation_dismissed ?? false,
+      },
+      lastSyncedAt: date(({ last_synced_at }) => last_synced_at),
+      artworkImpact: {
+        type: PartnerListArtworkImpactType,
+        description:
+          "Previews what adding the given artworks would publish. Not resolvable through partnerListsConnection.",
+        args: {
+          artworkIDs: {
+            type: new GraphQLNonNull(
+              new GraphQLList(new GraphQLNonNull(GraphQLString))
+            ),
+          },
+        },
+        resolve: async (
+          { id, _fromConnection, distribution_status },
+          { artworkIDs },
+          { partnerListArtworkImpactLoader }
+        ) => {
+          // Same N+1 guard as `publication` below — there's no batch endpoint
+          // for artwork impact, so this refuses to resolve per node inside
+          // partnerListsConnection.
+          if (!partnerListArtworkImpactLoader || _fromConnection) return null
+
+          // An empty array would be dropped from the query string entirely,
+          // so answer locally rather than send Gravity a param-less request.
+          if (artworkIDs.length === 0) {
+            return {
+              distribution_status,
+              private_count: 0,
+              unlisted_count: 0,
+              affected_count: 0,
+            }
+          }
+
+          return partnerListArtworkImpactLoader(id, {
+            artwork_ids: artworkIDs,
+          })
+        },
+      },
       createdAt: date(),
       updatedAt: date(),
       // published/passcodeProtected read from the `partner_list_publication`

@@ -1789,13 +1789,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           // Marks every node as reached through this connection —
-          // PartnerListType.publication refuses to resolve when this is set,
-          // since a page of N lists would otherwise fire N Gravity
-          // `partner_list/:id/publication` calls with no batch endpoint to
+          // PartnerListType.publication and PartnerListType.artworkImpact
+          // refuse to resolve when this is set, since a page of N lists would
+          // otherwise fire N Gravity `partner_list/:id/publication` (or
+          // `partner_list/:id/artwork_impact`) calls with no batch endpoint to
           // collapse them into one (see the resolver for the full
           // explanation). Every other single-list access path (the
           // `partnerList(id:)` lookup above, and every PartnerList mutation
-          // payload) is unflagged and resolves `publication` normally.
+          // payload) is unflagged and resolves these fields normally.
           const flaggedBody = body.map((list) => ({
             ...list,
             _fromConnection: true,
