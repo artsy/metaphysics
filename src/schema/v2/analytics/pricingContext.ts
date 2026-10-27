@@ -15,8 +15,7 @@ import { snakeCaseFields, stitchedAmountArgs } from "./shared"
 
 /**
  * `Artwork.pricingContext`, served from Vortex's REST API. It replaces the
- * field the stitched Vortex schema added, with the same types, and is only
- * mounted when `USE_UNSTITCHED_VORTEX` is on.
+ * field the stitched Vortex schema added, with the same types.
  */
 
 export const categoryMap = {

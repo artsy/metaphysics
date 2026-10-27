@@ -4,11 +4,6 @@ import {
   PartnerStatsSection,
 } from "../vortexPartnerStatsLoader"
 
-interface GraphQLArgs {
-  query: string
-  variables?: any
-}
-
 export default (opts) => {
   const { vortexLoaderWithoutAuthenticationFactory: vortexLoader } = factories(
     opts
@@ -33,15 +28,6 @@ export default (opts) => {
     priceInsightsLoader: warehouseLoader("price_insights"),
     pricingContextLoader: warehouseLoader("pricing_context"),
     warehouseMetadataLoader: warehouseLoader("warehouse_metadata"),
-    vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
-      return vortexLoader(
-        "/graphql",
-        { query, variables: JSON.stringify(variables) },
-        {
-          method: "POST",
-        }
-      )
-    },
     auctionLotRecommendationsLoader: vortexLoader(
       "auction_lot_recommendations"
     ),

@@ -16,7 +16,6 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
-import config from "config"
 import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
 import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -300,10 +299,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      // Stitched from Vortex until it's unstitched.
-      ...(config.USE_UNSTITCHED_VORTEX
-        ? { analytics: PartnerAnalyticsField }
-        : {}),
+      analytics: PartnerAnalyticsField,
       artistsWithAlertCountsConnection: {
         type: ArtistsWithAlertCountsConnectionType,
         args: pageable({
