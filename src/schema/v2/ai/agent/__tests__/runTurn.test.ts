@@ -54,6 +54,7 @@ jest.mock("lib/rateLimitByUser", () => ({
 }))
 
 import { runTurn } from "../runTurn"
+import { imageHandleFor } from "../images"
 
 const FAKE_USAGE = {
   inputTokens: {
@@ -1792,9 +1793,21 @@ describe("runTurn with attached images", () => {
       .filter((entry: any) => entry.role === "user")
       .map((entry: any) => entry.content)
     expect(userContents).toEqual([
-      [{ type: "text", text: "[Collector attached image_1]\nlike this" }],
+      [
+        {
+          type: "text",
+          text: `[Collector attached ${imageHandleFor(
+            OLDER_IMAGE
+          )}]\nlike this`,
+        },
+      ],
       [{ type: "text", text: "thanks" }],
-      [{ type: "text", text: "[Collector attached image_2]" }],
+      [
+        {
+          type: "text",
+          text: `[Collector attached ${imageHandleFor(IMAGE)}]`,
+        },
+      ],
     ])
     // No pixels, keys or URLs anywhere in the prompt.
     expect(JSON.stringify(mockModel.doStreamCalls[0].prompt)).not.toMatch(
@@ -1807,9 +1820,38 @@ describe("runTurn with attached images", () => {
 
     const [, , imageHandles] = mockBuildAgentTools.mock.calls[0]
     expect(Array.from(imageHandles.entries())).toEqual([
-      ["image_1", OLDER_IMAGE],
-      ["image_2", IMAGE],
+      [imageHandleFor(OLDER_IMAGE), OLDER_IMAGE],
+      [imageHandleFor(IMAGE), IMAGE],
     ])
+  })
+
+  it("keeps each image's handle when the client trims older messages", async () => {
+    await collectEvents(input)
+    await collectEvents({ ...input, history: input.history.slice(2) })
+
+    const handlesOnTurn = (call: number) =>
+      Array.from(mockBuildAgentTools.mock.calls[call][2].keys())
+    expect(handlesOnTurn(0)).toContain(imageHandleFor(IMAGE))
+    // The older image is gone, and the newer one keeps its name.
+    expect(handlesOnTurn(1)).toEqual([imageHandleFor(IMAGE)])
+  })
+
+  it("gives the same image one handle however often it's attached", async () => {
+    await collectEvents({
+      conversationID: "c1",
+      message: "again",
+      image: IMAGE,
+      history: [{ role: "user", content: "like this", image: IMAGE }],
+    })
+
+    const [, , imageHandles] = mockBuildAgentTools.mock.calls[0]
+    expect(Array.from(imageHandles.keys())).toEqual([imageHandleFor(IMAGE)])
+  })
+
+  it("names handles after the image, not its position", () => {
+    expect(imageHandleFor(IMAGE)).toMatch(/^image_[0-9a-f]{8}$/)
+    expect(imageHandleFor(IMAGE)).not.toBe(imageHandleFor(OLDER_IMAGE))
+    expect(imageHandleFor({ ...IMAGE })).toBe(imageHandleFor(IMAGE))
   })
 
   it("assigns no handle to an image replayed on an assistant turn", async () => {

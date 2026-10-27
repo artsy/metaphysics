@@ -4,12 +4,20 @@ import * as Sentry from "@sentry/node"
 import {
   buildAgentTools,
   describeToolCall,
+  IMAGE_INPUT_TYPE_NAME,
   narrowSchemaFor,
   runQueryArtsyTool,
   summarizeToolCall,
 } from "../tools"
 import { mapSchema, MapperKind } from "@graphql-tools/utils"
-import { GraphQLObjectType, parse, specifiedRules, validate } from "graphql"
+import {
+  getNamedType,
+  GraphQLObjectType,
+  isInputObjectType,
+  parse,
+  specifiedRules,
+  validate,
+} from "graphql"
 import { HTTPError } from "lib/HTTPError"
 
 describe("buildAgentTools", () => {
@@ -1310,7 +1318,7 @@ describe("image handles", () => {
       undefined,
     ],
     [
-      "a handle nested in a parent's connection, as an object",
+      "an object literal on a nested filterArtworksConnection",
       `{ gene(id: "painting") { filterArtworksConnection(image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" }, first: 5) { ${NODES} } } }`,
       undefined,
     ],
@@ -1331,6 +1339,70 @@ describe("image handles", () => {
       expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
     }
   )
+
+  it.each([
+    [
+      "a literal",
+      `{ artworksConnection(input: { image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" } }, first: 5) { ${NODES} } }`,
+      undefined,
+    ],
+    [
+      "a variable",
+      `query ($input: FilterArtworksInput) { artworksConnection(input: $input, first: 5) { ${NODES} } }`,
+      {
+        input: {
+          image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" },
+        },
+      },
+    ],
+    [
+      "a literal on a nested connection",
+      `{ gene(id: "painting") { filterArtworksConnection(input: { image: { s3Key: "someone/else.jpg", s3Bucket: "image-uploads" } }, first: 5) { ${NODES} } } }`,
+      undefined,
+    ],
+  ])(
+    "never searches an image smuggled inside `input` as %s",
+    async (_label, query, variables) => {
+      const { context, filterArtworksUncachedLoader } = imageSearchContext()
+
+      const result = await runQueryArtsyTool(
+        { query, variables },
+        schema,
+        context,
+        handles
+      )
+
+      expect(result.ok).toBe(false)
+      expect(result.content).toMatch(
+        /Field "image" is not defined by type "FilterArtworksInput"/
+      )
+      expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+    }
+  )
+
+  it("keeps the image type out of every input object, so a direct argument is the only way in", () => {
+    // substituteImageHandles only inspects arguments. If the image type ever
+    // reappears as an input field, that's an unchecked path to a raw S3
+    // location -- fail here rather than in production.
+    const narrow = narrowSchemaFor(schema)
+    const embedding = Object.values(narrow.getTypeMap())
+      .filter(isInputObjectType)
+      .flatMap((type) =>
+        Object.values(type.getFields())
+          .filter(
+            (field) => getNamedType(field.type).name === IMAGE_INPUT_TYPE_NAME
+          )
+          .map((field) => `${type.name}.${field.name}`)
+      )
+
+    expect(embedding).toEqual([])
+    // ...while the direct argument the agent uses is still there.
+    const imageArgument = narrow
+      .getQueryType()!
+      .getFields()
+      .artworksConnection.args.find((arg) => arg.name === "image")
+    expect(getNamedType(imageArgument!.type).name).toBe(IMAGE_INPUT_TYPE_NAME)
+  })
 
   it("tells the model why `image` can't be combined with `keyword`", async () => {
     const { context, filterArtworksUncachedLoader } = imageSearchContext()
@@ -1386,10 +1458,10 @@ describe("image handles", () => {
     const withImage = buildAgentTools(schema, {} as ResolverContext, handles)
 
     expect(Object.keys(without)).toEqual(["query_artsy"])
-    expect(without.query_artsy.description).not.toContain("image_N")
+    expect(without.query_artsy.description).not.toContain("Collector attached")
     expect(Object.keys(withImage)).toEqual(["query_artsy"])
     expect(withImage.query_artsy.description).toContain(
-      'artworksConnection(image: "image_1"'
+      'artworksConnection(image: "image_…"'
     )
   })
 

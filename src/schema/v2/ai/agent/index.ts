@@ -136,7 +136,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       throw new Error("This feature is not currently enabled")
     }
 
-    const input = args.input as {
+    const rawInput = args.input as {
       conversationID: string
       message: string
       image?: AIAgentImage | null
@@ -145,18 +145,27 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
       includeDebugToolCalls?: boolean | null
     }
 
-    // Gates attaching a new image only. Images already in a replayed history
-    // were accepted when they were sent; turning the flag off shouldn't break
-    // those conversations.
-    if (
-      input.image &&
-      !isDevelopment &&
-      !isFeatureFlagEnabled("onyx_ai_agent-image-input", {
+    // A kill switch, not only a rollout gate: with the flag off, no image is
+    // searched, whether it's attached now or replayed in history (which the
+    // client controls just as much). A new attachment is rejected so the
+    // collector knows; replayed ones are dropped, so a conversation that had
+    // images carries on as text rather than erroring.
+    const imageInputEnabled =
+      isDevelopment ||
+      isFeatureFlagEnabled("onyx_ai_agent-image-input", {
         userId: context.userID,
       })
-    ) {
+    if (rawInput.image && !imageInputEnabled) {
       throw new Error("Image input is not currently enabled")
     }
+    const input = imageInputEnabled
+      ? rawInput
+      : {
+          ...rawInput,
+          history: rawInput.history?.map(
+            ({ image: _image, ...entry }) => entry
+          ),
+        }
 
     assertMessageOrImage(input)
     assertInputWithinLimits(input)

@@ -204,7 +204,7 @@ input AIAgentTurnInput {
   history: [AIAgentMessageInput!]
 
   """
-  An image attached to the new message, to search by or ask about.
+  An image attached to the new message, to find artworks that look like it.
   """
   image: AIAgentImageInput
 

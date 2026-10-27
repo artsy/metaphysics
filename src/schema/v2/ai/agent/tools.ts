@@ -152,6 +152,23 @@ const objectFieldFilter: FieldFilter = (typeName, fieldName) => {
 const interfaceFieldFilter: FieldFilter = (typeName, fieldName) =>
   !DENIED_FIELDS_BY_TYPE[typeName]?.has(fieldName)
 
+export const IMAGE_INPUT_TYPE_NAME = "ArtworkImageSearchInput"
+
+/**
+ * An image may reach a query only as a direct argument, which is the one
+ * place `substituteImageHandles` resolves handles and rejects raw S3
+ * locations. Left in, `FilterArtworksInput.image` would let
+ * `artworksConnection(input: { image: { s3Key, s3Bucket } })` -- or the same
+ * through a variable -- search any object in an allowed bucket without ever
+ * passing through that check. Removing the field makes those queries fail
+ * validation instead.
+ */
+const inputObjectFieldFilter: FieldFilter = (
+  _typeName,
+  _fieldName,
+  inputField
+) => getNamedType(inputField.type).name !== IMAGE_INPUT_TYPE_NAME
+
 /**
  * The one way the allowlist above fails *open*: it keys on a type's name, so
  * renaming `Me` or `FollowsAndSaves` upstream stops the lookup matching, and
@@ -201,6 +218,7 @@ export function narrowSchemaFor(realSchema: GraphQLSchema): GraphQLSchema {
     rootFieldFilter,
     objectFieldFilter,
     interfaceFieldFilter,
+    inputObjectFieldFilter,
   })
   const pruned = pruneSchema(filtered)
 
@@ -406,12 +424,10 @@ function sanitizeExecutionErrors(errors: readonly GraphQLError[]): string {
   return Array.from(categories).join("; ")
 }
 
-const IMAGE_INPUT_TYPE_NAME = "ArtworkImageSearchInput"
-
 const IMAGE_ARGUMENT_HINT =
   "Pass an attached image only as its handle string, e.g. " +
-  '`artworksConnection(image: "image_1", first: 10)`, or as a variable ' +
-  'whose value is the handle (`{ "image": "image_1" }`).'
+  '`artworksConnection(image: "image_3f9a2c1b", first: 10)`, or as a ' +
+  'variable whose value is the handle (`{ "image": "image_3f9a2c1b" }`).'
 
 function namedTypeName(type: TypeNode): string {
   return type.kind === Kind.NAMED_TYPE
@@ -434,7 +450,7 @@ function imageObjectValue(image: AIAgentImage): ObjectValueNode {
 }
 
 /**
- * The model refers to an attached image by handle (`"image_1"`), never by S3
+ * The model refers to an attached image by handle (`"image_3f9a2c1b"`), never by S3
  * key, and this is the only place a handle becomes one: every value of the
  * image input type is resolved against this request's attachments, and any
  * other value -- an object literal, a variable holding an object, a default
@@ -718,8 +734,8 @@ export function buildAgentTools(
 
 const IMAGE_SEARCH_TOOL_NOTE =
   " The collector attached images, noted in their messages as " +
-  "`[Collector attached image_N]`. To find works that look like one, pass " +
-  'its handle as `artworksConnection(image: "image_1", ...)` alongside any ' +
+  "`[Collector attached image_…]`. To find works that look like one, pass " +
+  'its handle as `artworksConnection(image: "image_…", ...)` alongside any ' +
   "other filters; never combine `image` with `keyword`, `variant` or `sort`."
 
 const ACTIVITY_BY_FIELD = new Map<string, AIAgentActivity>([

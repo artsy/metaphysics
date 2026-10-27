@@ -184,7 +184,7 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
     image: {
       type: AIAgentImageInputType,
       description:
-        "An image attached to the new message, to search by or ask about.",
+        "An image attached to the new message, to find artworks that look like it.",
     },
     history: {
       type: new GraphQLList(new GraphQLNonNull(AIAgentMessageInputType)),

@@ -1,17 +1,18 @@
+import { createHash } from "crypto"
 import config from "config"
 import type { AIAgentHistoryEntry, AIAgentImage } from "./types"
 
 /**
  * Attached images never reach the model as pixels by default, and the model
- * never sees an S3 key. Each image becomes a handle -- `image_1`, `image_2`,
- * ... in conversation order -- that the model passes to a tool, and the tool
- * resolves it here, against this request's own input and history. A handle
- * the request didn't attach resolves to nothing, so a model (or a collector
- * typing "[Collector attached image_7]") cannot point a search at an
- * arbitrary S3 object.
+ * never sees an S3 key. Each image becomes a handle, e.g. `image_3f9a2c1b`,
+ * that the model passes to a tool, and the tool resolves it here, against this
+ * request's own input and history. A handle the request didn't attach
+ * resolves to nothing, so a model (or a collector typing "[Collector attached
+ * image_…]") cannot point a search at an arbitrary S3 object.
  *
- * Handles are positional, so they stay stable across turns as long as the
- * client replays the same history, which it does by contract.
+ * A handle is derived from the image's S3 location rather than its position,
+ * so it names the same image on every turn even when the client trims old
+ * messages from the history it replays.
  */
 export type AIAgentImageHandles = ReadonlyMap<string, AIAgentImage>
 
@@ -22,13 +23,21 @@ export interface AIAgentImageHandleAssignment {
   currentHandle: string | null
 }
 
+export function imageHandleFor(image: AIAgentImage): string {
+  const digest = createHash("sha256")
+    .update(`${image.s3Bucket}/${image.s3Key}`)
+    .digest("hex")
+  return `image_${digest.slice(0, 8)}`
+}
+
 export function assignImageHandles(
   history: readonly AIAgentHistoryEntry[] | null | undefined,
   image: AIAgentImage | null | undefined
 ): AIAgentImageHandleAssignment {
   const handles = new Map<string, AIAgentImage>()
   const assign = (attached: AIAgentImage) => {
-    const handle = `image_${handles.size + 1}`
+    // The same image attached twice is one handle.
+    const handle = imageHandleFor(attached)
     handles.set(handle, { s3Key: attached.s3Key, s3Bucket: attached.s3Bucket })
     return handle
   }

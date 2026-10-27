@@ -441,13 +441,41 @@ describe("AIAgentTurn", () => {
       ).toHaveBeenCalledWith("onyx_ai_agent-image-input", { userId: "user-42" })
     })
 
-    it("keeps replaying images already in the history when that flag is off", () => {
+    it("drops images replayed in history when that flag is off, so none is searched", () => {
+      // The client controls history as much as the new message, so the flag
+      // has to cover both to work as a kill switch.
       mockIsFeatureFlagEnabled.mockImplementation(
         (flag: string) => flag !== "onyx_ai_agent-image-input"
       )
       const history = [
         { role: "user", content: "like this", image },
         { role: "assistant", content: "Here you go." },
+      ]
+
+      callSubscribe({ conversationID: "c1", message: "cheaper", history }, user)
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          history: [
+            { role: "user", content: "like this" },
+            { role: "assistant", content: "Here you go." },
+          ],
+        }),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it("doesn't reject a conversation over an image it's going to drop", () => {
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+      const history = [
+        {
+          role: "user",
+          content: "like this",
+          image: { ...image, s3Bucket: "someone-elses-bucket" },
+        },
       ]
 
       expect(() =>
