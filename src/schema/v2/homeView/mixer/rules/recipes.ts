@@ -6,6 +6,7 @@ import { Tasks } from "../../sections/Tasks"
 import { HeroUnits } from "../../sections/HeroUnits"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
 import { RecentlyViewedArtworks } from "../../sections/RecentlyViewedArtworks"
+import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
 import { CuratedGroup } from "../../sections/CuratedGroup"
 import { EditorialGroup } from "../../sections/EditorialGroup"
 import { Auctions } from "../../sections/Auctions"
@@ -30,8 +31,10 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
     HeroUnits.id,
     NewWorksForYou.id,
     RecentlyViewedArtworks.id,
-    // Curated discovery block: Curators' Picks rail + artist/collection chips.
+    // Curated discovery block: chips-only (artists, Curator's Picks, collections).
     CuratedGroup.id,
+    // Separate section below Curated — different visual treatment, so not merged in.
+    RecommendedArtworks.id,
     // Editorial block: the editorial rail + News as chips.
     EditorialGroup.id,
     Auctions.id, // "Discover Auctions on Artsy"

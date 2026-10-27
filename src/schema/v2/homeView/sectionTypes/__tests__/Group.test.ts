@@ -143,6 +143,12 @@ describe("HomeViewSectionGroup", () => {
           entityID: RecommendedArtists.id,
         },
         {
+          title: "Curators' Picks",
+          href: `home-view/sections/${CuratorsPicksEmerging.id}?sectionType=${CuratorsPicksEmerging.type}`,
+          entityType: "HomeViewSection",
+          entityID: CuratorsPicksEmerging.id,
+        },
+        {
           title: "Trending Artists",
           subtitle: "See the works boundary pushing artists are creating.",
           href: `home-view/sections/${TrendingArtists.id}?sectionType=${TrendingArtists.type}`,

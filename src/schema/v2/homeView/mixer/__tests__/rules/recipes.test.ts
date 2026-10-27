@@ -78,6 +78,7 @@ describe("composeForArm", () => {
       NewWorksForYou.id,
       RecentlyViewedArtworks.id,
       CuratedGroup.id,
+      RecommendedArtworks.id,
       EditorialGroup.id,
       Auctions.id,
       ViewingRooms.id,

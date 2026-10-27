@@ -58,10 +58,12 @@ const ARTIST_IMAGE_VERSIONS = ["large", "square", "medium"]
 const artistCoverURL = (artist: any): string | undefined =>
   artist?.image_url ? setVersion(artist, ARTIST_IMAGE_VERSIONS) : undefined
 
-// STOPGAP (superseded by the Gravity field): artist chip stack = the rail's first
-// 3 artists' covers. Section-level, not an N+1; degrades to no images on failure.
-export const artistChipStackURLs = async (
+// STOPGAP (superseded by the Gravity field): a section-as-chip's stack = the first
+// 3 of the referenced section's nodes, mapped to image URLs by `toURL`. Section-level,
+// not an N+1; degrades to no images on failure.
+const sectionStackURLs = async (
   section: HomeViewSection,
+  toURL: (node: any) => string | undefined,
   parent: any,
   context: any,
   info: any
@@ -76,13 +78,22 @@ export const artistChipStackURLs = async (
     )
     return (connection?.edges ?? [])
       .map((edge: any) => edge.node)
-      .map(artistCoverURL)
+      .map(toURL)
       .filter(Boolean)
       .slice(0, CHIP_STACK_SIZE)
   } catch {
     return []
   }
 }
+
+// Artists rail → first 3 artists' cover images.
+export const artistChipStackURLs = (
+  section: HomeViewSection,
+  parent: any,
+  context: any,
+  info: any
+): Promise<string[]> =>
+  sectionStackURLs(section, artistCoverURL, parent, context, info)
 
 export const CuratedGroup: HomeViewGroupSection = {
   id: "home-view-section-curated-group",
@@ -97,18 +108,27 @@ export const CuratedGroup: HomeViewGroupSection = {
   // TODO: palette token once available.
   backgroundColor: "#F7F7F7",
 
-  // TODO: redesigned "Curated" is chips-only — flip to `rails: []` once finalized.
-  rails: [{ sectionID: CuratorsPicksEmerging.id }],
+  // Chips-only (no rail): Curator's Picks is now a chip alongside the artists.
+  rails: [],
 
   chipsGroups: [
     {
       resolver: async (parent, args, context, info) => {
         const [
           recommendedImages,
+          curatorsPicksImages,
           trendingImages,
           { body = [] },
         ] = await Promise.all([
           artistChipStackURLs(RecommendedArtists, parent, context, info),
+          // Curator's Picks is an artworks section → stack the first 3 artworks.
+          sectionStackURLs(
+            CuratorsPicksEmerging,
+            artworkImageURL,
+            parent,
+            context,
+            info
+          ),
           artistChipStackURLs(TrendingArtists, parent, context, info),
           context.marketingCollectionsLoader({
             slugs: COLLECTION_CHIP_SLUGS,
@@ -116,7 +136,7 @@ export const CuratedGroup: HomeViewGroupSection = {
           }),
         ])
 
-        const artistChips = [
+        const sectionChips = [
           {
             title: "Recommended Artists",
             // TODO: confirm copy — may be placeholder.
@@ -129,6 +149,16 @@ export const CuratedGroup: HomeViewGroupSection = {
               : {}),
             entityType: "HomeViewSection",
             entityID: RecommendedArtists.id,
+          },
+          {
+            // TODO: confirm chip copy (title/subtitle) with design.
+            title: "Curators' Picks",
+            href: sectionScreenHref(CuratorsPicksEmerging),
+            ...(curatorsPicksImages.length
+              ? { imageURLs: curatorsPicksImages }
+              : {}),
+            entityType: "HomeViewSection",
+            entityID: CuratorsPicksEmerging.id,
           },
           {
             title: "Trending Artists",
@@ -169,7 +199,7 @@ export const CuratedGroup: HomeViewGroupSection = {
           }
         })
 
-        return connectionFromArray([...artistChips, ...collectionChips], args)
+        return connectionFromArray([...sectionChips, ...collectionChips], args)
       },
     },
   ],

@@ -65,8 +65,11 @@ describe("HomeFeedSimplificationRule", () => {
   it("composes the consolidated arm with reordering", async () => {
     mockGetVariant.mockReturnValue({ enabled: true, name: "consolidated" })
     const out = await rule.apply(sections, context)
-    // RecommendedArtworks isn't in the consolidated arm, so it's dropped.
-    expect(out.map((s) => s.id)).toEqual([QuickLinks.id, NewWorksForYou.id])
+    expect(out.map((s) => s.id)).toEqual([
+      QuickLinks.id,
+      NewWorksForYou.id,
+      RecommendedArtworks.id,
+    ])
   })
 
   describe("x-home-feed-arm override", () => {
@@ -79,7 +82,11 @@ describe("HomeFeedSimplificationRule", () => {
 
       const out = await rule.apply(sections, overrideContext)
 
-      expect(out.map((s) => s.id)).toEqual([QuickLinks.id, NewWorksForYou.id])
+      expect(out.map((s) => s.id)).toEqual([
+        QuickLinks.id,
+        NewWorksForYou.id,
+        RecommendedArtworks.id,
+      ])
       expect(mockGetVariant).not.toHaveBeenCalled()
     })
 
