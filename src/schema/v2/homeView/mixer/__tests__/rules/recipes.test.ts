@@ -1,10 +1,13 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { applyComponentOverride, composeForArm } from "../../rules/recipes"
 import { QuickLinks } from "../../../sections/QuickLinks"
+import { HeroUnits } from "../../../sections/HeroUnits"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
+import { RecentlyViewedArtworks } from "../../../sections/RecentlyViewedArtworks"
 import { RecommendedArtworks } from "../../../sections/RecommendedArtworks"
 import { CuratorsPicksEmerging } from "../../../sections/CuratorsPicksEmerging"
-import { AuctionLotsForYou } from "../../../sections/AuctionLotsForYou"
+import { Auctions } from "../../../sections/Auctions"
+import { ViewingRooms } from "../../../sections/ViewingRooms"
 import { TrendingArtists } from "../../../sections/TrendingArtists"
 import { LatestArticles } from "../../../sections/LatestArticles"
 import { News } from "../../../sections/News"
@@ -20,10 +23,13 @@ describe("composeForArm", () => {
   const sections = [
     QuickLinks,
     Tasks,
+    HeroUnits,
     NewWorksForYou,
+    RecentlyViewedArtworks,
     RecommendedArtworks,
     CuratorsPicksEmerging,
-    AuctionLotsForYou,
+    Auctions,
+    ViewingRooms,
     TrendingArtists,
     LatestArticles,
     News,
@@ -68,11 +74,14 @@ describe("composeForArm", () => {
     expect(out.map((s) => s.id)).toEqual([
       QuickLinks.id,
       Tasks.id,
+      HeroUnits.id,
       NewWorksForYou.id,
-      EditorialGroup.id,
-      WhatsHappeningGroup.id,
+      RecentlyViewedArtworks.id,
       CuratedGroup.id,
-      RecommendedArtworks.id,
+      EditorialGroup.id,
+      Auctions.id,
+      ViewingRooms.id,
+      WhatsHappeningGroup.id,
     ])
   })
 

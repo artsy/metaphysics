@@ -3,10 +3,13 @@ import { HomeViewSection } from "schema/v2/homeView/sections"
 // Import the real instances so recipes use their `.id` (no stringly-typed drift).
 import { QuickLinks } from "../../sections/QuickLinks"
 import { Tasks } from "../../sections/Tasks"
+import { HeroUnits } from "../../sections/HeroUnits"
 import { NewWorksForYou } from "../../sections/NewWorksForYou"
-import { RecommendedArtworks } from "../../sections/RecommendedArtworks"
+import { RecentlyViewedArtworks } from "../../sections/RecentlyViewedArtworks"
 import { CuratedGroup } from "../../sections/CuratedGroup"
 import { EditorialGroup } from "../../sections/EditorialGroup"
+import { Auctions } from "../../sections/Auctions"
+import { ViewingRooms } from "../../sections/ViewingRooms"
 import { WhatsHappeningGroup } from "../../sections/WhatsHappeningGroup"
 
 // Single source of truth for the `variant.name` strings — must match the Unleash config exactly.
@@ -24,17 +27,17 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
   consolidated: [
     QuickLinks.id,
     Tasks.id, // "Act Now" pending-action prompts (auth-gated; only shows with tasks)
+    HeroUnits.id,
     NewWorksForYou.id,
-    // Consolidated editorial block: the editorial rail + News as chips.
-    // Replaces the standalone LatestArticles + News rails in this arm.
-    EditorialGroup.id,
-    // Consolidated events block: Featured Fairs + Shows rails, no chips.
-    // Replaces the standalone ShowsForYou + FeaturedFairs rails in this arm.
-    WhatsHappeningGroup.id,
-    // Consolidated discovery block: Curators' Picks rail + entry chips absorbing
-    // Recommended/Trending Artists and Collections.
+    RecentlyViewedArtworks.id,
+    // Curated discovery block: Curators' Picks rail + artist/collection chips.
     CuratedGroup.id,
-    RecommendedArtworks.id,
+    // Editorial block: the editorial rail + News as chips.
+    EditorialGroup.id,
+    Auctions.id, // "Discover Auctions on Artsy"
+    ViewingRooms.id,
+    // Events block: Featured Fairs + Shows rails, no chips.
+    WhatsHappeningGroup.id,
   ],
 }
 
