@@ -36,6 +36,54 @@ describe("Sale type", () => {
     allViaLoader.mockReset()
   })
 
+  describe("representativeArtworks", () => {
+    const query = gql`
+      {
+        sale(id: "foo-foo") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    it("resolves from representative_artwork_ids in one batched load", async () => {
+      const artworksLoader = jest.fn(({ ids }) =>
+        Promise.resolve(ids.map((id: string) => ({ _id: id, id })))
+      )
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: ["art-1", "art-2", "art-3"] },
+        { artworksLoader }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([
+        { internalID: "art-1" },
+        { internalID: "art-2" },
+        { internalID: "art-3" },
+      ])
+      expect(artworksLoader).toHaveBeenCalledTimes(1)
+      expect(artworksLoader).toHaveBeenCalledWith({
+        ids: ["art-1", "art-2", "art-3"],
+        batched: true,
+      })
+    })
+
+    it("returns [] without calling the loader when there are no ids", async () => {
+      const artworksLoader = jest.fn()
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: [] },
+        { artworksLoader }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([])
+      expect(artworksLoader).not.toHaveBeenCalled()
+    })
+  })
+
   describe("sale timeZone", () => {
     const query = `
     {

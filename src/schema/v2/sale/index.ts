@@ -103,9 +103,27 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Sale",
   interfaces: [NodeInterface],
   fields: () => {
+    // Lazy require: artwork <-> sale is a circular import.
+    const { ArtworkType } = require("schema/v2/artwork")
     return {
       ...SlugAndInternalIDFields,
       cached,
+      representativeArtworks: {
+        type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
+        description:
+          "Up to 3 representative artworks (ordered). Resolved in one batched /artworks load",
+        resolve: (
+          { representative_artwork_ids },
+          _args,
+          { artworksLoader }
+        ) => {
+          if (!representative_artwork_ids?.length) return []
+          return artworksLoader({
+            ids: representative_artwork_ids,
+            batched: true,
+          })
+        },
+      },
       artworksConnection: {
         type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",

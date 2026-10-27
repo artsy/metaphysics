@@ -37307,6 +37307,11 @@ type Sale implements Node {
   A registration for this sale or null
   """
   registrationStatus: Bidder
+
+  """
+  Up to 3 representative artworks (ordered). Resolved in one batched /artworks load
+  """
+  representativeArtworks: [Artwork!]
   requireBidderApproval: Boolean
   requireIdentityVerification: Boolean
   saleAgreement: SaleAgreement
