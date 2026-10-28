@@ -88,6 +88,10 @@ import {
 } from "schema/v2/conversationMessageTemplate/conversationMessageTemplateExample"
 import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTemplatesConnection"
 import { ArtworkDuplicatePairsConnection } from "schema/v2/artworkDuplicatePair/artworkDuplicatePairs"
+import {
+  canSendPersonalizedOffer,
+  loadPartnerOfferEligibility,
+} from "schema/v2/conversation/partnerOfferEligibility"
 import { BrandKitType } from "./brandKit"
 import { bulkUpdateMetadataPreview } from "./BulkOperation/bulkUpdateMetadataPreview"
 
@@ -201,10 +205,9 @@ export const AnalyticsQueryPeriodEnum = {
 const UNANSWERED_CONVERSATIONS_SCAN_LIMIT = 50
 
 // Each eligibility check is a Gravity call that itself calls Impulse and
-// Exchange, so the lookup for `offerEligibleConversation` only considers the
+// Exchange, so `conversationsEligibleForPersonalizedOffer` only considers the
 // most recent inquiries rather than every one in the window.
-const OFFER_ELIGIBLE_SCAN_LIMIT = 10
-const MS_PER_DAY = 24 * 60 * 60 * 1000
+const PERSONALIZED_OFFER_SCAN_LIMIT = 10
 
 // True when the current field is being resolved beneath a list index in the
 // response (e.g. `partnersConnection.edges[3].node.inquiryMetrics`). The
@@ -1469,16 +1472,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      offerEligibleConversations: {
+      conversationsEligibleForPersonalizedOffer: {
         type: new GraphQLNonNull(
           new GraphQLList(new GraphQLNonNull(ConversationType))
         ),
         description:
           "The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. " +
-          `Only the ${OFFER_ELIGIBLE_SCAN_LIMIT} most recent inquiries inside the window are checked, so this is capped at that many. ` +
+          'Powers the "Send offers" card on the partner\'s CMS Home page. ' +
+          `Only the ${PERSONALIZED_OFFER_SCAN_LIMIT} most recent inquiries inside the window are checked, so this is capped at that many. ` +
           "Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.",
         args: {
-          daysInPast: {
+          createdWithinDays: {
             type: GraphQLInt,
             defaultValue: 5,
             description:
@@ -1487,7 +1491,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: async (
           { _id },
-          { daysInPast },
+          { createdWithinDays },
           {
             conversationsLoader,
             partnerOfferEligibilityLoader,
@@ -1502,61 +1506,54 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           // REST calls, with no batch variant.
           if (isUnderListPath(info)) {
             throw new Error(
-              "[partner/offerEligibleConversation] This field cannot be queried under a list or connection " +
+              "[partner/conversationsEligibleForPersonalizedOffer] This field cannot be queried under a list or connection " +
                 "(e.g. partnersConnection); it is only supported for a single partner via partner(id:)."
             )
           }
 
-          let conversations: { id: string; created_at?: string }[]
+          let conversations: { id: string }[]
 
           try {
-            // Same filters as the CMS inbox, minus orders: a conversation with
-            // an order is never eligible, so skip it before paying for the check.
+            // Same filters as the CMS inbox, narrowed to inquiries that could
+            // be eligible at all: from a collector (not a gallery), with no
+            // order. Impulse applies the window, so the scan limit only counts
+            // candidates worth paying the eligibility check.
             ;({ conversations } = await conversationsLoader({
               page: 1,
-              size: OFFER_ELIGIBLE_SCAN_LIMIT,
+              size: PERSONALIZED_OFFER_SCAN_LIMIT,
               sort: "-created_at",
               deleted: false,
               intercepted: false,
               to_id: _id,
               to_type: "Partner",
+              from_type: "User",
               has_message: true,
               dismissed: false,
               conversation_type: "inquiry",
+              created_within_days: createdWithinDays,
             }))
           } catch (error) {
             console.error(
-              "[partner/offerEligibleConversation] Error fetching conversations:",
+              "[partner/conversationsEligibleForPersonalizedOffer] Error fetching conversations:",
               error
             )
             return []
           }
 
-          const cutoff = Date.now() - daysInPast * MS_PER_DAY
-          const recentConversations = (conversations ?? []).filter(
-            ({ created_at }) => !!created_at && Date.parse(created_at) >= cutoff
-          )
+          const candidates = conversations ?? []
 
           const eligibilities = await Promise.all(
-            recentConversations.map(async ({ id }) => {
-              try {
-                const eligibility = await partnerOfferEligibilityLoader({
-                  impulse_conversation_id: id,
-                })
-                return eligibility?.status === "eligible"
-              } catch (error) {
-                // One failed check shouldn't hide the others.
-                console.error(
-                  "[partner/offerEligibleConversation] Error checking eligibility:",
-                  error
-                )
-                return false
-              }
+            candidates.map(async ({ id }) => {
+              const eligibility = await loadPartnerOfferEligibility({
+                loader: partnerOfferEligibilityLoader,
+                conversationId: id,
+              })
+              return canSendPersonalizedOffer(eligibility)
             })
           )
 
           // Keeps Impulse's newest-first order.
-          return recentConversations.filter((_conversation, index) => {
+          return candidates.filter((_conversation, index) => {
             return eligibilities[index]
           })
         },

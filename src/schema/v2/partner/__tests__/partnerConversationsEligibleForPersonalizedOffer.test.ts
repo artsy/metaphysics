@@ -1,11 +1,11 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("Partner offerEligibleConversations", () => {
+describe("Partner conversationsEligibleForPersonalizedOffer", () => {
   const query = gql`
     {
       partner(id: "example-partner") {
-        offerEligibleConversations {
+        conversationsEligibleForPersonalizedOffer {
           internalID
         }
       }
@@ -16,10 +16,6 @@ describe("Partner offerEligibleConversations", () => {
     id: "example-partner",
     _id: "partner-internal-id",
   })
-
-  const daysAgo = (days: number) => {
-    return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
-  }
 
   const runWith = (loaders: Record<string, jest.Mock>) => {
     return runAuthenticatedQuery(query, {
@@ -32,11 +28,7 @@ describe("Partner offerEligibleConversations", () => {
 
   it("returns every recent eligible inquiry, newest first", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
-      conversations: [
-        { id: "newest", created_at: daysAgo(1) },
-        { id: "middle", created_at: daysAgo(2) },
-        { id: "oldest", created_at: daysAgo(3) },
-      ],
+      conversations: [{ id: "newest" }, { id: "middle" }, { id: "oldest" }],
     })
     const partnerOfferEligibilityLoader = jest
       .fn()
@@ -58,23 +50,51 @@ describe("Partner offerEligibleConversations", () => {
       expect.objectContaining({
         to_id: "partner-internal-id",
         to_type: "Partner",
+        from_type: "User",
         conversation_type: "inquiry",
         sort: "-created_at",
         dismissed: false,
+        created_within_days: 5,
       })
     )
-    expect(partner.offerEligibleConversations).toEqual([
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([
       { internalID: "middle" },
       { internalID: "oldest" },
     ])
   })
 
-  it("ignores inquiries older than the window without checking them", async () => {
+  it("lets Impulse apply a custom window", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
-      conversations: [
-        { id: "recent", created_at: daysAgo(4) },
-        { id: "stale", created_at: daysAgo(6) },
-      ],
+      conversations: [],
+    })
+    const partnerOfferEligibilityLoader = jest.fn()
+    const windowQuery = gql`
+      {
+        partner(id: "example-partner") {
+          conversationsEligibleForPersonalizedOffer(createdWithinDays: 14) {
+            internalID
+          }
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(windowQuery, {
+      partnerLoader,
+      conversationsLoader,
+      partnerOfferEligibilityLoader,
+      userID: "user-id",
+      accessToken: "access-token",
+    })
+
+    expect(conversationsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ created_within_days: 14 })
+    )
+    expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
+  })
+
+  it("checks every candidate Impulse returns", async () => {
+    const conversationsLoader = jest.fn().mockResolvedValue({
+      conversations: [{ id: "first" }, { id: "second" }],
     })
     const partnerOfferEligibilityLoader = jest
       .fn()
@@ -85,16 +105,19 @@ describe("Partner offerEligibleConversations", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partnerOfferEligibilityLoader).toHaveBeenCalledTimes(1)
+    expect(partnerOfferEligibilityLoader).toHaveBeenCalledTimes(2)
     expect(partnerOfferEligibilityLoader).toHaveBeenCalledWith({
-      impulse_conversation_id: "recent",
+      impulse_conversation_id: "first",
     })
-    expect(partner.offerEligibleConversations).toEqual([])
+    expect(partnerOfferEligibilityLoader).toHaveBeenCalledWith({
+      impulse_conversation_id: "second",
+    })
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
   })
 
   it("is empty when no recent inquiry is eligible", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
-      conversations: [{ id: "a", created_at: daysAgo(1) }],
+      conversations: [{ id: "a" }],
     })
     const partnerOfferEligibilityLoader = jest
       .fn()
@@ -105,15 +128,12 @@ describe("Partner offerEligibleConversations", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.offerEligibleConversations).toEqual([])
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
   })
 
   it("keeps looking when one eligibility check fails", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
-      conversations: [
-        { id: "broken", created_at: daysAgo(1) },
-        { id: "fine", created_at: daysAgo(2) },
-      ],
+      conversations: [{ id: "broken" }, { id: "fine" }],
     })
     const partnerOfferEligibilityLoader = jest
       .fn()
@@ -128,7 +148,9 @@ describe("Partner offerEligibleConversations", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.offerEligibleConversations).toEqual([{ internalID: "fine" }])
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([
+      { internalID: "fine" },
+    ])
   })
 
   it("is empty when Impulse errors", async () => {
@@ -143,13 +165,13 @@ describe("Partner offerEligibleConversations", () => {
     })
 
     expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
-    expect(partner.offerEligibleConversations).toEqual([])
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
   })
 
   it("is empty when unauthenticated (no loaders available)", async () => {
     const { partner } = await runQuery(query, { partnerLoader })
 
-    expect(partner.offerEligibleConversations).toEqual([])
+    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
   })
 
   it("throws if selected under partnersConnection instead of a single partner", async () => {
@@ -158,7 +180,7 @@ describe("Partner offerEligibleConversations", () => {
         partnersConnection(first: 1) {
           edges {
             node {
-              offerEligibleConversations {
+              conversationsEligibleForPersonalizedOffer {
                 internalID
               }
             }

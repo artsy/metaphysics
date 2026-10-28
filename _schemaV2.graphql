@@ -30549,6 +30549,16 @@ type Partner implements Node {
     last: Int
     page: Int
   ): ConversationMessageTemplateConnection
+
+  """
+  The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. Powers the "Send offers" card on the partner's CMS Home page. Only the 10 most recent inquiries inside the window are checked, so this is capped at that many. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.
+  """
+  conversationsEligibleForPersonalizedOffer(
+    """
+    Only consider inquiries started within this many days.
+    """
+    createdWithinDays: Int = 5
+  ): [Conversation!]!
   counts: PartnerCounts
   defaultProfileID: String
   displayArtistsSection: Boolean
@@ -30869,16 +30879,6 @@ type Partner implements Node {
   merchantAccount: PartnerMerchantAccount
   meta: PartnerMeta
   name: String
-
-  """
-  The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. Only the 10 most recent inquiries inside the window are checked, so this is capped at that many. Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage), not selectable under any list or connection field, such as partnersConnection.
-  """
-  offerEligibleConversations(
-    """
-    Only consider inquiries started within this many days.
-    """
-    daysInPast: Int = 5
-  ): [Conversation!]!
 
   """
   A single order for this partner.

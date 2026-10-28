@@ -36,7 +36,10 @@ import {
   paginationResolver,
 } from "../fields/pagination"
 import { CollectorResume } from "./collectorResume"
-import { PartnerOfferEligibilityType } from "./partnerOfferEligibility"
+import {
+  loadPartnerOfferEligibility,
+  PartnerOfferEligibilityType,
+} from "./partnerOfferEligibility"
 import { UserInterestConnection } from "../userInterests"
 import {
   PartnerOfferConnectionType,
@@ -362,20 +365,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Whether the partner can send a personalized offer from this conversation. Null when it can't be determined; treat that as not eligible.",
         type: PartnerOfferEligibilityType,
-        resolve: async ({ id }, _args, { partnerOfferEligibilityLoader }) => {
-          if (!partnerOfferEligibilityLoader) return null
-
-          try {
-            return await partnerOfferEligibilityLoader({
-              impulse_conversation_id: id,
-            })
-          } catch (error) {
-            console.error(
-              "[schema/v2/conversation/partnerOfferEligibility] Error:",
-              error
-            )
-            return null
-          }
+        resolve: ({ id }, _args, { partnerOfferEligibilityLoader }) => {
+          return loadPartnerOfferEligibility({
+            loader: partnerOfferEligibilityLoader,
+            conversationId: id,
+          })
         },
       },
       collectorPartnerOffersConnection: {
