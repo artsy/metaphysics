@@ -224,6 +224,31 @@ describe("Partner inquiryMetrics.conversationEligibleForPersonalizedOffer", () =
     ).toBeNull()
   })
 
+  it("stops scanning when Gravity reports eligibility as unavailable", async () => {
+    const conversationsLoader = jest.fn().mockResolvedValue({
+      conversations: [{ id: "first" }, { id: "second" }],
+    })
+    const partnerOfferEligibilityLoader = jest
+      .fn()
+      .mockImplementation(({ impulse_conversation_id }) => {
+        return Promise.resolve(
+          impulse_conversation_id === "first"
+            ? { status: "ineligible", details: { reason: "unavailable" } }
+            : { status: "eligible" }
+        )
+      })
+
+    const { partner } = await runWith({
+      conversationsLoader,
+      partnerOfferEligibilityLoader,
+    })
+
+    expect(partnerOfferEligibilityLoader).toHaveBeenCalledTimes(1)
+    expect(
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toBeNull()
+  })
+
   it("is null when Impulse errors", async () => {
     const conversationsLoader = jest
       .fn()

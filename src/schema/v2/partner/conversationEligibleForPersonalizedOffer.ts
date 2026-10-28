@@ -76,15 +76,19 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
 
       // Check newest first and stop at the first eligible inquiry, so the common
       // case costs one eligibility call instead of one per candidate. The checks
-      // run one after another, so a rejection (usually an outage, and each call
-      // can wait out the full request timeout) ends the scan instead of moving
-      // on to the next candidate.
+      // run one after another, so a rejection or an "unavailable" answer (both
+      // mean an outage, and each call can wait out a timeout) ends the scan
+      // instead of moving on to the next candidate.
       for (const conversation of candidates) {
         try {
           const eligibility = await partnerOfferEligibilityLoader({
             impulse_conversation_id: conversation.id,
           })
           if (canSendPersonalizedOffer(eligibility)) return conversation
+
+          // Gravity answers 200 with this reason when Impulse or Exchange is
+          // down, and the next candidate would wait on the same failed service.
+          if (eligibility?.details?.reason === "unavailable") return null
         } catch (error) {
           console.error(
             `[partner/conversationEligibleForPersonalizedOffer] Error checking conversation ${conversation.id}, stopping the scan:`,
