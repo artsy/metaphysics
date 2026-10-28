@@ -47,11 +47,11 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
         return null
       }
 
-      let conversations: { id: string }[]
+      let response: { conversations?: { id: string }[] }
 
       try {
         // Same filters as the CMS inbox.
-        ;({ conversations } = await conversationsLoader({
+        response = await conversationsLoader({
           page: 1,
           size: PERSONALIZED_OFFER_SCAN_LIMIT,
           sort: "-created_at",
@@ -63,7 +63,7 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
           dismissed: false,
           conversation_type: "inquiry",
           created_within_days: createdWithinDays,
-        }))
+        })
       } catch (error) {
         console.error(
           "[partner/conversationEligibleForPersonalizedOffer] Error fetching conversations:",
@@ -72,7 +72,7 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
         return null
       }
 
-      const candidates = conversations ?? []
+      const candidates = response.conversations ?? []
 
       // Check newest first and stop at the first eligible inquiry, so the common
       // case costs one eligibility call instead of one per candidate. The checks
