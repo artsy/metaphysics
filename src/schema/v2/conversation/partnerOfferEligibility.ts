@@ -120,7 +120,6 @@ export const loadPartnerOfferEligibility = async ({
   }
 }
 
-/** The one place that defines "eligible": the partner can send a personalized offer now. */
 export const canSendPersonalizedOffer = (
   eligibility: { status?: string } | null
 ): boolean => {

@@ -62,6 +62,7 @@ describe("Partner inquiry metrics", () => {
       user_ids: ["user-1", "user-2"],
       size: 2,
     })
+    expect(conversationsLoader).toHaveBeenCalledTimes(1)
     expect(partner.inquiryMetrics).toEqual({
       confirmedBuyersWaitingCount: 1,
       unansweredCount: 7,
@@ -90,7 +91,7 @@ describe("Partner inquiry metrics", () => {
     })
   })
 
-  it("returns null when a loader errors", async () => {
+  it("returns null counts when the conversations loader errors", async () => {
     const conversationsLoader = jest
       .fn()
       .mockRejectedValue(new Error("Impulse unavailable"))
@@ -104,7 +105,62 @@ describe("Partner inquiry metrics", () => {
       accessToken: "access-token",
     })
 
-    expect(partner.inquiryMetrics).toBeNull()
+    expect(partnerCollectorProfilesLoader).not.toHaveBeenCalled()
+    expect(partner.inquiryMetrics).toEqual({
+      confirmedBuyersWaitingCount: null,
+      unansweredCount: null,
+    })
+  })
+
+  it("still returns the unanswered count when the collector profile lookup fails", async () => {
+    const conversationsLoader = jest.fn().mockResolvedValue({
+      total_count: 4,
+      conversations: [{ from_id: "user-1" }],
+    })
+    const partnerCollectorProfilesLoader = jest
+      .fn()
+      .mockRejectedValue(new Error("Gravity unavailable"))
+
+    const { partner } = await runAuthenticatedQuery(query, {
+      partnerLoader,
+      conversationsLoader,
+      partnerCollectorProfilesLoader,
+      userID: "user-id",
+      accessToken: "access-token",
+    })
+
+    expect(partner.inquiryMetrics).toEqual({
+      confirmedBuyersWaitingCount: null,
+      unansweredCount: 4,
+    })
+  })
+
+  it("doesn't look up collector profiles when only the unanswered count is selected", async () => {
+    const countOnlyQuery = gql`
+      {
+        partner(id: "example-partner") {
+          inquiryMetrics {
+            unansweredCount
+          }
+        }
+      }
+    `
+    const conversationsLoader = jest.fn().mockResolvedValue({
+      total_count: 3,
+      conversations: [{ from_id: "user-1" }],
+    })
+    const partnerCollectorProfilesLoader = jest.fn()
+
+    const { partner } = await runAuthenticatedQuery(countOnlyQuery, {
+      partnerLoader,
+      conversationsLoader,
+      partnerCollectorProfilesLoader,
+      userID: "user-id",
+      accessToken: "access-token",
+    })
+
+    expect(partner.inquiryMetrics).toEqual({ unansweredCount: 3 })
+    expect(partnerCollectorProfilesLoader).not.toHaveBeenCalled()
   })
 
   it("returns null when unauthenticated (no loaders available)", async () => {
@@ -135,12 +191,10 @@ describe("Partner inquiry metrics", () => {
       ],
       headers: { "x-total-count": "2" },
     })
-    const conversationsLoader = jest.fn().mockResolvedValue({
-      total_count: 0,
-      conversations: [],
-    })
+    const conversationsLoader = jest.fn()
     const partnerCollectorProfilesLoader = jest.fn()
 
+    // With several partners GraphQL aggregates the errors, so match on the stack.
     let thrown: Error | undefined
     try {
       await runAuthenticatedQuery(connectionQuery, {
@@ -157,5 +211,8 @@ describe("Partner inquiry metrics", () => {
     expect(thrown?.stack).toMatch(
       /cannot be queried under a list or connection/
     )
+
+    expect(conversationsLoader).not.toHaveBeenCalled()
+    expect(partnerCollectorProfilesLoader).not.toHaveBeenCalled()
   })
 })

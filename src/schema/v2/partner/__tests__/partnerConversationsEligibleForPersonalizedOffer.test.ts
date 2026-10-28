@@ -1,12 +1,14 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("Partner conversationsEligibleForPersonalizedOffer", () => {
+describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () => {
   const query = gql`
     {
       partner(id: "example-partner") {
-        conversationsEligibleForPersonalizedOffer {
-          internalID
+        inquiryMetrics {
+          conversationsEligibleForPersonalizedOffer {
+            internalID
+          }
         }
       }
     }
@@ -50,17 +52,15 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
       expect.objectContaining({
         to_id: "partner-internal-id",
         to_type: "Partner",
-        from_type: "User",
         conversation_type: "inquiry",
         sort: "-created_at",
         dismissed: false,
         created_within_days: 5,
       })
     )
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([
-      { internalID: "middle" },
-      { internalID: "oldest" },
-    ])
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([{ internalID: "middle" }, { internalID: "oldest" }])
   })
 
   it("lets Impulse apply a custom window", async () => {
@@ -71,8 +71,10 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
     const windowQuery = gql`
       {
         partner(id: "example-partner") {
-          conversationsEligibleForPersonalizedOffer(createdWithinDays: 14) {
-            internalID
+          inquiryMetrics {
+            conversationsEligibleForPersonalizedOffer(createdWithinDays: 14) {
+              internalID
+            }
           }
         }
       }
@@ -112,7 +114,9 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
     expect(partnerOfferEligibilityLoader).toHaveBeenCalledWith({
       impulse_conversation_id: "second",
     })
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([])
   })
 
   it("is empty when no recent inquiry is eligible", async () => {
@@ -128,7 +132,9 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([])
   })
 
   it("keeps looking when one eligibility check fails", async () => {
@@ -148,9 +154,9 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
       partnerOfferEligibilityLoader,
     })
 
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([
-      { internalID: "fine" },
-    ])
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([{ internalID: "fine" }])
   })
 
   it("is empty when Impulse errors", async () => {
@@ -165,23 +171,52 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
     })
 
     expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([])
   })
 
-  it("is empty when unauthenticated (no loaders available)", async () => {
+  it("is unavailable when unauthenticated (no loaders available)", async () => {
     const { partner } = await runQuery(query, { partnerLoader })
 
-    expect(partner.conversationsEligibleForPersonalizedOffer).toEqual([])
+    expect(partner.inquiryMetrics).toBeNull()
   })
 
-  it("throws if selected under partnersConnection instead of a single partner", async () => {
+  it("is empty when the eligibility loader is unavailable", async () => {
+    const { partner } = await runWith({
+      conversationsLoader: jest.fn().mockResolvedValue({
+        conversations: [{ id: "a" }],
+      }),
+      partnerOfferEligibilityLoader: undefined as any,
+    })
+
+    expect(
+      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+    ).toEqual([])
+  })
+
+  it("doesn't pay for the collector profile lookup the other metrics need", async () => {
+    const partnerCollectorProfilesLoader = jest.fn()
+
+    await runWith({
+      conversationsLoader: jest.fn().mockResolvedValue({ conversations: [] }),
+      partnerOfferEligibilityLoader: jest.fn(),
+      partnerCollectorProfilesLoader,
+    })
+
+    expect(partnerCollectorProfilesLoader).not.toHaveBeenCalled()
+  })
+
+  it("throws if selected under partnersConnection instead of a single partner, without calling upstream", async () => {
     const connectionQuery = gql`
       {
-        partnersConnection(first: 1) {
+        partnersConnection(first: 2) {
           edges {
             node {
-              conversationsEligibleForPersonalizedOffer {
-                internalID
+              inquiryMetrics {
+                conversationsEligibleForPersonalizedOffer {
+                  internalID
+                }
               }
             }
           }
@@ -190,18 +225,34 @@ describe("Partner conversationsEligibleForPersonalizedOffer", () => {
     `
 
     const partnersLoader = jest.fn().mockResolvedValue({
-      body: [{ id: "partner-1", _id: "partner-1-internal-id" }],
-      headers: { "x-total-count": "1" },
+      body: [
+        { id: "partner-1", _id: "partner-1-internal-id" },
+        { id: "partner-2", _id: "partner-2-internal-id" },
+      ],
+      headers: { "x-total-count": "2" },
     })
+    const conversationsLoader = jest.fn()
+    const partnerOfferEligibilityLoader = jest.fn()
 
-    await expect(
-      runAuthenticatedQuery(connectionQuery, {
+    // With several partners GraphQL aggregates the errors, so match on the stack.
+    let thrown: Error | undefined
+    try {
+      await runAuthenticatedQuery(connectionQuery, {
         partnersLoader,
-        conversationsLoader: jest.fn(),
-        partnerOfferEligibilityLoader: jest.fn(),
+        conversationsLoader,
+        partnerOfferEligibilityLoader,
         userID: "user-id",
         accessToken: "access-token",
       })
-    ).rejects.toThrow(/cannot be queried under a list or connection/)
+    } catch (error) {
+      thrown = error as Error
+    }
+
+    expect(thrown?.stack).toMatch(
+      /cannot be queried under a list or connection/
+    )
+
+    expect(conversationsLoader).not.toHaveBeenCalled()
+    expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
   })
 })
