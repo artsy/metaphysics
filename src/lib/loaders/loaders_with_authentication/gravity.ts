@@ -2070,6 +2070,19 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    undistributePartnerListLoader: gravityLoader(
+      (id) => `partner_list/${id}/undistribute`,
+      {},
+      { method: "POST" }
+    ),
+    dismissPartnerListSyncConfirmationLoader: gravityLoader(
+      (id) => `partner_list/${id}/dismiss_sync_confirmation`,
+      {},
+      { method: "POST" }
+    ),
+    partnerListArtworkImpactLoader: gravityLoader(
+      (id) => `partner_list/${id}/artwork_impact`
+    ),
     addArtworkToPartnerListLoader: gravityLoader<
       any,
       { listId: string; artworkId: string }

@@ -36,6 +36,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 import { deprecate } from "lib/deprecation"
+import { ArgumentError } from "lib/argumentError"
 import { CURATORS_PICK_COLLECTION_SLUG } from "schema/v2/artwork/collectorSignals"
 import { keys, map, omit } from "lodash"
 import {
@@ -780,21 +781,25 @@ const filterArtworksConnectionTypeFactory = (
 
     // Checked after `mapRootToFilterParams`, which can add a keyword (e.g. an alert's).
     if (gravityOptions.similar_to_artwork_id && gravityOptions.keyword) {
-      throw new Error("`similarToArtworkID` cannot be combined with `keyword`.")
+      throw new ArgumentError(
+        "`similarToArtworkID` cannot be combined with `keyword`."
+      )
     }
 
     if (image) {
       if (gravityOptions.similar_to_artwork_id) {
-        throw new Error("`image` cannot be combined with `similarToArtworkID`.")
+        throw new ArgumentError(
+          "`image` cannot be combined with `similarToArtworkID`."
+        )
       }
       if (gravityOptions.keyword) {
-        throw new Error("`image` cannot be combined with `keyword`.")
+        throw new ArgumentError("`image` cannot be combined with `keyword`.")
       }
       if (gravityOptions.variant) {
-        throw new Error("`image` cannot be combined with `variant`.")
+        throw new ArgumentError("`image` cannot be combined with `variant`.")
       }
       if (gravityOptions.sort && gravityOptions.sort !== "-decayed_merch") {
-        throw new Error(
+        throw new ArgumentError(
           "`image` search only supports the `-decayed_merch` sort."
         )
       }
