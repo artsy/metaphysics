@@ -1,9 +1,4 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from "graphql"
 import {
   canSendPersonalizedOffer,
   loadPartnerOfferEligibility,
@@ -16,25 +11,23 @@ export interface InquiryMetricsSource {
   partnerID: string
 }
 
-interface ConversationsEligibleForPersonalizedOfferArguments {
+interface ConversationEligibleForPersonalizedOfferArguments {
   createdWithinDays: number
 }
 
-export const conversationsEligibleForPersonalizedOfferField = (): GraphQLFieldConfig<
+export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldConfig<
   InquiryMetricsSource,
   ResolverContext,
-  ConversationsEligibleForPersonalizedOfferArguments
+  ConversationEligibleForPersonalizedOfferArguments
 > => {
   const { ConversationType } = require("schema/v2/conversation")
 
   return {
-    type: new GraphQLNonNull(
-      new GraphQLList(new GraphQLNonNull(ConversationType))
-    ),
+    type: ConversationType,
     description:
-      "The partner's recent inquiries that a personalized offer can still be sent from, newest first. Empty if there are none. " +
+      "The newest recent inquiry a personalized offer can still be sent from, or null if there is none. " +
       'Powers the "Send offers" card on the partner\'s CMS Home page. ' +
-      `Only the ${PERSONALIZED_OFFER_SCAN_LIMIT} most recent inquiries inside the window are checked, so this is capped at that many.`,
+      `Only the ${PERSONALIZED_OFFER_SCAN_LIMIT} most recent inquiries inside the window are checked, and checking stops at the first eligible one.`,
     args: {
       createdWithinDays: {
         type: new GraphQLNonNull(GraphQLInt),
@@ -48,13 +41,13 @@ export const conversationsEligibleForPersonalizedOfferField = (): GraphQLFieldCo
       { conversationsLoader, partnerOfferEligibilityLoader }
     ) => {
       if (!conversationsLoader || !partnerOfferEligibilityLoader) {
-        return []
+        return null
       }
 
       // Impulse ignores the window for an empty value, which would scan every
       // inquiry ever received, and rejects zero and negative values.
       if (createdWithinDays < 1) {
-        return []
+        return null
       }
 
       let conversations: { id: string }[]
@@ -76,27 +69,29 @@ export const conversationsEligibleForPersonalizedOfferField = (): GraphQLFieldCo
         }))
       } catch (error) {
         console.error(
-          "[partner/conversationsEligibleForPersonalizedOffer] Error fetching conversations:",
+          "[partner/conversationEligibleForPersonalizedOffer] Error fetching conversations:",
           error
         )
-        return []
+        return null
       }
 
       const candidates = conversations ?? []
 
-      const eligibilities = await Promise.all(
-        candidates.map(async ({ id }) => {
+      // Check newest first and stop at the first eligible inquiry, so the common
+      // case costs one eligibility call instead of one per candidate.
+      return candidates.reduce<Promise<{ id: string } | null>>(
+        async (found, conversation) => {
+          const match = await found
+          if (match) return match
+
           const eligibility = await loadPartnerOfferEligibility({
             loader: partnerOfferEligibilityLoader,
-            conversationId: id,
+            conversationId: conversation.id,
           })
-          return canSendPersonalizedOffer(eligibility)
-        })
+          return canSendPersonalizedOffer(eligibility) ? conversation : null
+        },
+        Promise.resolve(null)
       )
-
-      return candidates.filter((_conversation, index) => {
-        return eligibilities[index]
-      })
     },
   }
 }

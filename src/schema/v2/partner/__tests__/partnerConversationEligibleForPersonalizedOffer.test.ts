@@ -1,12 +1,12 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () => {
+describe("Partner inquiryMetrics.conversationEligibleForPersonalizedOffer", () => {
   const query = gql`
     {
       partner(id: "example-partner") {
         inquiryMetrics {
-          conversationsEligibleForPersonalizedOffer {
+          conversationEligibleForPersonalizedOffer {
             internalID
           }
         }
@@ -28,7 +28,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     })
   }
 
-  it("returns every recent eligible inquiry, newest first", async () => {
+  it("returns the newest eligible inquiry and stops checking there", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "newest" }, { id: "middle" }, { id: "oldest" }],
     })
@@ -59,8 +59,12 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
       })
     )
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([{ internalID: "middle" }, { internalID: "oldest" }])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toEqual({ internalID: "middle" })
+    expect(partnerOfferEligibilityLoader).toHaveBeenCalledTimes(2)
+    expect(partnerOfferEligibilityLoader).not.toHaveBeenCalledWith({
+      impulse_conversation_id: "oldest",
+    })
   })
 
   it("lets Impulse apply a custom window", async () => {
@@ -72,7 +76,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
       {
         partner(id: "example-partner") {
           inquiryMetrics {
-            conversationsEligibleForPersonalizedOffer(createdWithinDays: 14) {
+            conversationEligibleForPersonalizedOffer(createdWithinDays: 14) {
               internalID
             }
           }
@@ -100,7 +104,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
       {
         partner(id: "example-partner") {
           inquiryMetrics {
-            conversationsEligibleForPersonalizedOffer(createdWithinDays: null) {
+            conversationEligibleForPersonalizedOffer(createdWithinDays: null) {
               internalID
             }
           }
@@ -122,7 +126,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
   })
 
   it.each([0, -1])(
-    "is empty without calling Impulse when the window is %d days",
+    "is null without calling Impulse when the window is %d days",
     async (days) => {
       const conversationsLoader = jest.fn()
       const partnerOfferEligibilityLoader = jest.fn()
@@ -130,7 +134,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
         {
           partner(id: "example-partner") {
             inquiryMetrics {
-              conversationsEligibleForPersonalizedOffer(createdWithinDays: ${days}) {
+              conversationEligibleForPersonalizedOffer(createdWithinDays: ${days}) {
                 internalID
               }
             }
@@ -147,14 +151,14 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
       })
 
       expect(
-        partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-      ).toEqual([])
+        partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+      ).toBeNull()
       expect(conversationsLoader).not.toHaveBeenCalled()
       expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
     }
   )
 
-  it("checks every candidate Impulse returns", async () => {
+  it("checks every candidate when none is eligible", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "first" }, { id: "second" }],
     })
@@ -175,11 +179,11 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
       impulse_conversation_id: "second",
     })
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toBeNull()
   })
 
-  it("is empty when no recent inquiry is eligible", async () => {
+  it("is null when no recent inquiry is eligible", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "a" }],
     })
@@ -193,8 +197,8 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     })
 
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toBeNull()
   })
 
   it("keeps looking when one eligibility check fails", async () => {
@@ -215,11 +219,11 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     })
 
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([{ internalID: "fine" }])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toEqual({ internalID: "fine" })
   })
 
-  it("is empty when Impulse errors", async () => {
+  it("is null when Impulse errors", async () => {
     const conversationsLoader = jest
       .fn()
       .mockRejectedValue(new Error("Impulse unavailable"))
@@ -232,8 +236,8 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
 
     expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toBeNull()
   })
 
   it("is unavailable when unauthenticated (no loaders available)", async () => {
@@ -242,7 +246,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     expect(partner.inquiryMetrics).toBeNull()
   })
 
-  it("is empty when the eligibility loader is unavailable", async () => {
+  it("is null when the eligibility loader is unavailable", async () => {
     const { partner } = await runWith({
       conversationsLoader: jest.fn().mockResolvedValue({
         conversations: [{ id: "a" }],
@@ -251,8 +255,8 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     })
 
     expect(
-      partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
-    ).toEqual([])
+      partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
+    ).toBeNull()
   })
 
   it("doesn't pay for the collector profile lookup the other metrics need", async () => {
@@ -274,7 +278,7 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
           edges {
             node {
               inquiryMetrics {
-                conversationsEligibleForPersonalizedOffer {
+                conversationEligibleForPersonalizedOffer {
                   internalID
                 }
               }

@@ -6,9 +6,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
-  conversationsEligibleForPersonalizedOfferField,
+  conversationEligibleForPersonalizedOfferField,
   InquiryMetricsSource,
-} from "./conversationsEligibleForPersonalizedOffer"
+} from "./conversationEligibleForPersonalizedOffer"
 
 // Confirmed-buyer inquirers are only counted within the most recent batch
 // of unanswered conversations, to bound the cost of the collector-profiles
@@ -135,7 +135,7 @@ const PartnerInquiryMetricsType = new GraphQLObjectType<
           return unanswered?.total_count ?? null
         },
       },
-      conversationsEligibleForPersonalizedOffer: conversationsEligibleForPersonalizedOfferField(),
+      conversationEligibleForPersonalizedOffer: conversationEligibleForPersonalizedOfferField(),
     }
   },
 })
