@@ -32182,7 +32182,7 @@ type PartnerInquiryMetrics {
   confirmedBuyersWaitingCount: Int
 
   """
-  The newest recent inquiry a personalized offer can still be sent from, or null if there is none. Powers the "Send offers" card on the partner's CMS Home page. Only the 10 most recent inquiries inside the window are checked, and checking stops at the first eligible one.
+  The newest recent inquiry a personalized offer can still be sent from, or null if there is none. Powers the "Send offers" card on the partner's CMS Home page. Only the 5 most recent inquiries inside the window are checked, and checking stops at the first eligible one.
   """
   conversationEligibleForPersonalizedOffer(
     """

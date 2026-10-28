@@ -150,8 +150,9 @@ export const inquiryMetricsField: GraphQLFieldConfig<any, ResolverContext> = {
 
     // inquiryMetrics is only meant to be queried for a single partner (their
     // own CMS homepage), never for a page of partners: every child makes
-    // per-partner REST calls with no batch variant (the eligibility field up
-    // to 10 Gravity checks, each of which calls Impulse and Exchange again),
+    // per-partner REST calls with no batch variant (the eligibility field scans
+    // several inquiries with one Gravity check each, and each check calls
+    // Impulse and Exchange again),
     // so selecting any of them under a list/connection field would fan out
     // into an N+1 incident (see AGENTS.md). A numeric segment in the resolve
     // path only occurs under a list, never for the singular `partner(id:)`

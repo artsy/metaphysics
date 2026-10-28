@@ -1,7 +1,7 @@
 import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const PERSONALIZED_OFFER_SCAN_LIMIT = 10
+const PERSONALIZED_OFFER_SCAN_LIMIT = 5
 
 export interface InquiryMetricsSource {
   partnerID: string
