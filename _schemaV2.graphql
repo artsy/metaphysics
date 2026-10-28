@@ -32188,7 +32188,7 @@ type PartnerInquiryMetrics {
     """
     Only consider inquiries started within this many days.
     """
-    createdWithinDays: Int = 5
+    createdWithinDays: Int! = 5
   ): [Conversation!]!
 
   """

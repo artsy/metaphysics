@@ -49,6 +49,7 @@ describe("Partner inquiry metrics", () => {
 
     expect(conversationsLoader).toHaveBeenCalledWith(
       expect.objectContaining({
+        sort: "-last_message_at",
         to_id: "partner-internal-id",
         to_type: "Partner",
         has_message: true,

@@ -94,6 +94,66 @@ describe("Partner inquiryMetrics.conversationsEligibleForPersonalizedOffer", () 
     expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
   })
 
+  it("rejects an explicit null window instead of forwarding it to Impulse", async () => {
+    const conversationsLoader = jest.fn()
+    const nullWindowQuery = gql`
+      {
+        partner(id: "example-partner") {
+          inquiryMetrics {
+            conversationsEligibleForPersonalizedOffer(createdWithinDays: null) {
+              internalID
+            }
+          }
+        }
+      }
+    `
+
+    await expect(
+      runAuthenticatedQuery(nullWindowQuery, {
+        partnerLoader,
+        conversationsLoader,
+        partnerOfferEligibilityLoader: jest.fn(),
+        userID: "user-id",
+        accessToken: "access-token",
+      })
+    ).rejects.toThrow(/Int!/)
+
+    expect(conversationsLoader).not.toHaveBeenCalled()
+  })
+
+  it.each([0, -1])(
+    "is empty without calling Impulse when the window is %d days",
+    async (days) => {
+      const conversationsLoader = jest.fn()
+      const partnerOfferEligibilityLoader = jest.fn()
+      const windowQuery = gql`
+        {
+          partner(id: "example-partner") {
+            inquiryMetrics {
+              conversationsEligibleForPersonalizedOffer(createdWithinDays: ${days}) {
+                internalID
+              }
+            }
+          }
+        }
+      `
+
+      const { partner } = await runAuthenticatedQuery(windowQuery, {
+        partnerLoader,
+        conversationsLoader,
+        partnerOfferEligibilityLoader,
+        userID: "user-id",
+        accessToken: "access-token",
+      })
+
+      expect(
+        partner.inquiryMetrics.conversationsEligibleForPersonalizedOffer
+      ).toEqual([])
+      expect(conversationsLoader).not.toHaveBeenCalled()
+      expect(partnerOfferEligibilityLoader).not.toHaveBeenCalled()
+    }
+  )
+
   it("checks every candidate Impulse returns", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "first" }, { id: "second" }],

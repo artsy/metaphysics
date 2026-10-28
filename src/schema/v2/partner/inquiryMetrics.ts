@@ -5,7 +5,10 @@ import {
   GraphQLResolveInfo,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { conversationsEligibleForPersonalizedOfferField } from "./conversationsEligibleForPersonalizedOffer"
+import {
+  conversationsEligibleForPersonalizedOfferField,
+  InquiryMetricsSource,
+} from "./conversationsEligibleForPersonalizedOffer"
 
 // Confirmed-buyer inquirers are only counted within the most recent batch
 // of unanswered conversations, to bound the cost of the collector-profiles
@@ -34,8 +37,7 @@ interface UnansweredConversations {
   conversations: { from_id?: string }[]
 }
 
-interface InquiryMetricsSource {
-  partnerID: string
+interface InquiryMetricsParent extends InquiryMetricsSource {
   unansweredConversations: () => Promise<UnansweredConversations | null>
 }
 
@@ -50,6 +52,10 @@ const loadUnansweredConversations = async ({
     const { total_count, conversations } = await loader({
       page: 1,
       size: UNANSWERED_CONVERSATIONS_SCAN_LIMIT,
+      // Newest message first, which is Impulse's default order. Passed
+      // explicitly so which conversations fall inside the scan limit doesn't
+      // silently depend on that default.
+      sort: "-last_message_at",
       deleted: false,
       intercepted: false,
       to_id: partnerID,
@@ -71,7 +77,7 @@ const loadUnansweredConversations = async ({
 }
 
 const PartnerInquiryMetricsType = new GraphQLObjectType<
-  InquiryMetricsSource,
+  InquiryMetricsParent,
   ResolverContext
 >({
   name: "PartnerInquiryMetrics",

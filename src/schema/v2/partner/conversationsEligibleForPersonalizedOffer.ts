@@ -12,7 +12,7 @@ import { ResolverContext } from "types/graphql"
 
 const PERSONALIZED_OFFER_SCAN_LIMIT = 10
 
-interface InquiryMetricsSource {
+export interface InquiryMetricsSource {
   partnerID: string
 }
 
@@ -37,7 +37,7 @@ export const conversationsEligibleForPersonalizedOfferField = (): GraphQLFieldCo
       `Only the ${PERSONALIZED_OFFER_SCAN_LIMIT} most recent inquiries inside the window are checked, so this is capped at that many.`,
     args: {
       createdWithinDays: {
-        type: GraphQLInt,
+        type: new GraphQLNonNull(GraphQLInt),
         defaultValue: 5,
         description: "Only consider inquiries started within this many days.",
       },
@@ -48,6 +48,12 @@ export const conversationsEligibleForPersonalizedOfferField = (): GraphQLFieldCo
       { conversationsLoader, partnerOfferEligibilityLoader }
     ) => {
       if (!conversationsLoader || !partnerOfferEligibilityLoader) {
+        return []
+      }
+
+      // Impulse ignores the window for an empty value, which would scan every
+      // inquiry ever received, and rejects zero and negative values.
+      if (createdWithinDays < 1) {
         return []
       }
 
