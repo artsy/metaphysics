@@ -1,5 +1,4 @@
 import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from "graphql"
-import { canSendPersonalizedOffer } from "schema/v2/conversation/partnerOfferEligibility"
 import { ResolverContext } from "types/graphql"
 
 const PERSONALIZED_OFFER_SCAN_LIMIT = 10
@@ -84,7 +83,7 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
           const eligibility = await partnerOfferEligibilityLoader({
             impulse_conversation_id: conversation.id,
           })
-          if (canSendPersonalizedOffer(eligibility)) return conversation
+          if (eligibility?.status === "eligible") return conversation
 
           // Gravity answers 200 with this reason when Impulse or Exchange is
           // down, and the next candidate would wait on the same failed service.

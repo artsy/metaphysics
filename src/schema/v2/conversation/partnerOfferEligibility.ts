@@ -94,34 +94,3 @@ export const PartnerOfferEligibilityType = new GraphQLObjectType<
     },
   },
 })
-
-/**
- * Loads a conversation's personalized-offer eligibility from Gravity. Null when
- * it can't be determined (no loader, or the lookup failed); treat that as not
- * eligible.
- */
-export const loadPartnerOfferEligibility = async ({
-  loader,
-  conversationId,
-}: {
-  loader: ResolverContext["partnerOfferEligibilityLoader"]
-  conversationId: string
-}) => {
-  if (!loader) return null
-
-  try {
-    return await loader({ impulse_conversation_id: conversationId })
-  } catch (error) {
-    console.error(
-      `[schema/v2/conversation/partnerOfferEligibility] Error checking conversation ${conversationId}:`,
-      error
-    )
-    return null
-  }
-}
-
-export const canSendPersonalizedOffer = (
-  eligibility: { status?: string } | null
-): boolean => {
-  return eligibility?.status === "eligible"
-}
