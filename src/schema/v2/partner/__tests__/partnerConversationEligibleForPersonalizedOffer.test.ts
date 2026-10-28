@@ -201,7 +201,7 @@ describe("Partner inquiryMetrics.conversationEligibleForPersonalizedOffer", () =
     ).toBeNull()
   })
 
-  it("keeps looking when one eligibility check fails", async () => {
+  it("stops scanning at the first failed eligibility check", async () => {
     const conversationsLoader = jest.fn().mockResolvedValue({
       conversations: [{ id: "broken" }, { id: "fine" }],
     })
@@ -218,9 +218,10 @@ describe("Partner inquiryMetrics.conversationEligibleForPersonalizedOffer", () =
       partnerOfferEligibilityLoader,
     })
 
+    expect(partnerOfferEligibilityLoader).toHaveBeenCalledTimes(1)
     expect(
       partner.inquiryMetrics.conversationEligibleForPersonalizedOffer
-    ).toEqual({ internalID: "fine" })
+    ).toBeNull()
   })
 
   it("is null when Impulse errors", async () => {

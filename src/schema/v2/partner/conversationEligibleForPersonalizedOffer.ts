@@ -1,8 +1,5 @@
 import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from "graphql"
-import {
-  canSendPersonalizedOffer,
-  loadPartnerOfferEligibility,
-} from "schema/v2/conversation/partnerOfferEligibility"
+import { canSendPersonalizedOffer } from "schema/v2/conversation/partnerOfferEligibility"
 import { ResolverContext } from "types/graphql"
 
 const PERSONALIZED_OFFER_SCAN_LIMIT = 10
@@ -78,20 +75,26 @@ export const conversationEligibleForPersonalizedOfferField = (): GraphQLFieldCon
       const candidates = conversations ?? []
 
       // Check newest first and stop at the first eligible inquiry, so the common
-      // case costs one eligibility call instead of one per candidate.
-      return candidates.reduce<Promise<{ id: string } | null>>(
-        async (found, conversation) => {
-          const match = await found
-          if (match) return match
-
-          const eligibility = await loadPartnerOfferEligibility({
-            loader: partnerOfferEligibilityLoader,
-            conversationId: conversation.id,
+      // case costs one eligibility call instead of one per candidate. The checks
+      // run one after another, so a rejection (usually an outage, and each call
+      // can wait out the full request timeout) ends the scan instead of moving
+      // on to the next candidate.
+      for (const conversation of candidates) {
+        try {
+          const eligibility = await partnerOfferEligibilityLoader({
+            impulse_conversation_id: conversation.id,
           })
-          return canSendPersonalizedOffer(eligibility) ? conversation : null
-        },
-        Promise.resolve(null)
-      )
+          if (canSendPersonalizedOffer(eligibility)) return conversation
+        } catch (error) {
+          console.error(
+            `[partner/conversationEligibleForPersonalizedOffer] Error checking conversation ${conversation.id}, stopping the scan:`,
+            error
+          )
+          return null
+        }
+      }
+
+      return null
     },
   }
 }
