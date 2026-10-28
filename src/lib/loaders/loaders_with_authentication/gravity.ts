@@ -2018,6 +2018,74 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
 
+    // CRM Contact Loaders
+    crmContactsLoader: gravityLoader("crm_contacts", {}, { headers: true }),
+    crmContactLoader: gravityLoader((id) => `crm_contact/${id}`),
+    createCrmContactLoader: gravityLoader(
+      "crm_contact",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactLoader: gravityLoader(
+      (id) => `crm_contact/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    archiveCrmContactLoader: gravityLoader(
+      (id) => `crm_contact/${id}/archive`,
+      {},
+      { method: "POST" }
+    ),
+    unarchiveCrmContactLoader: gravityLoader(
+      (id) => `crm_contact/${id}/unarchive`,
+      {},
+      { method: "POST" }
+    ),
+    crmContactEmailsLoader: gravityLoader(
+      "crm_contact_emails",
+      {},
+      { headers: true }
+    ),
+    crmContactEmailLoader: gravityLoader((id) => `crm_contact_email/${id}`),
+    createCrmContactEmailLoader: gravityLoader(
+      "crm_contact_email",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactEmailLoader: gravityLoader(
+      (id) => `crm_contact_email/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactEmailLoader: gravityLoader(
+      (id) => `crm_contact_email/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    crmContactLocationsLoader: gravityLoader(
+      "crm_contact_locations",
+      {},
+      { headers: true }
+    ),
+    crmContactLocationLoader: gravityLoader(
+      (id) => `crm_contact_location/${id}`
+    ),
+    createCrmContactLocationLoader: gravityLoader(
+      "crm_contact_location",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactLocationLoader: gravityLoader(
+      (id) => `crm_contact_location/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactLocationLoader: gravityLoader(
+      (id) => `crm_contact_location/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+
     // Brand Kit Loaders
     brandKitLoader: gravityLoader("brand_kit"),
     createBrandKitLoader: gravityLoader("brand_kit", {}, { method: "POST" }),
