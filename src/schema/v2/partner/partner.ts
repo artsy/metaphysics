@@ -12,11 +12,9 @@ import {
   GraphQLFieldConfigArgumentMap,
   GraphQLFieldConfigMap,
   GraphQLFloat,
-  GraphQLResolveInfo,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
-import config from "config"
 import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
 import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -90,6 +88,7 @@ import { ArtworkTemplatesConnection } from "schema/v2/artworkTemplate/artworkTem
 import { ArtworkDuplicatePairsConnection } from "schema/v2/artworkDuplicatePair/artworkDuplicatePairs"
 import { BrandKitType } from "./brandKit"
 import { bulkUpdateMetadataPreview } from "./BulkOperation/bulkUpdateMetadataPreview"
+import { inquiryMetricsField } from "./inquiryMetrics"
 
 // Partner-scoped loaders answer 403 (user cannot manage the partner) and 404
 // (resource missing, deleted, or owned by another partner) for anything the
@@ -195,28 +194,6 @@ export const AnalyticsQueryPeriodEnum = {
   type: AnalyticsQueryPeriodEnumType,
 }
 
-// Confirmed-buyer inquirers are only counted within the most recent batch
-// of unanswered conversations, to bound the cost of the collector-profiles
-// lookup. See the `confirmedBuyersWaitingCount` field description below.
-const UNANSWERED_CONVERSATIONS_SCAN_LIMIT = 50
-
-// True when the current field is being resolved beneath a list index in the
-// response (e.g. `partnersConnection.edges[3].node.inquiryMetrics`). The
-// singular `partner(id:)` field never produces a numeric path segment, so
-// this reliably distinguishes "resolved for one partner" from "resolved as
-// one node of a list/connection of partners" without needing to enumerate
-// every field that can return a Partner.
-const isUnderListPath = (info: GraphQLResolveInfo): boolean => {
-  let path: typeof info.path | undefined = info.path
-  while (path) {
-    if (typeof path.key === "number") {
-      return true
-    }
-    path = path.prev
-  }
-  return false
-}
-
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -300,10 +277,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      // Stitched from Vortex until it's unstitched.
-      ...(config.USE_UNSTITCHED_VORTEX
-        ? { analytics: PartnerAnalyticsField }
-        : {}),
+      analytics: PartnerAnalyticsField,
       artistsWithAlertCountsConnection: {
         type: ArtistsWithAlertCountsConnectionType,
         args: pageable({
@@ -1344,123 +1318,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      inquiryMetrics: {
-        type: new GraphQLObjectType<any, ResolverContext>({
-          name: "PartnerInquiryMetrics",
-          fields: {
-            confirmedBuyersWaitingCount: {
-              type: GraphQLInt,
-              description:
-                "Number of confirmed buyers whose inquiries are still awaiting a response from the partner. " +
-                `Only scanned within the first ${UNANSWERED_CONVERSATIONS_SCAN_LIMIT} unanswered conversations returned by Impulse, so for partners with more unanswered conversations than that, this is a lower bound rather than an exact count.`,
-              resolve: ({ confirmed_buyers_waiting_count }) =>
-                confirmed_buyers_waiting_count,
-            },
-            unansweredCount: {
-              type: GraphQLInt,
-              description:
-                "Number of inquiries still awaiting a response from the partner",
-              resolve: ({ unanswered_count }) => unanswered_count,
-            },
-          },
-        }),
-        description:
-          "Aggregate metrics for the partner's unanswered inquiries, composed from Impulse conversations and Gravity collector profiles. " +
-          "Only resolvable for a single partner (e.g. `partner(id:)` on that partner's own CMS homepage) — not selectable under any list or connection field, such as partnersConnection.",
-        resolve: async (
-          { _id },
-          _args,
-          {
-            conversationsLoader,
-            partnerCollectorProfilesLoader,
-          }: ResolverContext,
-          info
-        ) => {
-          if (!conversationsLoader || !partnerCollectorProfilesLoader) {
-            return null
-          }
-
-          // inquiryMetrics is only meant to be queried for a single partner
-          // (their own CMS homepage), never for a page of partners: its two
-          // loader calls are per-partner REST calls with no batch variant,
-          // so selecting it under any list/connection field would fan out
-          // into an N+1 incident. A numeric segment in the resolve path only
-          // occurs under a list (e.g. partnersConnection's `edges[3].node`),
-          // never for the singular `partner(id:)` field, so this reliably
-          // distinguishes the two without needing to enumerate every list
-          // field that returns a Partner.
-          if (isUnderListPath(info)) {
-            throw new Error(
-              "[partner/inquiryMetrics] This field cannot be queried under a list or connection " +
-                "(e.g. partnersConnection); it is only supported for a single partner via partner(id:)."
-            )
-          }
-
-          let total_count: number
-          let conversations: { from_id?: string }[]
-
-          try {
-            // Same filters as the CMS unanswered-inquiries view, so counts
-            // always match what the partner sees when clicking through.
-            // NOTE: no sort param is passed, so which conversations fall
-            // within the scan limit below depends on Impulse's default
-            // ordering for this endpoint. Confirm that ordering (and pass
-            // an explicit sort param if Impulse supports one) before
-            // relying on "most recent" framing in the field description.
-            ;({ total_count, conversations } = await conversationsLoader({
-              page: 1,
-              size: UNANSWERED_CONVERSATIONS_SCAN_LIMIT,
-              deleted: false,
-              intercepted: false,
-              to_id: _id,
-              to_type: "Partner",
-              has_message: true,
-              has_reply: false,
-              dismissed: false,
-              to_be_replied: true,
-            }))
-          } catch (error) {
-            console.error(
-              "[partner/inquiryMetrics] Error fetching conversations:",
-              error
-            )
-            return null
-          }
-
-          const userIds = [
-            ...new Set(
-              (conversations ?? [])
-                .map((conversation) => conversation.from_id)
-                .filter((id): id is string => !!id)
-            ),
-          ]
-
-          let confirmedBuyersWaitingCount: number | null = 0
-          if (userIds.length > 0) {
-            try {
-              const { body } = await partnerCollectorProfilesLoader({
-                partner_id: _id,
-                user_ids: userIds,
-                size: userIds.length,
-              })
-              confirmedBuyersWaitingCount = body.filter(
-                (item) => item.collector_profile?.confirmed_buyer_at
-              ).length
-            } catch (error) {
-              console.error(
-                "[partner/inquiryMetrics] Error fetching collector profiles:",
-                error
-              )
-              confirmedBuyersWaitingCount = null
-            }
-          }
-
-          return {
-            unanswered_count: total_count,
-            confirmed_buyers_waiting_count: confirmedBuyersWaitingCount,
-          }
-        },
-      },
+      inquiryMetrics: inquiryMetricsField,
       isLinkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>

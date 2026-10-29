@@ -48,8 +48,8 @@ const buildContext = (responses: any = {}) => {
   const mockArtworksLoader = jest.fn(() => Promise.resolve(newForYouArtworks))
   const mockSetsLoader = jest.fn(() => Promise.resolve({ body: sets }))
   const mockSetItemsLoader = jest.fn(() => Promise.resolve({ body: setItems }))
-  const mockVortexGraphqlLoader = jest.fn(() => () =>
-    Promise.resolve({ data: { newForYouRecommendations } })
+  const mockVortexNewForYouRecommendationsLoader = jest.fn(() =>
+    Promise.resolve({ data: newForYouRecommendations })
   )
 
   const context = {
@@ -59,11 +59,9 @@ const buildContext = (responses: any = {}) => {
     userID: "vortex-user-id",
     userAgent: ELIGIBLE_USER_AGENT,
     authenticatedLoaders: {
-      vortexGraphqlLoader: mockVortexGraphqlLoader,
+      vortexNewForYouRecommendationsLoader: mockVortexNewForYouRecommendationsLoader,
     },
-    unauthenticatedLoaders: {
-      vortexGraphqlLoader: null,
-    },
+    unauthenticatedLoaders: {},
   } as any
 
   return context
@@ -95,7 +93,7 @@ describe("artworksForUser", () => {
   describe("with no affinity artworks", () => {
     it("returns an empty array", async () => {
       const query = buildQuery()
-      const newForYouRecommendations = [{}]
+      const newForYouRecommendations = []
       const newForYouArtworks = []
       const context = buildContext({
         newForYouRecommendations,
@@ -119,9 +117,7 @@ describe("artworksForUser", () => {
   describe("with recs and new for you artworks", () => {
     it("returns those artworks", async () => {
       const query = buildQuery()
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{}]
       const context = buildContext({
         newForYouRecommendations,
@@ -145,9 +141,7 @@ describe("artworksForUser", () => {
   describe("with backfill and no flag", () => {
     it("returns artworks without backfill", async () => {
       const query = buildQuery({ includeBackfill: false })
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{}]
       const context = buildContext({
         newForYouRecommendations,
@@ -171,9 +165,7 @@ describe("artworksForUser", () => {
   describe("with backfill and the flag but enough affinity artworks", () => {
     it("returns affinity artworks without backfill", async () => {
       const query = buildQuery({ first: 1, includeBackfill: true })
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{}]
       const sets = [{ id: "valid-id" }]
       const setItems = [{}]
@@ -201,9 +193,7 @@ describe("artworksForUser", () => {
   describe("with backfill and the flag and not enough affinity artworks", () => {
     it("returns affinity artworks with backfill", async () => {
       const query = buildQuery({ first: 2, includeBackfill: true })
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{ id: "valid-id" }]
       const sets = [{ id: "valid-id" }]
       const setItems = [{ id: "other-valid-id" }]
@@ -231,9 +221,7 @@ describe("artworksForUser", () => {
   describe("with no backfill and the flag and not enough affinity artworks", () => {
     it("returns only the affinity artworks", async () => {
       const query = buildQuery({ first: 2, includeBackfill: true })
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{}]
       const context = buildContext({
         newForYouRecommendations,
@@ -279,7 +267,7 @@ describe("artworksForUser", () => {
         expect.objectContaining({ rail: "nwfy", user_id: "abc123" })
       )
       expect(
-        context.authenticatedLoaders.vortexGraphqlLoader
+        context.authenticatedLoaders.vortexNewForYouRecommendationsLoader
       ).not.toHaveBeenCalled()
       // Downstream (artwork fetch → connection) is the shared path, unchanged.
       expect(context.artworksLoader).toHaveBeenCalledWith(
@@ -297,9 +285,7 @@ describe("artworksForUser", () => {
         includeBackfill: true,
         excludeDislikedArtworks: true,
       })
-      const newForYouRecommendations = {
-        edges: [{ node: { artworkId: "valid-id" } }],
-      }
+      const newForYouRecommendations = [{ artwork_id: "valid-id" }]
       const newForYouArtworks = [{}]
       const sets = [{ id: "valid-id" }]
       const setItems = [{}]
@@ -356,8 +342,8 @@ describe("artworksForUser", () => {
       })),
       userID: "vortex-user-id",
       userAgent: ELIGIBLE_USER_AGENT,
-      authenticatedLoaders: { vortexGraphqlLoader: null },
-      unauthenticatedLoaders: { vortexGraphqlLoader: null },
+      authenticatedLoaders: { vortexNewForYouRecommendationsLoader: null },
+      unauthenticatedLoaders: {},
     } as any
   }
 

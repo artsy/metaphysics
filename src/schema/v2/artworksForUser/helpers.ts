@@ -1,13 +1,11 @@
-import config from "config"
-import gql from "lib/gql"
 import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
-import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable } from "relay-cursor-paging"
 import { loadVortexForUser } from "lib/loadVortexForUser"
 import { ResolverContext } from "types/graphql"
 
-// Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
+// Recommendations are fetched in one page and paginated in memory.
 const MAX_ARTWORKS = 50
 
 const NWFY_GRAVITY_RAIL_FLAG = "onyx_nwfy-gravity"
@@ -70,11 +68,10 @@ export const getNewForYouArtworkIDs = async (
   const {
     artworkRecommendationsLoader,
     authenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      vortexNewForYouRecommendationsLoader: vortexNewForYouAuthenticatedLoader,
       auctionLotRecommendationsLoader: auctionLotRecommendationsAuthenticatedLoader,
     },
     unauthenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
       auctionLotRecommendationsLoader: auctionLotRecommendationsUnauthenticatedLoader,
     },
     xImpersonateUserID,
@@ -121,59 +118,21 @@ export const getNewForYouArtworkIDs = async (
     return getNewForYouArtworkIDsFromGravity(args, context, userID)
   }
 
-  if (!vortexGraphQLAuthenticatedLoader)
+  if (!vortexNewForYouAuthenticatedLoader)
     throw new Error("Authentication failed: User is not authenticated.")
 
-  if (config.USE_UNSTITCHED_VORTEX) {
-    const recommendations = await loadVortexForUser(
-      context,
-      "vortexNewForYouRecommendationsLoader",
-      {
-        user_id: userID || undefined,
-        version: args.version || undefined,
-        max_works_per_artist: args.maxWorksPerArtist || undefined,
-        limit: MAX_ARTWORKS,
-      }
-    )
+  const recommendations = await loadVortexForUser(
+    context,
+    "vortexNewForYouRecommendationsLoader",
+    {
+      user_id: userID || undefined,
+      version: args.version || undefined,
+      max_works_per_artist: args.maxWorksPerArtist || undefined,
+      limit: MAX_ARTWORKS,
+    }
+  )
 
-    return recommendations.map(({ artwork_id }) => artwork_id)
-  }
-
-  const userIdArgument = userID ? `userId: "${userID}"` : ""
-  const versionArgument = args.version ? `version: "${args.version}"` : ""
-  const maxWorksPerArtistArgument = args.maxWorksPerArtist
-    ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
-    : ""
-
-  const query = {
-    query: gql`
-        query newForYouRecommendationsQuery {
-          newForYouRecommendations(
-            first: ${MAX_ARTWORKS}
-            ${userIdArgument}
-            ${versionArgument}
-            ${maxWorksPerArtistArgument}
-          ) {
-            totalCount
-            edges {
-              node {
-                artworkId
-              }
-            }
-          }
-        }
-      `,
-  }
-
-  const vortexResult = xImpersonateUserID
-    ? await vortexGraphQLUnauthenticatedLoader(query)()
-    : await vortexGraphQLAuthenticatedLoader(query)()
-
-  const artworkIds = extractNodes(
-    vortexResult.data?.newForYouRecommendations
-  ).map((node: any) => node?.artworkId)
-
-  return artworkIds
+  return recommendations.map(({ artwork_id }) => artwork_id)
 }
 
 export const getNewForYouArtworks = async (

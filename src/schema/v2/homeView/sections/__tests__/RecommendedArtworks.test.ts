@@ -84,41 +84,16 @@ describe("RecommendedArtworks", () => {
     `
 
     const vortexResponse = {
-      data: {
-        artworkRecommendations: {
-          edges: [
-            {
-              node: {
-                artworkId: "608a7417bdfbd1a789ba092a",
-                score: 3.422242962512335,
-              },
-            },
-            {
-              node: {
-                artworkId: "308a7416bdfbd1a789ba0911",
-                score: 3.2225049587839654,
-              },
-            },
-            {
-              node: {
-                artworkId: "208a7416bdfbd1a789ba0911",
-                score: 4.2225049587839654,
-              },
-            },
-            {
-              node: {
-                artworkId: "108a7416bdfbd1a789ba0911",
-                score: 5.2225049587839654,
-              },
-            },
-          ],
-          totalCount: 4,
-        },
-      },
+      data: [
+        { artwork_id: "608a7417bdfbd1a789ba092a", score: 3.422242962512335 },
+        { artwork_id: "308a7416bdfbd1a789ba0911", score: 3.2225049587839654 },
+        { artwork_id: "208a7416bdfbd1a789ba0911", score: 4.2225049587839654 },
+        { artwork_id: "108a7416bdfbd1a789ba0911", score: 5.2225049587839654 },
+      ],
     }
 
-    const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
-      vortexResponse
+    const vortexArtworkRecommendationsLoader = jest.fn(
+      async () => vortexResponse
     )
 
     const artworksResponse = [
@@ -140,12 +115,8 @@ describe("RecommendedArtworks", () => {
       accessToken: "424242",
       artworksLoader,
       userID: "vortex-user-id",
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: null,
-      },
+      authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+      unauthenticatedLoaders: {},
     }
 
     const response = await runQuery(query, context)
