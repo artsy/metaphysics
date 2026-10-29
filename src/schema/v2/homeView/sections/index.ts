@@ -6,8 +6,10 @@ import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { Auctions } from "./Auctions"
+import { CuratedGroup } from "./CuratedGroup"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
+import { EditorialGroup } from "./EditorialGroup"
 import { ExploreByCategory } from "./ExploreByCategory"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { GalleriesNearYou } from "./GalleriesNearYou"
@@ -26,6 +28,7 @@ import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtwor
 import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
+import { WhatsHappeningGroup } from "./WhatsHappeningGroup"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
 import { QuickLinks } from "./QuickLinks"
@@ -59,8 +62,10 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   BasedOnYourRecentSaves,
+  CuratedGroup,
   CuratorsPicksEmerging,
   DiscoverSomethingNew,
+  EditorialGroup,
   ExploreByCategory,
   FeaturedFairs,
   GalleriesNearYou,
@@ -81,6 +86,7 @@ const sections: HomeViewSection[] = [
   Tasks,
   TrendingArtists,
   ViewingRooms,
+  WhatsHappeningGroup,
 ]
 
 export const registry = sections.reduce(

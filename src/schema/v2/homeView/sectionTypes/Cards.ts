@@ -16,7 +16,7 @@ export interface HomeViewCardsSection extends HomeViewSection {
   trackItemImpressions?: boolean
 }
 
-const HomeViewCardConnectionType = connectionWithCursorInfo({
+export const HomeViewCardConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewCardType,
 }).connectionType
 

@@ -22370,6 +22370,41 @@ type HomeViewComponentBehaviorsViewAll {
 }
 
 """
+A labeled group of entry chips within a section group
+"""
+type HomeViewGroupChipGroup {
+  cardsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): HomeViewCardConnection
+
+  """
+  'View all' destination for this chips group.
+  """
+  href: String
+
+  """
+  [Analytics] `owner type` for this chips group's 'view all' tap.
+  """
+  ownerType: String
+  title: String
+}
+
+"""
+A referenced section rendered as a rail inside a section group
+"""
+type HomeViewGroupRail {
+  section: HomeViewSectionGeneric
+
+  """
+  Label override for this rail; null → use the section's own title.
+  """
+  title: String
+}
+
+"""
 A user activity section in the home view
 """
 type HomeViewSectionActivity implements HomeViewSectionGeneric & Node {
@@ -22721,6 +22756,43 @@ type HomeViewSectionGenericEdge {
   The item at the end of the edge
   """
   node: HomeViewSectionGeneric
+}
+
+"""
+A section group: an ordered set of rails and/or a group of entry chips
+"""
+type HomeViewSectionGroup implements HomeViewSectionGeneric & Node {
+  """
+  Background tint for the whole area as a raw hex string (null → untinted).
+  """
+  backgroundColor: String
+  chipsGroups: [HomeViewGroupChipGroup!]!
+
+  """
+  Component prescription for this section, for overriding or customizing presentation and behavior
+  """
+  component: HomeViewComponent
+
+  """
+  [Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)
+  """
+  contextModule: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+
+  """
+  [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
+  """
+  ownerType: String
+  rails: [HomeViewGroupRail!]!
 }
 
 """
@@ -25151,6 +25223,7 @@ type MarketingCollection implements Node {
     size: Int = 10
   ): [MarketingCollection!]!
   representativeArtworkID: String
+  representativeArtworks: [Artwork!]
   showFeaturedArtists: Boolean!
   showHeaderArtworksRail: Boolean!
   slug: String!
@@ -37362,6 +37435,11 @@ type Sale implements Node {
   A registration for this sale or null
   """
   registrationStatus: Bidder
+
+  """
+  Up to 3 representative artworks (ordered). Resolved in one batched /artworks load
+  """
+  representativeArtworks: [Artwork!]
   requireBidderApproval: Boolean
   requireIdentityVerification: Boolean
   saleAgreement: SaleAgreement

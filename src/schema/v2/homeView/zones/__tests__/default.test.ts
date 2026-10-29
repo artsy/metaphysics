@@ -3,6 +3,7 @@ import { getSections } from "../default"
 
 jest.mock("lib/featureFlags", () => ({
   getExperimentVariant: jest.fn(),
+  isFeatureFlagEnabled: jest.fn(() => false),
 }))
 
 describe("getSections", () => {

@@ -50,6 +50,7 @@ const {
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
+  SYSTEM_ENVIRONMENT,
   INTROSPECT_TOKEN,
 } = config
 
@@ -192,13 +193,24 @@ const extensionsPlugin: Plugin<YogaInternalContext, YogaServerContext> = {
           return
         }
         const ctx = args.contextValue as YogaInternalContext
-        const extensions = createExtensions(
-          args.document,
-          result,
-          ctx._requestID,
-          ctx._userAgent
-        )
-        if (extensions) {
+        const extensions = {
+          ...createExtensions(
+            args.document,
+            result,
+            ctx._requestID,
+            ctx._userAgent
+          ),
+          // Dev/QA: surface which home-feed arm actually shaped this response.
+          ...(SYSTEM_ENVIRONMENT !== "production" && ctx.homeViewAppliedArm
+            ? {
+                homeViewSimplification: {
+                  appliedArm: ctx.homeViewAppliedArm.arm ?? "control",
+                  source: ctx.homeViewAppliedArm.source,
+                },
+              }
+            : {}),
+        }
+        if (Object.keys(extensions).length) {
           setResult({
             ...(result as any),
             extensions: {
@@ -277,9 +289,15 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     // Headers to be threaded through to downstream services
     // and used to authenticate with Artnet services.
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
-    const xArtnetUserID = req.headers["x-artnet-user-id"] as
-      | string
-      | undefined
+    const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
+
+    // Dev/QA only: force a home-feed-simplification arm, bypassing Unleash
+    // assignment. Honored everywhere except real production — staging/review
+    // apps run NODE_ENV=production, so gate on SYSTEM_ENVIRONMENT, not PRODUCTION_ENV.
+    const xHomeFeedArm =
+      SYSTEM_ENVIRONMENT !== "production"
+        ? (req.headers["x-home-feed-arm"] as string | undefined)
+        : undefined
 
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
@@ -317,6 +335,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       appToken,
       ipAddress,
       xImpersonateUserID,
+      xHomeFeedArm,
       isCMSRequest,
       _req: req,
       _requestID: requestID,
