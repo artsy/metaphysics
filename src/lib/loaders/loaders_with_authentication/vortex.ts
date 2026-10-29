@@ -1,6 +1,4 @@
 import config from "config"
-import gql from "lib/gql"
-import { extractNodes } from "lib/helpers"
 import factories from "../api"
 import { createMarketPriceInsightsBatchLoader } from "../vortexMarketPriceInsightsBatchLoader"
 import {
@@ -9,11 +7,6 @@ import {
 } from "../vortexPartnerStatsLoader"
 
 const { VORTEX_APP_ID } = config
-
-interface LoaderArgs {
-  query: string
-  variables?: any
-}
 
 export default (accessToken, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -41,71 +34,11 @@ export default (accessToken, opts) => {
     { method: "POST" }
   )
 
-  const vortexGraphqlLoader = ({ query, variables }: LoaderArgs) =>
-    vortexLoader(
-      "/graphql",
-      { query, variables: JSON.stringify(variables) },
-      {
-        method: "POST",
-      }
-    )
-
-  const stitchedMarketPriceInsightsBatchLoader = async (
-    params: MarketPriceInsightsBatchLoaderParams
-  ) => {
-    const artistIDMediumTuples = params
-      .map((artist) => ({
-        artistId: artist.artistId,
-        medium: artist.category,
-      }))
-      .filter((tuple) => tuple.artistId && tuple.medium)
-
-    const vortexResult = await vortexGraphqlLoader({
-      query: gql`
-        query MarketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
-          marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
-            totalCount
-            edges {
-              node {
-                annualLotsSold
-                annualValueSoldCents
-                artistId
-                demandRank
-                lastAuctionResultDate
-                medianSalePriceLast36Months
-                medium
-                sellThroughRate
-                medianSaleOverEstimatePercentage
-                liquidityRank
-              }
-            }
-          }
-        }
-      `,
-      variables: { artistIDMediumTuples },
-    })()
-
-    const priceInsightNodes: MarketPriceInsight[] = extractNodes(
-      vortexResult.data?.marketPriceInsightsBatch
-    )
-
-    if (vortexResult?.errors?.length) {
-      console.error(vortexResult.errors)
-    }
-
-    return priceInsightNodes
-  }
-
-  const marketPriceInsightsBatchLoader = config.USE_UNSTITCHED_VORTEX
-    ? createMarketPriceInsightsBatchLoader(
-        vortexLoader("market_price_insights_batch", {}, { method: "POST" })
-      )
-    : stitchedMarketPriceInsightsBatchLoader
-
   return {
     vortexTokenLoader,
-    vortexGraphqlLoader,
-    marketPriceInsightsBatchLoader,
+    marketPriceInsightsBatchLoader: createMarketPriceInsightsBatchLoader(
+      vortexLoader("market_price_insights_batch", {}, { method: "POST" })
+    ),
     auctionLotRecommendationsLoader: vortexLoader(
       "auction_lot_recommendations"
     ),
@@ -139,8 +72,6 @@ export default (accessToken, opts) => {
     vortexUserStatsLoader: vortexLoader("user_stats"),
   }
 }
-
-const MAX_MARKET_PRICE_INSIGHTS = 50
 
 // Vortex's BigInt fields arrive as strings.
 export type MarketPriceInsight = {

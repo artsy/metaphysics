@@ -85,12 +85,10 @@ describe("NewWorksForYou", () => {
       }
     `
 
-    const newForYouRecommendations = {
-      edges: [
-        { node: { artworkId: "608a7417bdfbd1a789ba092a" } },
-        { node: { artworkId: "308a7416bdfbd1a789ba0911" } },
-      ],
-    }
+    const newForYouRecommendations = [
+      { artwork_id: "608a7417bdfbd1a789ba092a" },
+      { artwork_id: "308a7416bdfbd1a789ba0911" },
+    ]
 
     const artworksResponse = [
       {
@@ -103,8 +101,8 @@ describe("NewWorksForYou", () => {
       },
     ]
 
-    const mockVortexGraphqlLoader = jest.fn(() => () =>
-      Promise.resolve({ data: { newForYouRecommendations } })
+    const vortexNewForYouRecommendationsLoader = jest.fn(() =>
+      Promise.resolve({ data: newForYouRecommendations })
     )
     const artworksLoader = jest.fn(() => Promise.resolve(artworksResponse))
 
@@ -114,12 +112,8 @@ describe("NewWorksForYou", () => {
       artworksLoader,
       setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
       setItemsLoader: jest.fn(() => Promise.resolve({ body: [] })),
-      authenticatedLoaders: {
-        vortexGraphqlLoader: mockVortexGraphqlLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: jest.fn(),
-      },
+      authenticatedLoaders: { vortexNewForYouRecommendationsLoader },
+      unauthenticatedLoaders: {},
     } as any
 
     const { homeView } = await runQuery(query, context)
@@ -165,10 +159,8 @@ describe("NewWorksForYou", () => {
       }
     `
 
-    type VortexGraphqlLoaderArgs = { query: string }
-    const mockVortexGraphqlLoader = jest.fn(
-      (_args: VortexGraphqlLoaderArgs) => () =>
-        Promise.resolve({ data: { newForYouRecommendations: [{}] } })
+    const vortexNewForYouRecommendationsLoader = jest.fn(
+      (_params: Record<string, unknown>) => Promise.resolve({ data: [] })
     )
 
     const context = {
@@ -177,20 +169,15 @@ describe("NewWorksForYou", () => {
       artworksLoader: jest.fn(() => Promise.resolve([])),
       setsLoader: jest.fn(() => Promise.resolve({ body: [] })),
       setItemsLoader: jest.fn(() => Promise.resolve({ body: [{}] })),
-      authenticatedLoaders: {
-        vortexGraphqlLoader: mockVortexGraphqlLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: jest.fn(),
-      },
+      authenticatedLoaders: { vortexNewForYouRecommendationsLoader },
+      unauthenticatedLoaders: {},
     } as any
 
     await runQuery(query, context)
 
-    const vortexGraphqlQuery =
-      mockVortexGraphqlLoader.mock.calls?.[0]?.[0]?.query
-
-    expect(vortexGraphqlQuery).toMatch('version: "C"')
+    expect(vortexNewForYouRecommendationsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ version: "C" })
+    )
   })
 
   // `showArtworksCardView` is deprecated and always false since the

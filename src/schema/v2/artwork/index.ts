@@ -1465,10 +1465,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       price: {
         type: GraphQLString,
       },
-      // Stitched from Vortex until it's unstitched.
-      ...(config.USE_UNSTITCHED_VORTEX
-        ? { pricingContext: ArtworkPricingContextField }
-        : {}),
+      pricingContext: ArtworkPricingContextField,
       privateShortcutPath: {
         type: GraphQLString,
         description: "Private shortcut URL path for accessing the artwork",

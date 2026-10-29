@@ -1,8 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import config from "config"
-import gql from "lib/gql"
-import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
@@ -32,49 +30,13 @@ const getArtworkIdsFromVortex = async (
   userId: string | undefined,
   context: ResolverContext
 ): Promise<string[]> => {
-  if (config.USE_UNSTITCHED_VORTEX) {
-    const recommendations = await loadVortexForUser(
-      context,
-      "vortexArtworkRecommendationsLoader",
-      { user_id: userId, limit: MAX_ARTWORKS }
-    )
-
-    return recommendations.map(({ artwork_id }) => artwork_id)
-  }
-
-  const {
-    authenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-    },
-    unauthenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-    },
-    xImpersonateUserID,
-  } = context
-
-  const query = {
-    query: gql`
-        query artworkRecommendationsQuery {
-          artworkRecommendations(first: ${MAX_ARTWORKS}, userId: "${userId}") {
-            totalCount
-            edges {
-              node {
-                artworkId
-                score
-              }
-            }
-          }
-        }
-      `,
-  }
-
-  const vortexResult = xImpersonateUserID
-    ? await vortexGraphQLUnauthenticatedLoader!(query)()
-    : await vortexGraphQLAuthenticatedLoader!(query)()
-
-  return extractNodes(vortexResult.data?.artworkRecommendations).map(
-    (node: any) => node?.artworkId
+  const recommendations = await loadVortexForUser(
+    context,
+    "vortexArtworkRecommendationsLoader",
+    { user_id: userId, limit: MAX_ARTWORKS }
   )
+
+  return recommendations.map(({ artwork_id }) => artwork_id)
 }
 
 const getArtworkIdsFromGravity = async (
@@ -109,14 +71,12 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
     const {
       artworksLoader,
       artworkRecommendationsLoader,
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
+      authenticatedLoaders: { vortexArtworkRecommendationsLoader },
       xImpersonateUserID,
       userID,
     } = context
 
-    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
+    if (!artworksLoader || !vortexArtworkRecommendationsLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
