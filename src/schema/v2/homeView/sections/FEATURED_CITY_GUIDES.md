@@ -32,12 +32,10 @@ export const FEATURED_CITY_GUIDE: FeaturedCityGuide = {
 
 - Only one guide can be featured at a time. To promote another city, replace
   the entry.
-- Inside the window, every viewer sees the featured pill, wherever they are.
-  The viewer's IP location is not looked up.
-- Outside the window, the pill falls back to a generic "City Guide" link that
-  suggests the city nearest to the viewer's IP location — see
-  [`citiesWithGuides.ts`](./citiesWithGuides.ts) for the list of cities that
-  fallback can suggest.
+- Inside the window, every viewer sees the featured pill first, wherever they
+  are.
+- Outside the window, a generic "City Guide" pill links to `/city-guide` as the
+  last pill. The app picks the city itself.
 - The pill only shows for Eigen `>= 9.19.0` (or non-Eigen clients); see
   `CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION` in
   [`QuickLinks.ts`](./QuickLinks.ts).

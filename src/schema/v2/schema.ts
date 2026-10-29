@@ -284,6 +284,31 @@ import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
+import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import {
+  crmContactEmail,
+  crmContactEmailsConnection,
+} from "./crmContact/crmContactEmail"
+import {
+  crmContactLocation,
+  crmContactLocationsConnection,
+} from "./crmContact/crmContactLocation"
+import {
+  archiveCRMContactMutation,
+  createCRMContactMutation,
+  unarchiveCRMContactMutation,
+  updateCRMContactMutation,
+} from "./crmContact/crmContactMutations"
+import {
+  createCRMContactEmailMutation,
+  deleteCRMContactEmailMutation,
+  updateCRMContactEmailMutation,
+} from "./crmContact/crmContactEmailMutations"
+import {
+  createCRMContactLocationMutation,
+  deleteCRMContactLocationMutation,
+  updateCRMContactLocationMutation,
+} from "./crmContact/crmContactLocationMutations"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
@@ -595,6 +620,12 @@ const rootFields = {
   instagramPostsConnection,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
+  crmContact,
+  crmContactsConnection,
+  crmContactEmail,
+  crmContactEmailsConnection,
+  crmContactLocation,
+  crmContactLocationsConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -754,6 +785,16 @@ export default new GraphQLSchema({
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,
       createMailchimpCampaign: createMailchimpCampaignMutation,
+      createCRMContact: createCRMContactMutation,
+      updateCRMContact: updateCRMContactMutation,
+      archiveCRMContact: archiveCRMContactMutation,
+      unarchiveCRMContact: unarchiveCRMContactMutation,
+      createCRMContactEmail: createCRMContactEmailMutation,
+      updateCRMContactEmail: updateCRMContactEmailMutation,
+      deleteCRMContactEmail: deleteCRMContactEmailMutation,
+      createCRMContactLocation: createCRMContactLocationMutation,
+      updateCRMContactLocation: updateCRMContactLocationMutation,
+      deleteCRMContactLocation: deleteCRMContactLocationMutation,
       createBrandKit: createBrandKitMutation,
       updateBrandKit: updateBrandKitMutation,
       deleteBrandKit: deleteBrandKitMutation,
