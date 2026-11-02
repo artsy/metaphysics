@@ -4137,19 +4137,6 @@ enum ArtnetSaleStatus {
   SOLD
 }
 
-"""
-What the inventory row changed, so a sync reclaims only the named fields from it.
-"""
-enum ArtnetSyncedField {
-  AVAILABILITY
-  DESCRIPTION
-  DIMENSIONS
-  MATERIALS
-  MEDIUM
-  PRICE
-  TITLE
-}
-
 type ArtsyShippingOptInMutationFailure {
   mutationError: GravityMutationError
 }
@@ -41140,16 +41127,6 @@ input UpdateArtnetArtworkMutationInput {
   Also push the artwork-sourced fields (title, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. Set when the edit came from an inventory row rather than the Artnet row.
   """
   syncOn: Boolean
-
-  """
-  Read only with syncOn. Narrows syncedFields to one edition set, by its Gravity edition set ID. Omit to apply them to every edition.
-  """
-  syncedEditionSetId: String
-
-  """
-  Read only with syncOn, and ignored without it. Narrows which inventory-row changes are reclaimed, so anything a gallery set directly on the Artnet row survives a sync about something else. Omit to reclaim both price and sale status.
-  """
-  syncedFields: [ArtnetSyncedField!]
 }
 
 type UpdateArtnetArtworkMutationPayload {
