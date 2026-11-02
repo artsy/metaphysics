@@ -10,14 +10,12 @@ export const HOME_FEED_SIMPLIFICATION_FLAG: FeatureFlag =
   "onyx_home-feed-simplification"
 
 // Reshapes the feed per the user's experiment arm; no-op for control/unenrolled.
-// Mirrors AuctionEngagementRule: read a request-scoped signal, transform sections.
 export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   async apply(
     sections: HomeViewSection[],
     context: ResolverContext
   ): Promise<HomeViewSection[]> {
     const { arm, source } = this.resolveArm(context)
-    // Surfaced in extensions (non-prod) for at-a-glance debugging.
     context.homeViewAppliedArm = { arm, source }
     return composeForArm(arm, sections)
   }
@@ -25,14 +23,10 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   private resolveArm(
     context: ResolverContext
   ): { arm: Arm | null; source: "override" | "unleash" | "anonymous" } {
-    // Dev/QA override via x-home-feed-arm header (non-prod); doesn't affect tracked variant.
     if (context.xHomeFeedArm && isArm(context.xHomeFeedArm)) {
       return { arm: context.xHomeFeedArm, source: "override" }
     }
 
-    // Don't enroll logged-out viewers: Unleash variant stickiness keys on userID,
-    // so without one the arm would be assigned randomly per request. The feed is
-    // Eigen-only (always authenticated) for now, so they just get the baseline feed.
     if (!context.userID) {
       return { arm: null, source: "anonymous" }
     }
@@ -40,7 +34,7 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
     const variant = getExperimentVariant(HOME_FEED_SIMPLIFICATION_FLAG, {
       userId: context.userID,
     })
-    // getExperimentVariant returns `false` if Unleash isn't initialized.
+
     if (!variant || typeof variant === "boolean" || !variant.enabled) {
       return { arm: null, source: "unleash" }
     }

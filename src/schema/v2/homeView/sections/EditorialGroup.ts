@@ -8,13 +8,10 @@ import ArticleSorts from "schema/v2/sorts/article_sorts"
 import { ArticleLayoutEnum } from "schema/v2/article/models"
 import { normalize, setVersion } from "schema/v2/image/normalize"
 
-// How many news articles surface as cards below the editorial lead rail.
 const NEWS_CARD_COUNT = 6
 
-// Preferred card thumbnail versions; setVersion falls back to largest if none match.
 const CARD_IMAGE_VERSIONS = ["large", "larger", "main", "medium"]
 
-// Resolve an article's (possibly `:version`-templated) thumbnail to a concrete URL.
 const articleThumbnailURL = (thumbnailImage: any): string | undefined => {
   const normalized = thumbnailImage && normalize(thumbnailImage)
   return normalized ? setVersion(normalized, CARD_IMAGE_VERSIONS) : undefined
@@ -32,11 +29,7 @@ export const EditorialGroup: HomeViewGroupSection = {
   requiresAuthentication: false,
   // TODO: palette token once available.
   backgroundColor: "#FEF8ED",
-
-  // Relabeled "Editorial" so it doesn't duplicate the container's "Artsy Editorial" header.
   rails: [{ sectionID: LatestArticles.id, title: "Editorial" }],
-
-  // "View all" follows the News rail's own href + ownerType so the two stay in sync.
   cardGroups: [
     {
       title: "Art News",
