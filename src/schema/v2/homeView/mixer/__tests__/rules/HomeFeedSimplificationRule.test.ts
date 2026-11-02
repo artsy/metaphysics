@@ -33,6 +33,16 @@ describe("HomeFeedSimplificationRule", () => {
     expect(await rule.apply(sections, context)).toEqual(sections)
   })
 
+  it("does not enroll logged-out viewers (no userID) and skips Unleash", async () => {
+    const anonContext = {} as ResolverContext
+    expect(await rule.apply(sections, anonContext)).toEqual(sections)
+    expect(mockGetVariant).not.toHaveBeenCalled()
+    expect(anonContext.homeViewAppliedArm).toEqual({
+      arm: null,
+      source: "anonymous",
+    })
+  })
+
   // Regression: a flag-on "control" variant has the experiment toggle enabled, so
   // experiment-only sections pass the display filter. The control arm must still
   // strip them so they don't leak into the baseline feed.

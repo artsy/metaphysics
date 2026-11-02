@@ -33,7 +33,10 @@ export interface ResolverContextValues {
   /** Dev/QA only: forces a home-feed-simplification arm. Non-production only. */
   xHomeFeedArm?: string
   /** Set by HomeFeedSimplificationRule; surfaced in extensions for debugging. */
-  homeViewAppliedArm?: { arm: string | null; source: "override" | "unleash" }
+  homeViewAppliedArm?: {
+    arm: string | null
+    source: "override" | "unleash" | "anonymous"
+  }
   isCMSRequest: boolean
 }
 

@@ -24,10 +24,17 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
 
   private resolveArm(
     context: ResolverContext
-  ): { arm: Arm | null; source: "override" | "unleash" } {
+  ): { arm: Arm | null; source: "override" | "unleash" | "anonymous" } {
     // Dev/QA override via x-home-feed-arm header (non-prod); doesn't affect tracked variant.
     if (context.xHomeFeedArm && isArm(context.xHomeFeedArm)) {
       return { arm: context.xHomeFeedArm, source: "override" }
+    }
+
+    // Don't enroll logged-out viewers: Unleash variant stickiness keys on userID,
+    // so without one the arm would be assigned randomly per request. The feed is
+    // Eigen-only (always authenticated) for now, so they just get the baseline feed.
+    if (!context.userID) {
+      return { arm: null, source: "anonymous" }
     }
 
     const variant = getExperimentVariant(HOME_FEED_SIMPLIFICATION_FLAG, {
