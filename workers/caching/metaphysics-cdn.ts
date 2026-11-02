@@ -1,5 +1,38 @@
 /// <reference types="@cloudflare/workers-types" />
 
+const PAGE_PATH_HEADER = "x-artsy-page-path"
+const PAGE_TAG_PREFIX = "force-page:"
+// Cloudflare purge API caps tags at 1,024 printable ASCII chars; commas separate tags.
+const MAX_TAG_LENGTH = 1024
+const VALID_TAG_REGEX = /^[\x21-\x2b\x2d-\x7e]+$/
+
+/**
+ * Forque builds the same tag from a URL to purge every cached response for a page,
+ * so keep this normalization in sync with Forque's.
+ */
+export function getPageTag(request) {
+  const rawPath = request.headers.get(PAGE_PATH_HEADER)
+
+  if (!rawPath) {
+    return null
+  }
+
+  const pathname = rawPath.split(/[?#]/)[0].toLowerCase()
+
+  if (!pathname.startsWith("/")) {
+    return null
+  }
+
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/"
+  const tag = `${PAGE_TAG_PREFIX}${normalizedPath}`
+
+  if (tag.length > MAX_TAG_LENGTH || !VALID_TAG_REGEX.test(tag)) {
+    return null
+  }
+
+  return tag
+}
+
 export default {
   async fetch(request, env, ctx) {
     const cacheKeyGeneration = env.CACHE_KEY_GENERATION ?? "v1"
@@ -116,7 +149,14 @@ export default {
 
           response = new Response(originResponse.body, originResponse)
           response.headers.set("Cache-Control", `max-age=${maxAge}`)
-          ctx.waitUntil(cache.put(cacheKey, response.clone()))
+
+          const responseToCache = response.clone()
+          const pageTag = getPageTag(request)
+          if (pageTag) {
+            responseToCache.headers.append("Cache-Tag", pageTag)
+          }
+
+          ctx.waitUntil(cache.put(cacheKey, responseToCache))
         }
         return response
       }

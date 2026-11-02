@@ -3,11 +3,13 @@ import { jest } from "@jest/globals"
 describe("metaphysics-cdn fetch handler", () => {
   let fetchHandler: (request: Request, env: any, ctx: any) => Promise<Response>
   let mockCache: any
+  let getPageTag: (request: Request) => string | null
 
   beforeEach(async () => {
     // Import the fetch handler
     const module = await import("./metaphysics-cdn")
     fetchHandler = module.default.fetch
+    getPageTag = module.getPageTag
 
     // Mock the caches.default object
     mockCache = {
@@ -104,5 +106,92 @@ describe("metaphysics-cdn fetch handler", () => {
     expect(global.fetch).toHaveBeenCalledWith(request)
     expect(response.status).toBe(200)
     expect(await response.text()).toBe("Origin response")
+  })
+  describe("page cache tags", () => {
+    const fetchWithMiss = async (headers: Record<string, string>) => {
+      const request = new Request("https://example.com", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ key: "value" }),
+      })
+
+      mockCache.match.mockResolvedValueOnce(null)
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce(new Response("Origin response", { status: 200 }))
+
+      const ctx = { waitUntil: jest.fn() }
+      const response = await fetchHandler(request, {}, ctx)
+      const [, cachedResponse] = mockCache.put.mock.calls[0]
+
+      return { response, cachedResponse: cachedResponse as Response }
+    }
+
+    it("tags the cached response with the page path", async () => {
+      const { response, cachedResponse } = await fetchWithMiss({
+        "x-artsy-page-path": "/feature/the-artsy-vanguard-2027",
+      })
+
+      expect(cachedResponse.headers.get("Cache-Tag")).toBe(
+        "force-page:/feature/the-artsy-vanguard-2027"
+      )
+      expect(response.headers.get("Cache-Tag")).toBeNull()
+    })
+
+    it("does not tag the cached response without the page path header", async () => {
+      const { cachedResponse } = await fetchWithMiss({})
+
+      expect(cachedResponse.headers.get("Cache-Tag")).toBeNull()
+    })
+
+    it("does not tag the cached response when the tag would be invalid", async () => {
+      const { cachedResponse } = await fetchWithMiss({
+        "x-artsy-page-path": "/artist/a,b",
+      })
+
+      expect(cachedResponse.headers.get("Cache-Tag")).toBeNull()
+    })
+  })
+
+  describe("getPageTag", () => {
+    const tagFor = (path: string) =>
+      getPageTag(
+        new Request("https://example.com", {
+          headers: { "x-artsy-page-path": path },
+        })
+      )
+
+    it.each([
+      [
+        "/feature/the-artsy-vanguard-2027",
+        "force-page:/feature/the-artsy-vanguard-2027",
+      ],
+      [
+        "/Feature/The-Artsy-Vanguard-2027",
+        "force-page:/feature/the-artsy-vanguard-2027",
+      ],
+      [
+        "/feature/the-artsy-vanguard-2027/",
+        "force-page:/feature/the-artsy-vanguard-2027",
+      ],
+      ["/collect?sort=-published_at#top", "force-page:/collect"],
+      ["/artist/caf%C3%A9", "force-page:/artist/caf%c3%a9"],
+      ["/", "force-page:/"],
+    ])("normalizes %s to %s", (path, expected) => {
+      expect(tagFor(path)).toBe(expected)
+    })
+
+    it.each([
+      ["a relative path", "feature/foo"],
+      ["a path with a comma", "/artist/a,b"],
+      ["a path with a space", "/artist/a b"],
+      ["a path that is too long", `/${"a".repeat(1024)}`],
+    ])("returns null for %s", (_label, path) => {
+      expect(tagFor(path)).toBeNull()
+    })
+
+    it("returns null without the header", () => {
+      expect(getPageTag(new Request("https://example.com"))).toBeNull()
+    })
   })
 })
