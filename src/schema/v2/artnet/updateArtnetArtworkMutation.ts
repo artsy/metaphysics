@@ -1,8 +1,6 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLInt,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -25,24 +23,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   materials?: string
   priceToMinor?: number
   syncOn?: boolean
-  syncedFields?: string[]
-  syncedEditionSetId?: string
 }
-
-const ArtnetSyncedFieldType = new GraphQLEnumType({
-  name: "ArtnetSyncedField",
-  description:
-    "What the inventory row changed, so a sync reclaims only the named fields from it.",
-  values: {
-    TITLE: { value: "title" },
-    DIMENSIONS: { value: "dimensions" },
-    DESCRIPTION: { value: "description" },
-    MEDIUM: { value: "medium" },
-    MATERIALS: { value: "materials" },
-    AVAILABILITY: { value: "availability" },
-    PRICE: { value: "price" },
-  },
-})
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateArtnetArtworkSuccess",
@@ -110,16 +91,6 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         "Also push the artwork-sourced fields (title, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. Set when the edit came from an inventory row rather than the Artnet row.",
     },
-    syncedFields: {
-      type: new GraphQLList(new GraphQLNonNull(ArtnetSyncedFieldType)),
-      description:
-        "Read only with syncOn, and ignored without it. Narrows which inventory-row changes are reclaimed, so anything a gallery set directly on the Artnet row survives a sync about something else. Omit to reclaim both price and sale status.",
-    },
-    syncedEditionSetId: {
-      type: GraphQLString,
-      description:
-        "Read only with syncOn. Narrows syncedFields to one edition set, by its Gravity edition set ID. Omit to apply them to every edition.",
-    },
   },
   outputFields: {
     artnetArtworkOrError: {
@@ -130,28 +101,11 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    {
-      id,
-      published,
-      availability,
-      materials,
-      priceToMinor,
-      syncOn,
-      syncedFields,
-      syncedEditionSetId,
-    },
+    { id, published, availability, materials, priceToMinor, syncOn },
     { updateArtnetArtworkLoader }
   ) => {
     if (!updateArtnetArtworkLoader) {
       throw new Error("You need to be signed in to perform this action")
-    }
-
-    // An empty list reaches Gravity indistinguishable from an omitted one (qs drops empty
-    // arrays), which would reclaim both price and sale status instead of reclaiming nothing.
-    if (syncedFields?.length === 0) {
-      throw new Error(
-        "syncedFields must not be empty; omit it to reclaim both price and sale status"
-      )
     }
 
     try {
@@ -163,8 +117,6 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             materials,
             priceToMinor,
             syncOn,
-            syncedFields,
-            syncedEditionSetId,
           },
           isUndefined
         )

@@ -58,7 +58,7 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
-  it("passes materials, priceToMinor, syncedFields and syncedEditionSetId through", async () => {
+  it("passes materials, priceToMinor and syncOn through", async () => {
     const query = `
       mutation {
         updateArtnetArtwork(
@@ -67,8 +67,6 @@ describe("updateArtnetArtwork mutation", () => {
             materials: "Oil on canvas"
             priceToMinor: 500000
             syncOn: true
-            syncedFields: [PRICE, AVAILABILITY]
-            syncedEditionSetId: "edition-set-1"
           }
         ) {
           artnetArtworkOrError {
@@ -91,38 +89,8 @@ describe("updateArtnetArtwork mutation", () => {
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
       materials: "Oil on canvas",
       sync_on: true,
-      synced_fields: ["price", "availability"],
-      synced_edition_set_id: "edition-set-1",
       price_to_minor: 500000,
     })
-  })
-
-  it("rejects an empty syncedFields list rather than letting it reach Gravity as omitted", async () => {
-    const query = `
-      mutation {
-        updateArtnetArtwork(
-          input: { id: "artnet-artwork-1", syncOn: true, syncedFields: [] }
-        ) {
-          artnetArtworkOrError {
-            ... on UpdateArtnetArtworkSuccess {
-              artnetArtwork {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
-      id: "artnet-artwork-1",
-    })
-
-    await expect(
-      runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
-    ).rejects.toThrow(/syncedFields must not be empty/)
-
-    expect(updateArtnetArtworkLoader).not.toHaveBeenCalled()
   })
 
   it("sends price_to_minor as null to clear it, and omits the key entirely when not provided", async () => {
@@ -183,9 +151,9 @@ describe("updateArtnetArtwork mutation", () => {
         sync_on: true,
       }
     )
-    expect(
-      updateArtnetArtworkLoader2.mock.calls[0][1]
-    ).not.toHaveProperty("price_to_minor")
+    expect(updateArtnetArtworkLoader2.mock.calls[0][1]).not.toHaveProperty(
+      "price_to_minor"
+    )
   })
 
   it("returns a mutation error when Gravity rejects the request", async () => {
