@@ -51,6 +51,7 @@ import { ResolverContext } from "types/graphql"
 import { allViaLoader } from "lib/all"
 import { markdown } from "../fields/markdown"
 import { SaleAgreementType } from "../SaleAgreements/SaleAgreement"
+import { representativeArtworks } from "schema/v2/fields/representativeArtworks"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -103,28 +104,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Sale",
   interfaces: [NodeInterface],
   fields: () => {
-    // Lazy require: artwork <-> sale is a circular import.
-    const { ArtworkType } = require("schema/v2/artwork")
     return {
       ...SlugAndInternalIDFields,
       cached,
-      representativeArtworks: {
-        type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
-        description:
-          "Up to 3 representative artworks (ordered). Batched at the connection resolver; falls back to a single /artworks load for standalone access.",
-        resolve: (
-          { _representativeArtworks, representative_artwork_ids },
-          _args,
-          { artworksLoader }
-        ) => {
-          if (_representativeArtworks) return _representativeArtworks
-          if (!representative_artwork_ids?.length) return []
-          return artworksLoader({
-            ids: representative_artwork_ids,
-            batched: true,
-          }).catch(() => [])
-        },
-      },
+      representativeArtworks: representativeArtworks(),
       artworksConnection: {
         type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",

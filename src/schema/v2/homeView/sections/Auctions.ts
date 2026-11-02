@@ -3,7 +3,6 @@ import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageSalesModuleType } from "schema/v2/home/home_page_sales_module"
-import { attachSaleRepresentativeArtworks } from "schema/v2/sale/representativeArtworks"
 import { connectionFromArray } from "graphql-relay"
 import { emptyConnection } from "schema/v2/fields/pagination"
 
@@ -30,11 +29,8 @@ export const Auctions: HomeViewSection = {
       return emptyConnection
     }
 
-    const sales = ((await resolver.resolve(parent, args, context, info)) ??
-      []) as any[]
+    const result = await resolver.resolve(parent, args, context, info)
 
-    await attachSaleRepresentativeArtworks(sales, context)
-
-    return connectionFromArray(sales, args)
+    return connectionFromArray(result as readonly unknown[], args)
   }),
 }

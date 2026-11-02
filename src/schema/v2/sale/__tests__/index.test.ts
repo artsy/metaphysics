@@ -47,34 +47,13 @@ describe("Sale type", () => {
       }
     `
 
-    it("reads precomputed _representativeArtworks without calling the loader", async () => {
-      const artworksLoader = jest.fn()
-
-      const data = await execute(
-        query,
-        {
-          ...sale,
-          _representativeArtworks: [{ _id: "pre-1" }, { _id: "pre-2" }],
-        },
-        { artworksLoader }
-      )
-
-      expect(data.sale.representativeArtworks).toEqual([
-        { internalID: "pre-1" },
-        { internalID: "pre-2" },
-      ])
-      expect(artworksLoader).not.toHaveBeenCalled()
-    })
-
-    it("falls back to a single batched load for standalone access", async () => {
-      const artworksLoader = jest.fn(({ ids }) =>
-        Promise.resolve(ids.map((id: string) => ({ _id: id, id })))
-      )
+    it("resolves ids through the artwork-by-id loader", async () => {
+      const load = jest.fn((id: string) => Promise.resolve({ _id: id }))
 
       const data = await execute(
         query,
         { ...sale, representative_artwork_ids: ["art-1", "art-2", "art-3"] },
-        { artworksLoader }
+        { artworkByIDLoader: { load } }
       )
 
       expect(data.sale.representativeArtworks).toEqual([
@@ -82,24 +61,37 @@ describe("Sale type", () => {
         { internalID: "art-2" },
         { internalID: "art-3" },
       ])
-      expect(artworksLoader).toHaveBeenCalledTimes(1)
-      expect(artworksLoader).toHaveBeenCalledWith({
-        ids: ["art-1", "art-2", "art-3"],
-        batched: true,
-      })
+      expect(load).toHaveBeenCalledTimes(3)
     })
 
-    it("returns [] without calling the loader when there are no ids", async () => {
-      const artworksLoader = jest.fn()
+    it("drops ids the loader can't resolve", async () => {
+      const load = jest.fn((id: string) =>
+        Promise.resolve(id === "missing" ? null : { _id: id })
+      )
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: ["art-1", "missing", "art-2"] },
+        { artworkByIDLoader: { load } }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([
+        { internalID: "art-1" },
+        { internalID: "art-2" },
+      ])
+    })
+
+    it("returns [] without touching the loader when there are no ids", async () => {
+      const load = jest.fn()
 
       const data = await execute(
         query,
         { ...sale, representative_artwork_ids: [] },
-        { artworksLoader }
+        { artworkByIDLoader: { load } }
       )
 
       expect(data.sale.representativeArtworks).toEqual([])
-      expect(artworksLoader).not.toHaveBeenCalled()
+      expect(load).not.toHaveBeenCalled()
     })
   })
 
