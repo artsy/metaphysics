@@ -162,4 +162,43 @@ describe("Auctions", () => {
       "a3",
     ])
   })
+
+  it("still returns the sales when the representative-artworks load fails", async () => {
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-auctions") {
+            ... on HomeViewSectionSales {
+              salesConnection(first: 10) {
+                edges {
+                  node {
+                    name
+                    representativeArtworks {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const sales = [
+      { name: "Auction 1", representative_artwork_ids: ["a1", "a2"] },
+      { name: "Auction 2", representative_artwork_ids: ["a3"] },
+    ]
+
+    const context = {
+      salesLoader: jest.fn().mockResolvedValue(sales),
+      artworksLoader: jest.fn().mockRejectedValue(new Error("gravity down")),
+    }
+
+    const { homeView } = await runQuery(query, context)
+
+    const nodes = homeView.section.salesConnection.edges.map((e) => e.node)
+    expect(nodes.map((n) => n.name)).toEqual(["Auction 1", "Auction 2"])
+    expect(nodes[0].representativeArtworks).toEqual([])
+  })
 })

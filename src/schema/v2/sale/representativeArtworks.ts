@@ -10,9 +10,16 @@ export const attachSaleRepresentativeArtworks = async (
   const ids = [
     ...new Set(sales.flatMap((sale) => sale.representative_artwork_ids ?? [])),
   ]
-  const artworks: any[] = ids.length
-    ? await artworksLoader({ ids, batched: true })
-    : []
+  if (!ids.length) return
+
+  let artworks: any[]
+  try {
+    artworks = await artworksLoader({ ids, batched: true })
+  } catch {
+    // Leave _representativeArtworks unset so the field resolver falls back,
+    // rather than failing the whole (production) auctions rail resolver.
+    return
+  }
 
   const byId = new Map(artworks.filter(Boolean).map((a) => [a._id, a]))
 

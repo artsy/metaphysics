@@ -122,7 +122,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return artworksLoader({
             ids: representative_artwork_ids,
             batched: true,
-          })
+          }).catch(() => [])
         },
       },
       artworksConnection: {
