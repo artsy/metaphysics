@@ -268,6 +268,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateArtnetEditionSetLoader: gravityLoader(
+      (id) => `artnet_edition_set/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
     updateArtnetImportLoader: gravityLoader(
       (id) => `artnet_import/${id}`,

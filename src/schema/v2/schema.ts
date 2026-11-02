@@ -170,6 +170,7 @@ import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtne
 import { createArtnetArtworkMutation } from "./artnet/createArtnetArtworkMutation"
 import { updateArtnetArtworkMutation } from "./artnet/updateArtnetArtworkMutation"
 import { finalizeArtnetImportMutation } from "./artnet/finalizeArtnetImportMutation"
+import { updateArtnetEditionSetMutation } from "./artnet/updateArtnetEditionSetMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -937,6 +938,7 @@ export default new GraphQLSchema({
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
       updateArtnetArtwork: updateArtnetArtworkMutation,
+      updateArtnetEditionSet: updateArtnetEditionSetMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityArticle: updateCityArticleMutation,
