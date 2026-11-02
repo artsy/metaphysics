@@ -180,25 +180,10 @@ export const MarketingCollectionType = new GraphQLObjectType<
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
-    const { ArtworkType } = require("./artwork")
     return {
       ...MarketingCollectionFields,
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
-      representativeArtworks: {
-        type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
-        resolve: (
-          { representative_artwork_ids },
-          _args,
-          { artworksLoader }
-        ) => {
-          if (!representative_artwork_ids?.length) return []
-          return artworksLoader({
-            ids: representative_artwork_ids,
-            batched: true,
-          })
-        },
-      },
       artworksConnection: filterArtworksConnectionWithParams((args) => {
         const filterArtworksArgs = {
           marketing_collection_id: args.id,

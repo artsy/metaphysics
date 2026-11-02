@@ -25738,7 +25738,6 @@ type MarketingCollection implements Node {
     size: Int = 10
   ): [MarketingCollection!]!
   representativeArtworkID: String
-  representativeArtworks: [Artwork!]
   showFeaturedArtists: Boolean!
   showHeaderArtworksRail: Boolean!
   slug: String!
