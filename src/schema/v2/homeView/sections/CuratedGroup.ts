@@ -5,6 +5,7 @@ import { HomeViewGroupSection } from "../sectionTypes/Group"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
+import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { setVersion } from "schema/v2/image/normalize"
 import { getDefault } from "schema/v2/image"
 
@@ -138,38 +139,34 @@ export const CuratedGroup: HomeViewGroupSection = {
 
         const sectionCards = [
           {
+            section: RecommendedArtists,
             title: "Recommended Artists",
-            // TODO: confirm copy — may be placeholder.
             subtitle:
               "Explore a curated selection of the most exciting artists working today.",
-            href: sectionScreenHref(RecommendedArtists),
-            // STOPGAP stack (first 3 artists' covers); omitted if unavailable.
-            ...(recommendedImages.length
-              ? { imageURLs: recommendedImages }
-              : {}),
-            entityType: "HomeViewSection",
-            entityID: RecommendedArtists.id,
+            images: recommendedImages,
           },
           {
-            // TODO: confirm card copy (title/subtitle) with design.
+            section: CuratorsPicksEmerging,
             title: "Curators' Picks",
-            href: sectionScreenHref(CuratorsPicksEmerging),
-            ...(curatorsPicksImages.length
-              ? { imageURLs: curatorsPicksImages }
-              : {}),
-            entityType: "HomeViewSection",
-            entityID: CuratorsPicksEmerging.id,
+            images: curatorsPicksImages,
           },
           {
+            section: TrendingArtists,
             title: "Trending Artists",
-            // TODO: confirm copy — may be placeholder.
             subtitle: "See the works boundary pushing artists are creating.",
-            href: sectionScreenHref(TrendingArtists),
-            ...(trendingImages.length ? { imageURLs: trendingImages } : {}),
-            entityType: "HomeViewSection",
-            entityID: TrendingArtists.id,
+            images: trendingImages,
           },
         ]
+          .filter(({ section }) => isSectionDisplayable(section, context))
+          .map(({ section, title, subtitle, images }) => ({
+            title,
+            ...(subtitle ? { subtitle } : {}),
+            href: sectionScreenHref(section),
+            // STOPGAP stack (first 3 covers/artworks); omitted if unavailable.
+            ...(images.length ? { imageURLs: images } : {}),
+            entityType: "HomeViewSection",
+            entityID: section.id,
+          }))
 
         // Preserve the configured slug order (the loader may not).
         const bySlug = new Map<string, any>(

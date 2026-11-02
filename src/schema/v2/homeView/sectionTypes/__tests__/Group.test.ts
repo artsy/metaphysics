@@ -91,8 +91,9 @@ describe("HomeViewSectionGroup", () => {
   })
 
   describe("cards (section resolver)", () => {
-    it("returns artist cards + marketing-collection cards", async () => {
-      const context = ({
+    const buildContext = (accessToken?: string) =>
+      (({
+        accessToken,
         marketingCollectionsLoader: jest.fn().mockResolvedValue({
           body: [
             {
@@ -122,8 +123,9 @@ describe("HomeViewSectionGroup", () => {
             }))
           )
         ),
-      } as unknown) as ResolverContext
+      } as unknown) as ResolverContext)
 
+    const resolveCards = async (context: ResolverContext) => {
       const cardGroup = CuratedGroup.cardGroups![0]
       const connection = await (cardGroup.resolver as any)(
         cardGroup,
@@ -131,7 +133,11 @@ describe("HomeViewSectionGroup", () => {
         context,
         info
       )
-      const cards = connection.edges.map((e) => e.node)
+      return connection.edges.map((e) => e.node)
+    }
+
+    it("returns artist cards + marketing-collection cards (logged in)", async () => {
+      const cards = await resolveCards(buildContext("a-token"))
 
       expect(cards).toEqual([
         {
@@ -179,6 +185,19 @@ describe("HomeViewSectionGroup", () => {
           entityType: "MarketingCollection",
           entityID: "bci",
         },
+      ])
+    })
+
+    it("drops cards for sections not displayable to the viewer (logged out)", async () => {
+      const cards = await resolveCards(buildContext())
+
+      // RecommendedArtists requires auth, so for a logged-out viewer its card is
+      // dropped — otherwise its homeView.section(id) href would throw.
+      expect(cards.map((c) => c.title)).toEqual([
+        "Curators' Picks",
+        "Trending Artists",
+        "Most Loved",
+        "Blue-Chip Icons",
       ])
     })
   })
