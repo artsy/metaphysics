@@ -96,7 +96,9 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     materials: {
       type: GraphQLString,
       description:
-        'Free-text materials ("oil on canvas"), distinct from the medium vocabulary. Pass an empty string to clear Artnet\'s; omit to leave it unchanged.',
+        'Free-text materials ("oil on canvas"), distinct from the medium vocabulary. Omit to leave it unchanged. ' +
+        "Cannot currently be used to clear Artnet's materials: Gravity's own clear signal is an empty string, but " +
+        "an empty string and null are indistinguishable by the time a request reaches it from here.",
     },
     priceToMinor: {
       type: GraphQLInt,
