@@ -13,6 +13,8 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
+import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtnetArtworkType } from "./artnetArtwork"
 
@@ -125,35 +127,48 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (input, { updateArtnetArtworkLoader }) => {
-    const {
+  mutateAndGetPayload: async (
+    {
       id,
       published,
       availability,
       materials,
+      priceToMinor,
       syncOn,
       syncedFields,
       syncedEditionSetId,
-    } = input
-
+    },
+    { updateArtnetArtworkLoader }
+  ) => {
     if (!updateArtnetArtworkLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
+    // An empty list reaches Gravity indistinguishable from an omitted one (qs drops empty
+    // arrays), which would reclaim both price and sale status instead of reclaiming nothing.
+    if (syncedFields?.length === 0) {
+      throw new Error(
+        "syncedFields must not be empty; omit it to reclaim both price and sale status"
+      )
+    }
+
     try {
-      return await updateArtnetArtworkLoader(id, {
-        published,
-        availability,
-        materials,
-        sync_on: syncOn,
-        synced_fields: syncedFields,
-        synced_edition_set_id: syncedEditionSetId,
-        // Passed only when the client sent the key, so Gravity can tell an omitted ceiling
-        // from an explicit null asking to clear one.
-        ...(Object.prototype.hasOwnProperty.call(input, "priceToMinor")
-          ? { price_to_minor: input.priceToMinor }
-          : {}),
-      })
+      const gravityParams = snakeCaseKeys(
+        omitBy(
+          {
+            published,
+            availability,
+            materials,
+            priceToMinor,
+            syncOn,
+            syncedFields,
+            syncedEditionSetId,
+          },
+          isUndefined
+        )
+      )
+
+      return await updateArtnetArtworkLoader(id, gravityParams)
     } catch (error) {
       const formatted = formatGravityError(error)
       if (formatted) {

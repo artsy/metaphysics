@@ -43,10 +43,7 @@ describe("updateArtnetArtwork mutation", () => {
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
       published: false,
       availability: "sold",
-      materials: undefined,
       sync_on: true,
-      synced_fields: undefined,
-      synced_edition_set_id: undefined,
     })
     expect(data).toEqual({
       updateArtnetArtwork: {
@@ -92,14 +89,40 @@ describe("updateArtnetArtwork mutation", () => {
     await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
 
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
-      published: undefined,
-      availability: undefined,
       materials: "Oil on canvas",
       sync_on: true,
       synced_fields: ["price", "availability"],
       synced_edition_set_id: "edition-set-1",
       price_to_minor: 500000,
     })
+  })
+
+  it("rejects an empty syncedFields list rather than letting it reach Gravity as omitted", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", syncOn: true, syncedFields: [] }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+    })
+
+    await expect(
+      runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+    ).rejects.toThrow(/syncedFields must not be empty/)
+
+    expect(updateArtnetArtworkLoader).not.toHaveBeenCalled()
   })
 
   it("sends price_to_minor as null to clear it, and omits the key entirely when not provided", async () => {
@@ -126,12 +149,7 @@ describe("updateArtnetArtwork mutation", () => {
     await runAuthenticatedQuery(clearQuery, { updateArtnetArtworkLoader })
 
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
-      published: undefined,
-      availability: undefined,
-      materials: undefined,
       sync_on: true,
-      synced_fields: undefined,
-      synced_edition_set_id: undefined,
       price_to_minor: null,
     })
 
@@ -162,14 +180,12 @@ describe("updateArtnetArtwork mutation", () => {
     expect(updateArtnetArtworkLoader2).toHaveBeenCalledWith(
       "artnet-artwork-1",
       {
-        published: undefined,
-        availability: undefined,
-        materials: undefined,
         sync_on: true,
-        synced_fields: undefined,
-        synced_edition_set_id: undefined,
       }
     )
+    expect(
+      updateArtnetArtworkLoader2.mock.calls[0][1]
+    ).not.toHaveProperty("price_to_minor")
   })
 
   it("returns a mutation error when Gravity rejects the request", async () => {
