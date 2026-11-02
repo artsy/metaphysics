@@ -78,4 +78,20 @@ describe("EditorialGroup", () => {
       },
     ])
   })
+
+  it("returns an empty connection when the articles load fails", async () => {
+    const context = ({
+      articlesLoader: jest.fn().mockRejectedValue(new Error("boom")),
+    } as unknown) as ResolverContext
+
+    const cardGroup = EditorialGroup.cardGroups![0]
+    const connection = await (cardGroup.resolver as any)(
+      cardGroup,
+      { first: 10 },
+      context,
+      {} as any
+    )
+
+    expect(connection.edges).toEqual([])
+  })
 })

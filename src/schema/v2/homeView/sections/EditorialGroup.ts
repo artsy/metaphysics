@@ -2,6 +2,7 @@ import { connectionFromArray } from "graphql-relay"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomeViewGroupSection } from "../sectionTypes/Group"
 import { HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION } from "../sectionTypes/groupMinimumEigenVersion"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { LatestArticles } from "./LatestArticles"
 import { News } from "./News"
 import ArticlesConnection from "schema/v2/articlesConnection"
@@ -37,8 +38,8 @@ export const EditorialGroup: HomeViewGroupSection = {
       title: "Art News",
       href: News.component?.behaviors?.viewAll?.href ?? undefined,
       ownerType: News.component?.behaviors?.viewAll?.ownerType ?? undefined,
-      resolver: async (parent, args, context, info) => {
-        const connection: any = await ArticlesConnection.resolve!(
+      resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+        const connection: any = await (ArticlesConnection.resolve!(
           parent,
           {
             published: true,
@@ -48,7 +49,7 @@ export const EditorialGroup: HomeViewGroupSection = {
           },
           context,
           info
-        )
+        ) as Promise<any>).catch(() => null)
 
         const cards = (connection?.edges ?? []).map(({ node }) => ({
           title: node.title,
@@ -59,7 +60,7 @@ export const EditorialGroup: HomeViewGroupSection = {
         }))
 
         return connectionFromArray(cards, args)
-      },
+      }),
     },
   ],
 }
