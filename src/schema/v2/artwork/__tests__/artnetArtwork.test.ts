@@ -46,7 +46,9 @@ describe("CatalogArtwork.artnetArtwork", () => {
               availability
               published
               priceCurrency
-              mediums
+              primaryMedium
+              additionalMediums
+              materials
             }
           }
         }
@@ -60,7 +62,9 @@ describe("CatalogArtwork.artnetArtwork", () => {
         availability: "Price on Request",
         published: true,
         price_currency: "USD",
-        mediums: ["Paintings", "Works on paper"],
+        primary_medium: "Paintings",
+        additional_mediums: ["Works on paper"],
+        materials: "Oil on canvas",
       }),
     })
 
@@ -73,20 +77,24 @@ describe("CatalogArtwork.artnetArtwork", () => {
             availability: "Price on Request",
             published: true,
             priceCurrency: "USD",
-            mediums: ["Paintings", "Works on paper"],
+            primaryMedium: "Paintings",
+            additionalMediums: ["Works on paper"],
+            materials: "Oil on canvas",
           },
         },
       },
     })
   })
 
-  it("returns an empty list when mediums is not present", async () => {
+  it("returns an empty list when additional_mediums is not present", async () => {
     const query = gql`
       {
         artwork(id: "some-artwork") {
           catalogArtwork {
             artnetArtwork {
-              mediums
+              primaryMedium
+              additionalMediums
+              materials
             }
           }
         }
@@ -100,7 +108,15 @@ describe("CatalogArtwork.artnetArtwork", () => {
     })
 
     expect(data).toEqual({
-      artwork: { catalogArtwork: { artnetArtwork: { mediums: [] } } },
+      artwork: {
+        catalogArtwork: {
+          artnetArtwork: {
+            primaryMedium: null,
+            additionalMediums: [],
+            materials: null,
+          },
+        },
+      },
     })
   })
 

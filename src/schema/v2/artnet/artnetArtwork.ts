@@ -17,7 +17,9 @@ export interface ArtnetArtworkGravityResponse {
   id: string
   catalog_artwork_id: string
   artnet_id: string | null
-  mediums: string[]
+  primary_medium: string | null
+  additional_mediums: string[]
+  materials: string | null
   availability: string | null
   price_currency: string | null
   price_from_minor: number | null
@@ -40,11 +42,22 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ artnet_id }) => artnet_id,
     },
-    mediums: {
-      type: new GraphQLList(GraphQLString),
+    primaryMedium: {
+      type: GraphQLString,
       description:
-        "Medium names + materials for this artwork, e.g. Paintings, Oil.",
-      resolve: ({ mediums }) => mediums ?? [],
+        "The medium Art OS shows as this artwork's primary; Artnet itself holds a flat list.",
+      resolve: ({ primary_medium }) => primary_medium,
+    },
+    additionalMediums: {
+      type: new GraphQLList(GraphQLString),
+      description: "Medium names beyond the primary, in Gravity's order.",
+      resolve: ({ additional_mediums }) => additional_mediums ?? [],
+    },
+    materials: {
+      type: GraphQLString,
+      description:
+        'Free-text materials (e.g. "oil on canvas"), distinct from the medium vocabulary.',
+      resolve: ({ materials }) => materials,
     },
     availability: {
       type: GraphQLString,
