@@ -11,6 +11,10 @@
 // Usage:
 //   METAPHYSICS_ACCESS_TOKEN=... METAPHYSICS_USER_ID=... yarn ai-agent-chat
 //
+// To attach an already-uploaded image to the first message (which may then
+// be empty -- just press enter):
+//   yarn ai-agent-chat --image-s3-key <key> --image-s3-bucket <bucket>
+//
 // These can also be set in .env instead of prefixing every invocation.
 
 import "../src/lib/loadenv"
@@ -28,6 +32,24 @@ const INPUT_HISTORY_SIZE = 200
 const INPUT_HISTORY_FILE =
   process.env.AI_AGENT_CHAT_HISTORY_FILE ||
   join(homedir(), ".metaphysics-ai-agent-history.json")
+
+function argValue(name: string): string | undefined {
+  const index = process.argv.indexOf(name)
+  return index === -1 ? undefined : process.argv[index + 1]
+}
+
+type ImageInput = { s3Key: string; s3Bucket: string }
+
+const IMAGE_S3_KEY = argValue("--image-s3-key")
+const IMAGE_S3_BUCKET = argValue("--image-s3-bucket")
+if (!!IMAGE_S3_KEY !== !!IMAGE_S3_BUCKET) {
+  console.error("Pass --image-s3-key and --image-s3-bucket together.")
+  process.exit(1)
+}
+const INITIAL_IMAGE: ImageInput | null =
+  IMAGE_S3_KEY && IMAGE_S3_BUCKET
+    ? { s3Key: IMAGE_S3_KEY, s3Bucket: IMAGE_S3_BUCKET }
+    : null
 
 if (!ACCESS_TOKEN || !USER_ID) {
   console.error(
@@ -84,6 +106,7 @@ type HistoryEntry = {
   role: "USER" | "ASSISTANT"
   content: string
   displayedSections?: DisplayedSection[]
+  image?: ImageInput
 }
 
 const SECTION_ENTITY_TYPES: Record<string, EntityType> = {
@@ -241,7 +264,8 @@ function describeError(error: unknown): string {
 async function sendTurn(
   conversationID: string,
   message: string,
-  history: HistoryEntry[]
+  history: HistoryEntry[],
+  image: ImageInput | null
 ): Promise<{ text: string | null; displayedSections: DisplayedSection[] }> {
   const response = await fetch(METAPHYSICS_URL, {
     method: "POST",
@@ -257,6 +281,7 @@ async function sendTurn(
         input: {
           conversationID,
           message,
+          ...(image && { image }),
           history,
           supportedSections: SUPPORTED_SECTIONS,
           includeDebugToolCalls: true,
@@ -375,6 +400,8 @@ async function sendTurn(
 function main() {
   const conversationID = randomUUID()
   const history: HistoryEntry[] = []
+  // Attached to the first message only, then replayed with it in `history`.
+  let pendingImage = INITIAL_IMAGE
 
   console.log(
     `Chatting with the Artsy AI agent (conversation ${conversationID}).`
@@ -382,6 +409,14 @@ function main() {
   console.log(
     'Type your message and press enter. Type "exit" or Ctrl+C to quit.\n'
   )
+  if (pendingImage) {
+    console.log(
+      dim(
+        `[image s3://${pendingImage.s3Bucket}/${pendingImage.s3Key} will be ` +
+          "attached to your first message, which may be empty]\n"
+      )
+    )
+  }
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -396,7 +431,7 @@ function main() {
   rl.on("line", async (line) => {
     const message = line.trim()
     saveInputHistory(rl.history)
-    if (!message) {
+    if (!message && !pendingImage) {
       rl.prompt()
       return
     }
@@ -408,12 +443,15 @@ function main() {
     rl.pause()
     process.stdout.write("agent> ")
     try {
+      const image = pendingImage
       const { text, displayedSections } = await sendTurn(
         conversationID,
         message,
-        history
+        history,
+        image
       )
-      history.push({ role: "USER", content: message })
+      pendingImage = null
+      history.push({ role: "USER", content: message, ...(image && { image }) })
       if (text) {
         history.push({
           role: "ASSISTANT",

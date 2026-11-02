@@ -69,23 +69,7 @@ describe("RecommendedArtists", () => {
     `
 
     const mockVortexResponse = {
-      data: {
-        artistRecommendations: {
-          edges: [
-            {
-              node: {
-                artistId: "artist-1",
-              },
-            },
-            {
-              node: {
-                artistId: "artist-2",
-              },
-            },
-          ],
-          totalCount: 2,
-        },
-      },
+      data: [{ artist_id: "artist-1" }, { artist_id: "artist-2" }],
     }
 
     const mockArtistsResponse = {
@@ -106,11 +90,11 @@ describe("RecommendedArtists", () => {
     const context = {
       accessToken: "424242",
       authenticatedLoaders: {
-        vortexGraphqlLoader: jest.fn(() => async () => mockVortexResponse),
+        vortexArtistRecommendationsLoader: jest.fn(
+          async () => mockVortexResponse
+        ),
       },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: jest.fn(() => async () => []),
-      },
+      unauthenticatedLoaders: {},
       artistsLoader: jest.fn().mockReturnValue(mockArtistsResponse),
     }
 

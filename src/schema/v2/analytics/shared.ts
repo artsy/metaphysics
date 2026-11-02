@@ -19,8 +19,8 @@ import { ResolverContext } from "types/graphql"
 
 /**
  * Types that used to come from the stitched Vortex schema. Names and
- * descriptions match what Vortex served, so clients see the same schema
- * whether `USE_UNSTITCHED_VORTEX` is on or off.
+ * descriptions match what Vortex served, so clients saw no schema change when
+ * it was unstitched.
  */
 
 /**

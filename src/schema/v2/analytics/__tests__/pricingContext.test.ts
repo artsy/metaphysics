@@ -3,14 +3,6 @@ import { HTTPError } from "lib/HTTPError"
 import { runQuery } from "schema/v2/test/utils"
 import { filtersDescription } from "../pricingContext"
 
-jest.mock("config", () => {
-  const actualConfig = jest.requireActual("config").default
-  return {
-    __esModule: true,
-    default: { ...actualConfig, USE_UNSTITCHED_VORTEX: true },
-  }
-})
-
 const artwork = {
   artist: {
     id: "artist-slug",

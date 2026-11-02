@@ -1,4 +1,3 @@
-import config from "config"
 import { getExperimentVariant, isFeatureFlagEnabled } from "lib/featureFlags"
 import { HTTPError } from "lib/HTTPError"
 import {
@@ -17,16 +16,10 @@ const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 
 const ELIGIBLE_USER_AGENT = "Artsy-Mobile/9.14.0"
 
-const mockLoaderFactory = (affinities) => {
-  const edges = affinities.map((affinity) => {
-    return { node: { ...affinity } }
-  })
-
-  const data = { newForYouRecommendations: { edges } }
-  const loader = jest.fn(() => ({ data }))
-
-  return loader
-}
+const mockLoaderFactory = (recommendations) =>
+  jest.fn(async () => ({
+    data: recommendations.map(({ artworkId }) => ({ artwork_id: artworkId })),
+  }))
 
 describe("getNewForYouArtworkIDs", () => {
   const userLoader = mockLoaderFactory([{ artworkId: "banksy" }])
@@ -35,10 +28,10 @@ describe("getNewForYouArtworkIDs", () => {
   it("prefers the authenticatedLoaders when available", async () => {
     const context = {
       authenticatedLoaders: {
-        vortexGraphqlLoader: () => userLoader,
+        vortexNewForYouRecommendationsLoader: userLoader,
       },
       unauthenticatedLoaders: {
-        vortexGraphqlLoader: appLoader,
+        vortexNewForYouRecommendationsLoader: appLoader,
       },
     } as any
 
@@ -55,8 +48,12 @@ describe("getNewForYouArtworkIDs", () => {
     const artworkRecommendationsLoader = jest.fn()
     const context = {
       artworkRecommendationsLoader,
-      authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-      unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+      authenticatedLoaders: {
+        vortexNewForYouRecommendationsLoader: vortexLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexNewForYouRecommendationsLoader: vortexLoader,
+      },
     } as any
 
     const artworkIds = await getNewForYouArtworkIDs(
@@ -96,8 +93,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -121,8 +122,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => jest.fn() },
-        unauthenticatedLoaders: { vortexGraphqlLoader: jest.fn() },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: jest.fn(),
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: jest.fn(),
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -140,8 +145,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => jest.fn() },
-        unauthenticatedLoaders: { vortexGraphqlLoader: jest.fn() },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: jest.fn(),
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: jest.fn(),
+        },
       } as any
 
       await expect(
@@ -157,8 +166,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         xImpersonateUserID: "braze-user-id",
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -179,8 +192,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -212,8 +229,12 @@ describe("getNewForYouArtworkIDs", () => {
         artworkRecommendationsLoader,
         userID: "logged-in-user",
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -241,8 +262,12 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         userID: "logged-in-user",
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -262,8 +287,12 @@ describe("getNewForYouArtworkIDs", () => {
         artworkRecommendationsLoader,
         userID: "logged-in-user",
         userAgent: "Artsy-Mobile/9.13.0",
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -288,8 +317,12 @@ describe("getNewForYouArtworkIDs", () => {
         artworkRecommendationsLoader,
         userID: "logged-in-user",
         userAgent: ELIGIBLE_USER_AGENT,
-        authenticatedLoaders: { vortexGraphqlLoader: () => vortexLoader },
-        unauthenticatedLoaders: { vortexGraphqlLoader: vortexLoader },
+        authenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
+        unauthenticatedLoaders: {
+          vortexNewForYouRecommendationsLoader: vortexLoader,
+        },
       } as any
 
       const artworkIds = await getNewForYouArtworkIDs(
@@ -310,11 +343,11 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         artworkRecommendationsLoader,
         authenticatedLoaders: {
-          vortexGraphqlLoader: () => jest.fn(),
+          vortexNewForYouRecommendationsLoader: jest.fn(),
           auctionLotRecommendationsLoader: auctionLoader,
         },
         unauthenticatedLoaders: {
-          vortexGraphqlLoader: jest.fn(),
+          vortexNewForYouRecommendationsLoader: jest.fn(),
           auctionLotRecommendationsLoader: auctionLoader,
         },
       } as any
@@ -329,25 +362,15 @@ describe("getNewForYouArtworkIDs", () => {
     })
   })
 
-  describe("with USE_UNSTITCHED_VORTEX", () => {
-    beforeEach(() => {
-      config.USE_UNSTITCHED_VORTEX = true
-    })
-
-    afterEach(() => {
-      config.USE_UNSTITCHED_VORTEX = false
-    })
-
+  describe("Vortex REST parameters", () => {
     const newForYouRecommendations = {
       data: [{ artwork_id: "artwork-1" }, { artwork_id: "artwork-2" }],
     }
 
     it("loads the artwork ids from Vortex's REST API", async () => {
       const userLoader = jest.fn().mockResolvedValue(newForYouRecommendations)
-      const vortexGraphqlLoader = jest.fn()
       const context = {
         authenticatedLoaders: {
-          vortexGraphqlLoader,
           vortexNewForYouRecommendationsLoader: userLoader,
         },
         unauthenticatedLoaders: {},
@@ -364,7 +387,6 @@ describe("getNewForYouArtworkIDs", () => {
         max_works_per_artist: 3,
         limit: 50,
       })
-      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
     })
 
     it("uses the app loader with the user id for impersonated requests", async () => {
@@ -372,7 +394,6 @@ describe("getNewForYouArtworkIDs", () => {
       const context = {
         xImpersonateUserID: "user-1",
         authenticatedLoaders: {
-          vortexGraphqlLoader: jest.fn(),
           vortexNewForYouRecommendationsLoader: jest.fn(),
         },
         unauthenticatedLoaders: {

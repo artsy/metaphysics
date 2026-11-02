@@ -22,6 +22,7 @@ jest.mock("lib/apis/anthropic", () => ({
 // doesn't intercept — so this replaces `buildAgentTools` itself instead,
 // keeping `summarizeToolCall` real (it's pure and worth exercising for real)
 // while swapping in a controllable execute.
+const mockBuildAgentTools = jest.fn()
 const mockToolExecute = jest.fn().mockResolvedValue({
   ok: true,
   content: '{"artist":{"name":"Andy Warhol"}}',
@@ -32,7 +33,8 @@ jest.mock("../tools", () => {
   const actual = jest.requireActual("../tools")
   return {
     ...actual,
-    buildAgentTools: () => ({
+    buildAgentTools: (...args: unknown[]) => ({
+      ...mockBuildAgentTools(...args),
       query_artsy: tool({
         description: "test",
         inputSchema: jsonSchema({ type: "object" }),
@@ -52,6 +54,7 @@ jest.mock("lib/rateLimitByUser", () => ({
 }))
 
 import { runTurn } from "../runTurn"
+import { imageHandleFor } from "../images"
 
 const FAKE_USAGE = {
   inputTokens: {
@@ -65,7 +68,10 @@ const FAKE_USAGE = {
 }
 
 function fakeContext(
-  overrides: { artworksLoader?: jest.Mock; artistsLoader?: jest.Mock } = {}
+  overrides: {
+    artworksLoader?: jest.Mock
+    artistsLoader?: jest.Mock
+  } = {}
 ): ResolverContext {
   return ({
     userID: "user-42",
@@ -90,9 +96,11 @@ async function collectEvents(
   input: {
     conversationID: string
     message: string
+    image?: { s3Key: string; s3Bucket: string } | null
     history?: Array<{
       role: string
       content: string
+      image?: { s3Key: string; s3Bucket: string } | null
       artworkIDs?: string[] | null
       displayedSections?: Array<{
         entityType: "ARTWORK" | "ARTIST"
@@ -1735,5 +1743,129 @@ describe("runTurn", () => {
       // displaced by the rolling one, so the cross-turn prefix stays cached.
       expect(cachedRolesOnCall(1)).toEqual(["system", "assistant", "tool"])
     })
+  })
+})
+
+describe("runTurn with attached images", () => {
+  const IMAGE = { s3Key: "uploads/query.jpg", s3Bucket: "image-uploads" }
+  const OLDER_IMAGE = { s3Key: "uploads/older.jpg", s3Bucket: "image-uploads" }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
+    mockModel = new MockLanguageModelV3({
+      doStream: {
+        stream: convertArrayToReadableStream([
+          { type: "stream-start", warnings: [] },
+          { type: "text-start", id: "1" },
+          {
+            type: "text-delta",
+            id: "1",
+            delta: JSON.stringify({ message: "Here are some.", section: null }),
+          },
+          { type: "text-end", id: "1" },
+          {
+            type: "finish",
+            finishReason: { unified: "stop", raw: "end_turn" },
+            usage: FAKE_USAGE,
+          },
+        ]),
+      },
+    })
+  })
+
+  const input = {
+    conversationID: "c1",
+    message: "",
+    image: IMAGE,
+    history: [
+      { role: "user", content: "like this", image: OLDER_IMAGE },
+      { role: "assistant", content: "Here you go." },
+      { role: "user", content: "thanks" },
+      { role: "assistant", content: "Anytime." },
+    ],
+  }
+
+  it("shows the model each attached image only as a handle note, in conversation order", async () => {
+    await collectEvents(input)
+
+    const userContents = mockModel.doStreamCalls[0].prompt
+      .filter((entry: any) => entry.role === "user")
+      .map((entry: any) => entry.content)
+    expect(userContents).toEqual([
+      [
+        {
+          type: "text",
+          text: `[Collector attached ${imageHandleFor(
+            OLDER_IMAGE
+          )}]\nlike this`,
+        },
+      ],
+      [{ type: "text", text: "thanks" }],
+      [
+        {
+          type: "text",
+          text: `[Collector attached ${imageHandleFor(IMAGE)}]`,
+        },
+      ],
+    ])
+    // No pixels, keys or URLs anywhere in the prompt.
+    expect(JSON.stringify(mockModel.doStreamCalls[0].prompt)).not.toMatch(
+      /uploads\/|image-uploads|"type":"file"|"type":"image"/
+    )
+  })
+
+  it("hands the tools the same handles the prompt names", async () => {
+    await collectEvents(input)
+
+    const [, , imageHandles] = mockBuildAgentTools.mock.calls[0]
+    expect(Array.from(imageHandles.entries())).toEqual([
+      [imageHandleFor(OLDER_IMAGE), OLDER_IMAGE],
+      [imageHandleFor(IMAGE), IMAGE],
+    ])
+  })
+
+  it("keeps each image's handle when the client trims older messages", async () => {
+    await collectEvents(input)
+    await collectEvents({ ...input, history: input.history.slice(2) })
+
+    const handlesOnTurn = (call: number) =>
+      Array.from(mockBuildAgentTools.mock.calls[call][2].keys())
+    expect(handlesOnTurn(0)).toContain(imageHandleFor(IMAGE))
+    // The older image is gone, and the newer one keeps its name.
+    expect(handlesOnTurn(1)).toEqual([imageHandleFor(IMAGE)])
+  })
+
+  it("gives the same image one handle however often it's attached", async () => {
+    await collectEvents({
+      conversationID: "c1",
+      message: "again",
+      image: IMAGE,
+      history: [{ role: "user", content: "like this", image: IMAGE }],
+    })
+
+    const [, , imageHandles] = mockBuildAgentTools.mock.calls[0]
+    expect(Array.from(imageHandles.keys())).toEqual([imageHandleFor(IMAGE)])
+  })
+
+  it("names handles after the image, not its position", () => {
+    expect(imageHandleFor(IMAGE)).toMatch(/^image_[0-9a-f]{8}$/)
+    expect(imageHandleFor(IMAGE)).not.toBe(imageHandleFor(OLDER_IMAGE))
+    expect(imageHandleFor({ ...IMAGE })).toBe(imageHandleFor(IMAGE))
+  })
+
+  it("assigns no handle to an image replayed on an assistant turn", async () => {
+    await collectEvents({
+      conversationID: "c1",
+      message: "cheaper",
+      history: [{ role: "assistant", content: "Here you go.", image: IMAGE }],
+    })
+
+    const [, , imageHandles] = mockBuildAgentTools.mock.calls[0]
+    expect(imageHandles.size).toBe(0)
+    const conversation = mockModel.doStreamCalls[0].prompt.filter(
+      (entry: any) => entry.role !== "system"
+    )
+    expect(JSON.stringify(conversation)).not.toContain("Collector attached")
   })
 })

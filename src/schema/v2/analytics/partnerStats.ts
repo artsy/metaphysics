@@ -39,7 +39,7 @@ import {
 /**
  * `Partner.analytics` and `User.analytics`, served from Vortex's REST API.
  * They replace the fields the stitched Vortex schema added, with the same
- * types, and are only mounted when `USE_UNSTITCHED_VORTEX` is on.
+ * types.
  */
 
 // Vortex REST is authorized like the stitched Vortex link was: with the

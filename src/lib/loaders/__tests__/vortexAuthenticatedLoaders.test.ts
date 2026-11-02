@@ -1,3 +1,5 @@
+import vortexLoaders from "lib/loaders/loaders_with_authentication/vortex"
+
 const mockVortexRequest = jest.fn()
 
 jest.mock("lib/loaders/api", () => ({
@@ -11,28 +13,12 @@ jest.mock("lib/loaders/api", () => ({
   }),
 }))
 
-const loadWithFlag = (useUnstitchedVortex: boolean) => {
-  let loaders: any
-  jest.isolateModules(() => {
-    const actualConfig = jest.requireActual("config").default
-    jest.doMock("config", () => ({
-      __esModule: true,
-      default: { ...actualConfig, USE_UNSTITCHED_VORTEX: useUnstitchedVortex },
-    }))
-    loaders = require("lib/loaders/loaders_with_authentication/vortex").default(
-      "access-token",
-      {}
-    )
-  })
-  return loaders
-}
-
 describe("marketPriceInsightsBatchLoader", () => {
   beforeEach(() => mockVortexRequest.mockReset())
 
-  it("posts to the REST endpoint when USE_UNSTITCHED_VORTEX is on", async () => {
+  it("posts the pairs to the REST batch endpoint", async () => {
     mockVortexRequest.mockResolvedValue({ data: [] })
-    const { marketPriceInsightsBatchLoader } = loadWithFlag(true)
+    const { marketPriceInsightsBatchLoader } = vortexLoaders("access-token", {})
 
     await marketPriceInsightsBatchLoader([
       { artistId: "artist-1", category: "Painting" },
@@ -43,20 +29,5 @@ describe("marketPriceInsightsBatchLoader", () => {
       { tuples: [{ artist_id: "artist-1", medium: "Painting" }] },
       { method: "POST" }
     )
-  })
-
-  it("queries Vortex GraphQL when USE_UNSTITCHED_VORTEX is off", async () => {
-    mockVortexRequest.mockResolvedValue({
-      data: { marketPriceInsightsBatch: {} },
-    })
-    const { marketPriceInsightsBatchLoader } = loadWithFlag(false)
-
-    await marketPriceInsightsBatchLoader([
-      { artistId: "artist-1", category: "Painting" },
-    ])
-
-    expect(mockVortexRequest).toHaveBeenCalledWith("/graphql", undefined, {
-      method: "POST",
-    })
   })
 })

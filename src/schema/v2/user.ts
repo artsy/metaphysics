@@ -8,7 +8,6 @@ import {
   GraphQLString,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import config from "config"
 import {
   CatchCollectionNotFoundException,
   convertConnectionArgsToGravityArgs,
@@ -138,10 +137,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...InternalIDFields,
       cached,
-      // Stitched from Vortex until it's unstitched.
-      ...(config.USE_UNSTITCHED_VORTEX
-        ? { analytics: UserAnalyticsField }
-        : {}),
+      analytics: UserAnalyticsField,
       accessiblePropertiesConnection: {
         type: UserAccessiblePropertiesConnectionType,
         args: pageable({

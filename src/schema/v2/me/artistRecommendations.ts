@@ -1,11 +1,9 @@
 import { GraphQLEnumType, GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArray } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import gql from "lib/gql"
-import config from "config"
 import { loadVortexForUser } from "lib/loadVortexForUser"
 import { artistConnection } from "schema/v2/artist"
 
@@ -70,26 +68,22 @@ const fetchHybridRecommendations = async (
 ) => {
   const {
     artistsLoader,
-    authenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-    } = {},
+    authenticatedLoaders: { vortexArtistRecommendationsLoader } = {},
     xImpersonateUserID,
     userID,
   } = context
 
-  if (!artistsLoader || !vortexGraphQLAuthenticatedLoader) return
+  if (!artistsLoader || !vortexArtistRecommendationsLoader) return
 
   const userId = userID || xImpersonateUserID
 
   // Fetch artist IDs from Vortex
-  const artistIds = config.USE_UNSTITCHED_VORTEX
-    ? (
-        await loadVortexForUser(context, "vortexArtistRecommendationsLoader", {
-          user_id: userId,
-          limit: MAX_ARTISTS,
-        })
-      ).map(({ artist_id }) => artist_id)
-    : await fetchArtistIdsFromVortexGraphql(context, userId)
+  const artistIds = (
+    await loadVortexForUser(context, "vortexArtistRecommendationsLoader", {
+      user_id: userId,
+      limit: MAX_ARTISTS,
+    })
+  ).map(({ artist_id }) => artist_id)
 
   // Fetch artist details from Gravity
   const artists = artistIds.length
@@ -101,47 +95,6 @@ const fetchHybridRecommendations = async (
     pageCursors: createPageCursors({ ...args, page, size }, artists.length),
     ...connectionFromArray(artists, args),
   }
-}
-
-const fetchArtistIdsFromVortexGraphql = async (
-  {
-    authenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-    } = {},
-    unauthenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-    },
-    xImpersonateUserID,
-  }: ResolverContext,
-  userId: string | undefined
-) => {
-  const query = {
-    query: gql`
-        query artistRecommendationsQuery {
-          artistRecommendations(first: ${MAX_ARTISTS}, userId: "${userId}") {
-            totalCount
-            edges {
-              node {
-                artistId
-                score
-              }
-            }
-          }
-        }
-      `,
-  }
-
-  const vortexLoader = xImpersonateUserID
-    ? vortexGraphQLUnauthenticatedLoader
-    : vortexGraphQLAuthenticatedLoader
-
-  if (!vortexLoader) return []
-
-  const vortexResult = await vortexLoader(query)()
-
-  return extractNodes(vortexResult.data?.artistRecommendations).map(
-    (node: any) => node?.artistId
-  )
 }
 
 export const ArtistRecommendations: GraphQLFieldConfig<

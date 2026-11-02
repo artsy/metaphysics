@@ -1,6 +1,5 @@
 import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { stitchSchemas } from "@graphql-tools/stitch"
-import config from "config"
 import {
   causalitySubschemaConfig,
   executableCausalitySchema,
@@ -15,13 +14,11 @@ import {
   executableExchangeSchema,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
-import { vortexSubschemaConfig } from "lib/stitching/vortex/schema"
 
 import { GraphQLSchema } from "graphql"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
 import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
-import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/v2/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -70,14 +67,6 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
   useStitchingEnvironment(
     convectionStitchingEnvironmentV2(localSchema, executableConvectionSchema())
   )
-
-  // Vortex is being replaced by native resolvers over its REST API. Until
-  // those exist, flipping this flag drops every Vortex type from the schema.
-  if (!config.USE_UNSTITCHED_VORTEX) {
-    subschemas.push(vortexSubschemaConfig())
-
-    useStitchingEnvironment(vortexStitchingEnvironmentv2(localSchema))
-  }
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon

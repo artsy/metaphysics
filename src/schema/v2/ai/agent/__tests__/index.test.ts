@@ -13,7 +13,7 @@ jest.mock("../runTurn", () => ({
   runTurn: (...args: any[]) => mockRunTurn(...args),
 }))
 
-import { AIAgentTurn } from "../index"
+import { AIAgentTurn, UNAVAILABLE_IMAGE_NOTE } from "../index"
 
 // `subscribe`/`resolve` are tested directly as plain functions rather than
 // through a full schema execution — graphql-js's `execute()` (which
@@ -311,6 +311,219 @@ describe("AIAgentTurn", () => {
       schema,
       context
     )
+  })
+
+  describe("attached images", () => {
+    const user = { userID: "user-42", accessToken: "token" }
+    const image = { s3Key: "uploads/query.jpg", s3Bucket: "image-uploads" }
+    let originalBuckets: string[]
+
+    beforeEach(() => {
+      originalBuckets = config.SEARCH_ARTWORK_IMAGE_BUCKETS
+      config.SEARCH_ARTWORK_IMAGE_BUCKETS = ["image-uploads"]
+    })
+
+    afterEach(() => {
+      config.SEARCH_ARTWORK_IMAGE_BUCKETS = originalBuckets
+    })
+
+    it("rejects an empty message with no image", () => {
+      expect(() =>
+        callSubscribe({ conversationID: "c1", message: "  " }, user)
+      ).toThrow("A message or an image is required")
+      expect(mockRunTurn).not.toHaveBeenCalled()
+    })
+
+    it("accepts an empty message when an image is attached", () => {
+      callSubscribe({ conversationID: "c1", message: "", image }, user)
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ message: "", image }),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it("rejects an image in a bucket image search doesn't support", () => {
+      expect(() =>
+        callSubscribe(
+          {
+            conversationID: "c1",
+            message: "like this",
+            image: { ...image, s3Bucket: "someone-elses-bucket" },
+          },
+          user
+        )
+      ).toThrow(
+        'Images must be uploaded to a supported bucket, not "someone-elses-bucket"'
+      )
+      expect(mockRunTurn).not.toHaveBeenCalled()
+    })
+
+    it("rejects every image when no bucket is configured", () => {
+      config.SEARCH_ARTWORK_IMAGE_BUCKETS = []
+
+      expect(() =>
+        callSubscribe({ conversationID: "c1", message: "", image }, user)
+      ).toThrow(/supported bucket/)
+    })
+
+    it("rejects an image with a blank key", () => {
+      expect(() =>
+        callSubscribe(
+          {
+            conversationID: "c1",
+            message: "",
+            image: { ...image, s3Key: " " },
+          },
+          user
+        )
+      ).toThrow("An attached image needs an S3 key")
+    })
+
+    it("checks the bucket of images replayed on user turns", () => {
+      const history = [
+        {
+          role: "user",
+          content: "like this",
+          image: { ...image, s3Bucket: "someone-elses-bucket" },
+        },
+        { role: "assistant", content: "Here you go." },
+      ]
+
+      expect(() =>
+        callSubscribe(
+          { conversationID: "c1", message: "cheaper", history },
+          user
+        )
+      ).toThrow(/supported bucket/)
+    })
+
+    it("ignores an image replayed on an assistant turn, which never carried one", () => {
+      const history = [
+        {
+          role: "assistant",
+          content: "Here you go.",
+          image: { ...image, s3Bucket: "someone-elses-bucket" },
+        },
+      ]
+
+      expect(() =>
+        callSubscribe(
+          { conversationID: "c1", message: "cheaper", history },
+          user
+        )
+      ).not.toThrow()
+    })
+
+    it("counts image fields against the byte cap", () => {
+      const history = Array.from({ length: 20 }, () => ({
+        role: "user",
+        content: "",
+        image: { s3Key: "k".repeat(5_000), s3Bucket: "image-uploads" },
+      }))
+
+      expect(() =>
+        callSubscribe({ conversationID: "c1", message: "hi", history }, user)
+      ).toThrow(/too large/)
+    })
+
+    it("gates attaching a new image on its own feature flag", () => {
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+
+      expect(() =>
+        callSubscribe({ conversationID: "c1", message: "", image }, user)
+      ).toThrow("Image input is not currently enabled")
+      expect(
+        mockIsFeatureFlagEnabled
+      ).toHaveBeenCalledWith("onyx_ai_agent-image-input", { userId: "user-42" })
+    })
+
+    it("drops images replayed in history when that flag is off, so none is searched", () => {
+      // The client controls history as much as the new message, so the flag
+      // has to cover both to work as a kill switch.
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+      const history = [
+        { role: "user", content: "like this", image },
+        { role: "assistant", content: "Here you go." },
+      ]
+
+      callSubscribe({ conversationID: "c1", message: "cheaper", history }, user)
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          history: [
+            { role: "user", content: "like this" },
+            { role: "assistant", content: "Here you go." },
+          ],
+        }),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it("leaves a note in place of a dropped image when its message had no text", () => {
+      // An empty user message fails the whole request upstream, so an
+      // image-only message can't simply lose its image.
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+      const history = [
+        { role: "user", content: "", image },
+        { role: "assistant", content: "Here you go." },
+      ]
+
+      callSubscribe({ conversationID: "c1", message: "cheaper", history }, user)
+
+      expect(mockRunTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          history: [
+            { role: "user", content: UNAVAILABLE_IMAGE_NOTE },
+            { role: "assistant", content: "Here you go." },
+          ],
+        }),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it("doesn't reject a conversation over an image it's going to drop", () => {
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag: string) => flag !== "onyx_ai_agent-image-input"
+      )
+      const history = [
+        {
+          role: "user",
+          content: "like this",
+          image: { ...image, s3Bucket: "someone-elses-bucket" },
+        },
+      ]
+
+      expect(() =>
+        callSubscribe(
+          { conversationID: "c1", message: "cheaper", history },
+          user
+        )
+      ).not.toThrow()
+    })
+
+    it("skips the image flag in development", () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+      const originalNodeEnv = config.NODE_ENV
+      config.NODE_ENV = "development"
+
+      try {
+        expect(() =>
+          callSubscribe({ conversationID: "c1", message: "", image }, user)
+        ).not.toThrow()
+      } finally {
+        config.NODE_ENV = originalNodeEnv
+      }
+    })
   })
 
   it("resolve is the identity function", () => {

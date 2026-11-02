@@ -1,4 +1,3 @@
-import config from "config"
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
@@ -22,8 +21,8 @@ describe("artworkRecommendations", () => {
   `
 
   it("returns artwork recommendations with order from Vortex", async () => {
-    const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
-      vortexResponse
+    const vortexArtworkRecommendationsLoader = jest.fn(
+      async () => vortexResponse
     )
 
     const artworksLoader = jest.fn(async () => artworksResponse)
@@ -32,32 +31,17 @@ describe("artworkRecommendations", () => {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
       userID: "vortex-user-id",
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: null,
-      },
+      authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+      unauthenticatedLoaders: {},
     }
 
     const {
       me: { artworkRecommendations },
     } = await runAuthenticatedQuery(query, context)
 
-    expect(vortexGraphQLAuthenticatedLoader).toHaveBeenCalledWith({
-      query: gql`
-        query artworkRecommendationsQuery {
-          artworkRecommendations(first: 50, userId: "vortex-user-id") {
-            totalCount
-            edges {
-              node {
-                artworkId
-                score
-              }
-            }
-          }
-        }
-      `,
+    expect(vortexArtworkRecommendationsLoader).toHaveBeenCalledWith({
+      user_id: "vortex-user-id",
+      limit: 50,
     })
 
     expect(artworksLoader).toHaveBeenCalledWith({
@@ -86,13 +70,8 @@ describe("artworkRecommendations", () => {
   })
 
   it("doesn't return artworks if no artwork recommendations are present", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => ({
-      data: {
-        artworkRecommendations: {
-          edges: [],
-          totalCount: 0,
-        },
-      },
+    const vortexArtworkRecommendationsLoader = jest.fn(async () => ({
+      data: [],
     }))
 
     const artworksLoader = jest.fn(async () => artworksResponse)
@@ -100,12 +79,8 @@ describe("artworkRecommendations", () => {
     const context: any = {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphqlLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: null,
-      },
+      authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+      unauthenticatedLoaders: {},
     }
 
     const {
@@ -119,24 +94,22 @@ describe("artworkRecommendations", () => {
       }
     `)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalled()
+    expect(vortexArtworkRecommendationsLoader).toHaveBeenCalled()
     expect(artworksLoader).not.toHaveBeenCalled()
   })
 
   it("doesn't fetch artworks when the requested page is past the end", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+    const vortexArtworkRecommendationsLoader = jest.fn(
+      async () => vortexResponse
+    )
     const artworksLoader = jest.fn(async () => artworksResponse)
 
     const context: any = {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
       userID: "vortex-user-id",
-      authenticatedLoaders: {
-        vortexGraphqlLoader,
-      },
-      unauthenticatedLoaders: {
-        vortexGraphqlLoader: null,
-      },
+      authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+      unauthenticatedLoaders: {},
     }
 
     const {
@@ -174,7 +147,9 @@ describe("artworkRecommendations", () => {
 
   describe("Gravity vs Vortex routing", () => {
     it("fetches IDs from the Gravity REST endpoint with the same response shape", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn(async () => ({
         artwork_ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
       }))
@@ -186,12 +161,8 @@ describe("artworkRecommendations", () => {
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
         userAgent: "Artsy-Mobile/9.11.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: {},
       }
 
       const {
@@ -199,7 +170,7 @@ describe("artworkRecommendations", () => {
       } = await runAuthenticatedQuery(query, context)
 
       expect(artworkRecommendationsLoader).toHaveBeenCalledWith({ size: 50 })
-      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).not.toHaveBeenCalled()
       expect(artworksLoader).toHaveBeenCalledWith({
         ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
       })
@@ -226,7 +197,9 @@ describe("artworkRecommendations", () => {
     })
 
     it("treats a Gravity 404 (kill-switch) as an empty connection", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn(async () => {
         throw new HTTPError("Not Found", 404)
       })
@@ -238,12 +211,8 @@ describe("artworkRecommendations", () => {
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
         userAgent: "Artsy-Mobile/9.11.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: {},
       }
 
       const {
@@ -257,12 +226,14 @@ describe("artworkRecommendations", () => {
         }
       `)
 
-      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).not.toHaveBeenCalled()
       expect(artworksLoader).not.toHaveBeenCalled()
     })
 
     it("propagates a non-404 Gravity error instead of silently emptying", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn(async () => {
         throw new HTTPError("Internal Server Error", 500)
       })
@@ -274,23 +245,21 @@ describe("artworkRecommendations", () => {
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
         userAgent: "Artsy-Mobile/9.11.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: {},
       }
 
       await expect(runAuthenticatedQuery(query, context)).rejects.toThrow(
         "Internal Server Error"
       )
-      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).not.toHaveBeenCalled()
       expect(artworksLoader).not.toHaveBeenCalled()
     })
 
     it("stays on the Vortex path for non-eigen clients (e.g. web)", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn()
       const artworksLoader = jest.fn(async () => artworksResponse)
 
@@ -299,22 +268,20 @@ describe("artworkRecommendations", () => {
         artworkRecommendationsLoader,
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: {},
       }
 
       await runAuthenticatedQuery(query, context)
 
       expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
-      expect(vortexGraphqlLoader).toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).toHaveBeenCalled()
     })
 
     it("stays on the Vortex path for eigen versions below 9.11.0", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn()
       const artworksLoader = jest.fn(async () => artworksResponse)
 
@@ -324,22 +291,20 @@ describe("artworkRecommendations", () => {
         meLoader: () => Promise.resolve({}),
         userID: "gravity-user-id",
         userAgent: "Artsy-Mobile/9.10.0",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader: null,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: {},
       }
 
       await runAuthenticatedQuery(query, context)
 
       expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
-      expect(vortexGraphqlLoader).toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).toHaveBeenCalled()
     })
 
     it("stays on the Vortex path for impersonated/app requests", async () => {
-      const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+      const vortexArtworkRecommendationsLoader = jest.fn(
+        async () => vortexResponse
+      )
       const artworkRecommendationsLoader = jest.fn()
       const artworksLoader = jest.fn(async () => artworksResponse)
 
@@ -349,127 +314,54 @@ describe("artworkRecommendations", () => {
         meLoader: () => Promise.resolve({}),
         userAgent: "Artsy-Mobile/9.11.0",
         xImpersonateUserID: "impersonated-user-id",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexGraphqlLoader,
-        },
+        authenticatedLoaders: { vortexArtworkRecommendationsLoader },
+        unauthenticatedLoaders: { vortexArtworkRecommendationsLoader },
       }
 
       await runAuthenticatedQuery(query, context)
 
       expect(artworkRecommendationsLoader).not.toHaveBeenCalled()
-      expect(vortexGraphqlLoader).toHaveBeenCalled()
+      expect(vortexArtworkRecommendationsLoader).toHaveBeenCalled()
     })
   })
 
-  describe("with USE_UNSTITCHED_VORTEX", () => {
-    beforeEach(() => {
-      config.USE_UNSTITCHED_VORTEX = true
+  it("uses the app loader with the impersonated user's id", async () => {
+    const appLoader = jest.fn().mockResolvedValue({
+      data: [{ artwork_id: "608a7417bdfbd1a789ba092a", score: 0.9 }],
     })
+    const userLoader = jest.fn()
 
-    afterEach(() => {
-      config.USE_UNSTITCHED_VORTEX = false
+    const context: any = {
+      artworksLoader: jest.fn(async () => artworksResponse),
+      meLoader: () => Promise.resolve({}),
+      // As in production: userID = xUserID || xImpersonateUserID
+      userID: "impersonated-user-id",
+      xImpersonateUserID: "impersonated-user-id",
+      authenticatedLoaders: {
+        vortexArtworkRecommendationsLoader: userLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexArtworkRecommendationsLoader: appLoader,
+      },
+    }
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(appLoader).toHaveBeenCalledWith({
+      user_id: "impersonated-user-id",
+      limit: 50,
     })
-
-    it("uses the app loader with the impersonated user's id", async () => {
-      const appLoader = jest.fn().mockResolvedValue({
-        data: [{ artwork_id: "608a7417bdfbd1a789ba092a", score: 0.9 }],
-      })
-      const userLoader = jest.fn()
-
-      const context: any = {
-        artworksLoader: jest.fn(async () => artworksResponse),
-        meLoader: () => Promise.resolve({}),
-        // As in production: userID = xUserID || xImpersonateUserID
-        userID: "impersonated-user-id",
-        xImpersonateUserID: "impersonated-user-id",
-        authenticatedLoaders: {
-          vortexGraphqlLoader: jest.fn(),
-          vortexArtworkRecommendationsLoader: userLoader,
-        },
-        unauthenticatedLoaders: {
-          vortexArtworkRecommendationsLoader: appLoader,
-        },
-      }
-
-      await runAuthenticatedQuery(query, context)
-
-      expect(appLoader).toHaveBeenCalledWith({
-        user_id: "impersonated-user-id",
-        limit: 50,
-      })
-      expect(userLoader).not.toHaveBeenCalled()
-    })
-
-    it("loads the artwork ids from Vortex's REST API", async () => {
-      const vortexArtworkRecommendationsLoader = jest.fn().mockResolvedValue({
-        data: [
-          { artwork_id: "608a7417bdfbd1a789ba092a", score: 0.9 },
-          { artwork_id: "308a7416bdfbd1a789ba0911", score: 0.5 },
-        ],
-      })
-      const vortexGraphqlLoader = jest.fn()
-      const artworksLoader = jest.fn(async () => artworksResponse)
-
-      const context: any = {
-        artworksLoader,
-        meLoader: () => Promise.resolve({}),
-        userID: "vortex-user-id",
-        authenticatedLoaders: {
-          vortexGraphqlLoader,
-          vortexArtworkRecommendationsLoader,
-        },
-        unauthenticatedLoaders: {},
-      }
-
-      await runAuthenticatedQuery(query, context)
-
-      expect(vortexArtworkRecommendationsLoader).toHaveBeenCalledWith({
-        user_id: "vortex-user-id",
-        limit: 50,
-      })
-      expect(vortexGraphqlLoader).not.toHaveBeenCalled()
-      expect(artworksLoader).toHaveBeenCalledWith({
-        ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
-      })
-    })
+    expect(userLoader).not.toHaveBeenCalled()
   })
 })
 
 const vortexResponse = {
-  data: {
-    artworkRecommendations: {
-      edges: [
-        {
-          node: {
-            artworkId: "608a7417bdfbd1a789ba092a",
-            score: 3.422242962512335,
-          },
-        },
-        {
-          node: {
-            artworkId: "308a7416bdfbd1a789ba0911",
-            score: 3.2225049587839654,
-          },
-        },
-        {
-          node: {
-            artworkId: "208a7416bdfbd1a789ba0911",
-            score: 4.2225049587839654,
-          },
-        },
-        {
-          node: {
-            artworkId: "108a7416bdfbd1a789ba0911",
-            score: 5.2225049587839654,
-          },
-        },
-      ],
-      totalCount: 4,
-    },
-  },
+  data: [
+    { artwork_id: "608a7417bdfbd1a789ba092a", score: 3.422242962512335 },
+    { artwork_id: "308a7416bdfbd1a789ba0911", score: 3.2225049587839654 },
+    { artwork_id: "208a7416bdfbd1a789ba0911", score: 4.2225049587839654 },
+    { artwork_id: "108a7416bdfbd1a789ba0911", score: 5.2225049587839654 },
+  ],
 }
 
 const artworksResponse = [

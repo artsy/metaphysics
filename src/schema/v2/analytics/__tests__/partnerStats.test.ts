@@ -3,14 +3,6 @@ import { HTTPError } from "lib/HTTPError"
 import { createPartnerStatsLoader } from "lib/loaders/vortexPartnerStatsLoader"
 import { runQuery } from "schema/v2/test/utils"
 
-jest.mock("config", () => {
-  const actualConfig = jest.requireActual("config").default
-  return {
-    __esModule: true,
-    default: { ...actualConfig, USE_UNSTITCHED_VORTEX: true },
-  }
-})
-
 const PARTNER_ID = "5748d153cd530e2d5100031c"
 
 const timeSeries = (key: string, values: number[]) =>

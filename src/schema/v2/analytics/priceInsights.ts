@@ -24,8 +24,7 @@ import {
 
 /**
  * Price insights served from Vortex's REST API. These replace the root fields
- * the stitched Vortex schema exposed, with the same names and types; they are
- * only mounted when `USE_UNSTITCHED_VORTEX` is on.
+ * the stitched Vortex schema exposed, with the same names and types.
  *
  * Vortex responds in snake_case with raw values, so each field reads its
  * snake_case key.
@@ -191,6 +190,9 @@ const MarketPriceInsights: GraphQLFieldConfig<any, ResolverContext> = {
     medium: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve: async (_root, { artistId, medium }, { unauthenticatedLoaders }) => {
+    // Vortex rejects blank values, where its GraphQL API returned null.
+    if (!artistId?.trim() || !medium?.trim()) return null
+
     const { data } = await unauthenticatedLoaders.marketPriceInsightsLoader({
       artist_id: artistId,
       medium,

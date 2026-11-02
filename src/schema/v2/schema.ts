@@ -284,6 +284,31 @@ import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
+import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import {
+  crmContactEmail,
+  crmContactEmailsConnection,
+} from "./crmContact/crmContactEmail"
+import {
+  crmContactLocation,
+  crmContactLocationsConnection,
+} from "./crmContact/crmContactLocation"
+import {
+  archiveCRMContactMutation,
+  createCRMContactMutation,
+  unarchiveCRMContactMutation,
+  updateCRMContactMutation,
+} from "./crmContact/crmContactMutations"
+import {
+  createCRMContactEmailMutation,
+  deleteCRMContactEmailMutation,
+  updateCRMContactEmailMutation,
+} from "./crmContact/crmContactEmailMutations"
+import {
+  createCRMContactLocationMutation,
+  deleteCRMContactLocationMutation,
+  updateCRMContactLocationMutation,
+} from "./crmContact/crmContactLocationMutations"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
@@ -338,6 +363,8 @@ import { createPartnerListFromShowMutation } from "./partner/Mutations/PartnerLi
 import { updatePartnerListMutation } from "./partner/Mutations/PartnerList/updatePartnerListMutation"
 import { deletePartnerListMutation } from "./partner/Mutations/PartnerList/deletePartnerListMutation"
 import { distributePartnerListMutation } from "./partner/Mutations/PartnerList/distributePartnerListMutation"
+import { undistributePartnerListMutation } from "./partner/Mutations/PartnerList/undistributePartnerListMutation"
+import { dismissPartnerListSyncConfirmationMutation } from "./partner/Mutations/PartnerList/dismissPartnerListSyncConfirmationMutation"
 import { addArtworkToPartnerListMutation } from "./partner/Mutations/PartnerList/addArtworkToPartnerListMutation"
 import { removeArtworkFromPartnerListMutation } from "./partner/Mutations/PartnerList/removeArtworkFromPartnerListMutation"
 import { bulkAddArtworksToPartnerListMutation } from "./partner/Mutations/PartnerList/bulkAddArtworksToPartnerListMutation"
@@ -361,7 +388,6 @@ import { assignArtistToPartnerMutation } from "./partner/Mutations/PartnerArtist
 import { updatePartnerArtistMutation } from "./partner/Mutations/PartnerArtist/updatePartnerArtistMutation"
 import { VerifyUser } from "./verifyUser"
 import { priceInsightsRootFields } from "./analytics/priceInsights"
-import config from "config"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/sectionTypes"
 import { CacheableDirective } from "directives/cacheableDirective"
@@ -485,12 +511,6 @@ import { createNavigationItemMutation } from "./Navigation/mutations/createNavig
 import { updateNavigationItemMutation } from "./Navigation/mutations/updateNavigationItemMutation"
 import { deleteNavigationItemMutation } from "./Navigation/mutations/deleteNavigationItemMutation"
 
-// Served natively once Vortex is unstitched; until then the stitched Vortex
-// schema provides these root fields. Query only: they were never on Viewer.
-const vortexUnstitchedRootFields = config.USE_UNSTITCHED_VORTEX
-  ? priceInsightsRootFields
-  : {}
-
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
   // externalPartner: ExternalPartner,
@@ -600,6 +620,12 @@ const rootFields = {
   instagramPostsConnection,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
+  crmContact,
+  crmContactsConnection,
+  crmContactEmail,
+  crmContactEmailsConnection,
+  crmContactLocation,
+  crmContactLocationsConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -759,6 +785,16 @@ export default new GraphQLSchema({
       completeMailchimpOAuth: completeMailchimpOAuthMutation,
       deleteMailchimpAccount: deleteMailchimpAccountMutation,
       createMailchimpCampaign: createMailchimpCampaignMutation,
+      createCRMContact: createCRMContactMutation,
+      updateCRMContact: updateCRMContactMutation,
+      archiveCRMContact: archiveCRMContactMutation,
+      unarchiveCRMContact: unarchiveCRMContactMutation,
+      createCRMContactEmail: createCRMContactEmailMutation,
+      updateCRMContactEmail: updateCRMContactEmailMutation,
+      deleteCRMContactEmail: deleteCRMContactEmailMutation,
+      createCRMContactLocation: createCRMContactLocationMutation,
+      updateCRMContactLocation: updateCRMContactLocationMutation,
+      deleteCRMContactLocation: deleteCRMContactLocationMutation,
       createBrandKit: createBrandKitMutation,
       updateBrandKit: updateBrandKitMutation,
       deleteBrandKit: deleteBrandKitMutation,
@@ -838,6 +874,8 @@ export default new GraphQLSchema({
       deliverSecondFactor: deliverSecondFactorMutation,
       disableSecondFactor: disableSecondFactorMutation,
       distributePartnerList: distributePartnerListMutation,
+      undistributePartnerList: undistributePartnerListMutation,
+      dismissPartnerListSyncConfirmation: dismissPartnerListSyncConfirmationMutation,
       dislikeArtwork: dislikeArtworkMutation,
       dismissTask: dismissTaskMutation,
       enableSecondFactor: enableSecondFactorMutation,
@@ -974,7 +1012,8 @@ export default new GraphQLSchema({
     name: "Query",
     fields: {
       ...rootFields,
-      ...vortexUnstitchedRootFields,
+      // Query only: these were never on Viewer.
+      ...priceInsightsRootFields,
       viewer: Viewer,
     },
   }),

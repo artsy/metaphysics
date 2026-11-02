@@ -21,7 +21,7 @@ export const QuickLinks: HomeViewSection = {
     if (
       isEigenVersionSatisfied(CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION, context)
     ) {
-      const cityGuidePill = await resolveFeaturedCityGuidePill(context)
+      const cityGuidePill = resolveFeaturedCityGuidePill()
       if (cityGuidePill.isFeatured) {
         links.unshift(cityGuidePill)
       } else {

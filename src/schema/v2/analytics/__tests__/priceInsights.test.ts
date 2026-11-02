@@ -89,6 +89,26 @@ describe("priceInsightsRootFields", () => {
       expect(marketPriceInsights).toBeNull()
     })
 
+    it.each([
+      ["artist", `artistId: "", medium: "Painting"`],
+      ["medium", `artistId: "artist-1", medium: " "`],
+    ])(
+      "returns null without asking Vortex for a blank %s",
+      async (_blank, args) => {
+        const marketPriceInsightsLoader = jest.fn()
+
+        const { marketPriceInsights } = await runQuery(
+          `{ marketPriceInsights(${args}) { id } }`,
+          {
+            marketPriceInsightsLoader,
+          }
+        )
+
+        expect(marketPriceInsights).toBeNull()
+        expect(marketPriceInsightsLoader).not.toHaveBeenCalled()
+      }
+    )
+
     it("keeps null BigInts null", async () => {
       const marketPriceInsightsLoader = jest.fn().mockResolvedValue({
         data: priceInsight({ annual_value_sold_cents: null }),

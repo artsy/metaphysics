@@ -1,12 +1,10 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "schema/v2/artwork"
-import gql from "lib/gql"
-import config from "config"
 import { loadVortexForUser } from "lib/loadVortexForUser"
 
 const MAX_ARTISTS = 50
@@ -25,30 +23,26 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     const {
-      authenticatedLoaders: {
-        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-      },
+      authenticatedLoaders: { vortexUserArtistAffinitiesLoader },
       artworksLoader,
       xImpersonateUserID,
       userID,
     } = context
 
-    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
+    if (!artworksLoader || !vortexUserArtistAffinitiesLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     // Fetch artist IDs from Vortex
     const userId = userID || xImpersonateUserID
 
-    const artistIds = config.USE_UNSTITCHED_VORTEX
-      ? (
-          await loadVortexForUser(context, "vortexUserArtistAffinitiesLoader", {
-            user_id: userId,
-            min_score: MIN_AFFINITY_SCORE,
-            limit: MAX_ARTISTS,
-          })
-        ).map(({ artist_id }) => artist_id)
-      : await fetchArtistIdsFromVortexGraphql(context, userId)
+    const artistIds = (
+      await loadVortexForUser(context, "vortexUserArtistAffinitiesLoader", {
+        user_id: userId,
+        min_score: MIN_AFFINITY_SCORE,
+        limit: MAX_ARTISTS,
+      })
+    ).map(({ artist_id }) => artist_id)
 
     // Fetch artworks from ArtworksLoader if the user interacted with any artists
     let artworks = []
@@ -75,41 +69,4 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       }),
     }
   },
-}
-
-const fetchArtistIdsFromVortexGraphql = async (
-  {
-    authenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-    },
-    unauthenticatedLoaders: {
-      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
-    },
-    xImpersonateUserID,
-  }: ResolverContext,
-  userId: string | undefined
-): Promise<string[]> => {
-  const query = {
-    query: gql`
-        query artistAffinitiesQuery {
-          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}, userId: "${userId}") {
-            totalCount
-            edges {
-              node {
-                artistId
-                score
-              }
-            }
-          }
-        }
-      `,
-  }
-
-  const vortexResult = xImpersonateUserID
-    ? await vortexGraphQLUnauthenticatedLoader(query)()
-    : await vortexGraphQLAuthenticatedLoader!(query)()
-
-  return extractNodes(vortexResult.data?.artistAffinities).map(
-    (node: any) => node?.artistId
-  )
 }

@@ -8,9 +8,7 @@ type UserScopedVortexLoaderName =
   | "vortexUserArtistAffinitiesLoader"
 
 /**
- * Loads a user's data (recommendations, affinities) from Vortex's REST API,
- * replacing the GraphQL queries made through `vortexGraphqlLoader` once
- * `USE_UNSTITCHED_VORTEX` is on.
+ * Loads a user's data (recommendations, affinities) from Vortex's REST API.
  *
  * Impersonated requests (e.g. Braze) go through the unauthenticated loader so
  * Vortex honours `user_id`; otherwise Vortex uses the logged-in user and
