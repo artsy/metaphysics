@@ -9,7 +9,10 @@ jest.mock("lib/featureFlags", () => ({
 }))
 
 jest.mock("schema/v2/homeView/experiments/experiments.ts", () => ({
-  CURRENTLY_RUNNING_EXPERIMENTS: ["other_experiment"],
+  CURRENTLY_RUNNING_EXPERIMENTS: [
+    "onyx_home-feed-simplification",
+    "other_experiment",
+  ],
 }))
 
 const mockGetFeatureFlag = getFeatureFlag as jest.Mock
@@ -75,6 +78,33 @@ describe("HomeViewExperiments", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.experiments).toEqual([])
+    })
+  })
+
+  describe("home-feed section-group version gate", () => {
+    const findHomeFeed = (experiments: any[]) =>
+      experiments.find((e: any) => e.name === "onyx_home-feed-simplification")
+
+    it("omits the home-feed experiment for Eigen below the min version", async () => {
+      const context: Partial<ResolverContext> = {
+        userAgent: "Artsy-Mobile/9.20.0",
+        userID: "user123",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(findHomeFeed(homeView.experiments)).toBeUndefined()
+    })
+
+    it("includes the home-feed experiment at or above the min version", async () => {
+      const context: Partial<ResolverContext> = {
+        userAgent: "Artsy-Mobile/9.23.0",
+        userID: "user123",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(findHomeFeed(homeView.experiments)).toBeDefined()
     })
   })
 
