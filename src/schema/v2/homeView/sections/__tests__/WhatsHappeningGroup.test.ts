@@ -10,8 +10,8 @@ describe("WhatsHappeningGroup", () => {
     ])
   })
 
-  it("has no chips", () => {
-    expect(WhatsHappeningGroup.chipsGroups).toBeUndefined()
+  it("has no cards", () => {
+    expect(WhatsHappeningGroup.cardGroups).toBeUndefined()
   })
 
   it("is gated behind the experiment flag", () => {

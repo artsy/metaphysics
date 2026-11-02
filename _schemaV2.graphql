@@ -22319,9 +22319,9 @@ type HomeViewComponentBehaviorsViewAll {
 }
 
 """
-A labeled group of entry chips within a section group
+A labeled group of entry cards within a section group
 """
-type HomeViewGroupChipGroup {
+type HomeViewGroupCardGroup {
   cardsConnection(
     after: String
     before: String
@@ -22330,12 +22330,12 @@ type HomeViewGroupChipGroup {
   ): HomeViewCardConnection
 
   """
-  'View all' destination for this chips group.
+  'View all' destination for this cards group.
   """
   href: String
 
   """
-  [Analytics] `owner type` for this chips group's 'view all' tap.
+  [Analytics] `owner type` for this cards group's 'view all' tap.
   """
   ownerType: String
   title: String
@@ -22708,14 +22708,14 @@ type HomeViewSectionGenericEdge {
 }
 
 """
-A section group: an ordered set of rails and/or a group of entry chips
+A section group: an ordered set of rails and/or a group of entry cards
 """
 type HomeViewSectionGroup implements HomeViewSectionGeneric & Node {
   """
   Background tint for the whole area as a raw hex string (null → untinted).
   """
   backgroundColor: String
-  chipsGroups: [HomeViewGroupChipGroup!]!
+  cardGroups: [HomeViewGroupCardGroup!]!
 
   """
   Component prescription for this section, for overriding or customizing presentation and behavior

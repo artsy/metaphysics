@@ -7,14 +7,14 @@ describe("EditorialGroup", () => {
     expect(EditorialGroup.rails).toEqual([
       { sectionID: LatestArticles.id, title: "Editorial" },
     ])
-    const [chipGroup] = EditorialGroup.chipsGroups!
-    expect(chipGroup.title).toEqual("Art News")
-    expect(chipGroup.href).toEqual("/news")
-    expect(chipGroup.ownerType).toEqual("marketNews")
+    const [cardGroup] = EditorialGroup.cardGroups!
+    expect(cardGroup.title).toEqual("Art News")
+    expect(cardGroup.href).toEqual("/news")
+    expect(cardGroup.ownerType).toEqual("marketNews")
     expect(EditorialGroup.backgroundColor).toEqual("#FEF8ED")
   })
 
-  it("maps news articles to chips with a thumbnail and href", async () => {
+  it("maps news articles to cards with a thumbnail and href", async () => {
     const context = ({
       articlesLoader: jest.fn().mockResolvedValue({
         count: 3,
@@ -45,16 +45,16 @@ describe("EditorialGroup", () => {
       }),
     } as unknown) as ResolverContext
 
-    const chipGroup = EditorialGroup.chipsGroups![0]
-    const connection = await (chipGroup.resolver as any)(
-      chipGroup,
+    const cardGroup = EditorialGroup.cardGroups![0]
+    const connection = await (cardGroup.resolver as any)(
+      cardGroup,
       { first: 10 },
       context,
       {} as any
     )
-    const chips = connection.edges.map((e) => e.node)
+    const cards = connection.edges.map((e) => e.node)
 
-    expect(chips).toEqual([
+    expect(cards).toEqual([
       {
         title: "News One",
         href: "/article/news-one",

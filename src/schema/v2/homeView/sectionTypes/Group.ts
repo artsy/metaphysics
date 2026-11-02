@@ -26,13 +26,13 @@ export interface HomeViewGroupRailRef {
   title?: string
 }
 
-/** A labeled group of entry chips within a section group. */
-export interface HomeViewGroupChipGroup {
-  /** Header for this chips group (e.g. "Art News"). */
+/** A labeled group of entry cards within a section group. */
+export interface HomeViewGroupCardGroup {
+  /** Header for this cards group (e.g. "Art News"). */
   title?: string
-  /** "View all" href for this chips group (e.g. "/news"). */
+  /** "View all" href for this cards group (e.g. "/news"). */
   href?: string
-  /** [Analytics] owner type for this chips group's "view all" tap. */
+  /** [Analytics] owner type for this cards group's "view all" tap. */
   ownerType?: string
   /** Resolves this group's cards (a HomeViewCard connection). */
   resolver: GraphQLFieldResolver<any, ResolverContext>
@@ -41,8 +41,8 @@ export interface HomeViewGroupChipGroup {
 export interface HomeViewGroupSection extends HomeViewSection {
   /** Ordered rails (0..N) rendered inside the container, each a referenced section. */
   rails?: HomeViewGroupRailRef[]
-  /** Ordered groups of entry chips (0..N) shown below the rails. */
-  chipsGroups?: HomeViewGroupChipGroup[]
+  /** Ordered groups of entry cards (0..N) shown below the rails. */
+  cardGroups?: HomeViewGroupCardGroup[]
   /** Background tint for the whole area (raw hex; null → untinted). */
   backgroundColor?: string
 }
@@ -64,9 +64,9 @@ const HomeViewGroupRailType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const HomeViewGroupChipGroupType = new GraphQLObjectType<any, ResolverContext>({
-  name: "HomeViewGroupChipGroup",
-  description: "A labeled group of entry chips within a section group",
+const HomeViewGroupCardGroupType = new GraphQLObjectType<any, ResolverContext>({
+  name: "HomeViewGroupCardGroup",
+  description: "A labeled group of entry cards within a section group",
   fields: {
     title: {
       type: GraphQLString,
@@ -74,16 +74,16 @@ const HomeViewGroupChipGroupType = new GraphQLObjectType<any, ResolverContext>({
     },
     href: {
       type: GraphQLString,
-      description: "'View all' destination for this chips group.",
+      description: "'View all' destination for this cards group.",
       resolve: ({ href }) => href,
     },
     ownerType: {
       type: GraphQLString,
       description:
-        "[Analytics] `owner type` for this chips group's 'view all' tap.",
+        "[Analytics] `owner type` for this cards group's 'view all' tap.",
       resolve: ({ ownerType }) => ownerType,
     },
-    // This group's chips. Reuses HomeViewCard (renders as "Chips" on the client).
+    // This group's cards (reuses the HomeViewCard node type).
     cardsConnection: {
       type: HomeViewCardConnectionType,
       args: pageable({}),
@@ -99,7 +99,7 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionGroup,
   description:
-    "A section group: an ordered set of rails and/or a group of entry chips",
+    "A section group: an ordered set of rails and/or a group of entry cards",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -121,11 +121,11 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
     },
 
     // Each group owns its header/"view all" + cards, so a block can have several rows.
-    chipsGroups: {
+    cardGroups: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(HomeViewGroupChipGroupType))
+        new GraphQLList(new GraphQLNonNull(HomeViewGroupCardGroupType))
       ),
-      resolve: (parent) => parent.chipsGroups ?? [],
+      resolve: (parent) => parent.cardGroups ?? [],
     },
 
     // TODO: emit a dark-mode-safe palette token rather than raw hex once exposed over the API.

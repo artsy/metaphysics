@@ -1,11 +1,11 @@
 import { ResolverContext } from "types/graphql"
 import { HomeViewGroupSectionType } from "../Group"
-import { CuratedGroup, artistChipStackURLs } from "../../sections/CuratedGroup"
+import { CuratedGroup, artistCardStackURLs } from "../../sections/CuratedGroup"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { RecommendedArtists } from "../../sections/RecommendedArtists"
 import { TrendingArtists } from "../../sections/TrendingArtists"
 
-describe("artistChipStackURLs", () => {
+describe("artistCardStackURLs", () => {
   it("returns the first 3 artists' cover images from the rail", async () => {
     const section = {
       resolver: async () => ({
@@ -15,7 +15,7 @@ describe("artistChipStackURLs", () => {
       }),
     } as any
 
-    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([
+    expect(await artistCardStackURLs(section, {}, {}, {})).toEqual([
       "https://ex.com/artist-1.jpg",
       "https://ex.com/artist-2.jpg",
       "https://ex.com/artist-3.jpg",
@@ -33,7 +33,7 @@ describe("artistChipStackURLs", () => {
       }),
     } as any
 
-    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([
+    expect(await artistCardStackURLs(section, {}, {}, {})).toEqual([
       "https://ex.com/a.jpg",
       "https://ex.com/c.jpg",
     ])
@@ -45,7 +45,7 @@ describe("artistChipStackURLs", () => {
         throw new Error("boom")
       },
     } as any
-    expect(await artistChipStackURLs(section, {}, {}, {})).toEqual([])
+    expect(await artistCardStackURLs(section, {}, {}, {})).toEqual([])
   })
 })
 
@@ -90,8 +90,8 @@ describe("HomeViewSectionGroup", () => {
     })
   })
 
-  describe("chips (section resolver)", () => {
-    it("returns artist chips + marketing-collection chips", async () => {
+  describe("cards (section resolver)", () => {
+    it("returns artist cards + marketing-collection cards", async () => {
       const context = ({
         marketingCollectionsLoader: jest.fn().mockResolvedValue({
           body: [
@@ -124,16 +124,16 @@ describe("HomeViewSectionGroup", () => {
         ),
       } as unknown) as ResolverContext
 
-      const chipGroup = CuratedGroup.chipsGroups![0]
-      const connection = await (chipGroup.resolver as any)(
-        chipGroup,
+      const cardGroup = CuratedGroup.cardGroups![0]
+      const connection = await (cardGroup.resolver as any)(
+        cardGroup,
         {},
         context,
         info
       )
-      const chips = connection.edges.map((e) => e.node)
+      const cards = connection.edges.map((e) => e.node)
 
-      expect(chips).toEqual([
+      expect(cards).toEqual([
         {
           title: "Recommended Artists",
           subtitle:

@@ -31,15 +31,15 @@ const ARM_ORDER: Record<Exclude<Arm, "control">, string[]> = {
     HeroUnits.id,
     NewWorksForYou.id,
     RecentlyViewedArtworks.id,
-    // Curated discovery block: chips-only (artists, Curator's Picks, collections).
+    // Curated discovery block: cards-only (artists, Curator's Picks, collections).
     CuratedGroup.id,
     // Separate section below Curated — different visual treatment, so not merged in.
     RecommendedArtworks.id,
-    // Editorial block: the editorial rail + News as chips.
+    // Editorial block: the editorial rail + News as cards.
     EditorialGroup.id,
     Auctions.id, // "Discover Auctions on Artsy"
     ViewingRooms.id,
-    // Events block: Featured Fairs + Shows rails, no chips.
+    // Events block: Featured Fairs + Shows rails, no cards.
     WhatsHappeningGroup.id,
   ],
 }
