@@ -200,5 +200,24 @@ describe("HomeViewSectionGroup", () => {
         "Blue-Chip Icons",
       ])
     })
+
+    it("still returns the section cards when the collections load fails", async () => {
+      const context = ({
+        accessToken: "a-token",
+        marketingCollectionsLoader: jest
+          .fn()
+          .mockRejectedValue(new Error("gravity down")),
+        artworksLoader: jest.fn(),
+      } as unknown) as ResolverContext
+
+      const cards = await resolveCards(context)
+
+      // The collections load rejected, but the section cards survive.
+      expect(cards.map((c) => c.title)).toEqual([
+        "Recommended Artists",
+        "Curators' Picks",
+        "Trending Artists",
+      ])
+    })
   })
 })

@@ -7,6 +7,7 @@ import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { setVersion } from "schema/v2/image/normalize"
 import { getDefault } from "schema/v2/image"
 
@@ -31,7 +32,7 @@ const collectionStackImageURLsBySlug = async (
     ...new Set(collections.flatMap((c) => c.representative_artwork_ids ?? [])),
   ]
   const artworks: any[] = ids.length
-    ? await context.artworksLoader({ ids, batched: true })
+    ? await context.artworksLoader({ ids, batched: true }).catch(() => [])
     : []
 
   const urlById = new Map<string, string>()
@@ -110,7 +111,7 @@ export const CuratedGroup: HomeViewGroupSection = {
 
   cardGroups: [
     {
-      resolver: async (parent, args, context, info) => {
+      resolver: withHomeViewTimeout(async (parent, args, context, info) => {
         const [
           recommendedImages,
           curatorsPicksImages,
@@ -127,10 +128,12 @@ export const CuratedGroup: HomeViewGroupSection = {
             info
           ),
           artistCardStackURLs(TrendingArtists, parent, context, info),
-          context.marketingCollectionsLoader({
-            slugs: COLLECTION_CARD_SLUGS,
-            size: COLLECTION_CARD_SLUGS.length,
-          }),
+          context
+            .marketingCollectionsLoader({
+              slugs: COLLECTION_CARD_SLUGS,
+              size: COLLECTION_CARD_SLUGS.length,
+            })
+            .catch(() => ({ body: [] })),
         ])
 
         const sectionCards = [
@@ -192,7 +195,7 @@ export const CuratedGroup: HomeViewGroupSection = {
         })
 
         return connectionFromArray([...sectionCards, ...collectionCards], args)
-      },
+      }),
     },
   ],
 }
