@@ -11,6 +11,8 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
+import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtnetEditionSetType } from "./artnetEditionSet"
 
@@ -100,25 +102,20 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (input, { updateArtnetEditionSetLoader }) => {
-    const { id, saleStatus } = input
-
+  mutateAndGetPayload: async (
+    { id, priceMinor, priceCurrency, saleStatus },
+    { updateArtnetEditionSetLoader }
+  ) => {
     if (!updateArtnetEditionSetLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await updateArtnetEditionSetLoader(id, {
-        // Passed only when the client sent the key, so Gravity can tell an omitted price from
-        // an explicit null asking to hand it back to the inventory row.
-        ...(Object.prototype.hasOwnProperty.call(input, "priceMinor")
-          ? { price_minor: input.priceMinor }
-          : {}),
-        ...(Object.prototype.hasOwnProperty.call(input, "priceCurrency")
-          ? { price_currency: input.priceCurrency }
-          : {}),
-        sale_status: saleStatus,
-      })
+      const gravityParams = snakeCaseKeys(
+        omitBy({ priceMinor, priceCurrency, saleStatus }, isUndefined)
+      )
+
+      return await updateArtnetEditionSetLoader(id, gravityParams)
     } catch (error) {
       const formatted = formatGravityError(error)
       if (formatted) {
