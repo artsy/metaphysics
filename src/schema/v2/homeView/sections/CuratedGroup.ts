@@ -2,6 +2,7 @@ import { connectionFromArray } from "graphql-relay"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomeViewGroupSection } from "../sectionTypes/Group"
+import { HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION } from "../sectionTypes/groupMinimumEigenVersion"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
@@ -96,6 +97,7 @@ export const CuratedGroup: HomeViewGroupSection = {
   id: "home-view-section-curated-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   featureFlag: "onyx_home-feed-simplification",
+  minimumEigenVersion: HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION,
   component: {
     title: "Chosen by our curators",
     type: "SectionGroup",

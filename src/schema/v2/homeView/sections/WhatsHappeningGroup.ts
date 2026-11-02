@@ -1,5 +1,6 @@
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomeViewGroupSection } from "../sectionTypes/Group"
+import { HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION } from "../sectionTypes/groupMinimumEigenVersion"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { ShowsForYou } from "./ShowsForYou"
 
@@ -8,6 +9,7 @@ export const WhatsHappeningGroup: HomeViewGroupSection = {
   id: "home-view-section-whats-happening-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   featureFlag: "onyx_home-feed-simplification",
+  minimumEigenVersion: HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION,
   component: {
     title: "What's Happening",
     description: "See art world events around the world",

@@ -1,6 +1,7 @@
 import { connectionFromArray } from "graphql-relay"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomeViewGroupSection } from "../sectionTypes/Group"
+import { HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION } from "../sectionTypes/groupMinimumEigenVersion"
 import { LatestArticles } from "./LatestArticles"
 import { News } from "./News"
 import ArticlesConnection from "schema/v2/articlesConnection"
@@ -21,6 +22,7 @@ export const EditorialGroup: HomeViewGroupSection = {
   id: "home-view-section-editorial-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
   featureFlag: "onyx_home-feed-simplification",
+  minimumEigenVersion: HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION,
   component: {
     title: "Artsy Editorial",
     description: "Your guide to the art world",
