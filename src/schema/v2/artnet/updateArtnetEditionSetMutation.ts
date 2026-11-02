@@ -23,7 +23,7 @@ interface UpdateArtnetEditionSetMutationInputProps {
   saleStatus?: string
 }
 
-export const ArtnetSaleStatusType = new GraphQLEnumType({
+const ArtnetSaleStatusType = new GraphQLEnumType({
   name: "ArtnetSaleStatus",
   description:
     "Artnet's own sale-status vocabulary for an edition, including the statuses no Gravity availability maps to.",
