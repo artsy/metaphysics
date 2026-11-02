@@ -111,12 +111,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       representativeArtworks: {
         type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
         description:
-          "Up to 3 representative artworks (ordered). Resolved in one batched /artworks load",
+          "Up to 3 representative artworks (ordered). Batched at the connection resolver; falls back to a single /artworks load for standalone access.",
         resolve: (
-          { representative_artwork_ids },
+          { _representativeArtworks, representative_artwork_ids },
           _args,
           { artworksLoader }
         ) => {
+          if (_representativeArtworks) return _representativeArtworks
           if (!representative_artwork_ids?.length) return []
           return artworksLoader({
             ids: representative_artwork_ids,

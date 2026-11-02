@@ -109,4 +109,57 @@ describe("Auctions", () => {
       }
     `)
   })
+
+  it("batches representativeArtworks across the page into one artworksLoader call", async () => {
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-auctions") {
+            ... on HomeViewSectionSales {
+              salesConnection(first: 10) {
+                edges {
+                  node {
+                    representativeArtworks {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const sales = [
+      { name: "Auction 1", representative_artwork_ids: ["a1", "a2"] },
+      { name: "Auction 2", representative_artwork_ids: ["a3"] },
+    ]
+
+    const artworksLoader = jest.fn(({ ids }) =>
+      Promise.resolve(ids.map((id: string) => ({ _id: id, id })))
+    )
+
+    const context = {
+      salesLoader: jest.fn().mockResolvedValue(sales),
+      artworksLoader,
+    }
+
+    const { homeView } = await runQuery(query, context)
+
+    expect(artworksLoader).toHaveBeenCalledTimes(1)
+    expect(artworksLoader).toHaveBeenCalledWith({
+      ids: ["a1", "a2", "a3"],
+      batched: true,
+    })
+
+    const nodes = homeView.section.salesConnection.edges.map((e) => e.node)
+    expect(nodes[0].representativeArtworks.map((a) => a.internalID)).toEqual([
+      "a1",
+      "a2",
+    ])
+    expect(nodes[1].representativeArtworks.map((a) => a.internalID)).toEqual([
+      "a3",
+    ])
+  })
 })

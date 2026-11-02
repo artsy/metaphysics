@@ -47,7 +47,26 @@ describe("Sale type", () => {
       }
     `
 
-    it("resolves from representative_artwork_ids in one batched load", async () => {
+    it("reads precomputed _representativeArtworks without calling the loader", async () => {
+      const artworksLoader = jest.fn()
+
+      const data = await execute(
+        query,
+        {
+          ...sale,
+          _representativeArtworks: [{ _id: "pre-1" }, { _id: "pre-2" }],
+        },
+        { artworksLoader }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([
+        { internalID: "pre-1" },
+        { internalID: "pre-2" },
+      ])
+      expect(artworksLoader).not.toHaveBeenCalled()
+    })
+
+    it("falls back to a single batched load for standalone access", async () => {
       const artworksLoader = jest.fn(({ ids }) =>
         Promise.resolve(ids.map((id: string) => ({ _id: id, id })))
       )

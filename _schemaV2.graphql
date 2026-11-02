@@ -38121,7 +38121,7 @@ type Sale implements Node {
   registrationStatus: Bidder
 
   """
-  Up to 3 representative artworks (ordered). Resolved in one batched /artworks load
+  Up to 3 representative artworks (ordered). Batched at the connection resolver; falls back to a single /artworks load for standalone access.
   """
   representativeArtworks: [Artwork!]
   requireBidderApproval: Boolean
