@@ -35,7 +35,7 @@ export interface ResolverContextValues {
   /** Set by HomeFeedSimplificationRule; surfaced in extensions for debugging. */
   homeViewAppliedArm?: {
     arm: string | null
-    source: "override" | "unleash" | "anonymous"
+    source: "override" | "unleash" | "anonymous" | "below_min_version"
   }
   isCMSRequest: boolean
 }

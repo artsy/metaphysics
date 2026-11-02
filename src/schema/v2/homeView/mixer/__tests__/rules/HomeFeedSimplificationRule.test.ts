@@ -43,6 +43,36 @@ describe("HomeFeedSimplificationRule", () => {
     })
   })
 
+  it("does not enroll Eigen clients below the section-group min version", async () => {
+    // Groups require Eigen >= 9.23.0; this client can't render the treatment.
+    const oldEigenContext = {
+      userID: "123",
+      userAgent: "Artsy-Mobile/9.20.0",
+    } as ResolverContext
+
+    expect(await rule.apply(sections, oldEigenContext)).toEqual(sections)
+    expect(mockGetVariant).not.toHaveBeenCalled()
+    expect(oldEigenContext.homeViewAppliedArm).toEqual({
+      arm: null,
+      source: "below_min_version",
+    })
+  })
+
+  it("enrolls Eigen clients at or above the section-group min version", async () => {
+    mockGetVariant.mockReturnValue({ enabled: true, name: "consolidated" })
+    const newEigenContext = {
+      userID: "123",
+      userAgent: "Artsy-Mobile/9.23.0",
+    } as ResolverContext
+
+    await rule.apply(sections, newEigenContext)
+    expect(mockGetVariant).toHaveBeenCalled()
+    expect(newEigenContext.homeViewAppliedArm).toEqual({
+      arm: "consolidated",
+      source: "unleash",
+    })
+  })
+
   it("strips experiment-only sections for a flag-on control variant", async () => {
     mockGetVariant.mockReturnValue({ enabled: true, name: "control" })
     const withGroup = [...sections, CuratedGroup] as HomeViewSection[]
