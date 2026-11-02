@@ -20,30 +20,21 @@ import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 
 /** A reference to a section rendered as a rail inside a section group. */
 export interface HomeViewGroupRailRef {
-  /** Internal id of the referenced section. */
   sectionID: string
-  /** Optional label override; falls back to the section's own component.title. */
   title?: string
 }
 
 /** A labeled group of entry cards within a section group. */
 export interface HomeViewGroupCardGroup {
-  /** Header for this cards group (e.g. "Art News"). */
   title?: string
-  /** "View all" href for this cards group (e.g. "/news"). */
   href?: string
-  /** [Analytics] owner type for this cards group's "view all" tap. */
   ownerType?: string
-  /** Resolves this group's cards (a HomeViewCard connection). */
   resolver: GraphQLFieldResolver<any, ResolverContext>
 }
 
 export interface HomeViewGroupSection extends HomeViewSection {
-  /** Ordered rails (0..N) rendered inside the container, each a referenced section. */
   rails?: HomeViewGroupRailRef[]
-  /** Ordered groups of entry cards (0..N) shown below the rails. */
   cardGroups?: HomeViewGroupCardGroup[]
-  /** Background tint for the whole area (raw hex; null → untinted). */
   backgroundColor?: string
 }
 
@@ -83,7 +74,6 @@ const HomeViewGroupCardGroupType = new GraphQLObjectType<any, ResolverContext>({
         "[Analytics] `owner type` for this cards group's 'view all' tap.",
       resolve: ({ ownerType }) => ownerType,
     },
-    // This group's cards (reuses the HomeViewCard node type).
     cardsConnection: {
       type: HomeViewCardConnectionType,
       args: pageable({}),
@@ -120,7 +110,6 @@ export const HomeViewGroupSectionType = new GraphQLObjectType<
       },
     },
 
-    // Each group owns its header/"view all" + cards, so a block can have several rows.
     cardGroups: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(HomeViewGroupCardGroupType))

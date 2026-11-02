@@ -292,8 +292,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
 
     // Dev/QA only: force a home-feed-simplification arm, bypassing Unleash
-    // assignment. Honored everywhere except real production — staging/review
-    // apps run NODE_ENV=production, so gate on SYSTEM_ENVIRONMENT, not PRODUCTION_ENV.
+    // assignment. Honored everywhere except real production.
     const xHomeFeedArm =
       SYSTEM_ENVIRONMENT !== "production"
         ? (req.headers["x-home-feed-arm"] as string | undefined)

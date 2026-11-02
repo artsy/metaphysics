@@ -185,9 +185,6 @@ export const MarketingCollectionType = new GraphQLObjectType<
       ...MarketingCollectionFields,
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
-      // Up to 3 representative artworks (ordered, by merchandisability). Resolved
-      // in one batched `/artworks` load; the plural of `representativeArtworkID`.
-      // `representative_artwork_id` (singular) equals the first of these.
       representativeArtworks: {
         type: new GraphQLList(new GraphQLNonNull(ArtworkType)),
         resolve: (

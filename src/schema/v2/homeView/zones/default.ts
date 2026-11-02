@@ -71,8 +71,6 @@ export async function getSections(context: ResolverContext) {
   const mixer = new HomeViewMixer([
     new DisplayableRule(),
     new AuctionEngagementRule(),
-    // Runs last: for enrolled users the arm recipe defines the final order,
-    // intentionally overriding AuctionEngagementRule's reordering.
     new HomeFeedSimplificationRule(),
   ])
 

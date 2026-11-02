@@ -9,11 +9,9 @@ import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { setVersion } from "schema/v2/image/normalize"
 import { getDefault } from "schema/v2/image"
 
-// Mirrors Eigen's getHomeViewSectionHref output for the section-detail screen.
 const sectionScreenHref = (section: HomeViewSection): string =>
   `home-view/sections/${section.id}?sectionType=${section.type}`
 
-// TODO: confirm "blue-chip-icons" is the correct prod slug (verified on staging).
 const COLLECTION_CARD_SLUGS = ["most-loved", "blue-chip-icons"]
 
 const CARD_STACK_SIZE = 3
@@ -24,8 +22,6 @@ const artworkImageURL = (artwork: any): string | undefined => {
   return image ? setVersion(image, STACK_IMAGE_VERSIONS) : undefined
 }
 
-// Collection stack images in one batched `/artworks` call (ids come off each
-// collection's `representative_artwork_ids`), avoiding a per-collection fan-out.
 const collectionStackImageURLsBySlug = async (
   collections: any[],
   context: any
@@ -99,7 +95,6 @@ export const artistCardStackURLs = (
 export const CuratedGroup: HomeViewGroupSection = {
   id: "home-view-section-curated-group",
   type: HomeViewSectionTypeNames.HomeViewSectionGroup,
-  // String literal (not the imported flag constant) to avoid a recipes -> section -> rule -> recipes cycle.
   featureFlag: "onyx_home-feed-simplification",
   component: {
     title: "Chosen by our curators",
@@ -109,7 +104,6 @@ export const CuratedGroup: HomeViewGroupSection = {
   // TODO: palette token once available.
   backgroundColor: "#F7F7F7",
 
-  // Cards-only (no rail): Curator's Picks is now a card alongside the artists.
   rails: [],
 
   cardGroups: [
@@ -168,7 +162,6 @@ export const CuratedGroup: HomeViewGroupSection = {
             entityID: section.id,
           }))
 
-        // Preserve the configured slug order (the loader may not).
         const bySlug = new Map<string, any>(
           (body as any[]).map((c) => [c.slug, c])
         )

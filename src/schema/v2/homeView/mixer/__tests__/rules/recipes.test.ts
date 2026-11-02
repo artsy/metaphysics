@@ -40,9 +40,6 @@ describe("composeForArm", () => {
     WhatsHappeningGroup,
   ] as HomeViewSection[]
 
-  // The experiment-only (flag-gated) sections. On the pass-through path these
-  // must be stripped so a flag-on "control" variant doesn't leak them into the
-  // baseline feed in their default positions.
   const experimentOnlyIds = [
     CuratedGroup.id,
     EditorialGroup.id,

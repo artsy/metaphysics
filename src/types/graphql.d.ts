@@ -30,7 +30,7 @@ export interface ResolverContextValues {
 
   ipAddress: string
   xImpersonateUserID?: string
-  /** Dev/QA only: forces a home-feed-simplification arm. Non-production only. */
+  /** Dev/QA only: forces a home-feed-simplification arm. */
   xHomeFeedArm?: string
   /** Set by HomeFeedSimplificationRule; surfaced in extensions for debugging. */
   homeViewAppliedArm?: {
