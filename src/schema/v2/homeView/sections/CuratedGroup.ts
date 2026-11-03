@@ -124,22 +124,42 @@ export const CuratedGroup: HomeViewGroupSection = {
   cardGroups: [
     {
       resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-        const [
-          recommendedImages,
-          curatorsPicksImages,
-          trendingImages,
-          { body = [] },
-        ] = await Promise.all([
-          artistCardStackURLs(RecommendedArtists, parent, context, info),
-          // Curator's Picks is an artworks section → stack the first 3 artworks.
-          sectionStackURLs(
-            CuratorsPicksEmerging,
-            artworkImageURL,
-            parent,
-            context,
-            info
-          ),
-          artistCardStackURLs(TrendingArtists, parent, context, info),
+        // Filter by displayability BEFORE resolving images, so an auth-gated
+        // section (e.g. Recommended Artists for a logged-out viewer) isn't run
+        // only to be discarded. `images` is a thunk, invoked only if it passes.
+        const displayableSpecs = [
+          {
+            section: RecommendedArtists,
+            title: "Recommended Artists",
+            subtitle:
+              "Explore a curated selection of the most exciting artists working today.",
+            images: () =>
+              artistCardStackURLs(RecommendedArtists, parent, context, info),
+          },
+          {
+            section: CuratorsPicksEmerging,
+            title: "Curators' Picks",
+            // Curator's Picks is an artworks section → stack the first 3 artworks.
+            images: () =>
+              sectionStackURLs(
+                CuratorsPicksEmerging,
+                artworkImageURL,
+                parent,
+                context,
+                info
+              ),
+          },
+          {
+            section: TrendingArtists,
+            title: "Trending Artists",
+            subtitle: "See the works boundary pushing artists are creating.",
+            images: () =>
+              artistCardStackURLs(TrendingArtists, parent, context, info),
+          },
+        ].filter(({ section }) => isSectionDisplayable(section, context))
+
+        const [sectionImages, { body = [] }] = await Promise.all([
+          Promise.all(displayableSpecs.map((spec) => spec.images())),
           context
             .marketingCollectionsLoader({
               slugs: COLLECTION_CARD_SLUGS,
@@ -148,36 +168,19 @@ export const CuratedGroup: HomeViewGroupSection = {
             .catch(() => ({ body: [] })),
         ])
 
-        const sectionCards = [
-          {
-            section: RecommendedArtists,
-            title: "Recommended Artists",
-            subtitle:
-              "Explore a curated selection of the most exciting artists working today.",
-            images: recommendedImages,
-          },
-          {
-            section: CuratorsPicksEmerging,
-            title: "Curators' Picks",
-            images: curatorsPicksImages,
-          },
-          {
-            section: TrendingArtists,
-            title: "Trending Artists",
-            subtitle: "See the works boundary pushing artists are creating.",
-            images: trendingImages,
-          },
-        ]
-          .filter(({ section }) => isSectionDisplayable(section, context))
-          .map(({ section, title, subtitle, images }) => ({
+        const sectionCards = displayableSpecs.map(
+          ({ section, title, subtitle }, index) => ({
             title,
             ...(subtitle ? { subtitle } : {}),
             href: sectionScreenHref(section),
             // STOPGAP stack (first 3 covers/artworks); omitted if unavailable.
-            ...(images.length ? { imageURLs: images } : {}),
+            ...(sectionImages[index].length
+              ? { imageURLs: sectionImages[index] }
+              : {}),
             entityType: "HomeViewSection",
             entityID: section.id,
-          }))
+          })
+        )
 
         const bySlug = new Map<string, any>(
           (body as any[]).map((c) => [c.slug, c])

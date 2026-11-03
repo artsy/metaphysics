@@ -211,6 +211,18 @@ describe("HomeViewSectionGroup", () => {
       ])
     })
 
+    it("does not run auth-gated section resolvers for a logged-out viewer", async () => {
+      const resolverSpy = jest.spyOn(RecommendedArtists, "resolver" as any)
+
+      try {
+        await resolveCards(buildContext())
+        // Filtered out before its images thunk runs, so its resolver never fires.
+        expect(resolverSpy).not.toHaveBeenCalled()
+      } finally {
+        resolverSpy.mockRestore()
+      }
+    })
+
     it("still returns the section cards when the collections load fails", async () => {
       const context = ({
         accessToken: "a-token",
