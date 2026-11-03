@@ -106,6 +106,17 @@ describe("HomeViewExperiments", () => {
 
       expect(findHomeFeed(homeView.experiments)).toBeDefined()
     })
+
+    it("omits the home-feed experiment for anonymous viewers (no userID)", async () => {
+      // Current Eigen version, so only the missing userID gates it out.
+      const context: Partial<ResolverContext> = {
+        userAgent: "Artsy-Mobile/9.23.0",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(findHomeFeed(homeView.experiments)).toBeUndefined()
+    })
   })
 
   describe("variant assignment", () => {

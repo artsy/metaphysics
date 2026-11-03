@@ -20,17 +20,20 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
 
     const experiments = CURRENTLY_RUNNING_EXPERIMENTS.map(
       (name: FeatureFlag) => {
-        // Don't report the home-feed experiment as exposed on clients too old to
-        // render it — they fall back to baseline, so counting them skews the A/B.
-        if (
-          name === HOME_FEED_SIMPLIFICATION_FLAG &&
-          eigenVersion &&
-          !isAtLeastVersion(
-            eigenVersion,
-            HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION
-          )
-        ) {
-          return undefined
+        // Keep in sync with HomeFeedSimplificationRule.resolveArm: viewers it
+        // serves the baseline to (anonymous, or Eigen below the min version) must
+        // not be reported as exposed, or they skew the A/B.
+        if (name === HOME_FEED_SIMPLIFICATION_FLAG) {
+          if (!context.userID) return undefined
+          if (
+            eigenVersion &&
+            !isAtLeastVersion(
+              eigenVersion,
+              HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION
+            )
+          ) {
+            return undefined
+          }
         }
 
         const flag = getFeatureFlag(name)
