@@ -149,13 +149,15 @@ describe("Auctions", () => {
 
     const { homeView } = await runQuery(repArtworksQuery, context)
 
-    // DataLoader coalesces every node's ids into a single batched call.
+    // DataLoader coalesces every node's ids into a single batched call, and
+    // passes size so Gravity doesn't paginate the id lookup to 10.
     expect(artworksLoader).toHaveBeenCalledTimes(1)
     expect(artworksLoader.mock.calls[0][0].ids.sort()).toEqual([
       "a1",
       "a2",
       "a3",
     ])
+    expect(artworksLoader.mock.calls[0][0].size).toEqual(3)
 
     const nodes = homeView.section.salesConnection.edges.map((e) => e.node)
     expect(nodes[0].representativeArtworks.map((a) => a.internalID)).toEqual([

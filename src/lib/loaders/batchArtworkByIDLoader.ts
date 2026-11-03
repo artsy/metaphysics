@@ -8,13 +8,20 @@ export const createArtworkByIDLoader = (
   artworksLoader: (params: {
     ids: string[]
     batched: boolean
+    size: number
   }) => Promise<any[]>
 ): DataLoader<string, any | null> =>
   new DataLoader<string, any | null>(
     async (ids) => {
       let artworks: any[] = []
       try {
-        artworks = await artworksLoader({ ids: [...ids], batched: true })
+        // `size` is required: fetching by id still paginates in Gravity, so
+        // without it a batch of >10 ids silently loses the rest.
+        artworks = await artworksLoader({
+          ids: [...ids],
+          batched: true,
+          size: ids.length,
+        })
       } catch {
         return ids.map(() => null)
       }
