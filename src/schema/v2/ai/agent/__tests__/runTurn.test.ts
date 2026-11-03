@@ -946,6 +946,39 @@ describe("runTurn", () => {
     expect(mockModel.doStreamCalls).toHaveLength(config.AI_AGENT_MAX_ITERATIONS)
   })
 
+  it("takes the tools away on the last allowed step so the model has to answer", async () => {
+    const buildStep = () => ({
+      stream: convertArrayToReadableStream<any>([
+        { type: "stream-start", warnings: [] },
+        {
+          type: "tool-call",
+          toolCallId: "call-1",
+          toolName: "query_artsy",
+          input: JSON.stringify({ query: "{ me { name } }" }),
+        },
+        {
+          type: "finish",
+          finishReason: { unified: "tool-calls", raw: "tool_use" },
+          usage: FAKE_USAGE,
+        },
+      ]),
+    })
+    mockModel = new MockLanguageModelV3({
+      doStream: Array.from(
+        { length: config.AI_AGENT_MAX_ITERATIONS + 1 },
+        buildStep
+      ),
+    })
+
+    await collectEvents({ conversationID: "c1", message: "Find Warhol" })
+
+    const toolChoices = mockModel.doStreamCalls.map(
+      (call) => call.toolChoice?.type
+    )
+    expect(toolChoices[toolChoices.length - 1]).toEqual("none")
+    expect(toolChoices.slice(0, -1)).not.toContain("none")
+  })
+
   it("aborts the in-flight request when the consumer disconnects early", async () => {
     // Simulates Yoga's SSE plumbing calling `.return()` on the subscription's
     // async generator when the client goes away mid-turn.

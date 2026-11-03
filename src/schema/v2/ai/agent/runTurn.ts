@@ -7,7 +7,7 @@ import { z } from "zod"
 import { anthropicProvider } from "lib/apis/anthropic"
 import { agentTracer } from "lib/apis/agentTracing"
 import { rateLimitByUser } from "lib/rateLimitByUser"
-import { info } from "lib/loggers"
+import { error as logError, info } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import {
   buildAgentTools,
@@ -931,11 +931,18 @@ function buildMessages(
  * it for an earlier write, and a step only appends two (the tool call and its
  * result) -- so one rolling breakpoint keeps the chain hitting, and the only
  * thing billed at the write rate is that step's new bytes.
+ *
+ * The last allowed step gets `toolChoice: "none"`, so the model answers with
+ * what it found rather than ending the turn on a search it can't run. The
+ * tools stay in the request, so the cached prefix still matches.
  */
-const prepareStep: PrepareStepFunction = ({ messages }) => {
-  if (messages.length === 0) return {}
+const prepareStep: PrepareStepFunction = ({ messages, stepNumber }) => {
+  const isLastStep = stepNumber >= config.AI_AGENT_MAX_ITERATIONS - 1
+  const toolChoice = isLastStep ? { toolChoice: "none" as const } : {}
+  if (messages.length === 0) return toolChoice
   const last = messages.length - 1
   return {
+    ...toolChoice,
     messages: [...messages.slice(0, last), withCacheBreakpoint(messages[last])],
   }
 }
@@ -1147,6 +1154,9 @@ export async function* runTurn(
         }
 
         case "abort": {
+          logError(
+            `[aiAgentTurn] aborted after ${toolCallCount} tool calls (turn timeout of ${config.AI_AGENT_TURN_TIMEOUT_MS}ms, or the client went away)`
+          )
           const payload: AIAgentTurnCompletePayload = {
             __typename: "AIAgentTurnComplete",
             message: null,
@@ -1161,6 +1171,7 @@ export async function* runTurn(
         }
 
         case "error": {
+          logError("[aiAgentTurn] stream error", part.error)
           Sentry.captureException(part.error)
           const payload: AIAgentTurnCompletePayload = {
             __typename: "AIAgentTurnComplete",
@@ -1185,9 +1196,18 @@ export async function* runTurn(
           const finalOutput: AgentOutput | null = hitCap
             ? null
             : await Promise.resolve(result.output).catch((error) => {
+                logError("[aiAgentTurn] structured output failed", error)
                 Sentry.captureException(error)
                 return null
               })
+          if (!finalOutput?.message) {
+            logError(
+              `[aiAgentTurn] no answer: finishReason=${part.finishReason} toolCalls=${toolCallCount}` +
+                (hitCap
+                  ? ` (hit AI_AGENT_MAX_ITERATIONS=${config.AI_AGENT_MAX_ITERATIONS})`
+                  : "")
+            )
+          }
           const section = finalOutput?.section
             ? await hydrateSection(finalOutput.section, context)
             : null
@@ -1217,6 +1237,7 @@ export async function* runTurn(
       }
     }
   } catch (error) {
+    logError("[aiAgentTurn] turn failed", error)
     Sentry.captureException(error)
     const payload: AIAgentTurnCompletePayload = {
       __typename: "AIAgentTurnComplete",
