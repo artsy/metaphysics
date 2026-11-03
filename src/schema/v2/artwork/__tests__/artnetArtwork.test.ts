@@ -48,6 +48,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
               priceCurrency
               primaryMedium
               additionalMediums
+              mediums
               materials
             }
           }
@@ -79,6 +80,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
             priceCurrency: "USD",
             primaryMedium: "Paintings",
             additionalMediums: ["Works on paper"],
+            mediums: ["Paintings", "Works on paper"],
             materials: "Oil on canvas",
           },
         },
@@ -94,6 +96,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
             artnetArtwork {
               primaryMedium
               additionalMediums
+              mediums
               materials
             }
           }
@@ -113,6 +116,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
           artnetArtwork: {
             primaryMedium: null,
             additionalMediums: [],
+            mediums: [],
             materials: null,
           },
         },

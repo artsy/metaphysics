@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { compact } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
@@ -52,6 +53,13 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       type: new GraphQLList(GraphQLString),
       description: "Medium names beyond the primary, in Gravity's order.",
       resolve: ({ additional_mediums }) => additional_mediums ?? [],
+    },
+    mediums: {
+      type: new GraphQLList(GraphQLString),
+      description: "Every medium name, primary first.",
+      deprecationReason: "Use primaryMedium and additionalMediums",
+      resolve: ({ primary_medium, additional_mediums }) =>
+        compact([primary_medium, ...(additional_mediums ?? [])]),
     },
     materials: {
       type: GraphQLString,
