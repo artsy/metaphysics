@@ -41116,7 +41116,7 @@ input UpdateArtnetArtworkMutationInput {
   """
   Ceiling of Artnet's price range, in minor units. The floor is the catalog artwork's price. Pass null to clear it; omit to leave it unchanged.
   """
-  priceToMinor: Int
+  priceToMinor: Long
 
   """
   Publish or unpublish the artwork on Artnet.
@@ -41165,7 +41165,7 @@ input UpdateArtnetEditionSetMutationInput {
   """
   Floor of this edition's price on Artnet, in minor units. A price and its currency travel together: pass both to set one, and both as null to hand the field back, after which the edition takes the inventory row's price again. Omit to leave it unchanged.
   """
-  priceMinor: Int
+  priceMinor: Long
 
   """
   Artnet's own sale status name. Includes the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery), which is the only way to set one.
