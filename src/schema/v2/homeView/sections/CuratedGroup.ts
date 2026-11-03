@@ -28,11 +28,23 @@ const collectionStackImageURLsBySlug = async (
   collections: any[],
   context: any
 ): Promise<Map<string, string[]>> => {
+  // Only the first CARD_STACK_SIZE per collection are shown; slice before merging
+  // so the batch stays small, and pass `size` — fetching by id still paginates in
+  // Gravity (no size → default page of 10 → extra ids silently dropped).
   const ids = [
-    ...new Set(collections.flatMap((c) => c.representative_artwork_ids ?? [])),
+    ...new Set(
+      collections.flatMap((c) =>
+        ((c.representative_artwork_ids ?? []) as string[]).slice(
+          0,
+          CARD_STACK_SIZE
+        )
+      )
+    ),
   ]
   const artworks: any[] = ids.length
-    ? await context.artworksLoader({ ids, batched: true }).catch(() => [])
+    ? await context
+        .artworksLoader({ ids, batched: true, size: ids.length })
+        .catch(() => [])
     : []
 
   const urlById = new Map<string, string>()

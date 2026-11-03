@@ -188,6 +188,16 @@ describe("HomeViewSectionGroup", () => {
       ])
     })
 
+    it("fetches the collection stack with an explicit size (no pagination)", async () => {
+      const context = buildContext("a-token")
+      await resolveCards(context)
+
+      // 2 collections x <=CARD_STACK_SIZE ids; size prevents Gravity paging to 10.
+      expect(context.artworksLoader as jest.Mock).toHaveBeenCalledWith(
+        expect.objectContaining({ size: 6 })
+      )
+    })
+
     it("drops cards for sections not displayable to the viewer (logged out)", async () => {
       const cards = await resolveCards(buildContext())
 
