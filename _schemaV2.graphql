@@ -3812,6 +3812,12 @@ type ArtnetArtwork {
   Free-text materials (e.g. "oil on canvas"), distinct from the medium vocabulary.
   """
   materials: String
+
+  """
+  Every medium name, primary first.
+  """
+  mediums: [String]
+    @deprecated(reason: "Use primaryMedium and additionalMediums")
   priceCurrency: String
   priceFrom: Money
   priceTo: Money
