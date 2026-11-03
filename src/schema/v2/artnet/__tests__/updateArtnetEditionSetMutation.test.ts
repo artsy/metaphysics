@@ -92,9 +92,9 @@ describe("updateArtnetEditionSet mutation", () => {
         price_currency: null,
       }
     )
-    expect(updateArtnetEditionSetLoader.mock.calls[0][1]).not.toHaveProperty(
-      "sale_status"
-    )
+    expect(
+      updateArtnetEditionSetLoader.mock.calls[0][1]
+    ).not.toHaveProperty("sale_status")
 
     const omitQuery = `
       mutation {
@@ -157,37 +157,5 @@ describe("updateArtnetEditionSet mutation", () => {
         },
       },
     })
-  })
-
-  it("passes syncPrice and syncAvailability through", async () => {
-    const syncQuery = `
-      mutation {
-        updateArtnetEditionSet(
-          input: { id: "artnet-edition-set-1", syncPrice: true, syncAvailability: true }
-        ) {
-          artnetEditionSetOrError {
-            ... on UpdateArtnetEditionSetSuccess {
-              artnetEditionSet {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const updateArtnetEditionSetLoader = jest.fn().mockResolvedValue({
-      id: "artnet-edition-set-1",
-    })
-
-    await runAuthenticatedQuery(syncQuery, { updateArtnetEditionSetLoader })
-
-    expect(updateArtnetEditionSetLoader).toHaveBeenCalledWith(
-      "artnet-edition-set-1",
-      {
-        sync_price: true,
-        sync_availability: true,
-      }
-    )
   })
 })

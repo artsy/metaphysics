@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLInt,
   GraphQLNonNull,
@@ -22,8 +21,6 @@ interface UpdateArtnetEditionSetMutationInputProps {
   priceMinor?: number | null
   priceCurrency?: string | null
   saleStatus?: string
-  syncPrice?: boolean
-  syncAvailability?: boolean
 }
 
 const ArtnetSaleStatusType = new GraphQLEnumType({
@@ -75,7 +72,7 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetEditionSetMutation",
   description:
-    "Sets an Artnet edition's own price or sale status, explicitly or by taking it from the edition's own catalog row, and pushes the artwork's whole edition set to Artnet, since Artnet replaces the set rather than patching one edition of it. At least one of `priceMinor`, `priceCurrency`, `saleStatus`, `syncPrice` or `syncAvailability` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Sets an Artnet edition's own price or sale status and pushes the artwork's whole edition set to Artnet, since Artnet replaces the set rather than patching one edition of it. At least one of `priceMinor`, `priceCurrency` or `saleStatus` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -96,16 +93,6 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
       description:
         "Artnet's own sale status name. Includes the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery), which is the only way to set one.",
     },
-    syncPrice: {
-      type: GraphQLBoolean,
-      description:
-        "Take this edition's price from its own catalog edition set instead of passing `priceMinor`/`priceCurrency` explicitly, so the caller does not have to duplicate a value it just wrote to the inventory row. Cannot be combined with `priceMinor` or `priceCurrency`.",
-    },
-    syncAvailability: {
-      type: GraphQLBoolean,
-      description:
-        "Take this edition's availability from its own catalog edition set (or the artwork's) instead of passing `saleStatus` explicitly. Cannot be combined with `saleStatus`.",
-    },
   },
   outputFields: {
     artnetEditionSetOrError: {
@@ -116,7 +103,7 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, priceMinor, priceCurrency, saleStatus, syncPrice, syncAvailability },
+    { id, priceMinor, priceCurrency, saleStatus },
     { updateArtnetEditionSetLoader }
   ) => {
     if (!updateArtnetEditionSetLoader) {
@@ -125,16 +112,7 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
 
     try {
       const gravityParams = snakeCaseKeys(
-        omitBy(
-          {
-            priceMinor,
-            priceCurrency,
-            saleStatus,
-            syncPrice,
-            syncAvailability,
-          },
-          isUndefined
-        )
+        omitBy({ priceMinor, priceCurrency, saleStatus }, isUndefined)
       )
 
       return await updateArtnetEditionSetLoader(id, gravityParams)
