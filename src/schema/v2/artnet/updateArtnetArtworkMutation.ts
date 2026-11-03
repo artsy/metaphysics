@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -14,6 +13,7 @@ import {
 import { snakeCaseKeys } from "lib/helpers"
 import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetArtworkType } from "./artnetArtwork"
 
 interface UpdateArtnetArtworkMutationInputProps {
@@ -21,7 +21,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   published?: boolean
   availability?: string
   materials?: string
-  priceToMinor?: number
+  priceToMinor?: number | null
   syncOn?: boolean
 }
 
@@ -82,7 +82,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
         "an empty string and null are indistinguishable by the time a request reaches it from here.",
     },
     priceToMinor: {
-      type: GraphQLInt,
+      type: GraphQLLong,
       description:
         "Ceiling of Artnet's price range, in minor units. The floor is the catalog artwork's price. Pass null to clear it; omit to leave it unchanged.",
     },

@@ -1,6 +1,5 @@
 import {
   GraphQLEnumType,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -14,6 +13,7 @@ import {
 import { snakeCaseKeys } from "lib/helpers"
 import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetEditionSetType } from "./artnetEditionSet"
 
 interface UpdateArtnetEditionSetMutationInputProps {
@@ -79,7 +79,7 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
       description: "The ID of the ArtnetEditionSet.",
     },
     priceMinor: {
-      type: GraphQLInt,
+      type: GraphQLLong,
       description:
         "Floor of this edition's price on Artnet, in minor units. A price and its currency travel together: pass both to set one, and both as null to hand the field back, after which the edition takes the inventory row's price again. Omit to leave it unchanged.",
     },
