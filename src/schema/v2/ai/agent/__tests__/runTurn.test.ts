@@ -9,9 +9,30 @@ import { ResolverContext } from "types/graphql"
 // instead of hitting the network. `anthropicProvider()` normally returns a
 // `(modelId) => LanguageModelV3` function; here it always returns whatever
 // model the current test installed via `mockModel`.
+// `litellmProvider()` (the same API through the LiteLLM gateway) returns the
+// same model; the jest.fns record which model ID each provider was asked for.
 let mockModel: MockLanguageModelV3
+const mockAnthropicModel = jest.fn((_modelID: string) => mockModel)
+const mockLiteLLMModel = jest.fn((_modelID: string) => mockModel)
 jest.mock("lib/apis/anthropic", () => ({
-  anthropicProvider: () => () => mockModel,
+  LITELLM_AGENT_MODEL: jest.requireActual("lib/apis/anthropic")
+    .LITELLM_AGENT_MODEL,
+  anthropicProvider: () => mockAnthropicModel,
+  litellmProvider: () => mockLiteLLMModel,
+}))
+
+// Sentry tracing is off in tests anyway (no AI_AGENT_OTLP_ENDPOINT); mocked
+// so the tests can tell whether a turn asked for it.
+const mockAgentTracer = jest.fn().mockReturnValue(undefined)
+jest.mock("lib/apis/agentTracing", () => ({
+  agentTracer: () => mockAgentTracer(),
+}))
+
+// Phoenix span shapes are covered by turnTrace.test.ts; here we only check
+// what a turn sends and when.
+const mockExportSpans = jest.fn()
+jest.mock("lib/apis/phoenix", () => ({
+  exportSpans: (...args: unknown[]) => mockExportSpans(...args),
 }))
 
 // Running a model-authored query against the real narrowed schema (parsing,
@@ -53,6 +74,7 @@ jest.mock("lib/rateLimitByUser", () => ({
   rateLimitByUser: (...args: any[]) => mockRateLimitByUser(...args),
 }))
 
+import { LITELLM_AGENT_MODEL } from "lib/apis/anthropic"
 import { runTurn } from "../runTurn"
 import { imageHandleFor } from "../images"
 
@@ -110,6 +132,7 @@ async function collectEvents(
     supportedSections?: Array<"ARTWORKS" | "ARTISTS"> | null
     includeDebugToolCalls?: boolean | null
     includeSuggestedReplies?: boolean
+    useLiteLLM?: boolean
   },
   context: ResolverContext = fakeContext()
 ) {
@@ -128,6 +151,7 @@ describe("runTurn", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
+    mockExportSpans.mockResolvedValue(true)
   })
 
   it("maps a two-step turn (tool-call step, then a final structured-output step) to AIAgentEvents", async () => {
@@ -897,6 +921,190 @@ describe("runTurn", () => {
       toolCallCount: 0,
       message: "Hello!",
       artworks: [],
+    })
+  })
+
+  describe("through LiteLLM (the Phoenix trace)", () => {
+    const answerJson = JSON.stringify({ message: "Hello!", section: null })
+
+    const textOnlyStep = (): LanguageModelV3StreamResult => ({
+      stream: convertArrayToReadableStream([
+        { type: "stream-start", warnings: [] },
+        { type: "text-start", id: "1" },
+        { type: "text-delta", id: "1", delta: answerJson },
+        { type: "text-end", id: "1" },
+        {
+          type: "finish",
+          finishReason: { unified: "stop", raw: "end_turn" },
+          usage: FAKE_USAGE,
+        },
+      ]),
+    })
+
+    const toolCallStep = (): LanguageModelV3StreamResult => ({
+      stream: convertArrayToReadableStream([
+        { type: "stream-start", warnings: [] },
+        {
+          type: "tool-call",
+          toolCallId: "call-1",
+          toolName: "query_artsy",
+          input: JSON.stringify({ query: "{ me { name } }" }),
+        },
+        {
+          type: "finish",
+          finishReason: { unified: "tool-calls", raw: "tool_use" },
+          usage: FAKE_USAGE,
+        },
+      ]),
+    })
+
+    const onInput = {
+      conversationID: "c1",
+      message: "Find Warhol",
+      useLiteLLM: true,
+    }
+
+    const turnComplete = (events: any[]) =>
+      events.find((e) => e.__typename === "AIAgentTurnComplete")
+
+    /** The spans of the one export the test expects. */
+    const exportedSpans = () => {
+      expect(mockExportSpans).toHaveBeenCalledTimes(1)
+      return mockExportSpans.mock.calls[0][1]
+    }
+
+    it("goes to Anthropic directly, traced to Sentry, when off", async () => {
+      mockModel = new MockLanguageModelV3({ doStream: textOnlyStep() })
+
+      const events = await collectEvents({
+        conversationID: "c1",
+        message: "Hi",
+      })
+
+      expect(turnComplete(events).stopReason).toEqual("stop")
+      expect(mockAnthropicModel).toHaveBeenCalledWith(config.AI_AGENT_MODEL)
+      expect(mockLiteLLMModel).not.toHaveBeenCalled()
+      expect(mockAgentTracer).toHaveBeenCalledTimes(1)
+      const call = mockModel.doStreamCalls[0]
+      expect(call.headers?.traceparent).toBeUndefined()
+      expect((call.providerOptions?.anthropic as any)?.metadata).toBeUndefined()
+      expect(mockExportSpans).not.toHaveBeenCalled()
+    })
+
+    // LiteLLM files every model call of the turn under this trace.
+    it("uses the LiteLLM model and sends the turn's trace with every model call when on", async () => {
+      mockModel = new MockLanguageModelV3({
+        doStream: [toolCallStep(), textOnlyStep()],
+      })
+
+      await collectEvents(onInput)
+
+      expect(mockLiteLLMModel).toHaveBeenCalledWith(LITELLM_AGENT_MODEL)
+      expect(mockAnthropicModel).not.toHaveBeenCalled()
+      expect(mockAgentTracer).not.toHaveBeenCalled()
+
+      const traceID = exportedSpans()[0].context.trace_id
+      expect(traceID).toMatch(/^[0-9a-f]{32}$/)
+      expect(mockModel.doStreamCalls).toHaveLength(2)
+      mockModel.doStreamCalls.forEach((call) => {
+        expect(call.headers?.traceparent).toMatch(
+          new RegExp(`^00-${traceID}-[0-9a-f]{16}-01$`)
+        )
+        // The conversation becomes the Phoenix session of LiteLLM's spans.
+        expect((call.providerOptions?.anthropic as any)?.metadata).toEqual({
+          userId: "c1",
+        })
+      })
+    })
+
+    it("exports the turn to Phoenix once, as a root span with a child per tool call", async () => {
+      mockModel = new MockLanguageModelV3({
+        doStream: [toolCallStep(), textOnlyStep()],
+      })
+
+      await collectEvents(onInput)
+
+      const [, traceID, rootSpanID] = String(
+        mockModel.doStreamCalls[0].headers?.traceparent
+      ).split("-")
+      const [root, ...tools] = exportedSpans()
+      expect(root).toMatchObject({
+        span_kind: "AGENT",
+        context: { trace_id: traceID, span_id: rootSpanID },
+        status_code: "OK",
+        attributes: {
+          "output.value": "Hello!",
+          metadata: {
+            model: LITELLM_AGENT_MODEL,
+            stopReason: "stop",
+            toolCallCount: 1,
+          },
+        },
+      })
+      expect(tools).toHaveLength(1)
+      expect(tools[0]).toMatchObject({
+        span_kind: "TOOL",
+        parent_id: rootSpanID,
+        status_code: "OK",
+        attributes: { "output.value": '{"artist":{"name":"Andy Warhol"}}' },
+      })
+    })
+
+    it("exports a model error as an ERROR turn", async () => {
+      mockModel = new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream<any>([
+            { type: "stream-start", warnings: [] },
+            { type: "error", error: new Error("overloaded") },
+          ]),
+        },
+      })
+
+      const complete = turnComplete(await collectEvents(onInput))
+
+      expect(complete.stopReason).toEqual("error")
+      expect(exportedSpans()[0]).toMatchObject({
+        status_code: "ERROR",
+        status_message: "error",
+      })
+    })
+
+    it("exports the turn as client_disconnected, not an error, when the consumer leaves mid-tool-call", async () => {
+      // The tool never returns, and the consumer goes away while it runs.
+      mockToolExecute.mockReturnValueOnce(new Promise(() => undefined))
+      mockModel = new MockLanguageModelV3({ doStream: [toolCallStep()] })
+      const generator = runTurn(
+        onInput,
+        ({} as unknown) as GraphQLSchema,
+        fakeContext()
+      )
+
+      const first = await generator.next()
+      expect(first.value).toMatchObject({ __typename: "AIAgentToolCall" })
+      expect(mockExportSpans).not.toHaveBeenCalled()
+      await generator.return(undefined as any)
+
+      const [root, tool] = exportedSpans()
+      expect(root).toMatchObject({
+        status_code: "OK",
+        attributes: { metadata: { stopReason: "client_disconnected" } },
+      })
+      expect(tool).toMatchObject({
+        status_code: "ERROR",
+        status_message: "no result",
+      })
+    })
+
+    it("has no trace when the turn is rate limited", async () => {
+      mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 99 })
+      mockModel = new MockLanguageModelV3({ doStream: textOnlyStep() })
+
+      const events = await collectEvents(onInput)
+
+      expect(turnComplete(events)).toMatchObject({
+        stopReason: "rate_limited",
+      })
+      expect(mockExportSpans).not.toHaveBeenCalled()
     })
   })
 

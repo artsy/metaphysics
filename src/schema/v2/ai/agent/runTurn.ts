@@ -4,11 +4,16 @@ import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
 import { z } from "zod"
-import { anthropicProvider } from "lib/apis/anthropic"
+import {
+  anthropicProvider,
+  litellmProvider,
+  LITELLM_AGENT_MODEL,
+} from "lib/apis/anthropic"
 import { agentTracer } from "lib/apis/agentTracing"
 import { rateLimitByUser } from "lib/rateLimitByUser"
 import { error as logError, info } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
+import { TurnTrace } from "./turnTrace"
 import {
   buildAgentTools,
   describeToolCall,
@@ -963,6 +968,8 @@ export async function* runTurn(
     supportedSections?: AIAgentSectionType[] | null
     includeDebugToolCalls?: boolean | null
     includeSuggestedReplies?: boolean
+    /** The LiteLLM gateway and Phoenix, not Anthropic and Sentry. */
+    useLiteLLM?: boolean
   },
   schema: GraphQLSchema,
   context: ResolverContext
@@ -991,7 +998,6 @@ export async function* runTurn(
     return
   }
 
-  const provider = anthropicProvider()
   const abortController = new AbortController()
   const timeout = setTimeout(
     () => abortController.abort(),
@@ -1000,6 +1006,24 @@ export async function* runTurn(
 
   let toolCallCount = 0
   const includeSuggestedReplies = !!input.includeSuggestedReplies
+
+  // Through LiteLLM, the turn is one Phoenix trace.
+  const trace = input.useLiteLLM
+    ? new TurnTrace({
+        conversationID: input.conversationID,
+        userID: context.userID as string,
+        message: input.message,
+        hasImage: !!input.image,
+      })
+    : null
+  const finishTrace = (payload: AIAgentTurnCompletePayload) =>
+    trace?.finish({
+      message: payload.message,
+      stopReason: payload.stopReason,
+      toolCallCount: payload.toolCallCount,
+      section: payload.sections[0] ?? null,
+      suggestedReplies: payload.suggestedReplies,
+    })
 
   try {
     // Resolved before the prompt and the output schema, which both depend on
@@ -1022,10 +1046,13 @@ export async function* runTurn(
     const messages = buildMessages(input.history, input.message, imageHandles)
     const tools = buildAgentTools(schema, context, imageHandles.handles)
 
-    const tracer = agentTracer()
+    // Sentry, or Phoenix through LiteLLM, never both.
+    const tracer = trace ? undefined : agentTracer()
 
     const result = streamText({
-      model: provider(config.AI_AGENT_MODEL),
+      model: trace
+        ? litellmProvider()(LITELLM_AGENT_MODEL)
+        : anthropicProvider()(config.AI_AGENT_MODEL),
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
       // and system prompt are byte-stable across steps for a given set of
       // supported sections and today's date (fixed tool order, no timestamps
@@ -1060,6 +1087,7 @@ export async function* runTurn(
             recordOutputs: true,
           }
         : undefined,
+      headers: trace ? { traceparent: trace.traceparent } : undefined,
       providerOptions: {
         anthropic: {
           thinking: { type: "adaptive" },
@@ -1070,6 +1098,8 @@ export async function* runTurn(
           // back to a synthetic "json" tool call, which would show up to
           // the client as a spurious AIAgentToolCall.
           structuredOutputMode: "outputFormat",
+          // LiteLLM uses it as the session of its own spans.
+          ...(trace ? { metadata: { userId: input.conversationID } } : {}),
         },
       },
     })
@@ -1109,6 +1139,7 @@ export async function* runTurn(
 
         case "tool-call": {
           toolCallCount += 1
+          trace?.toolCall(part.toolCallId, part.toolName, part.input)
           const description = describeToolCall(part.input)
           const payload: AIAgentToolCallPayload = {
             __typename: "AIAgentToolCall",
@@ -1125,6 +1156,7 @@ export async function* runTurn(
 
         case "tool-result": {
           const output = part.output as AIAgentToolRunResult
+          trace?.toolResult(part.toolCallId, output)
           const payload: AIAgentToolResultPayload = {
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
@@ -1140,6 +1172,10 @@ export async function* runTurn(
         case "tool-error": {
           // Defensive: runQueryArtsyTool returns { ok: false } rather than throwing.
           Sentry.captureException(part.error)
+          trace?.toolResult(part.toolCallId, {
+            ok: false,
+            content: String(part.error),
+          })
           const payload: AIAgentToolResultPayload = {
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
@@ -1166,6 +1202,7 @@ export async function* runTurn(
             stopReason: "aborted",
             toolCallCount,
           }
+          finishTrace(payload)
           yield payload
           return
         }
@@ -1182,6 +1219,7 @@ export async function* runTurn(
             stopReason: "error",
             toolCallCount,
           }
+          finishTrace(payload)
           yield payload
           return
         }
@@ -1231,6 +1269,7 @@ export async function* runTurn(
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
           }
+          finishTrace(payload)
           yield payload
           break
         }
@@ -1248,9 +1287,18 @@ export async function* runTurn(
       stopReason: "error",
       toolCallCount,
     }
+    finishTrace(payload)
     yield payload
   } finally {
     clearTimeout(timeout)
+    // The client left before the turn completed; a no-op otherwise.
+    trace?.finish({
+      message: null,
+      stopReason: "client_disconnected",
+      toolCallCount,
+      section: null,
+      suggestedReplies: null,
+    })
     // If the consumer tears down the subscription early, graphql-js calls
     // `.return()` on this generator, running this `finally` while an
     // Anthropic request may still be in flight — abort it so it doesn't leak.

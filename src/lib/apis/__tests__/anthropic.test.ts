@@ -1,6 +1,35 @@
 import { createAnthropic } from "@ai-sdk/anthropic"
+import config from "config"
+import { isLiteLLMConfigured, litellmURL } from "../anthropic"
 
 describe("anthropic", () => {
+  const original = {
+    LITELLM_BASE_URL: config.LITELLM_BASE_URL,
+    LITELLM_API_KEY: config.LITELLM_API_KEY,
+  }
+
+  afterEach(() => {
+    Object.assign(config, original)
+  })
+
+  it("routes through LiteLLM only when both URL and key are set", () => {
+    Object.assign(config, { LITELLM_BASE_URL: "https://litellm.invalid" })
+    Object.assign(config, { LITELLM_API_KEY: undefined })
+    expect(isLiteLLMConfigured()).toBe(false)
+
+    Object.assign(config, { LITELLM_API_KEY: "sk-virtual-key" })
+    expect(isLiteLLMConfigured()).toBe(true)
+  })
+
+  it.each(["https://litellm.invalid", "https://litellm.invalid/v1/"])(
+    "litellmURL resolves from the gateway root for %s",
+    (base) => {
+      Object.assign(config, { LITELLM_BASE_URL: base })
+
+      expect(litellmURL("/v1")).toEqual("https://litellm.invalid/v1")
+    }
+  )
+
   // The agent's last step relies on this (see prepareStep in runTurn): older
   // provider versions dropped the tools instead, which breaks the prompt cache.
   it("keeps the tools in the request when toolChoice is none", async () => {

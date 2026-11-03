@@ -8,6 +8,11 @@ jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: (...args: any[]) => mockIsFeatureFlagEnabled(...args),
 }))
 
+const mockIsLiteLLMConfigured = jest.fn().mockReturnValue(false)
+jest.mock("lib/apis/anthropic", () => ({
+  isLiteLLMConfigured: () => mockIsLiteLLMConfigured(),
+}))
+
 const mockRunTurn = jest.fn()
 jest.mock("../runTurn", () => ({
   runTurn: (...args: any[]) => mockRunTurn(...args),
@@ -34,6 +39,7 @@ describe("AIAgentTurn", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockIsFeatureFlagEnabled.mockReturnValue(true)
+    mockIsLiteLLMConfigured.mockReturnValue(false)
     mockRunTurn.mockReturnValue(
       (async function* () {
         yield { __typename: "AIAgentTurnComplete" }
@@ -157,7 +163,7 @@ describe("AIAgentTurn", () => {
     try {
       callSubscribe(input, context)
       expect(mockRunTurn).toHaveBeenCalledWith(
-        { ...input, includeSuggestedReplies: true },
+        { ...input, includeSuggestedReplies: true, useLiteLLM: false },
         expect.anything(),
         context
       )
@@ -216,6 +222,26 @@ describe("AIAgentTurn", () => {
       }
 
       expect(includeSuggestedRepliesPassedToRunTurn()).toBe(true)
+    })
+  })
+
+  describe("LiteLLM and Phoenix", () => {
+    const user = { userID: "user-42", accessToken: "token" }
+
+    it("are used when the LiteLLM gateway is configured", () => {
+      mockIsLiteLLMConfigured.mockReturnValue(true)
+
+      callSubscribe({ conversationID: "c1", message: "hi" }, user)
+
+      expect(mockRunTurn.mock.calls[0][0].useLiteLLM).toBe(true)
+    })
+
+    it("are not used otherwise", () => {
+      mockIsLiteLLMConfigured.mockReturnValue(false)
+
+      callSubscribe({ conversationID: "c1", message: "hi" }, user)
+
+      expect(mockRunTurn.mock.calls[0][0].useLiteLLM).toBe(false)
     })
   })
 
@@ -307,7 +333,12 @@ describe("AIAgentTurn", () => {
     callSubscribe(input, context, schema)
 
     expect(mockRunTurn).toHaveBeenCalledWith(
-      { ...input, includeDebugToolCalls: false, includeSuggestedReplies: true },
+      {
+        ...input,
+        includeDebugToolCalls: false,
+        includeSuggestedReplies: true,
+        useLiteLLM: false,
+      },
       schema,
       context
     )

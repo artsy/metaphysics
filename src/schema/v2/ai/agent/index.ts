@@ -2,6 +2,7 @@ import { GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { isLiteLLMConfigured } from "lib/apis/anthropic"
 import { runTurn } from "./runTurn"
 import { isSupportedImageBucket } from "./images"
 import {
@@ -194,6 +195,7 @@ export const AIAgentTurn: GraphQLFieldConfig<void, ResolverContext> = {
         ...input,
         includeDebugToolCalls: debugAvailable && !!input.includeDebugToolCalls,
         includeSuggestedReplies,
+        useLiteLLM: isLiteLLMConfigured(),
       },
       info.schema,
       context
