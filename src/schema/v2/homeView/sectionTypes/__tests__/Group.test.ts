@@ -4,6 +4,7 @@ import { CuratedGroup, artistCardStackURLs } from "../../sections/CuratedGroup"
 import { CuratorsPicksEmerging } from "../../sections/CuratorsPicksEmerging"
 import { RecommendedArtists } from "../../sections/RecommendedArtists"
 import { TrendingArtists } from "../../sections/TrendingArtists"
+import config from "config"
 
 describe("artistCardStackURLs", () => {
   it("returns the first 3 artists' cover images from the rail", async () => {
@@ -240,6 +241,37 @@ describe("HomeViewSectionGroup", () => {
         "Curators' Picks",
         "Trending Artists",
       ])
+    })
+
+    it("still returns the other cards when one section resolver hangs", async () => {
+      jest.useFakeTimers()
+      const hung = jest
+        .spyOn(TrendingArtists, "resolver" as any)
+        .mockReturnValue(new Promise(() => undefined))
+
+      try {
+        const cardsPromise = resolveCards(buildContext("a-token"))
+        // Fire the per-branch timeout (outer budget / 2) so the hung section
+        // degrades to [] before the outer timer would null the whole group.
+        await jest.advanceTimersByTimeAsync(
+          config.HOME_VIEW_RESOLVER_TIMEOUT_MS / 2
+        )
+        const cards = await cardsPromise
+
+        // Trending still appears (sans images); every other card is intact.
+        expect(cards.map((c) => c.title)).toEqual([
+          "Recommended Artists",
+          "Curators' Picks",
+          "Trending Artists",
+          "Most Loved",
+          "Blue-Chip Icons",
+        ])
+        const trending = cards.find((c) => c.title === "Trending Artists")
+        expect(trending.imageURLs).toBeUndefined()
+      } finally {
+        hung.mockRestore()
+        jest.useRealTimers()
+      }
     })
   })
 })

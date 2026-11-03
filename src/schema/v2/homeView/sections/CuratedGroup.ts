@@ -8,6 +8,8 @@ import { RecommendedArtists } from "./RecommendedArtists"
 import { TrendingArtists } from "./TrendingArtists"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
+import { withTimeout } from "lib/loaders/helpers"
+import config from "config"
 import { setVersion } from "schema/v2/image/normalize"
 import { getDefault } from "schema/v2/image"
 
@@ -158,15 +160,54 @@ export const CuratedGroup: HomeViewGroupSection = {
           },
         ].filter(({ section }) => isSectionDisplayable(section, context))
 
-        const [sectionImages, { body = [] }] = await Promise.all([
-          Promise.all(displayableSpecs.map((spec) => spec.images())),
-          context
-            .marketingCollectionsLoader({
-              slugs: COLLECTION_CARD_SLUGS,
-              size: COLLECTION_CARD_SLUGS.length,
-            })
-            .catch(() => ({ body: [] })),
-        ])
+        // Each branch gets half the outer budget so a single slow/hung section (or
+        // the collection load) always degrades to [] before the outer timer fires
+        // and nulls the whole group. Collections + their artwork stack run in one
+        // chained branch, alongside the section images, not after them.
+        const branchTimeout = config.HOME_VIEW_RESOLVER_TIMEOUT_MS / 2
+
+        type CollectionData = {
+          collections: any[]
+          stackBySlug: Map<string, string[]>
+        }
+
+        const [sectionImages, { collections, stackBySlug }] = await Promise.all(
+          [
+            Promise.all(
+              displayableSpecs.map(
+                (spec) =>
+                  withTimeout(
+                    spec.images(),
+                    branchTimeout
+                  ).catch(() => []) as Promise<string[]>
+              )
+            ),
+            withTimeout(
+              context
+                .marketingCollectionsLoader({
+                  slugs: COLLECTION_CARD_SLUGS,
+                  size: COLLECTION_CARD_SLUGS.length,
+                })
+                .then(async ({ body = [] }) => {
+                  const bySlug = new Map<string, any>(
+                    (body as any[]).map((c) => [c.slug, c])
+                  )
+                  const collections = COLLECTION_CARD_SLUGS.map((slug) =>
+                    bySlug.get(slug)
+                  ).filter(Boolean)
+                  const stackBySlug = await collectionStackImageURLsBySlug(
+                    collections,
+                    context
+                  )
+                  return { collections, stackBySlug }
+                }),
+              branchTimeout
+            ).catch(() => ({
+              collections: [],
+              stackBySlug: new Map<string, string[]>(),
+            })) as Promise<CollectionData>,
+          ]
+        )
 
         const sectionCards = displayableSpecs.map(
           ({ section, title, subtitle }, index) => ({
@@ -180,18 +221,6 @@ export const CuratedGroup: HomeViewGroupSection = {
             entityType: "HomeViewSection",
             entityID: section.id,
           })
-        )
-
-        const bySlug = new Map<string, any>(
-          (body as any[]).map((c) => [c.slug, c])
-        )
-        const collections = COLLECTION_CARD_SLUGS.map((slug) =>
-          bySlug.get(slug)
-        ).filter(Boolean)
-
-        const stackBySlug = await collectionStackImageURLsBySlug(
-          collections,
-          context
         )
 
         const collectionCards = collections.map((collection) => {
