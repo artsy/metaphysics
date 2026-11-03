@@ -924,7 +924,7 @@ describe("runTurn", () => {
     })
   })
 
-  describe("through LiteLLM (the Phoenix trace)", () => {
+  describe("through LiteLLM (feedbackID and the Phoenix trace)", () => {
     const answerJson = JSON.stringify({ message: "Hello!", section: null })
 
     const textOnlyStep = (): LanguageModelV3StreamResult => ({
@@ -973,7 +973,7 @@ describe("runTurn", () => {
       return mockExportSpans.mock.calls[0][1]
     }
 
-    it("goes to Anthropic directly, traced to Sentry, when off", async () => {
+    it("goes to Anthropic directly, traced to Sentry, with no feedbackID when off", async () => {
       mockModel = new MockLanguageModelV3({ doStream: textOnlyStep() })
 
       const events = await collectEvents({
@@ -981,7 +981,7 @@ describe("runTurn", () => {
         message: "Hi",
       })
 
-      expect(turnComplete(events).stopReason).toEqual("stop")
+      expect(turnComplete(events).feedbackID).toBeNull()
       expect(mockAnthropicModel).toHaveBeenCalledWith(config.AI_AGENT_MODEL)
       expect(mockLiteLLMModel).not.toHaveBeenCalled()
       expect(mockAgentTracer).toHaveBeenCalledTimes(1)
@@ -991,24 +991,25 @@ describe("runTurn", () => {
       expect(mockExportSpans).not.toHaveBeenCalled()
     })
 
-    // LiteLLM files every model call of the turn under this trace.
+    // LiteLLM files every model call of the turn under this trace, which is
+    // what a collector's feedback is attached to in Phoenix.
     it("uses the LiteLLM model and sends the turn's trace with every model call when on", async () => {
       mockModel = new MockLanguageModelV3({
         doStream: [toolCallStep(), textOnlyStep()],
       })
 
-      await collectEvents(onInput)
+      const events = await collectEvents(onInput)
 
       expect(mockLiteLLMModel).toHaveBeenCalledWith(LITELLM_AGENT_MODEL)
       expect(mockAnthropicModel).not.toHaveBeenCalled()
       expect(mockAgentTracer).not.toHaveBeenCalled()
 
-      const traceID = exportedSpans()[0].context.trace_id
-      expect(traceID).toMatch(/^[0-9a-f]{32}$/)
+      const { feedbackID } = turnComplete(events)
+      expect(feedbackID).toMatch(/^[0-9a-f]{32}$/)
       expect(mockModel.doStreamCalls).toHaveLength(2)
       mockModel.doStreamCalls.forEach((call) => {
         expect(call.headers?.traceparent).toMatch(
-          new RegExp(`^00-${traceID}-[0-9a-f]{16}-01$`)
+          new RegExp(`^00-${feedbackID}-[0-9a-f]{16}-01$`)
         )
         // The conversation becomes the Phoenix session of LiteLLM's spans.
         expect((call.providerOptions?.anthropic as any)?.metadata).toEqual({
@@ -1022,15 +1023,16 @@ describe("runTurn", () => {
         doStream: [toolCallStep(), textOnlyStep()],
       })
 
-      await collectEvents(onInput)
+      const events = await collectEvents(onInput)
 
-      const [, traceID, rootSpanID] = String(
-        mockModel.doStreamCalls[0].headers?.traceparent
-      ).split("-")
+      const { feedbackID } = turnComplete(events)
+      const rootSpanID = mockModel.doStreamCalls[0].headers?.traceparent?.split(
+        "-"
+      )[2]
       const [root, ...tools] = exportedSpans()
       expect(root).toMatchObject({
         span_kind: "AGENT",
-        context: { trace_id: traceID, span_id: rootSpanID },
+        context: { trace_id: feedbackID, span_id: rootSpanID },
         status_code: "OK",
         attributes: {
           "output.value": "Hello!",
@@ -1050,7 +1052,7 @@ describe("runTurn", () => {
       })
     })
 
-    it("exports a model error as an ERROR turn", async () => {
+    it("exports a model error as an ERROR turn, keeping the feedbackID", async () => {
       mockModel = new MockLanguageModelV3({
         doStream: {
           stream: convertArrayToReadableStream<any>([
@@ -1063,7 +1065,9 @@ describe("runTurn", () => {
       const complete = turnComplete(await collectEvents(onInput))
 
       expect(complete.stopReason).toEqual("error")
+      expect(complete.feedbackID).toMatch(/^[0-9a-f]{32}$/)
       expect(exportedSpans()[0]).toMatchObject({
+        context: { trace_id: complete.feedbackID },
         status_code: "ERROR",
         status_message: "error",
       })
@@ -1095,7 +1099,7 @@ describe("runTurn", () => {
       })
     })
 
-    it("has no trace when the turn is rate limited", async () => {
+    it("has no feedbackID or trace when the turn is rate limited", async () => {
       mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 99 })
       mockModel = new MockLanguageModelV3({ doStream: textOnlyStep() })
 
@@ -1103,6 +1107,7 @@ describe("runTurn", () => {
 
       expect(turnComplete(events)).toMatchObject({
         stopReason: "rate_limited",
+        feedbackID: null,
       })
       expect(mockExportSpans).not.toHaveBeenCalled()
     })
@@ -1742,6 +1747,7 @@ describe("runTurn", () => {
           suggestedReplies: null,
           stopReason: "rate_limited",
           toolCallCount: 0,
+          feedbackID: null,
         },
       ])
       expect(mockModel.doStreamCalls).toHaveLength(0)

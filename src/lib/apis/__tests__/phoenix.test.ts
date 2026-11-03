@@ -1,6 +1,6 @@
 import config from "config"
 import * as loggers from "lib/loggers"
-import { exportSpans, PhoenixSpan } from "lib/apis/phoenix"
+import { annotateTrace, exportSpans, PhoenixSpan } from "lib/apis/phoenix"
 
 const mockFetch = jest.fn()
 jest.mock("node-fetch", () => ({
@@ -20,6 +20,14 @@ const span: PhoenixSpan = {
   status_code: "OK",
   attributes: { "input.value": "hi" },
   events: [],
+}
+
+const feedback = {
+  traceID: TRACE_ID,
+  name: "user_feedback",
+  identifier: "user-1",
+  label: "thumbs_up",
+  score: 1,
 }
 
 describe("phoenix", () => {
@@ -66,6 +74,31 @@ describe("phoenix", () => {
     expect(request().url).toBe(
       "https://litellm.example.com/phoenix/v1/projects/metaphysics/spans"
     )
+  })
+
+  it("annotates a trace as a human judgment", async () => {
+    await expect(annotateTrace(feedback)).resolves.toBe(true)
+
+    expect(request().url).toBe(
+      "https://litellm.example.com/phoenix/v1/trace_annotations"
+    )
+    expect(request().body.data).toEqual([
+      {
+        trace_id: TRACE_ID,
+        name: "user_feedback",
+        annotator_kind: "HUMAN",
+        result: { label: "thumbs_up", score: 1, explanation: null },
+        identifier: "user-1",
+        metadata: {},
+      },
+    ])
+  })
+
+  it("rejects an invalid trace ID without calling Phoenix", async () => {
+    await expect(
+      annotateTrace({ ...feedback, traceID: "not-a-trace" })
+    ).resolves.toBe(false)
+    expect(mockFetch).not.toHaveBeenCalled()
   })
 
   it("does nothing when the gateway isn't configured", async () => {

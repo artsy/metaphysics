@@ -5,6 +5,8 @@
  *   ├─ LLM call              <- LiteLLM's span, parented via `traceparent`
  *   ├─ query_artsy (TOOL)    <- sent from here
  *   └─ LLM call
+ *
+ * The trace ID is the turn's feedbackID.
  */
 
 import { randomBytes } from "crypto"

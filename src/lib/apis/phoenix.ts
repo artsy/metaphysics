@@ -1,6 +1,7 @@
 /**
  * Phoenix, reached only through LiteLLM's pass-through routes, which add the
- * Phoenix key. The LiteLLM key must allow `/phoenix/v1/projects/<project>/spans`.
+ * Phoenix key. The LiteLLM key must allow `/phoenix/v1/trace_annotations` and
+ * `/phoenix/v1/projects/<project>/spans`.
  *
  * Spans use Phoenix's JSON API, not OTLP: the pass-through re-sends bodies as
  * JSON, and Phoenix's OTLP endpoint only takes protobuf.
@@ -12,6 +13,8 @@ import { isLiteLLMConfigured, litellmURL } from "lib/apis/anthropic"
 import { error } from "lib/loggers"
 
 const TIMEOUT_MS = 5000
+
+const TRACE_ID = /^[0-9a-f]{32}$/
 
 /** A span for Phoenix's `POST /v1/projects/{project}/spans`. */
 export interface PhoenixSpan {
@@ -71,3 +74,39 @@ export const exportSpans = (
   spans: PhoenixSpan[]
 ): Promise<boolean> =>
   post(`/projects/${encodeURIComponent(project)}/spans`, spans)
+
+/**
+ * A human judgment on a whole trace. Annotating again with the same name and
+ * identifier replaces the earlier one. Phoenix accepts an annotation before
+ * its trace arrives, so an unknown but well-formed trace ID still succeeds.
+ */
+export async function annotateTrace({
+  traceID,
+  name,
+  identifier,
+  label,
+  score,
+  explanation,
+  metadata,
+}: {
+  traceID: string
+  name: string
+  identifier: string
+  label: string
+  score: number
+  explanation?: string | null
+  metadata?: Record<string, unknown>
+}): Promise<boolean> {
+  if (!TRACE_ID.test(traceID)) return false
+
+  return post("/trace_annotations", [
+    {
+      trace_id: traceID,
+      name,
+      annotator_kind: "HUMAN",
+      result: { label, score, explanation: explanation || null },
+      identifier,
+      metadata: metadata ?? {},
+    },
+  ])
+}

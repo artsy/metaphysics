@@ -993,6 +993,7 @@ export async function* runTurn(
       suggestedReplies: null,
       stopReason: "rate_limited",
       toolCallCount: 0,
+      feedbackID: null,
     }
     yield payload
     return
@@ -1007,7 +1008,7 @@ export async function* runTurn(
   let toolCallCount = 0
   const includeSuggestedReplies = !!input.includeSuggestedReplies
 
-  // Through LiteLLM, the turn is one Phoenix trace.
+  // Through LiteLLM, the turn is one Phoenix trace, and its ID is the feedbackID.
   const trace = input.useLiteLLM
     ? new TurnTrace({
         conversationID: input.conversationID,
@@ -1016,6 +1017,7 @@ export async function* runTurn(
         hasImage: !!input.image,
       })
     : null
+  const feedbackID = trace?.traceID ?? null
   const finishTrace = (payload: AIAgentTurnCompletePayload) =>
     trace?.finish({
       message: payload.message,
@@ -1201,6 +1203,7 @@ export async function* runTurn(
             suggestedReplies: null,
             stopReason: "aborted",
             toolCallCount,
+            feedbackID,
           }
           finishTrace(payload)
           yield payload
@@ -1218,6 +1221,7 @@ export async function* runTurn(
             suggestedReplies: null,
             stopReason: "error",
             toolCallCount,
+            feedbackID,
           }
           finishTrace(payload)
           yield payload
@@ -1268,6 +1272,7 @@ export async function* runTurn(
                 : null,
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
+            feedbackID,
           }
           finishTrace(payload)
           yield payload
@@ -1286,6 +1291,7 @@ export async function* runTurn(
       suggestedReplies: null,
       stopReason: "error",
       toolCallCount,
+      feedbackID,
     }
     finishTrace(payload)
     yield payload
