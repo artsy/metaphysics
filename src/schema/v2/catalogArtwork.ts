@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+import { moneyFieldFromMinor } from "./fields/money"
 import { date } from "./fields/date"
 import { CatalogArtworkDocumentType } from "./catalogArtworkDocument"
 import { CatalogEditionSetType } from "./catalogEditionSet"
@@ -32,22 +32,10 @@ export const CatalogArtworkType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ price_currency }) => price_currency,
     },
-    priceListed: {
-      type: Money,
-      resolve: (
-        { price_minor: minor, price_currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
-          args,
-          context,
-          info
-        )
-      },
-    },
+    priceListed: moneyFieldFromMinor<{
+      price_minor: number | null
+      price_currency: string | null
+    }>("price_minor"),
     privateNotes: {
       type: GraphQLString,
       resolve: ({ private_notes }) => private_notes,
