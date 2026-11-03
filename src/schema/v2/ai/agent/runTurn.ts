@@ -1100,7 +1100,8 @@ export async function* runTurn(
           // back to a synthetic "json" tool call, which would show up to
           // the client as a spurious AIAgentToolCall.
           structuredOutputMode: "outputFormat",
-          // LiteLLM uses it as the session of its own spans.
+          // Deliberately the conversation, not the user: LiteLLM uses it as
+          // the session of its own spans, matching the turn's root span.
           ...(trace ? { metadata: { userId: input.conversationID } } : {}),
         },
       },

@@ -13,6 +13,11 @@ jest.mock("lib/featureFlags", () => ({
     mockIsFeatureFlagEnabled(...args),
 }))
 
+const mockRateLimitByUser = jest.fn()
+jest.mock("lib/rateLimitByUser", () => ({
+  rateLimitByUser: (...args: unknown[]) => mockRateLimitByUser(...args),
+}))
+
 const FEEDBACK_ID = "0af7651916cd43dd8448eb211c80319c" as const
 
 const signedIn = { accessToken: "secret", userID: "user-42" }
@@ -31,6 +36,22 @@ describe("createAIAgentFeedback", () => {
     mockAnnotateTrace.mockResolvedValue(true)
     mockIsFeatureFlagEnabled.mockReset()
     mockIsFeatureFlagEnabled.mockReturnValue(true)
+    mockRateLimitByUser.mockReset()
+    mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
+  })
+
+  it("doesn't record a vote over the user's rate limit", async () => {
+    mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 101 })
+
+    const data = await runQuery(mutation, signedIn, {
+      input: { feedbackID: FEEDBACK_ID, rating: "THUMBS_UP" },
+    })
+
+    expect(data).toEqual({ createAIAgentFeedback: { success: false } })
+    expect(mockRateLimitByUser).toHaveBeenCalledWith(
+      expect.objectContaining({ scope: "ai_agent_feedback", userID: "user-42" })
+    )
+    expect(mockAnnotateTrace).not.toHaveBeenCalled()
   })
 
   it("is gated by the same flag as the agent turn", async () => {

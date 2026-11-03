@@ -8,9 +8,13 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import config from "config"
 import { annotateTrace } from "lib/apis/phoenix"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { rateLimitByUser } from "lib/rateLimitByUser"
 import { ResolverContext } from "types/graphql"
 
 const MAX_COMMENT_LENGTH = 2000
+
+/** Each vote is a call to Phoenix; generous for real use, a cap on abuse. */
+const MAX_VOTES_PER_HOUR = 100
 
 export const FEEDBACK_ANNOTATION = "user_feedback"
 
@@ -76,6 +80,14 @@ export const createAIAgentFeedbackMutation = mutationWithClientMutationId<
         `Comment is too long (max ${MAX_COMMENT_LENGTH} characters)`
       )
     }
+
+    const { allowed } = await rateLimitByUser({
+      scope: "ai_agent_feedback",
+      userID: context.userID,
+      max: MAX_VOTES_PER_HOUR,
+      windowSeconds: 60 * 60,
+    })
+    if (!allowed) return { success: false }
 
     const thumbsUp = rating === "THUMBS_UP"
 
