@@ -11,6 +11,29 @@ import { HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION } from "../../sectionType
 export const HOME_FEED_SIMPLIFICATION_FLAG: FeatureFlag =
   "onyx_home-feed-simplification"
 
+// Single source of truth for who the experiment applies to: we must be able to
+// stably bucket the viewer (userID) and render the treatment (Eigen >= min
+// version). Both arm composition and exposure reporting gate on this so they
+// agree — an ineligible viewer sees the baseline and isn't reported as exposed.
+export const isEligibleForHomeFeedSimplification = (
+  context: ResolverContext
+): boolean => {
+  if (!context.userID) return false
+
+  const eigenVersion = getEigenVersionNumber(context.userAgent as string)
+  if (
+    eigenVersion &&
+    !isAtLeastVersion(
+      eigenVersion,
+      HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION
+    )
+  ) {
+    return false
+  }
+
+  return true
+}
+
 // Reshapes the feed per the user's experiment arm; no-op for control/unenrolled.
 export class HomeFeedSimplificationRule extends HomeViewMixerRule {
   async apply(
@@ -26,27 +49,15 @@ export class HomeFeedSimplificationRule extends HomeViewMixerRule {
     context: ResolverContext
   ): {
     arm: Arm | null
-    source: "override" | "unleash" | "anonymous" | "below_min_version"
+    source: "override" | "unleash" | "ineligible"
   } {
     if (context.xHomeFeedArm && isArm(context.xHomeFeedArm)) {
       return { arm: context.xHomeFeedArm, source: "override" }
     }
 
-    if (!context.userID) {
-      return { arm: null, source: "anonymous" }
-    }
-
-    // Below the groups' minimumEigenVersion the treatment can't render; enrolling
-    // would gut the feed (groups version-dropped, standalone rails arm-dropped).
-    const eigenVersion = getEigenVersionNumber(context.userAgent as string)
-    if (
-      eigenVersion &&
-      !isAtLeastVersion(
-        eigenVersion,
-        HOME_VIEW_SECTION_GROUP_MINIMUM_EIGEN_VERSION
-      )
-    ) {
-      return { arm: null, source: "below_min_version" }
+    // Anonymous or too-old clients get the baseline, not a random/un-renderable arm.
+    if (!isEligibleForHomeFeedSimplification(context)) {
+      return { arm: null, source: "ineligible" }
     }
 
     const variant = getExperimentVariant(HOME_FEED_SIMPLIFICATION_FLAG, {

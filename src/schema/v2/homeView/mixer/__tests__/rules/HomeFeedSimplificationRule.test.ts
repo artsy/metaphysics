@@ -1,6 +1,9 @@
 import { HomeViewSection } from "schema/v2/homeView/sections"
 import { ResolverContext } from "types/graphql"
-import { HomeFeedSimplificationRule } from "../../rules/HomeFeedSimplificationRule"
+import {
+  HomeFeedSimplificationRule,
+  isEligibleForHomeFeedSimplification,
+} from "../../rules/HomeFeedSimplificationRule"
 import { QuickLinks } from "../../../sections/QuickLinks"
 import { NewWorksForYou } from "../../../sections/NewWorksForYou"
 import { RecommendedArtworks } from "../../../sections/RecommendedArtworks"
@@ -39,7 +42,7 @@ describe("HomeFeedSimplificationRule", () => {
     expect(mockGetVariant).not.toHaveBeenCalled()
     expect(anonContext.homeViewAppliedArm).toEqual({
       arm: null,
-      source: "anonymous",
+      source: "ineligible",
     })
   })
 
@@ -54,7 +57,7 @@ describe("HomeFeedSimplificationRule", () => {
     expect(mockGetVariant).not.toHaveBeenCalled()
     expect(oldEigenContext.homeViewAppliedArm).toEqual({
       arm: null,
-      source: "below_min_version",
+      source: "ineligible",
     })
   })
 
@@ -178,5 +181,37 @@ describe("HomeFeedSimplificationRule", () => {
 
       expect(ctx.homeViewAppliedArm).toEqual({ arm: null, source: "unleash" })
     })
+  })
+})
+
+describe("isEligibleForHomeFeedSimplification", () => {
+  it("is false for anonymous viewers", () => {
+    expect(isEligibleForHomeFeedSimplification({} as ResolverContext)).toBe(
+      false
+    )
+  })
+
+  it("is false for Eigen below the min version", () => {
+    expect(
+      isEligibleForHomeFeedSimplification({
+        userID: "123",
+        userAgent: "Artsy-Mobile/9.20.0",
+      } as ResolverContext)
+    ).toBe(false)
+  })
+
+  it("is true for a logged-in, current-version viewer", () => {
+    expect(
+      isEligibleForHomeFeedSimplification({
+        userID: "123",
+        userAgent: "Artsy-Mobile/9.23.0",
+      } as ResolverContext)
+    ).toBe(true)
+  })
+
+  it("is true for a logged-in non-Eigen client (no version to gate on)", () => {
+    expect(
+      isEligibleForHomeFeedSimplification({ userID: "123" } as ResolverContext)
+    ).toBe(true)
   })
 })
