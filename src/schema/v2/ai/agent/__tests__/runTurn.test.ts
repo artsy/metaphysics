@@ -1099,6 +1099,25 @@ describe("runTurn", () => {
       })
     })
 
+    // The AI SDK ends every stream with finish, error or abort, so only a real
+    // disconnect reaches the `finally` as client_disconnected.
+    it("exports a stream that stops without finishing as an error, not a disconnect", async () => {
+      mockModel = new MockLanguageModelV3({
+        doStream: {
+          stream: convertArrayToReadableStream<any>([
+            { type: "stream-start", warnings: [] },
+          ]),
+        },
+      })
+
+      await collectEvents(onInput)
+
+      expect(exportedSpans()[0]).toMatchObject({
+        status_code: "ERROR",
+        attributes: { metadata: { stopReason: "error" } },
+      })
+    })
+
     it("has no feedbackID or trace when the turn is rate limited", async () => {
       mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 99 })
       mockModel = new MockLanguageModelV3({ doStream: textOnlyStep() })
@@ -1159,7 +1178,7 @@ describe("runTurn", () => {
     expect(mockModel.doStreamCalls).toHaveLength(config.AI_AGENT_MAX_ITERATIONS)
   })
 
-  it("takes the tools away on the last allowed step so the model has to answer", async () => {
+  it("makes the last allowed step answer instead of calling tools", async () => {
     const buildStep = () => ({
       stream: convertArrayToReadableStream<any>([
         { type: "stream-start", warnings: [] },
@@ -1190,6 +1209,19 @@ describe("runTurn", () => {
     )
     expect(toolChoices[toolChoices.length - 1]).toEqual("none")
     expect(toolChoices.slice(0, -1)).not.toContain("none")
+
+    // Only the last step is told to answer now.
+    const lastMessage = (call: { prompt: any[] }) =>
+      JSON.stringify(call.prompt[call.prompt.length - 1])
+    const calls = mockModel.doStreamCalls
+    expect(lastMessage(calls[calls.length - 1])).toContain(
+      "That was the last search"
+    )
+    calls
+      .slice(0, -1)
+      .forEach((call) =>
+        expect(lastMessage(call)).not.toContain("That was the last search")
+      )
   })
 
   it("aborts the in-flight request when the consumer disconnects early", async () => {

@@ -92,7 +92,8 @@ export const createAIAgentFeedbackMutation = mutationWithClientMutationId<
     const thumbsUp = rating === "THUMBS_UP"
 
     // The feedbackID is the turn's Phoenix trace ID. Keyed by user, so voting
-    // again replaces the earlier vote.
+    // again replaces the earlier vote. Not proof the user ran that turn: it's
+    // unguessable and only sent to them, which is enough for a thumbs up.
     const success = await annotateTrace({
       traceID: feedbackID,
       name: FEEDBACK_ANNOTATION,

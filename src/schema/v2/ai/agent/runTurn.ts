@@ -939,17 +939,27 @@ function buildMessages(
  *
  * The last allowed step gets `toolChoice: "none"`, so the model answers with
  * what it found rather than ending the turn on a search it can't run. The
- * tools stay in the request, so the cached prefix still matches.
+ * tools stay in the request, so the cached prefix still matches. The note
+ * after the breakpoint stops the answer promising a search that never comes.
  */
 const prepareStep: PrepareStepFunction = ({ messages, stepNumber }) => {
   const isLastStep = stepNumber >= config.AI_AGENT_MAX_ITERATIONS - 1
-  const toolChoice = isLastStep ? { toolChoice: "none" as const } : {}
-  if (messages.length === 0) return toolChoice
+  if (messages.length === 0) return isLastStep ? { toolChoice: "none" } : {}
   const last = messages.length - 1
-  return {
-    ...toolChoice,
-    messages: [...messages.slice(0, last), withCacheBreakpoint(messages[last])],
-  }
+  const cached = [
+    ...messages.slice(0, last),
+    withCacheBreakpoint(messages[last]),
+  ]
+  return isLastStep
+    ? { toolChoice: "none", messages: [...cached, LAST_STEP_NOTE] }
+    : { messages: cached }
+}
+
+const LAST_STEP_NOTE: ModelMessage = {
+  role: "user",
+  content:
+    "That was the last search for this answer. Reply now using only what " +
+    "you've found; don't offer to search again.",
 }
 
 /**
@@ -1194,7 +1204,7 @@ export async function* runTurn(
 
         case "abort": {
           logError(
-            `[aiAgentTurn] aborted after ${toolCallCount} tool calls (turn timeout of ${config.AI_AGENT_TURN_TIMEOUT_MS}ms, or the client went away)`
+            `[aiAgentTurn] aborted after ${toolCallCount} tool calls (turn timeout of ${config.AI_AGENT_TURN_TIMEOUT_MS}ms)`
           )
           const payload: AIAgentTurnCompletePayload = {
             __typename: "AIAgentTurnComplete",
@@ -1234,7 +1244,8 @@ export async function* runTurn(
           // call tools, the loop stops mid-flow and finishReason stays
           // "tool-calls" (a natural stop reports "stop" instead) -- in that
           // case the model never produced a final structured answer, so
-          // there's nothing to await from `result.output`.
+          // there's nothing to await from `result.output`. Only a fallback:
+          // the last step gets `toolChoice: "none"` (see prepareStep).
           const hitCap = part.finishReason === "tool-calls"
           const finalOutput: AgentOutput | null = hitCap
             ? null

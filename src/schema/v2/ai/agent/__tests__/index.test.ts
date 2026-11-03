@@ -259,6 +259,15 @@ describe("AIAgentTurn", () => {
     ).toThrow(/too long/)
   })
 
+  it("rejects an overlong conversation ID", () => {
+    expect(() =>
+      callSubscribe(
+        { conversationID: "c".repeat(257), message: "hi" },
+        { userID: "user-42", accessToken: "token" }
+      )
+    ).toThrow(/Conversation ID is too long/)
+  })
+
   it("rejects an oversized history", () => {
     const history = [{ role: "user", content: "x".repeat(200_000) }]
 

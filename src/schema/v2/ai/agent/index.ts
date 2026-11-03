@@ -98,12 +98,22 @@ function withoutImages(
   )
 }
 
+// It becomes Anthropic's metadata.user_id, which rejects over 512 characters.
+const MAX_CONVERSATION_ID_LENGTH = 256
+
 function assertInputWithinLimits(input: {
+  conversationID: string
   message: string
   image?: AIAgentImage | null
   history?: Array<AIAgentHistoryEntry> | null
   supportedSections?: Array<AIAgentSectionType> | null
 }) {
+  if (input.conversationID.length > MAX_CONVERSATION_ID_LENGTH) {
+    throw new Error(
+      `Conversation ID is too long (max ${MAX_CONVERSATION_ID_LENGTH} characters)`
+    )
+  }
+
   const history = input.history ?? []
   if (history.length > MAX_HISTORY_MESSAGES) {
     throw new Error(
