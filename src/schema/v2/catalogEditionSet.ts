@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
-import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+import { moneyFieldFromMinor } from "./fields/money"
 
 export interface CatalogEditionSetGravityResponse {
   id: string
@@ -29,22 +29,9 @@ export const CatalogEditionSetType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ price_currency }) => price_currency,
     },
-    priceListed: {
-      type: Money,
-      resolve: (
-        { price_minor: minor, price_currency: currencyCode },
-        args,
-        context,
-        info
-      ) => {
-        return resolveMinorAndCurrencyFieldsToMoney(
-          { minor, currencyCode },
-          args,
-          context,
-          info
-        )
-      },
-    },
+    priceListed: moneyFieldFromMinor<CatalogEditionSetGravityResponse>(
+      "price_minor"
+    ),
     availability: { type: GraphQLString },
     createdAt: date(),
     updatedAt: date(),

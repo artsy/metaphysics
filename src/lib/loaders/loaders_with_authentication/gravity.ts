@@ -2005,6 +2005,40 @@ export default (accessToken, userID, opts) => {
       { method: "DELETE" }
     ),
 
+    // Email Account Loaders
+    emailAccountsLoader: gravityLoader(
+      "partner_email_accounts",
+      {},
+      { headers: true }
+    ),
+    // Returns { authorization_url } — OAuth initiation step
+    initiateEmailOAuthLoader: gravityLoader(
+      "partner_email_account/authorize",
+      {},
+      { method: "POST" }
+    ),
+    // Exchanges code+state for an account — OAuth completion step
+    completeEmailOAuthLoader: gravityLoader(
+      "partner_email_account",
+      {},
+      { method: "POST" }
+    ),
+    updateEmailAccountLoader: gravityLoader(
+      (id) => `partner_email_account/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteEmailAccountLoader: gravityLoader(
+      (id) => `partner_email_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    refreshEmailAccountWatchLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/refresh_watch`,
+      {},
+      { method: "POST" }
+    ),
+
     // Mailchimp Campaign Loaders
     mailchimpCampaignsLoader: gravityLoader(
       "mailchimp_campaigns",

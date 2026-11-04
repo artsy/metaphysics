@@ -275,6 +275,7 @@ export interface AIAgentTurnCompletePayload {
   suggestedReplies: AIAgentSuggestedReply[] | null
   stopReason: string
   toolCallCount: number
+  feedbackID: string | null
 }
 
 export type AIAgentEventPayload =
@@ -419,6 +420,12 @@ const AIAgentTurnCompleteType = new GraphQLObjectType<
     },
     stopReason: { type: new GraphQLNonNull(GraphQLString) },
     toolCallCount: { type: new GraphQLNonNull(GraphQLInt) },
+    feedbackID: {
+      type: GraphQLString,
+      description:
+        "Opaque handle for rating this turn with `createAIAgentFeedback`. " +
+        "Null when feedback isn't being collected.",
+    },
   },
 })
 

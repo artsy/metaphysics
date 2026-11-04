@@ -4,11 +4,16 @@ import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
 import { z } from "zod"
-import { anthropicProvider } from "lib/apis/anthropic"
+import {
+  anthropicProvider,
+  litellmProvider,
+  LITELLM_AGENT_MODEL,
+} from "lib/apis/anthropic"
 import { agentTracer } from "lib/apis/agentTracing"
 import { rateLimitByUser } from "lib/rateLimitByUser"
-import { info } from "lib/loggers"
+import { error as logError, info } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
+import { TurnTrace } from "./turnTrace"
 import {
   buildAgentTools,
   describeToolCall,
@@ -931,13 +936,30 @@ function buildMessages(
  * it for an earlier write, and a step only appends two (the tool call and its
  * result) -- so one rolling breakpoint keeps the chain hitting, and the only
  * thing billed at the write rate is that step's new bytes.
+ *
+ * The last allowed step gets `toolChoice: "none"`, so the model answers with
+ * what it found rather than ending the turn on a search it can't run. The
+ * tools stay in the request, so the cached prefix still matches. The note
+ * after the breakpoint stops the answer promising a search that never comes.
  */
-const prepareStep: PrepareStepFunction = ({ messages }) => {
-  if (messages.length === 0) return {}
+const prepareStep: PrepareStepFunction = ({ messages, stepNumber }) => {
+  const isLastStep = stepNumber >= config.AI_AGENT_MAX_ITERATIONS - 1
+  if (messages.length === 0) return isLastStep ? { toolChoice: "none" } : {}
   const last = messages.length - 1
-  return {
-    messages: [...messages.slice(0, last), withCacheBreakpoint(messages[last])],
-  }
+  const cached = [
+    ...messages.slice(0, last),
+    withCacheBreakpoint(messages[last]),
+  ]
+  return isLastStep
+    ? { toolChoice: "none", messages: [...cached, LAST_STEP_NOTE] }
+    : { messages: cached }
+}
+
+const LAST_STEP_NOTE: ModelMessage = {
+  role: "user",
+  content:
+    "That was the last search for this answer. Reply now using only what " +
+    "you've found; don't offer to search again.",
 }
 
 /**
@@ -956,6 +978,8 @@ export async function* runTurn(
     supportedSections?: AIAgentSectionType[] | null
     includeDebugToolCalls?: boolean | null
     includeSuggestedReplies?: boolean
+    /** The LiteLLM gateway and Phoenix, not Anthropic and Sentry. */
+    useLiteLLM?: boolean
   },
   schema: GraphQLSchema,
   context: ResolverContext
@@ -979,12 +1003,12 @@ export async function* runTurn(
       suggestedReplies: null,
       stopReason: "rate_limited",
       toolCallCount: 0,
+      feedbackID: null,
     }
     yield payload
     return
   }
 
-  const provider = anthropicProvider()
   const abortController = new AbortController()
   const timeout = setTimeout(
     () => abortController.abort(),
@@ -993,6 +1017,25 @@ export async function* runTurn(
 
   let toolCallCount = 0
   const includeSuggestedReplies = !!input.includeSuggestedReplies
+
+  // Through LiteLLM, the turn is one Phoenix trace, and its ID is the feedbackID.
+  const trace = input.useLiteLLM
+    ? new TurnTrace({
+        conversationID: input.conversationID,
+        userID: context.userID as string,
+        message: input.message,
+        hasImage: !!input.image,
+      })
+    : null
+  const feedbackID = trace?.traceID ?? null
+  const finishTrace = (payload: AIAgentTurnCompletePayload) =>
+    trace?.finish({
+      message: payload.message,
+      stopReason: payload.stopReason,
+      toolCallCount: payload.toolCallCount,
+      section: payload.sections[0] ?? null,
+      suggestedReplies: payload.suggestedReplies,
+    })
 
   try {
     // Resolved before the prompt and the output schema, which both depend on
@@ -1015,10 +1058,13 @@ export async function* runTurn(
     const messages = buildMessages(input.history, input.message, imageHandles)
     const tools = buildAgentTools(schema, context, imageHandles.handles)
 
-    const tracer = agentTracer()
+    // Sentry, or Phoenix through LiteLLM, never both.
+    const tracer = trace ? undefined : agentTracer()
 
     const result = streamText({
-      model: provider(config.AI_AGENT_MODEL),
+      model: trace
+        ? litellmProvider()(LITELLM_AGENT_MODEL)
+        : anthropicProvider()(config.AI_AGENT_MODEL),
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
       // and system prompt are byte-stable across steps for a given set of
       // supported sections and today's date (fixed tool order, no timestamps
@@ -1053,6 +1099,7 @@ export async function* runTurn(
             recordOutputs: true,
           }
         : undefined,
+      headers: trace ? { traceparent: trace.traceparent } : undefined,
       providerOptions: {
         anthropic: {
           thinking: { type: "adaptive" },
@@ -1063,6 +1110,9 @@ export async function* runTurn(
           // back to a synthetic "json" tool call, which would show up to
           // the client as a spurious AIAgentToolCall.
           structuredOutputMode: "outputFormat",
+          // Deliberately the conversation, not the user: LiteLLM uses it as
+          // the session of its own spans, matching the turn's root span.
+          ...(trace ? { metadata: { userId: input.conversationID } } : {}),
         },
       },
     })
@@ -1102,6 +1152,7 @@ export async function* runTurn(
 
         case "tool-call": {
           toolCallCount += 1
+          trace?.toolCall(part.toolCallId, part.toolName, part.input)
           const description = describeToolCall(part.input)
           const payload: AIAgentToolCallPayload = {
             __typename: "AIAgentToolCall",
@@ -1118,6 +1169,7 @@ export async function* runTurn(
 
         case "tool-result": {
           const output = part.output as AIAgentToolRunResult
+          trace?.toolResult(part.toolCallId, output)
           const payload: AIAgentToolResultPayload = {
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
@@ -1133,6 +1185,10 @@ export async function* runTurn(
         case "tool-error": {
           // Defensive: runQueryArtsyTool returns { ok: false } rather than throwing.
           Sentry.captureException(part.error)
+          trace?.toolResult(part.toolCallId, {
+            ok: false,
+            content: String(part.error),
+          })
           const payload: AIAgentToolResultPayload = {
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
@@ -1147,6 +1203,9 @@ export async function* runTurn(
         }
 
         case "abort": {
+          logError(
+            `[aiAgentTurn] aborted after ${toolCallCount} tool calls (turn timeout of ${config.AI_AGENT_TURN_TIMEOUT_MS}ms)`
+          )
           const payload: AIAgentTurnCompletePayload = {
             __typename: "AIAgentTurnComplete",
             message: null,
@@ -1155,12 +1214,15 @@ export async function* runTurn(
             suggestedReplies: null,
             stopReason: "aborted",
             toolCallCount,
+            feedbackID,
           }
+          finishTrace(payload)
           yield payload
           return
         }
 
         case "error": {
+          logError("[aiAgentTurn] stream error", part.error)
           Sentry.captureException(part.error)
           const payload: AIAgentTurnCompletePayload = {
             __typename: "AIAgentTurnComplete",
@@ -1170,7 +1232,9 @@ export async function* runTurn(
             suggestedReplies: null,
             stopReason: "error",
             toolCallCount,
+            feedbackID,
           }
+          finishTrace(payload)
           yield payload
           return
         }
@@ -1180,14 +1244,24 @@ export async function* runTurn(
           // call tools, the loop stops mid-flow and finishReason stays
           // "tool-calls" (a natural stop reports "stop" instead) -- in that
           // case the model never produced a final structured answer, so
-          // there's nothing to await from `result.output`.
+          // there's nothing to await from `result.output`. Only a fallback:
+          // the last step gets `toolChoice: "none"` (see prepareStep).
           const hitCap = part.finishReason === "tool-calls"
           const finalOutput: AgentOutput | null = hitCap
             ? null
             : await Promise.resolve(result.output).catch((error) => {
+                logError("[aiAgentTurn] structured output failed", error)
                 Sentry.captureException(error)
                 return null
               })
+          if (!finalOutput?.message) {
+            logError(
+              `[aiAgentTurn] no answer: finishReason=${part.finishReason} toolCalls=${toolCallCount}` +
+                (hitCap
+                  ? ` (hit AI_AGENT_MAX_ITERATIONS=${config.AI_AGENT_MAX_ITERATIONS})`
+                  : "")
+            )
+          }
           const section = finalOutput?.section
             ? await hydrateSection(finalOutput.section, context)
             : null
@@ -1210,13 +1284,16 @@ export async function* runTurn(
                 : null,
             stopReason: hitCap ? "max_iterations" : part.finishReason,
             toolCallCount,
+            feedbackID,
           }
+          finishTrace(payload)
           yield payload
           break
         }
       }
     }
   } catch (error) {
+    logError("[aiAgentTurn] turn failed", error)
     Sentry.captureException(error)
     const payload: AIAgentTurnCompletePayload = {
       __typename: "AIAgentTurnComplete",
@@ -1226,10 +1303,20 @@ export async function* runTurn(
       suggestedReplies: null,
       stopReason: "error",
       toolCallCount,
+      feedbackID,
     }
+    finishTrace(payload)
     yield payload
   } finally {
     clearTimeout(timeout)
+    // The client left before the turn completed; a no-op otherwise.
+    trace?.finish({
+      message: null,
+      stopReason: "client_disconnected",
+      toolCallCount,
+      section: null,
+      suggestedReplies: null,
+    })
     // If the consumer tears down the subscription early, graphql-js calls
     // `.return()` on this generator, running this `finally` while an
     // Anthropic request may still be in flight — abort it so it doesn't leak.

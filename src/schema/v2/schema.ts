@@ -265,6 +265,11 @@ import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
+import { authorizeEmailAccountMutation } from "./me/authorizeEmailAccountMutation"
+import { completeEmailOAuthMutation } from "./me/completeEmailOAuthMutation"
+import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
+import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
+import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -497,6 +502,7 @@ import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
 import { AI } from "./ai"
 import { AIAgentTurn } from "./ai/agent"
+import { createAIAgentFeedbackMutation } from "./ai/agent/createAIAgentFeedbackMutation"
 import { Video } from "./video/video"
 import { VideosConnection } from "./video/videosConnection"
 import { createVideoMutation } from "./video/createVideoMutation"
@@ -727,6 +733,7 @@ export default new GraphQLSchema({
       commerceOptIn: commerceOptInMutation,
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
+      createAIAgentFeedback: createAIAgentFeedbackMutation,
       createAlert: createAlertMutation,
       createArtnetArtwork: createArtnetArtworkMutation,
       createArtnetImport: createArtnetImportMutation,
@@ -776,6 +783,11 @@ export default new GraphQLSchema({
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      authorizeEmailAccount: authorizeEmailAccountMutation,
+      completeEmailOAuth: completeEmailOAuthMutation,
+      deleteEmailAccount: deleteEmailAccountMutation,
+      refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
+      updateEmailAccount: updateEmailAccountMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,

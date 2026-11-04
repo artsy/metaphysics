@@ -172,6 +172,45 @@ describe("Artwork.catalogArtwork", () => {
     })
   })
 
+  it("returns a null priceListed when the catalog artwork and its edition sets have no price", async () => {
+    const query = gql`
+      {
+        artwork(id: "some-artwork") {
+          catalogArtwork {
+            priceListed {
+              major
+            }
+            catalogEditionSets {
+              priceListed {
+                major
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithCatalogArtwork({
+        id: "catalog-artwork-id",
+        price_minor: null,
+        price_currency: "USD",
+        catalog_edition_sets: [
+          { id: "edition-set-1", price_minor: null, price_currency: "USD" },
+        ],
+      }),
+    })
+
+    expect(data).toEqual({
+      artwork: {
+        catalogArtwork: {
+          priceListed: null,
+          catalogEditionSets: [{ priceListed: null }],
+        },
+      },
+    })
+  })
+
   it("returns an empty list when catalog_edition_sets is not present", async () => {
     const query = gql`
       {

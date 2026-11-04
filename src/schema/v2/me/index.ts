@@ -60,6 +60,7 @@ import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auctionResultsByFollowedArtists"
 import { authentications } from "./authentications"
+import { emailAccounts } from "./emailAccount"
 import { instagramAccounts } from "./instagramAccount"
 import { mailchimpAccounts } from "./mailchimpAccount"
 import { BankAccounts } from "./bank_accounts"
@@ -224,6 +225,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     auctionSegmentation: AuctionSegmentation,
     authentications: authentications,
     bankAccounts: BankAccounts,
+    emailAccounts: emailAccounts,
     instagramAccounts: instagramAccounts,
     mailchimpAccounts: mailchimpAccounts,
     basedOnUserSaves: BasedOnUserSaves,
