@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
   GraphQLFloat,
@@ -107,6 +108,22 @@ const ArtworkImageSearchInputType = new GraphQLInputObjectType({
     s3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
       description: "S3 bucket of the uploaded query image.",
+    },
+  },
+})
+
+// Gravity's `search_profile` param. Only "partner" changes anything, and Gravity
+// honours it only for a request scoped to one partner the caller can manage.
+export const PARTNER_INVENTORY_SEARCH_PROFILE = "partner"
+
+export const ArtworkSearchProfileType = new GraphQLEnumType({
+  name: "ArtworkSearchProfile",
+  values: {
+    DEFAULT: { value: "default" },
+    PARTNER_INVENTORY: {
+      value: PARTNER_INVENTORY_SEARCH_PROFILE,
+      description:
+        "Inventory search for a partner. Requires partnerID and partner access; ignored otherwise.",
     },
   },
 })
@@ -299,6 +316,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   saleID: {
     type: GraphQLID,
+  },
+  searchProfile: {
+    type: ArtworkSearchProfileType,
+    description:
+      "Which search behaviour to use. `PARTNER_INVENTORY` needs `partnerID` and partner access, and is ignored otherwise.",
   },
   showID: {
     type: GraphQLString,
@@ -590,6 +612,7 @@ const convertFilterArgs = ({
   partnerListID,
   priceRange,
   saleID,
+  searchProfile,
   showID,
   similarToArtworkID,
   sizes,
@@ -651,6 +674,7 @@ const convertFilterArgs = ({
     partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
+    search_profile: searchProfile,
     similar_to_artwork_id: similarToArtworkID,
     sizes: sizes,
     tag_id: tagID,
@@ -810,8 +834,18 @@ const filterArtworksConnectionTypeFactory = (
       gravityOptions.include_unpublished = true
     }
 
+    // `DEFAULT` is the same as no profile, so don't send it: Gravity never sees
+    // `search_profile=default`, and the cache key and connection ID match a
+    // request that omits the argument.
+    if (gravityOptions.search_profile !== PARTNER_INVENTORY_SEARCH_PROFILE) {
+      delete gravityOptions.search_profile
+    }
+
+    // Partner inventory results must never be served from the public cache, so
+    // the partner profile counts as an authorized filter.
     const requestedAuthorizedFilters = !!(
       gravityOptions.include_unpublished ||
+      gravityOptions.search_profile ||
       include_artworks_by_followed_artists ||
       visibility_level ||
       include_all_json
@@ -836,6 +870,7 @@ const filterArtworksConnectionTypeFactory = (
 
         delete gravityOptions.include_artworks_by_followed_artists
         delete gravityOptions.include_unpublished
+        delete gravityOptions.search_profile
         delete gravityOptions.visibility_level
         delete gravityOptions.include_json
         gravityOptions.aggregations = gravityOptions.aggregations.filter(
