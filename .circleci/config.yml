@@ -70,10 +70,30 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn-berry
+      # Babel transform cache (jest.config.js cacheDirectory). Keyed per shard, since each shard
+      # transforms different files, and refreshed weekly so it tracks src/ without saving on every run.
+      # Jest's cache is content-addressed, so restoring an older cache is always safe.
+      - run:
+          name: Compute Jest cache key
+          command: |
+            cat yarn.lock babel.config.js jest.config.js | sha256sum > /tmp/jest-cache-key
+            date +%G-%V >> /tmp/jest-cache-key
+      - restore_cache:
+          keys:
+            - v1-jest-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ checksum "/tmp/jest-cache-key" }}
+            - v1-jest-{{ .Environment.CIRCLE_NODE_INDEX }}-
       - run:
           name: Run Jest
           command: |
             yarn jest --ci --forceExit --maxWorkers=4 --workerIdleMemoryLimit=1G --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+      - save_cache:
+          key: v1-jest-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ checksum "/tmp/jest-cache-key" }}
+          paths:
+            - .cache/jest
+      - store_test_results:
+          path: ./reports/junit/
   type-check:
     executor:
       name: node/default
