@@ -265,6 +265,11 @@ import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
+import { authorizeEmailAccountMutation } from "./me/authorizeEmailAccountMutation"
+import { completeEmailOAuthMutation } from "./me/completeEmailOAuthMutation"
+import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
+import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
+import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -778,6 +783,11 @@ export default new GraphQLSchema({
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      authorizeEmailAccount: authorizeEmailAccountMutation,
+      completeEmailOAuth: completeEmailOAuthMutation,
+      deleteEmailAccount: deleteEmailAccountMutation,
+      refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
+      updateEmailAccount: updateEmailAccountMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
