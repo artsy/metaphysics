@@ -110,6 +110,7 @@ focus_areas:
     PR adds a business rule, validation, user-facing authorization copy or an LLM prompt
     to Metaphysics for a domain Gravity owns, raise it as a ⚪ q: asking whether it should
     live upstream so the two cannot drift. Do not block on it; stopgaps are accepted.
+    ✓ DO NOT FLAG: missing validation that Gravity or Exchange already does.
     ✗ FLAG: baking one client's display condition into a shared field
     (`artworksForUser` also feeds marketing emails). Put it behind an argument or on the
     client.
@@ -181,18 +182,13 @@ context: |
   Prettier, ESLint and `yarn type-check` run in CI. Do not comment on formatting or
   on errors the type checker would catch.
 
-  Calibration, from what human reviewers here have flagged and waved through:
-  - 🔴 blocking: breaking a client-facing schema contract, a non-null field that can
-    null out its parent on upstream failure, upstream fan-out that scales with page
-    size or nesting, data exposure, or a bug you can show with a concrete input.
-  - 🟠 required: mismatches with the upstream contract, mutations outside the
-    `...OrError` pattern, connections that page in memory.
-  - 🔵 nit: naming, descriptions, comment wording, ordering.
-  - ⚪ q: logic that may belong in Gravity, or anything you could not confirm.
-  - Do not ask Metaphysics to repeat validation Gravity or Exchange already does.
-  - Leftovers from the unstitching migration (duplicate `Errors` types, `Gravity`-prefixed
-    shim types) are expected. Do not flag them as duplication.
-  - Flag code comments that restate the code; this team keeps comments short.
+  Besides bugs you can show, these are 🔴 blocking here: broken client contracts,
+  non-null fields that can null their parent, upstream fan-out that grows with page
+  size or nesting, and data exposure. Naming, descriptions and comments that restate
+  the code are 🔵 nits.
+
+  Leftovers from the unstitching migration (duplicate `Errors` types,
+  `Gravity`-prefixed shim types) are expected; do not flag them as duplication.
 
 # Repos the experimental AI review can read for context (artsy/duchamp#128).
 related_repos:
