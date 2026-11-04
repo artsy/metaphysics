@@ -63,7 +63,9 @@ jobs:
     executor:
       name: node/default
       tag: "22.5"
-    parallelism: 6
+    # Each large container has 4 CPUs; run Jest workers in parallel instead of --runInBand,
+    # which only used one core per container (~35% CPU on 6 containers).
+    parallelism: 2
     steps:
       - checkout
       - node/install-packages:
@@ -71,7 +73,7 @@ jobs:
       - run:
           name: Run Jest
           command: |
-            yarn jest --ci --forceExit --logHeapUsage --runInBand --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
+            yarn jest --ci --forceExit --maxWorkers=4 --workerIdleMemoryLimit=1G --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
   type-check:
     executor:
       name: node/default
