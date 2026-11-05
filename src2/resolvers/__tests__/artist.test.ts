@@ -60,3 +60,141 @@ describe("Query.artist", () => {
     expect(artistLoader).not.toHaveBeenCalled()
   })
 })
+
+describe("Artist.artistSeriesConnection", () => {
+  const series = {
+    _id: "s1",
+    id: "series-one",
+    title: "Series One",
+    artist_ids: ["a1"],
+    artworks_count: 1,
+    description: "Hello *there*",
+  }
+
+  const runWithSeries = (source: string, artistSeriesListLoader: jest.Mock) =>
+    graphql({
+      schema,
+      source,
+      contextValue: {
+        artistLoader: jest.fn().mockResolvedValue(gravityArtist),
+        artistSeriesListLoader,
+        artistsLoader: jest.fn().mockResolvedValue({ body: [gravityArtist] }),
+      },
+    })
+
+  it("paginates and maps ArtistSeries nodes", async () => {
+    const artistSeriesListLoader = jest.fn().mockResolvedValue({
+      body: [series],
+      headers: { "x-total-count": "3" },
+    })
+
+    const { data, errors } = await runWithSeries(
+      `{
+        artist(id: "andy-warhol") {
+          artistSeriesConnection(first: 1) {
+            totalCount
+            pageInfo { hasNextPage }
+            pageCursors { around { page isCurrent } }
+            edges {
+              node {
+                internalID slug title artworksCountMessage
+                descriptionFormatted(format: HTML)
+                artists { slug }
+              }
+            }
+          }
+        }
+      }`,
+      artistSeriesListLoader
+    )
+
+    expect(errors).toBeUndefined()
+    expect(artistSeriesListLoader).toHaveBeenCalledWith({
+      artist_id: gravityArtist._id,
+      page: 1,
+      size: 1,
+      total_count: true,
+    })
+    const connection = (data as any).artist.artistSeriesConnection
+    expect(connection.totalCount).toBe(3)
+    expect(connection.pageInfo.hasNextPage).toBe(true)
+    expect(connection.pageCursors.around).toHaveLength(3)
+    expect(connection.edges[0].node).toMatchObject({
+      internalID: "s1",
+      slug: "series-one",
+      title: "Series One",
+      artworksCountMessage: "1 work",
+      artists: [{ slug: "andy-warhol" }],
+    })
+    expect(connection.edges[0].node.descriptionFormatted).toContain(
+      "<em>there</em>"
+    )
+  })
+})
+
+describe("Query.artistSeriesConnection", () => {
+  it("passes the root-only filter args to Gravity", async () => {
+    const artistSeriesListLoader = jest.fn().mockResolvedValue({
+      body: [{ _id: "s1", id: "series-one", title: "Series One" }],
+      headers: { "x-total-count": "1" },
+    })
+
+    const { data, errors } = await graphql({
+      schema,
+      source: `{
+        artistSeriesConnection(
+          first: 5
+          artistID: "a1"
+          artworkID: "w1"
+          excludeIDs: ["s9"]
+        ) {
+          totalCount
+          edges { node { slug title } }
+        }
+      }`,
+      contextValue: { artistSeriesListLoader },
+    })
+
+    expect(errors).toBeUndefined()
+    expect(artistSeriesListLoader).toHaveBeenCalledWith({
+      page: 1,
+      size: 5,
+      total_count: true,
+      artist_id: "a1",
+      artwork_id: "w1",
+      exclude_ids: ["s9"],
+    })
+    expect(data).toEqual({
+      artistSeriesConnection: {
+        totalCount: 1,
+        edges: [{ node: { slug: "series-one", title: "Series One" } }],
+      },
+    })
+  })
+})
+
+describe("artistSeriesConnection without first/last", () => {
+  it("falls back to a default page size so edges are returned", async () => {
+    const artistSeriesListLoader = jest.fn().mockResolvedValue({
+      body: [{ _id: "s1", id: "series-one" }],
+      headers: { "x-total-count": "1" },
+    })
+
+    const { data, errors } = await graphql({
+      schema,
+      source: `{ artistSeriesConnection { totalCount edges { node { slug } } } }`,
+      contextValue: { artistSeriesListLoader },
+    })
+
+    expect(errors).toBeUndefined()
+    expect(artistSeriesListLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 1, size: 10 })
+    )
+    expect(data).toEqual({
+      artistSeriesConnection: {
+        totalCount: 1,
+        edges: [{ node: { slug: "series-one" } }],
+      },
+    })
+  })
+})

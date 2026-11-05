@@ -1,3 +1,25 @@
+type Query {
+  """
+  An Artist
+  """
+  artist(
+    """
+    The slug or ID of the Artist
+    """
+    id: String!
+  ): Artist
+
+  artistSeriesConnection(
+    after: String
+    artistID: ID
+    artworkID: ID
+    before: String
+    excludeIDs: [ID!]
+    first: Int
+    last: Int
+  ): ArtistSeriesConnection
+}
+
 """
 An object with a Globally Unique ID
 """
@@ -23,12 +45,12 @@ type Artist implements Node {
   slug: ID!
   alternateNames: [String]
 
-  # artistSeriesConnection(
-  #   after: String
-  #   before: String
-  #   first: Int
-  #   last: Int
-  # ): ArtistSeriesConnection
+  artistSeriesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtistSeriesConnection
 
   birthday: String
   deathday: String
@@ -37,14 +59,124 @@ type Artist implements Node {
   displayName: String
 }
 
-type Query {
+"""
+A connection to a list of items.
+"""
+type ArtistSeriesConnection {
   """
-  An Artist
+  A list of edges.
   """
-  artist(
-    """
-    The slug or ID of the Artist
-    """
-    id: String!
-  ): Artist
+  edges: [ArtistSeriesEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+An edge in a connection.
+"""
+type ArtistSeriesEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: ArtistSeries
+}
+
+type ArtistSeries implements Node {
+  artistIDs: [String!]!
+  artists(page: Int, size: Int): [Artist!]!
+  artworksCount: Int!
+  artworksCountMessage: String
+  description: String
+  descriptionFormatted(format: Format): String
+  featured: Boolean!
+
+  forSaleArtworksCount: Int!
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+  # image: Image
+
+  """
+  A type-specific Gravity Mongo Document ID.
+  """
+  internalID: ID!
+  published: Boolean!
+  representativeArtworkID: ID
+  slug: String!
+  title: String!
+}
+
+enum Format {
+  HTML
+  MARKDOWN
+  PLAIN
+}
+
+type PageCursor {
+  """
+  first cursor on the page
+  """
+  cursor: String!
+
+  """
+  is this the current page?
+  """
+  isCurrent: Boolean!
+
+  """
+  page number out of totalPages
+  """
+  page: Int!
+}
+
+type PageCursors {
+  around: [PageCursor!]!
+
+  """
+  optional, may be included in field around
+  """
+  first: PageCursor
+
+  """
+  optional, may be included in field around
+  """
+  last: PageCursor
+  previous: PageCursor
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
 }

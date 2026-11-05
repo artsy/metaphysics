@@ -1,15 +1,16 @@
 # Artist type
 
-## Mapping: special cases
+## Field mapping: special cases
 
 - `internalID`: `_id`
 - `slug`: `id`
 
-## Nested objects
+## Nested queries
 
 ### artistSeriesConnection
 
 API endpoint: GET: "/api/v1/artist_series"
+
 Query params:
 
 - `artist_id`: current Artist's `internalID`

@@ -128,18 +128,36 @@ const enforceInternalHTTPS = (input: string) =>
     "https://www.artsy.net"
   )
 
+export type FormatType = "html" | "markdown" | "plain"
+
+export const formatMarkdownValue = (
+  value: string,
+  format?: FormatType | null
+): string => {
+  switch (format) {
+    case "html": {
+      marked.setOptions({
+        renderer: new marked.Renderer(),
+        gfm: true,
+        breaks: true,
+        pedantic: false,
+        sanitize: false,
+        smartypants: false,
+        tables: true,
+      })
+      return marked(enforceInternalHTTPS(value))
+    }
+    case "markdown":
+      return enforceInternalHTTPS(value)
+    case "plain":
+      return markdownToPlainText(value)
+    default:
+      return value
+  }
+}
+
 export const markdownToText = (str: string) => {
-  const renderer = new marked.Renderer()
-  marked.setOptions({
-    renderer,
-    gfm: true,
-    breaks: true,
-    pedantic: false,
-    sanitize: false,
-    smartypants: false,
-    tables: true,
-  })
-  return stripTags(marked(enforceInternalHTTPS(str))).trim()
+  return stripTags(formatMarkdownValue(str, "html")).trim()
 }
 
 const emptyConnection = {
