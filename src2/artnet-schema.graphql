@@ -1,0 +1,175 @@
+type Query {
+  publicArtworkListings(
+    # sortBy: [SortByClause_Input!]
+    # subscriptionId: ID!
+    # subscriptionScope: SubscriptionScope
+    # preferences: ArtListingPreferences_Input
+    freeformTextQuery: String
+    filters: ArtListingFilters_Input
+    page: Int!
+    pageSize: Int!
+  ): ArtworkListingResults!
+}
+
+type ArtListingSummary {
+  id: ID!
+  # listingDomain: ListingDomain!
+  # artMarketInstitution: ArtMarketInstitution
+  saleName: String
+  # timing: [Timing!]!
+  saleCountries: [String!]!
+  # saleStatus: SaleStatus
+  # prices: [ArtListingSalePrice!]!
+  saleId: ID
+  # featuredImage: Image
+  artListingDetailId: ID!
+  lastUpdated: DateTime!
+  listedDate: DateTime!
+  isRedacted: Boolean
+  # events: [ArtListingEvent!]!
+  internalID: ID
+
+  # listingData:
+  title: String
+  catalogLotNumber: String
+  artworks: [ArtworkSummary!]!
+  uri: String
+  externalUrl: String
+  saleNumber: String
+}
+
+type ArtworkSummary {
+  id: ID!
+  title: String!
+  creationYearFrom: Int
+  # creationYearFromEra: Era
+  creationYearFromQualifier: String
+  creationYearTo: Int
+  # creationYearToEra: Era
+  creationYearToQualifier: String
+  classifications: [TaxonomyEntity!]!
+  creator: CreatorSummary
+  # dimensions: Dimensions
+  edition: String
+  media: [String!]!
+  objectTypes: [TaxonomyEntity!]!
+  # timelineEvents: [ArtworkSummaryTimelineEvent!]!
+  lastUpdated: DateTime!
+  uri: String
+}
+
+interface CreatorSummary {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  attributionQualifier: String
+  movements: [TaxonomyEntity!]!
+  uri: String
+}
+
+type CollaborationSummary implements CreatorSummary {
+  artists: [ArtworkSummaryArtist!]!
+
+  # inherited:
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  attributionQualifier: String
+  movements: [TaxonomyEntity!]!
+  uri: String
+}
+
+type ArtistSummary implements CreatorSummary {
+  birthYear: Int
+  birthYearEra: Era
+  deathYear: Int
+  deathYearEra: Era
+  nationalities: [TaxonomyEntity!]!
+
+  # inherited:
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  attributionQualifier: String
+  movements: [TaxonomyEntity!]!
+  uri: String
+}
+
+type ManufacturerSummary implements CreatorSummary {
+  # inherited:
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  attributionQualifier: String
+  movements: [TaxonomyEntity!]!
+  uri: String
+}
+
+type ArtworkListingResults {
+  results: [ArtListingSummary!]!
+  count: BigInt
+  warnings: [Warning!]!
+}
+
+type Warning {
+  code: WarningCode!
+  keys: [String!]!
+  message: String!
+}
+
+enum WarningCode {
+  REDACTED
+  ACCOUNT_BALANCE
+  RESTRICTED
+}
+
+input ArtListingFilters_Input {
+  creator: CreatorFilter_Input
+  creatorNationality: EntityFilter_Input
+  artMarketInstitution: EntityFilter_Input
+  artMarketInstitutionCountry: EntityFilter_Input
+  # saleStatus: EnumFilter_Input
+  currency: EntityFilter_Input
+  sale: EntityFilter_Input
+  # saleDate: [DateFilter_Input!]
+  saleNumber: EntityFilter_Input
+  # creationYear: YearFilter_Input
+  # price: PriceFilter_Input
+  # dimension: [DimensionFilter_Input!]
+  catalogueRaisonneAuthor: EntityFilter_Input
+  catalogueRaisonneNumber: EntityFilter_Input
+  # category: HierarchicalEntityFilter_Input
+  # catalogLotNumber: CatalogLotNumberFilter_Input
+  maker: EntityFilter_Input
+  medium: EntityFilter_Input
+  mediumRaw: EntityFilter_Input
+  substrate: EntityFilter_Input
+  attribute: EntityFilter_Input
+  movement: EntityFilter_Input
+  material: EntityFilter_Input
+  media: EntityFilter_Input
+  classification: EntityFilter_Input
+  # hasImage: BoolFilter_Input
+  # isEdition: BoolFilter_Input
+  # isSigned: BoolFilter_Input
+  # birthYear: YearFilter_Input
+  # deathYear: YearFilter_Input
+  period: EntityFilter_Input
+  region: EntityFilter_Input
+  subjectMatter: EntityFilter_Input
+  objectType: EntityFilter_Input
+  artListingId: EntityFilter_Input
+  artworkListingTitle: EntityFilter_Input
+  # lastUpdated: [DateTimeFilter_Input!]
+  # isStamped: BoolFilter_Input
+  # isInscribed: BoolFilter_Input
+  # listedDate: [DateTimeFilter_Input!]
+  # listingDomain: EnumFilter_Input
+  # simplifiedTransactionStatus: EnumFilter_Input
+}
+
+type TaxonomyEntity {
+  id: ID!
+  key: String
+  value: String
+}
