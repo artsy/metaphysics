@@ -11,6 +11,12 @@ type Query {
   ): ArtworkListingResults!
 }
 
+type ArtworkListingResults {
+  results: [ArtListingSummary!]!
+  count: BigInt
+  warnings: [Warning!]!
+}
+
 type ArtListingSummary {
   id: ID!
   # listingDomain: ListingDomain!
@@ -105,12 +111,6 @@ type ManufacturerSummary implements CreatorSummary {
   uri: String
 }
 
-type ArtworkListingResults {
-  results: [ArtListingSummary!]!
-  count: BigInt
-  warnings: [Warning!]!
-}
-
 type Warning {
   code: WarningCode!
   keys: [String!]!
@@ -172,4 +172,27 @@ type TaxonomyEntity {
   id: ID!
   key: String
   value: String
+}
+
+# TODO: placeholder definitions for types referenced above so that the schema
+# builds. Replace with the real Artnet definitions as they're needed.
+scalar BigInt
+scalar DateTime
+
+enum Era {
+  BCE
+  CE
+}
+
+input EntityFilter_Input {
+  ids: [ID!]
+}
+
+input CreatorFilter_Input {
+  ids: [ID!]
+}
+
+type ArtworkSummaryArtist {
+  id: ID!
+  name: String
 }

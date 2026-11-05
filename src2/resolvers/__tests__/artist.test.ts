@@ -1,5 +1,12 @@
 import { graphql } from "graphql"
+import artnetDataManagers from "lib/apis/artnetDataManagers"
 import { schema } from "../../schema"
+
+jest.mock("lib/apis/artnetDataManagers", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}))
+const mockArtnet = artnetDataManagers as jest.Mock
 
 const run = (source: string, artistLoader: jest.Mock) =>
   graphql({ schema, source, contextValue: { artistLoader } })
@@ -194,6 +201,68 @@ describe("artistSeriesConnection without first/last", () => {
       artistSeriesConnection: {
         totalCount: 1,
         edges: [{ node: { slug: "series-one" } }],
+      },
+    })
+  })
+})
+
+describe("Query.publicArtworkListings", () => {
+  it("resolves top-level ArtListingSummary fields", async () => {
+    mockArtnet.mockResolvedValue({
+      body: {
+        count: 1,
+        warnings: [],
+        results: [
+          {
+            id: "l1",
+            artListingInternalId: "internal-1",
+            saleCountries: ["US"],
+            lot: {
+              title: "Untitled",
+              saleNumber: "42",
+              externalUri: "http://x",
+            },
+          },
+        ],
+      },
+    })
+
+    const { data, errors } = await graphql({
+      schema,
+      source: `{
+        publicArtworkListings(page: 1, pageSize: 5, freeformTextQuery: "warhol") {
+          count
+          results { id internalID title saleNumber externalUrl saleCountries }
+        }
+      }`,
+    })
+
+    expect(errors).toBeUndefined()
+    expect(mockArtnet).toHaveBeenCalledWith(
+      "coredata/v2/artwork-listings/search",
+      {
+        method: "POST",
+        body: {
+          freeformTextQuery: "warhol",
+          filters: undefined,
+          page: 1,
+          pageSize: 5,
+        },
+      }
+    )
+    expect(data).toEqual({
+      publicArtworkListings: {
+        count: 1,
+        results: [
+          {
+            id: "l1",
+            internalID: "internal-1",
+            title: "Untitled",
+            saleNumber: "42",
+            externalUrl: "http://x",
+            saleCountries: ["US"],
+          },
+        ],
       },
     })
   })

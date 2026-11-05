@@ -1,4 +1,6 @@
 ## publicArtworkListings
 
 API: ArtnetData
-Endpoint: GET "/coredata/v2/artwork-listings/search"
+Endpoint: POST "/coredata/v2/artwork-listings/search"
+
+Request body (JSON): `freeformTextQuery`, `filters`, `page`, `pageSize` args
