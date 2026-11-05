@@ -33,6 +33,9 @@ type ArtListingSummary {
   listedDate: DateTime!
   isRedacted: Boolean
   # events: [ArtListingEvent!]!
+
+  # TODO - this needs to be added to the REST API.
+  # Making it nullable for now.
   internalID: ID
 
   # listingData:
@@ -45,7 +48,10 @@ type ArtListingSummary {
 }
 
 type ArtworkSummary {
+  # TODO needs to be added to REST API
+  # (resolver is inventing a fake ID for now)
   id: ID!
+
   title: String!
   creationYearFrom: Int
   # creationYearFromEra: Era
