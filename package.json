@@ -124,7 +124,7 @@
   "devDependencies": {
     "@ai-sdk/provider": "3.0.19",
     "@artsy/express-reloadable": "1.8.1",
-    "@artsy/update-repo": "0.8.2",
+    "@artsy/update-repo": "0.8.3",
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.25.9",
     "@babel/node": "^7.25.9",
