@@ -19,7 +19,7 @@
     "delete-review-app": "./scripts/delete-review-app.sh",
     "deploy-cloudflare-workers:staging": "yarn wrangler deploy --keep-vars --config=workers/caching/metaphysics-cdn.toml --env staging",
     "deploy-cloudflare-workers": "yarn wrangler deploy --keep-vars --config=workers/caching/metaphysics-cdn.toml --env production",
-    "dev": "DEBUG=info,warn,error babel-node --extensions '.ts,.js' --inspect index.js",
+    "dev": "DEBUG=info,warn,error babel-node --extensions '.ts,.js' --inspect index2.js",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
     "dump:local": "SKIP_CONFIG_VALIDATION=true yarn dump-schema _schemaV2.graphql",
     "hokusai": "hokusai dev start --no-build",

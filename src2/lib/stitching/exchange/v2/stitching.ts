@@ -1,0 +1,1044 @@
+import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
+import type { AsyncExecutor } from "@graphql-tools/utils"
+import { WrapQuery } from "@graphql-tools/wrap"
+import {
+  execute,
+  GraphQLError,
+  GraphQLSchema,
+  Kind,
+  OperationTypeNode,
+  SelectionSetNode,
+} from "graphql"
+import { toGlobalId } from "graphql-relay"
+import gql from "lib/gql"
+import { ArtworkVersionType } from "schema/v2/artwork_version"
+import { amount, amountSDL } from "schema/v2/fields/money"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
+
+const orderTotals = [
+  "itemsTotal",
+  "sellerTotal",
+  "commissionFee",
+  "totalListPrice",
+  "buyerTotal",
+  "taxTotal",
+  "shippingTotal",
+  "transactionFee",
+  "artsyTotal",
+]
+const orderTotalsSDL = orderTotals.map(amountSDL)
+
+const lineItemTotals = ["shippingTotal", "listPrice", "commissionFee"]
+const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
+
+const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
+const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
+
+const shippingQuoteFields = ["price"]
+const shippingQuoteFieldsSDL = shippingQuoteFields.map(amountSDL)
+
+export const exchangeStitchingEnvironment = ({
+  localSchema,
+  exchangeSchema,
+}: {
+  localSchema: GraphQLSchema
+  exchangeSchema: GraphQLSchema
+}) => {
+  // Dynamically get all types that implement the CommerceOrder interface
+  // This ensures the union automatically includes new order types added to Exchange
+  const orderInterface = exchangeSchema.getType("CommerceOrder")
+  const orderImplementations =
+    orderInterface && "getInterfaces" in orderInterface
+      ? Object.values(exchangeSchema.getTypeMap())
+          .filter(
+            (type) =>
+              "getInterfaces" in type &&
+              typeof type.getInterfaces === "function" &&
+              type.getInterfaces().some((i) => i.name === "CommerceOrder")
+          )
+          .map((type) => type.name)
+          .join(" | ")
+      : "CommerceBuyOrder | CommerceOfferOrder" // Fallback if introspection fails
+
+  type DetailsFactoryInput = { from: string; to: string }
+
+  /**
+   * This returns a resolver which can take an exchange OrderParty union
+   * and convert it into a metaphysics `OrderParty`.
+   *
+   * You pass in the field to get the details from, and and the new fieldName
+   */
+  const partyUnionToDetailsFactory = ({ from, to }: DetailsFactoryInput) => {
+    // We abuse the query alias feature to make sure that all
+    // the data we need to generate the full object from
+    // is included.
+    //
+    // It's possible that this working around a bug in how the fragment is put
+    // together by graphql-tools.
+    const aliasedPartySelectionSet = (field, alias) => {
+      return `{
+        ${alias}: ${field} {
+          __typename
+          ... on CommerceUser {
+            __typename
+            id
+          }
+          ... on CommercePartner {
+            __typename
+            id
+          }
+        }
+      }`
+    }
+
+    return {
+      // Bit of a magic in next line, when adding selectionSet, it seems
+      // all second level fields (e.g. b in this query { a { b } }) are
+      // ignored, so __typename and id couldn't be added, so the hack
+      // was to alias the fragment field and that gets the current fields
+      selectionSet: aliasedPartySelectionSet(from, to),
+      resolve: async (parent, _args, context, _info) => {
+        const typename = parent[to].__typename
+        const id = parent[to].id
+
+        // Load the metaphysics representation directly via the loader rather
+        // than `delegateToSchema`. v10 of `@graphql-tools/delegate` strips
+        // fields not present in the propagated selection set, which dropped
+        // `name` (and others) from the returned object — re-running outer
+        // resolvers against a partial response then threw on `.trim()` etc.
+        if (typename === "CommerceUser") {
+          const user = await context.userByIDLoader(id)
+          return { ...user, __typename: "User" }
+        }
+        const partner = await context.partnerLoader(id)
+        return { ...partner, __typename: "Partner" }
+      },
+    }
+  }
+
+  const buyerDetailsResolver = partyUnionToDetailsFactory({
+    from: "buyer",
+    to: "buyerDetails",
+  })
+  const sellerDetailsResolver = partyUnionToDetailsFactory({
+    from: "seller",
+    to: "sellerDetails",
+  })
+  const fromDetailsResolver = partyUnionToDetailsFactory({
+    from: "from",
+    to: "fromDetails",
+  })
+
+  const creditCardResolver = {
+    selectionSet: `{ creditCardId }`,
+    resolve: (parent, _args, context, info) => {
+      const id = parent.creditCardId
+      if (!id) {
+        return null
+      } else {
+        return delegateToSchema({
+          schema: localSchema,
+          operation: OperationTypeNode.QUERY,
+          fieldName: "creditCard",
+          args: {
+            id,
+          },
+          context,
+          info,
+        })
+      }
+    },
+  }
+
+  const paymentMethodDetailsResolver = {
+    selectionSet: `{
+      creditCardId
+      bankAccountId
+      paymentMethod
+    }`,
+
+    resolve: async (parent, _args, context, info) => {
+      const { creditCardId, bankAccountId, paymentMethod } = parent
+
+      if (paymentMethod === "CREDIT_CARD" && Boolean(creditCardId)) {
+        const creditCard = await delegateToSchema({
+          schema: localSchema,
+          operation: OperationTypeNode.QUERY,
+          fieldName: "creditCard",
+          args: {
+            id: creditCardId,
+          },
+          context,
+          info,
+        })
+        return creditCard
+      } else if (
+        (paymentMethod === "US_BANK_ACCOUNT" ||
+          paymentMethod === "SEPA_DEBIT") &&
+        Boolean(bankAccountId)
+      ) {
+        const bankAccount = await delegateToSchema({
+          schema: localSchema,
+          operation: OperationTypeNode.QUERY,
+          fieldName: "bankAccount",
+          args: {
+            id: bankAccountId,
+          },
+          context,
+          info,
+        })
+        return bankAccount
+      } else if (paymentMethod === "WIRE_TRANSFER") {
+        return { __typename: "WireTransfer", isManualPayment: true }
+      } else {
+        return null
+      }
+    },
+  }
+
+  const inquiryOrderResolvers = {
+    isInquiryOrder: {
+      selectionSet: `{ impulseConversationId }`,
+      resolve: async (order) => {
+        const { impulseConversationId } = order
+        return Boolean(impulseConversationId)
+      },
+    },
+    conversation: {
+      selectionSet: `{ impulseConversationId }`,
+      resolve: async (order, _args, context, info) => {
+        const { impulseConversationId } = order
+        if (!impulseConversationId) return null
+
+        return delegateToSchema({
+          schema: localSchema,
+          operation: OperationTypeNode.QUERY,
+          fieldName: "_do_not_use_conversation",
+          args: { id: impulseConversationId },
+          context,
+          info,
+        })
+      },
+    },
+  }
+
+  // Map the totals array to a set of resolvers that call the amount function
+  const totalsResolvers = (_type: string, totalSDLS: string[]) =>
+    reduceToResolvers(
+      totalSDLS.map((name) => ({
+        [name]: {
+          selectionSet: `{ ${name}Cents currencyCode }`,
+          resolve: (parent, args, _context, _info) => {
+            return amount((_) => parent[name + "Cents"]).resolve(parent, args)
+          },
+        },
+      }))
+    )
+
+  const buyerProfileResolver = {
+    selectionSet: `{
+      buyer {
+        ... on CommerceUser {
+          id
+        }
+      }
+    }`,
+    resolve: async (parent, _args, context, info) => {
+      return await delegateToSchema({
+        schema: localSchema,
+        operation: OperationTypeNode.QUERY,
+        fieldName: "collectorProfile",
+        args: { userID: parent.buyer.id },
+        context,
+        info,
+      })
+    },
+  }
+
+  // Used to convert an array of `key: resolvers` to a single obj
+  const reduceToResolvers = (arr) => arr.reduce((a, b) => ({ ...a, ...b }))
+
+  return {
+    // The SDL used to declare how to stitch an object
+    extensionSchema: gql`
+
+    type CommerceOrderError {
+      requestError: RequestError
+    }
+
+    union CommerceOrderResult = ${orderImplementations} | CommerceOrderError
+
+    extend type Query {
+      commerceOrderResult(id: String, code: String): CommerceOrderResult
+    }
+
+    extend type Conversation {
+      orderConnection(
+        sellerId: ID
+        participantType: CommerceOrderParticipantEnum
+        state: CommerceOrderStateEnum
+        states: [CommerceOrderStateEnum!]
+        after: String
+        before: String
+        first: Int
+        last: Int
+      ): CommerceOrderConnectionWithTotalCount
+    }
+
+    extend type CommerceShippingQuote {
+      ${shippingQuoteFieldsSDL.join("\n")}
+    }
+
+    extend type CommerceLineItem {
+      artwork: Artwork
+      artworkVersion: ArtworkVersion
+      artworkOrEditionSet: ArtworkOrEditionSetType
+      ${lineItemTotalsSDL.join("\n")}
+    }
+
+    extend type CommerceBuyOrder {
+      buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
+      sellerDetails: OrderParty
+      creditCard: CreditCard
+      paymentMethodDetails: PaymentMethodUnion
+      conversation: Conversation
+
+      ${orderTotalsSDL.join("\n")}
+    }
+
+    extend type CommerceOfferOrder {
+      buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
+      sellerDetails: OrderParty
+      creditCard: CreditCard
+      paymentMethodDetails: PaymentMethodUnion
+      isInquiryOrder: Boolean!
+      conversation: Conversation
+
+      ${orderTotalsSDL.join("\n")}
+      ${amountSDL("offerTotal")}
+    }
+
+    extend interface CommerceOrder {
+      buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
+      sellerDetails: OrderParty
+      creditCard: CreditCard
+      paymentMethodDetails: PaymentMethodUnion
+      ${orderTotalsSDL.join("\n")}
+    }
+
+    extend type CommerceOffer {
+      fromDetails: OrderParty
+      ${offerAmountFieldsSDL.join("\n")}
+    }
+
+    extend type Me {
+      orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
+    }
+
+    extend type CollectorResume {
+      buyerActivity: CommerceBuyerActivity
+    }
+
+    extend type Viewer {
+      commerceOrders(
+        # Returns the elements in the list that come after the specified cursor.
+        after: String
+
+        # Returns the elements in the list that come before the specified cursor.
+        before: String
+        buyerId: String
+        buyerType: String
+
+        # Returns the first _n_ elements from the list.
+        first: Int
+        impulseConversationId: String
+
+        # Returns the last _n_ elements from the list.
+        last: Int
+        mode: CommerceOrderModeEnum
+        sellerId: String
+        sellerType: String
+        sort: CommerceOrderConnectionSortEnum
+        state: CommerceOrderStateEnum
+        states: [CommerceOrderStateEnum!]
+      ): CommerceOrderConnectionWithTotalCount
+    }
+
+    extend type Mutation {
+      # Creates an order and links the conversation to it
+      createInquiryOrder(
+        input: CommerceCreateInquiryOrderWithArtworkInput!
+      ): CommerceCreateInquiryOrderWithArtworkPayload
+      createInquiryOfferOrder(
+        input: CommerceCreateInquiryOfferOrderWithArtworkInput!
+      ): CommerceCreateInquiryOfferOrderWithArtworkPayload
+      # Submits an OfferOrder and creates a conversation for it
+      submitOfferOrderWithConversation(
+        input: CommerceSubmitOrderWithOfferInput!
+      ): CommerceSubmitOrderWithOfferPayload
+    }
+  `,
+
+    // Resolvers for the above
+    resolvers: {
+      CollectorResume: {
+        buyerActivity: {
+          selectionSet: `{
+            userId
+            purchases {
+              totalAuctionCount
+              totalPrivateSaleCount
+            }
+          }`,
+          resolve: async (parent, _args, context, info) => {
+            try {
+              const nonBnmoPurchases =
+                (parent?.purchases?.totalAuctionCount ?? 0) +
+                (parent?.purchases?.totalPrivateSaleCount ?? 0)
+
+              const exchangeArgs = {
+                buyerId: parent.userId,
+              }
+
+              const bnmoPurchases = await delegateToSchema({
+                schema: exchangeSchema,
+                operation: OperationTypeNode.QUERY,
+                fieldName: "commerceBuyerActivity",
+                args: exchangeArgs,
+                context,
+                info,
+              })
+
+              return {
+                totalPurchases: bnmoPurchases.totalPurchases + nonBnmoPurchases,
+              }
+            } catch (error) {
+              console.error(
+                "[schema/v2/conversation/collectorResume/totalPurchases] Error:",
+                error
+              )
+
+              return { totalPurchases: 0 }
+            }
+          },
+        },
+      },
+      Conversation: {
+        orderConnection: {
+          selectionSet: `{ internalID }`,
+          resolve: (
+            { internalID: conversationId },
+            {
+              sellerId,
+              ...requestArgs
+            }: {
+              /* Deprecated - use sellerId */
+              participantType?: any
+              /* Overrides buyer_id in request */
+              sellerId?: string
+              first?: number
+              last?: number
+              after?: string
+              before?: string
+              state?: string
+              states?: [string]
+            },
+            context,
+            info
+          ) => {
+            const viewerKey = sellerId
+              ? { sellerId: sellerId }
+              : { buyerId: context.userID }
+
+            const exchangeArgs = {
+              ...requestArgs,
+              ...viewerKey,
+              impulseConversationId: conversationId,
+            }
+
+            return delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "commerceOrders",
+              args: exchangeArgs,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      CommerceShippingQuote: {
+        ...totalsResolvers("CommerceShippingQuote", shippingQuoteFields),
+      },
+      CommerceBuyOrder: {
+        // The money helper resolvers
+        ...totalsResolvers("CommerceBuyOrder", orderTotals),
+        buyerDetails: buyerDetailsResolver,
+        buyerProfile: buyerProfileResolver,
+        sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
+      },
+      CommerceOfferOrder: {
+        ...totalsResolvers("CommerceOfferOrder", orderTotals),
+        buyerDetails: buyerDetailsResolver,
+        buyerProfile: buyerProfileResolver,
+        sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
+        ...inquiryOrderResolvers,
+      },
+      CommerceLineItem: {
+        artwork: {
+          selectionSet: `{ artworkId }`,
+          resolve: (parent, _args, context, info) => {
+            const id = parent.artworkId
+            return delegateToSchema({
+              schema: localSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "artwork",
+              args: {
+                id,
+              },
+              context,
+              info,
+            })
+          },
+        },
+        artworkVersion: {
+          selectionSet: `{ artworkVersionId }`,
+          resolve: (parent, _args, context, info) => {
+            const id = parent.artworkVersionId
+            const globalID = toGlobalId("ArtworkVersion", id)
+            return delegateToSchema({
+              schema: localSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "node",
+              args: {
+                id: globalID,
+              },
+              context,
+              info,
+              returnType: ArtworkVersionType,
+            })
+          },
+        },
+
+        artworkOrEditionSet: {
+          selectionSet: `{
+            artworkId
+            editionSetId
+          }`,
+          resolve: async (parent, _args, context, info) => {
+            const artworkId = parent.artworkId
+            const editionSetId = parent.editionSetId
+
+            if (editionSetId) {
+              return delegateToSchema({
+                schema: localSchema,
+                operation: OperationTypeNode.QUERY,
+                fieldName: "artwork",
+                args: {
+                  id: artworkId,
+                },
+                context,
+                info,
+                transforms: [
+                  // Wrap document takes a subtree as an AST node
+                  new WrapQuery(
+                    // path at which to apply wrapping and extracting
+                    ["artwork"],
+                    (subtree: SelectionSetNode) => ({
+                      // we create a wrapping AST Field
+                      kind: Kind.FIELD,
+                      name: {
+                        kind: Kind.NAME,
+                        value: "editionSet",
+                      },
+                      arguments: [
+                        {
+                          kind: Kind.ARGUMENT,
+                          name: {
+                            kind: Kind.NAME,
+                            value: "id",
+                          },
+                          value: {
+                            kind: Kind.STRING,
+                            value: editionSetId,
+                          },
+                        },
+                      ],
+                      // Inside the field selection
+                      selectionSet: subtree,
+                    }),
+                    // how to process the data result at path
+                    (result) => {
+                      return result.editionSet
+                    }
+                  ),
+                ],
+              })
+            }
+
+            return delegateToSchema({
+              schema: localSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "artwork",
+              args: {
+                id: artworkId,
+              },
+              context,
+              info,
+            })
+          },
+        },
+
+        ...totalsResolvers("CommerceLineItem", lineItemTotals),
+      },
+      CommerceOrder: {
+        // The money helper resolvers
+        ...totalsResolvers("CommerceOrder", orderTotals),
+        buyerDetails: buyerDetailsResolver,
+        sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
+      },
+      CommerceOffer: {
+        ...totalsResolvers("CommerceOffer", offerAmountFields),
+        fromDetails: fromDetailsResolver,
+      },
+      Me: {
+        orders: {
+          selectionSet: `{ __typename }`,
+          resolve: async (_source, args, context, info) => {
+            return await delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "commerceMyOrders",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Viewer: {
+        commerceOrders: {
+          selectionSet: `{ __typename }`,
+          resolve: (_parent, args, context, info) => {
+            return delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "commerceOrders",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Mutation: {
+        createInquiryOrder: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              console.log("error", e)
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
+            }
+
+            const orderResult = await delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.MUTATION,
+              fieldName: "commerceCreateInquiryOrderWithArtwork",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    } as SelectionSetNode
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = orderResult
+
+            if (orderOrError.error) {
+              return orderResult
+            } else if (orderOrError.order) {
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate order with conversation failed"
+                )
+              }
+            }
+
+            return orderResult
+          },
+        },
+        createInquiryOfferOrder: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
+            }
+
+            const offerResult = await delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.MUTATION,
+              fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOfferOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    } as SelectionSetNode
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = offerResult
+
+            if (orderOrError.error) {
+              // if we got an error from exchange, return it immediately
+              return offerResult
+            } else if (orderOrError.order) {
+              // attempt to associate the order with the conversation
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate offer with conversation failed"
+                )
+              }
+            }
+
+            return offerResult
+          },
+        },
+        submitOfferOrderWithConversation: {
+          resolve: async (_source, args, context, info) => {
+            const { submitArtworkInquiryRequestLoader } = context
+
+            const submitOrderWithOffer = await delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.MUTATION,
+              fieldName: "commerceSubmitOrderWithOffer",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID, orderOrError.order.lastOffer.note, orderOrError.order.lineItems.edges[0].node.artworkId
+                // to the Order selectionSet
+                new WrapQuery(
+                  ["commerceSubmitOrderWithOffer", "orderOrError", "order"],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "source",
+                        },
+                      },
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "paymentMethod",
+                        },
+                      },
+                      {
+                        kind: Kind.INLINE_FRAGMENT,
+                        typeCondition: {
+                          kind: Kind.NAMED_TYPE,
+                          name: {
+                            kind: Kind.NAME,
+                            value: "CommerceOfferOrder",
+                          },
+                        },
+                        selectionSet: {
+                          kind: Kind.SELECTION_SET,
+                          selections: [
+                            {
+                              kind: Kind.FIELD,
+                              name: {
+                                kind: Kind.NAME,
+                                value: "myLastOffer",
+                              },
+                              selectionSet: {
+                                kind: Kind.SELECTION_SET,
+                                selections: [
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "note",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: Kind.FIELD,
+                              name: {
+                                kind: Kind.NAME,
+                                value: "lineItems",
+                              },
+                              selectionSet: {
+                                kind: Kind.SELECTION_SET,
+                                selections: [
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "edges",
+                                    },
+                                    selectionSet: {
+                                      kind: Kind.SELECTION_SET,
+                                      selections: [
+                                        {
+                                          kind: Kind.FIELD,
+                                          name: {
+                                            kind: Kind.NAME,
+                                            value: "node",
+                                          },
+                                          selectionSet: {
+                                            kind: Kind.SELECTION_SET,
+                                            selections: [
+                                              {
+                                                kind: Kind.FIELD,
+                                                name: {
+                                                  kind: Kind.NAME,
+                                                  value: "artworkId",
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ]
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    } as SelectionSetNode
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = submitOrderWithOffer
+
+            const inquiryCreationHandledByGravity = isFeatureFlagEnabled(
+              "topaz_remove-inquiry-creation-from-order-mutation",
+              { userId: context.userID }
+            )
+
+            if (
+              inquiryCreationHandledByGravity ||
+              orderOrError.error ||
+              !orderOrError.order ||
+              orderOrError.order.source === "inquiry" ||
+              orderOrError.order.state === "IN_REVIEW"
+            ) {
+              return submitOrderWithOffer
+            }
+
+            try {
+              const { order } = orderOrError
+
+              await submitArtworkInquiryRequestLoader({
+                artwork: order.lineItems.edges[0].node.artworkId,
+                message: order.myLastOffer.note,
+                order_id: order.internalID,
+              })
+            } catch (e) {
+              console.error(e)
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Gravity: request to create inquiry failed`
+              )
+            }
+
+            return submitOrderWithOffer
+          },
+        },
+      },
+      CommerceOrderResult: {
+        __resolveType: (obj) => {
+          if (obj.requestError) {
+            return "CommerceOrderError"
+          }
+          return obj.__typename
+        },
+      },
+      Query: {
+        commerceOrderResult: {
+          resolve: async (_source, args, context, info) => {
+            // Create a custom executor that handles errors from Exchange
+            const customExecutor: AsyncExecutor = async (
+              params
+            ): Promise<any> => {
+              const { document, variables, context: execContext } = params
+
+              const result = await execute({
+                schema: exchangeSchema,
+                document,
+                variableValues: variables,
+                contextValue: execContext,
+              })
+
+              // If there are errors, don't return them - we'll handle in the resolver
+              if (result.errors && result.errors.length > 0) {
+                return {
+                  data: {
+                    commerceOrder: {
+                      __hasError: true,
+                      __error: result.errors[0],
+                    },
+                  },
+                  errors: undefined,
+                }
+              }
+
+              return result
+            }
+
+            const result = await delegateToSchema({
+              schema: {
+                schema: exchangeSchema,
+                executor: customExecutor,
+              },
+              operation: OperationTypeNode.QUERY,
+              fieldName: "commerceOrder",
+              args,
+              context,
+              info,
+            })
+
+            // Check if result has our error marker
+            if (result?.__hasError) {
+              const error = result.__error
+
+              const statusCode = error?.originalError?.statusCode || 500
+
+              return {
+                requestError: {
+                  statusCode,
+                },
+              }
+            }
+
+            return result
+          },
+        },
+      },
+    },
+  }
+}

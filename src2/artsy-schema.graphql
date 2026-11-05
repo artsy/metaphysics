@@ -1,0 +1,50 @@
+"""
+An object with a Globally Unique ID
+"""
+interface Node {
+  """
+  A globally unique ID.
+  """
+  id: ID!
+}
+
+type Artist implements Node {
+  """
+  A globally unique ID.
+  """
+  id: ID!
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  """
+  A slug ID.
+  """
+  slug: ID!
+  alternateNames: [String]
+
+  # artistSeriesConnection(
+  #   after: String
+  #   before: String
+  #   first: Int
+  #   last: Int
+  # ): ArtistSeriesConnection
+
+  birthday: String
+  deathday: String
+  disablePriceContext: Boolean
+  displayLabel: String
+  displayName: String
+}
+
+type Query {
+  """
+  An Artist
+  """
+  artist(
+    """
+    The slug or ID of the Artist
+    """
+    id: String!
+  ): Artist
+}
