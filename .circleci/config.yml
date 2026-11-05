@@ -94,6 +94,7 @@ jobs:
             - .cache/jest
       - store_test_results:
           path: ./reports/junit/
+          when: always
   type-check:
     executor:
       name: node/default
