@@ -1,17 +1,12 @@
 import type { SubschemaConfig } from "@graphql-tools/delegate"
 import { stitchSchemas } from "@graphql-tools/stitch"
 import {
-  causalitySubschemaConfig,
-  executableCausalitySchema,
-} from "lib/stitching/causality/schema"
-import {
   exchangeSubschemaConfig,
   executableExchangeSchema,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
 
 import { GraphQLSchema } from "graphql"
-import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
 
 /**
@@ -35,15 +30,6 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
       }
     }
   }
-
-  subschemas.push(causalitySubschemaConfig())
-
-  useStitchingEnvironment(
-    causalityStitchingEnvironmentV2({
-      causalitySchema: executableCausalitySchema(),
-      localSchema,
-    })
-  )
 
   subschemas.push(exchangeSubschemaConfig(transformsForExchange))
 
