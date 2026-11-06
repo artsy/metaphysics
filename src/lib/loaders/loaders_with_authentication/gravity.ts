@@ -2039,6 +2039,13 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
 
+    // Queues a background sync (202). Temporary manual trigger.
+    syncEmailAccountLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/sync`,
+      {},
+      { method: "POST" }
+    ),
+
     // Mailchimp Campaign Loaders
     mailchimpCampaignsLoader: gravityLoader(
       "mailchimp_campaigns",
@@ -2119,6 +2126,8 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+
+    crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
 
     // Brand Kit Loaders
     brandKitLoader: gravityLoader("brand_kit"),
