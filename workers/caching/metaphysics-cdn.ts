@@ -7,8 +7,8 @@ const MAX_TAG_LENGTH = 1024
 const VALID_TAG_REGEX = /^[\x21-\x2b\x2d-\x7e]+$/
 
 /**
- * Forque builds the same tag from a URL to purge every cached response for a page,
- * so keep this normalization in sync with Forque's.
+ * Purge one page in the Cloudflare dashboard (Custom Purge → Tag) with its tag, e.g.
+ * `force-page:/feature/some-slug`: lowercase, no query string, no trailing slash.
  */
 export function getPageTag(request) {
   const rawPath = request.headers.get(PAGE_PATH_HEADER)
