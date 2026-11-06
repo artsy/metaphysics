@@ -4,6 +4,7 @@ import express from "express"
 import moment from "moment-timezone"
 import morgan from "@artsy/morgan"
 import config from "./config"
+import { resolveArtnetEnv } from "./lib/artnetEnv"
 import { bodyParserMiddleware } from "./lib/bodyParserMiddleware"
 import { createLoaders } from "./lib/loaders"
 import { info } from "./lib/loggers"
@@ -61,6 +62,11 @@ const yoga = createYoga<YogaServerContext, ResolverContext>({
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
     const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
 
+    const xArtnetEnv = req.headers["x-artnet-env"] as string | undefined
+    // Resolved lazily so that an invalid header only fails Artnet queries
+    const artnetEnv = () =>
+      resolveArtnetEnv({ artnetEnv: xArtnetEnv, host: req.headers.host })
+
     const { requestIDs } = res.locals
 
     const userID = xUserID || xImpersonateUserID
@@ -88,6 +94,7 @@ const yoga = createYoga<YogaServerContext, ResolverContext>({
       ipAddress: requestIPAddress(req),
       xImpersonateUserID,
       isCMSRequest,
+      artnetEnv,
     }
   },
 })

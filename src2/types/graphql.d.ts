@@ -1,3 +1,4 @@
+import { ArtnetEnv } from "../lib/artnetEnv"
 import { createLoaders } from "../lib/loaders"
 
 export interface ResolverContextValues {
@@ -21,6 +22,9 @@ export interface ResolverContextValues {
   ipAddress: string
   xImpersonateUserID?: string
   isCMSRequest: boolean
+
+  /** The Artnet environment for this request (see lib/artnetEnv.ts) */
+  artnetEnv: () => ArtnetEnv
 }
 
 export type ResolverContext = ResolverContextValues &
