@@ -5,10 +5,6 @@ import {
   executableCausalitySchema,
 } from "lib/stitching/causality/schema"
 import {
-  convectionSubschemaConfig,
-  executableConvectionSchema,
-} from "lib/stitching/convection/schema"
-import {
   exchangeSubschemaConfig,
   executableExchangeSchema,
   transformsForExchange,
@@ -16,7 +12,6 @@ import {
 
 import { GraphQLSchema } from "graphql"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
-import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
 
 /**
@@ -57,12 +52,6 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
       localSchema,
       exchangeSchema: executableExchangeSchema(transformsForExchange),
     })
-  )
-
-  subschemas.push(convectionSubschemaConfig())
-
-  useStitchingEnvironment(
-    convectionStitchingEnvironmentV2(localSchema, executableConvectionSchema())
   )
 
   // The order should only matter in that extension schemas come after the

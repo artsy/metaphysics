@@ -1563,10 +1563,6 @@ describe("Artwork type", () => {
   })
 
   describe("#consignmentSubmission", () => {
-    const submission = {
-      id: "1",
-      state: "submitted",
-    }
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
@@ -1598,12 +1594,6 @@ describe("Artwork type", () => {
 
     it("returns null if submission not found", () => {
       artwork.submission_id = "1"
-      context.convectionGraphQLLoader = () =>
-        Promise.resolve({
-          submissions: {
-            edges: [],
-          },
-        })
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
@@ -1617,16 +1607,6 @@ describe("Artwork type", () => {
 
     it("returns null for artwork's submission since Convection is disabled", () => {
       artwork.submission_id = "1"
-      context.convectionGraphQLLoader = () =>
-        Promise.resolve({
-          submissions: {
-            edges: [
-              {
-                node: submission,
-              },
-            ],
-          },
-        })
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({

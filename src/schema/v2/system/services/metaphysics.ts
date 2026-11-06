@@ -17,7 +17,7 @@ import { ResolverContext } from "types/graphql"
 const mapEnvBooleans = {
   queryTracing: !!config.ENABLE_QUERY_TRACING,
   stitching: !config.DISABLE_SCHEMA_STITCHING,
-  stitchingConvection: true,
+  stitchingConvection: false,
   stitchingExchange: true,
   // Vortex is no longer stitched; kept so the public schema doesn't change.
   stitchingVortex: false,
