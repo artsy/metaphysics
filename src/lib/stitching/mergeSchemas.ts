@@ -4,7 +4,6 @@ import {
   causalitySubschemaConfig,
   executableCausalitySchema,
 } from "lib/stitching/causality/schema"
-import { diffusionSubschemaConfig } from "lib/stitching/diffusion/schema"
 import {
   exchangeSubschemaConfig,
   executableExchangeSchema,
@@ -45,8 +44,6 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
       localSchema,
     })
   )
-
-  subschemas.push(diffusionSubschemaConfig())
 
   subschemas.push(exchangeSubschemaConfig(transformsForExchange))
 
