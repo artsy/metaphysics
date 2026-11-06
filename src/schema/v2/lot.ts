@@ -9,8 +9,7 @@ import { Money, resolveLotCentsFieldToMoney } from "./fields/money"
 
 export const Lot = new GraphQLObjectType<any, ResolverContext>({
   name: "Lot",
-  description:
-    "A lot in an auction containing merged SaleArtwork and LotState data, stitched from causality.",
+  description: "A watched lot in an auction.",
   interfaces: () => {
     return [NodeInterface]
   },

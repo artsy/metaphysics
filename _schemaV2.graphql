@@ -22868,7 +22868,7 @@ The `Long` scalar type represents 52-bit signed integers
 scalar Long
 
 """
-A lot in an auction containing merged SaleArtwork and LotState data, stitched from causality.
+A watched lot in an auction.
 """
 type Lot implements Node {
   """
