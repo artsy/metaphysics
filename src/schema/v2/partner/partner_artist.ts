@@ -26,9 +26,11 @@ import { setVersion } from "../image/normalize"
 import { paginationResolver } from "../fields/pagination"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { ShowsConnection } from "../show"
+import { ArtistStoryType } from "../artistStory/artistStory"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
+  id: string
   artist: {
     id: string
     _id: string
@@ -147,6 +149,16 @@ const biographyBlurb: GraphQLFieldConfig<
     }
 
     return null
+  },
+}
+
+const story: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
+  type: ArtistStoryType,
+  description:
+    "This gallery's own Story, even if it isn't the one on the page.",
+  resolve: async ({ id }, _args, { artistStoriesLoader }) => {
+    const stories = await artistStoriesLoader({ partner_artist_id: id })
+    return stories?.[0]
   },
 }
 
@@ -328,6 +340,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
       type: GraphQLString,
       resolve: ({ sortable_id }) => sortable_id,
     },
+    story,
   }
 }
 

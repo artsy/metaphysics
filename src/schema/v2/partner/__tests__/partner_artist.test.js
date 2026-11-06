@@ -651,4 +651,51 @@ describe("partnerArtist", () => {
       })
     })
   })
+
+  describe("story", () => {
+    const query = gql`
+      {
+        partner(id: "levy-gorvy") {
+          artistsConnection(first: 3) {
+            edges {
+              story {
+                internalID
+                tagline
+              }
+            }
+          }
+        }
+      }
+    `
+
+    beforeEach(() => {
+      partnerArtistData = [
+        { id: "pa-gallery", artist: { blurb: "" }, partner: { name: "Catty" } },
+      ]
+    })
+
+    it("returns the gallery's own story, even when it has no content", async () => {
+      const artistStoriesLoader = jest
+        .fn()
+        .mockResolvedValue([{ id: "story-1", tagline: "" }])
+
+      const data = await runQuery(query, { ...context, artistStoriesLoader })
+
+      expect(data.partner.artistsConnection.edges[0].story).toEqual({
+        internalID: "story-1",
+        tagline: "",
+      })
+      expect(artistStoriesLoader).toHaveBeenCalledWith({
+        partner_artist_id: "pa-gallery",
+      })
+    })
+
+    it("returns null until the gallery saves a story", async () => {
+      const artistStoriesLoader = jest.fn().mockResolvedValue([])
+
+      const data = await runQuery(query, { ...context, artistStoriesLoader })
+
+      expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+    })
+  })
 })
