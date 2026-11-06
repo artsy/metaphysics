@@ -17,18 +17,16 @@ type ArtworkListingResults {
   warnings: [Warning!]!
 }
 
-type ArtListingSummary {
+interface ArtListingSummary {
   id: ID!
-  # listingDomain: ListingDomain!
+  listingDomain: ListingDomain!
   # artMarketInstitution: ArtMarketInstitution
   saleName: String
-  # timing: [Timing!]!
   saleCountries: [String!]!
   # saleStatus: SaleStatus
   # prices: [ArtListingSalePrice!]!
   saleId: ID
   # featuredImage: Image
-  artListingDetailId: ID!
   lastUpdated: DateTime!
   listedDate: DateTime!
   isRedacted: Boolean
@@ -40,11 +38,77 @@ type ArtListingSummary {
 
   # listingData:
   title: String
-  catalogLotNumber: String
   artworks: [ArtworkSummary!]!
   uri: String
   externalUrl: String
+}
+
+enum ListingDomain {
+  PDB
+  PDB_TEASER
+  GALLERY
+  ARTNET_AUCTION
+}
+
+type LotSummary implements ArtListingSummary {
+  timing: [Timing!]!
+
+  # listingData:
+  catalogLotNumber: String
   saleNumber: String
+  artListingDetailId: ID!
+
+  # inherited:
+  id: ID!
+  listingDomain: ListingDomain!
+  # artMarketInstitution: ArtMarketInstitution
+  saleName: String
+  saleCountries: [String!]!
+  # saleStatus: SaleStatus
+  # prices: [ArtListingSalePrice!]!
+  saleId: ID
+  # featuredImage: Image
+  lastUpdated: DateTime!
+  listedDate: DateTime!
+  isRedacted: Boolean
+  # events: [ArtListingEvent!]!
+  # TODO - this needs to be added to the REST API.
+  # Making it nullable for now.
+  internalID: ID
+  title: String
+  artworks: [ArtworkSummary!]!
+  uri: String
+  externalUrl: String
+}
+
+type GalleryListingSummary implements ArtListingSummary {
+  # inherited:
+  id: ID!
+  listingDomain: ListingDomain!
+  # artMarketInstitution: ArtMarketInstitution
+  saleName: String
+  # timing: [Timing!]!
+  saleCountries: [String!]!
+  # saleStatus: SaleStatus
+  # prices: [ArtListingSalePrice!]!
+  saleId: ID
+  # featuredImage: Image
+  lastUpdated: DateTime!
+  listedDate: DateTime!
+  isRedacted: Boolean
+  # events: [ArtListingEvent!]!
+  # TODO - this needs to be added to the REST API.
+  # Making it nullable for now.
+  internalID: ID
+  title: String
+  artworks: [ArtworkSummary!]!
+  uri: String
+  externalUrl: String
+}
+
+type Timing {
+  start: CustomDateTime!
+  end: CustomDateTime
 }
 
 type ArtworkSummary {
@@ -59,12 +123,12 @@ type ArtworkSummary {
   creationYearTo: Int
   # creationYearToEra: Era
   creationYearToQualifier: String
-  classifications: [TaxonomyEntity!]!
+  classifications: [KeyValuePair!]!
   creator: CreatorSummary
   # dimensions: Dimensions
   edition: String
   media: [String!]!
-  objectTypes: [TaxonomyEntity!]!
+  objectTypes: [KeyValuePair!]!
   # timelineEvents: [ArtworkSummaryTimelineEvent!]!
   lastUpdated: DateTime!
   uri: String
@@ -75,7 +139,7 @@ interface CreatorSummary {
   name: String!
   aliases: [String!]!
   attributionQualifier: String
-  movements: [TaxonomyEntity!]!
+  movements: [KeyValuePair!]!
   uri: String
 }
 
@@ -87,7 +151,7 @@ type CollaborationSummary implements CreatorSummary {
   name: String!
   aliases: [String!]!
   attributionQualifier: String
-  movements: [TaxonomyEntity!]!
+  movements: [KeyValuePair!]!
   uri: String
 }
 
@@ -96,14 +160,14 @@ type ArtistSummary implements CreatorSummary {
   birthYearEra: Era
   deathYear: Int
   deathYearEra: Era
-  nationalities: [TaxonomyEntity!]!
+  nationalities: [KeyValuePair!]!
 
   # inherited:
   id: ID!
   name: String!
   aliases: [String!]!
   attributionQualifier: String
-  movements: [TaxonomyEntity!]!
+  movements: [KeyValuePair!]!
   uri: String
 }
 
@@ -113,7 +177,7 @@ type ManufacturerSummary implements CreatorSummary {
   name: String!
   aliases: [String!]!
   attributionQualifier: String
-  movements: [TaxonomyEntity!]!
+  movements: [KeyValuePair!]!
   uri: String
 }
 
@@ -174,10 +238,20 @@ input ArtListingFilters_Input {
   # simplifiedTransactionStatus: EnumFilter_Input
 }
 
-type TaxonomyEntity {
+type KeyValuePair {
   id: ID!
   key: String
   value: String
+}
+
+type CustomDateTime {
+  year: Int
+  month: Int
+  day: Int
+  hour: Int
+  minute: Int
+  second: Int
+  timeZone: String
 }
 
 # TODO: placeholder definitions for types referenced above so that the schema
