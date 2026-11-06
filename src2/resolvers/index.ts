@@ -19,7 +19,13 @@ export const resolvers = merge(
   },
   query,
   artist,
-  artistSeries,
+  artistSeries
+)
+
+// Resolvers for the Artnet schema (artnet-schema.graphql). They're written
+// against the unprefixed type names; schema.ts adds the `artnet_` prefix.
+export const artnetResolvers = merge(
+  {},
   artnetQuery,
   artListingSummary,
   artworkSummary
