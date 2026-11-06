@@ -254,20 +254,6 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      convectionGraphQLLoader: () =>
-        Promise.resolve({
-          submissions: {
-            edges: [
-              {
-                node: {
-                  id: "1",
-                  my_collection_artwork_id: "artwork_id_with_submission",
-                  state: "submitted",
-                },
-              },
-            ],
-          } as any,
-        }),
       marketPriceInsightsBatchLoader,
       artistLoader: () =>
         Promise.resolve({
@@ -362,12 +348,6 @@ describe("me.myCollection", () => {
           },
         }),
       marketPriceInsightsBatchLoader,
-      convectionGraphQLLoader: () =>
-        Promise.resolve({
-          submissions: {
-            edges: [],
-          } as any,
-        }),
       artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
