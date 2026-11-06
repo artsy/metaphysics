@@ -62,8 +62,6 @@ describe("Vortex fields in the merged schema", () => {
       .fn()
       .mockResolvedValue({ data: [{ id: "1" }] })
 
-    // Diffusion's schema also declares these root fields, so this would
-    // reach Diffusion if they weren't filtered out of it.
     const result = await graphql({
       schema: mergedSchema,
       source: `{
