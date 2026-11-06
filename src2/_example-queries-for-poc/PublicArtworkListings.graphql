@@ -1,0 +1,28 @@
+query PublicArtworkListings {
+  artnet_publicArtworkListings(
+    freeformTextQuery: "warhol"
+    page: 1
+    pageSize: 30
+  ) {
+    count
+    results {
+      __typename
+      id
+      title
+      artworks {
+        id
+        title
+        creator {
+          __typename
+          id
+          name
+          ... on artnet_ArtistSummary {
+            nationalities {
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+}

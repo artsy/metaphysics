@@ -8537,6 +8537,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-scalars@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "graphql-scalars@npm:2.0.1"
+  dependencies:
+    tslib: "npm:^2.5.0"
+  peerDependencies:
+    graphql: ^16.0.0 || ^17.0.0
+  checksum: 10c0/69cd83e9bc576a1d59924bfe807113b24f89e82f2701d289490b21468ae5fba461985719b979f5ca01309095db4fd8cb7d62bdaaca80c2e000a563cdc788d97c
+  languageName: node
+  linkType: hard
+
 "graphql-type-json@npm:^0.3.2":
   version: 0.3.2
   resolution: "graphql-type-json@npm:0.3.2"
@@ -11110,6 +11121,7 @@ __metadata:
     graphql-parse-resolve-info: "npm:^4.14.1"
     graphql-query-complexity: "npm:2.0.0"
     graphql-relay: "npm:^0.10.2"
+    graphql-scalars: "npm:^2.0.1"
     graphql-type-json: "npm:^0.3.2"
     graphql-yoga: "npm:5.21.0"
     hot-shots: "npm:5.6.1"
