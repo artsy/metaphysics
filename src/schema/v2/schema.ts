@@ -254,6 +254,7 @@ import { PhoneNumber } from "./phoneNumber"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
 import { Profiles } from "./profiles"
 import { RecentlySoldArtworks } from "./recentlySoldArtworks"
+import { ConsignmentSubmissionField } from "./consignmentSubmission"
 import { SearchCriteriaLabel } from "./previewSavedSearch/searchCriteriaLabel"
 import { shortcut } from "./shortcut"
 import { Users } from "./users"
@@ -670,6 +671,7 @@ const rootFields = {
   shippingPreset: ShippingPreset,
   showsConnection: Shows,
   staticContent: StaticContent,
+  submission: ConsignmentSubmissionField,
   system: System,
   tag: TagField,
   targetSupply: TargetSupply,
