@@ -930,6 +930,9 @@ const filterArtworksConnectionTypeFactory = (
         first,
         after,
         page,
+        // The search profile only changes keyword matching, and a keyword is
+        // itself another filter, so on its own it doesn't need search.
+        searchProfile,
         ...otherFilters
       } = input
 

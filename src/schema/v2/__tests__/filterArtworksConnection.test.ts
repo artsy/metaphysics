@@ -1858,6 +1858,49 @@ describe("artworksConnection", () => {
         ])
         expect(artworksConnection.counts.total).toEqual(2)
       })
+
+      it("still uses partnerArtworksAllLoader when searchProfile is sent without a keyword", async () => {
+        const mockPartnerArtworksAllLoader = jest.fn(() =>
+          Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+        )
+        const mockFilterArtworksLoader = jest.fn()
+        const context = {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: {
+            filterArtworksLoader: mockFilterArtworksLoader,
+          },
+          isCMSRequest: true,
+          partnerArtworksAllLoader: mockPartnerArtworksAllLoader,
+        }
+
+        for (const searchProfile of ["DEFAULT", "PARTNER_INVENTORY"]) {
+          await runQuery(
+            gql`
+              {
+                artworksConnection(
+                  input: {
+                    partnerID: "partner123"
+                    sort: "-created_at"
+                    includeUnpublished: true
+                    disableNotForSaleSorting: true
+                    medium: "*"
+                    first: 10
+                    searchProfile: ${searchProfile}
+                  }
+                ) {
+                  counts {
+                    total
+                  }
+                }
+              }
+            `,
+            context
+          )
+        }
+
+        expect(mockPartnerArtworksAllLoader).toHaveBeenCalledTimes(2)
+        expect(mockFilterArtworksLoader).not.toHaveBeenCalled()
+      })
     })
 
     describe("complex CMS requests", () => {
