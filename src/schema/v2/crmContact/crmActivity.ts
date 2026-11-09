@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { omitBy, isUndefined } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
@@ -165,14 +166,20 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await crmActivitiesLoader({
-      crm_contact_id: args.crmContactID,
-      kind: args.kind,
-      sort: args.sort,
-      total_count: true,
-      size,
-      offset,
-    })
+    // Gravity rejects empty params, so leave out the optional ones not passed
+    const { body, headers } = await crmActivitiesLoader(
+      omitBy(
+        {
+          crm_contact_id: args.crmContactID,
+          kind: args.kind,
+          sort: args.sort,
+          total_count: true,
+          size,
+          offset,
+        },
+        isUndefined
+      )
+    )
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
