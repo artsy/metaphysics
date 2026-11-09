@@ -152,7 +152,10 @@ const biographyBlurb: GraphQLFieldConfig<
   },
 }
 
-const story: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
+export const story: GraphQLFieldConfig<
+  PartnerArtistDetails,
+  ResolverContext
+> = {
   type: ArtistStoryType,
   description:
     "This gallery's own Story, even if it isn't the one on the page.",
@@ -340,7 +343,6 @@ export const fields: Thunk<GraphQLFieldConfigMap<
       type: GraphQLString,
       resolve: ({ sortable_id }) => sortable_id,
     },
-    story,
   }
 }
 

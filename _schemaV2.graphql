@@ -29955,11 +29955,6 @@ type PartnerArtist {
     last: Int
   ): ShowConnection
   sortableID: String
-
-  """
-  This gallery's own Story, even if it isn't the one on the page.
-  """
-  story: ArtistStory
 }
 
 enum PartnerArtistArtworksSort {
@@ -30284,11 +30279,6 @@ type PartnerArtistEdge {
     last: Int
   ): ShowConnection
   sortableID: String
-
-  """
-  This gallery's own Story, even if it isn't the one on the page.
-  """
-  story: ArtistStory
 }
 
 type PartnerArtworkGrid implements ArtworkContextGrid {

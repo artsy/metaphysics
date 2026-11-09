@@ -45,6 +45,7 @@ import {
   fields as partnerArtistFields,
   isVerifiedRepresentative,
   stampVerifiedRepresentatives,
+  story,
 } from "./partner_artist"
 import {
   connectionWithCursorInfo,
@@ -208,6 +209,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           ResolverContext
         >)(),
         isVerifiedRepresentative,
+        story,
       }),
     }).connectionType
 
