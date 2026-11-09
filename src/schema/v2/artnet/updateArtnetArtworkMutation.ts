@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -15,6 +16,7 @@ import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetArtworkType } from "./artnetArtwork"
+import { ArtnetPushSkipType } from "./artnetPushSkip"
 
 interface UpdateArtnetArtworkMutationInputProps {
   id: string
@@ -32,6 +34,12 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     artnetArtwork: {
       type: ArtnetArtworkType,
       resolve: (artnetArtwork) => artnetArtwork,
+    },
+    skipped: {
+      type: new GraphQLList(ArtnetPushSkipType),
+      description:
+        "Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.",
+      resolve: ({ skipped }) => skipped ?? [],
     },
   }),
 })

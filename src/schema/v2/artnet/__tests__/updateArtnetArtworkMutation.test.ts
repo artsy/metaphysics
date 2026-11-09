@@ -156,6 +156,85 @@ describe("updateArtnetArtwork mutation", () => {
     )
   })
 
+  it("returns what the push could not send to Artnet", async () => {
+    const skippedQuery = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", syncOn: true }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+              skipped {
+                field
+                reason
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      skipped: [
+        { field: "price", reason: "Currency 'XYZ' is not accepted by Artnet" },
+      ],
+    })
+
+    const data = await runAuthenticatedQuery(skippedQuery, {
+      updateArtnetArtworkLoader,
+    })
+
+    expect(data).toEqual({
+      updateArtnetArtwork: {
+        artnetArtworkOrError: {
+          artnetArtwork: { internalID: "artnet-artwork-1" },
+          skipped: [
+            {
+              field: "price",
+              reason: "Currency 'XYZ' is not accepted by Artnet",
+            },
+          ],
+        },
+      },
+    })
+  })
+
+  it("returns an empty skipped list when Gravity sends none", async () => {
+    const skippedQuery = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", syncOn: true }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              skipped {
+                field
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+    })
+
+    const data = await runAuthenticatedQuery(skippedQuery, {
+      updateArtnetArtworkLoader,
+    })
+
+    expect(data).toEqual({
+      updateArtnetArtwork: {
+        artnetArtworkOrError: { skipped: [] },
+      },
+    })
+  })
+
   it("returns a mutation error when Gravity rejects the request", async () => {
     const updateArtnetArtworkLoader = jest
       .fn()
