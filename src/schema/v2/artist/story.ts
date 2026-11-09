@@ -2,6 +2,7 @@ import { GraphQLFieldConfig } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { isUnderListPath } from "lib/helpers"
 import {
   ArtistStoryType,
   GravityArtistStory,
@@ -30,13 +31,22 @@ export const Story: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
   resolve: async (
     { id },
     _args,
-    { partnerArtistsForArtistLoader, artistStoriesLoader }
+    { partnerArtistsForArtistLoader, artistStoriesLoader },
+    info
   ) => {
     // Read per call so tests can toggle it.
     const isDevelopment = config.NODE_ENV === "development"
 
     if (!isDevelopment && !isFeatureFlagEnabled("fireworksq4_artist-story")) {
       return null
+    }
+
+    // Each artist in a list would make its own Gravity calls (see AGENTS.md).
+    if (isUnderListPath(info)) {
+      throw new Error(
+        "[artist/story] This field cannot be queried under a list or connection " +
+          "(e.g. artistsConnection); it is only supported for a single artist via artist(id:)."
+      )
     }
 
     // Same lookup as biographyBlurb, so the two share one cached Gravity call.

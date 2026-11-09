@@ -1,4 +1,5 @@
 import config from "config"
+import { graphql } from "graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { runQuery } from "schema/v2/test/utils"
 
@@ -44,7 +45,9 @@ describe("Artist story", () => {
       .mockResolvedValue([{ id: "pa-featured" }])
     artistStoriesLoader = jest.fn().mockResolvedValue([gravityStory])
     context = {
-      artistLoader: jest.fn().mockResolvedValue({ id: "heidi-lau" }),
+      artistLoader: jest
+        .fn()
+        .mockResolvedValue({ id: "heidi-lau", slug: "heidi-lau" }),
       partnerArtistsForArtistLoader,
       artistStoriesLoader,
     }
@@ -71,6 +74,34 @@ describe("Artist story", () => {
     expect(artistStoriesLoader).toHaveBeenCalledWith({
       partner_artist_id: "pa-featured",
     })
+  })
+
+  it("returns null with an error under a list of artists, keeping the other fields", async () => {
+    const { schema } = require("schema/v2")
+
+    const result = await graphql({
+      schema,
+      source: `
+        {
+          artists(slugs: ["heidi-lau"]) {
+            slug
+            story {
+              internalID
+            }
+          }
+        }
+      `,
+      contextValue: context,
+    })
+
+    expect(result.data).toEqual({
+      artists: [{ slug: "heidi-lau", story: null }],
+    })
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors![0].message).toContain(
+      "cannot be queried under a list"
+    )
+    expect(artistStoriesLoader).not.toHaveBeenCalled()
   })
 
   it("returns null without calling Gravity when the flag is off", async () => {

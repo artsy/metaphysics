@@ -205,6 +205,31 @@ describe("ArtistStory", () => {
       })
     })
 
+    it("keeps the story when the videos fail to load", async () => {
+      artistVideosLoader.mockRejectedValue(new Error("Gravity is down"))
+
+      const data = await runQuery(
+        `
+          {
+            artist(id: "heidi-lau") {
+              story {
+                tagline
+                motionVideos {
+                  internalID
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+
+      expect(data.artist.story).toEqual({
+        tagline: "Clay as memory",
+        motionVideos: [],
+      })
+    })
+
     it("returns no videos when the story has none", async () => {
       const data = await runQuery(query, context)
 

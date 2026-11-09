@@ -140,7 +140,9 @@ export const ArtistStoryType = new GraphQLObjectType<
         new GraphQLList(new GraphQLNonNull(ArtistVideoType))
       ),
       resolve: async ({ id }, _args, { artistVideosLoader }) => {
-        const videos = await artistVideosLoader({ artist_story_id: id })
+        const videos = await artistVideosLoader({ artist_story_id: id }).catch(
+          () => null
+        )
 
         return videosInRole(videos, "motion")
       },
