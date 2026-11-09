@@ -34,6 +34,7 @@ export const AIAgentActivityType = new GraphQLEnumType({
     FINDING_RECOMMENDATIONS: {},
     LOADING_ARTWORK_DETAILS: {},
     SEARCHING_ARTSY: {},
+    LOOKING_AT_IMAGE: {},
   },
 })
 
@@ -46,6 +47,7 @@ export type AIAgentActivity =
   | "FINDING_RECOMMENDATIONS"
   | "LOADING_ARTWORK_DETAILS"
   | "SEARCHING_ARTSY"
+  | "LOOKING_AT_IMAGE"
 
 // GraphQL has no input unions, so a replayed section is a type tag plus ids
 // rather than the concrete section types the output union uses. The enum is
@@ -184,7 +186,7 @@ export const AIAgentTurnInputType = new GraphQLInputObjectType({
     image: {
       type: AIAgentImageInputType,
       description:
-        "An image attached to the new message, to find artworks that look like it.",
+        "An image attached to the new message, to find artworks that look like it or ask about it.",
     },
     history: {
       type: new GraphQLList(new GraphQLNonNull(AIAgentMessageInputType)),

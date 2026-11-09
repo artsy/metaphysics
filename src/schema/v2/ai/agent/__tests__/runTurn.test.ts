@@ -54,14 +54,26 @@ jest.mock("../tools", () => {
   const actual = jest.requireActual("../tools")
   return {
     ...actual,
-    buildAgentTools: (...args: unknown[]) => ({
-      ...mockBuildAgentTools(...args),
-      query_artsy: tool({
-        description: "test",
-        inputSchema: jsonSchema({ type: "object" }),
-        execute: (input: unknown) => mockToolExecute(input),
-      }),
-    }),
+    // `view_image` stays real: the separate description call it makes, and
+    // the text it hands the agent, are the things under test.
+    buildAgentTools: (...args: any[]) => {
+      mockBuildAgentTools(...args)
+      const [, context, imageHandles, viewImageOptions] = args
+      return {
+        query_artsy: tool({
+          description: "test",
+          inputSchema: jsonSchema({ type: "object" }),
+          execute: (input: unknown) => mockToolExecute(input),
+        }),
+        ...(imageHandles?.size && {
+          view_image: actual.buildViewImageTool(
+            imageHandles,
+            context,
+            viewImageOptions
+          ),
+        }),
+      }
+    },
   }
 })
 
@@ -93,6 +105,8 @@ function fakeContext(
   overrides: {
     artworksLoader?: jest.Mock
     artistsLoader?: jest.Mock
+    aiAgentImageUploadCreateLoader?: jest.Mock
+    aiAgentImageUploadPreviewLoader?: jest.Mock
   } = {}
 ): ResolverContext {
   return ({
@@ -103,6 +117,10 @@ function fakeContext(
     artistsLoader:
       overrides.artistsLoader ??
       jest.fn().mockResolvedValue({ body: [], headers: {} }),
+    aiAgentImageUploadCreateLoader:
+      overrides.aiAgentImageUploadCreateLoader ??
+      jest.fn().mockResolvedValue({}),
+    aiAgentImageUploadPreviewLoader: overrides.aiAgentImageUploadPreviewLoader,
     // Gravity's /artists?ids[]= loader is declared with `headers: true`, so it
     // resolves with `{ body, headers }` rather than a bare array.
   } as unknown) as ResolverContext
@@ -2247,5 +2265,260 @@ describe("runTurn eval options", () => {
     await run({ onStepFinish })
     expect(onStepFinish).toHaveBeenCalledTimes(1)
     expect(onStepFinish.mock.calls[0][0].usage.inputTokens).toBe(10)
+  })
+})
+
+describe("runTurn with view_image", () => {
+  const IMAGE = { s3Key: "uploads/query.jpg", s3Bucket: "image-uploads" }
+  const SIGNED_URL =
+    "https://gemini.example.com/crop?src=https%3A%2F%2Fs3.amazonaws.com%2Fimage-uploads%2Fuploads%2Fquery.jpg%3FX-Amz-Signature%3DSECRET"
+  const JPEG_BYTES = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10])
+
+  let fetchSpy: jest.SpyInstance
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
+    fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue(
+      new Response(JPEG_BYTES, {
+        status: 200,
+        headers: { "content-type": "image/jpeg" },
+      })
+    )
+  })
+
+  afterEach(() => {
+    fetchSpy.mockRestore()
+  })
+
+  const finalStep = (message: string): LanguageModelV3StreamResult => ({
+    stream: convertArrayToReadableStream([
+      { type: "stream-start", warnings: [] },
+      { type: "text-start", id: "2" },
+      {
+        type: "text-delta",
+        id: "2",
+        delta: JSON.stringify({ message, section: null }),
+      },
+      { type: "text-end", id: "2" },
+      {
+        type: "finish",
+        finishReason: { unified: "stop", raw: "end_turn" },
+        usage: FAKE_USAGE,
+      },
+    ]),
+  })
+
+  const viewImageStep = (handle: string): LanguageModelV3StreamResult => ({
+    stream: convertArrayToReadableStream([
+      { type: "stream-start", warnings: [] },
+      {
+        type: "tool-call",
+        toolCallId: "call-1",
+        toolName: "view_image",
+        input: JSON.stringify({ image: handle }),
+      },
+      {
+        type: "finish",
+        finishReason: { unified: "tool-calls", raw: "tool_use" },
+        usage: FAKE_USAGE,
+      },
+    ]),
+  })
+
+  const describedAs = (text: string) => ({
+    content: [{ type: "text" as const, text }],
+    finishReason: { unified: "stop" as const, raw: "end_turn" },
+    usage: FAKE_USAGE,
+    warnings: [],
+  })
+
+  it("claims the image, describes it in a separate call, and hands the agent only text", async () => {
+    mockModel = new MockLanguageModelV3({
+      doStream: [
+        viewImageStep(imageHandleFor(IMAGE)),
+        finalStep("A ginger cat."),
+      ],
+      doGenerate: describedAs("A ginger cat asleep on a windowsill."),
+    })
+    const aiAgentImageUploadCreateLoader = jest.fn().mockResolvedValue({})
+    const aiAgentImageUploadPreviewLoader = jest
+      .fn()
+      .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 })
+
+    const events = await collectEvents(
+      {
+        conversationID: "c1",
+        message: "like this but the cat should be fatter",
+        image: IMAGE,
+        includeDebugToolCalls: true,
+      },
+      fakeContext({
+        aiAgentImageUploadCreateLoader,
+        aiAgentImageUploadPreviewLoader,
+      })
+    )
+
+    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledWith({
+      s3_bucket: "image-uploads",
+      s3_key: "uploads/query.jpg",
+    })
+    expect(events[0]).toMatchObject({
+      __typename: "AIAgentToolCall",
+      toolName: "view_image",
+      activity: "LOOKING_AT_IMAGE",
+      summary: "Looking at your image…",
+      debugSummary: `view_image(image: "${imageHandleFor(IMAGE)}")`,
+    })
+    expect(events[1]).toMatchObject({
+      __typename: "AIAgentToolResult",
+      toolName: "view_image",
+      ok: true,
+      summary: null,
+      debugSummary: null,
+    })
+
+    // The description call: no tools, just this image.
+    expect(mockModel.doGenerateCalls).toHaveLength(1)
+    const describeCall = mockModel.doGenerateCalls[0]
+    expect(describeCall.tools ?? []).toEqual([])
+    const describeUser = describeCall.prompt.find(
+      (entry: any) => entry.role === "user"
+    ) as any
+    expect(describeUser.content).toContainEqual(
+      expect.objectContaining({
+        type: "file",
+        mediaType: "image/jpeg",
+      })
+    )
+
+    // The agent gets the text, never the pixels.
+    const agentPrompt = JSON.stringify(mockModel.doStreamCalls[1].prompt)
+    expect(agentPrompt).toContain("A ginger cat asleep on a windowsill.")
+    expect(agentPrompt).not.toContain(JPEG_BYTES.toString("base64"))
+    expect(agentPrompt).not.toMatch(/image-data|"type":"file"/)
+    // The signed URL stays server-side: not in a prompt, not in any event.
+    expect(JSON.stringify(describeCall.prompt)).not.toMatch(
+      /Signature|gemini\.example/
+    )
+    expect(agentPrompt).not.toMatch(/Signature|gemini\.example/)
+    expect(JSON.stringify(events)).not.toMatch(/Signature|gemini\.example/)
+  })
+
+  it("claims this turn's image even when the agent doesn't look at it, and never a replayed one", async () => {
+    mockModel = new MockLanguageModelV3({ doStream: [finalStep("Sure.")] })
+    const aiAgentImageUploadCreateLoader = jest.fn().mockResolvedValue({})
+    const OLD_IMAGE = { s3Key: "uploads/old.jpg", s3Bucket: "image-uploads" }
+
+    await collectEvents(
+      {
+        conversationID: "c1",
+        message: "like this, under $5k",
+        image: IMAGE,
+        history: [{ role: "user", content: "this one", image: OLD_IMAGE }],
+      } as any,
+      fakeContext({ aiAgentImageUploadCreateLoader })
+    )
+
+    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledTimes(1)
+    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledWith({
+      s3_bucket: "image-uploads",
+      s3_key: "uploads/query.jpg",
+    })
+    expect(mockModel.doGenerateCalls).toHaveLength(0)
+  })
+
+  it("still finishes the turn when the image can't be claimed", async () => {
+    mockModel = new MockLanguageModelV3({
+      doStream: [
+        viewImageStep(imageHandleFor(IMAGE)),
+        finalStep("Here are look-alikes."),
+      ],
+    })
+    // Too old to claim, so Gravity won't preview it for this collector either.
+    const aiAgentImageUploadCreateLoader = jest
+      .fn()
+      .mockRejectedValue(Object.assign(new Error("stale"), { statusCode: 422 }))
+    const aiAgentImageUploadPreviewLoader = jest
+      .fn()
+      .mockRejectedValue(Object.assign(new Error("nope"), { statusCode: 404 }))
+
+    const events = await collectEvents(
+      {
+        conversationID: "c1",
+        message: "what style is this?",
+        image: IMAGE,
+        includeDebugToolCalls: true,
+      },
+      fakeContext({
+        aiAgentImageUploadCreateLoader,
+        aiAgentImageUploadPreviewLoader,
+      })
+    )
+
+    expect(events[1]).toMatchObject({
+      __typename: "AIAgentToolResult",
+      toolName: "view_image",
+      ok: false,
+      summary: "Couldn't look at the image.",
+    })
+    expect(events[1].debugSummary).toMatch(/could not be found/)
+    expect(events[events.length - 1]).toMatchObject({
+      __typename: "AIAgentTurnComplete",
+      stopReason: "stop",
+      message: "Here are look-alikes.",
+    })
+    expect(mockModel.doGenerateCalls).toHaveLength(0)
+  })
+
+  it("turns a view_image failure into a tool error the turn recovers from", async () => {
+    mockModel = new MockLanguageModelV3({
+      doStream: [
+        viewImageStep(imageHandleFor(IMAGE)),
+        finalStep("Here are look-alikes."),
+      ],
+    })
+    fetchSpy.mockRejectedValue(new TypeError(`fetch failed: ${SIGNED_URL}`))
+    const aiAgentImageUploadPreviewLoader = jest
+      .fn()
+      .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 })
+
+    const events = await collectEvents(
+      {
+        conversationID: "c1",
+        message: "what style is this?",
+        image: IMAGE,
+        includeDebugToolCalls: true,
+      },
+      fakeContext({ aiAgentImageUploadPreviewLoader })
+    )
+
+    expect(events[1]).toMatchObject({
+      __typename: "AIAgentToolResult",
+      toolName: "view_image",
+      ok: false,
+      summary: "Couldn't look at the image.",
+    })
+    expect(events[1].debugSummary).toMatch(/could not be loaded/)
+    expect(events[events.length - 1]).toMatchObject({
+      __typename: "AIAgentTurnComplete",
+      stopReason: "stop",
+      message: "Here are look-alikes.",
+    })
+    expect(JSON.stringify(events)).not.toMatch(/Signature|gemini\.example/)
+    expect(JSON.stringify(mockModel.doStreamCalls[1].prompt)).not.toMatch(
+      /Signature|gemini\.example/
+    )
+  })
+
+  it("offers view_image only when something is attached", async () => {
+    mockModel = new MockLanguageModelV3({ doStream: [finalStep("Sure.")] })
+
+    await collectEvents({ conversationID: "c1", message: "hi" })
+
+    const toolNames = (mockModel.doStreamCalls[0].tools ?? []).map(
+      (tool: any) => tool.name
+    )
+    expect(toolNames).toEqual(["query_artsy"])
   })
 })

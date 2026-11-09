@@ -32,7 +32,12 @@ import {
 } from "lib/graphqlErrorHandler"
 import { ArgumentError } from "lib/argumentError"
 import { ResolverContext } from "types/graphql"
-import type { AIAgentImageHandles } from "./images"
+import {
+  AIAgentImageHandles,
+  AIAgentImageUnavailableError,
+  fetchImage,
+} from "./images"
+import type { AIAgentImageDescriber } from "./images"
 import type { AIAgentActivity, AIAgentImage } from "./types"
 
 /**
@@ -656,7 +661,8 @@ export async function runQueryArtsyTool(
 export function buildAgentTools(
   schema: GraphQLSchema,
   context: ResolverContext,
-  imageHandles: AIAgentImageHandles = new Map()
+  imageHandles: AIAgentImageHandles = new Map(),
+  viewImageOptions?: AIAgentViewImageOptions
 ): Record<string, Tool> {
   // A conversation without images gets byte-identical tool definitions to
   // one from before images existed, so its cached prompt prefix still hits.
@@ -729,6 +735,10 @@ export function buildAgentTools(
       execute: (input: unknown) =>
         runQueryArtsyTool(input, schema, context, imageHandles),
     }),
+    ...(hasImages &&
+      viewImageOptions && {
+        view_image: buildViewImageTool(imageHandles, context, viewImageOptions),
+      }),
   }
 }
 
@@ -737,6 +747,128 @@ const IMAGE_SEARCH_TOOL_NOTE =
   "`[Collector attached image_…]`. To find works that look like one, pass " +
   'its handle as `artworksConnection(image: "image_…", ...)` alongside any ' +
   "other filters; never combine `image` with `keyword`, `variant` or `sort`."
+
+export interface AIAgentViewImageOptions {
+  /** Settles once this turn's attached image is claimed for the collector. */
+  registration: Promise<void>
+  describeImage: AIAgentImageDescriber
+}
+
+/**
+ * Tells the agent what an attached image shows, for when similarity search
+ * can't express the request ("like this, but at night") or the collector asks
+ * about the image itself. Resolves the same handles `query_artsy` does.
+ *
+ * The agent never gets the pixels: a separate model call with no tools looks
+ * at the image and this returns its text description.
+ *
+ * Described at most once per handle per turn: a second call gets a pointer back
+ * to the first result. Across turns the history is replayed, so a follow-up
+ * may describe it again, which is fine.
+ */
+export function buildViewImageTool(
+  imageHandles: AIAgentImageHandles,
+  context: Pick<ResolverContext, "aiAgentImageUploadPreviewLoader">,
+  { registration, describeImage }: AIAgentViewImageOptions
+): Tool {
+  const viewed = new Map<string, Promise<AIAgentToolRunResult>>()
+
+  const view = async (
+    handle: string,
+    request: string
+  ): Promise<AIAgentToolRunResult> => {
+    const image = imageHandles.get(handle)
+    if (!image) {
+      return {
+        ok: false,
+        content:
+          `Unknown image handle "${handle}". Attached: ` +
+          `${Array.from(imageHandles.keys()).join(", ")}.`,
+      }
+    }
+    try {
+      // The preview is only served to the collector who claimed the image.
+      await registration
+      const description = await describeImage(
+        await fetchImage(image, context),
+        request
+      )
+      if (!description) throw new Error("Empty image description")
+      return {
+        ok: true,
+        content: `What the collector's ${handle} shows: ${description}`,
+      }
+    } catch (error) {
+      // Never the raw error: it can carry the signed URL. Nothing is sent to
+      // Sentry either, for the same reason -- a missing upload is routine.
+      const reason =
+        error instanceof AIAgentImageUnavailableError
+          ? error.message
+          : "The image could not be loaded."
+      return {
+        ok: false,
+        content:
+          `${reason} Search by its handle with ` +
+          "`artworksConnection(image: ...)` instead, or ask the collector.",
+      }
+    }
+  }
+
+  return tool({
+    description:
+      "Find out what an image the collector attached shows, by its handle " +
+      '(e.g. "image_3f9a2c1b"). Returns a text description of the image. ' +
+      "Use it only when you need to know what's in the picture: when the " +
+      "collector wants something different from what it shows (a changed " +
+      "subject, setting or composition), or asks about the image (its style, " +
+      "medium, likely period). To find works that simply look like it -- " +
+      "optionally with price, medium, size or other filters -- don't call " +
+      "this; pass the handle to `artworksConnection(image:)`.",
+    inputSchema: jsonSchema({
+      type: "object",
+      properties: {
+        image: {
+          type: "string",
+          description: 'The image handle, e.g. "image_3f9a2c1b".',
+        },
+        request: {
+          type: "string",
+          description:
+            "What the collector wants from the image, in a sentence, so the " +
+            'description focuses on it, e.g. "works like this but at night" ' +
+            'or "which style is this?".',
+        },
+      },
+      required: ["image"],
+      additionalProperties: false,
+    } as JSONSchema7),
+    execute: async (input: unknown): Promise<AIAgentToolRunResult> => {
+      const { image: handle, request } =
+        (input as { image?: unknown; request?: unknown } | null) ?? {}
+      if (typeof handle !== "string" || handle.length === 0) {
+        return {
+          ok: false,
+          content: 'An image handle such as "image_3f9a2c1b" is required.',
+        }
+      }
+
+      const previous = viewed.get(handle)
+      if (previous) {
+        const result = await previous
+        return result.ok
+          ? {
+              ok: true,
+              content: `${handle} is already described above in this turn.`,
+            }
+          : result
+      }
+
+      const result = view(handle, typeof request === "string" ? request : "")
+      viewed.set(handle, result)
+      return result
+    },
+  })
+}
 
 const ACTIVITY_BY_FIELD = new Map<string, AIAgentActivity>([
   ["__type", "THINKING"],
@@ -771,6 +903,7 @@ const SUMMARY_BY_ACTIVITY: Record<AIAgentActivity, string> = {
   FINDING_RECOMMENDATIONS: "Finding recommendations…",
   LOADING_ARTWORK_DETAILS: "Looking at the artwork…",
   SEARCHING_ARTSY: "Searching Artsy…",
+  LOOKING_AT_IMAGE: "Looking at your image…",
 }
 
 const MAX_DEBUG_SUMMARY_LENGTH = 4_000
@@ -879,6 +1012,24 @@ export function describeToolCall(input: unknown): AIAgentToolCallDescription {
     }
   } catch (_error) {
     return fallback
+  }
+}
+
+/**
+ * `describeToolCall` reads a GraphQL query; `view_image` has no query, only a
+ * handle, which is safe to show in the debug summary (the S3 key never is).
+ */
+export function describeAgentToolCall(
+  toolName: string,
+  input: unknown
+): AIAgentToolCallDescription {
+  if (toolName !== "view_image") return describeToolCall(input)
+
+  const handle = (input as { image?: unknown } | null)?.image
+  return {
+    activity: "LOOKING_AT_IMAGE",
+    summary: SUMMARY_BY_ACTIVITY.LOOKING_AT_IMAGE,
+    debugSummary: `view_image(image: ${formatDebugValue(handle)})`,
   }
 }
 
