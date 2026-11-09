@@ -27,9 +27,11 @@ export const GraphQLLong = new GraphQLScalarType({
   description: "The `Long` scalar type represents 52-bit signed integers",
   serialize: serializeLong,
   parseValue: serializeLong,
-  // undefined is how GraphQL is told a literal is invalid. Returning null instead
-  // passes validation and reaches the resolver as an explicit null, which callers
-  // that treat null as "clear this field" cannot tell from a typo.
+  // undefined is how GraphQL is told a literal is invalid; null would pass
+  // validation and arrive as an explicit null, which callers that read null as
+  // "clear this field" cannot tell from a typo. Only reached when stitching is
+  // off: incrementalMergeSchemas rebuilds this scalar and routes literals
+  // through parseValue instead.
   parseLiteral: (ast) => {
     if (ast.kind !== Kind.INT) return undefined
 

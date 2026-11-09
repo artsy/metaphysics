@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLFieldConfig,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export interface ArtnetPushSkipGravityResponse {
@@ -25,3 +30,15 @@ export const ArtnetPushSkipType = new GraphQLObjectType<
     },
   },
 })
+
+// Gravity merges this into the pushed record's own body, so every push mutation
+// reads it off the same payload.
+export const ArtnetPushSkippedField: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  type: new GraphQLList(ArtnetPushSkipType),
+  description:
+    "Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.",
+  resolve: ({ skipped }) => skipped ?? [],
+}

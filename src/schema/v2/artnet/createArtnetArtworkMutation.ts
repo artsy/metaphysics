@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -11,9 +10,11 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
+import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtnetArtworkType } from "./artnetArtwork"
-import { ArtnetPushSkipType } from "./artnetPushSkip"
+import { ArtnetPushSkippedField } from "./artnetPushSkip"
 
 interface CreateArtnetArtworkMutationInputProps {
   artworkID: string
@@ -28,12 +29,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: ArtnetArtworkType,
       resolve: (artnetArtwork) => artnetArtwork,
     },
-    skipped: {
-      type: new GraphQLList(ArtnetPushSkipType),
-      description:
-        "Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.",
-      resolve: ({ skipped }) => skipped ?? [],
-    },
+    skipped: ArtnetPushSkippedField,
   }),
 })
 
@@ -88,10 +84,9 @@ export const createArtnetArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await createArtnetArtworkLoader({
-        artwork_id: artworkID,
-        published,
-      })
+      return await createArtnetArtworkLoader(
+        snakeCaseKeys(omitBy({ artworkID, published }, isUndefined))
+      )
     } catch (error) {
       const formatted = formatGravityError(error)
       if (formatted) {

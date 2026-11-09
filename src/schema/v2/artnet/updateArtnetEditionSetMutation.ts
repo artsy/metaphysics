@@ -26,7 +26,7 @@ interface UpdateArtnetEditionSetMutationInputProps {
 const ArtnetSaleStatusType = new GraphQLEnumType({
   name: "ArtnetSaleStatus",
   description:
-    "Artnet's own sale-status vocabulary for an edition, including the statuses no Gravity availability maps to.",
+    "Artnet's own sale-status vocabulary for an edition. Setting one of the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery) is only possible here.",
   values: {
     FOR_SALE: { value: "For Sale" },
     RESERVED: { value: "Reserved" },
@@ -90,8 +90,7 @@ export const updateArtnetEditionSetMutation = mutationWithClientMutationId<
     },
     saleStatus: {
       type: ArtnetSaleStatusType,
-      description:
-        "Artnet's own sale status name. Includes the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery), which is the only way to set one.",
+      description: "Artnet's own sale status for this edition.",
     },
   },
   outputFields: {

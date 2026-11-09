@@ -93,8 +93,8 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
-  it("sends price_to_minor as null to clear it, and omits the key entirely when not provided", async () => {
-    const clearQuery = `
+  it("sends price_to_minor as null to clear it", async () => {
+    const query = `
       mutation {
         updateArtnetArtwork(
           input: { id: "artnet-artwork-1", priceToMinor: null, syncOn: true }
@@ -114,14 +114,16 @@ describe("updateArtnetArtwork mutation", () => {
       id: "artnet-artwork-1",
     })
 
-    await runAuthenticatedQuery(clearQuery, { updateArtnetArtworkLoader })
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
 
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
       sync_on: true,
       price_to_minor: null,
     })
+  })
 
-    const omitQuery = `
+  it("omits price_to_minor entirely when it is not provided", async () => {
+    const query = `
       mutation {
         updateArtnetArtwork(
           input: { id: "artnet-artwork-1", syncOn: true }
@@ -137,21 +139,18 @@ describe("updateArtnetArtwork mutation", () => {
       }
     `
 
-    const updateArtnetArtworkLoader2 = jest.fn().mockResolvedValue({
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
       id: "artnet-artwork-1",
     })
 
-    await runAuthenticatedQuery(omitQuery, {
-      updateArtnetArtworkLoader: updateArtnetArtworkLoader2,
-    })
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
 
-    expect(updateArtnetArtworkLoader2).toHaveBeenCalledWith(
-      "artnet-artwork-1",
-      {
-        sync_on: true,
-      }
-    )
-    expect(updateArtnetArtworkLoader2.mock.calls[0][1]).not.toHaveProperty(
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      sync_on: true,
+    })
+    // toHaveBeenCalledWith treats an undefined value as a missing key, so this
+    // is what actually proves omitBy ran.
+    expect(updateArtnetArtworkLoader.mock.calls[0][1]).not.toHaveProperty(
       "price_to_minor"
     )
   })

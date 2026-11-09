@@ -58,8 +58,8 @@ describe("updateArtnetEditionSet mutation", () => {
     })
   })
 
-  it("sends price_minor and price_currency as null to hand the price back, and omits them when not provided", async () => {
-    const clearQuery = `
+  it("sends price_minor and price_currency as null to hand the price back", async () => {
+    const query = `
       mutation {
         updateArtnetEditionSet(
           input: {
@@ -83,7 +83,7 @@ describe("updateArtnetEditionSet mutation", () => {
       id: "artnet-edition-set-1",
     })
 
-    await runAuthenticatedQuery(clearQuery, { updateArtnetEditionSetLoader })
+    await runAuthenticatedQuery(query, { updateArtnetEditionSetLoader })
 
     expect(updateArtnetEditionSetLoader).toHaveBeenCalledWith(
       "artnet-edition-set-1",
@@ -95,8 +95,10 @@ describe("updateArtnetEditionSet mutation", () => {
     expect(updateArtnetEditionSetLoader.mock.calls[0][1]).not.toHaveProperty(
       "sale_status"
     )
+  })
 
-    const omitQuery = `
+  it("omits the price keys entirely when only a sale status is sent", async () => {
+    const query = `
       mutation {
         updateArtnetEditionSet(
           input: { id: "artnet-edition-set-1", saleStatus: SOLD }
@@ -112,24 +114,24 @@ describe("updateArtnetEditionSet mutation", () => {
       }
     `
 
-    const updateArtnetEditionSetLoader2 = jest.fn().mockResolvedValue({
+    const updateArtnetEditionSetLoader = jest.fn().mockResolvedValue({
       id: "artnet-edition-set-1",
     })
 
-    await runAuthenticatedQuery(omitQuery, {
-      updateArtnetEditionSetLoader: updateArtnetEditionSetLoader2,
-    })
+    await runAuthenticatedQuery(query, { updateArtnetEditionSetLoader })
 
-    expect(updateArtnetEditionSetLoader2).toHaveBeenCalledWith(
+    expect(updateArtnetEditionSetLoader).toHaveBeenCalledWith(
       "artnet-edition-set-1",
       {
         sale_status: "Sold",
       }
     )
-    expect(updateArtnetEditionSetLoader2.mock.calls[0][1]).not.toHaveProperty(
+    // toHaveBeenCalledWith treats an undefined value as a missing key, so these
+    // are what actually prove omitBy ran.
+    expect(updateArtnetEditionSetLoader.mock.calls[0][1]).not.toHaveProperty(
       "price_minor"
     )
-    expect(updateArtnetEditionSetLoader2.mock.calls[0][1]).not.toHaveProperty(
+    expect(updateArtnetEditionSetLoader.mock.calls[0][1]).not.toHaveProperty(
       "price_currency"
     )
   })

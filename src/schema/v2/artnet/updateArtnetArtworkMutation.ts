@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -16,7 +15,7 @@ import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetArtworkType } from "./artnetArtwork"
-import { ArtnetPushSkipType } from "./artnetPushSkip"
+import { ArtnetPushSkippedField } from "./artnetPushSkip"
 
 interface UpdateArtnetArtworkMutationInputProps {
   id: string
@@ -35,12 +34,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: ArtnetArtworkType,
       resolve: (artnetArtwork) => artnetArtwork,
     },
-    skipped: {
-      type: new GraphQLList(ArtnetPushSkipType),
-      description:
-        "Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.",
-      resolve: ({ skipped }) => skipped ?? [],
-    },
+    skipped: ArtnetPushSkippedField,
   }),
 })
 
@@ -85,9 +79,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     materials: {
       type: GraphQLString,
       description:
-        'Free-text materials ("oil on canvas"), distinct from the medium vocabulary. Omit to leave it unchanged. ' +
-        "Cannot currently be used to clear Artnet's materials: Gravity's own clear signal is an empty string, but " +
-        "an empty string and null are indistinguishable by the time a request reaches it from here.",
+        'Free-text materials ("oil on canvas"). Omit to leave it unchanged; cannot be cleared, since Gravity clears on an empty string, which is indistinguishable from null by the time a request reaches it from here.',
     },
     priceToMinor: {
       type: GraphQLLong,

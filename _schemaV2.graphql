@@ -4077,7 +4077,7 @@ type ArtnetPushSkip {
 }
 
 """
-Artnet's own sale-status vocabulary for an edition, including the statuses no Gravity availability maps to.
+Artnet's own sale-status vocabulary for an edition. Setting one of the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery) is only possible here.
 """
 enum ArtnetSaleStatus {
   CONTACT_GALLERY
@@ -38818,7 +38818,7 @@ input UpdateArtnetArtworkMutationInput {
   id: String!
 
   """
-  Free-text materials ("oil on canvas"), distinct from the medium vocabulary. Omit to leave it unchanged. Cannot currently be used to clear Artnet's materials: Gravity's own clear signal is an empty string, but an empty string and null are indistinguishable by the time a request reaches it from here.
+  Free-text materials ("oil on canvas"). Omit to leave it unchanged; cannot be cleared, since Gravity clears on an empty string, which is indistinguishable from null by the time a request reaches it from here.
   """
   materials: String
 
@@ -38882,7 +38882,7 @@ input UpdateArtnetEditionSetMutationInput {
   priceMinor: Long
 
   """
-  Artnet's own sale status name. Includes the statuses no Gravity availability maps to (Not Available, Price on Request, Contact Gallery), which is the only way to set one.
+  Artnet's own sale status for this edition.
   """
   saleStatus: ArtnetSaleStatus
 }
