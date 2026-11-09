@@ -158,19 +158,32 @@ describe("crmContactsConnection", () => {
       expect.objectContaining({ assigned_to_user_id: "user-1" })
     )
 
+    await runAuthenticatedQuery(assigneeQuery("isUnassigned: true"), context)
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ unassigned: true })
+    )
+  })
+
+  it("omits unset, null and false assignee filters from the loader params", async () => {
+    // toHaveBeenCalledWith ignores undefined keys, so check the keys directly
+    const loaderKeys = (callIndex: number) => {
+      return Object.keys(
+        (context.crmContactsLoader as jest.Mock).mock.calls[callIndex][0]
+      )
+    }
+
     await runAuthenticatedQuery(
-      assigneeQuery("assignedToUserID: null"),
+      `{ crmContactsConnection(partnerID: "partner-1", first: 1) { totalCount } }`,
       context
     )
-    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ assigned_to_user_id: null })
+    await runAuthenticatedQuery(
+      `{ crmContactsConnection(partnerID: "partner-1", first: 1, assignedToUserID: null, isUnassigned: false) { totalCount } }`,
+      context
     )
-
-    await runAuthenticatedQuery(assigneeQuery(""), context)
-    expect(
-      (context.crmContactsLoader as jest.Mock).mock.calls.at(-1)[0]
-        .assigned_to_user_id
-    ).toBeUndefined()
+    ;[0, 1].forEach((callIndex) => {
+      expect(loaderKeys(callIndex)).not.toContain("assigned_to_user_id")
+      expect(loaderKeys(callIndex)).not.toContain("unassigned")
+    })
   })
 
   it("returns a connection of contacts", async () => {
