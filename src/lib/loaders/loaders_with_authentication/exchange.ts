@@ -1,15 +1,7 @@
 import factories from "../api"
 import config from "config"
-import fetch from "node-fetch"
-import urljoin from "url-join"
-import { GraphQLError } from "graphql"
 
-const { EXCHANGE_APP_ID, EXCHANGE_API_BASE } = config
-
-interface GraphQLArgs {
-  query: string
-  variables: any
-}
+const { EXCHANGE_APP_ID } = config
 
 export const exchangeLoaders = (accessToken, opts) => {
   const {
@@ -168,43 +160,8 @@ export const exchangeLoaders = (accessToken, opts) => {
     { partnerId: string; orderId: string }
   >(({ partnerId, orderId }) => `partners/${partnerId}/orders/${orderId}`)
 
-  const exchangeGraphQLLoader = async <R = unknown>({
-    query,
-    variables,
-  }: GraphQLArgs): Promise<Record<string, R>> => {
-    const token = await exchangeAccessTokenLoader()
-
-    const body = JSON.stringify({
-      query,
-      variables,
-    })
-
-    const response = await fetch(urljoin(EXCHANGE_API_BASE, "graphql"), {
-      method: "POST",
-      body,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-
-    const json = await response.json()
-    const { data: exchangeData, errors: exchangeErrors } = json
-
-    // If the exchange request failed for some reason, throw its errors.
-    if (exchangeErrors) {
-      const errors = exchangeErrors.reduce((acc, error) => {
-        return acc + " " + error["message"]
-      }, "[exchange]: Error ")
-      throw new GraphQLError(errors)
-    } else {
-      return exchangeData
-    }
-  }
-
   return {
     exchangeTokenLoader,
-    exchangeGraphQLLoader,
     meOrderBankAccountBalanceCheckLoader,
     meOrderLoader,
     meOrdersLoader,

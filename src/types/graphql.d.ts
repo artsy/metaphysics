@@ -1,4 +1,3 @@
-import { GraphQLSchema } from "graphql/type"
 import { createLoaders } from "../lib/loaders"
 import { ImageData } from "schema/v2/image/normalize"
 
@@ -10,9 +9,6 @@ export interface ResolverContextValues {
   userID?: string
   /** Optionally you should include a timezone for the user */
   defaultTimezone?: string
-
-  /** The schema used by the internal exchange graphql engine */
-  exchangeSchema: GraphQLSchema
 
   requestIDs: {
     requestID: string

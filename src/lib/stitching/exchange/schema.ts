@@ -1,5 +1,6 @@
 import { readFileSync } from "fs"
 import {
+  FilterRootFields,
   RenameRootFields,
   RenameTypes,
   TransformInterfaceFields,
@@ -38,15 +39,28 @@ export const transformsForExchange = [
   new TransformObjectFields(ReplaceCommerceDateTimeType),
 ]
 
-export const legacyTransformsForExchange = [
-  // Apply a prefix to all the typenames
-  // for Legacy merged schema approach
-  new RenameTypes((name) => {
-    return `Ecommerce${name}`
-  }),
-  // Rename all the root fields to be camelCased
-  new RenameRootFields(
-    (_operation, name) =>
-      `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
+/**
+ * Temporary scaffolding while Exchange is unstitched: root fields hidden from
+ * MP's public schema. `executableExchangeSchema` stays unfiltered, so the
+ * stitching extensions can still delegate to them.
+ */
+export const hiddenExchangeRootFields = new Set([
+  // No client usage (Force, Eigen, Volt and Datadog checked)
+  "commerceAbandonedOrders",
+  "commerceCompetingOrders",
+  "commerceConfirmFulfillment",
+  "commerceLineItems",
+  "commerceUpdateImpulseConversationId",
+  // Only used internally: `createInquiryOrder`, `createInquiryOfferOrder` and
+  // `submitOfferOrderWithConversation` delegate to these
+  "commerceCreateInquiryOfferOrderWithArtwork",
+  "commerceCreateInquiryOrderWithArtwork",
+  "commerceSubmitOrderWithOffer",
+])
+
+export const publicTransformsForExchange = [
+  ...transformsForExchange,
+  new FilterRootFields(
+    (_operation, fieldName) => !hiddenExchangeRootFields.has(fieldName)
   ),
 ]
