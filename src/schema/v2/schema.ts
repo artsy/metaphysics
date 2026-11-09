@@ -170,6 +170,7 @@ import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtne
 import { createArtnetArtworkMutation } from "./artnet/createArtnetArtworkMutation"
 import { updateArtnetArtworkMutation } from "./artnet/updateArtnetArtworkMutation"
 import { finalizeArtnetImportMutation } from "./artnet/finalizeArtnetImportMutation"
+import { updateArtnetEditionSetMutation } from "./artnet/updateArtnetEditionSetMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -503,7 +504,6 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
-import { AI } from "./ai"
 import { AIAgentTurn } from "./ai/agent"
 import { createAIAgentFeedbackMutation } from "./ai/agent/createAIAgentFeedbackMutation"
 import { Video } from "./video/video"
@@ -540,7 +540,6 @@ const rootFields = {
   },
   agreement: Agreement,
   admin: AdminField,
-  ai: AI,
   article: Article,
   articles: Articles,
   articlesConnection: ArticlesConnection,
@@ -955,6 +954,7 @@ export default new GraphQLSchema({
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
       updateArtnetArtwork: updateArtnetArtworkMutation,
+      updateArtnetEditionSet: updateArtnetEditionSetMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityArticle: updateCityArticleMutation,

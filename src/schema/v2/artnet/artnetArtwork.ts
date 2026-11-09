@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { compact } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
@@ -17,7 +18,10 @@ export interface ArtnetArtworkGravityResponse {
   id: string
   catalog_artwork_id: string
   artnet_id: string | null
-  mediums: string[]
+  artnet_artist_id: number | null
+  primary_medium: string | null
+  additional_mediums: string[]
+  materials: string | null
   availability: string | null
   price_currency: string | null
   price_from_minor: number | null
@@ -40,11 +44,35 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ artnet_id }) => artnet_id,
     },
+    artnetArtistId: {
+      type: GraphQLString,
+      description:
+        "Artnet's own artist ID, as last pushed or imported. Null means Gravity has never asserted one, which is what keeps the artwork unpublishable on Artnet.",
+      resolve: ({ artnet_artist_id }) => artnet_artist_id?.toString(),
+    },
+    primaryMedium: {
+      type: GraphQLString,
+      description:
+        "The medium Art OS shows as this artwork's primary; Artnet itself holds a flat list.",
+      resolve: ({ primary_medium }) => primary_medium,
+    },
+    additionalMediums: {
+      type: new GraphQLList(GraphQLString),
+      description: "Medium names beyond the primary, in Gravity's order.",
+      resolve: ({ additional_mediums }) => additional_mediums ?? [],
+    },
     mediums: {
       type: new GraphQLList(GraphQLString),
+      description: "Every medium name, primary first.",
+      deprecationReason: "Use primaryMedium and additionalMediums",
+      resolve: ({ primary_medium, additional_mediums }) =>
+        compact([primary_medium, ...(additional_mediums ?? [])]),
+    },
+    materials: {
+      type: GraphQLString,
       description:
-        "Medium names + materials for this artwork, e.g. Paintings, Oil.",
-      resolve: ({ mediums }) => mediums ?? [],
+        'Free-text materials (e.g. "oil on canvas"), distinct from the medium vocabulary.',
+      resolve: ({ materials }) => materials,
     },
     availability: {
       type: GraphQLString,
