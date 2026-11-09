@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLList,
@@ -151,6 +152,16 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Case-insensitive substring match on the display name or any email address",
     },
+    assignedToUserID: {
+      type: GraphQLString,
+      description:
+        "Only contacts assigned to this partner user. Cannot be combined with isUnassigned.",
+    },
+    isUnassigned: {
+      type: GraphQLBoolean,
+      description:
+        "Only contacts with no assignee. Cannot be combined with assignedToUserID.",
+    },
     sort: {
       type: CRMContactSortEnum,
       description: "Defaults to DISPLAY_NAME_ASC",
@@ -166,6 +177,8 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       status: args.status,
       category: args.category,
       q: args.query,
+      assigned_to_user_id: args.assignedToUserID,
+      unassigned: args.isUnassigned || undefined,
       sort: args.sort,
       total_count: true,
       size,

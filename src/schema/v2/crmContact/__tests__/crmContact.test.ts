@@ -141,6 +141,29 @@ describe("crmContactsConnection", () => {
     })
   })
 
+  it("passes the assignee filters to the loader", async () => {
+    const assigneeQuery = (args: string) => `
+      {
+        crmContactsConnection(partnerID: "partner-1" ${args} first: 1) {
+          totalCount
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(
+      assigneeQuery('assignedToUserID: "user-1"'),
+      context
+    )
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ assigned_to_user_id: "user-1" })
+    )
+
+    await runAuthenticatedQuery(assigneeQuery("isUnassigned: true"), context)
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ unassigned: true })
+    )
+  })
+
   it("returns a connection of contacts", async () => {
     const result = await runAuthenticatedQuery(query, context)
 
