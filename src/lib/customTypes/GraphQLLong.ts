@@ -27,14 +27,15 @@ export const GraphQLLong = new GraphQLScalarType({
   description: "The `Long` scalar type represents 52-bit signed integers",
   serialize: serializeLong,
   parseValue: serializeLong,
+  // undefined is how GraphQL is told a literal is invalid. Returning null instead
+  // passes validation and reaches the resolver as an explicit null, which callers
+  // that treat null as "clear this field" cannot tell from a typo.
   parseLiteral: (ast) => {
-    if (ast.kind == Kind.INT) {
-      const num = parseInt(ast.value, 10)
-      if (num <= MAX_LONG && num >= MIN_LONG) {
-        return num
-      }
-      return null
-    }
-    return null
+    if (ast.kind !== Kind.INT) return undefined
+
+    const num = parseInt(ast.value, 10)
+    if (num > MAX_LONG || num < MIN_LONG) return undefined
+
+    return num
   },
 })

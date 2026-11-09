@@ -156,6 +156,32 @@ describe("updateArtnetArtwork mutation", () => {
     )
   })
 
+  it("refuses a priceToMinor it cannot read rather than clearing the price", async () => {
+    const badQuery = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", priceToMinor: "not a number" }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const updateArtnetArtworkLoader = jest.fn()
+
+    await expect(
+      runAuthenticatedQuery(badQuery, { updateArtnetArtworkLoader })
+    ).rejects.toThrow(/priceToMinor/)
+
+    expect(updateArtnetArtworkLoader).not.toHaveBeenCalled()
+  })
+
   it("returns what the push could not send to Artnet", async () => {
     const skippedQuery = `
       mutation {

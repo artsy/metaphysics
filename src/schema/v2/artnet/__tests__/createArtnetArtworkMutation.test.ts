@@ -52,6 +52,51 @@ describe("createArtnetArtwork mutation", () => {
     })
   })
 
+  it("returns what the push could not send to Artnet", async () => {
+    const skippedQuery = `
+      mutation {
+        createArtnetArtwork(input: { artworkID: "artwork-1" }) {
+          artnetArtworkOrError {
+            ... on CreateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+              skipped {
+                field
+                reason
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const createArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      skipped: [
+        { field: "editions", reason: "Artnet accepts at most 100 editions" },
+      ],
+    })
+
+    const data = await runAuthenticatedQuery(skippedQuery, {
+      createArtnetArtworkLoader,
+    })
+
+    expect(data).toEqual({
+      createArtnetArtwork: {
+        artnetArtworkOrError: {
+          artnetArtwork: { internalID: "artnet-artwork-1" },
+          skipped: [
+            {
+              field: "editions",
+              reason: "Artnet accepts at most 100 editions",
+            },
+          ],
+        },
+      },
+    })
+  })
+
   it("returns a mutation error when Gravity rejects the request", async () => {
     const createArtnetArtworkLoader = jest
       .fn()
