@@ -1,0 +1,11 @@
+query CurrentUserBasicInfo {
+  getCurrentUser {
+    isLoggedIn
+    isReauthenticationRequired
+    user {
+      id
+      displayName
+      email
+    }
+  }
+}

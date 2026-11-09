@@ -25,6 +25,10 @@ export interface ResolverContextValues {
 
   /** The Artnet environment for this request (see lib/artnetEnv.ts) */
   artnetEnv: () => ArtnetEnv
+
+  /** Artnet user credentials, forwarded to the Artnet users service */
+  xArtnetToken?: string
+  xArtnetUserID?: string
 }
 
 export type ResolverContext = ResolverContextValues &

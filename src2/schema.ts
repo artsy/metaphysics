@@ -10,6 +10,12 @@ import {
   isSpecifiedScalarType,
 } from "graphql"
 import { GraphQLDateTime } from "graphql-scalars"
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
+import { RenameRootFields, RenameTypes, wrapSchema } from "@graphql-tools/wrap"
+import type { AsyncExecutor } from "@graphql-tools/utils"
+import { buildSchema } from "graphql"
+import { ARTNET_USERS_GRAPHQL_URLS } from "./lib/artnetEnv"
+import { ResolverContext } from "./types/graphql"
 import { artnetResolvers, resolvers } from "./resolvers"
 
 const readSDL = (file: string) => readFileSync(join(__dirname, file), "utf8")
@@ -35,16 +41,18 @@ function prefixSchema(
   const prefixed = (name: string) => `${prefix}${name}`
 
   // `resolveType` functions return type names, which are about to change.
-  const withPrefixedResolveType = (type) => {
+  const withPrefixedResolveType = (
+    type: GraphQLInterfaceType | GraphQLUnionType
+  ) => {
     const { resolveType } = type.toConfig()
     if (!resolveType) return type
     const config = type.toConfig()
-    config.resolveType = async (...args) => {
-      const result = await resolveType(...args)
+    config.resolveType = async (...args: any[]) => {
+      const result = await (resolveType as any)(...args)
       return typeof result === "string" ? prefixed(result) : result
     }
     return type instanceof GraphQLInterfaceType
-      ? new GraphQLInterfaceType(config)
+      ? new GraphQLInterfaceType(config as any)
       : new GraphQLUnionType(config as any)
   }
 
@@ -75,18 +83,67 @@ function prefixSchema(
 }
 
 const artsySchema = makeExecutableSchema({
-  typeDefs: readSDL("artsy-schema.graphql"),
+  typeDefs: readSDL("schema/artsy.graphql"),
   resolvers,
 })
 
 const artnetSchema = prefixSchema(
   makeExecutableSchema({
-    typeDefs: readSDL("artnet-schema.graphql"),
+    typeDefs: readSDL("schema/artnet-coredata.graphql"),
     resolvers: { ...artnetResolvers, DateTime: GraphQLDateTime },
   }),
   ARTNET_PREFIX,
   SHARED_TYPE_NAMES
 )
 
-// Root fields from both schemas (`Query`) are merged.
-export const schema = mergeSchemas({ schemas: [artsySchema, artnetSchema] })
+// The users schema is resolved by a remote GraphQL server, whose URL depends on
+// the request's Artnet environment. Operations are forwarded as-is (arguments,
+// selections, variables), with the same `artnet_` renaming as the schema above.
+const httpExecutors = new Map<string, ReturnType<typeof buildHTTPExecutor>>()
+
+const usersExecutor: AsyncExecutor = async (request) => {
+  const context = (request.context as unknown) as ResolverContext
+  const env = context.artnetEnv()
+  const endpoint = ARTNET_USERS_GRAPHQL_URLS[env]
+  if (!endpoint) {
+    throw new Error(`The Artnet users service isn't configured for "${env}"`)
+  }
+
+  let executor = httpExecutors.get(endpoint)
+  if (!executor) {
+    executor = buildHTTPExecutor({
+      endpoint,
+      headers: (executionRequest) => {
+        const { xArtnetToken, xArtnetUserID } =
+          ((executionRequest?.context as unknown) as ResolverContext) ?? {}
+        return {
+          ...(xArtnetToken && { "x-artnet-token": xArtnetToken }),
+          ...(xArtnetUserID && { "x-artnet-user-id": xArtnetUserID }),
+        }
+      },
+    })
+    httpExecutors.set(endpoint, executor)
+  }
+  return executor(request) as any
+}
+
+const keepName = (name: string) =>
+  ["Query", "Mutation", "Subscription", ...SHARED_TYPE_NAMES].includes(name)
+
+const artnetUsersSchema = wrapSchema({
+  schema: buildSchema(readSDL("schema/artnet-users.graphql")),
+  executor: usersExecutor,
+  transforms: [
+    new RenameTypes((name) =>
+      keepName(name) ? name : `${ARTNET_PREFIX}${name}`
+    ),
+    new RenameRootFields(
+      (_operation, fieldName) => `${ARTNET_PREFIX}${fieldName}`
+    ),
+  ],
+})
+
+// Root fields from all schemas (`Query`) are merged.
+export const schema = mergeSchemas({
+  schemas: [artsySchema, artnetSchema, artnetUsersSchema],
+})

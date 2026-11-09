@@ -95,6 +95,8 @@ const yoga = createYoga<YogaServerContext, ResolverContext>({
       xImpersonateUserID,
       isCMSRequest,
       artnetEnv,
+      xArtnetToken,
+      xArtnetUserID,
     }
   },
 })

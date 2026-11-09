@@ -1,0 +1,15 @@
+type Query {
+  currentUser: CurrentUserResult!
+}
+
+type CurrentUserResult {
+  isLoggedIn: Boolean!
+  isReauthenticationRequired: Boolean!
+  user: User
+}
+
+type User {
+  id: ID!
+  displayName: String!
+  email: String!
+}
