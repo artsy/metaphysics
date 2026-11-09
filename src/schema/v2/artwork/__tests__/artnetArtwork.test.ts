@@ -43,6 +43,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
             artnetArtwork {
               internalID
               artnetId
+              artnetArtistId
               availability
               published
               priceCurrency
@@ -60,6 +61,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
       artworkLoader: mockArtworkWithArtnetArtwork({
         id: "artnet-artwork-id",
         artnet_id: "12345",
+        artnet_artist_id: 67890,
         availability: "Price on Request",
         published: true,
         price_currency: "USD",
@@ -75,6 +77,7 @@ describe("CatalogArtwork.artnetArtwork", () => {
           artnetArtwork: {
             internalID: "artnet-artwork-id",
             artnetId: "12345",
+            artnetArtistId: "67890",
             availability: "Price on Request",
             published: true,
             priceCurrency: "USD",

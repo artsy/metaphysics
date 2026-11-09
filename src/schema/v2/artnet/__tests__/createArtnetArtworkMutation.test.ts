@@ -4,7 +4,7 @@ describe("createArtnetArtwork mutation", () => {
   const query = `
     mutation {
       createArtnetArtwork(
-        input: { artworkID: "artwork-1", artnetArtistID: 42, published: true }
+        input: { artworkID: "artwork-1", published: true }
       ) {
         artnetArtworkOrError {
           ... on CreateArtnetArtworkSuccess {
@@ -37,7 +37,6 @@ describe("createArtnetArtwork mutation", () => {
 
     expect(createArtnetArtworkLoader).toHaveBeenCalledWith({
       artwork_id: "artwork-1",
-      artnet_artist_id: 42,
       published: true,
     })
     expect(data).toEqual({

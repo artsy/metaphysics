@@ -92,9 +92,9 @@ describe("updateArtnetEditionSet mutation", () => {
         price_currency: null,
       }
     )
-    expect(
-      updateArtnetEditionSetLoader.mock.calls[0][1]
-    ).not.toHaveProperty("sale_status")
+    expect(updateArtnetEditionSetLoader.mock.calls[0][1]).not.toHaveProperty(
+      "sale_status"
+    )
 
     const omitQuery = `
       mutation {

@@ -18,6 +18,7 @@ export interface ArtnetArtworkGravityResponse {
   id: string
   catalog_artwork_id: string
   artnet_id: string | null
+  artnet_artist_id: number | null
   primary_medium: string | null
   additional_mediums: string[]
   materials: string | null
@@ -42,6 +43,12 @@ export const ArtnetArtworkType = new GraphQLObjectType<
     artnetId: {
       type: GraphQLString,
       resolve: ({ artnet_id }) => artnet_id,
+    },
+    artnetArtistId: {
+      type: GraphQLString,
+      description:
+        "Artnet's own artist ID, as last pushed or imported. Null means Gravity has never asserted one, which is what keeps the artwork unpublishable on Artnet.",
+      resolve: ({ artnet_artist_id }) => artnet_artist_id?.toString(),
     },
     primaryMedium: {
       type: GraphQLString,

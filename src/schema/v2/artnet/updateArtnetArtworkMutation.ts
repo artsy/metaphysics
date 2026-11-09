@@ -89,7 +89,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     syncOn: {
       type: GraphQLBoolean,
       description:
-        "Also push the artwork-sourced fields (title, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. Set when the edit came from an inventory row rather than the Artnet row.",
+        "Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Set when the edit came from an inventory row rather than the Artnet row.",
     },
   },
   outputFields: {

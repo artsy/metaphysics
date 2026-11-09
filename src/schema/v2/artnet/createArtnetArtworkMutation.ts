@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -16,7 +15,6 @@ import { ArtnetArtworkType } from "./artnetArtwork"
 
 interface CreateArtnetArtworkMutationInputProps {
   artworkID: string
-  artnetArtistID?: number
   published?: boolean
 }
 
@@ -54,16 +52,11 @@ export const createArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "CreateArtnetArtworkMutation",
   description:
-    "Creates an ArtnetArtwork from an existing artwork and its catalog artwork, and pushes the create to Artnet. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Creates an ArtnetArtwork from an existing artwork and its catalog artwork, and pushes the create to Artnet. Gravity resolves the Artnet artist itself and refuses a create it cannot match, so correcting the artist in Gravity is what makes a retry succeed. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     artworkID: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the artwork to distribute to Artnet.",
-    },
-    artnetArtistID: {
-      type: GraphQLInt,
-      description:
-        "Artnet's own ID for the artist (Gravity has no mapping to it).",
     },
     published: {
       type: GraphQLBoolean,
@@ -79,7 +72,7 @@ export const createArtnetArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkID, artnetArtistID, published },
+    { artworkID, published },
     { createArtnetArtworkLoader }
   ) => {
     if (!createArtnetArtworkLoader) {
@@ -89,7 +82,6 @@ export const createArtnetArtworkMutation = mutationWithClientMutationId<
     try {
       return await createArtnetArtworkLoader({
         artwork_id: artworkID,
-        artnet_artist_id: artnetArtistID,
         published,
       })
     } catch (error) {
