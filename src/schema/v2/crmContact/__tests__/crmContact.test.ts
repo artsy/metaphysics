@@ -186,6 +186,16 @@ describe("crmContactsConnection", () => {
     })
   })
 
+  it("rejects combining assignedToUserID with isUnassigned", async () => {
+    await expect(
+      runAuthenticatedQuery(
+        `{ crmContactsConnection(partnerID: "partner-1", first: 1, assignedToUserID: "user-1", isUnassigned: true) { totalCount } }`,
+        context
+      )
+    ).rejects.toThrow("cannot be combined")
+    expect(context.crmContactsLoader as jest.Mock).not.toHaveBeenCalled()
+  })
+
   it("returns a connection of contacts", async () => {
     const result = await runAuthenticatedQuery(query, context)
 

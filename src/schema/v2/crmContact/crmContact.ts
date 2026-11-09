@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLError,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
@@ -170,6 +171,12 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
   }),
   resolve: async (_root, args, { crmContactsLoader }) => {
     if (!crmContactsLoader) return null
+
+    if (args.assignedToUserID && args.isUnassigned) {
+      throw new GraphQLError(
+        "assignedToUserID and isUnassigned cannot be combined"
+      )
+    }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
