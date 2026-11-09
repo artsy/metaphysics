@@ -7,7 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { omitBy, isUndefined } from "lodash"
+import { omitBy, isNil } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
@@ -166,7 +166,7 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    // Gravity rejects empty params, so leave out the optional ones not passed
+    // Gravity rejects empty params, so leave out optional ones that are unset or null
     const { body, headers } = await crmActivitiesLoader(
       omitBy(
         {
@@ -177,7 +177,7 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
           size,
           offset,
         },
-        isUndefined
+        isNil
       )
     )
 
