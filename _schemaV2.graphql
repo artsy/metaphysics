@@ -3782,6 +3782,11 @@ type ArtnetArtwork {
   Medium names beyond the primary, in Gravity's order.
   """
   additionalMediums: [String]
+
+  """
+  Artnet's own artist ID, as last pushed or imported. Null means Gravity has never asserted one, which is what keeps the artwork unpublishable on Artnet.
+  """
+  artnetArtistId: String
   artnetEditionSets: [ArtnetEditionSet]
   artnetId: String
 
@@ -4054,6 +4059,21 @@ enum ArtnetImportState {
   FINALIZING
   PENDING
   PROCESSING
+}
+
+"""
+A field the push could not send but did not refuse to push over, because Artnet's own limits leave it no form to send it in.
+"""
+type ArtnetPushSkip {
+  """
+  The field left out of the push, e.g. "price" or "editions".
+  """
+  field: String
+
+  """
+  Why Artnet could not be sent this field.
+  """
+  reason: String
 }
 
 """
@@ -13151,11 +13171,6 @@ type CreateArtnetArtworkFailure {
 
 input CreateArtnetArtworkMutationInput {
   """
-  Artnet's own ID for the artist (Gravity has no mapping to it).
-  """
-  artnetArtistID: Int
-
-  """
   The ID of the artwork to distribute to Artnet.
   """
   artworkID: String!
@@ -13181,6 +13196,11 @@ union CreateArtnetArtworkResponseOrError =
 
 type CreateArtnetArtworkSuccess {
   artnetArtwork: ArtnetArtwork
+
+  """
+  Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.
+  """
+  skipped: [ArtnetPushSkip]
 }
 
 type CreateArtnetImportArtistAssignmentFailure {
@@ -25688,7 +25708,7 @@ type Mutation {
   createArtist(input: CreateArtistMutationInput!): CreateArtistMutationPayload
 
   """
-  Creates an ArtnetArtwork from an existing artwork and its catalog artwork, and pushes the create to Artnet. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
+  Creates an ArtnetArtwork from an existing artwork and its catalog artwork, and pushes the create to Artnet. Gravity resolves the Artnet artist itself and refuses a create it cannot match, so correcting the artist in Gravity is what makes a retry succeed. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
   """
   createArtnetArtwork(
     input: CreateArtnetArtworkMutationInput!
@@ -38813,7 +38833,7 @@ input UpdateArtnetArtworkMutationInput {
   published: Boolean
 
   """
-  Also push the artwork-sourced fields (title, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. Set when the edit came from an inventory row rather than the Artnet row.
+  Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Set when the edit came from an inventory row rather than the Artnet row.
   """
   syncOn: Boolean
 }
@@ -38832,6 +38852,11 @@ union UpdateArtnetArtworkResponseOrError =
 
 type UpdateArtnetArtworkSuccess {
   artnetArtwork: ArtnetArtwork
+
+  """
+  Fields the push left out because Artnet cannot express them, which is why Artnet may show less than Gravity holds. Not a failure: the rest of the push went through.
+  """
+  skipped: [ArtnetPushSkip]
 }
 
 type UpdateArtnetEditionSetFailure {
