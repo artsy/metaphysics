@@ -58,7 +58,7 @@ export default (opts) => {
     ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     artistStoriesLoader: gravityLoader("artist_stories"),
-    artistVideosLoader: gravityLoader("artist_videos"),
+    artistStoryVideosLoader: gravityLoader("artist_story_videos"),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
       (letter) => `artists/${letter}`,

@@ -3,31 +3,13 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { isUnderListPath } from "lib/helpers"
-import {
-  ArtistStoryType,
-  GravityArtistStory,
-} from "schema/v2/artistStory/artistStory"
+import { ArtistStoryType } from "schema/v2/artistStory/artistStory"
 
-const CONTENT_FIELDS: (keyof GravityArtistStory)[] = [
-  "tagline",
-  "pull_quote",
-  "pull_quote_attribution",
-  "about_body",
-  "portrait_image",
-  "portrait_alt_text",
-  "portrait_credit",
-  "header_image",
-  "header_image_alt_text",
-  "header_image_credit",
-  "accent_color",
-]
-
-const isBlank = (value: unknown) =>
-  value == null || (typeof value === "string" && value.trim() === "")
-
-export const Story: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
+export const FeaturedStory: GraphQLFieldConfig<
+  { id: string },
+  ResolverContext
+> = {
   type: ArtistStoryType,
-  description: "The Featured Partner's Story.",
   resolve: async (
     { id },
     _args,
@@ -41,10 +23,10 @@ export const Story: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
       return null
     }
 
-    // Each artist in a list would make its own Gravity calls (see AGENTS.md).
+    // The endpoint can't batch yet, so block lists to avoid one call per artist.
     if (isUnderListPath(info)) {
       throw new Error(
-        "[artist/story] This field cannot be queried under a list or connection " +
+        "[artist/featuredStory] This field cannot be queried under a list or connection " +
           "(e.g. artistsConnection); it is only supported for a single artist via artist(id:)."
       )
     }
@@ -60,11 +42,7 @@ export const Story: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
     const stories = await artistStoriesLoader({
       partner_artist_id: featured.id,
     })
-    const story = stories?.[0]
-    if (!story || CONTENT_FIELDS.every((field) => isBlank(story[field]))) {
-      return null
-    }
 
-    return story
+    return stories?.[0] ?? null
   },
 }

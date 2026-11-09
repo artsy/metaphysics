@@ -63,7 +63,7 @@ import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsA
 import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 import CareerHighlights from "./careerHighlights"
-import { Story } from "./story"
+import { FeaturedStory } from "./featuredStory"
 import {
   MarketingCollections,
   fetchMarketingCollections,
@@ -1053,7 +1053,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ residencies }) => residencies,
       },
-      story: Story,
+      featuredStory: FeaturedStory,
       duplicates: {
         type: new GraphQLList(Artist.type),
         resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {

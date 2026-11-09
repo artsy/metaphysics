@@ -10,7 +10,7 @@ import { IDFields } from "schema/v2/object_identification"
 import { GravityVideo, VideoType } from "schema/v2/types/Video"
 import { ArtistStoryQuoteType, toQuote } from "./artistStoryQuote"
 
-export interface GravityArtistVideo {
+export interface GravityArtistStoryVideo {
   id: string
   artist_story_id: string
   video_id: string
@@ -24,8 +24,8 @@ export interface GravityArtistVideo {
   updated_at: string
 }
 
-export const ArtistVideoRoleEnum = new GraphQLEnumType({
-  name: "ArtistVideoRole",
+export const ArtistStoryVideoRoleEnum = new GraphQLEnumType({
+  name: "ArtistStoryVideoRole",
   values: {
     HEADER: { value: "header" },
     MOTION: { value: "motion" },
@@ -34,14 +34,14 @@ export const ArtistVideoRoleEnum = new GraphQLEnumType({
 })
 
 // internalID is the placement's id, not the Video's.
-export const ArtistVideoType = new GraphQLObjectType<
-  GravityArtistVideo,
+export const ArtistStoryVideoType = new GraphQLObjectType<
+  GravityArtistStoryVideo,
   ResolverContext
 >({
-  name: "ArtistVideo",
+  name: "ArtistStoryVideo",
   fields: () => ({
     ...IDFields,
-    role: { type: new GraphQLNonNull(ArtistVideoRoleEnum) },
+    role: { type: new GraphQLNonNull(ArtistStoryVideoRoleEnum) },
     position: { type: new GraphQLNonNull(GraphQLInt) },
     caption: { type: GraphQLString },
     quote: {

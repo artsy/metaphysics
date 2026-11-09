@@ -9,7 +9,10 @@ import { IDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { ImageType } from "schema/v2/image"
 import { ArtistStoryQuoteType, toQuote } from "./artistStoryQuote"
-import { ArtistVideoType, GravityArtistVideo } from "./artistVideo"
+import {
+  ArtistStoryVideoType,
+  GravityArtistStoryVideo,
+} from "./artistStoryVideo"
 
 export interface GravityArtistStoryImage {
   id: string
@@ -73,8 +76,8 @@ const toStoryImage = ({
 
 // A placement whose Video wasn't embedded would otherwise null a non-null field.
 const videosInRole = (
-  videos: GravityArtistVideo[] | null,
-  role: GravityArtistVideo["role"]
+  videos: GravityArtistStoryVideo[] | null,
+  role: GravityArtistStoryVideo["role"]
 ) => {
   if (!videos) {
     return []
@@ -128,29 +131,29 @@ export const ArtistStoryType = new GraphQLObjectType<
       },
     },
     headerVideo: {
-      type: ArtistVideoType,
-      resolve: async ({ id }, _args, { artistVideosLoader }) => {
-        const videos = await artistVideosLoader({ artist_story_id: id })
+      type: ArtistStoryVideoType,
+      resolve: async ({ id }, _args, { artistStoryVideosLoader }) => {
+        const videos = await artistStoryVideosLoader({ artist_story_id: id })
 
         return videosInRole(videos, "header")[0] ?? null
       },
     },
     motionVideos: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ArtistVideoType))
+        new GraphQLList(new GraphQLNonNull(ArtistStoryVideoType))
       ),
-      resolve: async ({ id }, _args, { artistVideosLoader }) => {
-        const videos = await artistVideosLoader({ artist_story_id: id }).catch(
-          () => null
-        )
+      resolve: async ({ id }, _args, { artistStoryVideosLoader }) => {
+        const videos = await artistStoryVideosLoader({
+          artist_story_id: id,
+        }).catch(() => null)
 
         return videosInRole(videos, "motion")
       },
     },
     processVideo: {
-      type: ArtistVideoType,
-      resolve: async ({ id }, _args, { artistVideosLoader }) => {
-        const videos = await artistVideosLoader({ artist_story_id: id })
+      type: ArtistStoryVideoType,
+      resolve: async ({ id }, _args, { artistStoryVideosLoader }) => {
+        const videos = await artistStoryVideosLoader({ artist_story_id: id })
 
         return videosInRole(videos, "process")[0] ?? null
       },

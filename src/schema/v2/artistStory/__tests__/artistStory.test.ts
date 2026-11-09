@@ -48,19 +48,19 @@ const headerPlacement = {
 }
 
 describe("ArtistStory", () => {
-  let artistVideosLoader
+  let artistStoryVideosLoader
   let context
 
   beforeEach(() => {
     mockIsFeatureFlagEnabled.mockReset().mockReturnValue(true)
-    artistVideosLoader = jest.fn().mockResolvedValue([])
+    artistStoryVideosLoader = jest.fn().mockResolvedValue([])
     context = {
       artistLoader: jest.fn().mockResolvedValue({ id: "heidi-lau" }),
       partnerArtistsForArtistLoader: jest
         .fn()
         .mockResolvedValue([{ id: "pa-featured" }]),
       artistStoriesLoader: jest.fn().mockResolvedValue([gravityStory]),
-      artistVideosLoader,
+      artistStoryVideosLoader,
     }
   })
 
@@ -68,7 +68,7 @@ describe("ArtistStory", () => {
     const query = `
       {
         artist(id: "heidi-lau") {
-          story {
+          featuredStory {
             pullQuote {
               text
               attribution
@@ -96,7 +96,7 @@ describe("ArtistStory", () => {
     it("returns the quote, body and both images", async () => {
       const data = await runQuery(query, context)
 
-      expect(data.artist.story).toEqual({
+      expect(data.artist.featuredStory).toEqual({
         pullQuote: { text: "I follow the material.", attribution: "Heidi Lau" },
         aboutBody: "About Heidi",
         portrait: {
@@ -124,9 +124,9 @@ describe("ArtistStory", () => {
 
       const data = await runQuery(query, context)
 
-      expect(data.artist.story.pullQuote).toBeNull()
-      expect(data.artist.story.portrait).toBeNull()
-      expect(data.artist.story.headerImage).toBeNull()
+      expect(data.artist.featuredStory.pullQuote).toBeNull()
+      expect(data.artist.featuredStory.portrait).toBeNull()
+      expect(data.artist.featuredStory.headerImage).toBeNull()
     })
   })
 
@@ -134,7 +134,7 @@ describe("ArtistStory", () => {
     const query = `
       {
         artist(id: "heidi-lau") {
-          story {
+          featuredStory {
             headerVideo {
               internalID
               role
@@ -161,7 +161,7 @@ describe("ArtistStory", () => {
     `
 
     it("returns each role's videos, motion videos in position order, and skips placements without a video", async () => {
-      artistVideosLoader.mockResolvedValue([
+      artistStoryVideosLoader.mockResolvedValue([
         { ...headerPlacement, id: "motion-2", role: "motion", position: 1 },
         headerPlacement,
         {
@@ -178,10 +178,10 @@ describe("ArtistStory", () => {
 
       const data = await runQuery(query, context)
 
-      expect(artistVideosLoader).toHaveBeenCalledWith({
+      expect(artistStoryVideosLoader).toHaveBeenCalledWith({
         artist_story_id: "story-1",
       })
-      expect(data.artist.story).toEqual({
+      expect(data.artist.featuredStory).toEqual({
         headerVideo: {
           internalID: "header",
           role: "HEADER",
@@ -206,13 +206,13 @@ describe("ArtistStory", () => {
     })
 
     it("keeps the story when the videos fail to load", async () => {
-      artistVideosLoader.mockRejectedValue(new Error("Gravity is down"))
+      artistStoryVideosLoader.mockRejectedValue(new Error("Gravity is down"))
 
       const data = await runQuery(
         `
           {
             artist(id: "heidi-lau") {
-              story {
+              featuredStory {
                 tagline
                 motionVideos {
                   internalID
@@ -224,7 +224,7 @@ describe("ArtistStory", () => {
         context
       )
 
-      expect(data.artist.story).toEqual({
+      expect(data.artist.featuredStory).toEqual({
         tagline: "Clay as memory",
         motionVideos: [],
       })
@@ -233,7 +233,7 @@ describe("ArtistStory", () => {
     it("returns no videos when the story has none", async () => {
       const data = await runQuery(query, context)
 
-      expect(data.artist.story).toEqual({
+      expect(data.artist.featuredStory).toEqual({
         headerVideo: null,
         motionVideos: [],
         processVideo: null,

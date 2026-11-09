@@ -2414,6 +2414,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     """
     size: Int = 5
   ): [Show]
+  featuredStory: ArtistStory
 
   """
   Artworks Elastic Search results
@@ -2801,11 +2802,6 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   """
   sortableID: String
   statuses: ArtistStatuses
-
-  """
-  The Featured Partner's Story.
-  """
-  story: ArtistStory
   targetSupply: ArtistTargetSupply!
   vanguardYear: String
   verifiedRepresentatives: [VerifiedRepresentative!]!
@@ -3310,7 +3306,7 @@ type ArtistPartnerEdge {
   sortableID: String
 
   """
-  This gallery's own Story, even if it isn't the one on the page.
+  This partner artist's Story
   """
   story: ArtistStory
 }
@@ -3629,7 +3625,7 @@ type ArtistStatuses {
 type ArtistStory {
   aboutBody(format: Format): String
   headerImage: ArtistStoryImage
-  headerVideo: ArtistVideo
+  headerVideo: ArtistStoryVideo
 
   """
   A globally unique ID.
@@ -3640,9 +3636,9 @@ type ArtistStory {
   A type-specific ID.
   """
   internalID: ID!
-  motionVideos: [ArtistVideo!]!
+  motionVideos: [ArtistStoryVideo!]!
   portrait: ArtistStoryImage
-  processVideo: ArtistVideo
+  processVideo: ArtistStoryVideo
   pullQuote: ArtistStoryQuote
   tagline: String
 }
@@ -3656,6 +3652,30 @@ type ArtistStoryImage {
 type ArtistStoryQuote {
   attribution: String
   text: String!
+}
+
+type ArtistStoryVideo {
+  caption: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID.
+  """
+  internalID: ID!
+  position: Int!
+  quote: ArtistStoryQuote
+  role: ArtistStoryVideoRole!
+  video: Video!
+}
+
+enum ArtistStoryVideoRole {
+  HEADER
+  MOTION
+  PROCESS
 }
 
 type ArtistTargetSupply {
@@ -3706,30 +3726,6 @@ enum ArtistTargetSupplyType {
   CURATED_EMERGING
   HIGHEST_HQDLS
   HIGH_HQDLS
-}
-
-type ArtistVideo {
-  caption: String
-
-  """
-  A globally unique ID.
-  """
-  id: ID!
-
-  """
-  A type-specific ID.
-  """
-  internalID: ID!
-  position: Int!
-  quote: ArtistStoryQuote
-  role: ArtistVideoRole!
-  video: Video!
-}
-
-enum ArtistVideoRole {
-  HEADER
-  MOTION
-  PROCESS
 }
 
 """

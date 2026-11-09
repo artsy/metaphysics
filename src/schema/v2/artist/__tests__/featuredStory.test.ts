@@ -1,5 +1,4 @@
 import config from "config"
-import { graphql } from "graphql"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { runQuery } from "schema/v2/test/utils"
 
@@ -21,11 +20,11 @@ const gravityStory = {
   accent_color: null,
 }
 
-describe("Artist story", () => {
+describe("Artist featuredStory", () => {
   const query = `
     {
       artist(id: "heidi-lau") {
-        story {
+        featuredStory {
           internalID
           tagline
         }
@@ -60,7 +59,7 @@ describe("Artist story", () => {
   it("returns the Featured Partner's story when the flag is on", async () => {
     const data = await runQuery(query, context)
 
-    expect(data.artist.story).toEqual({
+    expect(data.artist.featuredStory).toEqual({
       internalID: "story-1",
       tagline: "Clay as memory",
     })
@@ -76,31 +75,14 @@ describe("Artist story", () => {
     })
   })
 
-  it("returns null with an error under a list of artists, keeping the other fields", async () => {
-    const { schema } = require("schema/v2")
+  it("errors under a list of artists without calling Gravity", async () => {
+    await expect(
+      runQuery(
+        `{ artists(slugs: ["heidi-lau"]) { featuredStory { internalID } } }`,
+        context
+      )
+    ).rejects.toThrow("cannot be queried under a list")
 
-    const result = await graphql({
-      schema,
-      source: `
-        {
-          artists(slugs: ["heidi-lau"]) {
-            slug
-            story {
-              internalID
-            }
-          }
-        }
-      `,
-      contextValue: context,
-    })
-
-    expect(result.data).toEqual({
-      artists: [{ slug: "heidi-lau", story: null }],
-    })
-    expect(result.errors).toHaveLength(1)
-    expect(result.errors![0].message).toContain(
-      "cannot be queried under a list"
-    )
     expect(artistStoriesLoader).not.toHaveBeenCalled()
   })
 
@@ -109,7 +91,7 @@ describe("Artist story", () => {
 
     const data = await runQuery(query, context)
 
-    expect(data.artist.story).toBeNull()
+    expect(data.artist.featuredStory).toBeNull()
     expect(partnerArtistsForArtistLoader).not.toHaveBeenCalled()
     expect(artistStoriesLoader).not.toHaveBeenCalled()
   })
@@ -120,7 +102,7 @@ describe("Artist story", () => {
 
     const data = await runQuery(query, context)
 
-    expect(data.artist.story.internalID).toBe("story-1")
+    expect(data.artist.featuredStory.internalID).toBe("story-1")
     expect(mockIsFeatureFlagEnabled).not.toHaveBeenCalled()
   })
 
@@ -129,7 +111,7 @@ describe("Artist story", () => {
 
     const data = await runQuery(query, context)
 
-    expect(data.artist.story).toBeNull()
+    expect(data.artist.featuredStory).toBeNull()
     expect(artistStoriesLoader).not.toHaveBeenCalled()
   })
 
@@ -138,16 +120,19 @@ describe("Artist story", () => {
 
     const data = await runQuery(query, context)
 
-    expect(data.artist.story).toBeNull()
+    expect(data.artist.featuredStory).toBeNull()
   })
 
-  it("returns null when every field in the row is empty", async () => {
+  it("returns the story with null fields when its row is empty", async () => {
     artistStoriesLoader.mockResolvedValue([
-      { ...gravityStory, tagline: "", about_body: "  " },
+      { ...gravityStory, tagline: null, about_body: null },
     ])
 
     const data = await runQuery(query, context)
 
-    expect(data.artist.story).toBeNull()
+    expect(data.artist.featuredStory).toEqual({
+      internalID: "story-1",
+      tagline: null,
+    })
   })
 })

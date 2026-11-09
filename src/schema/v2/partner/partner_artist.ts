@@ -171,8 +171,7 @@ export const story: GraphQLFieldConfig<
   ResolverContext
 > = {
   type: ArtistStoryType,
-  description:
-    "This gallery's own Story, even if it isn't the one on the page.",
+  description: "This partner artist's Story",
   resolve: async ({ id }, _args, { partnerArtistStoriesLoader }, info) => {
     if (!partnerArtistStoriesLoader || isUnderAllArtistsConnection(info)) {
       return null
