@@ -5,6 +5,10 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artistConnection } from "schema/v2/artist"
 import { artworkConnection } from "schema/v2/artwork"
+import {
+  ArtworkSearchProfileType,
+  PARTNER_INVENTORY_SEARCH_PROFILE,
+} from "schema/v2/artworkSearchProfile"
 import { paginationResolver } from "schema/v2/fields/pagination"
 import { ShowsConnection } from "schema/v2/show"
 
@@ -58,10 +62,15 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     },
     size: { type: GraphQLInt },
     page: { type: GraphQLInt },
+    searchProfile: {
+      type: ArtworkSearchProfileType,
+      description:
+        "Which search behaviour to use. `PARTNER_INVENTORY` matches title, artist, medium type and full or partial inventory ID.",
+    },
   }),
   resolve: async (
     { id },
-    { query, ...args },
+    { query, searchProfile, ...args },
     { partnerSearchArtworksLoader }
   ) => {
     if (!partnerSearchArtworksLoader) return null
@@ -80,6 +89,10 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
       size,
       offset,
       total_count: true,
+      // `DEFAULT` is the same as no profile, so only the partner profile is sent.
+      ...(searchProfile === PARTNER_INVENTORY_SEARCH_PROFILE && {
+        search_profile: searchProfile,
+      }),
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

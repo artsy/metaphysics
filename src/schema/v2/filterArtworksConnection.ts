@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
   GraphQLFloat,
@@ -45,6 +44,10 @@ import {
   ArtworksAggregationResultsType,
 } from "./aggregations/filter_artworks_aggregation"
 import Artist from "./artist"
+import {
+  ArtworkSearchProfileType,
+  PARTNER_INVENTORY_SEARCH_PROFILE,
+} from "./artworkSearchProfile"
 import Artwork, {
   artworkConnection,
   ArtworkConnectionInterface,
@@ -108,22 +111,6 @@ const ArtworkImageSearchInputType = new GraphQLInputObjectType({
     s3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
       description: "S3 bucket of the uploaded query image.",
-    },
-  },
-})
-
-// Gravity's `search_profile` param. Only "partner" changes anything, and Gravity
-// honours it only for a request scoped to one partner the caller can manage.
-export const PARTNER_INVENTORY_SEARCH_PROFILE = "partner"
-
-export const ArtworkSearchProfileType = new GraphQLEnumType({
-  name: "ArtworkSearchProfile",
-  values: {
-    DEFAULT: { value: "default" },
-    PARTNER_INVENTORY: {
-      value: PARTNER_INVENTORY_SEARCH_PROFILE,
-      description:
-        "Inventory search for a partner. Requires partnerID and partner access; ignored otherwise.",
     },
   },
 })

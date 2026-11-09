@@ -2587,6 +2587,40 @@ describe("Partner type", () => {
         },
       })
     })
+
+    describe("searchProfile", () => {
+      const searchWith = async (searchProfileArg) => {
+        const partnerSearchArtworksLoader = jest.fn(() =>
+          Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+        )
+        await runQuery(
+          gql`
+            {
+              partner(id: "levy-gorvy") {
+                artworksSearchConnection(query: "AB-12"${searchProfileArg}) {
+                  totalCount
+                }
+              }
+            }
+          `,
+          { ...context, partnerSearchArtworksLoader }
+        )
+        return partnerSearchArtworksLoader.mock.calls[0][1]
+      }
+
+      it("sends search_profile: partner for PARTNER_INVENTORY", async () => {
+        expect(await searchWith(", searchProfile: PARTNER_INVENTORY")).toEqual(
+          expect.objectContaining({ term: "AB-12", search_profile: "partner" })
+        )
+      })
+
+      it("sends no profile when omitted or DEFAULT", async () => {
+        expect(await searchWith("")).not.toHaveProperty("search_profile")
+        expect(await searchWith(", searchProfile: DEFAULT")).not.toHaveProperty(
+          "search_profile"
+        )
+      })
+    })
   })
 
   describe("#href", () => {
