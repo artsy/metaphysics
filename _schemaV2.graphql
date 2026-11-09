@@ -8059,6 +8059,85 @@ type BuyersPremium {
   percent: Float
 }
 
+type CRMActivity {
+  createdAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  crmContactID: String!
+
+  """
+  Null for activities that are not emails
+  """
+  emailMessage: EmailMessage
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  kind: CRMActivityKind
+  occurredAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  partnerID: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type CRMActivityConnection {
+  """
+  A list of edges.
+  """
+  edges: [CRMActivityEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+"""
+An edge in a connection.
+"""
+type CRMActivityEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: CRMActivity
+}
+
+enum CRMActivityKind {
+  EMAIL
+  NOTE
+}
+
+enum CRMActivitySort {
+  OCCURRED_AT_ASC
+  OCCURRED_AT_DESC
+}
+
 type CRMContact {
   archivedAt(
     format: String
@@ -11339,10 +11418,6 @@ type CommerceOrderEdge {
   node: CommerceOrder
 }
 
-type CommerceOrderError {
-  requestError: RequestError
-}
-
 """
 Represents either a state change or new offer
 """
@@ -11413,11 +11488,6 @@ type CommerceOrderRequiresAction {
   """
   actionData: CommerceOrderActionData!
 }
-
-union CommerceOrderResult =
-    CommerceBuyOrder
-  | CommerceOfferOrder
-  | CommerceOrderError
 
 enum CommerceOrderSourceEnum {
   """
@@ -17487,6 +17557,91 @@ enum EmailAccountStatus {
   DISCONNECTED
   ERROR
   EXPIRED
+}
+
+type EmailMessage {
+  """
+  Whether the viewer may read the subject and snippet. True for the mailbox owner, and for colleagues once the owner shares content with the partner.
+  """
+  contentVisible: Boolean!
+  direction: EmailMessageDirection
+  fromAddress: String
+  fromName: String
+  hasAttachments: Boolean
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+
+  """
+  Bcc participants are only included when the viewer may read the message
+  """
+  participants: [EmailParticipant!]
+  receivedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  sentAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  Null unless `contentVisible` is true
+  """
+  snippet: String
+
+  """
+  Null unless `contentVisible` is true
+  """
+  subject: String
+}
+
+enum EmailMessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+type EmailParticipant {
+  address: String!
+
+  """
+  Set when the address belongs to a CRM contact
+  """
+  crmContactID: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  name: String
+  role: EmailParticipantRole
+}
+
+enum EmailParticipantRole {
+  BCC
+  CC
+  FROM
+  TO
 }
 
 input EnableSecondFactorInput {
@@ -25259,16 +25414,6 @@ type Mutation {
   ): CommerceBuyerRejectOfferPayload
 
   """
-  Confirms the fulfillment of an order
-  """
-  commerceConfirmFulfillment(
-    """
-    Parameters for ConfirmFulfillment
-    """
-    input: CommerceConfirmFulfillmentInput!
-  ): CommerceConfirmFulfillmentPayload
-
-  """
   Confirms the pickup of an order
   """
   commerceConfirmPickup(
@@ -25287,26 +25432,6 @@ type Mutation {
     """
     input: CommerceCreateBankDebitSetupForOrderInput!
   ): CommerceCreateBankDebitSetupForOrderPayload
-
-  """
-  Creates an offer Order with inquiry as source.
-  """
-  commerceCreateInquiryOfferOrderWithArtwork(
-    """
-    Parameters for CreateInquiryOfferOrderWithArtwork
-    """
-    input: CommerceCreateInquiryOfferOrderWithArtworkInput!
-  ): CommerceCreateInquiryOfferOrderWithArtworkPayload
-
-  """
-  Creates a buy Order with inquiry as source.
-  """
-  commerceCreateInquiryOrderWithArtwork(
-    """
-    Parameters for CreateInquiryOrderWithArtwork
-    """
-    input: CommerceCreateInquiryOrderWithArtworkInput!
-  ): CommerceCreateInquiryOrderWithArtworkPayload
 
   """
   Creates an offer Order with artwork_page as source.
@@ -25466,16 +25591,6 @@ type Mutation {
   ): CommerceSubmitOrderPayload
 
   """
-  Submits an order with an offer.
-  """
-  commerceSubmitOrderWithOffer(
-    """
-    Parameters for SubmitOrderWithOffer
-    """
-    input: CommerceSubmitOrderWithOfferInput!
-  ): CommerceSubmitOrderWithOfferPayload
-
-  """
   Submits a pending offer.
   """
   commerceSubmitPendingOffer(
@@ -25484,16 +25599,6 @@ type Mutation {
     """
     input: CommerceSubmitPendingOfferInput!
   ): CommerceSubmitPendingOfferPayload
-
-  """
-  Updates the value of impulse_conversation_id on an order
-  """
-  commerceUpdateImpulseConversationId(
-    """
-    Parameters for UpdateImpulseConversationId
-    """
-    input: CommerceUpdateImpulseConversationIdInput!
-  ): CommerceUpdateImpulseConversationIdPayload
 
   """
   Complete the email OAuth flow by exchanging the authorization code for an account
@@ -26709,6 +26814,11 @@ type Mutation {
   syncCatalogToArtwork(
     input: SyncCatalogToArtworkMutationInput!
   ): SyncCatalogToArtworkMutationPayload
+
+  """
+  Queue a background sync of the new mail of a connected email account. Temporary manual trigger until syncs start automatically.
+  """
+  syncEmailAccount(input: SyncEmailAccountInput!): SyncEmailAccountPayload
 
   """
   Transfers My Collection artworks from one user to another.
@@ -32821,39 +32931,6 @@ type Query {
   ): CollectorProfileTypeConnection
 
   """
-  Find list of abandoned orders
-  """
-  commerceAbandonedOrders(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-    artworkId: ID!
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Ignored for the time being, future iterations will support this.
-    """
-    excludeFailedPayments: Boolean
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-    from: CommerceDateTime!
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    sellerId: String!
-  ): CommerceOrderConnectionWithTotalCount
-
-  """
   Find balance of an account associated with a setup intent
   """
   commerceBankAccountBalance(
@@ -32868,56 +32945,6 @@ type Query {
     buyerId: String!
     sellerId: String
   ): CommerceBuyerActivity
-
-  """
-  Find list of competing orders
-  """
-  commerceCompetingOrders(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    orderId: ID!
-  ): CommerceOrderConnectionWithTotalCount
-  commerceLineItems(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-    artworkId: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-    editionSetId: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    orderStates: [CommerceOrderStateEnum!]
-  ): CommerceLineItemConnection
 
   """
   Return my orders
@@ -32953,7 +32980,6 @@ type Query {
   Find an order by ID
   """
   commerceOrder(code: String, id: ID): CommerceOrder
-  commerceOrderResult(code: String, id: String): CommerceOrderResult
 
   """
   Find list of orders
@@ -33029,6 +33055,31 @@ type Query {
     """
     id: String!
   ): CreditCard
+
+  """
+  A connection of the timeline activities of a CRM contact
+  """
+  crmActivitiesConnection(
+    after: String
+    before: String
+
+    """
+    The internal ID of the CRM contact
+    """
+    crmContactID: String!
+    first: Int
+
+    """
+    Only activities of this kind
+    """
+    kind: CRMActivityKind
+    last: Int
+
+    """
+    Defaults to OCCURRED_AT_DESC (newest first)
+    """
+    sort: CRMActivitySort
+  ): CRMActivityConnection
 
   """
   A CRM contact of a partner
@@ -37882,6 +37933,36 @@ type SyncCatalogToArtworkSuccess {
   artwork: Artwork
   syncErrors: [String]
   syncedFields: [String]
+}
+
+type SyncEmailAccountFailure {
+  mutationError: GravityMutationError
+}
+
+input SyncEmailAccountInput {
+  clientMutationId: String
+
+  """
+  The internal ID of the email account
+  """
+  id: String!
+}
+
+type SyncEmailAccountPayload {
+  clientMutationId: String
+
+  """
+  On success: the email account
+  """
+  emailAccountOrError: SyncEmailAccountResponseOrError
+}
+
+union SyncEmailAccountResponseOrError =
+    SyncEmailAccountFailure
+  | SyncEmailAccountSuccess
+
+type SyncEmailAccountSuccess {
+  emailAccount: EmailAccount
 }
 
 type System {
@@ -43219,6 +43300,31 @@ type Viewer {
     """
     id: String!
   ): CreditCard
+
+  """
+  A connection of the timeline activities of a CRM contact
+  """
+  crmActivitiesConnection(
+    after: String
+    before: String
+
+    """
+    The internal ID of the CRM contact
+    """
+    crmContactID: String!
+    first: Int
+
+    """
+    Only activities of this kind
+    """
+    kind: CRMActivityKind
+    last: Int
+
+    """
+    Defaults to OCCURRED_AT_DESC (newest first)
+    """
+    sort: CRMActivitySort
+  ): CRMActivityConnection
 
   """
   A CRM contact of a partner

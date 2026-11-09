@@ -271,6 +271,7 @@ import { completeEmailOAuthMutation } from "./me/completeEmailOAuthMutation"
 import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
 import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
+import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -291,6 +292,7 @@ import {
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
 import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
   crmContactEmail,
   crmContactEmailsConnection,
@@ -629,6 +631,7 @@ const rootFields = {
   mailchimpCampaignsConnection,
   crmContact,
   crmContactsConnection,
+  crmActivitiesConnection,
   crmContactEmail,
   crmContactEmailsConnection,
   crmContactLocation,
@@ -790,6 +793,7 @@ export default new GraphQLSchema({
       deleteEmailAccount: deleteEmailAccountMutation,
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
+      syncEmailAccount: syncEmailAccountMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,

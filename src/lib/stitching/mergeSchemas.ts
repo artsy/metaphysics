@@ -3,6 +3,7 @@ import { stitchSchemas } from "@graphql-tools/stitch"
 import {
   exchangeSubschemaConfig,
   executableExchangeSchema,
+  publicTransformsForExchange,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
 
@@ -31,7 +32,7 @@ export const incrementalMergeSchemas = (localSchema: GraphQLSchema) => {
     }
   }
 
-  subschemas.push(exchangeSubschemaConfig(transformsForExchange))
+  subschemas.push(exchangeSubschemaConfig(publicTransformsForExchange))
 
   useStitchingEnvironment(
     exchangeStitchingEnvironmentV2({

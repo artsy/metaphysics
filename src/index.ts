@@ -17,10 +17,6 @@ import {
 } from "lib/loaders/api/extensionsLogger"
 import { info } from "./lib/loggers"
 import {
-  executableExchangeSchema,
-  legacyTransformsForExchange,
-} from "./lib/stitching/exchange/schema"
-import {
   middleware as requestIDsAdder,
   requestIPAddress,
 } from "./lib/requestIDs"
@@ -138,8 +134,6 @@ app.use(
   nameOldEigenQueries,
   fetchPersistedQuery
 )
-
-const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
 // `_`-prefixed to avoid colliding with resolver context keys.
 type YogaInternalContext = ResolverContext & {
@@ -277,9 +271,7 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
     // Headers to be threaded through to downstream services
     // and used to authenticate with Artnet services.
     const xArtnetToken = req.headers["x-artnet-token"] as string | undefined
-    const xArtnetUserID = req.headers["x-artnet-user-id"] as
-      | string
-      | undefined
+    const xArtnetUserID = req.headers["x-artnet-user-id"] as string | undefined
 
     const { requestIDs } = res.locals
     const requestID = requestIDs.requestID
@@ -311,7 +303,6 @@ const yoga = createYoga<YogaServerContext, YogaInternalContext>({
       userID,
       defaultTimezone,
       ...loaders,
-      exchangeSchema,
       requestIDs,
       userAgent,
       appToken,

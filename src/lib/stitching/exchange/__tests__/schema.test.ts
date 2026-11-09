@@ -3,6 +3,7 @@ import {
   getRootFieldsFromSchema,
   getMutationFieldsFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
+import { hiddenExchangeRootFields } from "../schema"
 import { getExchangeTransformedSchema } from "./testingUtils"
 
 it("does not include generic type names", async () => {
@@ -30,4 +31,21 @@ it("includes prefixed mutations", async () => {
 
   expect(mutations).toContain("commerceCreateOrderWithArtwork")
   expect(mutations).toContain("commerceApproveOrder")
+})
+
+it("hides unused root fields from the public schema", () => {
+  const { schema } = require("schema/v2")
+  const publicFields = [
+    ...Object.keys(schema.getQueryType().getFields()),
+    ...Object.keys(schema.getMutationType().getFields()),
+  ]
+
+  expect(hiddenExchangeRootFields.size).toBeGreaterThan(0)
+  hiddenExchangeRootFields.forEach((field) => {
+    expect(publicFields).not.toContain(field)
+  })
+  expect(publicFields).not.toContain("commerceOrderResult")
+  // Still served
+  expect(publicFields).toContain("commerceOrder")
+  expect(publicFields).toContain("createInquiryOrder")
 })

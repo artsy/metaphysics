@@ -1,8 +1,6 @@
 import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
-import type { AsyncExecutor } from "@graphql-tools/utils"
 import { WrapQuery } from "@graphql-tools/wrap"
 import {
-  execute,
   GraphQLError,
   GraphQLSchema,
   Kind,
@@ -44,22 +42,6 @@ export const exchangeStitchingEnvironment = ({
   localSchema: GraphQLSchema
   exchangeSchema: GraphQLSchema
 }) => {
-  // Dynamically get all types that implement the CommerceOrder interface
-  // This ensures the union automatically includes new order types added to Exchange
-  const orderInterface = exchangeSchema.getType("CommerceOrder")
-  const orderImplementations =
-    orderInterface && "getInterfaces" in orderInterface
-      ? Object.values(exchangeSchema.getTypeMap())
-          .filter(
-            (type) =>
-              "getInterfaces" in type &&
-              typeof type.getInterfaces === "function" &&
-              type.getInterfaces().some((i) => i.name === "CommerceOrder")
-          )
-          .map((type) => type.name)
-          .join(" | ")
-      : "CommerceBuyOrder | CommerceOfferOrder" // Fallback if introspection fails
-
   type DetailsFactoryInput = { from: string; to: string }
 
   /**
@@ -261,16 +243,6 @@ export const exchangeStitchingEnvironment = ({
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
-
-    type CommerceOrderError {
-      requestError: RequestError
-    }
-
-    union CommerceOrderResult = ${orderImplementations} | CommerceOrderError
-
-    extend type Query {
-      commerceOrderResult(id: String, code: String): CommerceOrderResult
-    }
 
     extend type Conversation {
       orderConnection(
@@ -967,75 +939,6 @@ export const exchangeStitchingEnvironment = ({
             }
 
             return submitOrderWithOffer
-          },
-        },
-      },
-      CommerceOrderResult: {
-        __resolveType: (obj) => {
-          if (obj.requestError) {
-            return "CommerceOrderError"
-          }
-          return obj.__typename
-        },
-      },
-      Query: {
-        commerceOrderResult: {
-          resolve: async (_source, args, context, info) => {
-            // Create a custom executor that handles errors from Exchange
-            const customExecutor: AsyncExecutor = async (
-              params
-            ): Promise<any> => {
-              const { document, variables, context: execContext } = params
-
-              const result = await execute({
-                schema: exchangeSchema,
-                document,
-                variableValues: variables,
-                contextValue: execContext,
-              })
-
-              // If there are errors, don't return them - we'll handle in the resolver
-              if (result.errors && result.errors.length > 0) {
-                return {
-                  data: {
-                    commerceOrder: {
-                      __hasError: true,
-                      __error: result.errors[0],
-                    },
-                  },
-                  errors: undefined,
-                }
-              }
-
-              return result
-            }
-
-            const result = await delegateToSchema({
-              schema: {
-                schema: exchangeSchema,
-                executor: customExecutor,
-              },
-              operation: OperationTypeNode.QUERY,
-              fieldName: "commerceOrder",
-              args,
-              context,
-              info,
-            })
-
-            // Check if result has our error marker
-            if (result?.__hasError) {
-              const error = result.__error
-
-              const statusCode = error?.originalError?.statusCode || 500
-
-              return {
-                requestError: {
-                  statusCode,
-                },
-              }
-            }
-
-            return result
           },
         },
       },
