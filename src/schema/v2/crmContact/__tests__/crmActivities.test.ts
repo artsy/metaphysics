@@ -78,6 +78,39 @@ describe("crmActivitiesConnection", () => {
     })
   })
 
+  it("omits kind and sort from the loader params when not given or null", async () => {
+    const crmActivitiesLoader = jest.fn().mockResolvedValue({
+      body: [],
+      headers: { "x-total-count": "0" },
+    })
+
+    await runAuthenticatedQuery(
+      `{ crmActivitiesConnection(crmContactID: "contact-1", first: 5) { totalCount } }`,
+      { crmActivitiesLoader }
+    )
+
+    // toHaveBeenCalledWith ignores undefined keys, so check the keys directly
+    expect(Object.keys(crmActivitiesLoader.mock.calls[0][0]).sort()).toEqual([
+      "crm_contact_id",
+      "offset",
+      "size",
+      "total_count",
+    ])
+
+    // Relay clients send unset variables as an explicit null
+    await runAuthenticatedQuery(
+      `{ crmActivitiesConnection(crmContactID: "contact-1", first: 5, kind: null) { totalCount } }`,
+      { crmActivitiesLoader }
+    )
+
+    expect(Object.keys(crmActivitiesLoader.mock.calls[1][0]).sort()).toEqual([
+      "crm_contact_id",
+      "offset",
+      "size",
+      "total_count",
+    ])
+  })
+
   it("returns null content when the viewer may not read the message", async () => {
     const crmActivitiesLoader = jest.fn().mockResolvedValue({
       body: [
