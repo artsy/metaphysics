@@ -504,7 +504,6 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
-import { AI } from "./ai"
 import { AIAgentTurn } from "./ai/agent"
 import { createAIAgentFeedbackMutation } from "./ai/agent/createAIAgentFeedbackMutation"
 import { Video } from "./video/video"
@@ -541,7 +540,6 @@ const rootFields = {
   },
   agreement: Agreement,
   admin: AdminField,
-  ai: AI,
   article: Article,
   articles: Articles,
   articlesConnection: ArticlesConnection,
