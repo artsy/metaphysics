@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLList,
@@ -155,12 +154,7 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
     assignedToUserID: {
       type: GraphQLString,
       description:
-        "Only contacts assigned to this partner user. Cannot be combined with isUnassigned.",
-    },
-    isUnassigned: {
-      type: GraphQLBoolean,
-      description:
-        "Only contacts with no assignee. Cannot be combined with assignedToUserID.",
+        "Only contacts assigned to this partner user. Pass null explicitly for only unassigned contacts; omit it for no filter.",
     },
     sort: {
       type: CRMContactSortEnum,
@@ -178,7 +172,6 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       category: args.category,
       q: args.query,
       assigned_to_user_id: args.assignedToUserID,
-      unassigned: args.isUnassigned || undefined,
       sort: args.sort,
       total_count: true,
       size,

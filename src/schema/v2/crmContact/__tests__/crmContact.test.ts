@@ -158,10 +158,19 @@ describe("crmContactsConnection", () => {
       expect.objectContaining({ assigned_to_user_id: "user-1" })
     )
 
-    await runAuthenticatedQuery(assigneeQuery("isUnassigned: true"), context)
-    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ unassigned: true })
+    await runAuthenticatedQuery(
+      assigneeQuery("assignedToUserID: null"),
+      context
     )
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ assigned_to_user_id: null })
+    )
+
+    await runAuthenticatedQuery(assigneeQuery(""), context)
+    expect(
+      (context.crmContactsLoader as jest.Mock).mock.calls.at(-1)[0]
+        .assigned_to_user_id
+    ).toBeUndefined()
   })
 
   it("returns a connection of contacts", async () => {
