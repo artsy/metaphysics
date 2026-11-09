@@ -675,27 +675,66 @@ describe("partnerArtist", () => {
     })
 
     it("returns the gallery's own story, even when it has no content", async () => {
-      const artistStoriesLoader = jest
+      const partnerArtistStoriesLoader = jest
         .fn()
         .mockResolvedValue([{ id: "story-1", tagline: "" }])
 
-      const data = await runQuery(query, { ...context, artistStoriesLoader })
+      const data = await runQuery(query, {
+        ...context,
+        partnerArtistStoriesLoader,
+      })
 
       expect(data.partner.artistsConnection.edges[0].story).toEqual({
         internalID: "story-1",
         tagline: "",
       })
-      expect(artistStoriesLoader).toHaveBeenCalledWith({
+      expect(partnerArtistStoriesLoader).toHaveBeenCalledWith({
         partner_artist_id: "pa-gallery",
       })
     })
 
     it("returns null until the gallery saves a story", async () => {
-      const artistStoriesLoader = jest.fn().mockResolvedValue([])
+      const partnerArtistStoriesLoader = jest.fn().mockResolvedValue([])
+
+      const data = await runQuery(query, {
+        ...context,
+        partnerArtistStoriesLoader,
+      })
+
+      expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+    })
+
+    it("returns null without a token", async () => {
+      const artistStoriesLoader = jest.fn()
 
       const data = await runQuery(query, { ...context, artistStoriesLoader })
 
       expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+      expect(artistStoriesLoader).not.toHaveBeenCalled()
+    })
+
+    it("returns null under allArtistsConnection without calling Gravity", async () => {
+      const partnerArtistStoriesLoader = jest.fn()
+
+      const data = await runQuery(
+        gql`
+          {
+            partner(id: "levy-gorvy") {
+              allArtistsConnection {
+                edges {
+                  story {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { ...context, partnerArtistStoriesLoader }
+      )
+
+      expect(data.partner.allArtistsConnection.edges[0].story).toBeNull()
+      expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
     })
   })
 })
