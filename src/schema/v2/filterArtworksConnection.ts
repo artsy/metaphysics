@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
   GraphQLFloat,
@@ -45,6 +44,7 @@ import {
   ArtworksAggregationResultsType,
 } from "./aggregations/filter_artworks_aggregation"
 import Artist from "./artist"
+import { ArtworkSearchProfileType } from "./artworkSearchProfile"
 import Artwork, {
   artworkConnection,
   ArtworkConnectionInterface,
@@ -108,18 +108,6 @@ const ArtworkImageSearchInputType = new GraphQLInputObjectType({
     s3Bucket: {
       type: new GraphQLNonNull(GraphQLString),
       description: "S3 bucket of the uploaded query image.",
-    },
-  },
-})
-
-export const ArtworkSearchProfileType = new GraphQLEnumType({
-  name: "ArtworkSearchProfile",
-  values: {
-    DEFAULT: { value: "default" },
-    PARTNER_INVENTORY: {
-      value: "partner",
-      description:
-        "Inventory search for a partner. Requires partnerID and partner access; ignored otherwise.",
     },
   },
 })

@@ -29067,6 +29067,11 @@ type Partner implements Node {
     last: Int
     page: Int
     query: String!
+
+    """
+    Which search behaviour to use. `PARTNER_INVENTORY` matches title, artist, medium type and full or partial inventory ID.
+    """
+    searchProfile: ArtworkSearchProfile
     size: Int
   ): ArtworkConnection
 
