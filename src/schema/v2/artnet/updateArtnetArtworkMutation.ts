@@ -10,13 +10,19 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
+import { omitBy, isUndefined } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetArtworkType } from "./artnetArtwork"
+import { ArtnetPushSkippedField } from "./artnetPushSkip"
 
 interface UpdateArtnetArtworkMutationInputProps {
   id: string
   published?: boolean
   availability?: string
+  materials?: string
+  priceToMinor?: number | null
   syncOn?: boolean
 }
 
@@ -28,6 +34,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: ArtnetArtworkType,
       resolve: (artnetArtwork) => artnetArtwork,
     },
+    skipped: ArtnetPushSkippedField,
   }),
 })
 
@@ -54,7 +61,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -69,10 +76,20 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         "Gravity availability (e.g. `for sale`, `sold`), normalized to an Artnet sale status.",
     },
+    materials: {
+      type: GraphQLString,
+      description:
+        'Free-text materials ("oil on canvas"). Omit to leave it unchanged; cannot be cleared, since Gravity clears on an empty string, which is indistinguishable from null by the time a request reaches it from here.',
+    },
+    priceToMinor: {
+      type: GraphQLLong,
+      description:
+        "Ceiling of Artnet's price range, in minor units. The floor is the catalog artwork's price. Pass null to clear it; omit to leave it unchanged.",
+    },
     syncOn: {
       type: GraphQLBoolean,
       description:
-        "Also push the artwork-sourced fields (title, dimensions), making Gravity the source of truth for them. Set when the edit came from an inventory row rather than the Artnet row.",
+        "Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Set when the edit came from an inventory row rather than the Artnet row.",
     },
   },
   outputFields: {
@@ -84,7 +101,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, published, availability, syncOn },
+    { id, published, availability, materials, priceToMinor, syncOn },
     { updateArtnetArtworkLoader }
   ) => {
     if (!updateArtnetArtworkLoader) {
@@ -92,11 +109,20 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await updateArtnetArtworkLoader(id, {
-        published,
-        availability,
-        sync_on: syncOn,
-      })
+      const gravityParams = snakeCaseKeys(
+        omitBy(
+          {
+            published,
+            availability,
+            materials,
+            priceToMinor,
+            syncOn,
+          },
+          isUndefined
+        )
+      )
+
+      return await updateArtnetArtworkLoader(id, gravityParams)
     } catch (error) {
       const formatted = formatGravityError(error)
       if (formatted) {
