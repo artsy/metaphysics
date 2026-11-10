@@ -4,9 +4,8 @@ import { anthropicProvider, litellmProvider } from "lib/apis/anthropic"
 /**
  * A variant is what one experiment varies: a model, and optionally a prompt.
  * Written `label=provider:model[@prompt-file]`, e.g.
- *   sonnet-5=anthropic:claude-sonnet-5
- *   candidate=litellm:claude-sonnet-5-5
- *   new-prompt=anthropic:claude-sonnet-5@prompts/candidate.md
+ *   sonnet-5=litellm:claude-sonnet-5
+ *   new-prompt=litellm:claude-sonnet-5@prompts/candidate.md
  */
 export interface EvalVariant {
   label: string
@@ -40,10 +39,12 @@ export function languageModelFor(variant: EvalVariant): LanguageModel {
 }
 
 /**
- * USD per million tokens, Anthropic first-party rates (checked 2026-11-09).
- * Cache writes are the 5-minute rate (1.25x input), which is what
- * runTurn's ephemeral breakpoints use. Add a model here before comparing
- * costs with it; unknown models report a null cost rather than a wrong one.
+ * USD per million tokens, Anthropic first-party rates (checked 2026-11-10).
+ * Sonnet 5.5 kept Sonnet 5's prices, cache reads included ($0.20). Opus
+ * 5.5's cache reads are also $0.20, not a tenth of its input. Cache writes
+ * are the 5-minute rate, which is what runTurn's ephemeral breakpoints use.
+ * Add a model here before comparing costs with it; unknown models report a
+ * null cost rather than a wrong one.
  */
 export const PRICES_PER_MTOK: Record<
   string,
@@ -57,14 +58,6 @@ export const PRICES_PER_MTOK: Record<
     cacheWrite: 2.5,
   },
   "claude-opus-5-5": { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
-  // Cache rates assumed at the usual 0.1x / 1.25x of input; not published
-  // in the table these came from.
-  "claude-haiku-5-5": {
-    input: 0.1,
-    output: 0.5,
-    cacheRead: 0.01,
-    cacheWrite: 0.125,
-  },
 }
 
 /** LiteLLM may echo a dated or prefixed ID; match on the base name. */

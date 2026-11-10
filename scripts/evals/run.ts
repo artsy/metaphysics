@@ -1,10 +1,10 @@
 // Runs the Art Assistant over a dataset, once per variant, and records each
-// variant as a Phoenix experiment with code and LLM-judge scores. See
-// scripts/evals/README.md.
+// variant as a Phoenix experiment with code and LLM-judge scores. Setup
+// and usage: the "Art Assistant evals" page in Notion.
 //
 //   yarn eval --dataset art-assistant-golden-v1 \
-//     --variant sonnet-5=anthropic:claude-sonnet-5 \
-//     --variant sonnet-5-5=anthropic:claude-sonnet-5-5
+//     --variant sonnet-5=litellm:claude-sonnet-5 \
+//     --variant sonnet-5-5=litellm:claude-sonnet-5-5
 
 import "../../src/lib/loadenv"
 import xapp from "@artsy/xapp"
@@ -33,10 +33,11 @@ import type {
   EvalScore,
 } from "../../src/lib/evals/types"
 import { schema } from "../../src/schema/v2"
-import { loadPromptTemplate } from "../../src/schema/v2/ai/agent/runTurn"
+import {
+  FALLBACK_SYSTEM_PROMPT,
+  loadPromptTemplate,
+} from "../../src/schema/v2/ai/agent/runTurn"
 import { argv, flag, value, values } from "./args"
-
-// ---------------------------------------------------------------- arguments
 
 function usage(message?: string): never {
   if (message) console.error(`${message}\n`)
@@ -53,7 +54,8 @@ function usage(message?: string): never {
       "  --concurrency N        turns in flight (default 3)",
       "  --now YYYY-MM-DD       pin today's date in the prompt (default: today)",
       "  --judge [provider:]MODEL  judge model (default litellm:claude-opus-5-5 when LiteLLM is set,",
-      "                         else anthropic:); --no-judge to skip",
+      "                         else anthropic:); must not be a variant's model, alias",
+      "                         included; --no-judge to skip",
       "  --no-phoenix           don't create experiments; local report only",
       "  --out DIR              report directory (default .cache/evals)",
       "",
@@ -107,11 +109,30 @@ if (!flag("--no-judge")) {
 const judgeModelID = judgeVariant
   ? `${judgeVariant.provider}:${judgeVariant.model}`
   : null
+if (
+  !isLiteLLMConfigured() &&
+  [...variants, judgeVariant].some((v) => v?.provider === "litellm")
+) {
+  usage("A litellm: model needs LITELLM_BASE_URL and LITELLM_API_KEY.")
+}
+if (
+  !config.ANTHROPIC_API_KEY &&
+  [...variants, judgeVariant].some((v) => v?.provider === "anthropic")
+) {
+  usage("An anthropic: model needs ANTHROPIC_API_KEY.")
+}
+if (judgeVariant && variants.some((v) => v.model === judgeVariant!.model)) {
+  usage(
+    `The judge (${judgeVariant.model}) is also a variant and would grade its own answers; pass a different --judge.`
+  )
+}
 const usePhoenix = !flag("--no-phoenix")
 const outDir = value("--out") ?? ".cache/evals"
 
-if (!Number.isInteger(repetitions) || repetitions < 1)
-  usage("Bad --repetitions.")
+const positiveInt = (n: number | undefined) => Number.isInteger(n) && n! >= 1
+if (!positiveInt(repetitions)) usage("Bad --repetitions.")
+if (!positiveInt(concurrency)) usage("Bad --concurrency.")
+if (limit !== undefined && !positiveInt(limit)) usage("Bad --limit.")
 if (isNaN(now.getTime())) usage("Bad --now; expected YYYY-MM-DD.")
 if (usePhoenix && !datasetName) {
   usage("--file runs have no Phoenix dataset to attach to; add --no-phoenix.")
@@ -127,7 +148,9 @@ if (!user.accessToken || !user.userID) {
   )
 }
 
-// ---------------------------------------------------------------- helpers
+// The AI SDK already retries 429/529 within a call; one more turn-level try
+// covers a longer outage without tripling the cost of a bad model ID.
+const PROVIDER_ATTEMPTS = 2
 
 const shortHash = (text: string) =>
   createHash("sha256").update(text).digest("hex").slice(0, 8)
@@ -193,8 +216,6 @@ function initAppToken(): Promise<void> {
   })
 }
 
-// ---------------------------------------------------------------- main
-
 async function main() {
   await initAppToken()
   const phoenix = usePhoenix ? PhoenixClient.fromEnv() : null
@@ -212,8 +233,9 @@ async function main() {
     usage("--dataset needs Phoenix; use --file with --no-phoenix.")
   } else {
     cases = readDatasetFile(datasetFile as string)
-    if (split) cases = cases.filter((c) => c.metadata.category === split)
   }
+  // Also filtered here, in case the server ignores the split parameter.
+  if (split) cases = cases.filter((c) => c.metadata.category === split)
 
   if (onlyCases.size) {
     cases = cases.filter(
@@ -233,6 +255,11 @@ async function main() {
   const gravityPrompt = variants.some((variant) => !variant.promptFile)
     ? await loadPromptTemplate(evalContext(user))
     : undefined
+  if (gravityPrompt === FALLBACK_SYSTEM_PROMPT) {
+    usage(
+      "Couldn't load the system prompt from Gravity (it fell back to the built-in one); check the eval user's token."
+    )
+  }
   const prompts = new Map(
     variants.map((variant) => [
       variant.label,
@@ -319,6 +346,7 @@ async function main() {
   const scored: ScoredRun[] = []
   const uploads: Promise<void>[] = []
   let done = 0
+  let uploadFailures = 0
   console.log(
     `Running ${cases.length} cases × ${repetitions} × ${
       variants.length
@@ -332,13 +360,25 @@ async function main() {
     let output: EvalRunOutput | null = null
     let error: string | undefined
     try {
-      output = await runCase(testCase, {
-        model: languageModelFor(variant),
-        systemPromptTemplate: prompts.get(variant.label),
-        now,
-        schema,
-        user,
-      })
+      // A provider error says nothing about the answer: retry it, and if it
+      // persists record the run as failed rather than as a bad answer.
+      for (let attempt = 1; attempt <= PROVIDER_ATTEMPTS; attempt++) {
+        output = await runCase(testCase, {
+          model: languageModelFor(variant),
+          systemPromptTemplate: prompts.get(variant.label),
+          now,
+          schema,
+          user,
+        })
+        if (output.stopReason !== "error") break
+        if (attempt < PROVIDER_ATTEMPTS) {
+          await new Promise((resolve) => setTimeout(resolve, attempt * 5000))
+        }
+      }
+      if (output?.stopReason === "error") {
+        output = null
+        error = `Provider error after ${PROVIDER_ATTEMPTS} attempts`
+      }
     } catch (cause) {
       error = (cause as Error)?.stack ?? String(cause)
     }
@@ -347,10 +387,12 @@ async function main() {
     const scores: EvalScore[] = output
       ? runCodeEvaluators(output, testCase)
       : []
+    let judgeFailed = false
     if (output && judgeModel) {
       try {
         scores.push(...(await judgeRun(judgeModel, testCase, output)))
       } catch (cause) {
+        judgeFailed = true
         console.error(`  judge failed on ${testCase.id}: ${cause}`)
       }
     }
@@ -379,6 +421,7 @@ async function main() {
               )
             )
           } catch (cause) {
+            uploadFailures += 1
             console.error(`  Phoenix upload failed on ${testCase.id}: ${cause}`)
           }
         })()
@@ -389,6 +432,7 @@ async function main() {
       variant: variant.label,
       caseID: testCase.id,
       scores: Object.fromEntries(scores.map((s) => [s.name, s.score])),
+      failed: error ? "run" : judgeFailed ? "judge" : undefined,
     }
     scored.push(record)
     appendFileSync(
@@ -418,8 +462,6 @@ async function main() {
 
   await Promise.all(uploads)
 
-  // ------------------------------------------------------------ summary
-
   const lines = [
     summarize(
       scored,
@@ -430,6 +472,11 @@ async function main() {
 
   if (phoenix && datasetID) {
     lines.push("", "Phoenix:")
+    if (uploadFailures) {
+      lines.push(
+        `  ${uploadFailures} runs failed to upload; the experiments are incomplete, runs.jsonl is not.`
+      )
+    }
     for (const [label, id] of experiments) {
       lines.push(`  ${label}: ${phoenix.experimentURL(datasetID, id)}`)
     }

@@ -9,6 +9,8 @@ export interface ScoredRun {
   variant: string
   caseID: string
   scores: Record<string, number | null>
+  /** The turn errored (no scores), or only the judge did (no judge_* scores). */
+  failed?: "run" | "judge"
 }
 
 export function perCaseMeans(

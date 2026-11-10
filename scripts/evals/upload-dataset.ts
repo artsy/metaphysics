@@ -1,5 +1,5 @@
 // Uploads a reviewed JSONL golden set to Phoenix as a dataset (or a new
-// version of one). See scripts/evals/README.md.
+// version of one). Setup and usage: the "Art Assistant evals" page in Notion.
 //
 //   yarn eval:upload --file golden-v1.jsonl --name art-assistant-golden-v1
 

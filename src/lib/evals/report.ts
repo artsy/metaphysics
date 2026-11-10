@@ -10,6 +10,8 @@ import type { ScoredRun } from "./stats"
 
 /** Below this many cases a verdict is a hint, not a decision. */
 const MIN_CASES = 20
+/** Above this share of failed runs (turn or judge), no verdict. */
+const MAX_FAILED = 0.05
 
 interface Row {
   metric: string
@@ -152,16 +154,50 @@ export function summarize(
       runs.filter((r) => r.variant === candidate).map((r) => r.caseID)
     ).size
 
+    // Failed runs have no scores, so the table silently rests on the rest;
+    // too many and the comparison isn't the one asked for.
+    const failures = [baseline, candidate].map((label) => {
+      const own = runs.filter((r) => r.variant === label)
+      const count = (kind: ScoredRun["failed"]) =>
+        own.filter((r) => r.failed === kind).length
+      return {
+        label,
+        total: own.length,
+        run: count("run"),
+        judge: count("judge"),
+      }
+    })
+    const tooFew = cases < MIN_CASES
+    const tooMany = failures.find(
+      (f) => f.total === 0 || (f.run + f.judge) / f.total > MAX_FAILED
+    )
+
     lines.push(
       "",
       `${candidate} vs ${baseline} · ${cases} cases × ${repetitions} run${
         repetitions === 1 ? "" : "s"
       }`,
       "",
-      `Switch? ${verdict(rows, judged)}`
+      `Switch? ${
+        tooFew
+          ? `NO VERDICT: only ${cases} cases; the intervals need at least ${MIN_CASES}.`
+          : tooMany
+          ? `NO VERDICT: ${tooMany.run + tooMany.judge} of ${tooMany.total} ${
+              tooMany.label
+            } runs failed. Fix the errors in runs.jsonl and rerun.`
+          : verdict(rows, judged)
+      }`
     )
-    if (cases < MIN_CASES) {
-      lines.push(`(Only ${cases} cases: a hint, not a decision.)`)
+    if (failures.some((f) => f.run || f.judge)) {
+      lines.push(
+        "Failed: " +
+          failures
+            .map(
+              (f) =>
+                `${f.label} ${f.run} turns, ${f.judge} judge calls of ${f.total}`
+            )
+            .join("; ")
+      )
     }
 
     const widths = [22, Math.max(10, baseline.length + 2), 12]
@@ -184,15 +220,17 @@ export function summarize(
       )
     }
 
-    const total = (label: string) =>
-      sumBy(
-        runs.filter((r) => r.variant === label),
-        (r) => r.scores.cost_usd ?? 0
-      )
+    // Unknown, not $0, when the model isn't in the price table.
+    const total = (label: string) => {
+      const costs = runs
+        .filter((r) => r.variant === label && r.scores.cost_usd != null)
+        .map((r) => r.scores.cost_usd as number)
+      return costs.length ? `$${sumBy(costs).toFixed(2)}` : "unknown"
+    }
     lines.push(
       "",
-      `Run cost: ${baseline} $${total(baseline).toFixed(2)}, ` +
-        `${candidate} $${total(candidate).toFixed(2)} (assistant only)`
+      `Run cost: ${baseline} ${total(baseline)}, ` +
+        `${candidate} ${total(candidate)} (assistant only)`
     )
 
     const drops = biggestDrops(runs, baseline, candidate)

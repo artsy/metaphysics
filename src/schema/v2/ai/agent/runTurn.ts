@@ -51,7 +51,7 @@ import {
   AIAgentTurnCompletePayload,
 } from "./types"
 
-const FALLBACK_SYSTEM_PROMPT = `
+export const FALLBACK_SYSTEM_PROMPT = `
 You are Artsy's AI assistant. Help the collector discover artists, artworks,
 shows, and fairs on Artsy using the provided tools. Only state facts returned
 by a tool call — never invent artist names, prices, availability, or results.

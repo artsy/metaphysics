@@ -83,7 +83,7 @@ export const cardCount = (output: EvalRunOutput): EvalScore =>
 /**
  * The assistant's tokens over all steps of the turn (not the judge's).
  * `input_tokens` includes cached input; `cache_read_tokens` is the part of
- * it served from the cache, billed at a tenth of the price.
+ * it served from the cache, billed at the cheaper cache-read rate.
  */
 export function tokens(output: EvalRunOutput): EvalScore[] {
   let input = 0

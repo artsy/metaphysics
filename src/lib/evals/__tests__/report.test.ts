@@ -66,7 +66,7 @@ describe("summarize", () => {
     )
   })
 
-  it("flags small runs and missing judges", () => {
+  it("gives no verdict on a small run", () => {
     const report = summarize(
       [
         { variant: "a", caseID: "x", scores: { answered: 1, cost_usd: 0.01 } },
@@ -75,7 +75,37 @@ describe("summarize", () => {
       ["a", "b"],
       1
     )
-    expect(report).toContain("NO: no real difference")
-    expect(report).toContain("(Only 1 cases: a hint, not a decision.)")
+    expect(report).toContain(
+      "Switch? NO VERDICT: only 1 cases; the intervals need at least 20."
+    )
+  })
+
+  it("withholds the verdict when too many runs failed", () => {
+    const report = summarize(
+      [
+        ...runs("a", base),
+        ...runs("b", base).map((run, i) =>
+          i < 5 ? { ...run, scores: {}, failed: "run" as const } : run
+        ),
+      ],
+      ["a", "b"],
+      3
+    )
+    expect(report).toContain("Switch? NO VERDICT: 5 of 30 b runs failed.")
+    expect(report).toContain(
+      "Failed: a 0 turns, 0 judge calls of 30; b 5 turns, 0 judge calls of 30"
+    )
+  })
+
+  it("prints an unknown cost rather than $0", () => {
+    const report = summarize(
+      [
+        ...runs("a", base),
+        ...runs("b", (i) => ({ ...base(i), cost_usd: null as any })),
+      ],
+      ["a", "b"],
+      3
+    )
+    expect(report).toContain("Run cost: a $0.90, b unknown")
   })
 })

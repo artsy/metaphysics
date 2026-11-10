@@ -65,11 +65,11 @@ function describeCards(section: AIAgentResponseSectionPayload): EvalCard[] {
       title: artwork.title ?? undefined,
       artist:
         artwork.artist?.name ??
-        (artwork.artists ?? [])
+        ((artwork.artists ?? [])
           .map((artist: any) => artist?.name)
           .filter(Boolean)
-          .join(", ") ??
-        undefined,
+          .join(", ") ||
+          undefined),
       price: artwork.sale_message ?? artwork.price ?? undefined,
       medium: artwork.medium ?? artwork.category ?? undefined,
     }))

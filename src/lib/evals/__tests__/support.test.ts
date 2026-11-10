@@ -60,6 +60,22 @@ describe("cost", () => {
       })
     ).toBeCloseTo(0.6 + 0.12 + 0.25 + 1.0)
   })
+
+  it("pins the published rates", () => {
+    expect(priceFor("claude-sonnet-5")).toEqual({
+      input: 2,
+      output: 10,
+      cacheRead: 0.2,
+      cacheWrite: 2.5,
+    })
+    expect(priceFor("claude-sonnet-5-5")).toEqual(priceFor("claude-sonnet-5"))
+    expect(priceFor("claude-opus-5-5")).toEqual({
+      input: 4,
+      output: 20,
+      cacheRead: 0.2,
+      cacheWrite: 5,
+    })
+  })
 })
 
 describe("stats", () => {
