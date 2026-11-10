@@ -738,5 +738,52 @@ describe("partnerArtist", () => {
       expect(data.partner.list.edges[0].story).toBeNull()
       expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
     })
+
+    describe("page size limit", () => {
+      const pagedQuery = gql`
+        query($first: Int) {
+          partner(id: "levy-gorvy") {
+            artistsConnection(first: $first) {
+              edges {
+                story {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      it("returns the story on a page at the limit", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          pagedQuery,
+          { ...context, partnerArtistStoriesLoader },
+          { first: 10 }
+        )
+
+        expect(data.partner.artistsConnection.edges[0].story).toEqual({
+          internalID: "story-1",
+        })
+      })
+
+      it("returns null on a page over the limit, without calling Gravity", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          pagedQuery,
+          { ...context, partnerArtistStoriesLoader },
+          { first: 11 }
+        )
+
+        expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+        expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
+      })
+    })
   })
 })

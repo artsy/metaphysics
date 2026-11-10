@@ -678,6 +678,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs
           )
 
+          // TODO: Gravity can't batch stories yet, so each edge makes its own call.
+          // 10 here is a magical numnber, and we should remove this when enable batching on stories endpoint
+          if (size > 10) {
+            body.forEach((partnerArtist) => {
+              partnerArtist._storyUnavailable = true
+            })
+          }
+
           if (isFieldRequested("edges.isVerifiedRepresentative", info)) {
             await stampVerifiedRepresentatives(
               body,
