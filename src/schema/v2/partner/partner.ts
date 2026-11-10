@@ -17,7 +17,10 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
 import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
 import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  convertConnectionArgsToGravityArgs,
+  isUnderListPath,
+} from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
 import Profile from "schema/v2/profile"
@@ -679,8 +682,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           // TODO: Gravity can't batch stories yet, so each edge makes its own call.
-          // 10 here is a magical numnber, and we should remove this when enable batching on stories endpoint
-          if (size > 10) {
+          // 10 here is a magical number, and we should remove this when enable batching on stories endpoint
+          if (size > 10 || isUnderListPath(info)) {
             body.forEach((partnerArtist) => {
               partnerArtist._storyUnavailable = true
             })

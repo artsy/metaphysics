@@ -784,6 +784,46 @@ describe("partnerArtist", () => {
         expect(data.partner.artistsConnection.edges[0].story).toBeNull()
         expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
       })
+
+      it("returns null when the partner is in a list, without calling Gravity", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          gql`
+            {
+              partnersConnection(first: 1) {
+                edges {
+                  node {
+                    artistsConnection(first: 1) {
+                      edges {
+                        story {
+                          internalID
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          {
+            ...context,
+            partnerArtistStoriesLoader,
+            partnersLoader: () =>
+              Promise.resolve({
+                body: [partnerData],
+                headers: { "x-total-count": "1" },
+              }),
+          }
+        )
+
+        expect(
+          data.partnersConnection.edges[0].node.artistsConnection.edges[0].story
+        ).toBeNull()
+        expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
+      })
     })
   })
 })
