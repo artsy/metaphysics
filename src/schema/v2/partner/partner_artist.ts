@@ -26,9 +26,11 @@ import { setVersion } from "../image/normalize"
 import { paginationResolver } from "../fields/pagination"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { ShowsConnection } from "../show"
+import { ArtistStoryType } from "../artistStory/artistStory"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
+  id: string
   artist: {
     id: string
     _id: string
@@ -147,6 +149,26 @@ const biographyBlurb: GraphQLFieldConfig<
     }
 
     return null
+  },
+}
+
+export const story: GraphQLFieldConfig<
+  PartnerArtistDetails & { _storyUnavailable?: boolean },
+  ResolverContext
+> = {
+  type: ArtistStoryType,
+  description: "This partner artist's Story",
+  resolve: async (
+    { id, _storyUnavailable },
+    _args,
+    { partnerArtistStoriesLoader }
+  ) => {
+    if (!partnerArtistStoriesLoader || _storyUnavailable) {
+      return null
+    }
+
+    const stories = await partnerArtistStoriesLoader({ partner_artist_id: id })
+    return stories?.[0]
   },
 }
 

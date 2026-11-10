@@ -1,9 +1,5 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLObjectType,
-  GraphQLResolveInfo,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLInt, GraphQLObjectType } from "graphql"
+import { isUnderListPath } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import {
   conversationEligibleForPersonalizedOfferField,
@@ -14,23 +10,6 @@ import {
 // of unanswered conversations, to bound the cost of the collector-profiles
 // lookup. See the `confirmedBuyersWaitingCount` field description below.
 const UNANSWERED_CONVERSATIONS_SCAN_LIMIT = 50
-
-// True when the current field is being resolved beneath a list index in the
-// response (e.g. `partnersConnection.edges[3].node.inquiryMetrics`). The
-// singular `partner(id:)` field never produces a numeric path segment, so
-// this reliably distinguishes "resolved for one partner" from "resolved as
-// one node of a list/connection of partners" without needing to enumerate
-// every field that can return a Partner.
-const isUnderListPath = (info: GraphQLResolveInfo): boolean => {
-  let path: typeof info.path | undefined = info.path
-  while (path) {
-    if (typeof path.key === "number") {
-      return true
-    }
-    path = path.prev
-  }
-  return false
-}
 
 interface UnansweredConversations {
   total_count: number

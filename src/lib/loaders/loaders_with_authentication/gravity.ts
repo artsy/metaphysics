@@ -1172,6 +1172,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtistStoriesLoader: gravityLoader("artist_stories"),
     partnerArtistsAllLoader: gravityLoader(
       (id) => `partner/${id}/partner_artists/all`,
       {},

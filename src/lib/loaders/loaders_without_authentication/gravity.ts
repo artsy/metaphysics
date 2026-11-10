@@ -57,6 +57,8 @@ export default (opts) => {
       (id) => `artist/${id}/instagram_media`
     ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
+    artistStoriesLoader: gravityLoader("artist_stories"),
+    artistStoryVideosLoader: gravityLoader("artist_story_videos"),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
       (letter) => `artists/${letter}`,
