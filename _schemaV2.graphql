@@ -3623,9 +3623,9 @@ type ArtistStatuses {
 }
 
 type ArtistStory {
-  aboutBody(format: Format): String
+  about: ArtistStoryAbout
   headerImage: ArtistStoryImage
-  headerVideo: ArtistStoryVideo
+  headerVideo: Video
 
   """
   A globally unique ID.
@@ -3637,9 +3637,13 @@ type ArtistStory {
   """
   internalID: ID!
   motionVideos: [ArtistStoryVideo!]!
-  portrait: ArtistStoryImage
-  processVideo: ArtistStoryVideo
+  processVideo: Video
   pullQuote: ArtistStoryQuote
+}
+
+type ArtistStoryAbout {
+  body(format: Format): String
+  portrait: ArtistStoryImage
   tagline: String
 }
 
@@ -3668,14 +3672,7 @@ type ArtistStoryVideo {
   internalID: ID!
   position: Int!
   quote: ArtistStoryQuote
-  role: ArtistStoryVideoRole!
   video: Video!
-}
-
-enum ArtistStoryVideoRole {
-  HEADER
-  MOTION
-  PROCESS
 }
 
 type ArtistTargetSupply {

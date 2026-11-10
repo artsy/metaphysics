@@ -26,7 +26,9 @@ describe("Artist featuredStory", () => {
       artist(id: "heidi-lau") {
         featuredStory {
           internalID
-          tagline
+          about {
+            tagline
+          }
         }
       }
     }
@@ -61,7 +63,7 @@ describe("Artist featuredStory", () => {
 
     expect(data.artist.featuredStory).toEqual({
       internalID: "story-1",
-      tagline: "Clay as memory",
+      about: { tagline: "Clay as memory" },
     })
     expect(mockIsFeatureFlagEnabled).toHaveBeenCalledWith(
       "fireworksq4_artist-story"
@@ -132,7 +134,7 @@ describe("Artist featuredStory", () => {
 
     expect(data.artist.featuredStory).toEqual({
       internalID: "story-1",
-      tagline: null,
+      about: { tagline: null },
     })
   })
 })

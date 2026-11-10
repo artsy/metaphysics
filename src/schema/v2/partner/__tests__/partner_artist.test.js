@@ -660,7 +660,9 @@ describe("partnerArtist", () => {
             edges {
               story {
                 internalID
-                tagline
+                about {
+                  tagline
+                }
               }
             }
           }
@@ -686,7 +688,7 @@ describe("partnerArtist", () => {
 
       expect(data.partner.artistsConnection.edges[0].story).toEqual({
         internalID: "story-1",
-        tagline: "",
+        about: { tagline: "" },
       })
       expect(partnerArtistStoriesLoader).toHaveBeenCalledWith({
         partner_artist_id: "pa-gallery",

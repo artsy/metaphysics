@@ -8,6 +8,7 @@ import { ResolverContext } from "types/graphql"
 import { IDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { ImageType } from "schema/v2/image"
+import { VideoType } from "schema/v2/types/Video"
 import { ArtistStoryQuoteType, toQuote } from "./artistStoryQuote"
 import {
   ArtistStoryVideoType,
@@ -88,24 +89,14 @@ const videosInRole = (
     .sort((a, b) => a.position - b.position)
 }
 
-export const ArtistStoryType = new GraphQLObjectType<
+const ArtistStoryAboutType = new GraphQLObjectType<
   GravityArtistStory,
   ResolverContext
 >({
-  name: "ArtistStory",
+  name: "ArtistStoryAbout",
   fields: () => ({
-    ...IDFields,
     tagline: { type: GraphQLString },
-    pullQuote: {
-      type: ArtistStoryQuoteType,
-      resolve: ({ pull_quote, pull_quote_attribution }) => {
-        return toQuote({
-          text: pull_quote,
-          attribution: pull_quote_attribution,
-        })
-      },
-    },
-    aboutBody: markdown((story) => story.about_body),
+    body: markdown((story) => story.about_body),
     portrait: {
       type: ArtistStoryImageType,
       resolve: ({ portrait_image, portrait_alt_text, portrait_credit }) => {
@@ -113,6 +104,29 @@ export const ArtistStoryType = new GraphQLObjectType<
           image: portrait_image,
           altText: portrait_alt_text,
           credit: portrait_credit,
+        })
+      },
+    },
+  }),
+})
+
+export const ArtistStoryType = new GraphQLObjectType<
+  GravityArtistStory,
+  ResolverContext
+>({
+  name: "ArtistStory",
+  fields: () => ({
+    ...IDFields,
+    about: {
+      type: ArtistStoryAboutType,
+      resolve: (story) => story,
+    },
+    pullQuote: {
+      type: ArtistStoryQuoteType,
+      resolve: ({ pull_quote, pull_quote_attribution }) => {
+        return toQuote({
+          text: pull_quote,
+          attribution: pull_quote_attribution,
         })
       },
     },
@@ -131,11 +145,11 @@ export const ArtistStoryType = new GraphQLObjectType<
       },
     },
     headerVideo: {
-      type: ArtistStoryVideoType,
+      type: VideoType,
       resolve: async ({ id }, _args, { artistStoryVideosLoader }) => {
         const videos = await artistStoryVideosLoader({ artist_story_id: id })
 
-        return videosInRole(videos, "header")[0] ?? null
+        return videosInRole(videos, "header")[0]?.video ?? null
       },
     },
     motionVideos: {
@@ -151,11 +165,11 @@ export const ArtistStoryType = new GraphQLObjectType<
       },
     },
     processVideo: {
-      type: ArtistStoryVideoType,
+      type: VideoType,
       resolve: async ({ id }, _args, { artistStoryVideosLoader }) => {
         const videos = await artistStoryVideosLoader({ artist_story_id: id })
 
-        return videosInRole(videos, "process")[0] ?? null
+        return videosInRole(videos, "process")[0]?.video ?? null
       },
     },
   }),

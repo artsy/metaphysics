@@ -73,12 +73,15 @@ describe("ArtistStory", () => {
               text
               attribution
             }
-            aboutBody
-            portrait {
-              altText
-              credit
-              image {
-                url(version: "large")
+            about {
+              tagline
+              body
+              portrait {
+                altText
+                credit
+                image {
+                  url(version: "large")
+                }
               }
             }
             headerImage {
@@ -93,16 +96,19 @@ describe("ArtistStory", () => {
       }
     `
 
-    it("returns the quote, body and both images", async () => {
+    it("returns the about section, the quote and the header image", async () => {
       const data = await runQuery(query, context)
 
       expect(data.artist.featuredStory).toEqual({
         pullQuote: { text: "I follow the material.", attribution: "Heidi Lau" },
-        aboutBody: "About Heidi",
-        portrait: {
-          altText: "Heidi in her studio",
-          credit: "Photo: A. Photographer",
-          image: { url: "https://img.test/portrait/large.jpg" },
+        about: {
+          tagline: "Clay as memory",
+          body: "About Heidi",
+          portrait: {
+            altText: "Heidi in her studio",
+            credit: "Photo: A. Photographer",
+            image: { url: "https://img.test/portrait/large.jpg" },
+          },
         },
         headerImage: {
           altText: "Her kiln",
@@ -125,8 +131,27 @@ describe("ArtistStory", () => {
       const data = await runQuery(query, context)
 
       expect(data.artist.featuredStory.pullQuote).toBeNull()
-      expect(data.artist.featuredStory.portrait).toBeNull()
+      expect(data.artist.featuredStory.about.portrait).toBeNull()
       expect(data.artist.featuredStory.headerImage).toBeNull()
+    })
+
+    it("returns an about section with null fields when the row has no text or portrait", async () => {
+      context.artistStoriesLoader.mockResolvedValue([
+        {
+          ...gravityStory,
+          tagline: null,
+          about_body: null,
+          portrait_image: null,
+        },
+      ])
+
+      const data = await runQuery(query, context)
+
+      expect(data.artist.featuredStory.about).toEqual({
+        tagline: null,
+        body: null,
+        portrait: null,
+      })
     })
   })
 
@@ -137,10 +162,6 @@ describe("ArtistStory", () => {
           featuredStory {
             headerVideo {
               internalID
-              role
-              video {
-                internalID
-              }
             }
             motionVideos {
               internalID
@@ -153,7 +174,6 @@ describe("ArtistStory", () => {
             }
             processVideo {
               internalID
-              role
             }
           }
         }
@@ -172,7 +192,12 @@ describe("ArtistStory", () => {
           quote: "Clay remembers.",
           quote_attribution: "Heidi Lau",
         },
-        { ...headerPlacement, id: "process", role: "process" },
+        {
+          ...headerPlacement,
+          id: "process",
+          role: "process",
+          video: { ...video, _id: "video-2" },
+        },
         { ...headerPlacement, id: "orphan", role: "motion", video: null },
       ])
 
@@ -182,11 +207,7 @@ describe("ArtistStory", () => {
         artist_story_id: "story-1",
       })
       expect(data.artist.featuredStory).toEqual({
-        headerVideo: {
-          internalID: "header",
-          role: "HEADER",
-          video: { internalID: "video-1" },
-        },
+        headerVideo: { internalID: "video-1" },
         motionVideos: [
           {
             internalID: "motion-1",
@@ -201,7 +222,7 @@ describe("ArtistStory", () => {
             quote: null,
           },
         ],
-        processVideo: { internalID: "process", role: "PROCESS" },
+        processVideo: { internalID: "video-2" },
       })
     })
 
@@ -213,7 +234,9 @@ describe("ArtistStory", () => {
           {
             artist(id: "heidi-lau") {
               featuredStory {
-                tagline
+                about {
+                  tagline
+                }
                 motionVideos {
                   internalID
                 }
@@ -225,7 +248,7 @@ describe("ArtistStory", () => {
       )
 
       expect(data.artist.featuredStory).toEqual({
-        tagline: "Clay as memory",
+        about: { tagline: "Clay as memory" },
         motionVideos: [],
       })
     })

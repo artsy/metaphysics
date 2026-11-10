@@ -1,5 +1,4 @@
 import {
-  GraphQLEnumType,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -24,15 +23,6 @@ export interface GravityArtistStoryVideo {
   updated_at: string
 }
 
-export const ArtistStoryVideoRoleEnum = new GraphQLEnumType({
-  name: "ArtistStoryVideoRole",
-  values: {
-    HEADER: { value: "header" },
-    MOTION: { value: "motion" },
-    PROCESS: { value: "process" },
-  },
-})
-
 // internalID is the placement's id, not the Video's.
 export const ArtistStoryVideoType = new GraphQLObjectType<
   GravityArtistStoryVideo,
@@ -41,7 +31,6 @@ export const ArtistStoryVideoType = new GraphQLObjectType<
   name: "ArtistStoryVideo",
   fields: () => ({
     ...IDFields,
-    role: { type: new GraphQLNonNull(ArtistStoryVideoRoleEnum) },
     position: { type: new GraphQLNonNull(GraphQLInt) },
     caption: { type: GraphQLString },
     quote: {
