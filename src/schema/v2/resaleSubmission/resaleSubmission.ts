@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLFloat,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,9 +14,18 @@ import { ArtworkType } from "schema/v2/artwork"
 import { date } from "schema/v2/fields/date"
 import {
   Money,
+  MoneyInput,
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import { InternalIDFields } from "schema/v2/object_identification"
+import {
+  ARTSY_FEE_RATE,
+  PriceInput,
+  isSubmissionCurrency,
+  payoutFromMinor,
+  priceCurrencyError,
+  toMinor,
+} from "./price"
 
 export const ResaleSubmissionStateEnum = new GraphQLEnumType({
   name: "ResaleSubmissionState",
@@ -88,22 +98,96 @@ type MinorPriceKey =
   | "price_listed_minor"
 
 // moneyMajorResolver turns a null amount into 0, so unset prices are checked here.
+const resolveMoney = (
+  minor: number | null | undefined,
+  currencyCode: string,
+  args,
+  context,
+  info
+) => {
+  if (minor == null) return null
+
+  return resolveMinorAndCurrencyFieldsToMoney(
+    { minor, currencyCode },
+    args,
+    context,
+    info
+  )
+}
+
 const moneyFromMinor = (
   key: MinorPriceKey
 ): GraphQLFieldConfig<ResaleSubmissionRecord, ResolverContext> => ({
   type: Money,
-  resolve: (submission, args, context, info) => {
-    const minor = submission[key]
-    if (minor == null) return null
-
-    return resolveMinorAndCurrencyFieldsToMoney(
-      { minor, currencyCode: submission.price_currency_code },
+  resolve: (submission, args, context, info) =>
+    resolveMoney(
+      submission[key],
+      submission.price_currency_code,
       args,
       context,
       info
-    )
+    ),
+})
+
+type PayoutBreakdown = ReturnType<typeof payoutFromMinor> & {
+  price_currency_code: string
+}
+
+const payoutMoney = (
+  key: "asking_price_minor" | "artsy_fee_minor" | "payout_minor"
+): GraphQLFieldConfig<PayoutBreakdown, ResolverContext> => ({
+  type: new GraphQLNonNull(Money),
+  resolve: (breakdown, args, context, info) =>
+    resolveMoney(
+      breakdown[key],
+      breakdown.price_currency_code,
+      args,
+      context,
+      info
+    ),
+})
+
+const ResaleSubmissionPayoutBreakdownType = new GraphQLObjectType<
+  PayoutBreakdown,
+  ResolverContext
+>({
+  name: "ResaleSubmissionPayoutBreakdown",
+  fields: {
+    askingPrice: payoutMoney("asking_price_minor"),
+    artsyFee: payoutMoney("artsy_fee_minor"),
+    payout: {
+      ...payoutMoney("payout_minor"),
+      description: "What the collector receives: the asking price less the fee",
+    },
   },
 })
+
+const payoutBreakdownField: GraphQLFieldConfig<
+  ResaleSubmissionRecord,
+  ResolverContext,
+  { priceListed?: PriceInput }
+> = {
+  type: ResaleSubmissionPayoutBreakdownType,
+  description:
+    "The payout for the saved asking price, or for priceListed when given. Null when there is no price.",
+  args: {
+    priceListed: {
+      type: MoneyInput,
+      description:
+        "Preview the payout for a price that isn't saved yet, in major units (dollars)",
+    },
+  },
+  resolve: ({ price_listed_minor, price_currency_code }, { priceListed }) => {
+    if (priceListed && !isSubmissionCurrency(priceListed)) {
+      throw new Error(priceCurrencyError)
+    }
+
+    const minor = priceListed ? toMinor(priceListed) : price_listed_minor
+    if (minor == null) return null
+
+    return { ...payoutFromMinor(minor), price_currency_code }
+  },
+}
 
 export const ResaleSubmissionType = new GraphQLObjectType<
   ResaleSubmissionRecord,
@@ -131,6 +215,12 @@ export const ResaleSubmissionType = new GraphQLObjectType<
       ...moneyFromMinor("price_listed_minor"),
       description: "The collector's asking price",
     },
+    artsyFeeRate: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: "The share of the sale price Artsy keeps, e.g. 0.15",
+      resolve: () => ARTSY_FEE_RATE,
+    },
+    payoutBreakdown: payoutBreakdownField,
     packaging: { type: ResaleSubmissionPackagingEnum },
     packer: { type: ResaleSubmissionPackerEnum },
     courierHandoff: {

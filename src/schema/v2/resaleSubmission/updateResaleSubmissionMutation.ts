@@ -9,7 +9,6 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import currencyCodes from "lib/currency_codes.json"
 import { ResaleSubmissionUpdate } from "lib/loaders/loaders_with_authentication/resaleSubmissionStubs"
 import { MoneyInput } from "schema/v2/fields/money"
 import { ResolverContext } from "types/graphql"
@@ -20,6 +19,12 @@ import {
   ResaleSubmissionType,
 } from "./resaleSubmission"
 import { mutationError } from "./mutationError"
+import {
+  PriceInput,
+  isSubmissionCurrency,
+  priceCurrencyError,
+  toMinor,
+} from "./price"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateResaleSubmissionSuccess",
@@ -48,11 +53,9 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-const SUBMISSION_CURRENCY = "USD"
-
 interface InputProps {
   id: string
-  priceListed?: { amount: number; currencyCode: string }
+  priceListed?: PriceInput
   packaging?: string
   packer?: string
   courierHandoff?: string
@@ -96,14 +99,10 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     const update: ResaleSubmissionUpdate = {}
 
     if (priceListed) {
-      if (priceListed.currencyCode.toUpperCase() !== SUBMISSION_CURRENCY) {
-        return mutationError(
-          `priceListed currency must be ${SUBMISSION_CURRENCY}`
-        )
+      if (!isSubmissionCurrency(priceListed)) {
+        return mutationError(priceCurrencyError)
       }
-      const factor =
-        currencyCodes[SUBMISSION_CURRENCY.toLowerCase()].subunit_to_unit
-      update.price_listed_minor = Math.round(priceListed.amount * factor)
+      update.price_listed_minor = toMinor(priceListed)
     }
     if (packaging) update.packaging = packaging
     if (packer) update.packer = packer
