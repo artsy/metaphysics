@@ -108,4 +108,41 @@ describe("summarize", () => {
     )
     expect(report).toContain("Run cost: a $0.90, b unknown")
   })
+
+  it("doesn't say yes without a judge or a known cost", () => {
+    const noJudge = (i: number) => {
+      const { judge_useful: _unused, ...rest } = base(i)
+      return rest
+    }
+    const cheaper = (scores: (i: number) => Record<string, number>) => (
+      i: number
+    ) => ({ ...scores(i), cost_usd: 0.02 + (i % 2) * 0.001 })
+    expect(
+      summarize(
+        [...runs("a", noJudge), ...runs("b", cheaper(noJudge))],
+        ["a", "b"],
+        3
+      )
+    ).toMatch(
+      /Switch\? MAYBE: No judge, so quality is unknown, and −\d+% cost\./
+    )
+
+    const faster = (i: number) => ({
+      ...base(i),
+      latency_s: 5,
+      cost_usd: null as any,
+    })
+    expect(
+      summarize(
+        [
+          ...runs("a", (i) => ({ ...base(i), cost_usd: null as any })),
+          ...runs("b", faster),
+        ],
+        ["a", "b"],
+        3
+      )
+    ).toMatch(
+      /Switch\? MAYBE: Same quality, and −\d+% latency, but cost is unknown\./
+    )
+  })
 })

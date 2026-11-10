@@ -103,14 +103,23 @@ function verdict(rows: Compared[], judged: boolean): string {
   const better = quality("better")
   const costs = moves("worse")
   const gains = moves("better")
+  // A YES needs evidence on both quality and cost; without it, MAYBE.
+  const costKnown = rows.some((r) => r.row.metric === "cost_usd")
+  const yes = (reason: string) =>
+    !costKnown
+      ? `MAYBE: ${reason}, but cost is unknown.`
+      : !judged
+      ? `MAYBE: ${reason}.`
+      : `YES: ${reason}.`
+
   if (worse) return `NO: worse ${worse}.`
   if (better && costs) {
     return `MAYBE: better ${better}, but ${costs}. Worth it if that trade is.`
   }
-  if (better) return `YES: better ${better}${gains ? `, and ${gains}` : ""}.`
+  if (better) return yes(`better ${better}${gains ? `, and ${gains}` : ""}`)
   const same = judged ? "Same quality" : "No judge, so quality is unknown"
   if (costs) return `NO: ${same}, but ${costs}.`
-  if (gains) return `YES: ${same}, and ${gains}.`
+  if (gains) return yes(`${same}, and ${gains}`)
   return "NO: no real difference, so no reason to switch."
 }
 

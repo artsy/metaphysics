@@ -210,6 +210,13 @@ function initAppToken(): Promise<void> {
           return
         }
         config.GRAVITY_XAPP_TOKEN = token
+        // The library refreshes the token later; a failed refresh emits
+        // "error" again, which would crash the run without a listener.
+        xapp.on("error", () =>
+          console.error(
+            "  Gravity app token refresh failed; later searches may 401."
+          )
+        )
         resolve()
       }
     )
@@ -234,8 +241,13 @@ async function main() {
   } else {
     cases = readDatasetFile(datasetFile as string)
   }
-  // Also filtered here, in case the server ignores the split parameter.
-  if (split) cases = cases.filter((c) => c.metadata.category === split)
+  // Uploaded splits are categories, so filter by category too, in case the
+  // server ignores the parameter. A split made in the UI matches no
+  // category; then the server's answer stands.
+  if (split) {
+    const matching = cases.filter((c) => c.metadata.category === split)
+    if (matching.length || !datasetName) cases = matching
+  }
 
   if (onlyCases.size) {
     cases = cases.filter(
