@@ -715,14 +715,14 @@ describe("partnerArtist", () => {
       expect(artistStoriesLoader).not.toHaveBeenCalled()
     })
 
-    it("returns null under allArtistsConnection without calling Gravity", async () => {
+    it("returns null under allArtistsConnection, even aliased, without calling Gravity", async () => {
       const partnerArtistStoriesLoader = jest.fn()
 
       const data = await runQuery(
         gql`
           {
             partner(id: "levy-gorvy") {
-              allArtistsConnection {
+              list: allArtistsConnection {
                 edges {
                   story {
                     internalID
@@ -735,7 +735,7 @@ describe("partnerArtist", () => {
         { ...context, partnerArtistStoriesLoader }
       )
 
-      expect(data.partner.allArtistsConnection.edges[0].story).toBeNull()
+      expect(data.partner.list.edges[0].story).toBeNull()
       expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
     })
   })

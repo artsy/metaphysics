@@ -575,6 +575,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               )
             })
             .then((body) => {
+              // TODO: This connection has no page size, and Gravity can't batch
+              // stories yet, so each edge would make its own call.
+              body.forEach((partnerArtist) => {
+                partnerArtist._storyUnavailable = true
+              })
+
               return {
                 totalCount: body.length,
                 ...connectionFromArraySlice(body, args, {

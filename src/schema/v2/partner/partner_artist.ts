@@ -11,7 +11,6 @@ import {
   GraphQLFieldConfig,
   GraphQLEnumType,
   GraphQLInt,
-  GraphQLResolveInfo,
 } from "graphql"
 import { Thunk } from "types/graphql"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -153,27 +152,18 @@ const biographyBlurb: GraphQLFieldConfig<
   },
 }
 
-// allArtistsConnection has no page size, and Gravity can't batch stories yet,
-// so each of its edges would make its own call.
-const isUnderAllArtistsConnection = (info: GraphQLResolveInfo) => {
-  let path: typeof info.path | undefined = info.path
-  while (path) {
-    if (path.key === "allArtistsConnection") {
-      return true
-    }
-    path = path.prev
-  }
-  return false
-}
-
 export const story: GraphQLFieldConfig<
-  PartnerArtistDetails,
+  PartnerArtistDetails & { _storyUnavailable?: boolean },
   ResolverContext
 > = {
   type: ArtistStoryType,
   description: "This partner artist's Story",
-  resolve: async ({ id }, _args, { partnerArtistStoriesLoader }, info) => {
-    if (!partnerArtistStoriesLoader || isUnderAllArtistsConnection(info)) {
+  resolve: async (
+    { id, _storyUnavailable },
+    _args,
+    { partnerArtistStoriesLoader }
+  ) => {
+    if (!partnerArtistStoriesLoader || _storyUnavailable) {
       return null
     }
 
