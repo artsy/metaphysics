@@ -2774,16 +2774,15 @@ describe("artworksConnection", () => {
       )
     })
 
-    it("treats DEFAULT the same as omitting the argument", async () => {
-      const query = (searchProfile: string) => gql`
+    it("forwards DEFAULT to Gravity on the authenticated loader", async () => {
+      const query = gql`
         {
           artworksConnection(
             first: 10
             partnerID: "partner-id"
             keyword: "AB-123"
-            ${searchProfile}
+            searchProfile: DEFAULT
           ) {
-            id
             edges {
               node {
                 slug
@@ -2793,23 +2792,12 @@ describe("artworksConnection", () => {
         }
       `
 
-      const withDefault = await runQuery(
-        query("searchProfile: DEFAULT"),
-        searchProfileContext
-      )
-      const withoutArg = await runQuery(query(""), searchProfileContext)
+      await runQuery(query, searchProfileContext)
 
-      expect(authenticatedFilterArtworksLoader).not.toHaveBeenCalled()
-      expect(unauthenticatedFilterArtworksLoader).toHaveBeenCalledTimes(2)
-      expect(unauthenticatedFilterArtworksLoader.mock.calls[0]).toEqual(
-        unauthenticatedFilterArtworksLoader.mock.calls[1]
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ search_profile: "default" })
       )
-      expect(unauthenticatedFilterArtworksLoader).toHaveBeenCalledWith(
-        expect.not.objectContaining({ search_profile: expect.anything() })
-      )
-      expect(withDefault.artworksConnection.id).toEqual(
-        withoutArg.artworksConnection.id
-      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
     })
   })
 })

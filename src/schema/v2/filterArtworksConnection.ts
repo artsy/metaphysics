@@ -112,16 +112,12 @@ const ArtworkImageSearchInputType = new GraphQLInputObjectType({
   },
 })
 
-// Gravity's `search_profile` param. Only "partner" changes anything, and Gravity
-// honours it only for a request scoped to one partner the caller can manage.
-export const PARTNER_INVENTORY_SEARCH_PROFILE = "partner"
-
 export const ArtworkSearchProfileType = new GraphQLEnumType({
   name: "ArtworkSearchProfile",
   values: {
     DEFAULT: { value: "default" },
     PARTNER_INVENTORY: {
-      value: PARTNER_INVENTORY_SEARCH_PROFILE,
+      value: "partner",
       description:
         "Inventory search for a partner. Requires partnerID and partner access; ignored otherwise.",
     },
@@ -834,15 +830,6 @@ const filterArtworksConnectionTypeFactory = (
       gravityOptions.include_unpublished = true
     }
 
-    // `DEFAULT` is the same as no profile, so don't send it: Gravity never sees
-    // `search_profile=default`, and the cache key and connection ID match a
-    // request that omits the argument.
-    if (gravityOptions.search_profile !== PARTNER_INVENTORY_SEARCH_PROFILE) {
-      delete gravityOptions.search_profile
-    }
-
-    // Partner inventory results must never be served from the public cache, so
-    // the partner profile counts as an authorized filter.
     const requestedAuthorizedFilters = !!(
       gravityOptions.include_unpublished ||
       gravityOptions.search_profile ||
@@ -925,14 +912,12 @@ const filterArtworksConnectionTypeFactory = (
         disableNotForSaleSorting,
         medium,
         includeNonArtsyListed,
+        searchProfile,
         // pagination arguments we want to exclude
         // from the check for other filters
         first,
         after,
         page,
-        // The search profile only changes keyword matching, and a keyword is
-        // itself another filter, so on its own it doesn't need search.
-        searchProfile,
         ...otherFilters
       } = input
 
