@@ -768,7 +768,7 @@ export interface AIAgentViewImageOptions {
  */
 export function buildViewImageTool(
   imageHandles: AIAgentImageHandles,
-  context: Pick<ResolverContext, "aiAgentImageUploadPreviewLoader">,
+  context: Pick<ResolverContext, "imageUploadPreviewLoader">,
   { registration, describeImage }: AIAgentViewImageOptions
 ): Tool {
   const viewed = new Map<string, Promise<AIAgentToolRunResult>>()

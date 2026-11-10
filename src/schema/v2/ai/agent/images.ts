@@ -86,11 +86,11 @@ export function isSupportedImageBucket(bucket: string): boolean {
  */
 export async function registerAttachedImage(
   image: AIAgentImage,
-  context: Pick<ResolverContext, "aiAgentImageUploadCreateLoader">
+  context: Pick<ResolverContext, "createImageUploadLoader">
 ): Promise<void> {
-  if (!context.aiAgentImageUploadCreateLoader) return
+  if (!context.createImageUploadLoader) return
   try {
-    await context.aiAgentImageUploadCreateLoader({
+    await context.createImageUploadLoader({
       s3_bucket: image.s3Bucket,
       s3_key: image.s3Key,
     })
@@ -134,15 +134,15 @@ export interface AIAgentFetchedImage {
  */
 export async function fetchImage(
   image: AIAgentImage,
-  context: Pick<ResolverContext, "aiAgentImageUploadPreviewLoader">
+  context: Pick<ResolverContext, "imageUploadPreviewLoader">
 ): Promise<AIAgentFetchedImage> {
-  if (!context.aiAgentImageUploadPreviewLoader) {
+  if (!context.imageUploadPreviewLoader) {
     throw new AIAgentImageUnavailableError("The image could not be found.")
   }
 
   let url: unknown
   try {
-    const body = await context.aiAgentImageUploadPreviewLoader({
+    const body = await context.imageUploadPreviewLoader({
       s3_bucket: image.s3Bucket,
       s3_key: image.s3Key,
     })

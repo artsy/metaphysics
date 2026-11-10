@@ -105,8 +105,8 @@ function fakeContext(
   overrides: {
     artworksLoader?: jest.Mock
     artistsLoader?: jest.Mock
-    aiAgentImageUploadCreateLoader?: jest.Mock
-    aiAgentImageUploadPreviewLoader?: jest.Mock
+    createImageUploadLoader?: jest.Mock
+    imageUploadPreviewLoader?: jest.Mock
   } = {}
 ): ResolverContext {
   return ({
@@ -117,10 +117,9 @@ function fakeContext(
     artistsLoader:
       overrides.artistsLoader ??
       jest.fn().mockResolvedValue({ body: [], headers: {} }),
-    aiAgentImageUploadCreateLoader:
-      overrides.aiAgentImageUploadCreateLoader ??
-      jest.fn().mockResolvedValue({}),
-    aiAgentImageUploadPreviewLoader: overrides.aiAgentImageUploadPreviewLoader,
+    createImageUploadLoader:
+      overrides.createImageUploadLoader ?? jest.fn().mockResolvedValue({}),
+    imageUploadPreviewLoader: overrides.imageUploadPreviewLoader,
     // Gravity's /artists?ids[]= loader is declared with `headers: true`, so it
     // resolves with `{ body, headers }` rather than a bare array.
   } as unknown) as ResolverContext
@@ -2341,8 +2340,8 @@ describe("runTurn with view_image", () => {
       ],
       doGenerate: describedAs("A ginger cat asleep on a windowsill."),
     })
-    const aiAgentImageUploadCreateLoader = jest.fn().mockResolvedValue({})
-    const aiAgentImageUploadPreviewLoader = jest
+    const createImageUploadLoader = jest.fn().mockResolvedValue({})
+    const imageUploadPreviewLoader = jest
       .fn()
       .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 })
 
@@ -2354,12 +2353,12 @@ describe("runTurn with view_image", () => {
         includeDebugToolCalls: true,
       },
       fakeContext({
-        aiAgentImageUploadCreateLoader,
-        aiAgentImageUploadPreviewLoader,
+        createImageUploadLoader,
+        imageUploadPreviewLoader,
       })
     )
 
-    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledWith({
+    expect(createImageUploadLoader).toHaveBeenCalledWith({
       s3_bucket: "image-uploads",
       s3_key: "uploads/query.jpg",
     })
@@ -2407,7 +2406,7 @@ describe("runTurn with view_image", () => {
 
   it("claims this turn's image even when the agent doesn't look at it, and never a replayed one", async () => {
     mockModel = new MockLanguageModelV3({ doStream: [finalStep("Sure.")] })
-    const aiAgentImageUploadCreateLoader = jest.fn().mockResolvedValue({})
+    const createImageUploadLoader = jest.fn().mockResolvedValue({})
     const OLD_IMAGE = { s3Key: "uploads/old.jpg", s3Bucket: "image-uploads" }
 
     await collectEvents(
@@ -2417,11 +2416,11 @@ describe("runTurn with view_image", () => {
         image: IMAGE,
         history: [{ role: "user", content: "this one", image: OLD_IMAGE }],
       } as any,
-      fakeContext({ aiAgentImageUploadCreateLoader })
+      fakeContext({ createImageUploadLoader })
     )
 
-    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledTimes(1)
-    expect(aiAgentImageUploadCreateLoader).toHaveBeenCalledWith({
+    expect(createImageUploadLoader).toHaveBeenCalledTimes(1)
+    expect(createImageUploadLoader).toHaveBeenCalledWith({
       s3_bucket: "image-uploads",
       s3_key: "uploads/query.jpg",
     })
@@ -2436,10 +2435,10 @@ describe("runTurn with view_image", () => {
       ],
     })
     // Too old to claim, so Gravity won't preview it for this collector either.
-    const aiAgentImageUploadCreateLoader = jest
+    const createImageUploadLoader = jest
       .fn()
       .mockRejectedValue(Object.assign(new Error("stale"), { statusCode: 422 }))
-    const aiAgentImageUploadPreviewLoader = jest
+    const imageUploadPreviewLoader = jest
       .fn()
       .mockRejectedValue(Object.assign(new Error("nope"), { statusCode: 404 }))
 
@@ -2451,8 +2450,8 @@ describe("runTurn with view_image", () => {
         includeDebugToolCalls: true,
       },
       fakeContext({
-        aiAgentImageUploadCreateLoader,
-        aiAgentImageUploadPreviewLoader,
+        createImageUploadLoader,
+        imageUploadPreviewLoader,
       })
     )
 
@@ -2479,7 +2478,7 @@ describe("runTurn with view_image", () => {
       ],
     })
     fetchSpy.mockRejectedValue(new TypeError(`fetch failed: ${SIGNED_URL}`))
-    const aiAgentImageUploadPreviewLoader = jest
+    const imageUploadPreviewLoader = jest
       .fn()
       .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 })
 
@@ -2490,7 +2489,7 @@ describe("runTurn with view_image", () => {
         image: IMAGE,
         includeDebugToolCalls: true,
       },
-      fakeContext({ aiAgentImageUploadPreviewLoader })
+      fakeContext({ imageUploadPreviewLoader })
     )
 
     expect(events[1]).toMatchObject({

@@ -1491,7 +1491,7 @@ describe("view_image", () => {
   let fetchSpy: jest.SpyInstance
 
   const viewImageTool = ({
-    aiAgentImageUploadPreviewLoader = jest
+    imageUploadPreviewLoader = jest
       .fn()
       .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 }),
     registration = Promise.resolve(),
@@ -1499,18 +1499,18 @@ describe("view_image", () => {
       .fn()
       .mockResolvedValue("A ginger cat on a windowsill."),
   }: {
-    aiAgentImageUploadPreviewLoader?: jest.Mock
+    imageUploadPreviewLoader?: jest.Mock
     registration?: Promise<void>
     describeImage?: jest.Mock
   } = {}) => {
     const tool = buildViewImageTool(
       handles,
-      ({ aiAgentImageUploadPreviewLoader } as unknown) as ResolverContext,
+      ({ imageUploadPreviewLoader } as unknown) as ResolverContext,
       { registration, describeImage }
     )
     const execute = (input: unknown) =>
       tool.execute!(input, { toolCallId: "call-1", messages: [] })
-    return { tool, execute, aiAgentImageUploadPreviewLoader, describeImage }
+    return { tool, execute, imageUploadPreviewLoader, describeImage }
   }
 
   beforeEach(() => {
@@ -1527,18 +1527,14 @@ describe("view_image", () => {
   })
 
   it("returns a text description, never the pixels", async () => {
-    const {
-      execute,
-      aiAgentImageUploadPreviewLoader,
-      describeImage,
-    } = viewImageTool()
+    const { execute, imageUploadPreviewLoader, describeImage } = viewImageTool()
 
     const output = await execute({
       image: "image_1",
       request: "works like this but at night",
     })
 
-    expect(aiAgentImageUploadPreviewLoader).toHaveBeenCalledWith({
+    expect(imageUploadPreviewLoader).toHaveBeenCalledWith({
       s3_bucket: "image-uploads",
       s3_key: "uploads/query.jpg",
     })
@@ -1558,17 +1554,17 @@ describe("view_image", () => {
   it("waits for the image to be claimed before previewing it", async () => {
     let claim!: () => void
     const registration = new Promise<void>((resolve) => (claim = resolve))
-    const { execute, aiAgentImageUploadPreviewLoader } = viewImageTool({
+    const { execute, imageUploadPreviewLoader } = viewImageTool({
       registration,
     })
 
     const output = execute({ image: "image_1" })
     await new Promise((resolve) => setImmediate(resolve))
-    expect(aiAgentImageUploadPreviewLoader).not.toHaveBeenCalled()
+    expect(imageUploadPreviewLoader).not.toHaveBeenCalled()
 
     claim()
     expect(await output).toMatchObject({ ok: true })
-    expect(aiAgentImageUploadPreviewLoader).toHaveBeenCalledTimes(1)
+    expect(imageUploadPreviewLoader).toHaveBeenCalledTimes(1)
   })
 
   it("describes each image once per turn", async () => {
@@ -1586,7 +1582,7 @@ describe("view_image", () => {
   })
 
   it("rejects a handle the request didn't attach", async () => {
-    const { execute, aiAgentImageUploadPreviewLoader } = viewImageTool()
+    const { execute, imageUploadPreviewLoader } = viewImageTool()
 
     const output = await execute({ image: "image_2" })
 
@@ -1594,7 +1590,7 @@ describe("view_image", () => {
       ok: false,
       content: 'Unknown image handle "image_2". Attached: image_1.',
     })
-    expect(aiAgentImageUploadPreviewLoader).not.toHaveBeenCalled()
+    expect(imageUploadPreviewLoader).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -1602,7 +1598,7 @@ describe("view_image", () => {
       "the image isn't the collector's (Gravity 404s)",
       () =>
         viewImageTool({
-          aiAgentImageUploadPreviewLoader: jest
+          imageUploadPreviewLoader: jest
             .fn()
             .mockRejectedValue(new HTTPError("nope", 404)),
         }),
