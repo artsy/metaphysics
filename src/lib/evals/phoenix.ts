@@ -26,7 +26,9 @@ export class PhoenixClient {
     path: string,
     body?: unknown
   ): Promise<T> {
-    const response = await fetch(new URL(path, this.config.url), {
+    // Appended, not resolved: `new URL(path, base)` would drop a path in
+    // PHOENIX_URL.
+    const response = await fetch(this.config.url.replace(/\/$/, "") + path, {
       method,
       headers: {
         accept: "application/json",
@@ -194,9 +196,9 @@ export class PhoenixClient {
   }
 
   experimentURL(datasetID: string, experimentID: string): string {
-    return new URL(
-      `/datasets/${datasetID}/compare?experimentId=${experimentID}`,
-      this.config.url
-    ).toString()
+    return `${this.config.url.replace(
+      /\/$/,
+      ""
+    )}/datasets/${datasetID}/compare?experimentId=${experimentID}`
   }
 }

@@ -25,8 +25,6 @@ import type {
   EvalStep,
 } from "./types"
 
-const TOOL_RESULT_CHARS = 4000
-
 export interface EvalUser {
   accessToken: string
   userID: string
@@ -115,7 +113,7 @@ function toStep(step: StepResult<ToolSet>, durationMs: number): EvalStep {
         query: typeof input.query === "string" ? input.query : null,
         variables: input.variables ?? null,
         ok: result ? result.ok : null,
-        result: String(result?.content ?? "").slice(0, TOOL_RESULT_CHARS),
+        result: String(result?.content ?? ""),
       }
     }),
   }

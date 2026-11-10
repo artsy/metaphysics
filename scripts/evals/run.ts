@@ -52,7 +52,6 @@ function usage(message?: string): never {
       "  --split NAME           only this Phoenix split (a category)",
       "  --exclude-user-dependent  skip cases about the eval user's own saves/follows",
       "  --concurrency N        turns in flight (default 3)",
-      "  --now YYYY-MM-DD       pin today's date in the prompt (default: today)",
       "  --judge [provider:]MODEL  judge model (default litellm:claude-opus-5-5 when LiteLLM is set,",
       "                         else anthropic:); must not be a variant's model, alias",
       "                         included; --no-judge to skip",
@@ -89,9 +88,8 @@ const limit = value("--limit") ? Number(value("--limit")) : undefined
 const onlyCases = new Set(values("--case"))
 const split = value("--split")
 const concurrency = Number(value("--concurrency") ?? 3)
-const now = value("--now")
-  ? new Date(`${value("--now")}T12:00:00Z`)
-  : new Date(`${new Date().toISOString().slice(0, 10)}T12:00:00Z`)
+// One date for the whole run, so a run across midnight stays comparable.
+const now = new Date(`${new Date().toISOString().slice(0, 10)}T12:00:00Z`)
 // Same `provider:model` form as a variant; a bare model name uses LiteLLM
 // when it's configured, so one key covers the whole run.
 let judgeVariant: EvalVariant | null = null
@@ -121,7 +119,12 @@ if (
 ) {
   usage("An anthropic: model needs ANTHROPIC_API_KEY.")
 }
-if (judgeVariant && variants.some((v) => v.model === judgeVariant!.model)) {
+const baseModel = (id: string) =>
+  id.replace(/^anthropic\//, "").replace(/-\d{8}$/, "")
+if (
+  judgeVariant &&
+  variants.some((v) => baseModel(v.model) === baseModel(judgeVariant!.model))
+) {
   usage(
     `The judge (${judgeVariant.model}) is also a variant and would grade its own answers; pass a different --judge.`
   )
@@ -133,7 +136,6 @@ const positiveInt = (n: number | undefined) => Number.isInteger(n) && n! >= 1
 if (!positiveInt(repetitions)) usage("Bad --repetitions.")
 if (!positiveInt(concurrency)) usage("Bad --concurrency.")
 if (limit !== undefined && !positiveInt(limit)) usage("Bad --limit.")
-if (isNaN(now.getTime())) usage("Bad --now; expected YYYY-MM-DD.")
 if (usePhoenix && !datasetName) {
   usage("--file runs have no Phoenix dataset to attach to; add --no-phoenix.")
 }
@@ -372,8 +374,9 @@ async function main() {
     let output: EvalRunOutput | null = null
     let error: string | undefined
     try {
-      // A provider error says nothing about the answer: retry it, and if it
-      // persists record the run as failed rather than as a bad answer.
+      // A turn error (provider outage, a resolver throwing) says nothing
+      // about the answer: retry it, and if it persists record the run as
+      // failed rather than as a bad answer.
       for (let attempt = 1; attempt <= PROVIDER_ATTEMPTS; attempt++) {
         output = await runCase(testCase, {
           model: languageModelFor(variant),
@@ -389,7 +392,7 @@ async function main() {
       }
       if (output?.stopReason === "error") {
         output = null
-        error = `Provider error after ${PROVIDER_ATTEMPTS} attempts`
+        error = `Turn error after ${PROVIDER_ATTEMPTS} attempts`
       }
     } catch (cause) {
       error = (cause as Error)?.stack ?? String(cause)

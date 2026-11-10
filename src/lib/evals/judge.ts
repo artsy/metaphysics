@@ -13,9 +13,12 @@ import type { EvalCase, EvalRunOutput, EvalScore } from "./types"
 export const DEFAULT_JUDGE_MODEL = "claude-opus-5-5"
 
 /** Bump when the rubric changes, so old and new scores aren't averaged. */
-export const JUDGE_VERSION = "v1"
+export const JUDGE_VERSION = "v2"
 
-const TOOL_RESULT_BUDGET = 12_000
+// About 25k tokens of search results. Past it a result is cut and marked
+// "…", and the rubric says not to fail a claim that only the cut part
+// could support.
+const TOOL_RESULT_BUDGET = 100_000
 
 export const JUDGE_SYSTEM_PROMPT = `
 You grade answers from Artsy's art assistant, which helps collectors find
@@ -38,9 +41,10 @@ grade.
   medium, size, artist, for sale, place, time) is respected by the answer
   and its cards; "fail" if any is broken; "na" if none was stated.
 - grounded: "pass" if every factual claim (names, prices, dates, counts,
-  availability) is supported by the search results shown; "fail" if
-  anything is invented or contradicts them; "na" if the answer makes no
-  factual claims.
+  availability) is supported by the search results or the cards; "fail"
+  if anything is invented or contradicts them; "na" if the answer makes no
+  factual claims. A result ending in "…" was cut for length: a claim it
+  could only be checked against there is not a fail.
 - mustNot: if the case lists things a good answer must not do and the
   answer does one, useful is at most 2.
 
