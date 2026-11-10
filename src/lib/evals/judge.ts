@@ -13,7 +13,7 @@ import type { EvalCase, EvalRunOutput, EvalScore } from "./types"
 export const DEFAULT_JUDGE_MODEL = "claude-opus-5-5"
 
 /** Bump when the rubric changes, so old and new scores aren't averaged. */
-export const JUDGE_VERSION = "v2"
+export const JUDGE_VERSION = "v3"
 
 // About 25k tokens of search results. Past it a result is cut and marked
 // "…", and the rubric says not to fail a claim that only the cut part
@@ -62,17 +62,20 @@ export type JudgeVerdict = z.infer<typeof JudgeSchema>
 
 export function buildJudgePrompt(
   testCase: EvalCase,
-  output: EvalRunOutput
+  output: EvalRunOutput,
+  now?: Date
 ): string {
   const history = (testCase.input.history ?? [])
     .map((entry) => `${entry.role}: ${entry.content}`)
     .join("\n")
 
-  let budget = TOOL_RESULT_BUDGET
-  const searches = toolCalls(output)
+  // Split evenly, so early searches can't crowd out the last one, which
+  // usually backs the answer.
+  const calls = toolCalls(output)
+  const perCall = Math.floor(TOOL_RESULT_BUDGET / Math.max(1, calls.length))
+  const searches = calls
     .map((call, index) => {
-      const result = call.result.slice(0, Math.max(0, budget))
-      budget -= result.length
+      const result = call.result.slice(0, perCall)
       return [
         `#${index + 1} ${call.ok === false ? "FAILED" : "ok"}`,
         `query: ${call.query ?? "(none)"}`,
@@ -100,6 +103,8 @@ export function buildJudgePrompt(
     .join("\n")
 
   return [
+    // The assistant was told this date; the judge's own clock may differ.
+    now ? `<today>${now.toISOString().slice(0, 10)}</today>` : "",
     history ? `<conversation_so_far>\n${history}\n</conversation_so_far>` : "",
     `<collector_message>\n${testCase.input.message}\n</collector_message>`,
     testCase.reference.expectedBehavior
@@ -146,7 +151,8 @@ export function verdictScores(verdict: JudgeVerdict): EvalScore[] {
 export async function judge(
   model: LanguageModel,
   testCase: EvalCase,
-  output: EvalRunOutput
+  output: EvalRunOutput,
+  now?: Date
 ): Promise<EvalScore[]> {
   // A turn with no answer has nothing to judge; it is already a 1.
   if (!output.message) {
@@ -161,7 +167,7 @@ export async function judge(
   const result = await generateText({
     model,
     system: JUDGE_SYSTEM_PROMPT,
-    prompt: buildJudgePrompt(testCase, output),
+    prompt: buildJudgePrompt(testCase, output, now),
     output: Output.object({ schema: JudgeSchema }),
     maxOutputTokens: 4000,
     providerOptions: {

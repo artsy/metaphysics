@@ -21,7 +21,11 @@ import {
   JUDGE_VERSION,
   judge as judgeRun,
 } from "../../src/lib/evals/judge"
-import { languageModelFor, parseVariant } from "../../src/lib/evals/models"
+import {
+  baseModel,
+  languageModelFor,
+  parseVariant,
+} from "../../src/lib/evals/models"
 import type { EvalVariant } from "../../src/lib/evals/models"
 import { PhoenixClient } from "../../src/lib/evals/phoenix"
 import { summarize } from "../../src/lib/evals/report"
@@ -119,8 +123,6 @@ if (
 ) {
   usage("An anthropic: model needs ANTHROPIC_API_KEY.")
 }
-const baseModel = (id: string) =>
-  id.replace(/^anthropic\//, "").replace(/-\d{8}$/, "")
 if (
   judgeVariant &&
   variants.some((v) => baseModel(v.model) === baseModel(judgeVariant!.model))
@@ -370,7 +372,7 @@ async function main() {
   )
 
   await pool(jobs, concurrency, async ({ testCase, repetition, variant }) => {
-    const startTime = new Date()
+    let startTime = new Date()
     let output: EvalRunOutput | null = null
     let error: string | undefined
     try {
@@ -378,6 +380,7 @@ async function main() {
       // about the answer: retry it, and if it persists record the run as
       // failed rather than as a bad answer.
       for (let attempt = 1; attempt <= PROVIDER_ATTEMPTS; attempt++) {
+        startTime = new Date()
         output = await runCase(testCase, {
           model: languageModelFor(variant),
           systemPromptTemplate: prompts.get(variant.label),
@@ -405,7 +408,7 @@ async function main() {
     let judgeFailed = false
     if (output && judgeModel) {
       try {
-        scores.push(...(await judgeRun(judgeModel, testCase, output)))
+        scores.push(...(await judgeRun(judgeModel, testCase, output, now)))
       } catch (cause) {
         judgeFailed = true
         console.error(`  judge failed on ${testCase.id}: ${cause}`)

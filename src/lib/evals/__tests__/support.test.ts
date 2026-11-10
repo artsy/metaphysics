@@ -45,6 +45,7 @@ describe("cost", () => {
       priceFor("claude-sonnet-5")
     )
     expect(priceFor("art-assistant")).toBeNull()
+    expect(priceFor("claude-sonnet-5-6")).toBeNull()
   })
 
   it("bills cached input at its own rates", () => {

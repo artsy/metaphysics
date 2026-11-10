@@ -60,15 +60,13 @@ export const PRICES_PER_MTOK: Record<
   "claude-opus-5-5": { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
 }
 
-/** LiteLLM may echo a dated or prefixed ID; match on the base name. */
+/** `anthropic/claude-sonnet-5-20260901` → `claude-sonnet-5`. */
+export const baseModel = (id: string) =>
+  id.replace(/^anthropic\//, "").replace(/-\d{8}$/, "")
+
+/** Exact on the base name: a new model gets no price, not a neighbour's. */
 export function priceFor(modelId: string | null | undefined) {
-  if (!modelId) return null
-  const id = modelId.replace(/^anthropic\//, "")
-  if (PRICES_PER_MTOK[id]) return PRICES_PER_MTOK[id]
-  const base = Object.keys(PRICES_PER_MTOK)
-    .sort((a, b) => b.length - a.length)
-    .find((name) => id.startsWith(name))
-  return base ? PRICES_PER_MTOK[base] : null
+  return (modelId && PRICES_PER_MTOK[baseModel(modelId)]) || null
 }
 
 export function stepCostUSD(step: {
