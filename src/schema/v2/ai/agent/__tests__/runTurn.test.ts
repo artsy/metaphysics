@@ -2148,3 +2148,104 @@ describe("runTurn with attached images", () => {
     expect(JSON.stringify(conversation)).not.toContain("Collector attached")
   })
 })
+
+describe("runTurn eval options", () => {
+  const answer = () =>
+    new MockLanguageModelV3({
+      doStream: {
+        stream: convertArrayToReadableStream([
+          { type: "stream-start", warnings: [] },
+          { type: "text-start", id: "1" },
+          {
+            type: "text-delta",
+            id: "1",
+            delta: JSON.stringify({ message: "Hello.", section: null }),
+          },
+          { type: "text-end", id: "1" },
+          {
+            type: "finish",
+            finishReason: { unified: "stop", raw: "end_turn" },
+            usage: FAKE_USAGE,
+          },
+        ]),
+      },
+    })
+
+  const run = async (
+    options: Parameters<typeof runTurn>[3],
+    input: { useLiteLLM?: boolean } = {},
+    context: ResolverContext = fakeContext()
+  ) => {
+    const events: any[] = []
+    for await (const event of runTurn(
+      { conversationID: "eval-1", message: "Hi", ...input },
+      ({} as unknown) as GraphQLSchema,
+      context,
+      options
+    )) {
+      events.push(event)
+    }
+    return events
+  }
+
+  const systemPrompt = (model: MockLanguageModelV3) =>
+    model.doStreamCalls[0].prompt.find((entry: any) => entry.role === "system")!
+      .content as string
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockRateLimitByUser.mockResolvedValue({ allowed: true, count: 1 })
+    mockExportSpans.mockResolvedValue(true)
+    mockModel = answer()
+  })
+
+  it("uses the given model instead of the configured one", async () => {
+    const candidate = answer()
+    const events = await run({ model: candidate })
+    expect(candidate.doStreamCalls).toHaveLength(1)
+    expect(mockModel.doStreamCalls).toHaveLength(0)
+    expect(mockAnthropicModel).not.toHaveBeenCalled()
+    expect(events[events.length - 1].message).toBe("Hello.")
+  })
+
+  it("replaces the Gravity template but keeps the appended notes", async () => {
+    const context = fakeContext()
+    await run({ systemPromptTemplate: "Candidate prompt." }, {}, context)
+    expect(context.aiPromptTemplatesLoader).not.toHaveBeenCalled()
+    expect(systemPrompt(mockModel)).toMatch(/^Candidate prompt\./)
+    expect(systemPrompt(mockModel)).toContain("## Today")
+  })
+
+  it("pins today's date", async () => {
+    await run({ now: new Date("2026-03-04T12:00:00Z") })
+    expect(systemPrompt(mockModel)).toContain("Wednesday, March 4, 2026")
+  })
+
+  it("skips the rate limit only when asked", async () => {
+    mockRateLimitByUser.mockResolvedValue({ allowed: false, count: 99 })
+    const limited = await run({})
+    expect(limited[0].stopReason).toBe("rate_limited")
+
+    const events = await run({ skipRateLimit: true })
+    expect(events[events.length - 1].stopReason).toBe("stop")
+  })
+
+  it("sends nothing to Sentry or Phoenix when tracing is disabled", async () => {
+    await run({ disableTracing: true })
+    expect(mockAgentTracer).not.toHaveBeenCalled()
+
+    mockModel = answer()
+    const events = await run({ disableTracing: true }, { useLiteLLM: true })
+    expect(mockExportSpans).not.toHaveBeenCalled()
+    // Still through LiteLLM: only the trace is dropped, not the gateway.
+    expect(mockLiteLLMModel).toHaveBeenCalledWith(LITELLM_AGENT_MODEL)
+    expect(events[events.length - 1].feedbackID).toBeNull()
+  })
+
+  it("reports every step", async () => {
+    const onStepFinish = jest.fn()
+    await run({ onStepFinish })
+    expect(onStepFinish).toHaveBeenCalledTimes(1)
+    expect(onStepFinish.mock.calls[0][0].usage.inputTokens).toBe(10)
+  })
+})
