@@ -64,6 +64,7 @@ import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 import CareerHighlights from "./careerHighlights"
 import { FeaturedStory } from "./featuredStory"
+import { AccentColorOptions } from "./accentColorOptions"
 import {
   MarketingCollections,
   fetchMarketingCollections,
@@ -1054,6 +1055,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ residencies }) => residencies,
       },
       featuredStory: FeaturedStory,
+      accentColorOptions: AccentColorOptions,
       duplicates: {
         type: new GraphQLList(Artist.type),
         resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {

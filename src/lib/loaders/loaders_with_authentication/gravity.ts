@@ -97,6 +97,14 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     agreementLoader: gravityLoader((id) => `agreement/${id}`),
+    artistAccentColorOptionsLoader: gravityLoader(
+      "artist_accent_color_options"
+    ),
+    refreshArtistAccentColorOptionsLoader: gravityLoader(
+      "artist_accent_color_options/rebuild",
+      {},
+      { method: "POST" }
+    ),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
