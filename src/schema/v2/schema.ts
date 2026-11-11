@@ -273,6 +273,7 @@ import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
 import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
+import { replyToEmailMessageMutation } from "./me/replyToEmailMessageMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -804,6 +805,7 @@ export default new GraphQLSchema({
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
       syncEmailAccount: syncEmailAccountMutation,
+      replyToEmailMessage: replyToEmailMessageMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
