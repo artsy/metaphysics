@@ -28,12 +28,14 @@ import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 import { QuickLinks } from "../sections/QuickLinks"
 import { AuctionEngagementRule } from "../mixer/rules/AuctionEngagementRule"
 import { BasedOnYourRecentSaves } from "../sections/BasedOnYourRecentSaves"
+import { CityGuides } from "../sections/CityGuides"
 
 const SECTIONS: HomeViewSection[] = [
   QuickLinks,
   Tasks,
   LatestActivity,
   NewWorksForYou,
+  CityGuides,
   RecentlyViewedArtworks,
   InfiniteDiscovery,
   DiscoverSomethingNew,
