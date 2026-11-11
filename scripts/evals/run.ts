@@ -13,7 +13,7 @@ import { execSync } from "child_process"
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 import { join } from "path"
 import config from "../../src/config"
-import { isLiteLLMConfigured } from "../../src/lib/apis/anthropic"
+import { isLiteLLMConfigured, litellmURL } from "../../src/lib/apis/anthropic"
 import { readDatasetFile } from "../../src/lib/evals/dataset"
 import { runCodeEvaluators } from "../../src/lib/evals/evaluators"
 import {
@@ -24,7 +24,9 @@ import {
 import {
   baseModel,
   languageModelFor,
+  loadPrices,
   parseVariant,
+  priceFor,
 } from "../../src/lib/evals/models"
 import type { EvalVariant } from "../../src/lib/evals/models"
 import { PhoenixClient } from "../../src/lib/evals/phoenix"
@@ -227,8 +229,40 @@ function initAppToken(): Promise<void> {
   })
 }
 
+/** Each variant's price per million tokens, from LiteLLM, for the log. */
+async function loadAndShowPrices(): Promise<void> {
+  if (!isLiteLLMConfigured()) {
+    console.log("No LiteLLM configured, so costs will be unknown.")
+    return
+  }
+  await loadPrices(async () => {
+    const response = await fetch(litellmURL("/model/info"), {
+      headers: { authorization: `Bearer ${config.LITELLM_API_KEY}` },
+    })
+    if (!response.ok) {
+      throw new Error(`LiteLLM /model/info returned ${response.status}.`)
+    }
+    return response.json()
+  })
+  const perM = (n: number | null) =>
+    n == null ? "?" : `$${+(n * 1_000_000).toFixed(3)}`
+  for (const variant of variants) {
+    const price = priceFor(variant.model)
+    console.log(
+      price
+        ? `Price ${variant.model}: ${perM(price.input)} in, ${perM(
+            price.output
+          )} out, ${perM(price.cacheRead)} cache read, ${perM(
+            price.cacheWrite
+          )} cache write per M (LiteLLM)`
+        : `No LiteLLM price for ${variant.model}; its cost will be unknown.`
+    )
+  }
+}
+
 async function main() {
   await initAppToken()
+  await loadAndShowPrices()
   const phoenix = usePhoenix ? PhoenixClient.fromEnv() : null
 
   let datasetID: string | null = null

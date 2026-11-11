@@ -3,7 +3,7 @@ import { tmpdir } from "os"
 import { join } from "path"
 import { readDatasetFile } from "../dataset"
 import { buildJudgePrompt, verdictScores } from "../judge"
-import { parseVariant, priceFor, stepCostUSD } from "../models"
+import { loadPrices, parseVariant, priceFor, stepCostUSD } from "../models"
 import { PhoenixClient } from "../phoenix"
 import { pairedComparison, perCaseMeans } from "../stats"
 import type { ScoredRun } from "../stats"
@@ -37,14 +37,39 @@ describe("parseVariant", () => {
 })
 
 describe("cost", () => {
-  it("matches dated and prefixed model IDs", () => {
-    expect(priceFor("anthropic/claude-sonnet-5-5")).toBe(
-      priceFor("claude-sonnet-5-5")
-    )
-    expect(priceFor("claude-sonnet-5-20260901")).toBe(
+  // Shaped like LiteLLM's /model/info response.
+  const modelInfo = {
+    data: [
+      {
+        model_name: "claude-sonnet-5",
+        litellm_params: { model: "anthropic/claude-sonnet-5" },
+        model_info: {
+          input_cost_per_token: 2e-6,
+          output_cost_per_token: 1e-5,
+          cache_read_input_token_cost: 2e-7,
+          cache_creation_input_token_cost: 2.5e-6,
+        },
+      },
+      {
+        model_name: "art-assistant",
+        litellm_params: { model: "anthropic/claude-sonnet-5-5" },
+        model_info: {
+          input_cost_per_token: 2e-6,
+          output_cost_per_token: 1e-5,
+        },
+      },
+      { model_name: "unpriced", model_info: {} },
+    ],
+  }
+  beforeAll(() => loadPrices(async () => modelInfo))
+
+  it("matches public, upstream and dated model IDs", () => {
+    expect(priceFor("claude-sonnet-5")).not.toBeNull()
+    expect(priceFor("anthropic/claude-sonnet-5-20260901")).toBe(
       priceFor("claude-sonnet-5")
     )
-    expect(priceFor("art-assistant")).toBeNull()
+    expect(priceFor("art-assistant")).toBe(priceFor("claude-sonnet-5-5"))
+    expect(priceFor("unpriced")).toBeNull()
     expect(priceFor("claude-sonnet-5-6")).toBeNull()
   })
 
@@ -62,20 +87,16 @@ describe("cost", () => {
     ).toBeCloseTo(0.6 + 0.12 + 0.25 + 1.0)
   })
 
-  it("pins the published rates", () => {
-    expect(priceFor("claude-sonnet-5")).toEqual({
-      input: 2,
-      output: 10,
-      cacheRead: 0.2,
-      cacheWrite: 2.5,
-    })
-    expect(priceFor("claude-sonnet-5-5")).toEqual(priceFor("claude-sonnet-5"))
-    expect(priceFor("claude-opus-5-5")).toEqual({
-      input: 4,
-      output: 20,
-      cacheRead: 0.2,
-      cacheWrite: 5,
-    })
+  it("is unknown when a cache rate the step used isn't listed", () => {
+    const step = {
+      modelId: "art-assistant",
+      inputTokens: 1000,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+      outputTokens: 100,
+    }
+    expect(stepCostUSD(step)).toBeCloseTo(0.002 + 0.001)
+    expect(stepCostUSD({ ...step, cacheReadTokens: 500 })).toBeNull()
   })
 })
 
