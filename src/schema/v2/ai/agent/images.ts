@@ -2,7 +2,7 @@ import { createHash } from "crypto"
 import { generateText } from "ai"
 import type { LanguageModel } from "ai"
 import config from "config"
-import { info } from "lib/loggers"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import type { AIAgentHistoryEntry, AIAgentImage } from "./types"
 
@@ -95,8 +95,11 @@ export async function registerAttachedImage(
       s3_key: image.s3Key,
     })
   } catch (error) {
+    // A warning, not Sentry: it's routine for a too-old or someone else's
+    // upload, but it also means `view_image` won't work for this image. The
+    // status only, never the key.
     const status = (error as { statusCode?: number })?.statusCode
-    info(
+    warn(
       `[aiAgentTurn] attached image not registered${
         status ? ` (${status})` : ""
       }`

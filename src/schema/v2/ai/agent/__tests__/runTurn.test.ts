@@ -86,7 +86,13 @@ jest.mock("lib/rateLimitByUser", () => ({
   rateLimitByUser: (...args: any[]) => mockRateLimitByUser(...args),
 }))
 
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  warn: jest.fn(),
+}))
+
 import { LITELLM_AGENT_MODEL } from "lib/apis/anthropic"
+import { warn } from "lib/loggers"
 import { runTurn } from "../runTurn"
 import { imageHandleFor } from "../images"
 
@@ -2434,10 +2440,11 @@ describe("runTurn with view_image", () => {
         finalStep("Here are look-alikes."),
       ],
     })
-    // Too old to claim, so Gravity won't preview it for this collector either.
+    // Too old to claim (Gravity answers that with the same 404 as a missing
+    // upload), so it won't preview it for this collector either.
     const createImageUploadLoader = jest
       .fn()
-      .mockRejectedValue(Object.assign(new Error("stale"), { statusCode: 422 }))
+      .mockRejectedValue(Object.assign(new Error("stale"), { statusCode: 404 }))
     const imageUploadPreviewLoader = jest
       .fn()
       .mockRejectedValue(Object.assign(new Error("nope"), { statusCode: 404 }))
@@ -2468,6 +2475,13 @@ describe("runTurn with view_image", () => {
       message: "Here are look-alikes.",
     })
     expect(mockModel.doGenerateCalls).toHaveLength(0)
+    // Visible in logs, with the status but never the key.
+    expect(warn).toHaveBeenCalledWith(
+      "[aiAgentTurn] attached image not registered (404)"
+    )
+    expect(JSON.stringify((warn as jest.Mock).mock.calls)).not.toContain(
+      "uploads/query.jpg"
+    )
   })
 
   it("turns a view_image failure into a tool error the turn recovers from", async () => {

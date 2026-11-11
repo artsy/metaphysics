@@ -31,6 +31,7 @@ import {
   statusCodeForError,
 } from "lib/graphqlErrorHandler"
 import { ArgumentError } from "lib/argumentError"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import {
   AIAgentImageHandles,
@@ -801,10 +802,19 @@ export function buildViewImageTool(
     } catch (error) {
       // Never the raw error: it can carry the signed URL. Nothing is sent to
       // Sentry either, for the same reason -- a missing upload is routine.
+      // The warning carries our own message, or just the error's class for
+      // anything else, so a broken endpoint or model still shows up in logs.
       const reason =
         error instanceof AIAgentImageUnavailableError
           ? error.message
           : "The image could not be loaded."
+      warn(
+        `[aiAgentTurn] view_image failed: ${
+          error instanceof AIAgentImageUnavailableError
+            ? reason
+            : (error as Error)?.name ?? "unknown error"
+        }`
+      )
       return {
         ok: false,
         content:

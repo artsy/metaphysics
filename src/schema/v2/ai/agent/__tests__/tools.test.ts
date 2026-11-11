@@ -21,6 +21,12 @@ import {
   validate,
 } from "graphql"
 import { HTTPError } from "lib/HTTPError"
+import { warn } from "lib/loggers"
+
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  warn: jest.fn(),
+}))
 
 describe("buildAgentTools", () => {
   it("exposes exactly one tool, query_artsy", () => {
@@ -1514,6 +1520,7 @@ describe("view_image", () => {
   }
 
   beforeEach(() => {
+    ;(warn as jest.Mock).mockClear()
     fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue(
       new Response(JPEG_BYTES, {
         status: 200,
@@ -1660,6 +1667,13 @@ describe("view_image", () => {
       // Points the model back at strategy A rather than ending the turn.
       expect(output.content).toContain("artworksConnection(image: ...)")
       expect(JSON.stringify(output)).not.toMatch(
+        /gemini|amazonaws|Signature|SECRET|uploads\/query/
+      )
+      // Logged so a broken endpoint or model is visible, but never the URL.
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("[aiAgentTurn] view_image failed:")
+      )
+      expect(JSON.stringify((warn as jest.Mock).mock.calls)).not.toMatch(
         /gemini|amazonaws|Signature|SECRET|uploads\/query/
       )
     }
