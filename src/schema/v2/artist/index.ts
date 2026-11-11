@@ -24,6 +24,7 @@ import { date } from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import numeral from "schema/v2/fields/numeral"
+import { representativeArtworks } from "schema/v2/fields/representativeArtworks"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -112,6 +113,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      representativeArtworks: representativeArtworks(),
       alternateNames: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ alternate_names }) => alternate_names,
