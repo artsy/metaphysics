@@ -1190,6 +1190,36 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     partnerArtistStoriesLoader: gravityLoader("artist_stories"),
+    createArtistStoryLoader: gravityLoader(
+      "artist_story",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistStoryLoader: gravityLoader(
+      (id) => `artist_story/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistStoryLoader: gravityLoader(
+      (id) => `artist_story/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    createArtistStoryVideoLoader: gravityLoader(
+      "artist_story_video",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistStoryVideoLoader: gravityLoader(
+      (id) => `artist_story_video/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistStoryVideoLoader: gravityLoader(
+      (id) => `artist_story_video/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     partnerArtistsAllLoader: gravityLoader(
       (id) => `partner/${id}/partner_artists/all`,
       {},
