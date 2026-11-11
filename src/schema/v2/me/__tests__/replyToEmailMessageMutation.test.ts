@@ -1,4 +1,4 @@
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { HTTPError } from "lib/HTTPError"
 
 const mutation = `
@@ -62,9 +62,9 @@ describe("replyToEmailMessage", () => {
     })
   })
 
-  it("returns no payload when the user is signed out", async () => {
-    const result = await runAuthenticatedQuery(mutation, {})
-
-    expect(result.replyToEmailMessage).toBeNull()
+  it("throws when signed out", async () => {
+    await expect(runQuery(mutation, {})).rejects.toThrow(
+      "You need to be signed in to perform this action"
+    )
   })
 })
