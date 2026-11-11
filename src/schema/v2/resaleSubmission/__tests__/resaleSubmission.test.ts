@@ -28,6 +28,9 @@ const query = (id: string) => gql`
         priceListed {
           minor
         }
+        packaging
+        packer
+        courierHandoff
         createdAt
       }
     }
@@ -59,6 +62,9 @@ describe("me.resaleSubmission", () => {
       },
       recommendedPriceMax: { minor: 360000 },
       priceListed: null,
+      packaging: null,
+      packer: null,
+      courierHandoff: null,
       createdAt: expect.any(String),
     })
     expect(submission.id).not.toEqual(submission.internalID)
@@ -85,13 +91,16 @@ describe("me.resaleSubmission", () => {
     })
   })
 
-  it("returns a saved price of 0", async () => {
+  it("returns saved shipping preferences and a saved price of 0", async () => {
     const resaleSubmissionLoader = jest.fn(() =>
       Promise.resolve({
         id: "gravity-id",
         state: "accepted",
         price_currency_code: "USD",
         price_listed_minor: 0,
+        packaging: "no_preference",
+        packer: "courier",
+        courier_handoff: "courier_pickup",
       })
     )
 
@@ -99,7 +108,12 @@ describe("me.resaleSubmission", () => {
       resaleSubmissionLoader,
     } as any)
 
-    expect(submission.priceListed).toEqual({ minor: 0 })
+    expect(submission).toMatchObject({
+      priceListed: { minor: 0 },
+      packaging: "NO_PREFERENCE",
+      packer: "COURIER",
+      courierHandoff: "COURIER_PICKUP",
+    })
   })
 
   it("falls back to artworkLoader for the submitted artwork", async () => {
