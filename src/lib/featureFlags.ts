@@ -14,6 +14,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_ai_agent-image-input",
   "onyx_ai_agent-suggested-replies",
   "onyx_ai_agent-turn",
+  "onyx_home-view-city-guide",
   "onyx_nwfy-gravity",
   "onyx_nwfy-refresh-eigen",
   "topaz_remove-inquiry-creation-from-order-mutation",
