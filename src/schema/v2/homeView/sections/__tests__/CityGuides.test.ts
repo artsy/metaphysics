@@ -34,12 +34,10 @@ const cardsQuery = gql`
 `
 
 const buildLoaders = () => ({
-  // London: 6 guides, 80 running + 9 opening. Every other city: 0 guides, 60 + 50.
-  showsWithHeadersLoader: jest.fn(({ near, status }) => {
-    const isLondon = near === "51.51,-0.13"
-    if (status === "running") return withTotalCount(isLondon ? 80 : 60)
-    return withTotalCount(isLondon ? 9 : 50)
-  }),
+  // London: 6 guides, 89 shows. Every other city: 0 guides, 110 shows.
+  showsWithHeadersLoader: jest.fn(({ near }) =>
+    withTotalCount(near === "51.51,-0.13" ? 89 : 110)
+  ),
   itinerariesLoader: jest.fn(({ city_slug }) =>
     withTotalCount(city_slug === "london-united-kingdom" ? 6 : 0)
   ),
@@ -164,19 +162,19 @@ describe("CityGuides", () => {
     })
   })
 
-  it("fetches only counts, with a fixed number of calls per city", async () => {
+  it("fetches only counts, with one shows and one guides call per city", async () => {
     const loaders = buildLoaders()
 
     await runQuery(cardsQuery, { unauthenticatedLoaders: loaders })
 
     const cityCount = HOME_VIEW_CITY_GUIDE_SLUGS.length
-    expect(loaders.showsWithHeadersLoader).toHaveBeenCalledTimes(cityCount * 2)
+    expect(loaders.showsWithHeadersLoader).toHaveBeenCalledTimes(cityCount)
     expect(loaders.itinerariesLoader).toHaveBeenCalledTimes(cityCount)
 
     expect(loaders.showsWithHeadersLoader).toHaveBeenCalledWith(
       expect.objectContaining({
         near: "51.51,-0.13",
-        status: "upcoming",
+        status: "running_and_upcoming",
         day_threshold: 14,
         at_a_fair: false,
         include_local_discovery: false,
@@ -214,16 +212,18 @@ describe("CityGuides", () => {
     )
 
     expect(london.chips).toEqual([])
-    expect(newYork.chips).toEqual(["1 Curated Guide", "20 Shows"])
+    expect(newYork.chips).toEqual(["1 Curated Guide", "10 Shows"])
   })
 
   describe("countLabel", () => {
     it("formats counts", () => {
-      expect(countLabel(0, "Show", "Shows")).toBeNull()
-      expect(countLabel(null, "Show", "Shows")).toBeNull()
-      expect(countLabel(1, "Show", "Shows")).toBe("1 Show")
-      expect(countLabel(100, "Show", "Shows")).toBe("100 Shows")
-      expect(countLabel(101, "Show", "Shows")).toBe("100+ Shows")
+      expect(countLabel(0, "Show")).toBeNull()
+      expect(countLabel(null, "Show")).toBeNull()
+      expect(countLabel(1, "Show")).toBe("1 Show")
+      expect(countLabel(1, "Curated Guide")).toBe("1 Curated Guide")
+      expect(countLabel(6, "Curated Guide")).toBe("6 Curated Guides")
+      expect(countLabel(100, "Show")).toBe("100 Shows")
+      expect(countLabel(101, "Show")).toBe("100+ Shows")
     })
   })
 })

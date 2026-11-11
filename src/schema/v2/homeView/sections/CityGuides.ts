@@ -1,5 +1,6 @@
 import { ContextModule } from "@artsy/cohesion"
 import { connectionFromArray } from "graphql-relay"
+import inflect from "i"
 import { compact } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { cityShowsParams } from "schema/v2/city/cityShowsParams"
@@ -43,17 +44,18 @@ const CITY_IMAGE_URLS: Record<HomeViewCityGuideSlug, string> = {
 const OPENING_SOON_DAY_THRESHOLD = 14
 const MAX_DISPLAYED_COUNT = 100
 
+const { pluralize } = inflect()
+
 export const countLabel = (
   count: number | null,
-  singular: string,
-  plural: string
+  label: string
 ): string | null => {
   if (!count) return null
 
   const displayed =
     count > MAX_DISPLAYED_COUNT ? `${MAX_DISPLAYED_COUNT}+` : `${count}`
 
-  return `${displayed} ${count === 1 ? singular : plural}`
+  return `${displayed} ${count === 1 ? label : pluralize(label)}`
 }
 
 const totalCount = async (
@@ -83,17 +85,12 @@ const loadCityCounts = async (
     coords: [city.coordinates.lat, city.coordinates.lng],
   }
 
-  const [currentShows, openingShows, curatedGuides] = await Promise.all([
-    totalCount(
-      showsWithHeadersLoader({
-        ...cityShowsParams(tCity, { status: "RUNNING" }),
-        ...COUNT_ONLY,
-      })
-    ),
+  const [showsCount, curatedGuidesCount] = await Promise.all([
+    // Running shows plus shows opening within the threshold, in one request
     totalCount(
       showsWithHeadersLoader({
         ...cityShowsParams(tCity, {
-          status: "UPCOMING",
+          status: "RUNNING_AND_UPCOMING",
           dayThreshold: OPENING_SOON_DAY_THRESHOLD,
         }),
         ...COUNT_ONLY,
@@ -108,12 +105,7 @@ const loadCityCounts = async (
     ),
   ])
 
-  const shows =
-    currentShows === null || openingShows === null
-      ? null
-      : currentShows + openingShows
-
-  return { shows, curatedGuides }
+  return { showsCount, curatedGuidesCount }
 }
 
 export const CityGuides: HomeViewSection = {
@@ -150,12 +142,8 @@ export const CityGuides: HomeViewSection = {
       href: `/city-guide?citySlug=${city.slug}`,
       imageURL: CITY_IMAGE_URLS[HOME_VIEW_CITY_GUIDE_SLUGS[index]],
       chips: compact([
-        countLabel(
-          counts[index].curatedGuides,
-          "Curated Guide",
-          "Curated Guides"
-        ),
-        countLabel(counts[index].shows, "Show", "Shows"),
+        countLabel(counts[index].curatedGuidesCount, "Curated Guide"),
+        countLabel(counts[index].showsCount, "Show"),
       ]),
     }))
 
