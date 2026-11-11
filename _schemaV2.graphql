@@ -15146,7 +15146,7 @@ input CreateResaleSubmissionsInput {
 
 type CreateResaleSubmissionsPayload {
   clientMutationId: String
-  responseOrError: CreateResaleSubmissionsResponseOrError
+  resaleSubmissionsOrError: CreateResaleSubmissionsResponseOrError
 }
 
 union CreateResaleSubmissionsResponseOrError =

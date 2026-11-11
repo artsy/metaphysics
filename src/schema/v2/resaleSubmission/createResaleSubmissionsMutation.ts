@@ -84,7 +84,7 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    responseOrError: {
+    resaleSubmissionsOrError: {
       type: ResponseOrErrorType,
       resolve: (result) => result,
     },

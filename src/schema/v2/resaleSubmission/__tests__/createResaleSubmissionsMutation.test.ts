@@ -13,7 +13,7 @@ const mutation = (artworkIDs: string[]) => gql`
     createResaleSubmissions(input: { artworkIDs: ${JSON.stringify(
       artworkIDs
     )} }) {
-      responseOrError {
+      resaleSubmissionsOrError {
         __typename
         ... on CreateResaleSubmissionsSuccess {
           results {
@@ -45,7 +45,7 @@ const create = async (artworkIDs: string[], loaders: any = stubLoaders()) => {
     mutation(artworkIDs),
     loaders
   )
-  return createResaleSubmissions.responseOrError
+  return createResaleSubmissions.resaleSubmissionsOrError
 }
 
 const artworkID = (n: number) => n.toString(16).padStart(24, "0")
