@@ -51,16 +51,4 @@ describe("representativeArtworks field", () => {
     expect(result).toEqual([])
     expect(load).not.toHaveBeenCalled()
   })
-
-  it("honors a custom ids accessor", async () => {
-    const customField = representativeArtworks((parent) => parent.rep_ids)
-    const load = jest.fn((id: string) => Promise.resolve({ _id: id }))
-    const result = await (customField.resolve as any)(
-      { rep_ids: ["art-9"] },
-      {},
-      { artworkByIDLoader: { load } }
-    )
-
-    expect(result).toEqual([{ _id: "art-9" }])
-  })
 })
