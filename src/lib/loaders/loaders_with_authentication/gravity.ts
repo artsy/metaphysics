@@ -2135,6 +2135,29 @@ export default (accessToken, userID, opts) => {
 
     crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
 
+    // Email Sender Review Loaders
+    emailSenderReviewsLoader: gravityLoader(
+      "email_sender_reviews",
+      {},
+      { headers: true }
+    ),
+    emailSenderReviewLoader: gravityLoader((id) => `email_sender_review/${id}`),
+    approveEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/approve`,
+      {},
+      { method: "POST" }
+    ),
+    skipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/skip`,
+      {},
+      { method: "POST" }
+    ),
+    unskipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/unskip`,
+      {},
+      { method: "POST" }
+    ),
+
     // Brand Kit Loaders
     brandKitLoader: gravityLoader("brand_kit"),
     createBrandKitLoader: gravityLoader("brand_kit", {}, { method: "POST" }),
