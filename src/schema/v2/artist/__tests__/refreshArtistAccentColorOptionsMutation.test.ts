@@ -98,7 +98,7 @@ describe("refreshArtistAccentColorOptionsMutation", () => {
   it("returns a Gravity error as a failure", async () => {
     refreshArtistAccentColorOptionsLoader.mockRejectedValue(
       new HTTPError(
-        'https://api.artsy.test/api/v1/artist_accent_color_options/rebuild - {"type":"error","message":"Artist not found"}',
+        "Error",
         404,
         '{"type":"error","message":"Artist not found"}'
       )
