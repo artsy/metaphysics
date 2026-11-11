@@ -22,7 +22,8 @@ interface UpdateArtnetArtworkMutationInputProps {
   id: string
   published?: boolean
   availability?: string
-  mediums?: string[]
+  primaryMedium?: string
+  additionalMediums?: string[]
   materials?: string
   priceToMinor?: number | null
   syncOn?: boolean
@@ -63,7 +64,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `mediums`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -78,10 +79,15 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         "Gravity availability (e.g. `for sale`, `sold`), normalized to an Artnet sale status.",
     },
-    mediums: {
+    primaryMedium: {
+      type: GraphQLString,
+      description:
+        "The artwork's primary medium on Artnet, from Artnet's accepted mediums. Replaces the current primary, which is removed from Artnet; the additional mediums are kept. Omit to leave it unchanged.",
+    },
+    additionalMediums: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
-        "Every medium Artnet should hold, primary first, from Artnet's accepted mediums. Replaces Artnet's list: what is missing is removed. Omit to leave it unchanged.",
+        "The artwork's other mediums on Artnet, from Artnet's accepted mediums. Replaces them: what is missing is removed, and an empty list removes them all. Omit to leave them unchanged.",
     },
     materials: {
       type: GraphQLString,
@@ -108,7 +114,16 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, published, availability, mediums, materials, priceToMinor, syncOn },
+    {
+      id,
+      published,
+      availability,
+      primaryMedium,
+      additionalMediums,
+      materials,
+      priceToMinor,
+      syncOn,
+    },
     { updateArtnetArtworkLoader }
   ) => {
     if (!updateArtnetArtworkLoader) {
@@ -121,7 +136,8 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
           {
             published,
             availability,
-            mediums,
+            primaryMedium,
+            additionalMediums,
             materials,
             priceToMinor,
             syncOn,

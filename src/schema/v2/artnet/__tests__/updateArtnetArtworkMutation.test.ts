@@ -58,11 +58,15 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
-  it("passes mediums through as Gravity's mediums param", async () => {
+  it("passes primaryMedium and additionalMediums through to Gravity", async () => {
     const query = `
       mutation {
         updateArtnetArtwork(
-          input: { id: "artnet-artwork-1", mediums: ["Sculpture", "Paintings"] }
+          input: {
+            id: "artnet-artwork-1"
+            primaryMedium: "Sculpture"
+            additionalMediums: ["Paintings"]
+          }
         ) {
           artnetArtworkOrError {
             ... on UpdateArtnetArtworkSuccess {
@@ -86,11 +90,41 @@ describe("updateArtnetArtwork mutation", () => {
     })
 
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
-      mediums: ["Sculpture", "Paintings"],
+      primary_medium: "Sculpture",
+      additional_mediums: ["Paintings"],
     })
     expect(
       data.updateArtnetArtwork.artnetArtworkOrError.artnetArtwork
     ).toEqual({ primaryMedium: "Sculpture", additionalMediums: ["Paintings"] })
+  })
+
+  // An empty list removes every additional medium, so it has to reach Gravity
+  // as one rather than be dropped as "not given".
+  it("passes an empty additionalMediums through", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", additionalMediums: [] }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest
+      .fn()
+      .mockResolvedValue({ id: "artnet-artwork-1" })
+
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      additional_mediums: [],
+    })
   })
 
   it("passes materials, priceToMinor and syncOn through", async () => {
