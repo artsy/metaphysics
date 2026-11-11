@@ -2061,6 +2061,13 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
 
+    // Replies to a synced email message from its mailbox (201)
+    replyToEmailMessageLoader: gravityLoader(
+      (id) => `partner_email_message/${id}/reply`,
+      {},
+      { method: "POST" }
+    ),
+
     // Mailchimp Campaign Loaders
     mailchimpCampaignsLoader: gravityLoader(
       "mailchimp_campaigns",
