@@ -15,6 +15,7 @@ import { HeroUnits } from "./HeroUnits"
 import { LatestActivity } from "./LatestActivity"
 import { LatestArticles } from "./LatestArticles"
 import { LatestAuctionResults } from "./LatestAuctionResults"
+import { MarketingCollections } from "./MarketingCollections"
 import { News } from "./News"
 import { NewWorksForYou } from "./NewWorksForYou"
 import { NewWorksFromGalleriesYouFollow } from "./NewWorksFromGalleriesYouFollow"
@@ -69,6 +70,7 @@ const sections: HomeViewSection[] = [
   LatestActivity,
   LatestArticles,
   LatestAuctionResults,
+  MarketingCollections,
   News,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
