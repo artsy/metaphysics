@@ -44,6 +44,7 @@ import {
   ArtworksAggregationResultsType,
 } from "./aggregations/filter_artworks_aggregation"
 import Artist from "./artist"
+import { ArtworkSearchProfileType } from "./artworkSearchProfile"
 import Artwork, {
   artworkConnection,
   ArtworkConnectionInterface,
@@ -299,6 +300,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   saleID: {
     type: GraphQLID,
+  },
+  searchProfile: {
+    type: ArtworkSearchProfileType,
+    description:
+      "Which search behaviour to use. `PARTNER_INVENTORY` needs `partnerID` and partner access, and is ignored otherwise.",
   },
   showID: {
     type: GraphQLString,
@@ -590,6 +596,7 @@ const convertFilterArgs = ({
   partnerListID,
   priceRange,
   saleID,
+  searchProfile,
   showID,
   similarToArtworkID,
   sizes,
@@ -651,6 +658,7 @@ const convertFilterArgs = ({
     partner_show_id: showID,
     price_range: priceRange,
     sale_id: saleID,
+    search_profile: searchProfile,
     similar_to_artwork_id: similarToArtworkID,
     sizes: sizes,
     tag_id: tagID,
@@ -812,6 +820,7 @@ const filterArtworksConnectionTypeFactory = (
 
     const requestedAuthorizedFilters = !!(
       gravityOptions.include_unpublished ||
+      gravityOptions.search_profile ||
       include_artworks_by_followed_artists ||
       visibility_level ||
       include_all_json
@@ -836,6 +845,7 @@ const filterArtworksConnectionTypeFactory = (
 
         delete gravityOptions.include_artworks_by_followed_artists
         delete gravityOptions.include_unpublished
+        delete gravityOptions.search_profile
         delete gravityOptions.visibility_level
         delete gravityOptions.include_json
         gravityOptions.aggregations = gravityOptions.aggregations.filter(
@@ -890,6 +900,7 @@ const filterArtworksConnectionTypeFactory = (
         disableNotForSaleSorting,
         medium,
         includeNonArtsyListed,
+        searchProfile,
         // pagination arguments we want to exclude
         // from the check for other filters
         first,

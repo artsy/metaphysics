@@ -2587,6 +2587,31 @@ describe("Partner type", () => {
         },
       })
     })
+
+    it("forwards searchProfile to Gravity", async () => {
+      const partnerSearchArtworksLoader = jest.fn(() =>
+        Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+      )
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            artworksSearchConnection(
+              query: "AB-12"
+              searchProfile: PARTNER_INVENTORY
+            ) {
+              totalCount
+            }
+          }
+        }
+      `
+
+      await runQuery(query, { ...context, partnerSearchArtworksLoader })
+
+      expect(partnerSearchArtworksLoader).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ term: "AB-12", search_profile: "partner" })
+      )
+    })
   })
 
   describe("#href", () => {
