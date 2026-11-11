@@ -1,8 +1,8 @@
 import DataLoader from "dataloader"
 
-// Coalesces single artwork-by-id loads made in the same tick into one batched
-// /artworks call, so `representativeArtworks` fields across a connection don't
-// fan out. Raw DataLoader (not batchLoader) since it coalesces regardless of
+// Coalesces single artwork-by-id loads in same tick into one batched
+// call, to prevent fan out.
+// Raw DataLoader (not batchLoader) since it coalesces regardless of
 // ENABLE_RESOLVER_BATCHING.
 export const createArtworkByIDLoader = (
   artworksLoader: (params: {
@@ -15,8 +15,7 @@ export const createArtworkByIDLoader = (
     async (ids) => {
       let artworks: any[] = []
       try {
-        // `size` is required: fetching by id still paginates in Gravity, so
-        // without it a batch of >10 ids silently loses the rest.
+        // `size` is required
         artworks = await artworksLoader({
           ids: [...ids],
           batched: true,
