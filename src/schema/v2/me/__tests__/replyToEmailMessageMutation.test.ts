@@ -4,12 +4,14 @@ import { HTTPError } from "lib/HTTPError"
 const mutation = `
   mutation {
     replyToEmailMessage(input: { id: "msg-1", bodyHTML: "<p>Thanks!</p>" }) {
-      emailMessageOrError {
+      replyOrError {
         __typename
         ... on ReplyToEmailMessageSuccess {
-          providerMessageID
-          providerThreadID
-          rfcMessageID
+          reply {
+            providerMessageID
+            providerThreadID
+            rfcMessageID
+          }
         }
         ... on ReplyToEmailMessageFailure {
           mutationError { message statusCode }
@@ -34,11 +36,13 @@ describe("replyToEmailMessage", () => {
     expect(replyToEmailMessageLoader).toHaveBeenCalledWith("msg-1", {
       body_html: "<p>Thanks!</p>",
     })
-    expect(result.replyToEmailMessage.emailMessageOrError).toEqual({
+    expect(result.replyToEmailMessage.replyOrError).toEqual({
       __typename: "ReplyToEmailMessageSuccess",
-      providerMessageID: "sent-1",
-      providerThreadID: "t-1",
-      rfcMessageID: "<x@example.com>",
+      reply: {
+        providerMessageID: "sent-1",
+        providerThreadID: "t-1",
+        rfcMessageID: "<x@example.com>",
+      },
     })
   })
 
@@ -52,9 +56,15 @@ describe("replyToEmailMessage", () => {
       ),
     })
 
-    expect(result.replyToEmailMessage.emailMessageOrError).toEqual({
+    expect(result.replyToEmailMessage.replyOrError).toEqual({
       __typename: "ReplyToEmailMessageFailure",
       mutationError: { message: "Account is not active", statusCode: 400 },
     })
+  })
+
+  it("returns no payload when the user is signed out", async () => {
+    const result = await runAuthenticatedQuery(mutation, {})
+
+    expect(result.replyToEmailMessage).toBeNull()
   })
 })

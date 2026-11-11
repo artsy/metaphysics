@@ -1,14 +1,9 @@
-import {
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLUnionType,
-} from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import {
   NOT_SIGNED_IN,
+  responseOrErrorType,
   withGravityMutationError,
 } from "schema/v2/crmContact/mutationHelpers"
 
@@ -17,9 +12,8 @@ interface Input {
   bodyHTML: string
 }
 
-const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ReplyToEmailMessageSuccess",
-  isTypeOf: (data) => data._type !== "GravityMutationError",
+const ReplyType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ReplyToEmailMessageReply",
   fields: () => ({
     providerMessageID: {
       type: GraphQLString,
@@ -39,24 +33,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ReplyToEmailMessageFailure",
-  isTypeOf: (data) => data._type === "GravityMutationError",
-  fields: () => ({
-    mutationError: {
-      type: GravityMutationErrorType,
-      resolve: (err) => err,
-    },
-  }),
-})
-
-const ResponseOrErrorType = new GraphQLUnionType({
-  name: "ReplyToEmailMessageResponseOrError",
-  types: [SuccessType, FailureType],
-  resolveType: (data) =>
-    data._type === "GravityMutationError"
-      ? "ReplyToEmailMessageFailure"
-      : "ReplyToEmailMessageSuccess",
+const ResponseOrErrorType = responseOrErrorType({
+  name: "ReplyToEmailMessage",
+  payloadField: "reply",
+  payloadType: ReplyType,
 })
 
 export const replyToEmailMessageMutation = mutationWithClientMutationId<
@@ -78,7 +58,7 @@ export const replyToEmailMessageMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    emailMessageOrError: {
+    replyOrError: {
       type: ResponseOrErrorType,
       description: "On success: the provider IDs of the sent reply",
       resolve: (result) => result,
