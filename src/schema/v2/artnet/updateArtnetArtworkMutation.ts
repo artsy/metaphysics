@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -21,6 +22,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   id: string
   published?: boolean
   availability?: string
+  mediums?: string[]
   materials?: string
   priceToMinor?: number | null
   syncOn?: boolean
@@ -61,7 +63,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `mediums`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -75,6 +77,11 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
       description:
         "Gravity availability (e.g. `for sale`, `sold`), normalized to an Artnet sale status.",
+    },
+    mediums: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Every medium Artnet should hold, primary first, from Artnet's accepted mediums. Replaces Artnet's list: what is missing is removed. Omit to leave it unchanged.",
     },
     materials: {
       type: GraphQLString,
@@ -101,7 +108,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, published, availability, materials, priceToMinor, syncOn },
+    { id, published, availability, mediums, materials, priceToMinor, syncOn },
     { updateArtnetArtworkLoader }
   ) => {
     if (!updateArtnetArtworkLoader) {
@@ -114,6 +121,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
           {
             published,
             availability,
+            mediums,
             materials,
             priceToMinor,
             syncOn,

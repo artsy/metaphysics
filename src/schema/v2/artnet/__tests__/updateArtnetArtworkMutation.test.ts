@@ -58,6 +58,41 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
+  it("passes mediums through as Gravity's mediums param", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", mediums: ["Sculpture", "Paintings"] }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                primaryMedium
+                additionalMediums
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      primary_medium: "Sculpture",
+      additional_mediums: ["Paintings"],
+    })
+
+    const data = await runAuthenticatedQuery(query, {
+      updateArtnetArtworkLoader,
+    })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      mediums: ["Sculpture", "Paintings"],
+    })
+    expect(
+      data.updateArtnetArtwork.artnetArtworkOrError.artnetArtwork
+    ).toEqual({ primaryMedium: "Sculpture", additionalMediums: ["Paintings"] })
+  })
+
   it("passes materials, priceToMinor and syncOn through", async () => {
     const query = `
       mutation {

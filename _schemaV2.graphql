@@ -27358,7 +27358,7 @@ type Mutation {
   ): updateArtistStoryVideoPayload
 
   """
-  Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
+  Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `mediums`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
   """
   updateArtnetArtwork(
     input: UpdateArtnetArtworkMutationInput!
@@ -39440,6 +39440,11 @@ input UpdateArtnetArtworkMutationInput {
   Free-text materials ("oil on canvas"). Omit to leave it unchanged; cannot be cleared, since Gravity clears on an empty string, which is indistinguishable from null by the time a request reaches it from here.
   """
   materials: String
+
+  """
+  Every medium Artnet should hold, primary first, from Artnet's accepted mediums. Replaces Artnet's list: what is missing is removed. Omit to leave it unchanged.
+  """
+  mediums: [String!]
 
   """
   Ceiling of Artnet's price range, in minor units. The floor is the catalog artwork's price. Pass null to clear it; omit to leave it unchanged.
