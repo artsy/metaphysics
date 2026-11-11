@@ -75,6 +75,7 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
   description:
     "Ask Artsy to assess My Collection works for resale. A work that already has an active submission returns it. A rejected assessment is a success; one work failing doesn't fail the others.",
   inputFields: {
+    // Eigen's sell flow lets collectors select many works at once, so this takes a list.
     artworkIDs: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
