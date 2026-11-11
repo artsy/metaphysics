@@ -31165,7 +31165,7 @@ type PartnerListPublication {
   artworksCount: Int!
 
   """
-  Cover image for the room's hero. Gravity only accepts uploads for partners in the viewing rooms rebuild.
+  Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.
   """
   coverImage: Image
   createdAt(

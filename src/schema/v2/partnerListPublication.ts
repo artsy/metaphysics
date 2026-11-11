@@ -131,7 +131,7 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     coverImage: {
       type: Image.type,
       description:
-        "Cover image for the room's hero. Gravity only accepts uploads for partners in the viewing rooms rebuild.",
+        "Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.",
       resolve: ({ cover_image }) => {
         if (!cover_image) return null
         return normalizeImageData(cover_image, true)
