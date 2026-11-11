@@ -3,6 +3,8 @@ import { ResolverContext } from "types/graphql"
 import * as Sentry from "@sentry/node"
 import {
   buildAgentTools,
+  buildViewImageTool,
+  describeAgentToolCall,
   describeToolCall,
   IMAGE_INPUT_TYPE_NAME,
   narrowSchemaFor,
@@ -19,6 +21,12 @@ import {
   validate,
 } from "graphql"
 import { HTTPError } from "lib/HTTPError"
+import { warn } from "lib/loggers"
+
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  warn: jest.fn(),
+}))
 
 describe("buildAgentTools", () => {
   it("exposes exactly one tool, query_artsy", () => {
@@ -1453,13 +1461,16 @@ describe("image handles", () => {
     })
   })
 
-  it("only adds image guidance when something is attached", () => {
+  it("only offers view_image, and image guidance, when something is attached", () => {
     const without = buildAgentTools(schema, {} as ResolverContext)
-    const withImage = buildAgentTools(schema, {} as ResolverContext, handles)
+    const withImage = buildAgentTools(schema, {} as ResolverContext, handles, {
+      registration: Promise.resolve(),
+      describeImage: jest.fn(),
+    })
 
     expect(Object.keys(without)).toEqual(["query_artsy"])
     expect(without.query_artsy.description).not.toContain("Collector attached")
-    expect(Object.keys(withImage)).toEqual(["query_artsy"])
+    expect(Object.keys(withImage)).toEqual(["query_artsy", "view_image"])
     expect(withImage.query_artsy.description).toContain(
       'artworksConnection(image: "image_…"'
     )
@@ -1473,5 +1484,221 @@ describe("image handles", () => {
     expect(description.activity).toBe("SEARCHING_ARTWORKS")
     expect(description.debugSummary).toContain('image: "image_1"')
     expect(description.debugSummary).not.toContain("uploads/query.jpg")
+  })
+})
+
+describe("view_image", () => {
+  const IMAGE = { s3Key: "uploads/query.jpg", s3Bucket: "image-uploads" }
+  const handles = new Map([["image_1", IMAGE]])
+  const SIGNED_URL =
+    "https://gemini.example.com/crop?src=https%3A%2F%2Fs3.amazonaws.com%2Fimage-uploads%2Fuploads%2Fquery.jpg%3FX-Amz-Signature%3DSECRET"
+  const JPEG_BYTES = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10])
+
+  let fetchSpy: jest.SpyInstance
+
+  const viewImageTool = ({
+    imageUploadPreviewLoader = jest
+      .fn()
+      .mockResolvedValue({ url: SIGNED_URL, expires_in: 300 }),
+    registration = Promise.resolve(),
+    describeImage = jest
+      .fn()
+      .mockResolvedValue("A ginger cat on a windowsill."),
+  }: {
+    imageUploadPreviewLoader?: jest.Mock
+    registration?: Promise<void>
+    describeImage?: jest.Mock
+  } = {}) => {
+    const tool = buildViewImageTool(
+      handles,
+      ({ imageUploadPreviewLoader } as unknown) as ResolverContext,
+      { registration, describeImage }
+    )
+    const execute = (input: unknown) =>
+      tool.execute!(input, { toolCallId: "call-1", messages: [] })
+    return { tool, execute, imageUploadPreviewLoader, describeImage }
+  }
+
+  beforeEach(() => {
+    ;(warn as jest.Mock).mockClear()
+    fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue(
+      new Response(JPEG_BYTES, {
+        status: 200,
+        headers: { "content-type": "image/jpeg" },
+      })
+    )
+  })
+
+  afterEach(() => {
+    fetchSpy.mockRestore()
+  })
+
+  it("returns a text description, never the pixels", async () => {
+    const { execute, imageUploadPreviewLoader, describeImage } = viewImageTool()
+
+    const output = await execute({
+      image: "image_1",
+      request: "works like this but at night",
+    })
+
+    expect(imageUploadPreviewLoader).toHaveBeenCalledWith({
+      s3_bucket: "image-uploads",
+      s3_key: "uploads/query.jpg",
+    })
+    expect(fetchSpy).toHaveBeenCalledWith(SIGNED_URL, expect.anything())
+    expect(describeImage).toHaveBeenCalledWith(
+      { data: JPEG_BYTES.toString("base64"), mediaType: "image/jpeg" },
+      "works like this but at night"
+    )
+    expect(output).toEqual({
+      ok: true,
+      content:
+        "What the collector's image_1 shows: A ginger cat on a windowsill.",
+    })
+    expect(JSON.stringify(output)).not.toContain(JPEG_BYTES.toString("base64"))
+  })
+
+  it("waits for the image to be claimed before previewing it", async () => {
+    let claim!: () => void
+    const registration = new Promise<void>((resolve) => (claim = resolve))
+    const { execute, imageUploadPreviewLoader } = viewImageTool({
+      registration,
+    })
+
+    const output = execute({ image: "image_1" })
+    await new Promise((resolve) => setImmediate(resolve))
+    expect(imageUploadPreviewLoader).not.toHaveBeenCalled()
+
+    claim()
+    expect(await output).toMatchObject({ ok: true })
+    expect(imageUploadPreviewLoader).toHaveBeenCalledTimes(1)
+  })
+
+  it("describes each image once per turn", async () => {
+    const { execute, describeImage } = viewImageTool()
+
+    await execute({ image: "image_1" })
+    const second = await execute({ image: "image_1" })
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1)
+    expect(describeImage).toHaveBeenCalledTimes(1)
+    expect(second).toEqual({
+      ok: true,
+      content: "image_1 is already described above in this turn.",
+    })
+  })
+
+  it("rejects a handle the request didn't attach", async () => {
+    const { execute, imageUploadPreviewLoader } = viewImageTool()
+
+    const output = await execute({ image: "image_2" })
+
+    expect(output).toEqual({
+      ok: false,
+      content: 'Unknown image handle "image_2". Attached: image_1.',
+    })
+    expect(imageUploadPreviewLoader).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    [
+      "the image isn't the collector's (Gravity 404s)",
+      () =>
+        viewImageTool({
+          imageUploadPreviewLoader: jest
+            .fn()
+            .mockRejectedValue(new HTTPError("nope", 404)),
+        }),
+      /could not be found/,
+    ],
+    [
+      "the download fails outright",
+      () => {
+        fetchSpy.mockRejectedValue(new TypeError(`fetch failed: ${SIGNED_URL}`))
+        return viewImageTool()
+      },
+      /could not be loaded/,
+    ],
+    [
+      "S3 says the object is gone",
+      () => {
+        fetchSpy.mockResolvedValue(new Response("<Error/>", { status: 404 }))
+        return viewImageTool()
+      },
+      /could not be found/,
+    ],
+    [
+      "it isn't an image format the model reads",
+      () => {
+        fetchSpy.mockResolvedValue(
+          new Response(JPEG_BYTES, {
+            status: 200,
+            headers: { "content-type": "image/heic" },
+          })
+        )
+        return viewImageTool()
+      },
+      /format that can't be viewed/,
+    ],
+    [
+      "the description call fails",
+      () =>
+        viewImageTool({
+          describeImage: jest
+            .fn()
+            .mockRejectedValue(new Error(`upstream said ${SIGNED_URL}`)),
+        }),
+      /could not be loaded/,
+    ],
+    [
+      "the description comes back empty",
+      () => viewImageTool({ describeImage: jest.fn().mockResolvedValue("") }),
+      /could not be loaded/,
+    ],
+  ])(
+    "returns a plain tool error, with no URL, when %s",
+    async (_label, setup, message) => {
+      const { execute } = setup()
+
+      const output = await execute({ image: "image_1" })
+
+      expect(output.ok).toBe(false)
+      expect(output.content).toMatch(message)
+      // Points the model back at strategy A rather than ending the turn.
+      expect(output.content).toContain("artworksConnection(image: ...)")
+      expect(JSON.stringify(output)).not.toMatch(
+        /gemini|amazonaws|Signature|SECRET|uploads\/query/
+      )
+      // Logged so a broken endpoint or model is visible, but never the URL.
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("[aiAgentTurn] view_image failed:")
+      )
+      expect(JSON.stringify((warn as jest.Mock).mock.calls)).not.toMatch(
+        /gemini|amazonaws|Signature|SECRET|uploads\/query/
+      )
+    }
+  )
+
+  it("can't preview anything without a signed-in collector's loader", async () => {
+    const tool = buildViewImageTool(handles, {} as ResolverContext, {
+      registration: Promise.resolve(),
+      describeImage: jest.fn(),
+    })
+
+    const output = await tool.execute!(
+      { image: "image_1" },
+      { toolCallId: "call-1", messages: [] }
+    )
+
+    expect(output).toMatchObject({ ok: false })
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it("is described as looking at the image, with only the handle in debug", () => {
+    expect(describeAgentToolCall("view_image", { image: "image_1" })).toEqual({
+      activity: "LOOKING_AT_IMAGE",
+      summary: "Looking at your image…",
+      debugSummary: 'view_image(image: "image_1")',
+    })
   })
 })

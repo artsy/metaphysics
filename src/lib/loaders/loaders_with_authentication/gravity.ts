@@ -409,6 +409,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    // Claims an image the collector uploaded to S3 for them (e.g. one attached
+    // to an AI agent turn); only its owner can then preview it.
+    createImageUploadLoader: gravityLoader(
+      "me/image_uploads",
+      {},
+      { method: "POST" }
+    ),
+    // A short-lived, resized URL for the collector's own upload.
+    imageUploadPreviewLoader: gravityLoader("me/image_uploads/preview_url"),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkEditionSetLoader: gravityLoader(
       (artworkID) => `artwork/${artworkID}/edition_set`,
