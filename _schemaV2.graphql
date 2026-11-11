@@ -35872,6 +35872,16 @@ type ResaleSubmission {
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
+
+  """
+  True only for a marketplace submission with nothing missing. Does not mean it is listed.
+  """
+  isReadyToList: Boolean!
+
+  """
+  What the collector still has to provide on this submission's channel
+  """
+  missingRequirements: [ResaleSubmissionRequirement!]!
   packaging: ResaleSubmissionPackaging
   packer: ResaleSubmissionPacker
 
@@ -35921,6 +35931,13 @@ enum ResaleSubmissionRejectionReason {
   MEDIUM_NOT_SUPPORTED
   NOT_PURCHASED_ON_ARTSY
   OUTSIDE_US
+}
+
+enum ResaleSubmissionRequirement {
+  COURIER_HANDOFF
+  PACKAGING
+  PACKER
+  PRICE_LISTED
 }
 
 enum ResaleSubmissionState {

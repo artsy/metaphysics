@@ -31,6 +31,8 @@ const query = (id: string) => gql`
         packaging
         packer
         courierHandoff
+        missingRequirements
+        isReadyToList
         createdAt
       }
     }
@@ -65,12 +67,19 @@ describe("me.resaleSubmission", () => {
       packaging: null,
       packer: null,
       courierHandoff: null,
+      missingRequirements: [
+        "PRICE_LISTED",
+        "PACKAGING",
+        "PACKER",
+        "COURIER_HANDOFF",
+      ],
+      isReadyToList: false,
       createdAt: expect.any(String),
     })
     expect(submission.id).not.toEqual(submission.internalID)
   })
 
-  it("resolves an auction submission", async () => {
+  it("resolves an auction submission as not ready to list", async () => {
     const submission = await resaleSubmission(`stub-${AUCTION_ARTWORK_ID}`)
 
     expect(submission).toMatchObject({
@@ -78,6 +87,8 @@ describe("me.resaleSubmission", () => {
       channel: "AUCTION",
       recommendedPriceMin: null,
       recommendedPriceMax: null,
+      missingRequirements: [],
+      isReadyToList: false,
     })
   })
 
@@ -88,19 +99,23 @@ describe("me.resaleSubmission", () => {
       state: "REJECTED",
       channel: null,
       rejectionReasons: ["OUTSIDE_US"],
+      isReadyToList: false,
     })
   })
 
-  it("returns saved shipping preferences and a saved price of 0", async () => {
+  it("reads saved fields and readiness from the record without recomputing them", async () => {
     const resaleSubmissionLoader = jest.fn(() =>
       Promise.resolve({
         id: "gravity-id",
-        state: "accepted",
+        state: "listed",
+        channel: "marketplace",
         price_currency_code: "USD",
         price_listed_minor: 0,
         packaging: "no_preference",
         packer: "courier",
         courier_handoff: "courier_pickup",
+        missing_requirements: ["packer"],
+        ready_to_list: true,
       })
     )
 
@@ -113,6 +128,8 @@ describe("me.resaleSubmission", () => {
       packaging: "NO_PREFERENCE",
       packer: "COURIER",
       courierHandoff: "COURIER_PICKUP",
+      missingRequirements: ["PACKER"],
+      isReadyToList: true,
     })
   })
 

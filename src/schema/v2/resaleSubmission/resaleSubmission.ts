@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLList,
@@ -71,6 +72,16 @@ export const ResaleSubmissionCourierHandoffEnum = new GraphQLEnumType({
   },
 })
 
+export const ResaleSubmissionRequirementEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionRequirement",
+  values: {
+    PRICE_LISTED: { value: "price_listed_minor" },
+    PACKAGING: { value: "packaging" },
+    PACKER: { value: "packer" },
+    COURIER_HANDOFF: { value: "courier_handoff" },
+  },
+})
+
 type MinorPriceKey =
   | "recommended_price_min_minor"
   | "recommended_price_max_minor"
@@ -125,6 +136,20 @@ export const ResaleSubmissionType = new GraphQLObjectType<
     courierHandoff: {
       type: ResaleSubmissionCourierHandoffEnum,
       resolve: ({ courier_handoff }) => courier_handoff,
+    },
+    missingRequirements: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ResaleSubmissionRequirementEnum))
+      ),
+      description:
+        "What the collector still has to provide on this submission's channel",
+      resolve: ({ missing_requirements }) => missing_requirements ?? [],
+    },
+    isReadyToList: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "True only for a marketplace submission with nothing missing. Does not mean it is listed.",
+      resolve: ({ ready_to_list }) => !!ready_to_list,
     },
     submittedArtwork: {
       type: ArtworkType,
