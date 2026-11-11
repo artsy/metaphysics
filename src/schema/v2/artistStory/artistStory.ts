@@ -9,6 +9,10 @@ import { IDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { ImageType } from "schema/v2/image"
 import { VideoType } from "schema/v2/types/Video"
+import {
+  ArtistStoryAccentColorType,
+  toAccentColor,
+} from "./artistStoryAccentColor"
 import { ArtistStoryQuoteType, toQuote } from "./artistStoryQuote"
 import {
   ArtistStoryVideoType,
@@ -117,6 +121,10 @@ export const ArtistStoryType = new GraphQLObjectType<
   name: "ArtistStory",
   fields: () => ({
     ...IDFields,
+    accentColor: {
+      type: ArtistStoryAccentColorType,
+      resolve: ({ accent_color }) => toAccentColor(accent_color),
+    },
     about: {
       type: ArtistStoryAboutType,
       resolve: (story) => story,

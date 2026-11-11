@@ -77,6 +77,7 @@ import MatchArtist from "./match/artist"
 import Partner from "schema/v2/partner/partner"
 import Conversation from ".//conversation"
 import { updateArtistMutation } from "./artist/updateArtistMutation"
+import { refreshArtistAccentColorOptionsMutation } from "./artist/refreshArtistAccentColorOptionsMutation"
 import { updateArtistSocialsMutation } from "./artist/updateArtistSocialsMutation"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import SendConversationMessageMutation from "./conversation/send_message_mutation"
@@ -801,6 +802,7 @@ export default new GraphQLSchema({
       authorizeEmailAccount: authorizeEmailAccountMutation,
       completeEmailOAuth: completeEmailOAuthMutation,
       deleteEmailAccount: deleteEmailAccountMutation,
+      refreshArtistAccentColorOptions: refreshArtistAccentColorOptionsMutation,
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
       syncEmailAccount: syncEmailAccountMutation,
