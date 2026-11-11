@@ -215,12 +215,14 @@ export function summarize(
       pad("", widths[0]) + pad(baseline, widths[1]) + pad(candidate, widths[2])
     )
     for (const r of rows) {
-      const note =
-        r.change === "same"
-          ? "same"
-          : r.row.quality
-          ? r.change
-          : `${r.change} ${signed(r.percent)}`
+      // Too few cases for the intervals: show the numbers, claim nothing.
+      const note = tooFew
+        ? ""
+        : r.change === "same"
+        ? "same"
+        : r.row.quality
+        ? r.change
+        : `${r.change} ${signed(r.percent)}`
       lines.push(
         pad(r.row.name, widths[0]) +
           pad(r.row.format(r.baseline), widths[1]) +

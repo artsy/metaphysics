@@ -78,6 +78,9 @@ describe("summarize", () => {
     expect(report).toContain(
       "Switch? NO VERDICT: only 1 cases; the intervals need at least 20."
     )
+    expect(report).not.toMatch(
+      /(Answered|Cost per answer).*(same|better|worse)/
+    )
   })
 
   it("withholds the verdict when too many runs failed", () => {

@@ -406,6 +406,8 @@ async function main() {
   )
 
   await pool(jobs, concurrency, async ({ testCase, repetition, variant }) => {
+    // Our gs-001 rather than Phoenix's example ID, which nobody can read.
+    const caseLabel = String(testCase.metadata.caseId ?? testCase.id)
     let startTime = new Date()
     let output: EvalRunOutput | null = null
     let error: string | undefined
@@ -445,7 +447,7 @@ async function main() {
         scores.push(...(await judgeRun(judgeModel, testCase, output, now)))
       } catch (cause) {
         judgeFailed = true
-        console.error(`  judge failed on ${testCase.id}: ${cause}`)
+        console.error(`  judge failed on ${caseLabel}: ${cause}`)
       }
     }
 
@@ -474,7 +476,7 @@ async function main() {
             )
           } catch (cause) {
             uploadFailures += 1
-            console.error(`  Phoenix upload failed on ${testCase.id}: ${cause}`)
+            console.error(`  Phoenix upload failed on ${caseLabel}: ${cause}`)
           }
         })()
       )
@@ -482,7 +484,7 @@ async function main() {
 
     const record: ScoredRun = {
       variant: variant.label,
-      caseID: testCase.id,
+      caseID: caseLabel,
       scores: Object.fromEntries(scores.map((s) => [s.name, s.score])),
       failed: error ? "run" : judgeFailed ? "judge" : undefined,
     }
@@ -501,7 +503,7 @@ async function main() {
     done += 1
     const useful = record.scores.judge_useful
     console.log(
-      `[${done}/${jobs.length}] ${variant.label} ${testCase.id} #${repetition}: ` +
+      `[${done}/${jobs.length}] ${variant.label} ${caseLabel} #${repetition}: ` +
         (error
           ? `ERROR ${error.split("\n")[0]}`
           : `${output!.stopReason}, ${output!.steps.length} steps, ` +
