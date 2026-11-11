@@ -1,11 +1,14 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLError,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { omitBy, isNil } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
@@ -151,6 +154,16 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Case-insensitive substring match on the display name or any email address",
     },
+    assignedToUserID: {
+      type: GraphQLString,
+      description:
+        "Only contacts assigned to this partner user. Cannot be combined with isUnassigned.",
+    },
+    isUnassigned: {
+      type: GraphQLBoolean,
+      description:
+        "Only contacts with no assignee. Cannot be combined with assignedToUserID.",
+    },
     sort: {
       type: CRMContactSortEnum,
       description: "Defaults to DISPLAY_NAME_ASC",
@@ -159,18 +172,32 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (_root, args, { crmContactsLoader }) => {
     if (!crmContactsLoader) return null
 
+    if (args.assignedToUserID && args.isUnassigned) {
+      throw new GraphQLError(
+        "assignedToUserID and isUnassigned cannot be combined"
+      )
+    }
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await crmContactsLoader({
-      partner_id: args.partnerID,
-      status: args.status,
-      category: args.category,
-      q: args.query,
-      sort: args.sort,
-      total_count: true,
-      size,
-      offset,
-    })
+    // Gravity rejects empty params, so leave out optional ones that are unset or null
+    const { body, headers } = await crmContactsLoader(
+      omitBy(
+        {
+          partner_id: args.partnerID,
+          status: args.status,
+          category: args.category,
+          q: args.query,
+          assigned_to_user_id: args.assignedToUserID,
+          unassigned: args.isUnassigned || undefined,
+          sort: args.sort,
+          total_count: true,
+          size,
+          offset,
+        },
+        isNil
+      )
+    )
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

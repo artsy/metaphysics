@@ -10,9 +10,11 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  */
 const FEATURE_FLAGS_LIST = [
   "fireworksq4_artist-story",
+  "fireworksq4_edit-artist-story",
   "onyx_ai_agent-image-input",
   "onyx_ai_agent-suggested-replies",
   "onyx_ai_agent-turn",
+  "onyx_home-view-city-guide",
   "onyx_nwfy-gravity",
   "onyx_nwfy-refresh-eigen",
   "topaz_remove-inquiry-creation-from-order-mutation",

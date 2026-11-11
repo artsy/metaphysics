@@ -162,6 +162,9 @@ describe("ArtistStory", () => {
           featuredStory {
             headerVideo {
               internalID
+              video {
+                internalID
+              }
             }
             motionVideos {
               internalID
@@ -174,6 +177,9 @@ describe("ArtistStory", () => {
             }
             processVideo {
               internalID
+              video {
+                internalID
+              }
             }
           }
         }
@@ -207,7 +213,7 @@ describe("ArtistStory", () => {
         artist_story_id: "story-1",
       })
       expect(data.artist.featuredStory).toEqual({
-        headerVideo: { internalID: "video-1" },
+        headerVideo: { internalID: "header", video: { internalID: "video-1" } },
         motionVideos: [
           {
             internalID: "motion-1",
@@ -222,7 +228,10 @@ describe("ArtistStory", () => {
             quote: null,
           },
         ],
-        processVideo: { internalID: "video-2" },
+        processVideo: {
+          internalID: "process",
+          video: { internalID: "video-2" },
+        },
       })
     })
 

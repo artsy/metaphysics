@@ -32,6 +32,12 @@ import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArt
 import { createCityVideoMutation } from "./cityContent/mutations/createCityVideoMutation"
 import { updateCityVideoMutation } from "./cityContent/mutations/updateCityVideoMutation"
 import { deleteCityVideoMutation } from "./cityContent/mutations/deleteCityVideoMutation"
+import { createArtistStoryMutation } from "./artistStory/mutations/createArtistStoryMutation"
+import { createArtistStoryVideoMutation } from "./artistStory/mutations/createArtistStoryVideoMutation"
+import { updateArtistStoryMutation } from "./artistStory/mutations/updateArtistStoryMutation"
+import { updateArtistStoryVideoMutation } from "./artistStory/mutations/updateArtistStoryVideoMutation"
+import { deleteArtistStoryMutation } from "./artistStory/mutations/deleteArtistStoryMutation"
+import { deleteArtistStoryVideoMutation } from "./artistStory/mutations/deleteArtistStoryVideoMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -77,6 +83,7 @@ import MatchArtist from "./match/artist"
 import Partner from "schema/v2/partner/partner"
 import Conversation from ".//conversation"
 import { updateArtistMutation } from "./artist/updateArtistMutation"
+import { refreshArtistAccentColorOptionsMutation } from "./artist/refreshArtistAccentColorOptionsMutation"
 import { updateArtistSocialsMutation } from "./artist/updateArtistSocialsMutation"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import SendConversationMessageMutation from "./conversation/send_message_mutation"
@@ -273,6 +280,7 @@ import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
 import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
+import { replyToEmailMessageMutation } from "./me/replyToEmailMessageMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -757,6 +765,8 @@ export default new GraphQLSchema({
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
+      createArtistStory: createArtistStoryMutation,
+      createArtistStoryVideo: createArtistStoryVideoMutation,
       createArtworkImport: CreateArtworkImportMutation,
       createArtworkTemplate: CreateArtworkTemplateMutation,
       createArtworkFromTemplate: CreateArtworkFromTemplateMutation,
@@ -801,9 +811,11 @@ export default new GraphQLSchema({
       authorizeEmailAccount: authorizeEmailAccountMutation,
       completeEmailOAuth: completeEmailOAuthMutation,
       deleteEmailAccount: deleteEmailAccountMutation,
+      refreshArtistAccentColorOptions: refreshArtistAccentColorOptionsMutation,
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
       syncEmailAccount: syncEmailAccountMutation,
+      replyToEmailMessage: replyToEmailMessageMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
@@ -851,6 +863,8 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtistStory: deleteArtistStoryMutation,
+      deleteArtistStoryVideo: deleteArtistStoryVideoMutation,
       deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
       discardNavigationDraft: discardNavigationDraftMutation,
@@ -967,6 +981,8 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
+      updateArtistStory: updateArtistStoryMutation,
+      updateArtistStoryVideo: updateArtistStoryVideoMutation,
       updateArtnetArtwork: updateArtnetArtworkMutation,
       updateArtnetEditionSet: updateArtnetEditionSetMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,

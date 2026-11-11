@@ -1,11 +1,35 @@
 import { ResolverContext } from "types/graphql"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { getSections } from "../default"
 
 jest.mock("lib/featureFlags", () => ({
   getExperimentVariant: jest.fn(),
+  isFeatureFlagEnabled: jest.fn(() => false),
 }))
 
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+
 describe("getSections", () => {
+  describe("with the city guide feature flag enabled", () => {
+    afterEach(() => {
+      mockIsFeatureFlagEnabled.mockReturnValue(false)
+    })
+
+    it("places the city guides section right after New Works for You", async () => {
+      mockIsFeatureFlagEnabled.mockImplementation(
+        (flag) => flag === "onyx_home-view-city-guide"
+      )
+
+      const sections = await getSections({
+        accessToken: "some-token",
+      } as ResolverContext)
+      const sectionIds = sections.map((section) => section.id)
+
+      const index = sectionIds.indexOf("home-view-section-new-works-for-you")
+      expect(sectionIds[index + 1]).toEqual("home-view-section-city-guides")
+    })
+  })
+
   describe("with an authenticated user", () => {
     it("returns the correct sections", async () => {
       const context: Partial<ResolverContext> = {
