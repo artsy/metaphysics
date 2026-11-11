@@ -10,6 +10,10 @@ import { ResolverContext } from "types/graphql"
 import { ResaleSubmissionRecord } from "lib/loaders/loaders_with_authentication/resaleSubmissionStubs"
 import { ArtworkType } from "schema/v2/artwork"
 import { date } from "schema/v2/fields/date"
+import {
+  Money,
+  resolveMinorAndCurrencyFieldsToMoney,
+} from "schema/v2/fields/money"
 import { InternalIDFields } from "schema/v2/object_identification"
 
 export const ResaleSubmissionStateEnum = new GraphQLEnumType({
@@ -40,6 +44,29 @@ export const ResaleSubmissionRejectionReasonEnum = new GraphQLEnumType({
   },
 })
 
+type MinorPriceKey =
+  | "recommended_price_min_minor"
+  | "recommended_price_max_minor"
+  | "price_listed_minor"
+
+// moneyMajorResolver turns a null amount into 0, so unset prices are checked here.
+const moneyFromMinor = (
+  key: MinorPriceKey
+): GraphQLFieldConfig<ResaleSubmissionRecord, ResolverContext> => ({
+  type: Money,
+  resolve: (submission, args, context, info) => {
+    const minor = submission[key]
+    if (minor == null) return null
+
+    return resolveMinorAndCurrencyFieldsToMoney(
+      { minor, currencyCode: submission.price_currency_code },
+      args,
+      context,
+      info
+    )
+  },
+})
+
 export const ResaleSubmissionType = new GraphQLObjectType<
   ResaleSubmissionRecord,
   ResolverContext
@@ -59,6 +86,12 @@ export const ResaleSubmissionType = new GraphQLObjectType<
         new GraphQLList(new GraphQLNonNull(ResaleSubmissionRejectionReasonEnum))
       ),
       resolve: ({ rejection_reasons }) => rejection_reasons ?? [],
+    },
+    recommendedPriceMin: moneyFromMinor("recommended_price_min_minor"),
+    recommendedPriceMax: moneyFromMinor("recommended_price_max_minor"),
+    priceListed: {
+      ...moneyFromMinor("price_listed_minor"),
+      description: "The collector's asking price",
     },
     submittedArtwork: {
       type: ArtworkType,
