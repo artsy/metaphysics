@@ -3663,7 +3663,7 @@ type ArtistStory {
   about: ArtistStoryAbout
   accentColor: ArtistStoryAccentColor
   headerImage: ArtistStoryImage
-  headerVideo: Video
+  headerVideo: ArtistStoryVideo
 
   """
   A globally unique ID.
@@ -3675,7 +3675,7 @@ type ArtistStory {
   """
   internalID: ID!
   motionVideos: [ArtistStoryVideo!]!
-  processVideo: Video
+  processVideo: ArtistStoryVideo
   pullQuote: ArtistStoryQuote
 }
 
