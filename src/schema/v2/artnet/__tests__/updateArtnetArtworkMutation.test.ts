@@ -98,9 +98,9 @@ describe("updateArtnetArtwork mutation", () => {
     ).toEqual({ primaryMedium: "Sculpture", additionalMediums: ["Paintings"] })
   })
 
-  // An empty list removes every additional medium, so it has to reach Gravity
-  // as one rather than be dropped as "not given".
-  it("passes an empty additionalMediums through", async () => {
+  // An empty list removes every additional medium, but qs drops empty arrays
+  // from the request, so it reaches Gravity as null rather than not at all.
+  it("sends an empty additionalMediums to Gravity as null", async () => {
     const query = `
       mutation {
         updateArtnetArtwork(
@@ -123,7 +123,7 @@ describe("updateArtnetArtwork mutation", () => {
     await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
 
     expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
-      additional_mediums: [],
+      additional_mediums: null,
     })
   })
 

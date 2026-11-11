@@ -137,7 +137,10 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             published,
             availability,
             primaryMedium,
-            additionalMediums,
+            // qs drops an empty array from the request (ljharb/qs#362), so
+            // "remove them all" goes to Gravity as null, which it reads the same.
+            additionalMediums:
+              additionalMediums?.length === 0 ? null : additionalMediums,
             materials,
             priceToMinor,
             syncOn,
