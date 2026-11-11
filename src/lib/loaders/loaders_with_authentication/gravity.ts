@@ -10,9 +10,14 @@ export default (accessToken, userID, opts) => {
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
   )
+  const myCollectionArtworksLoader = gravityLoader(
+    "collection/my-collection/artworks",
+    {},
+    { headers: true }
+  )
 
   return {
-    ...createResaleSubmissionStubLoaders(userID),
+    ...createResaleSubmissionStubLoaders(userID, myCollectionArtworksLoader),
     addArtworkToPartnerShowLoader: gravityLoader<
       any,
       { showId: string; artworkId: string; partnerId: string }
@@ -1130,11 +1135,7 @@ export default (accessToken, userID, opts) => {
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
     modelChangesLoader: gravityLoader("model_changes", {}, { headers: true }),
-    myCollectionArtworksLoader: gravityLoader(
-      "collection/my-collection/artworks",
-      {},
-      { headers: true }
-    ),
+    myCollectionArtworksLoader,
     navigationGroupLoader: gravityLoader((id) => `navigation_group/${id}`),
     navigationGroupsLoader: gravityLoader("/navigation_groups"),
     navigationGroupLiveLoader: gravityLoader(

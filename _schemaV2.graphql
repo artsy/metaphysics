@@ -24967,6 +24967,18 @@ type Me implements Node {
     """
     id: String!
   ): ResaleSubmission
+
+  """
+  The current user's resale submissions
+  """
+  resaleSubmissionsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): ResaleSubmissionConnection
   saleRegistrationsConnection(
     after: String
     auctionState: AuctionState
@@ -36217,10 +36229,42 @@ enum ResaleSubmissionChannel {
   MARKETPLACE
 }
 
+"""
+A connection to a list of items.
+"""
+type ResaleSubmissionConnection {
+  """
+  A list of edges.
+  """
+  edges: [ResaleSubmissionEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
 enum ResaleSubmissionCourierHandoff {
   COURIER_PICKUP
   NO_PREFERENCE
   SELLER_DROPOFF
+}
+
+"""
+An edge in a connection.
+"""
+type ResaleSubmissionEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: ResaleSubmission
 }
 
 enum ResaleSubmissionPackaging {

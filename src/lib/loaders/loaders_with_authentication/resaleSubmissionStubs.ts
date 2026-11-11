@@ -36,6 +36,7 @@ export interface ResaleSubmissionRecord {
 const STUB_ID_PREFIX = "stub-"
 const STUB_TIMESTAMP = "2026-11-01T00:00:00.000Z"
 const MARKETPLACE_PRICE_RANGE_MINOR = { min: 280000, max: 360000 }
+const STUB_COLLECTION_SIZE = 100
 
 const REQUIREMENTS_BY_CHANNEL: Record<
   ResaleSubmissionChannel,
@@ -117,7 +118,42 @@ const findResaleSubmission = (id: string, userID: string) => {
   )
 }
 
-export const createResaleSubmissionStubLoaders = (userID: string) => ({
+export const createResaleSubmissionStubLoaders = (
+  userID: string,
+  myCollectionArtworksLoader: (
+    options: Record<string, unknown>
+  ) => Promise<{ body: any[]; headers: Record<string, string> }>
+) => ({
   // TODO: gravityLoader((id) => `me/resale_submission/${id}`)
   resaleSubmissionLoader: (id: string) => findResaleSubmission(id, userID),
+
+  // TODO: gravityLoader("me/resale_submissions", {}, { headers: true })
+  // Lists the user's sellable My Collection works, paged in memory so the counts match.
+  resaleSubmissionsLoader: async ({
+    size,
+    offset,
+  }: {
+    page?: number
+    size: number
+    offset: number
+    total_count?: boolean
+  }) => {
+    const { body } = await myCollectionArtworksLoader({
+      user_id: userID,
+      private: true,
+      all: true,
+      sort: "-position",
+      page: 1,
+      size: STUB_COLLECTION_SIZE,
+    })
+    const sellable = body.filter((artwork) => isSellable(artwork._id))
+
+    return {
+      body: sellable.slice(offset, offset + size).map((artwork) => ({
+        ...buildResaleSubmission(artwork._id, userID),
+        _submitted_artwork: artwork,
+      })),
+      headers: { "x-total-count": String(sellable.length) },
+    }
+  },
 })
