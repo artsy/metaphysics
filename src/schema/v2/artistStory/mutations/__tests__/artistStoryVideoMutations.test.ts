@@ -28,6 +28,7 @@ const resultFields = `
     artistStoryID
     videos {
       internalID
+      role
       position
       video {
         title
@@ -135,9 +136,24 @@ describe("artist story video mutations", () => {
       expect(data.createArtistStoryVideo.responseOrError).toEqual({
         artistStoryID: "story-1",
         videos: [
-          { internalID: "motion-1", position: 0, video: { title: "Kiln" } },
-          { internalID: "motion-2", position: 1, video: { title: "Kiln" } },
-          { internalID: "process", position: 0, video: { title: "Kiln" } },
+          {
+            internalID: "motion-1",
+            role: "MOTION",
+            position: 0,
+            video: { title: "Kiln" },
+          },
+          {
+            internalID: "motion-2",
+            role: "MOTION",
+            position: 1,
+            video: { title: "Kiln" },
+          },
+          {
+            internalID: "process",
+            role: "PROCESS",
+            position: 0,
+            video: { title: "Kiln" },
+          },
         ],
       })
     })
@@ -201,7 +217,12 @@ describe("artist story video mutations", () => {
       expect(data.updateArtistStoryVideo.responseOrError).toEqual({
         artistStoryID: "story-1",
         videos: [
-          { internalID: "placement-1", position: 0, video: { title: "Kiln" } },
+          {
+            internalID: "placement-1",
+            role: "PROCESS",
+            position: 0,
+            video: { title: "Kiln" },
+          },
         ],
       })
     })

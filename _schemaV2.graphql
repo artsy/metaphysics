@@ -3732,6 +3732,7 @@ type ArtistStoryVideo {
   internalID: ID!
   position: Int!
   quote: ArtistStoryQuote
+  role: ArtistStoryVideoRole!
   video: Video!
 }
 

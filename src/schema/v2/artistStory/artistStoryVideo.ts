@@ -1,4 +1,5 @@
 import {
+  GraphQLEnumType,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -23,6 +24,24 @@ export interface GravityArtistStoryVideo {
   updated_at: string
 }
 
+export const ArtistStoryVideoRoleEnum = new GraphQLEnumType({
+  name: "ArtistStoryVideoRole",
+  values: {
+    HEADER: {
+      value: "header",
+      description: "Silent background loop behind the page header. Vimeo only.",
+    },
+    MOTION: {
+      value: "motion",
+      description: "Silent loop with a caption and quote. Vimeo only.",
+    },
+    PROCESS: {
+      value: "process",
+      description: "The artist's process film. Vimeo or YouTube.",
+    },
+  },
+})
+
 // internalID is the placement's id, not the Video's.
 export const ArtistStoryVideoType = new GraphQLObjectType<
   GravityArtistStoryVideo,
@@ -31,6 +50,7 @@ export const ArtistStoryVideoType = new GraphQLObjectType<
   name: "ArtistStoryVideo",
   fields: () => ({
     ...IDFields,
+    role: { type: new GraphQLNonNull(ArtistStoryVideoRoleEnum) },
     position: { type: new GraphQLNonNull(GraphQLInt) },
     caption: { type: GraphQLString },
     quote: {

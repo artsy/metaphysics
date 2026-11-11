@@ -1,28 +1,11 @@
-import { GraphQLEnumType, GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { snakeCaseKeys } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
+import { ArtistStoryVideoRoleEnum } from "../artistStoryVideo"
 import { canEditArtistStories } from "./assertCanEditArtistStories"
 import { ArtistStoryVideoMutationResponseOrErrorType } from "./artistStoryVideoMutationResponseOrError"
-
-export const ArtistStoryVideoRoleEnum = new GraphQLEnumType({
-  name: "ArtistStoryVideoRole",
-  values: {
-    HEADER: {
-      value: "header",
-      description: "Silent background loop behind the page header. Vimeo only.",
-    },
-    MOTION: {
-      value: "motion",
-      description: "Silent loop with a caption and quote. Vimeo only.",
-    },
-    PROCESS: {
-      value: "process",
-      description: "The artist's process film. Vimeo or YouTube.",
-    },
-  },
-})
 
 // The write already succeeded when this runs, so a failure refreshing the
 // list surfaces as a plain error rather than a GravityMutationError.

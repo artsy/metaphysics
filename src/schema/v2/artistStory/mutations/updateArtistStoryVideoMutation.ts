@@ -3,12 +3,10 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { snakeCaseKeys } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
+import { ArtistStoryVideoRoleEnum } from "../artistStoryVideo"
 import { canEditArtistStories } from "./assertCanEditArtistStories"
 import { ArtistStoryVideoMutationResponseOrErrorType } from "./artistStoryVideoMutationResponseOrError"
-import {
-  ArtistStoryVideoRoleEnum,
-  refreshArtistStoryVideos,
-} from "./createArtistStoryVideoMutation"
+import { refreshArtistStoryVideos } from "./createArtistStoryVideoMutation"
 
 interface InputProps {
   clientMutationId?: string
