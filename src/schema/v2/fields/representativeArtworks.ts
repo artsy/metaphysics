@@ -2,8 +2,14 @@ import { GraphQLFieldConfig, GraphQLList, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 // Reusable `[Artwork!]` field that resolves a model's representative_artwork_ids
-// into Artwork objects via artworkByIDLoader, which coalesces across the request
-// so it's safe on types returned through a connection (no per-node fan-out).
+// into Artwork objects via artworkByIDLoader, which coalesces loads made in the
+// same tick into one /artworks call.
+//
+// This avoids per-node fan-out only when the parent nodes arrive together (e.g.
+// a connection that returns its page in one upstream call). If a caller loads
+// each parent in its own request/tick (say artistLoader(id) per item), those
+// loads land in separate ticks and you get one /artworks call per parent again
+// — the coalescing is not an unconditional guarantee.
 //
 // Call this inside a type's `fields: () => ({...})` thunk — the lazy require of
 // ArtworkType below needs the module graph built to avoid a circular import.
