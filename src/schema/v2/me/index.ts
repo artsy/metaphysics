@@ -85,6 +85,7 @@ import { MyBids } from "./myBids"
 import { MyCollection } from "./myCollection"
 import MyCollectionAuctionResults from "./myCollectionAuctionResults"
 import { MyCollectionInfo } from "./myCollectionInfo"
+import { ResaleSubmissionField } from "../resaleSubmission/resaleSubmission"
 import { myLocationType } from "./myLocation"
 import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { newWorksFromGalleriesYouFollow } from "./newWorksFromGalleriesYouFollow"
@@ -488,6 +489,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     partners: ManagedPartners,
     myCollectionConnection: MyCollection,
     myCollectionInfo: MyCollectionInfo,
+    resaleSubmission: ResaleSubmissionField,
     myCollectionAuctionResults: MyCollectionAuctionResults,
     myBids: MyBids,
     name: {
