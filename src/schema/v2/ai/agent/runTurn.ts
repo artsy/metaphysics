@@ -1,5 +1,11 @@
 import { streamText, stepCountIs, parsePartialJson, Output } from "ai"
-import type { ModelMessage, PrepareStepFunction } from "ai"
+import type {
+  LanguageModel,
+  ModelMessage,
+  PrepareStepFunction,
+  StreamTextOnStepFinishCallback,
+  ToolSet,
+} from "ai"
 import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
@@ -45,7 +51,7 @@ import {
   AIAgentTurnCompletePayload,
 } from "./types"
 
-const FALLBACK_SYSTEM_PROMPT = `
+export const FALLBACK_SYSTEM_PROMPT = `
 You are Artsy's AI assistant. Help the collector discover artists, artworks,
 shows, and fairs on Artsy using the provided tools. Only state facts returned
 by a tool call — never invent artist names, prices, availability, or results.
@@ -663,7 +669,9 @@ function cardsAvailableNote(
       ].join("\n")
 }
 
-async function loadPromptTemplate(context: ResolverContext): Promise<string> {
+export async function loadPromptTemplate(
+  context: ResolverContext
+): Promise<string> {
   try {
     const { body } = await context.aiPromptTemplatesLoader({
       name: AI_PROMPT_TEMPLATE_NAME,
@@ -743,17 +751,21 @@ async function loadSystemPrompt(
   {
     supportedSections,
     includeSuggestedReplies,
+    template: templateOverride,
+    now,
   }: {
     supportedSections: readonly AIAgentSectionType[]
     includeSuggestedReplies: boolean
+    template?: string
+    now?: Date
   }
 ): Promise<string> {
-  const template = await loadPromptTemplate(context)
+  const template = templateOverride ?? (await loadPromptTemplate(context))
   return [
     template,
     cardsAvailableNote(supportedSections),
     includeSuggestedReplies ? SUGGESTED_REPLIES_NOTE : null,
-    currentDateNote(),
+    currentDateNote(now),
   ]
     .filter(Boolean)
     .join("\n\n")
@@ -963,6 +975,29 @@ const LAST_STEP_NOTE: ModelMessage = {
 }
 
 /**
+ * Offline evals only (scripts/evals): never reachable from GraphQL, which
+ * always calls runTurn without them. Each one replaces a production input
+ * that would otherwise make two runs of the same case incomparable.
+ */
+export interface RunTurnOptions {
+  /** Replaces AI_AGENT_MODEL (or the LiteLLM alias). */
+  model?: LanguageModel
+  /**
+   * Replaces the Gravity prompt template. The cards, suggested-replies and
+   * date notes are still appended, as in production.
+   */
+  systemPromptTemplate?: string
+  /** Pins "today" in the prompt, so date-relative answers are comparable. */
+  now?: Date
+  /** An eval user runs hundreds of turns an hour. */
+  skipRateLimit?: boolean
+  /** Keeps eval traffic out of Sentry and Phoenix's production project. */
+  disableTracing?: boolean
+  /** Per-step usage, timing and tool results, for scoring. */
+  onStepFinish?: StreamTextOnStepFinishCallback<ToolSet>
+}
+
+/**
  * Runs one agent turn, yielding AIAgentEvent payloads as they happen.
  *
  * Never throws: a runtime failure always surfaces as a terminal
@@ -982,18 +1017,21 @@ export async function* runTurn(
     useLiteLLM?: boolean
   },
   schema: GraphQLSchema,
-  context: ResolverContext
+  context: ResolverContext,
+  options: RunTurnOptions = {}
 ): AsyncGenerator<AIAgentEventPayload> {
   // Before any model spend: one turn can be several Anthropic calls, and the
   // IP-based limiter doesn't cover this field (see lib/rateLimitByUser).
   // Enforced here rather than in `subscribe` because that must stay
   // synchronous, and this needs a memcached round-trip.
-  const { allowed } = await rateLimitByUser({
-    scope: "ai_agent_turn",
-    userID: context.userID as string,
-    max: config.AI_AGENT_RATE_LIMIT_MAX,
-    windowSeconds: Math.ceil(config.AI_AGENT_RATE_LIMIT_WINDOW_MS / 1000),
-  })
+  const { allowed } = options.skipRateLimit
+    ? { allowed: true }
+    : await rateLimitByUser({
+        scope: "ai_agent_turn",
+        userID: context.userID as string,
+        max: config.AI_AGENT_RATE_LIMIT_MAX,
+        windowSeconds: Math.ceil(config.AI_AGENT_RATE_LIMIT_WINDOW_MS / 1000),
+      })
   if (!allowed) {
     const payload: AIAgentTurnCompletePayload = {
       __typename: "AIAgentTurnComplete",
@@ -1019,14 +1057,15 @@ export async function* runTurn(
   const includeSuggestedReplies = !!input.includeSuggestedReplies
 
   // Through LiteLLM, the turn is one Phoenix trace, and its ID is the feedbackID.
-  const trace = input.useLiteLLM
-    ? new TurnTrace({
-        conversationID: input.conversationID,
-        userID: context.userID as string,
-        message: input.message,
-        hasImage: !!input.image,
-      })
-    : null
+  const trace =
+    input.useLiteLLM && !options.disableTracing
+      ? new TurnTrace({
+          conversationID: input.conversationID,
+          userID: context.userID as string,
+          message: input.message,
+          hasImage: !!input.image,
+        })
+      : null
   const feedbackID = trace?.traceID ?? null
   const finishTrace = (payload: AIAgentTurnCompletePayload) =>
     trace?.finish({
@@ -1053,18 +1092,22 @@ export async function* runTurn(
     const system = await loadSystemPrompt(context, {
       supportedSections,
       includeSuggestedReplies,
+      template: options.systemPromptTemplate,
+      now: options.now,
     })
     const imageHandles = assignImageHandles(input.history, input.image)
     const messages = buildMessages(input.history, input.message, imageHandles)
     const tools = buildAgentTools(schema, context, imageHandles.handles)
 
     // Sentry, or Phoenix through LiteLLM, never both.
-    const tracer = trace ? undefined : agentTracer()
+    const tracer = trace || options.disableTracing ? undefined : agentTracer()
 
     const result = streamText({
-      model: trace
-        ? litellmProvider()(LITELLM_AGENT_MODEL)
-        : anthropicProvider()(config.AI_AGENT_MODEL),
+      model:
+        options.model ??
+        (input.useLiteLLM
+          ? litellmProvider()(LITELLM_AGENT_MODEL)
+          : anthropicProvider()(config.AI_AGENT_MODEL)),
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
       // and system prompt are byte-stable across steps for a given set of
       // supported sections and today's date (fixed tool order, no timestamps
@@ -1080,6 +1123,7 @@ export async function* runTurn(
       messages,
       tools,
       prepareStep,
+      onStepFinish: options.onStepFinish,
       stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
