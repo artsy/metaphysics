@@ -50,6 +50,22 @@ isSaved: {
 
 Also watch for the error-handling twist: if such a field is non-null (`Boolean!`) and the loader rejects, GraphQL nulls the nearest nullable ancestor and silently drops the node from the response. Wrap the loader call and degrade gracefully instead.
 
+## Mutations: name the OrError field after what it returns
+
+Mutations return a union of `<MutationName>Success` and `<MutationName>Failure`, typed `<MutationName>ResponseOrError`. Name the output field after what the mutation returns, not the generic `responseOrError`:
+
+```ts
+// ❌ Generic
+outputFields: {
+  responseOrError: { type: ResponseOrErrorType, resolve: (result) => result },
+}
+
+// ✅ Named after the result: artworkOrError, showOrError, orderOrError
+outputFields: {
+  artworkOrError: { type: ResponseOrErrorType, resolve: (result) => result },
+}
+```
+
 ## Commands
 
 - Starting: `yarn start`
