@@ -409,6 +409,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    // Claims an image the collector uploaded to S3 for them (e.g. one attached
+    // to an AI agent turn); only its owner can then preview it.
+    createImageUploadLoader: gravityLoader(
+      "me/image_uploads",
+      {},
+      { method: "POST" }
+    ),
+    // A short-lived, resized URL for the collector's own upload.
+    imageUploadPreviewLoader: gravityLoader("me/image_uploads/preview_url"),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkEditionSetLoader: gravityLoader(
       (artworkID) => `artwork/${artworkID}/edition_set`,
@@ -1172,6 +1181,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtistStoriesLoader: gravityLoader("artist_stories"),
     partnerArtistsAllLoader: gravityLoader(
       (id) => `partner/${id}/partner_artists/all`,
       {},
@@ -2133,6 +2143,29 @@ export default (accessToken, userID, opts) => {
     ),
 
     crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
+
+    // Email Sender Review Loaders
+    emailSenderReviewsLoader: gravityLoader(
+      "email_sender_reviews",
+      {},
+      { headers: true }
+    ),
+    emailSenderReviewLoader: gravityLoader((id) => `email_sender_review/${id}`),
+    approveEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/approve`,
+      {},
+      { method: "POST" }
+    ),
+    skipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/skip`,
+      {},
+      { method: "POST" }
+    ),
+    unskipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/unskip`,
+      {},
+      { method: "POST" }
+    ),
 
     // Brand Kit Loaders
     brandKitLoader: gravityLoader("brand_kit"),

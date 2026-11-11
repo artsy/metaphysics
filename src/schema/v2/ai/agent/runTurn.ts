@@ -1,5 +1,11 @@
 import { streamText, stepCountIs, parsePartialJson, Output } from "ai"
-import type { ModelMessage, PrepareStepFunction } from "ai"
+import type {
+  LanguageModel,
+  ModelMessage,
+  PrepareStepFunction,
+  StreamTextOnStepFinishCallback,
+  ToolSet,
+} from "ai"
 import { GraphQLSchema } from "graphql"
 import * as Sentry from "@sentry/node"
 import config from "config"
@@ -16,12 +22,14 @@ import { ResolverContext } from "types/graphql"
 import { TurnTrace } from "./turnTrace"
 import {
   buildAgentTools,
-  describeToolCall,
+  describeAgentToolCall,
   AIAgentToolRunResult,
 } from "./tools"
 import {
   AIAgentImageHandleAssignment,
   assignImageHandles,
+  buildImageDescriber,
+  registerAttachedImage,
   withImageHandleNote,
 } from "./images"
 import {
@@ -45,7 +53,7 @@ import {
   AIAgentTurnCompletePayload,
 } from "./types"
 
-const FALLBACK_SYSTEM_PROMPT = `
+export const FALLBACK_SYSTEM_PROMPT = `
 You are Artsy's AI assistant. Help the collector discover artists, artworks,
 shows, and fairs on Artsy using the provided tools. Only state facts returned
 by a tool call — never invent artist names, prices, availability, or results.
@@ -218,35 +226,50 @@ already shown as if they were new. Do not invent an artist exclusion argument.
 
 ## Attached images
 
-A collector may attach an image. You never see it: their message carries a
-note such as “[Collector attached image_3f9a2c1b]”, and \`image_3f9a2c1b\` is
-the handle the artwork search takes. Each image keeps its handle for the whole
-conversation. Copy handles exactly from those notes; never invent one, and
-never ask for or write an S3 key or URL.
+A collector may attach an image. You never see it: their message
+carries a note such as “[Collector attached image_3f9a2c1b]”, and
+\`image_3f9a2c1b\` is the handle every tool takes. Each image keeps its handle
+for the whole conversation. Copy handles exactly from those notes; never invent
+one, and never ask for or write an S3 key or URL.
 
-What you can do with it is find works that look like it, optionally narrowed
-by anything the artwork filters express: price, medium, size, colors, rarity,
-availability, artist, location, period. “Similar to this but under $5,000”,
-“like this, only prints”, “like this in blue”, or no text at all:
+Choose one of two strategies per turn.
+
+A. Look-alikes, with or without filters — the default. The message is empty
+or only narrows the results with things the artwork filters express: price,
+medium, size, colors, rarity, availability, artist, location, period.
+“Similar to this but under $5,000”, “like this, only prints”, “like this in
+blue”. Search by the image directly:
 \`artworksConnection(image: "image_3f9a2c1b", forSale: true, priceRange: "*-5000", first: 5) { counts { total } edges { node { internalID slug title artistNames saleMessage } } }\`.
 Never combine \`image\` with \`keyword\` or \`variant\`, and pass no \`sort\`; the
-search ranks by visual similarity and availability itself. If you are unsure
-how to read the request, run this search.
+search ranks by visual similarity and availability itself. Do not call
+\`view_image\` for this strategy: the search sees the picture for you.
 
-You cannot see what the image shows. When the collector wants something it
-doesn't contain — “similar, but the cat should be fatter”, “this scene at
-night” — or asks about the image itself — “what style is this?”, “who made
-this?” — say briefly that we can find works that look like their image, then
-show that search with any filters they gave. Never describe, name, or guess at
-the image's subject, style, or maker.
+B. A change to what the picture shows. The collector wants something the
+image does not contain, which looking alike cannot express: “similar, but the
+cat should be fatter”, “this scene at night”, “the same composition with two
+people”. Then:
+1. Call \`view_image\` with the handle and, as \`request\`, what the collector
+   wants. It returns a description of what the image shows.
+2. Rewrite that description concisely — subject, composition, style, medium,
+   palette, mood — with the collector's change applied: “a fat ginger cat
+   asleep on a sunlit windowsill, loose expressive brushwork, warm ochres”.
+3. Search with that description, not the image and not their raw words:
+\`artworksConnection(keyword: "<edited description>", variant: "hybrid", hybridWeights: [0.3, 0.7], forSale: true, first: 5)\`.
+   Still turn explicit constraints (price, medium, size) into filters.
 
-If the image search fails, say the image search is unavailable right now
-instead of answering without it.
+\`view_image\` is also right when they ask about the image itself: “what style
+is this?”, “who might have made this?”. Answer from its description; never
+name an artist as the maker of their image unless a tool result establishes
+it.
+
+When unsure which strategy fits, use A. If \`view_image\` fails, fall back to
+A rather than guessing at the picture. If an image search fails, say the
+image search is unavailable right now instead of answering without it.
 
 A follow-up such as “cheaper”, “only paintings”, or “more like the second
-one” reruns the search with the most recent image and the changed filters,
-unless the collector clearly changes the subject. Return the results as an
-\`ARTWORKS\` section, as for any artwork search.
+one” keeps the most recent image and strategy unless the collector clearly
+changes the subject. Return the results as an \`ARTWORKS\` section, as for any
+artwork search.
 
 ## Prices
 
@@ -663,7 +686,9 @@ function cardsAvailableNote(
       ].join("\n")
 }
 
-async function loadPromptTemplate(context: ResolverContext): Promise<string> {
+export async function loadPromptTemplate(
+  context: ResolverContext
+): Promise<string> {
   try {
     const { body } = await context.aiPromptTemplatesLoader({
       name: AI_PROMPT_TEMPLATE_NAME,
@@ -743,17 +768,21 @@ async function loadSystemPrompt(
   {
     supportedSections,
     includeSuggestedReplies,
+    template: templateOverride,
+    now,
   }: {
     supportedSections: readonly AIAgentSectionType[]
     includeSuggestedReplies: boolean
+    template?: string
+    now?: Date
   }
 ): Promise<string> {
-  const template = await loadPromptTemplate(context)
+  const template = templateOverride ?? (await loadPromptTemplate(context))
   return [
     template,
     cardsAvailableNote(supportedSections),
     includeSuggestedReplies ? SUGGESTED_REPLIES_NOTE : null,
-    currentDateNote(),
+    currentDateNote(now),
   ]
     .filter(Boolean)
     .join("\n\n")
@@ -891,7 +920,7 @@ function buildMessages(
   // Sections are read off assistant turns only: a user message never rendered
   // cards, so ids replayed on one describe nothing the collector is looking at.
   // An attached image is a text note naming its handle, never the pixels: the
-  // search resolves the handle itself.
+  // model asks what it shows with `view_image` when it needs to.
   const priorMessages: ModelMessage[] = (history ?? []).map((entry, index) =>
     entry.role === "assistant"
       ? {
@@ -962,6 +991,35 @@ const LAST_STEP_NOTE: ModelMessage = {
     "you've found; don't offer to search again.",
 }
 
+function failedToolSummary(toolName: string): string {
+  return toolName === "view_image"
+    ? "Couldn't look at the image."
+    : "Search failed."
+}
+
+/**
+ * Offline evals only (scripts/evals): never reachable from GraphQL, which
+ * always calls runTurn without them. Each one replaces a production input
+ * that would otherwise make two runs of the same case incomparable.
+ */
+export interface RunTurnOptions {
+  /** Replaces AI_AGENT_MODEL (or the LiteLLM alias). */
+  model?: LanguageModel
+  /**
+   * Replaces the Gravity prompt template. The cards, suggested-replies and
+   * date notes are still appended, as in production.
+   */
+  systemPromptTemplate?: string
+  /** Pins "today" in the prompt, so date-relative answers are comparable. */
+  now?: Date
+  /** An eval user runs hundreds of turns an hour. */
+  skipRateLimit?: boolean
+  /** Keeps eval traffic out of Sentry and Phoenix's production project. */
+  disableTracing?: boolean
+  /** Per-step usage, timing and tool results, for scoring. */
+  onStepFinish?: StreamTextOnStepFinishCallback<ToolSet>
+}
+
 /**
  * Runs one agent turn, yielding AIAgentEvent payloads as they happen.
  *
@@ -982,18 +1040,21 @@ export async function* runTurn(
     useLiteLLM?: boolean
   },
   schema: GraphQLSchema,
-  context: ResolverContext
+  context: ResolverContext,
+  options: RunTurnOptions = {}
 ): AsyncGenerator<AIAgentEventPayload> {
   // Before any model spend: one turn can be several Anthropic calls, and the
   // IP-based limiter doesn't cover this field (see lib/rateLimitByUser).
   // Enforced here rather than in `subscribe` because that must stay
   // synchronous, and this needs a memcached round-trip.
-  const { allowed } = await rateLimitByUser({
-    scope: "ai_agent_turn",
-    userID: context.userID as string,
-    max: config.AI_AGENT_RATE_LIMIT_MAX,
-    windowSeconds: Math.ceil(config.AI_AGENT_RATE_LIMIT_WINDOW_MS / 1000),
-  })
+  const { allowed } = options.skipRateLimit
+    ? { allowed: true }
+    : await rateLimitByUser({
+        scope: "ai_agent_turn",
+        userID: context.userID as string,
+        max: config.AI_AGENT_RATE_LIMIT_MAX,
+        windowSeconds: Math.ceil(config.AI_AGENT_RATE_LIMIT_WINDOW_MS / 1000),
+      })
   if (!allowed) {
     const payload: AIAgentTurnCompletePayload = {
       __typename: "AIAgentTurnComplete",
@@ -1019,14 +1080,15 @@ export async function* runTurn(
   const includeSuggestedReplies = !!input.includeSuggestedReplies
 
   // Through LiteLLM, the turn is one Phoenix trace, and its ID is the feedbackID.
-  const trace = input.useLiteLLM
-    ? new TurnTrace({
-        conversationID: input.conversationID,
-        userID: context.userID as string,
-        message: input.message,
-        hasImage: !!input.image,
-      })
-    : null
+  const trace =
+    input.useLiteLLM && !options.disableTracing
+      ? new TurnTrace({
+          conversationID: input.conversationID,
+          userID: context.userID as string,
+          message: input.message,
+          hasImage: !!input.image,
+        })
+      : null
   const feedbackID = trace?.traceID ?? null
   const finishTrace = (payload: AIAgentTurnCompletePayload) =>
     trace?.finish({
@@ -1053,18 +1115,34 @@ export async function* runTurn(
     const system = await loadSystemPrompt(context, {
       supportedSections,
       includeSuggestedReplies,
+      template: options.systemPromptTemplate,
+      now: options.now,
     })
     const imageHandles = assignImageHandles(input.history, input.image)
     const messages = buildMessages(input.history, input.message, imageHandles)
-    const tools = buildAgentTools(schema, context, imageHandles.handles)
+    const model =
+      options.model ??
+      (input.useLiteLLM
+        ? litellmProvider()(LITELLM_AGENT_MODEL)
+        : anthropicProvider()(config.AI_AGENT_MODEL))
+    const tools = buildAgentTools(schema, context, imageHandles.handles, {
+      // Only this turn's image: a replayed one was claimed on its own turn.
+      // Started now and awaited only by `view_image`, so a turn that doesn't
+      // look at the image never waits on it.
+      registration: input.image
+        ? registerAttachedImage(input.image, context)
+        : Promise.resolve(),
+      describeImage: buildImageDescriber(model, {
+        abortSignal: abortController.signal,
+        headers: trace ? { traceparent: trace.traceparent } : undefined,
+      }),
+    })
 
     // Sentry, or Phoenix through LiteLLM, never both.
-    const tracer = trace ? undefined : agentTracer()
+    const tracer = trace || options.disableTracing ? undefined : agentTracer()
 
     const result = streamText({
-      model: trace
-        ? litellmProvider()(LITELLM_AGENT_MODEL)
-        : anthropicProvider()(config.AI_AGENT_MODEL),
+      model,
       // First cache breakpoint (see withCacheBreakpoint): the tool definitions
       // and system prompt are byte-stable across steps for a given set of
       // supported sections and today's date (fixed tool order, no timestamps
@@ -1080,6 +1158,7 @@ export async function* runTurn(
       messages,
       tools,
       prepareStep,
+      onStepFinish: options.onStepFinish,
       stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
@@ -1153,7 +1232,7 @@ export async function* runTurn(
         case "tool-call": {
           toolCallCount += 1
           trace?.toolCall(part.toolCallId, part.toolName, part.input)
-          const description = describeToolCall(part.input)
+          const description = describeAgentToolCall(part.toolName, part.input)
           const payload: AIAgentToolCallPayload = {
             __typename: "AIAgentToolCall",
             toolName: part.toolName,
@@ -1174,7 +1253,7 @@ export async function* runTurn(
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
             ok: output.ok,
-            summary: output.ok ? null : "Search failed.",
+            summary: output.ok ? null : failedToolSummary(part.toolName),
             debugSummary:
               !output.ok && input.includeDebugToolCalls ? output.content : null,
           }
@@ -1193,7 +1272,7 @@ export async function* runTurn(
             __typename: "AIAgentToolResult",
             toolName: part.toolName,
             ok: false,
-            summary: "Search failed.",
+            summary: failedToolSummary(part.toolName),
             debugSummary: input.includeDebugToolCalls
               ? "The query could not be run."
               : null,

@@ -9,6 +9,7 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * @see https://tools.artsy.net/feature-flags
  */
 const FEATURE_FLAGS_LIST = [
+  "fireworksq4_artist-story",
   "onyx_ai_agent-image-input",
   "onyx_ai_agent-suggested-replies",
   "onyx_ai_agent-turn",

@@ -295,6 +295,10 @@ import {
 import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
+  emailSenderReview,
+  emailSenderReviewsConnection,
+} from "./crmContact/emailSenderReview"
+import {
   crmContactEmail,
   crmContactEmailsConnection,
 } from "./crmContact/crmContactEmail"
@@ -308,6 +312,11 @@ import {
   unarchiveCRMContactMutation,
   updateCRMContactMutation,
 } from "./crmContact/crmContactMutations"
+import {
+  approveEmailSenderReviewMutation,
+  skipEmailSenderReviewMutation,
+  unskipEmailSenderReviewMutation,
+} from "./crmContact/emailSenderReviewMutations"
 import {
   createCRMContactEmailMutation,
   deleteCRMContactEmailMutation,
@@ -631,6 +640,8 @@ const rootFields = {
   crmContact,
   crmContactsConnection,
   crmActivitiesConnection,
+  emailSenderReview,
+  emailSenderReviewsConnection,
   crmContactEmail,
   crmContactEmailsConnection,
   crmContactLocation,
@@ -806,6 +817,9 @@ export default new GraphQLSchema({
       updateCRMContact: updateCRMContactMutation,
       archiveCRMContact: archiveCRMContactMutation,
       unarchiveCRMContact: unarchiveCRMContactMutation,
+      approveEmailSenderReview: approveEmailSenderReviewMutation,
+      skipEmailSenderReview: skipEmailSenderReviewMutation,
+      unskipEmailSenderReview: unskipEmailSenderReviewMutation,
       createCRMContactEmail: createCRMContactEmailMutation,
       updateCRMContactEmail: updateCRMContactEmailMutation,
       deleteCRMContactEmail: deleteCRMContactEmailMutation,
