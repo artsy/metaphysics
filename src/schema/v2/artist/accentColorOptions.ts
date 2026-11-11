@@ -13,9 +13,7 @@ export const AccentColorOptions: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: new GraphQLNonNull(
-    new GraphQLList(new GraphQLNonNull(ArtistStoryAccentColorType))
-  ),
+  type: new GraphQLList(new GraphQLNonNull(ArtistStoryAccentColorType)),
   resolve: async ({ id }, _args, { artistAccentColorOptionsLoader }, info) => {
     if (!artistAccentColorOptionsLoader) {
       throw new Error("You need to be signed in to perform this action")

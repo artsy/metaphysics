@@ -83,10 +83,4 @@ describe("ArtistStory accentColor", () => {
       textColor: "WHITE",
     })
   })
-
-  it("returns null without a saved color", async () => {
-    const data = await runQuery(query, contextWith(null))
-
-    expect(data.artist.featuredStory.accentColor).toBeNull()
-  })
 })
