@@ -44,6 +44,33 @@ export const ResaleSubmissionRejectionReasonEnum = new GraphQLEnumType({
   },
 })
 
+export const ResaleSubmissionPackagingEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionPackaging",
+  values: {
+    FRAMED: { value: "framed" },
+    ROLLED: { value: "rolled" },
+    NO_PREFERENCE: { value: "no_preference" },
+  },
+})
+
+export const ResaleSubmissionPackerEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionPacker",
+  values: {
+    SELLER: { value: "seller" },
+    COURIER: { value: "courier" },
+    NO_PREFERENCE: { value: "no_preference" },
+  },
+})
+
+export const ResaleSubmissionCourierHandoffEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionCourierHandoff",
+  values: {
+    SELLER_DROPOFF: { value: "seller_dropoff" },
+    COURIER_PICKUP: { value: "courier_pickup" },
+    NO_PREFERENCE: { value: "no_preference" },
+  },
+})
+
 type MinorPriceKey =
   | "recommended_price_min_minor"
   | "recommended_price_max_minor"
@@ -92,6 +119,12 @@ export const ResaleSubmissionType = new GraphQLObjectType<
     priceListed: {
       ...moneyFromMinor("price_listed_minor"),
       description: "The collector's asking price",
+    },
+    packaging: { type: ResaleSubmissionPackagingEnum },
+    packer: { type: ResaleSubmissionPackerEnum },
+    courierHandoff: {
+      type: ResaleSubmissionCourierHandoffEnum,
+      resolve: ({ courier_handoff }) => courier_handoff,
     },
     submittedArtwork: {
       type: ArtworkType,
