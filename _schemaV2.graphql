@@ -31176,6 +31176,11 @@ type PartnerListPublication {
     """
     timezone: String
   ): String
+
+  """
+  Long plain-text curatorial text introducing the works (viewing rooms rebuild). Not shown to visitors yet.
+  """
+  curatorialText: String
   description: String
 
   """
@@ -32432,6 +32437,11 @@ input PublishPartnerListPublicationMutationInput {
   """
   artworkFieldVisibility: ArtworkFieldVisibilityInput
   clientMutationId: String
+
+  """
+  Long plain-text curatorial text (viewing rooms rebuild). Blank hides it.
+  """
+  curatorialText: String
 
   """
   Plain-text description shown on the published room.

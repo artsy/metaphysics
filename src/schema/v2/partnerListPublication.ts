@@ -91,6 +91,12 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    curatorialText: {
+      type: GraphQLString,
+      description:
+        "Long plain-text curatorial text introducing the works (viewing rooms rebuild). Not shown to visitors yet.",
+      resolve: ({ curatorial_text }) => curatorial_text,
+    },
     showGalleryName: {
       type: GraphQLBoolean,
       description: "Whether the gallery name is shown on the public page.",

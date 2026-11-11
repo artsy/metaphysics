@@ -228,6 +228,46 @@ describe("PublishPartnerListPublicationMutation", () => {
     ).toEqual({ heading: "For Anna", showGalleryName: false })
   })
 
+  it("sets curatorialText, keeping its paragraph breaks", async () => {
+    const withCuratorialText = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            curatorialText: "First paragraph.\\n\\nSecond paragraph."
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                curatorialText
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        curatorial_text: "First paragraph.\n\nSecond paragraph.",
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(withCuratorialText, context)
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        curatorial_text: "First paragraph.\n\nSecond paragraph.",
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({ curatorialText: "First paragraph.\n\nSecond paragraph." })
+  })
+
   it("accepts location and certificateOfAuthenticity visibility keys", async () => {
     const withNewVisibilityKeys = gql`
       mutation {
