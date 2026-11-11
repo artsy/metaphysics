@@ -32,6 +32,12 @@ import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArt
 import { createCityVideoMutation } from "./cityContent/mutations/createCityVideoMutation"
 import { updateCityVideoMutation } from "./cityContent/mutations/updateCityVideoMutation"
 import { deleteCityVideoMutation } from "./cityContent/mutations/deleteCityVideoMutation"
+import { createArtistStoryMutation } from "./artistStory/mutations/createArtistStoryMutation"
+import { createArtistStoryVideoMutation } from "./artistStory/mutations/createArtistStoryVideoMutation"
+import { updateArtistStoryMutation } from "./artistStory/mutations/updateArtistStoryMutation"
+import { updateArtistStoryVideoMutation } from "./artistStory/mutations/updateArtistStoryVideoMutation"
+import { deleteArtistStoryMutation } from "./artistStory/mutations/deleteArtistStoryMutation"
+import { deleteArtistStoryVideoMutation } from "./artistStory/mutations/deleteArtistStoryVideoMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -759,6 +765,8 @@ export default new GraphQLSchema({
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
+      createArtistStory: createArtistStoryMutation,
+      createArtistStoryVideo: createArtistStoryVideoMutation,
       createArtworkImport: CreateArtworkImportMutation,
       createArtworkTemplate: CreateArtworkTemplateMutation,
       createArtworkFromTemplate: CreateArtworkFromTemplateMutation,
@@ -855,6 +863,8 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtistStory: deleteArtistStoryMutation,
+      deleteArtistStoryVideo: deleteArtistStoryVideoMutation,
       deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
       discardNavigationDraft: discardNavigationDraftMutation,
@@ -971,6 +981,8 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
+      updateArtistStory: updateArtistStoryMutation,
+      updateArtistStoryVideo: updateArtistStoryVideoMutation,
       updateArtnetArtwork: updateArtnetArtworkMutation,
       updateArtnetEditionSet: updateArtnetEditionSetMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
