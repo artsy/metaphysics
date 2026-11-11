@@ -393,6 +393,8 @@ import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/Pa
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
 import { publishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/publishPartnerListPublicationMutation"
 import { unpublishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/unpublishPartnerListPublicationMutation"
+import { updatePartnerListPublicationCoverImageMutation } from "./partner/Mutations/PartnerListPublication/updatePartnerListPublicationCoverImageMutation"
+import { deletePartnerListPublicationCoverImageMutation } from "./partner/Mutations/PartnerListPublication/deletePartnerListPublicationCoverImageMutation"
 import { authenticatePrivateViewingRoomMutation } from "./privateViewingRoom/mutations/authenticatePrivateViewingRoomMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
@@ -835,6 +837,8 @@ export default new GraphQLSchema({
       deleteBrandKitLogo: deleteBrandKitLogoMutation,
       publishPartnerListPublication: publishPartnerListPublicationMutation,
       unpublishPartnerListPublication: unpublishPartnerListPublicationMutation,
+      updatePartnerListPublicationCoverImage: updatePartnerListPublicationCoverImageMutation,
+      deletePartnerListPublicationCoverImage: deletePartnerListPublicationCoverImageMutation,
       authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,

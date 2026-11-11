@@ -9,6 +9,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
+import Image, { normalizeImageData } from "./image"
 
 // Single source of truth for the 13 keys Gravity's
 // VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
@@ -126,6 +127,15 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     passcode: {
       type: GraphQLString,
       description: "Plain-text passcode gating this room, if one is set.",
+    },
+    coverImage: {
+      type: Image.type,
+      description:
+        "Cover image for the room's hero. Gravity only accepts uploads for partners in the viewing rooms rebuild.",
+      resolve: ({ cover_image }) => {
+        if (!cover_image) return null
+        return normalizeImageData(cover_image, true)
+      },
     },
     createdAt: date(),
     updatedAt: date(),

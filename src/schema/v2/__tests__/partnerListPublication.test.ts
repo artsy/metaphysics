@@ -60,6 +60,54 @@ describe("PartnerList.publication", () => {
     })
   })
 
+  it("resolves the cover image, or null without one", async () => {
+    const coverQuery = gql`
+      {
+        partner(id: "gallery-1") {
+          partnerList(id: "list-abc") {
+            publication {
+              coverImage {
+                internalID
+                url(version: "normalized")
+              }
+            }
+          }
+        }
+      }
+    `
+    const buildContext = (coverImage) => ({
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListLoader: jest.fn().mockResolvedValue({ id: "list-abc" }),
+      partnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        cover_image: coverImage,
+      }),
+    })
+
+    const withCover = await runAuthenticatedQuery(
+      coverQuery,
+      buildContext({
+        id: "img-1",
+        image_url: "https://d32dm0rphc51dk.cloudfront.net/abc/:version.jpg",
+        image_versions: ["normalized"],
+        image_urls: {
+          normalized:
+            "https://d32dm0rphc51dk.cloudfront.net/abc/normalized.jpg",
+        },
+      })
+    )
+    const withoutCover = await runAuthenticatedQuery(
+      coverQuery,
+      buildContext(null)
+    )
+
+    expect(withCover.partner.partnerList.publication.coverImage).toEqual({
+      internalID: "img-1",
+      url: "https://d32dm0rphc51dk.cloudfront.net/abc/normalized.jpg",
+    })
+    expect(withoutCover.partner.partnerList.publication.coverImage).toBeNull()
+  })
+
   it("returns null when no publication exists yet", async () => {
     const context = {
       partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
