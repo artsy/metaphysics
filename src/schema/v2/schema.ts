@@ -50,6 +50,7 @@ import { updateHeroUnitMutation } from "./HeroUnit/updateHeroUnitMutation"
 import { artworksCollectionsBatchUpdateMutation } from "./me/artworksCollectionsBatchUpdateMutation"
 import { createCollectionMutation } from "./me/createCollectionMutation"
 import { createResaleSubmissionsMutation } from "./resaleSubmission/createResaleSubmissionsMutation"
+import { updateResaleSubmissionMutation } from "./resaleSubmission/updateResaleSubmissionMutation"
 import { deleteCollectionMutation } from "./me/deleteCollectionMutation"
 import {
   notificationPreferences,
@@ -1036,6 +1037,7 @@ export default new GraphQLSchema({
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,
       updatePartnerShow: updatePartnerShowMutation,
       updateQuiz: updateQuizMutation,
+      updateResaleSubmission: updateResaleSubmissionMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateShippingPreset: updateShippingPresetMutation,
