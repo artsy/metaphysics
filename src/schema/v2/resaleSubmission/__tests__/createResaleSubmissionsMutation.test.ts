@@ -43,7 +43,11 @@ const mutation = (artworkIDs: string[]) => gql`
 const create = async (artworkIDs: string[], loaders: any = stubLoaders()) => {
   const { createResaleSubmissions } = await runAuthenticatedQuery(
     mutation(artworkIDs),
-    loaders
+    {
+      meMyCollectionArtworksLoader: () =>
+        Promise.resolve({ body: [], headers: {} }),
+      ...loaders,
+    }
   )
   return createResaleSubmissions.resaleSubmissionsOrError
 }
@@ -130,6 +134,72 @@ describe("createResaleSubmissions", () => {
         error: { message, statusCode: 400 },
       },
     ])
+  })
+
+  it("falls back to the HTTP error when Gravity's body has no message", async () => {
+    const createResaleSubmissionLoader = jest.fn(() =>
+      Promise.reject(new HTTPError("Bad Gateway", 502, JSON.stringify({})))
+    )
+
+    const response = await create([MARKETPLACE_ARTWORK_ID], {
+      createResaleSubmissionLoader,
+    })
+
+    expect(response.results).toEqual([
+      {
+        artworkID: MARKETPLACE_ARTWORK_ID,
+        resaleSubmission: null,
+        error: { message: "Bad Gateway", statusCode: 502 },
+      },
+    ])
+  })
+
+  it("loads the created submissions' artworks in one call", async () => {
+    const meMyCollectionArtworksLoader = jest.fn(() =>
+      Promise.resolve({
+        body: [
+          { _id: MARKETPLACE_ARTWORK_ID, id: "work-1" },
+          { _id: AUCTION_ARTWORK_ID, id: "work-2" },
+        ],
+        headers: {},
+      })
+    )
+    const artworkLoader = jest.fn()
+
+    const { createResaleSubmissions } = await runAuthenticatedQuery(
+      gql`
+        mutation {
+          createResaleSubmissions(
+            input: { artworkIDs: ["${MARKETPLACE_ARTWORK_ID}", "${AUCTION_ARTWORK_ID}"] }
+          ) {
+            resaleSubmissionsOrError {
+              ... on CreateResaleSubmissionsSuccess {
+                results {
+                  resaleSubmission {
+                    submittedArtwork {
+                      internalID
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      {
+        ...stubLoaders(),
+        meMyCollectionArtworksLoader,
+        artworkLoader,
+      } as any
+    )
+
+    expect(
+      createResaleSubmissions.resaleSubmissionsOrError.results.map(
+        (r) => r.resaleSubmission.submittedArtwork.internalID
+      )
+    ).toEqual([MARKETPLACE_ARTWORK_ID, AUCTION_ARTWORK_ID])
+    expect(meMyCollectionArtworksLoader).toHaveBeenCalledTimes(1)
+    expect(artworkLoader).not.toHaveBeenCalled()
   })
 
   it("sends a repeated work to Gravity once", async () => {

@@ -19,7 +19,7 @@ export const ResaleSubmissionsConnectionType = connectionWithCursorInfo({
 
 // Submitted works are private My Collection artworks, so load them in one call
 // rather than one artworkLoader call per node.
-const attachSubmittedArtworks = async (
+export const attachSubmittedArtworks = async (
   submissions: ResaleSubmissionRecord[],
   meMyCollectionArtworksLoader: ResolverContext["meMyCollectionArtworksLoader"]
 ) => {
@@ -38,7 +38,7 @@ const attachSubmittedArtworks = async (
         artworksByID[submission.submitted_artwork_id]
     })
   } catch (error) {
-    console.error("[resaleSubmissionsConnection] artworks failed:", error)
+    console.error("[resaleSubmissions] artworks failed:", error)
   }
 }
 

@@ -15169,7 +15169,7 @@ type CreateResaleSubmissionsResult {
 
 type CreateResaleSubmissionsSuccess {
   """
-  One result per artwork, in the order they were sent
+  One result per distinct artwork, in the order they were first sent
   """
   results: [CreateResaleSubmissionsResult!]!
 }

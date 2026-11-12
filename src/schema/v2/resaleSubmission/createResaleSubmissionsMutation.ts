@@ -14,6 +14,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ResaleSubmissionType } from "./resaleSubmission"
 import { mutationError } from "./mutationError"
+import { attachSubmittedArtworks } from "./resaleSubmissionsConnection"
 
 // Metaphysics makes one Gravity call per work, so keep a selection small.
 export const MAX_ARTWORKS_PER_REQUEST = 10
@@ -41,7 +42,8 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     results: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ResultType))),
-      description: "One result per artwork, in the order they were sent",
+      description:
+        "One result per distinct artwork, in the order they were first sent",
     },
   }),
 })
@@ -91,7 +93,7 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { artworkIDs },
-    { createResaleSubmissionLoader }
+    { createResaleSubmissionLoader, meMyCollectionArtworksLoader }
   ) => {
     if (!createResaleSubmissionLoader) {
       throw new Error("You need to be signed in to perform this action")
@@ -119,13 +121,21 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
           })
           return { artworkID, resaleSubmission, error: null }
         } catch (error) {
+          const formatted = formatGravityError(error)
           return {
             artworkID,
             resaleSubmission: null,
-            error: formatGravityError(error) ?? mutationError(error.message),
+            error: formatted
+              ? { ...formatted, message: formatted.message || error.message }
+              : mutationError(error.message),
           }
         }
       })
+    )
+
+    await attachSubmittedArtworks(
+      results.flatMap((r) => (r.resaleSubmission ? [r.resaleSubmission] : [])),
+      meMyCollectionArtworksLoader
     )
 
     return { results }
