@@ -25,6 +25,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   primaryMedium?: string
   additionalMediums?: string[]
   materials?: string
+  priceFromMinor?: number
   priceToMinor?: number | null
   syncOn?: boolean
 }
@@ -64,7 +65,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceFromMinor`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -94,10 +95,15 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         'Free-text materials ("oil on canvas"). Omit to leave it unchanged; cannot be cleared, since Gravity clears on an empty string, which is indistinguishable from null by the time a request reaches it from here.',
     },
+    priceFromMinor: {
+      type: GraphQLLong,
+      description:
+        "Artnet's own price, in minor units and the artwork's currency, replacing the catalog price there until the next sync. A single price: any ceiling is cleared. Can't be combined with priceToMinor.",
+    },
     priceToMinor: {
       type: GraphQLLong,
       description:
-        "Ceiling of Artnet's price range, in minor units. The floor is the catalog artwork's price. Pass null to clear it; omit to leave it unchanged.",
+        "Ceiling of Artnet's price range, in minor units. With sync off the floor is Artnet's own price when it's in the artwork's currency, otherwise the catalog price, and there must be one. Pass null to clear it; omit to leave it unchanged.",
     },
     syncOn: {
       type: GraphQLBoolean,
@@ -121,6 +127,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       primaryMedium,
       additionalMediums,
       materials,
+      priceFromMinor,
       priceToMinor,
       syncOn,
     },
@@ -142,6 +149,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             additionalMediums:
               additionalMediums?.length === 0 ? null : additionalMediums,
             materials,
+            priceFromMinor,
             priceToMinor,
             syncOn,
           },
