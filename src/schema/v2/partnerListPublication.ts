@@ -134,7 +134,10 @@ export const PartnerListPublicationType = new GraphQLObjectType<
         "Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.",
       resolve: ({ cover_image }) => {
         if (!cover_image) return null
-        return normalizeImageData(cover_image, true)
+        return {
+          ...normalizeImageData(cover_image, true),
+          gemini_template_key: "artos-viewing-room-cover",
+        }
       },
     },
     createdAt: date(),
