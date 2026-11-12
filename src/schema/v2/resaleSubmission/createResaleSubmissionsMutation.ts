@@ -7,13 +7,10 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { uniq } from "lodash"
-import {
-  GravityMutationErrorType,
-  formatGravityError,
-} from "lib/gravityErrorHandler"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ResaleSubmissionType } from "./resaleSubmission"
-import { mutationError } from "./mutationError"
+import { mutationError, toMutationError } from "./mutationError"
 import { attachSubmittedArtworks } from "./resaleSubmissionsConnection"
 
 // Metaphysics makes one Gravity call per work, so keep a selection small.
@@ -121,13 +118,10 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
           })
           return { artworkID, resaleSubmission, error: null }
         } catch (error) {
-          const formatted = formatGravityError(error)
           return {
             artworkID,
             resaleSubmission: null,
-            error: formatted
-              ? { ...formatted, message: formatted.message || error.message }
-              : mutationError(error.message),
+            error: toMutationError(error),
           }
         }
       })
