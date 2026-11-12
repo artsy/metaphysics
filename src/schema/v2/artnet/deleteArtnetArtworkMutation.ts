@@ -23,7 +23,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     artnetArtwork: {
       type: ArtnetArtworkType,
       description:
-        "The ArtnetArtwork as it was when the Delete was pushed. Removal is not complete yet, so it can still be read until Artnet confirms it.",
+        "The ArtnetArtwork the Delete was pushed for. `deleteInFlight` is true while the Delete is pending, and false means it was already destroyed.",
       resolve: (artnetArtwork) => artnetArtwork,
     },
   }),
@@ -52,7 +52,7 @@ export const deleteArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "DeleteArtnetArtworkMutation",
   description:
-    "Removes an ArtnetArtwork from Artnet by pushing a Delete, and from Gravity once Artnet reports it done. Removal is asynchronous: the ArtnetArtwork is returned unchanged and is destroyed when Artnet's task settles, after which it can no longer be found. A Delete Artnet fails leaves the ArtnetArtwork, so the mutation can be repeated; repeating it while one is on its way does nothing. Edits to the ArtnetArtwork are refused while a Delete is pending. An ArtnetArtwork Artnet never created, because it refused the Create, has nothing to delete there and is destroyed immediately. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Removes an ArtnetArtwork from Artnet by pushing a Delete. Removal is asynchronous: the ArtnetArtwork is returned as is, with `deleteInFlight` set, and is destroyed once Artnet's Delete task settles and its messages confirm the artwork is gone, after which it can no longer be found. If they don't, it stays and `lastDeleteMessages` says why, and the mutation can be repeated. Repeating it while one is pending does nothing, and edits are refused meanwhile. An ArtnetArtwork whose Create made no artwork on Artnet is destroyed immediately. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),

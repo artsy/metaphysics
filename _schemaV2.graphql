@@ -3903,6 +3903,11 @@ type ArtnetArtwork {
   ): String
 
   """
+  Whether a Delete pushed to Artnet has not settled yet. Edits are refused while it has not.
+  """
+  deleteInFlight: Boolean
+
+  """
   A globally unique ID.
   """
   id: ID!
@@ -3911,6 +3916,11 @@ type ArtnetArtwork {
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
+
+  """
+  What came back for the latest Delete pushed to Artnet: Artnet's messages when it settled the Delete without confirming the artwork is gone (the ArtnetArtwork is then kept), or Gravity's reason if it gave up waiting. Empty while the Delete is pending, or when none was pushed.
+  """
+  lastDeleteMessages: [String]
 
   """
   Free-text materials (e.g. "oil on canvas"), distinct from the medium vocabulary.
@@ -15797,7 +15807,7 @@ union DeleteArtnetArtworkResponseOrError =
 
 type DeleteArtnetArtworkSuccess {
   """
-  The ArtnetArtwork as it was when the Delete was pushed. Removal is not complete yet, so it can still be read until Artnet confirms it.
+  The ArtnetArtwork the Delete was pushed for. `deleteInFlight` is true while the Delete is pending, and false means it was already destroyed.
   """
   artnetArtwork: ArtnetArtwork
 }
@@ -26566,7 +26576,7 @@ type Mutation {
   ): deleteArtistStoryVideoPayload
 
   """
-  Removes an ArtnetArtwork from Artnet by pushing a Delete, and from Gravity once Artnet reports it done. Removal is asynchronous: the ArtnetArtwork is returned unchanged and is destroyed when Artnet's task settles, after which it can no longer be found. A Delete Artnet fails leaves the ArtnetArtwork, so the mutation can be repeated; repeating it while one is on its way does nothing. Edits to the ArtnetArtwork are refused while a Delete is pending. An ArtnetArtwork Artnet never created, because it refused the Create, has nothing to delete there and is destroyed immediately. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
+  Removes an ArtnetArtwork from Artnet by pushing a Delete. Removal is asynchronous: the ArtnetArtwork is returned as is, with `deleteInFlight` set, and is destroyed once Artnet's Delete task settles and its messages confirm the artwork is gone, after which it can no longer be found. If they don't, it stays and `lastDeleteMessages` says why, and the mutation can be repeated. Repeating it while one is pending does nothing, and edits are refused meanwhile. An ArtnetArtwork whose Create made no artwork on Artnet is destroyed immediately. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.
   """
   deleteArtnetArtwork(
     input: DeleteArtnetArtworkMutationInput!

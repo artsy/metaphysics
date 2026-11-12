@@ -27,6 +27,9 @@ export interface ArtnetArtworkGravityResponse {
   price_from_minor: number | null
   price_to_minor: number | null
   published: boolean
+  // Absent from a Gravity that predates deleting, so both are read with defaults.
+  delete_in_flight?: boolean
+  last_delete_messages?: string[]
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
   created_at: string
   updated_at: string
@@ -92,6 +95,18 @@ export const ArtnetArtworkType = new GraphQLObjectType<
     published: {
       type: GraphQLBoolean,
       description: "Whether the artwork is published on Artnet.",
+    },
+    deleteInFlight: {
+      type: GraphQLBoolean,
+      description:
+        "Whether a Delete pushed to Artnet has not settled yet. Edits are refused while it has not.",
+      resolve: ({ delete_in_flight }) => delete_in_flight ?? false,
+    },
+    lastDeleteMessages: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "What came back for the latest Delete pushed to Artnet: Artnet's messages when it settled the Delete without confirming the artwork is gone (the ArtnetArtwork is then kept), or Gravity's reason if it gave up waiting. Empty while the Delete is pending, or when none was pushed.",
+      resolve: ({ last_delete_messages }) => last_delete_messages ?? [],
     },
     artnetEditionSets: {
       type: new GraphQLList(ArtnetEditionSetType),
