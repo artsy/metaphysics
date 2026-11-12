@@ -68,7 +68,8 @@ describe("PartnerList.publication", () => {
             publication {
               coverImage {
                 internalID
-                url(version: "normalized")
+                url(version: "wide")
+                isProcessing
               }
             }
           }
@@ -89,10 +90,10 @@ describe("PartnerList.publication", () => {
       buildContext({
         id: "img-1",
         image_url: "https://d32dm0rphc51dk.cloudfront.net/abc/:version.jpg",
-        image_versions: ["normalized"],
+        gemini_token_updated_at: new Date().toISOString(),
+        image_versions: ["wide"],
         image_urls: {
-          normalized:
-            "https://d32dm0rphc51dk.cloudfront.net/abc/normalized.jpg",
+          wide: "https://d32dm0rphc51dk.cloudfront.net/abc/wide.jpg",
         },
       })
     )
@@ -103,7 +104,10 @@ describe("PartnerList.publication", () => {
 
     expect(withCover.partner.partnerList.publication.coverImage).toEqual({
       internalID: "img-1",
-      url: "https://d32dm0rphc51dk.cloudfront.net/abc/normalized.jpg",
+      url: "https://d32dm0rphc51dk.cloudfront.net/abc/wide.jpg",
+      // Only `wide` exists: done for this template, though the default
+      // (artwork) template would still call it processing.
+      isProcessing: false,
     })
     expect(withoutCover.partner.partnerList.publication.coverImage).toBeNull()
   })
