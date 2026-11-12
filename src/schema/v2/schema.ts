@@ -49,6 +49,7 @@ import { modelChangesConnection } from "./modelChange/modelChangesConnection"
 import { updateHeroUnitMutation } from "./HeroUnit/updateHeroUnitMutation"
 import { artworksCollectionsBatchUpdateMutation } from "./me/artworksCollectionsBatchUpdateMutation"
 import { createCollectionMutation } from "./me/createCollectionMutation"
+import { cancelResaleSubmissionMutation } from "./resaleSubmission/cancelResaleSubmissionMutation"
 import { createResaleSubmissionsMutation } from "./resaleSubmission/createResaleSubmissionsMutation"
 import { updateResaleSubmissionMutation } from "./resaleSubmission/updateResaleSubmissionMutation"
 import { deleteCollectionMutation } from "./me/deleteCollectionMutation"
@@ -812,6 +813,7 @@ export default new GraphQLSchema({
       createPartnerShowEvent: createPartnerShowEventMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
+      cancelResaleSubmission: cancelResaleSubmissionMutation,
       createResaleSubmissions: createResaleSubmissionsMutation,
       authorizeEmailAccount: authorizeEmailAccountMutation,
       completeEmailOAuth: completeEmailOAuthMutation,

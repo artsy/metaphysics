@@ -144,6 +144,26 @@ export const createResaleSubmissionStubLoaders = (userID: string) => ({
       ...update,
     }),
 
+  // TODO: gravityLoader((id) => `me/resale_submission/${id}/cancel`, {}, { method: "POST" })
+  cancelResaleSubmissionLoader: async (id: string) => {
+    const record = await findResaleSubmission(id, userID)
+
+    if (record.state !== "accepted") {
+      const message = `Cannot cancel a ${record.state} submission`
+      throw new HTTPError(
+        message,
+        400,
+        JSON.stringify({ type: "param_error", message })
+      )
+    }
+
+    return withRequirements({
+      ...record,
+      state: "canceled",
+      canceled_at: new Date().toISOString(),
+    })
+  },
+
   // TODO: gravityLoader("me/resale_submissions", {}, { headers: true })
   resaleSubmissionsLoader: (_options: {
     page: number
