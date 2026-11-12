@@ -58,6 +58,33 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
+  it("passes priceFromMinor through as Gravity's price_from_minor", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", priceFromMinor: 500000 }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest
+      .fn()
+      .mockResolvedValue({ id: "artnet-artwork-1" })
+
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      price_from_minor: 500000,
+    })
+  })
+
   it("passes primaryMedium and additionalMediums through to Gravity", async () => {
     const query = `
       mutation {
