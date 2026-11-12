@@ -5,11 +5,9 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import {
-  GravityMutationErrorType,
-  formatGravityError,
-} from "lib/gravityErrorHandler"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { toMutationError } from "./mutationError"
 import { ResaleSubmissionType } from "./resaleSubmission"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -71,11 +69,7 @@ export const cancelResaleSubmissionMutation = mutationWithClientMutationId<
     try {
       return await cancelResaleSubmissionLoader(id)
     } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      }
-      throw new Error(error)
+      return toMutationError(error)
     }
   },
 })

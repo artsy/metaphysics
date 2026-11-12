@@ -29,10 +29,10 @@ const mutation = (id: string) => gql`
   }
 `
 
-const cancel = async (id: string) => {
+const cancel = async (id: string, loaders: any = stubLoaders()) => {
   const { cancelResaleSubmission } = await runAuthenticatedQuery(
     mutation(id),
-    stubLoaders() as any
+    loaders
   )
   return cancelResaleSubmission.resaleSubmissionOrError
 }
@@ -66,6 +66,21 @@ describe("cancelResaleSubmission", () => {
         message: "Resale submission not found",
         statusCode: 404,
       },
+    })
+  })
+
+  it("returns an error that isn't from Gravity as a failure", async () => {
+    const cancelResaleSubmissionLoader = jest.fn(() =>
+      Promise.reject(new Error("socket hang up"))
+    )
+
+    expect(
+      await cancel(`stub-${MARKETPLACE_ARTWORK_ID}`, {
+        cancelResaleSubmissionLoader,
+      })
+    ).toEqual({
+      __typename: "CancelResaleSubmissionFailure",
+      mutationError: { message: "socket hang up", statusCode: null },
     })
   })
 
