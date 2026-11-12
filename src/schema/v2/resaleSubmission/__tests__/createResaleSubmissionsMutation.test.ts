@@ -95,24 +95,29 @@ describe("createResaleSubmissions", () => {
     })
   })
 
-  it("keeps the other works when one fails in Gravity", async () => {
-    const createResaleSubmissionLoader = jest.fn(({ artwork_id }) =>
-      artwork_id === AUCTION_ARTWORK_ID
+  it("returns an error for a work that already has an active submission and keeps the others", async () => {
+    const message =
+      "Validation failed: Submitted artwork already has an active resale submission"
+    const createResaleSubmissionLoader = jest.fn(({ submitted_artwork_id }) =>
+      submitted_artwork_id === AUCTION_ARTWORK_ID
         ? Promise.reject(
-            new HTTPError("Forbidden", 403, {
-              error: "You don't own this artwork",
-            })
+            new HTTPError(
+              "Bad Request",
+              400,
+              JSON.stringify({ type: "param_error", message })
+            )
           )
-        : stubLoaders().createResaleSubmissionLoader({ artwork_id })
+        : stubLoaders().createResaleSubmissionLoader({ submitted_artwork_id })
     )
 
     const response = await create(
       [MARKETPLACE_ARTWORK_ID, AUCTION_ARTWORK_ID],
-      {
-        createResaleSubmissionLoader,
-      }
+      { createResaleSubmissionLoader }
     )
 
+    expect(createResaleSubmissionLoader).toHaveBeenCalledWith({
+      submitted_artwork_id: MARKETPLACE_ARTWORK_ID,
+    })
     expect(response.results).toEqual([
       expect.objectContaining({
         artworkID: MARKETPLACE_ARTWORK_ID,
@@ -122,7 +127,7 @@ describe("createResaleSubmissions", () => {
       {
         artworkID: AUCTION_ARTWORK_ID,
         resaleSubmission: null,
-        error: { message: "You don't own this artwork", statusCode: 403 },
+        error: { message, statusCode: 400 },
       },
     ])
   })

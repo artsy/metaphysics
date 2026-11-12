@@ -73,7 +73,7 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
 >({
   name: "CreateResaleSubmissions",
   description:
-    "Ask Artsy to assess My Collection works for resale. A work that already has an active submission returns it. A rejected assessment is a success; one work failing doesn't fail the others.",
+    "Ask Artsy to assess My Collection works for resale. A work that already has an active submission comes back with an error. A rejected assessment is a success; one work failing doesn't fail the others.",
   inputFields: {
     // Eigen's sell flow lets collectors select many works at once, so this takes a list.
     artworkIDs: {
@@ -115,7 +115,7 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
       ids.map(async (artworkID) => {
         try {
           const resaleSubmission = await createResaleSubmissionLoader({
-            artwork_id: artworkID,
+            submitted_artwork_id: artworkID,
           })
           return { artworkID, resaleSubmission, error: null }
         } catch (error) {

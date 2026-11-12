@@ -120,9 +120,12 @@ export const createResaleSubmissionStubLoaders = (userID: string) => ({
   // TODO: gravityLoader((id) => `me/resale_submission/${id}`)
   resaleSubmissionLoader: (id: string) => findResaleSubmission(id, userID),
 
-  // TODO: gravityLoader("resale_submission", {}, { method: "POST" })
-  createResaleSubmissionLoader: ({ artwork_id }: { artwork_id: string }) =>
-    Promise.resolve(buildResaleSubmission(artwork_id, userID)),
+  // TODO: gravityLoader("me/resale_submission", {}, { method: "POST" })
+  createResaleSubmissionLoader: ({
+    submitted_artwork_id,
+  }: {
+    submitted_artwork_id: string
+  }) => Promise.resolve(buildResaleSubmission(submitted_artwork_id, userID)),
 
   // TODO: gravityLoader("me/resale_submissions", {}, { headers: true })
   resaleSubmissionsLoader: (_options: {

@@ -26507,7 +26507,7 @@ type Mutation {
   createPurchase(input: createPurchaseInput!): createPurchasePayload
 
   """
-  Ask Artsy to assess My Collection works for resale. A work that already has an active submission returns it. A rejected assessment is a success; one work failing doesn't fail the others.
+  Ask Artsy to assess My Collection works for resale. A work that already has an active submission comes back with an error. A rejected assessment is a success; one work failing doesn't fail the others.
   """
   createResaleSubmissions(
     input: CreateResaleSubmissionsInput!
