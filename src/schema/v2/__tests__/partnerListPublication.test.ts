@@ -60,6 +60,58 @@ describe("PartnerList.publication", () => {
     })
   })
 
+  it("resolves the cover image, or null without one", async () => {
+    const coverQuery = gql`
+      {
+        partner(id: "gallery-1") {
+          partnerList(id: "list-abc") {
+            publication {
+              coverImage {
+                internalID
+                url(version: "wide")
+                isProcessing
+              }
+            }
+          }
+        }
+      }
+    `
+    const buildContext = (coverImage) => ({
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListLoader: jest.fn().mockResolvedValue({ id: "list-abc" }),
+      partnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        cover_image: coverImage,
+      }),
+    })
+
+    const withCover = await runAuthenticatedQuery(
+      coverQuery,
+      buildContext({
+        id: "img-1",
+        image_url: "https://d32dm0rphc51dk.cloudfront.net/abc/:version.jpg",
+        gemini_token_updated_at: new Date().toISOString(),
+        image_versions: ["wide"],
+        image_urls: {
+          wide: "https://d32dm0rphc51dk.cloudfront.net/abc/wide.jpg",
+        },
+      })
+    )
+    const withoutCover = await runAuthenticatedQuery(
+      coverQuery,
+      buildContext(null)
+    )
+
+    expect(withCover.partner.partnerList.publication.coverImage).toEqual({
+      internalID: "img-1",
+      url: "https://d32dm0rphc51dk.cloudfront.net/abc/wide.jpg",
+      // Only `wide` exists: done for this template, though the default
+      // (artwork) template would still call it processing.
+      isProcessing: false,
+    })
+    expect(withoutCover.partner.partnerList.publication.coverImage).toBeNull()
+  })
+
   it("returns null when no publication exists yet", async () => {
     const context = {
       partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
