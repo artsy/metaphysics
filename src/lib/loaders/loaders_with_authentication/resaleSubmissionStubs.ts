@@ -118,6 +118,6 @@ const findResaleSubmission = (id: string, userID: string) => {
 }
 
 export const createResaleSubmissionStubLoaders = (userID: string) => ({
-  // TODO: gravityLoader((id) => `resale_submission/${id}`)
+  // TODO: gravityLoader((id) => `me/resale_submission/${id}`)
   resaleSubmissionLoader: (id: string) => findResaleSubmission(id, userID),
 })
