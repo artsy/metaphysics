@@ -52,10 +52,14 @@ describe("me.resaleSubmissionsConnection", () => {
         headers: { "x-total-count": "3" },
       })
     )
+    const meMyCollectionArtworksLoader = jest.fn(() =>
+      Promise.resolve({ body: [], headers: {} })
+    )
 
     const { me } = await runAuthenticatedQuery(query, {
       meLoader,
       resaleSubmissionsLoader,
+      meMyCollectionArtworksLoader,
     } as any)
 
     expect(resaleSubmissionsLoader).toHaveBeenCalledWith({
@@ -82,6 +86,64 @@ describe("me.resaleSubmissionsConnection", () => {
         },
       ],
     })
+  })
+
+  it("loads every node's artwork in one My Collection call", async () => {
+    const resaleSubmissionsLoader = jest.fn(() =>
+      Promise.resolve({
+        body: [
+          buildResaleSubmission(MARKETPLACE_ARTWORK_ID, "user-42"),
+          buildResaleSubmission(AUCTION_ARTWORK_ID, "user-42"),
+        ],
+        headers: { "x-total-count": "2" },
+      })
+    )
+    const meMyCollectionArtworksLoader = jest.fn(() =>
+      Promise.resolve({
+        body: [
+          { _id: AUCTION_ARTWORK_ID, id: "work-2" },
+          { _id: MARKETPLACE_ARTWORK_ID, id: "work-1" },
+        ],
+        headers: {},
+      })
+    )
+    const artworkLoader = jest.fn()
+
+    const { me } = await runAuthenticatedQuery(
+      gql`
+        {
+          me {
+            resaleSubmissionsConnection(first: 2) {
+              edges {
+                node {
+                  submittedArtwork {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      {
+        meLoader,
+        resaleSubmissionsLoader,
+        meMyCollectionArtworksLoader,
+        artworkLoader,
+      } as any
+    )
+
+    expect(
+      me.resaleSubmissionsConnection.edges.map(
+        ({ node }) => node.submittedArtwork.internalID
+      )
+    ).toEqual([MARKETPLACE_ARTWORK_ID, AUCTION_ARTWORK_ID])
+    expect(meMyCollectionArtworksLoader).toHaveBeenCalledTimes(1)
+    expect(meMyCollectionArtworksLoader).toHaveBeenCalledWith({
+      artworks: [MARKETPLACE_ARTWORK_ID, AUCTION_ARTWORK_ID],
+      size: 2,
+    })
+    expect(artworkLoader).not.toHaveBeenCalled()
   })
 
   it("is empty when Gravity returns 404", async () => {
