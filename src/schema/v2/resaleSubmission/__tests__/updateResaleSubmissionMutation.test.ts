@@ -113,4 +113,19 @@ describe("updateResaleSubmission", () => {
       },
     })
   })
+
+  it("returns an error that isn't from Gravity as a failure", async () => {
+    const updateResaleSubmissionLoader = jest.fn(() =>
+      Promise.reject(new Error("socket hang up"))
+    )
+
+    expect(
+      await update(`{ id: "${id}", packer: SELLER }`, {
+        updateResaleSubmissionLoader,
+      })
+    ).toEqual({
+      __typename: "UpdateResaleSubmissionFailure",
+      mutationError: { message: "socket hang up", statusCode: null },
+    })
+  })
 })

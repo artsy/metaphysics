@@ -6,10 +6,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
-import {
-  GravityMutationErrorType,
-  formatGravityError,
-} from "lib/gravityErrorHandler"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { ResaleSubmissionUpdate } from "lib/loaders/loaders_with_authentication/resaleSubmissionStubs"
 import { ResolverContext } from "types/graphql"
 import {
@@ -18,6 +15,7 @@ import {
   ResaleSubmissionPackerEnum,
   ResaleSubmissionType,
 } from "./resaleSubmission"
+import { toMutationError } from "./mutationError"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateResaleSubmissionSuccess",
@@ -99,11 +97,7 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     try {
       return await updateResaleSubmissionLoader(id, update)
     } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      }
-      throw new Error(error)
+      return toMutationError(error)
     }
   },
 })
