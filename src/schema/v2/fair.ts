@@ -34,6 +34,7 @@ import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
 import { markdown } from "./fields/markdown"
+import { representativeArtworks } from "./fields/representativeArtworks"
 import { articleConnection } from "./article"
 import ArticleSorts from "./sorts/article_sorts"
 import {
@@ -75,6 +76,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       ...itemItineraryMembershipFields("Fair"),
+      representativeArtworks: representativeArtworks(),
       about: markdown(),
       followedContent: {
         type: FollowedContentType,
