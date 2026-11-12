@@ -1,12 +1,14 @@
 import {
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLFloat,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ResaleSubmissionRecord } from "lib/loaders/loaders_with_authentication/resaleSubmissionStubs"
 import { ArtworkType } from "schema/v2/artwork"
 import { date } from "schema/v2/fields/date"
@@ -15,6 +17,7 @@ import {
   resolveMinorAndCurrencyFieldsToMoney,
 } from "schema/v2/fields/money"
 import { InternalIDFields } from "schema/v2/object_identification"
+import { ARTSY_FEE_RATE, payoutFromMinor } from "./price"
 
 export const ResaleSubmissionStateEnum = new GraphQLEnumType({
   name: "ResaleSubmissionState",
@@ -94,6 +97,64 @@ const moneyFromMinor = (
   },
 })
 
+type PayoutBreakdown = ReturnType<typeof payoutFromMinor> & {
+  price_currency_code: string
+}
+
+const payoutMoney = (
+  key: "asking_price_minor" | "artsy_fee_minor" | "payout_minor"
+): GraphQLFieldConfig<PayoutBreakdown, ResolverContext> => ({
+  type: new GraphQLNonNull(Money),
+  resolve: (breakdown, args, context, info) =>
+    resolveMinorAndCurrencyFieldsToMoney(
+      { minor: breakdown[key], currencyCode: breakdown.price_currency_code },
+      args,
+      context,
+      info
+    ),
+})
+
+const ResaleSubmissionPayoutBreakdownType = new GraphQLObjectType<
+  PayoutBreakdown,
+  ResolverContext
+>({
+  name: "ResaleSubmissionPayoutBreakdown",
+  fields: {
+    askingPrice: payoutMoney("asking_price_minor"),
+    artsyFee: payoutMoney("artsy_fee_minor"),
+    payout: {
+      ...payoutMoney("payout_minor"),
+      description: "What the collector receives: the asking price less the fee",
+    },
+  },
+})
+
+const payoutBreakdownField: GraphQLFieldConfig<
+  ResaleSubmissionRecord,
+  ResolverContext,
+  { priceListedMinor?: number | null }
+> = {
+  type: ResaleSubmissionPayoutBreakdownType,
+  description:
+    "The payout for the saved asking price, or for priceListedMinor when given. Null when there is no price.",
+  args: {
+    priceListedMinor: {
+      type: GraphQLLong,
+      description:
+        "Preview the payout for a price that isn't saved yet, in minor units (cents)",
+    },
+  },
+  resolve: (
+    { price_listed_minor, price_currency_code },
+    { priceListedMinor }
+  ) => {
+    const minor = priceListedMinor ?? price_listed_minor
+    if (minor == null) return null
+
+    return { ...payoutFromMinor(minor), price_currency_code }
+  },
+}
+
 export const ResaleSubmissionType = new GraphQLObjectType<
   ResaleSubmissionRecord,
   ResolverContext
@@ -120,6 +181,12 @@ export const ResaleSubmissionType = new GraphQLObjectType<
       ...moneyFromMinor("price_listed_minor"),
       description: "The collector's asking price",
     },
+    artsyFeeRate: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: "The share of the sale price Artsy keeps, e.g. 0.15",
+      resolve: () => ARTSY_FEE_RATE,
+    },
+    payoutBreakdown: payoutBreakdownField,
     packaging: { type: ResaleSubmissionPackagingEnum },
     packer: { type: ResaleSubmissionPackerEnum },
     courierHandoff: {
