@@ -2,6 +2,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
 import { createBatchItineraryStopMembershipsLoader } from "../batchItineraryStopMembershipsLoader"
+import { createResaleSubmissionStubLoaders } from "./resaleSubmissionStubs"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -11,6 +12,7 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
+    ...createResaleSubmissionStubLoaders(userID),
     addArtworkToPartnerShowLoader: gravityLoader<
       any,
       { showId: string; artworkId: string; partnerId: string }
