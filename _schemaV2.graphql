@@ -36345,6 +36345,10 @@ type RequestPriceEstimatedMutationSuccess {
 A collector's request to resell a work from their My Collection
 """
 type ResaleSubmission {
+  """
+  The share of the sale price Artsy keeps, e.g. 0.15
+  """
+  artsyFeeRate: Float!
   canceledAt(
     format: String
 
@@ -36379,6 +36383,16 @@ type ResaleSubmission {
   internalID: ID!
   packaging: ResaleSubmissionPackaging
   packer: ResaleSubmissionPacker
+
+  """
+  The payout for the saved asking price, or for priceListedMinor when given. Null when there is no price.
+  """
+  payoutBreakdown(
+    """
+    Preview the payout for a price that isn't saved yet, in minor units (cents)
+    """
+    priceListedMinor: Long
+  ): ResaleSubmissionPayoutBreakdown
 
   """
   The collector's asking price
@@ -36452,6 +36466,16 @@ enum ResaleSubmissionPacker {
   COURIER
   NO_PREFERENCE
   SELLER
+}
+
+type ResaleSubmissionPayoutBreakdown {
+  artsyFee: Money!
+  askingPrice: Money!
+
+  """
+  What the collector receives: the asking price less the fee
+  """
+  payout: Money!
 }
 
 enum ResaleSubmissionRejectionReason {
