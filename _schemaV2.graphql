@@ -15169,6 +15169,31 @@ type CreatePurchaseSuccess {
   purchase: Purchase
 }
 
+type CreateResaleSubmissionFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateResaleSubmissionInput {
+  """
+  The My Collection artwork's internalID (not a slug)
+  """
+  artworkID: String!
+  clientMutationId: String
+}
+
+type CreateResaleSubmissionPayload {
+  clientMutationId: String
+  responseOrError: CreateResaleSubmissionResponseOrError
+}
+
+union CreateResaleSubmissionResponseOrError =
+    CreateResaleSubmissionFailure
+  | CreateResaleSubmissionSuccess
+
+type CreateResaleSubmissionSuccess {
+  resaleSubmission: ResaleSubmission
+}
+
 type CreateSaleAgreementFailure {
   mutationError: GravityMutationError
 }
@@ -25036,6 +25061,28 @@ type Me implements Node {
     @deprecated(
       reason: "These genomic recs are deprecated. Use artworkRecommendations instead."
     )
+
+  """
+  One of the current user's resale submissions
+  """
+  resaleSubmission(
+    """
+    The resale submission's internalID
+    """
+    id: String!
+  ): ResaleSubmission
+
+  """
+  The current user's resale submissions
+  """
+  resaleSubmissionsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): ResaleSubmissionConnection
   saleRegistrationsConnection(
     after: String
     auctionState: AuctionState
@@ -25644,6 +25691,18 @@ type Money {
   An amount of money expressed in minor units (like cents).
   """
   minor: Long!
+}
+
+input MoneyInput {
+  """
+  amount in dollars or major unit
+  """
+  amount: Float!
+
+  """
+  The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  """
+  currencyCode: String!
 }
 
 type MoveArtworksBetweenPartnerListsFailure {
@@ -26520,6 +26579,13 @@ type Mutation {
   Create a purchase
   """
   createPurchase(input: createPurchaseInput!): createPurchasePayload
+
+  """
+  Ask Artsy to assess a My Collection work for resale. Returns the work's active submission if it already has one. A rejected assessment is a success.
+  """
+  createResaleSubmission(
+    input: CreateResaleSubmissionInput!
+  ): CreateResaleSubmissionPayload
 
   """
   Creates a static Markdown-backed sale agreement.
@@ -27841,6 +27907,13 @@ type Mutation {
   Update a quiz artwork interacted_with flag
   """
   updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
+
+  """
+  Update the asking price and shipping preferences of a resale submission. Omitted fields stay unchanged.
+  """
+  updateResaleSubmission(
+    input: UpdateResaleSubmissionInput!
+  ): UpdateResaleSubmissionPayload
 
   """
   Updates a saleAgreement.
@@ -36230,6 +36303,174 @@ type RequestPriceEstimatedMutationSuccess {
   submittedPriceEstimateParams: SubmittedPriceEstimateParams
 }
 
+"""
+A collector's request to resell a work from their My Collection
+"""
+type ResaleSubmission {
+  """
+  The share of the sale price Artsy keeps, e.g. 0.15
+  """
+  artsyFeeRate: Float!
+  canceledAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  The recommended sales channel. Null when rejected.
+  """
+  channel: ResaleSubmissionChannel
+  courierHandoff: ResaleSubmissionCourierHandoff
+  createdAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+
+  """
+  True only for a marketplace submission with nothing missing. Does not mean it is listed.
+  """
+  isReadyToList: Boolean!
+
+  """
+  What the collector still has to provide on this submission's channel
+  """
+  missingRequirements: [ResaleSubmissionRequirement!]!
+  packaging: ResaleSubmissionPackaging
+  packer: ResaleSubmissionPacker
+
+  """
+  The payout for the saved asking price, or for priceListed when given. Null when there is no price.
+  """
+  payoutBreakdown(
+    """
+    Preview the payout for a price that isn't saved yet, in major units (dollars)
+    """
+    priceListed: MoneyInput
+  ): ResaleSubmissionPayoutBreakdown
+
+  """
+  The collector's asking price
+  """
+  priceListed: Money
+  recommendedPriceMax: Money
+  recommendedPriceMin: Money
+  rejectionReasons: [ResaleSubmissionRejectionReason!]!
+  state: ResaleSubmissionState!
+  submittedArtwork: Artwork
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+}
+
+enum ResaleSubmissionChannel {
+  AUCTION
+  MARKETPLACE
+}
+
+"""
+A connection to a list of items.
+"""
+type ResaleSubmissionConnection {
+  """
+  A list of edges.
+  """
+  edges: [ResaleSubmissionEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+enum ResaleSubmissionCourierHandoff {
+  COURIER_PICKUP
+  NO_PREFERENCE
+  SELLER_DROPOFF
+}
+
+"""
+An edge in a connection.
+"""
+type ResaleSubmissionEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: ResaleSubmission
+}
+
+enum ResaleSubmissionPackaging {
+  FRAMED
+  NO_PREFERENCE
+  ROLLED
+}
+
+enum ResaleSubmissionPacker {
+  COURIER
+  NO_PREFERENCE
+  SELLER
+}
+
+type ResaleSubmissionPayoutBreakdown {
+  artsyFee: Money!
+  askingPrice: Money!
+
+  """
+  What the collector receives: the asking price less the fee
+  """
+  payout: Money!
+}
+
+enum ResaleSubmissionRejectionReason {
+  MEDIUM_NOT_SUPPORTED
+  NOT_PURCHASED_ON_ARTSY
+  OUTSIDE_US
+}
+
+enum ResaleSubmissionRequirement {
+  COURIER_HANDOFF
+  PACKAGING
+  PACKER
+  PRICE_LISTED
+}
+
+enum ResaleSubmissionState {
+  ACCEPTED
+  AUCTION_REVIEW
+  CANCELED
+  LISTED
+  REJECTED
+}
+
 type ResizedImageUrl {
   cachePolicy: String
   factor: Float!
@@ -42308,6 +42549,40 @@ union UpdatePurchaseResponseOrError =
 
 type UpdatePurchaseSuccess {
   purchase: Purchase
+}
+
+type UpdateResaleSubmissionFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateResaleSubmissionInput {
+  clientMutationId: String
+  courierHandoff: ResaleSubmissionCourierHandoff
+
+  """
+  The resale submission's internalID
+  """
+  id: String!
+  packaging: ResaleSubmissionPackaging
+  packer: ResaleSubmissionPacker
+
+  """
+  The collector's asking price, in major units (dollars)
+  """
+  priceListed: MoneyInput
+}
+
+type UpdateResaleSubmissionPayload {
+  clientMutationId: String
+  responseOrError: UpdateResaleSubmissionResponseOrError
+}
+
+union UpdateResaleSubmissionResponseOrError =
+    UpdateResaleSubmissionFailure
+  | UpdateResaleSubmissionSuccess
+
+type UpdateResaleSubmissionSuccess {
+  resaleSubmission: ResaleSubmission
 }
 
 type UpdateSaleAgreementFailure {
