@@ -2613,6 +2613,34 @@ describe("Partner type", () => {
       )
     })
 
+    it("forwards PARTNER_CMS to Gravity as partner_cms", async () => {
+      const partnerSearchArtworksLoader = jest.fn(() =>
+        Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+      )
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            artworksSearchConnection(
+              query: "Sculpture"
+              searchProfile: PARTNER_CMS
+            ) {
+              totalCount
+            }
+          }
+        }
+      `
+
+      await runQuery(query, { ...context, partnerSearchArtworksLoader })
+
+      expect(partnerSearchArtworksLoader).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          term: "Sculpture",
+          search_profile: "partner_cms",
+        })
+      )
+    })
+
     it("doesn't send search_profile when searchProfile is null", async () => {
       const partnerSearchArtworksLoader = jest.fn(() =>
         Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
