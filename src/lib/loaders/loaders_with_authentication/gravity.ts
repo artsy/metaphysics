@@ -2336,5 +2336,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    updatePartnerListPublicationCoverImageLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/cover_image`,
+      {},
+      { method: "POST" }
+    ),
+    deletePartnerListPublicationCoverImageLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/cover_image`,
+      {},
+      { method: "DELETE" }
+    ),
   }
 }

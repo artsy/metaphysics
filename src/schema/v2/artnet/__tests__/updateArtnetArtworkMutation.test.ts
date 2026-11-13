@@ -58,6 +58,102 @@ describe("updateArtnetArtwork mutation", () => {
     })
   })
 
+  it("passes priceFromMinor through as Gravity's price_from_minor", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", priceFromMinor: 500000 }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest
+      .fn()
+      .mockResolvedValue({ id: "artnet-artwork-1" })
+
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      price_from_minor: 500000,
+    })
+  })
+
+  it("passes primaryMedium and additionalMediums through to Gravity", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: {
+            id: "artnet-artwork-1"
+            primaryMedium: "Sculpture"
+            additionalMediums: ["Paintings"]
+          }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                primaryMedium
+                additionalMediums
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      primary_medium: "Sculpture",
+      additional_mediums: ["Paintings"],
+    })
+
+    const data = await runAuthenticatedQuery(query, {
+      updateArtnetArtworkLoader,
+    })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      primary_medium: "Sculpture",
+      additional_mediums: ["Paintings"],
+    })
+    expect(
+      data.updateArtnetArtwork.artnetArtworkOrError.artnetArtwork
+    ).toEqual({ primaryMedium: "Sculpture", additionalMediums: ["Paintings"] })
+  })
+
+  // An empty list removes every additional medium, but qs drops empty arrays
+  // from the request, so it reaches Gravity as null rather than not at all.
+  it("sends an empty additionalMediums to Gravity as null", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", additionalMediums: [] }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const updateArtnetArtworkLoader = jest
+      .fn()
+      .mockResolvedValue({ id: "artnet-artwork-1" })
+
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      additional_mediums: null,
+    })
+  })
+
   it("passes materials, priceToMinor and syncOn through", async () => {
     const query = `
       mutation {

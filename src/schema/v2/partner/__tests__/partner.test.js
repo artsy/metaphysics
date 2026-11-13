@@ -2612,6 +2612,27 @@ describe("Partner type", () => {
         expect.objectContaining({ term: "AB-12", search_profile: "partner" })
       )
     })
+
+    it("doesn't send search_profile when searchProfile is null", async () => {
+      const partnerSearchArtworksLoader = jest.fn(() =>
+        Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+      )
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            artworksSearchConnection(query: "AB-12", searchProfile: null) {
+              totalCount
+            }
+          }
+        }
+      `
+
+      await runQuery(query, { ...context, partnerSearchArtworksLoader })
+
+      expect(partnerSearchArtworksLoader.mock.calls[0][1]).not.toHaveProperty(
+        "search_profile"
+      )
+    })
   })
 
   describe("#href", () => {

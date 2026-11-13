@@ -1,5 +1,6 @@
 import gql from "lib/gql"
 import { runQuery } from "../test/utils"
+import { createArtworkByIDLoader } from "lib/loaders/batchArtworkByIDLoader"
 
 const marketingCollectionsData = [
   {
@@ -70,6 +71,79 @@ describe("MarketingCollections", () => {
     expect(data).toEqual({
       marketingCollection: { ...expected, internalID: payload.id },
     })
+  })
+  it("resolves representativeArtworks through the artwork-by-id loader", async () => {
+    const query = gql`
+      {
+        marketingCollection(slug: "percys-z-collection-1") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    const load = jest.fn((id: string) => Promise.resolve({ _id: id }))
+    const context = {
+      marketingCollectionLoader: () =>
+        Promise.resolve({
+          ...marketingCollectionsData[0],
+          representative_artwork_ids: ["art-1", "art-2"],
+        }),
+      artworkByIDLoader: { load },
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data.marketingCollection.representativeArtworks).toEqual([
+      { internalID: "art-1" },
+      { internalID: "art-2" },
+    ])
+    expect(load).toHaveBeenCalledTimes(2)
+  })
+  it("coalesces representativeArtworks across a list into one upstream call", async () => {
+    const query = gql`
+      {
+        marketingCollections {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    // The real coalescing loader wrapped around a stubbed /artworks endpoint,
+    // so a whole page of collections must produce a single upstream call.
+    const artworksLoader = jest.fn(({ ids }) =>
+      Promise.resolve(ids.map((_id: string) => ({ _id })))
+    )
+    const context = {
+      marketingCollectionsLoader: () =>
+        Promise.resolve({
+          body: [
+            {
+              ...marketingCollectionsData[0],
+              representative_artwork_ids: ["a1", "a2"],
+            },
+            {
+              ...marketingCollectionsData[1],
+              representative_artwork_ids: ["a3", "a4"],
+            },
+          ],
+        }),
+      artworkByIDLoader: createArtworkByIDLoader(artworksLoader),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data.marketingCollections).toEqual([
+      { representativeArtworks: [{ internalID: "a1" }, { internalID: "a2" }] },
+      { representativeArtworks: [{ internalID: "a3" }, { internalID: "a4" }] },
+    ])
+    expect(artworksLoader).toHaveBeenCalledTimes(1)
+    expect(artworksLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ ids: ["a1", "a2", "a3", "a4"] })
+    )
   })
   it("return marketing collection artworks by partnerID", async () => {
     const query = gql`

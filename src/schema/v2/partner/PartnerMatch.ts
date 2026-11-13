@@ -86,7 +86,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
       size,
       offset,
       total_count: true,
-      search_profile: searchProfile,
+      ...(searchProfile ? { search_profile: searchProfile } : {}),
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
