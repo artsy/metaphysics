@@ -13,6 +13,10 @@ import {
   ArtnetEditionSetGravityResponse,
   ArtnetEditionSetType,
 } from "./artnetEditionSet"
+import {
+  ArtnetArtworkImageGravityResponse,
+  ArtnetArtworkImageType,
+} from "./artnetArtworkImage"
 
 export interface ArtnetArtworkGravityResponse {
   id: string
@@ -31,6 +35,8 @@ export interface ArtnetArtworkGravityResponse {
   delete_in_flight?: boolean
   last_delete_messages?: string[]
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
+  artnet_artwork_images: ArtnetArtworkImageGravityResponse[]
+  separate_image_sets: boolean
   created_at: string
   updated_at: string
 }
@@ -111,6 +117,18 @@ export const ArtnetArtworkType = new GraphQLObjectType<
     artnetEditionSets: {
       type: new GraphQLList(ArtnetEditionSetType),
       resolve: ({ artnet_edition_sets }) => artnet_edition_sets ?? [],
+    },
+    images: {
+      type: new GraphQLList(ArtnetArtworkImageType),
+      description:
+        "The images Artnet holds for this artwork, and those sent to it.",
+      resolve: ({ artnet_artwork_images }) => artnet_artwork_images ?? [],
+    },
+    hasSeparateImageSets: {
+      type: GraphQLBoolean,
+      description:
+        "Artnet holds images the Artsy artwork does not. `syncImages` then does nothing, and Artnet's images change only through `addImageIDs`, `removeImageIDs` and `uploadImageS3Locations` on `updateArtnetArtwork`.",
+      resolve: ({ separate_image_sets }) => !!separate_image_sets,
     },
     createdAt: date(),
     updatedAt: date(),
