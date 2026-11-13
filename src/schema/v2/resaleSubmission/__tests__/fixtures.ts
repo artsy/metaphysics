@@ -6,3 +6,4 @@ export const AUCTION_ARTWORK_ID = "5f00000000000000000000b0"
 export const REJECTED_ARTWORK_ID = "5f00000000000000000000a1"
 
 export const stubLoaders = () => createResaleSubmissionStubLoaders("user-42")
+export const meLoader = jest.fn(() => Promise.resolve({ id: "user-42" }))
