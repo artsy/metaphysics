@@ -31519,7 +31519,7 @@ type PartnerListPublication {
   artworksCount: Int!
 
   """
-  Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.
+  Cover image for the room's hero banner (viewing rooms rebuild), as currently uploaded. Visitors see the one from the last publish, via PrivateViewingRoom.coverImageURL.
   """
   coverImage: Image
   createdAt(
@@ -32594,6 +32594,11 @@ type PrivateViewingRoom {
   applyBrand: Boolean
   artworks: [PrivateViewingRoomArtwork!]
   brandKit: BrandKit
+
+  """
+  URL of the room's cover image as of the last publish (viewing rooms rebuild), for the hero banner. Omitted without a cover, and for a gated room until authenticated.
+  """
+  coverImageURL: String
   description: String
 
   """
@@ -32656,6 +32661,11 @@ type PrivateViewingRoomContents {
   applyBrand: Boolean
   artworks: [PrivateViewingRoomArtwork!]
   brandKit: BrandKit
+
+  """
+  URL of the room's cover image as of the last publish (viewing rooms rebuild), for the hero banner. Omitted without a cover, and for a gated room until authenticated.
+  """
+  coverImageURL: String
   description: String
 
   """
