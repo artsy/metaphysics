@@ -1,7 +1,6 @@
 import { HTTPError } from "lib/HTTPError"
 
-// Stand-ins for Gravity's ResaleSubmission endpoints, which don't exist yet.
-// They keep no state: each record is rebuilt from the artwork ID it was made for.
+// The stubs keep no state: each record is rebuilt from the artwork ID it was made for.
 
 export type ResaleSubmissionChannel = "marketplace" | "auction"
 
@@ -120,4 +119,16 @@ const findResaleSubmission = (id: string, userID: string) => {
 export const createResaleSubmissionStubLoaders = (userID: string) => ({
   // TODO: gravityLoader((id) => `me/resale_submission/${id}`)
   resaleSubmissionLoader: (id: string) => findResaleSubmission(id, userID),
+
+  // TODO: gravityLoader("me/resale_submissions", {}, { headers: true })
+  resaleSubmissionsLoader: (_options: {
+    page: number
+    size: number
+    offset: number
+    total_count: boolean
+  }) =>
+    Promise.resolve({
+      body: [] as ResaleSubmissionRecord[],
+      headers: { "x-total-count": "0" },
+    }),
 })
