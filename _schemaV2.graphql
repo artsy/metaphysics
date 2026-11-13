@@ -15169,6 +15169,48 @@ type CreatePurchaseSuccess {
   purchase: Purchase
 }
 
+type CreateResaleSubmissionsFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateResaleSubmissionsInput {
+  """
+  My Collection artwork internalIDs (not slugs), at most 10
+  """
+  artworkIDs: [String!]!
+  clientMutationId: String
+}
+
+type CreateResaleSubmissionsPayload {
+  clientMutationId: String
+  resaleSubmissionsOrError: CreateResaleSubmissionsResponseOrError
+}
+
+union CreateResaleSubmissionsResponseOrError =
+    CreateResaleSubmissionsFailure
+  | CreateResaleSubmissionsSuccess
+
+type CreateResaleSubmissionsResult {
+  artworkID: String!
+
+  """
+  Null when this work succeeded
+  """
+  error: GravityMutationError
+
+  """
+  Null when this work failed
+  """
+  resaleSubmission: ResaleSubmission
+}
+
+type CreateResaleSubmissionsSuccess {
+  """
+  One result per distinct artwork, in the order they were first sent
+  """
+  results: [CreateResaleSubmissionsResult!]!
+}
+
 type CreateSaleAgreementFailure {
   mutationError: GravityMutationError
 }
@@ -26542,6 +26584,13 @@ type Mutation {
   Create a purchase
   """
   createPurchase(input: createPurchaseInput!): createPurchasePayload
+
+  """
+  Ask Artsy to assess My Collection works for resale. A work that already has an active submission comes back with an error. A rejected assessment is a success; one work failing doesn't fail the others.
+  """
+  createResaleSubmissions(
+    input: CreateResaleSubmissionsInput!
+  ): CreateResaleSubmissionsPayload
 
   """
   Creates a static Markdown-backed sale agreement.
