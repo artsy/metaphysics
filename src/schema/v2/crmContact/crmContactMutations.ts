@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
@@ -61,6 +62,13 @@ const contactFields = {
       "Replaces the whole list on update. Unknown values are rejected.",
   },
   notes: { type: GraphQLString },
+  budgetMin: { type: GraphQLFloat },
+  budgetMax: { type: GraphQLFloat },
+  budgetCurrency: {
+    type: GraphQLString,
+    description:
+      "ISO 4217 code, e.g. USD. Required when a budget bound is set.",
+  },
   assignedToUserID: {
     type: GraphQLString,
     description: "Must be a user who belongs to the contact's partner",
@@ -74,6 +82,9 @@ const toGravityContactParams = (input: any) => ({
   phone: input.phone,
   categories: input.categories,
   notes: input.notes,
+  budget_min: input.budgetMin,
+  budget_max: input.budgetMax,
+  budget_currency: input.budgetCurrency,
   assigned_to_user_id: input.assignedToUserID,
 })
 

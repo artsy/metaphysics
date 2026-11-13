@@ -6,6 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLFloat,
   GraphQLString,
 } from "graphql"
 import { omitBy, isNil } from "lodash"
@@ -96,6 +97,21 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
         "Any of collector, artist, enthusiast, advisor, critic, curator, journalist, gallery, institution, museum, buyer, government",
     },
     notes: { type: GraphQLString },
+    budgetMin: {
+      type: GraphQLFloat,
+      description: "Lower end of the contact's budget, in `budgetCurrency`",
+      resolve: ({ budget_min }) => (isNil(budget_min) ? null : +budget_min),
+    },
+    budgetMax: {
+      type: GraphQLFloat,
+      description: "Upper end of the contact's budget, in `budgetCurrency`",
+      resolve: ({ budget_max }) => (isNil(budget_max) ? null : +budget_max),
+    },
+    budgetCurrency: {
+      type: GraphQLString,
+      description: "ISO 4217 currency code of the budget, e.g. USD",
+      resolve: ({ budget_currency }) => budget_currency,
+    },
     // Gravity embeds these in every contact response, so they cost no extra
     // loader calls on a list. Use the dedicated connections to page them.
     emails: {

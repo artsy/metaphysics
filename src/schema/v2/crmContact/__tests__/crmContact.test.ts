@@ -16,6 +16,9 @@ const gravityContact = {
   archived_at: null,
   categories: ["collector", "buyer"],
   notes: null,
+  budget_min: "1000.0",
+  budget_max: "5000.5",
+  budget_currency: "USD",
   emails: [
     {
       id: "email-1",
@@ -49,6 +52,9 @@ describe("crmContact", () => {
         normalizedPhone
         status
         categories
+        budgetMin
+        budgetMax
+        budgetCurrency
         emails {
           address
           isPrimary
@@ -84,6 +90,9 @@ describe("crmContact", () => {
         normalizedPhone: "+442079460958",
         status: "ACTIVE",
         categories: ["collector", "buyer"],
+        budgetMin: 1000,
+        budgetMax: 5000.5,
+        budgetCurrency: "USD",
         emails: [{ address: "ada@example.com", isPrimary: true }],
         locations: [{ countryCode: "GB", cityName: "London", isPrimary: true }],
       },
