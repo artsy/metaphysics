@@ -32,6 +32,13 @@ export interface ResaleSubmissionRecord {
   _submitted_artwork?: any
 }
 
+export type ResaleSubmissionUpdate = Partial<
+  Pick<
+    ResaleSubmissionRecord,
+    "price_listed_minor" | "packaging" | "packer" | "courier_handoff"
+  >
+>
+
 const STUB_ID_PREFIX = "stub-"
 const STUB_TIMESTAMP = "2026-11-01T00:00:00.000Z"
 const MARKETPLACE_PRICE_RANGE_MINOR = { min: 280000, max: 360000 }
@@ -126,6 +133,16 @@ export const createResaleSubmissionStubLoaders = (userID: string) => ({
   }: {
     submitted_artwork_id: string
   }) => Promise.resolve(buildResaleSubmission(submitted_artwork_id, userID)),
+
+  // TODO: gravityLoader((id) => `me/resale_submission/${id}`, {}, { method: "PUT" })
+  updateResaleSubmissionLoader: async (
+    id: string,
+    update: ResaleSubmissionUpdate
+  ) =>
+    withRequirements({
+      ...(await findResaleSubmission(id, userID)),
+      ...update,
+    }),
 
   // TODO: gravityLoader("me/resale_submissions", {}, { headers: true })
   resaleSubmissionsLoader: (_options: {
