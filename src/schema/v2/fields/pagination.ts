@@ -190,15 +190,7 @@ export function connectionWithCursorInfo(
 /**
  * Everything you need to create a complete & usuable paginated connection
  */
-export const paginationResolver = <T>({
-  totalCount,
-  offset,
-  page,
-  size,
-  body,
-  args,
-  resolveNode,
-}: {
+interface PaginationParams<T> {
   /** Args object containing either `page/size` or `first/after` */
   args: ConnectionArguments
   /** Returned from loader */
@@ -209,23 +201,62 @@ export const paginationResolver = <T>({
   page: number
   /** Returned from `convertConnectionArgsToGravityArgs`; "per" */
   size: number
-  /** Returned from the 'X-TOTAL-COUNT' header */
-  totalCount: number
   /** Optional callback. Allows resolution of custom node structure. */
   resolveNode?: GraphQLFieldResolver<any, any> | null
-}) => {
-  const connectionArgs = {
+}
+
+function buildConnectionArgs(size: number, args: ConnectionArguments) {
+  return {
     // If we're exclusively using page/size pagination, `hasNextPage` will
     // always be `false` unless we include `first` as `size` for creating the connection.
     first: size,
     ...pick(args, "before", "after", "first", "last"),
   }
+}
+
+export const paginationResolver = <T>(
+  params: PaginationParams<T> & {
+    /** Returned from the 'X-TOTAL-COUNT' header */
+    totalCount: number
+  }
+) => {
+  const { totalCount, offset, page, size, body, args, resolveNode } = params
 
   return {
     totalCount,
     pageCursors: createPageCursors({ page, size }, totalCount),
-    ...connectionFromArraySlice(body, connectionArgs, {
+    ...connectionFromArraySlice(body, buildConnectionArgs(size, args), {
       arrayLength: totalCount,
+      sliceStart: offset,
+      resolveNode,
+    }),
+  }
+}
+
+export const paginationResolverLazy = <T>(
+  params: PaginationParams<T> & {
+    /** When provided, behaves like paginationResolver. When omitted, hasNextPage is inferred from result size. */
+    totalCount?: number
+  }
+) => {
+  const { totalCount, offset, page, size, body, args, resolveNode } = params
+
+  const hasMore = body.length === size
+  const arrayLength =
+    totalCount ?? (hasMore ? offset + size + 1 : offset + body.length)
+
+  return {
+    totalCount: totalCount ?? null,
+    pageCursors:
+      totalCount != null
+        ? createPageCursors({ page, size }, totalCount)
+        : {
+            around: [
+              { cursor: pageToCursor(page, size), page, isCurrent: true },
+            ],
+          },
+    ...connectionFromArraySlice(body, buildConnectionArgs(size, args), {
+      arrayLength,
       sliceStart: offset,
       resolveNode,
     }),
