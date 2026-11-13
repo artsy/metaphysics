@@ -17,16 +17,27 @@ const query = (id: string) => gql`
         state
         channel
         rejectionReasons
+        recommendedPriceMin {
+          minor
+          currencyCode
+          display
+        }
+        recommendedPriceMax {
+          minor
+        }
+        priceListed {
+          minor
+        }
         createdAt
       }
     }
   }
 `
 
-const resaleSubmission = async (id: string) => {
+const resaleSubmission = async (id: string, loaders = stubLoaders()) => {
   const { me } = await runAuthenticatedQuery(query(id), {
     meLoader,
-    ...stubLoaders(),
+    ...loaders,
   } as any)
   return me.resaleSubmission
 }
@@ -41,6 +52,13 @@ describe("me.resaleSubmission", () => {
       state: "ACCEPTED",
       channel: "MARKETPLACE",
       rejectionReasons: [],
+      recommendedPriceMin: {
+        minor: 280000,
+        currencyCode: "USD",
+        display: "US$2,800",
+      },
+      recommendedPriceMax: { minor: 360000 },
+      priceListed: null,
       createdAt: expect.any(String),
     })
     expect(submission.id).not.toEqual(submission.internalID)
@@ -49,7 +67,12 @@ describe("me.resaleSubmission", () => {
   it("resolves an auction submission", async () => {
     const submission = await resaleSubmission(`stub-${AUCTION_ARTWORK_ID}`)
 
-    expect(submission).toMatchObject({ state: "ACCEPTED", channel: "AUCTION" })
+    expect(submission).toMatchObject({
+      state: "ACCEPTED",
+      channel: "AUCTION",
+      recommendedPriceMin: null,
+      recommendedPriceMax: null,
+    })
   })
 
   it("resolves a rejected submission with its reasons", async () => {
@@ -60,6 +83,23 @@ describe("me.resaleSubmission", () => {
       channel: null,
       rejectionReasons: ["OUTSIDE_US"],
     })
+  })
+
+  it("returns a saved price of 0", async () => {
+    const resaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        id: "gravity-id",
+        state: "accepted",
+        price_currency_code: "USD",
+        price_listed_minor: 0,
+      })
+    )
+
+    const submission = await resaleSubmission("gravity-id", {
+      resaleSubmissionLoader,
+    } as any)
+
+    expect(submission.priceListed).toEqual({ minor: 0 })
   })
 
   it("falls back to artworkLoader for the submitted artwork", async () => {

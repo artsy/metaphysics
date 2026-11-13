@@ -36275,6 +36275,13 @@ type ResaleSubmission {
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
+
+  """
+  The collector's asking price
+  """
+  priceListed: Money
+  recommendedPriceMax: Money
+  recommendedPriceMin: Money
   rejectionReasons: [ResaleSubmissionRejectionReason!]!
   state: ResaleSubmissionState!
   submittedArtwork: Artwork
