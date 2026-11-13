@@ -276,6 +276,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deleteArtnetArtworkLoader: gravityLoader(
+      (id) => `artnet_artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     updateArtnetEditionSetLoader: gravityLoader(
       (id) => `artnet_edition_set/${id}`,
       {},
