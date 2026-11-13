@@ -36257,6 +36257,7 @@ type ResaleSubmission {
   The recommended sales channel. Null when rejected.
   """
   channel: ResaleSubmissionChannel
+  courierHandoff: ResaleSubmissionCourierHandoff
   createdAt(
     format: String
 
@@ -36275,6 +36276,8 @@ type ResaleSubmission {
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
+  packaging: ResaleSubmissionPackaging
+  packer: ResaleSubmissionPacker
 
   """
   The collector's asking price
@@ -36298,6 +36301,24 @@ type ResaleSubmission {
 enum ResaleSubmissionChannel {
   AUCTION
   MARKETPLACE
+}
+
+enum ResaleSubmissionCourierHandoff {
+  COURIER_PICKUP
+  NO_PREFERENCE
+  SELLER_DROPOFF
+}
+
+enum ResaleSubmissionPackaging {
+  FRAMED
+  NO_PREFERENCE
+  ROLLED
+}
+
+enum ResaleSubmissionPacker {
+  COURIER
+  NO_PREFERENCE
+  SELLER
 }
 
 enum ResaleSubmissionRejectionReason {
