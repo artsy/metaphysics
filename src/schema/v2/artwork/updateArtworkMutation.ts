@@ -272,8 +272,7 @@ const inputFields = {
   },
 }
 
-// TODO: Extract this and use it in other mutations that require S3 locations
-const S3LocationInputType = new GraphQLInputObjectType({
+export const S3LocationInputType = new GraphQLInputObjectType({
   name: "S3LocationInput",
   fields: {
     bucket: {

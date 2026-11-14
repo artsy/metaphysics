@@ -17,6 +17,7 @@ import { ResolverContext } from "types/graphql"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { ArtnetArtworkType } from "./artnetArtwork"
 import { ArtnetPushSkippedField } from "./artnetPushSkip"
+import { S3LocationInputType } from "../artwork/updateArtworkMutation"
 
 interface UpdateArtnetArtworkMutationInputProps {
   id: string
@@ -28,6 +29,11 @@ interface UpdateArtnetArtworkMutationInputProps {
   priceFromMinor?: number
   priceToMinor?: number | null
   syncOn?: boolean
+  syncImages?: boolean
+  addImageIDs?: string[]
+  removeImageIDs?: string[]
+  uploadImageS3Locations?: { bucket: string; key: string }[]
+  copyImageIDs?: string[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -65,7 +71,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceFromMinor`, `priceToMinor` or `syncOn` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceFromMinor`, `priceToMinor`, `syncOn`, `syncImages`, `addImageIDs`, `removeImageIDs`, `uploadImageS3Locations` or `copyImageIDs` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -110,6 +116,31 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         "Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Set when the edit came from an inventory row rather than the Artnet row.",
     },
+    syncImages: {
+      type: GraphQLBoolean,
+      description:
+        "Add the Artsy artwork's new images to Artnet and remove its deleted ones. Send after an image save. Does nothing when `hasSeparateImageSets` is true, and is ignored when images are named in the same request.",
+    },
+    addImageIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "IDs of the Artsy artwork's images to send to Artnet. An image Artnet already holds is ignored; one it did not add before is tried again.",
+    },
+    removeImageIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "IDs of `ArtnetArtworkImage`s to remove from Artnet. Artnet keeps at least one image on an artwork. When `hasSeparateImageSets` is false, an image still on the Artsy artwork cannot be removed this way: delete it from the artwork and send `syncImages`.",
+    },
+    uploadImageS3Locations: {
+      type: new GraphQLList(new GraphQLNonNull(S3LocationInputType)),
+      description:
+        "Image files already uploaded to S3, to add to Artnet without adding them to the Artsy artwork.",
+    },
+    copyImageIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "IDs of `ArtnetArtworkImage`s to copy onto the Artsy artwork. Nothing is sent to Artnet. Once the artwork has every image Artnet holds, `hasSeparateImageSets` turns false and `syncImages` applies to it.",
+    },
   },
   outputFields: {
     artnetArtworkOrError: {
@@ -130,6 +161,11 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       priceFromMinor,
       priceToMinor,
       syncOn,
+      syncImages,
+      addImageIDs,
+      removeImageIDs,
+      uploadImageS3Locations,
+      copyImageIDs,
     },
     { updateArtnetArtworkLoader }
   ) => {
@@ -152,6 +188,11 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             priceFromMinor,
             priceToMinor,
             syncOn,
+            syncImages,
+            addImageIds: addImageIDs,
+            removeImageIds: removeImageIDs,
+            uploadLocations: uploadImageS3Locations,
+            copyImageIds: copyImageIDs,
           },
           isUndefined
         )
