@@ -410,6 +410,7 @@ describe("updateArtnetArtwork mutation", () => {
               addImageIDs: ["artsy-image-1"]
               removeImageIDs: ["image-3"]
               uploadImageS3Locations: [{ bucket: "uploads", key: "a/b.jpg" }]
+              copyImageIDs: ["image-4"]
             }
           ) {
             artnetArtworkOrError {
@@ -436,6 +437,7 @@ describe("updateArtnetArtwork mutation", () => {
       add_image_ids: ["artsy-image-1"],
       remove_image_ids: ["image-3"],
       upload_locations: [{ bucket: "uploads", key: "a/b.jpg" }],
+      copy_image_ids: ["image-4"],
     })
     expect(data.updateArtnetArtwork.artnetArtworkOrError.artnetArtwork).toEqual(
       {
