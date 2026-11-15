@@ -8666,6 +8666,36 @@ type CalendarYearPriceInsights {
   medium: String!
 }
 
+type CancelResaleSubmissionFailure {
+  mutationError: GravityMutationError
+}
+
+input CancelResaleSubmissionInput {
+  clientMutationId: String
+
+  """
+  The internal ID of the resale submission to cancel.
+  """
+  id: String!
+}
+
+type CancelResaleSubmissionPayload {
+  clientMutationId: String
+
+  """
+  On success: the canceled resale submission.
+  """
+  resaleSubmissionOrError: CancelResaleSubmissionResponseOrError
+}
+
+union CancelResaleSubmissionResponseOrError =
+    CancelResaleSubmissionFailure
+  | CancelResaleSubmissionSuccess
+
+type CancelResaleSubmissionSuccess {
+  resaleSubmission: ResaleSubmission
+}
+
 type Card {
   """
   The display brand of the card (e.g., Visa, Mastercard).
@@ -25923,6 +25953,13 @@ type Mutation {
   bulkUpdateArtworksMetadata(
     input: BulkUpdateArtworksMetadataMutationInput!
   ): BulkUpdateArtworksMetadataMutationPayload
+
+  """
+  Cancel an accepted resale submission. The submission is kept, with state CANCELED.
+  """
+  cancelResaleSubmission(
+    input: CancelResaleSubmissionInput!
+  ): CancelResaleSubmissionPayload
 
   """
   Creates a pending offer on an pending order.

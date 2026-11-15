@@ -1017,6 +1017,11 @@ export default (accessToken, userID, opts) => {
     ),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meCancelResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}/cancel`,
+      {},
+      { method: "POST" }
+    ),
     meCityShowsLoader: gravityLoader("me/city_shows", {}, { headers: true }),
     meUpdateCollectionsLoader: gravityLoader(
       "me/collections",
