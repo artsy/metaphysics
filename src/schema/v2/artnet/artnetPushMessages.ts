@@ -29,7 +29,7 @@ export const ArtnetPushMessagesType = new GraphQLObjectType<
       type: GraphQLBoolean,
       description:
         "True when Gravity stopped asking how the push turned out, so the outcome is unknown rather than bad. False when Artnet itself reported these messages.",
-      resolve: ({ gave_up }) => gave_up,
+      resolve: ({ gave_up }) => gave_up ?? false,
     },
   },
 })

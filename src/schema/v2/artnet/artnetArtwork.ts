@@ -41,7 +41,7 @@ export interface ArtnetArtworkGravityResponse {
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
   artnet_artwork_images: ArtnetArtworkImageGravityResponse[]
   separate_image_sets: boolean
-  push_messages: ArtnetPushMessagesGravityResponse | null
+  push_messages?: ArtnetPushMessagesGravityResponse | null
   created_at: string
   updated_at: string
 }
@@ -139,7 +139,7 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       type: ArtnetPushMessagesType,
       description:
         "What the last push of this artwork to Artnet had to say, if anything. Null once a later push settles cleanly — a working push is what clears these, nothing acknowledges them.",
-      resolve: ({ push_messages }) => push_messages,
+      resolve: ({ push_messages }) => push_messages ?? null,
     },
     createdAt: date(),
     updatedAt: date(),

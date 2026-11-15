@@ -437,6 +437,13 @@ describe("CatalogArtwork.artnetArtwork.pushMessages", () => {
     })
   })
 
+  it("reads an absent message list as empty", async () => {
+    expect(await pushMessages({ messages: null, gave_up: null })).toEqual({
+      messages: [],
+      gaveUp: false,
+    })
+  })
+
   // gaveUp is the difference between a bad outcome and no outcome.
   it("reports that the outcome is unknown when Gravity stopped asking", async () => {
     const result = await pushMessages({
