@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { ArtworkType } from "../../artwork"
 import { date } from "../../fields/date"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { InternalIDFields } from "../../object_identification"
@@ -145,6 +146,24 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
       },
       state: {
         type: new GraphQLNonNull(ResaleSubmissionStateEnum),
+      },
+      submittedArtwork: {
+        type: ArtworkType,
+        description: "The My Collection artwork being resold.",
+        resolve: async (
+          { submitted_artwork_id },
+          _args,
+          { meMyCollectionArtworksLoader }
+        ) => {
+          if (!meMyCollectionArtworksLoader) return null
+
+          const { body } = await meMyCollectionArtworksLoader({
+            artworks: [submitted_artwork_id],
+            size: 1,
+          })
+
+          return body[0] ?? null
+        },
       },
       submittedArtworkID: {
         type: new GraphQLNonNull(GraphQLString),

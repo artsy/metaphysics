@@ -36309,6 +36309,11 @@ type ResaleSubmission {
   state: ResaleSubmissionState!
 
   """
+  The My Collection artwork being resold.
+  """
+  submittedArtwork: Artwork
+
+  """
   ID of the My Collection artwork being resold.
   """
   submittedArtworkID: String!

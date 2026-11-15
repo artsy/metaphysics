@@ -231,4 +231,64 @@ describe("me.resaleSubmission", () => {
 
     expect(response.me).toBeNull()
   })
+
+  describe("submittedArtwork", () => {
+    const artworkQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            submittedArtworkID
+            submittedArtwork {
+              internalID
+              title
+            }
+          }
+        }
+      }
+    `
+
+    beforeEach(() => {
+      context.meMyCollectionArtworksLoader = jest.fn(() =>
+        Promise.resolve({
+          body: [{ _id: "artwork-1", id: "an-artwork", title: "Untitled" }],
+          headers: {},
+        })
+      )
+    })
+
+    it("returns the submitted artwork from My Collection", async () => {
+      const response = await runAuthenticatedQuery(artworkQuery, context)
+
+      expect(
+        context.meMyCollectionArtworksLoader as jest.Mock
+      ).toHaveBeenCalledWith({ artworks: ["artwork-1"], size: 1 })
+      expect(response.me.resaleSubmission).toEqual({
+        submittedArtworkID: "artwork-1",
+        submittedArtwork: { internalID: "artwork-1", title: "Untitled" },
+      })
+    })
+
+    it("returns null when the artwork is no longer in My Collection", async () => {
+      context.meMyCollectionArtworksLoader = jest.fn(() =>
+        Promise.resolve({ body: [], headers: {} })
+      )
+
+      const response = await runAuthenticatedQuery(artworkQuery, context)
+
+      expect(response.me.resaleSubmission.submittedArtworkID).toEqual(
+        "artwork-1"
+      )
+      expect(response.me.resaleSubmission.submittedArtwork).toBeNull()
+    })
+
+    it("surfaces artwork loading errors", async () => {
+      context.meMyCollectionArtworksLoader = jest.fn(() =>
+        Promise.reject(new HTTPError("Server Error", 500))
+      )
+
+      await expect(
+        runAuthenticatedQuery(artworkQuery, context)
+      ).rejects.toThrow()
+    })
+  })
 })
