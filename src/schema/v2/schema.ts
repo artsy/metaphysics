@@ -238,6 +238,9 @@ import { recordGuidedTourEventMutation } from "./me/guidedTour/recordGuidedTourE
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
+import { cancelResaleSubmissionMutation } from "./me/resaleSubmission/cancelResaleSubmissionMutation"
+import { createResaleSubmissionsMutation } from "./me/resaleSubmission/createResaleSubmissionsMutation"
+import { updateResaleSubmissionMutation } from "./me/resaleSubmission/updateResaleSubmissionMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
@@ -753,6 +756,7 @@ export default new GraphQLSchema({
       bulkDeleteArtworks: bulkDeleteArtworksMutation,
       bulkDeleteArtworksFromPartnerList: bulkDeleteArtworksFromPartnerListMutation,
       bulkUpdateArtworksMetadata: bulkUpdateArtworksMetadataMutation,
+      cancelResaleSubmission: cancelResaleSubmissionMutation,
       confirmPassword: confirmPasswordMutation,
       copyItinerary: copyItineraryMutation,
       createImage: createImageMutation,
@@ -852,6 +856,7 @@ export default new GraphQLSchema({
       deletePartnerListPublicationCoverImage: deletePartnerListPublicationCoverImageMutation,
       authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
+      createResaleSubmissions: createResaleSubmissionsMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
       createShippingPreset: createShippingPresetMutation,
@@ -1036,6 +1041,7 @@ export default new GraphQLSchema({
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,
       updatePartnerShow: updatePartnerShowMutation,
       updateQuiz: updateQuizMutation,
+      updateResaleSubmission: updateResaleSubmissionMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateShippingPreset: updateShippingPresetMutation,
