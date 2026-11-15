@@ -239,6 +239,7 @@ import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMut
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
 import { createResaleSubmissionsMutation } from "./me/resaleSubmission/createResaleSubmissionsMutation"
+import { updateResaleSubmissionMutation } from "./me/resaleSubmission/updateResaleSubmissionMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
@@ -1038,6 +1039,7 @@ export default new GraphQLSchema({
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,
       updatePartnerShow: updatePartnerShowMutation,
       updateQuiz: updateQuizMutation,
+      updateResaleSubmission: updateResaleSubmissionMutation,
       updateSaleAgreement: UpdateSaleAgreementMutation,
       updateSmsSecondFactor: updateSmsSecondFactorMutation,
       updateShippingPreset: updateShippingPresetMutation,

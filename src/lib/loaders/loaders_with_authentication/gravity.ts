@@ -1093,6 +1093,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    meUpdateResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     meUserInterestLoader: gravityLoader((id) => `me/user_interest/${id}`),
     meUserInterestsLoader: gravityLoader(
       "me/user_interests",

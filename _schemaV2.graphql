@@ -27903,6 +27903,13 @@ type Mutation {
   updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
 
   """
+  Update the asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.
+  """
+  updateResaleSubmission(
+    input: UpdateResaleSubmissionInput!
+  ): UpdateResaleSubmissionPayload
+
+  """
   Updates a saleAgreement.
   """
   updateSaleAgreement(
@@ -42540,6 +42547,56 @@ union UpdatePurchaseResponseOrError =
 
 type UpdatePurchaseSuccess {
   purchase: Purchase
+}
+
+type UpdateResaleSubmissionFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateResaleSubmissionInput {
+  clientMutationId: String
+
+  """
+  How the work will get to its buyer.
+  """
+  courierHandoff: ResaleSubmissionCourierHandoff
+
+  """
+  The internal ID of the resale submission to update.
+  """
+  id: String!
+
+  """
+  How the work will be packed.
+  """
+  packaging: ResaleSubmissionPackaging
+
+  """
+  Who will pack the work.
+  """
+  packer: ResaleSubmissionPacker
+
+  """
+  The asking price in US dollars, as a plain number like “2500” or “2500.50”, without a currency symbol or separators.
+  """
+  priceListed: String
+}
+
+type UpdateResaleSubmissionPayload {
+  clientMutationId: String
+
+  """
+  On success: the updated resale submission.
+  """
+  resaleSubmissionOrError: UpdateResaleSubmissionResponseOrError
+}
+
+union UpdateResaleSubmissionResponseOrError =
+    UpdateResaleSubmissionFailure
+  | UpdateResaleSubmissionSuccess
+
+type UpdateResaleSubmissionSuccess {
+  resaleSubmission: ResaleSubmission
 }
 
 type UpdateSaleAgreementFailure {
