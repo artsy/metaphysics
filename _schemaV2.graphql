@@ -35175,6 +35175,11 @@ type Query {
   requestLocation(ip: String): RequestLocation
 
   """
+  The shipping questions to ask when preparing a resale submission, with the answers each accepts, in the order they are asked.
+  """
+  resaleShippingPreferenceOptions: [ResaleShippingPreferenceQuestion!]!
+
+  """
   A Sale
   """
   sale(
@@ -36332,6 +36337,31 @@ type RequestPriceEstimatedMutationFailure {
 
 type RequestPriceEstimatedMutationSuccess {
   submittedPriceEstimateParams: SubmittedPriceEstimateParams
+}
+
+"""
+The updateResaleSubmission input a question answers.
+"""
+enum ResaleShippingPreferenceField {
+  COURIER_HANDOFF
+  PACKAGING
+  PACKER
+}
+
+type ResaleShippingPreferenceOption {
+  description: String
+
+  """
+  The enum value to send for this answer, e.g. FRAMED for packaging.
+  """
+  key: String!
+  label: String!
+}
+
+type ResaleShippingPreferenceQuestion {
+  field: ResaleShippingPreferenceField!
+  options: [ResaleShippingPreferenceOption!]!
+  prompt: String!
 }
 
 """
@@ -45922,6 +45952,11 @@ type Viewer {
   A requested location
   """
   requestLocation(ip: String): RequestLocation
+
+  """
+  The shipping questions to ask when preparing a resale submission, with the answers each accepts, in the order they are asked.
+  """
+  resaleShippingPreferenceOptions: [ResaleShippingPreferenceQuestion!]!
 
   """
   A Sale

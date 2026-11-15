@@ -240,6 +240,7 @@ import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
 import { cancelResaleSubmissionMutation } from "./me/resaleSubmission/cancelResaleSubmissionMutation"
 import { createResaleSubmissionsMutation } from "./me/resaleSubmission/createResaleSubmissionsMutation"
+import { ResaleShippingPreferenceOptions } from "./me/resaleSubmission/resaleShippingPreferenceOptions"
 import { updateResaleSubmissionMutation } from "./me/resaleSubmission/updateResaleSubmissionMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
@@ -687,6 +688,7 @@ const rootFields = {
   purchasesConnection: PurchasesConnection,
   recentlySoldArtworks: RecentlySoldArtworks,
   requestLocation: RequestLocationField,
+  resaleShippingPreferenceOptions: ResaleShippingPreferenceOptions,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,
