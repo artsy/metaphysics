@@ -1025,6 +1025,11 @@ export default (accessToken, userID, opts) => {
     ),
     meCollectorProfileLoader: gravityLoader("me/collector_profile"),
     meCreateAlertLoader: gravityLoader("me/alert", {}, { method: "POST" }),
+    meCreateResaleSubmissionLoader: gravityLoader(
+      "me/resale_submission",
+      {},
+      { method: "POST" }
+    ),
     meCreateUserInterestLoader: gravityLoader(
       "me/user_interest",
       {},

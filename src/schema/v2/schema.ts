@@ -238,6 +238,7 @@ import { recordGuidedTourEventMutation } from "./me/guidedTour/recordGuidedTourE
 import { markNotificationsAsSeenMutation } from "./me/markNotificationsAsSeenMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
+import { createResaleSubmissionsMutation } from "./me/resaleSubmission/createResaleSubmissionsMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
@@ -852,6 +853,7 @@ export default new GraphQLSchema({
       deletePartnerListPublicationCoverImage: deletePartnerListPublicationCoverImageMutation,
       authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
+      createResaleSubmissions: createResaleSubmissionsMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
       createSmsSecondFactor: createSmsSecondFactorMutation,
       createShippingPreset: createShippingPresetMutation,

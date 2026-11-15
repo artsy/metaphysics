@@ -15169,6 +15169,43 @@ type CreatePurchaseSuccess {
   purchase: Purchase
 }
 
+type CreateResaleSubmissionFailure {
+  """
+  The artwork this result is for.
+  """
+  artworkID: String!
+  mutationError: GravityMutationError
+}
+
+union CreateResaleSubmissionResponseOrError =
+    CreateResaleSubmissionFailure
+  | CreateResaleSubmissionSuccess
+
+type CreateResaleSubmissionSuccess {
+  """
+  The artwork this result is for.
+  """
+  artworkID: String!
+  resaleSubmission: ResaleSubmission
+}
+
+input CreateResaleSubmissionsInput {
+  """
+  The internal IDs of the artworks to assess.
+  """
+  artworkIDs: [String!]!
+  clientMutationId: String
+}
+
+type CreateResaleSubmissionsPayload {
+  clientMutationId: String
+
+  """
+  One result per distinct artwork, in the order first sent. On success: the new resale submission.
+  """
+  resaleSubmissionsOrErrors: [CreateResaleSubmissionResponseOrError!]!
+}
+
 type CreateSaleAgreementFailure {
   mutationError: GravityMutationError
 }
@@ -26536,6 +26573,13 @@ type Mutation {
   Create a purchase
   """
   createPurchase(input: createPurchaseInput!): createPurchasePayload
+
+  """
+  Submit My Collection works for resale assessment.
+  """
+  createResaleSubmissions(
+    input: CreateResaleSubmissionsInput!
+  ): CreateResaleSubmissionsPayload
 
   """
   Creates a static Markdown-backed sale agreement.
