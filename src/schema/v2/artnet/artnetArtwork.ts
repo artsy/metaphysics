@@ -12,6 +12,10 @@ import {
   ArtnetEditionSetGravityResponse,
   ArtnetEditionSetType,
 } from "./artnetEditionSet"
+import {
+  ArtnetPushMessagesGravityResponse,
+  ArtnetPushMessagesType,
+} from "./artnetPushMessages"
 
 export interface ArtnetArtworkGravityResponse {
   id: string
@@ -24,6 +28,7 @@ export interface ArtnetArtworkGravityResponse {
   price_to_minor: number | null
   published: boolean
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
+  push_messages: ArtnetPushMessagesGravityResponse | null
   created_at: string
   updated_at: string
 }
@@ -68,6 +73,12 @@ export const ArtnetArtworkType = new GraphQLObjectType<
     artnetEditionSets: {
       type: new GraphQLList(ArtnetEditionSetType),
       resolve: ({ artnet_edition_sets }) => artnet_edition_sets ?? [],
+    },
+    pushMessages: {
+      type: ArtnetPushMessagesType,
+      description:
+        "What the last push of this artwork to Artnet had to say, if anything. Null once a later push settles cleanly — a working push is what clears these, nothing acknowledges them.",
+      resolve: ({ push_messages }) => push_messages,
     },
     createdAt: date(),
     updatedAt: date(),
