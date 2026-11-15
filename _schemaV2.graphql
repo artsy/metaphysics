@@ -25037,6 +25037,21 @@ type Me implements Node {
       reason: "These genomic recs are deprecated. Use artworkRecommendations instead."
     )
   resaleSubmission(id: String!): ResaleSubmission
+
+  """
+  The current user’s resale submissions.
+  """
+  resaleSubmissionsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    Newest first when omitted.
+    """
+    sort: ResaleSubmissionSorts
+  ): ResaleSubmissionConnection
   saleRegistrationsConnection(
     after: String
     auctionState: AuctionState
@@ -36332,10 +36347,42 @@ enum ResaleSubmissionChannel {
   MARKETPLACE
 }
 
+"""
+A connection to a list of items.
+"""
+type ResaleSubmissionConnection {
+  """
+  A list of edges.
+  """
+  edges: [ResaleSubmissionEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
 enum ResaleSubmissionCourierHandoff {
   COURIER_PICKUP
   NO_PREFERENCE
   SELLER_DROPOFF
+}
+
+"""
+An edge in a connection.
+"""
+type ResaleSubmissionEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: ResaleSubmission
 }
 
 enum ResaleSubmissionPackaging {
@@ -36354,6 +36401,13 @@ enum ResaleSubmissionRejectionReason {
   MEDIUM_NOT_SUPPORTED
   NOT_PURCHASED_ON_ARTSY
   OUTSIDE_US
+}
+
+enum ResaleSubmissionSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
 }
 
 enum ResaleSubmissionState {

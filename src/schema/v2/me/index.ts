@@ -37,6 +37,7 @@ import {
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
 import { GuidedTourField } from "./guidedTour"
 import { ResaleSubmissionType } from "./resaleSubmission/resaleSubmission"
+import { ResaleSubmissionsConnection } from "./resaleSubmission/resaleSubmissionsConnection"
 import { artworkConnection } from "../artwork"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
@@ -712,6 +713,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return meResaleSubmissionLoader(submissionID)
       },
     },
+    resaleSubmissionsConnection: ResaleSubmissionsConnection,
     saleRegistrationsConnection: SaleRegistrationConnection,
     secondFactors: {
       type: new GraphQLList(SecondFactorInterface),
@@ -891,6 +893,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "addressConnection",
       "basedOnUserSaves",
       "resaleSubmission",
+      "resaleSubmissionsConnection",
     ]
 
     if (xImpersonateUserID) {
