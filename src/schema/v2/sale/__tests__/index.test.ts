@@ -36,6 +36,65 @@ describe("Sale type", () => {
     allViaLoader.mockReset()
   })
 
+  describe("representativeArtworks", () => {
+    const query = gql`
+      {
+        sale(id: "foo-foo") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    it("resolves ids through the artwork-by-id loader", async () => {
+      const load = jest.fn((id: string) => Promise.resolve({ _id: id }))
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: ["art-1", "art-2", "art-3"] },
+        { artworkByIDLoader: { load } }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([
+        { internalID: "art-1" },
+        { internalID: "art-2" },
+        { internalID: "art-3" },
+      ])
+      expect(load).toHaveBeenCalledTimes(3)
+    })
+
+    it("drops ids the loader can't resolve", async () => {
+      const load = jest.fn((id: string) =>
+        Promise.resolve(id === "missing" ? null : { _id: id })
+      )
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: ["art-1", "missing", "art-2"] },
+        { artworkByIDLoader: { load } }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([
+        { internalID: "art-1" },
+        { internalID: "art-2" },
+      ])
+    })
+
+    it("returns [] without touching the loader when there are no ids", async () => {
+      const load = jest.fn()
+
+      const data = await execute(
+        query,
+        { ...sale, representative_artwork_ids: [] },
+        { artworkByIDLoader: { load } }
+      )
+
+      expect(data.sale.representativeArtworks).toEqual([])
+      expect(load).not.toHaveBeenCalled()
+    })
+  })
+
   describe("sale timeZone", () => {
     const query = `
     {

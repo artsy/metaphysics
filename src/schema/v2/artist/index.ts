@@ -24,6 +24,7 @@ import { date } from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import numeral from "schema/v2/fields/numeral"
+import { representativeArtworks } from "schema/v2/fields/representativeArtworks"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -63,6 +64,8 @@ import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsA
 import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 import CareerHighlights from "./careerHighlights"
+import { FeaturedStory } from "./featuredStory"
+import { AccentColorOptions } from "./accentColorOptions"
 import {
   MarketingCollections,
   fetchMarketingCollections,
@@ -111,6 +114,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      representativeArtworks: representativeArtworks(),
       alternateNames: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ alternate_names }) => alternate_names,
@@ -1052,6 +1056,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ residencies }) => residencies,
       },
+      featuredStory: FeaturedStory,
+      accentColorOptions: AccentColorOptions,
       duplicates: {
         type: new GraphQLList(Artist.type),
         resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {

@@ -17,6 +17,7 @@ import {
   trim,
   values,
 } from "lodash"
+import { GraphQLResolveInfo } from "graphql"
 import moment, { LocaleSpecification } from "moment"
 import { performance } from "perf_hooks"
 import { stringify } from "qs"
@@ -291,4 +292,20 @@ export const snakeCaseKeys = (
 
     return snakeCase(key)
   })
+}
+
+// True when the current field is being resolved beneath a list index in the
+// response (e.g. `partnersConnection.edges[3].node.inquiryMetrics`). A
+// singular field such as `partner(id:)` never produces a numeric path segment,
+// so this tells "resolved for one record" from "resolved as one node of a
+// list/connection" without enumerating every field that can return the type.
+export const isUnderListPath = (info: GraphQLResolveInfo): boolean => {
+  let path: typeof info.path | undefined = info.path
+  while (path) {
+    if (typeof path.key === "number") {
+      return true
+    }
+    path = path.prev
+  }
+  return false
 }

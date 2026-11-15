@@ -651,4 +651,179 @@ describe("partnerArtist", () => {
       })
     })
   })
+
+  describe("story", () => {
+    const query = gql`
+      {
+        partner(id: "levy-gorvy") {
+          artistsConnection(first: 3) {
+            edges {
+              story {
+                internalID
+                about {
+                  tagline
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    beforeEach(() => {
+      partnerArtistData = [
+        { id: "pa-gallery", artist: { blurb: "" }, partner: { name: "Catty" } },
+      ]
+    })
+
+    it("returns the gallery's own story, even when it has no content", async () => {
+      const partnerArtistStoriesLoader = jest
+        .fn()
+        .mockResolvedValue([{ id: "story-1", tagline: "" }])
+
+      const data = await runQuery(query, {
+        ...context,
+        partnerArtistStoriesLoader,
+      })
+
+      expect(data.partner.artistsConnection.edges[0].story).toEqual({
+        internalID: "story-1",
+        about: { tagline: "" },
+      })
+      expect(partnerArtistStoriesLoader).toHaveBeenCalledWith({
+        partner_artist_id: "pa-gallery",
+      })
+    })
+
+    it("returns null until the gallery saves a story", async () => {
+      const partnerArtistStoriesLoader = jest.fn().mockResolvedValue([])
+
+      const data = await runQuery(query, {
+        ...context,
+        partnerArtistStoriesLoader,
+      })
+
+      expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+    })
+
+    it("returns null without a token", async () => {
+      const artistStoriesLoader = jest.fn()
+
+      const data = await runQuery(query, { ...context, artistStoriesLoader })
+
+      expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+      expect(artistStoriesLoader).not.toHaveBeenCalled()
+    })
+
+    it("returns null under allArtistsConnection, even aliased, without calling Gravity", async () => {
+      const partnerArtistStoriesLoader = jest.fn()
+
+      const data = await runQuery(
+        gql`
+          {
+            partner(id: "levy-gorvy") {
+              list: allArtistsConnection {
+                edges {
+                  story {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { ...context, partnerArtistStoriesLoader }
+      )
+
+      expect(data.partner.list.edges[0].story).toBeNull()
+      expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
+    })
+
+    describe("page size limit", () => {
+      const pagedQuery = gql`
+        query($first: Int) {
+          partner(id: "levy-gorvy") {
+            artistsConnection(first: $first) {
+              edges {
+                story {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      it("returns the story on a page at the limit", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          pagedQuery,
+          { ...context, partnerArtistStoriesLoader },
+          { first: 10 }
+        )
+
+        expect(data.partner.artistsConnection.edges[0].story).toEqual({
+          internalID: "story-1",
+        })
+      })
+
+      it("returns null on a page over the limit, without calling Gravity", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          pagedQuery,
+          { ...context, partnerArtistStoriesLoader },
+          { first: 11 }
+        )
+
+        expect(data.partner.artistsConnection.edges[0].story).toBeNull()
+        expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
+      })
+
+      it("returns null when the partner is in a list, without calling Gravity", async () => {
+        const partnerArtistStoriesLoader = jest
+          .fn()
+          .mockResolvedValue([{ id: "story-1" }])
+
+        const data = await runQuery(
+          gql`
+            {
+              partnersConnection(first: 1) {
+                edges {
+                  node {
+                    artistsConnection(first: 1) {
+                      edges {
+                        story {
+                          internalID
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          {
+            ...context,
+            partnerArtistStoriesLoader,
+            partnersLoader: () =>
+              Promise.resolve({
+                body: [partnerData],
+                headers: { "x-total-count": "1" },
+              }),
+          }
+        )
+
+        expect(
+          data.partnersConnection.edges[0].node.artistsConnection.edges[0].story
+        ).toBeNull()
+        expect(partnerArtistStoriesLoader).not.toHaveBeenCalled()
+      })
+    })
+  })
 })

@@ -17,7 +17,10 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
 import { PartnerAnalyticsField } from "schema/v2/analytics/partnerStats"
 import { AnalyticsQueryPeriodEnumType } from "schema/v2/analytics/shared"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  convertConnectionArgsToGravityArgs,
+  isUnderListPath,
+} from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
 import Profile from "schema/v2/profile"
@@ -45,6 +48,7 @@ import {
   fields as partnerArtistFields,
   isVerifiedRepresentative,
   stampVerifiedRepresentatives,
+  story,
 } from "./partner_artist"
 import {
   connectionWithCursorInfo,
@@ -208,6 +212,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           ResolverContext
         >)(),
         isVerifiedRepresentative,
+        story,
       }),
     }).connectionType
 
@@ -573,6 +578,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               )
             })
             .then((body) => {
+              // TODO: This connection has no page size, and Gravity can't batch
+              // stories yet, so each edge would make its own call.
+              body.forEach((partnerArtist) => {
+                partnerArtist._storyUnavailable = true
+              })
+
               return {
                 totalCount: body.length,
                 ...connectionFromArraySlice(body, args, {
@@ -669,6 +680,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             id,
             gravityArgs
           )
+
+          // TODO: Gravity can't batch stories yet, so each edge makes its own call.
+          // 10 here is a magical number, and we should remove this when enable batching on stories endpoint
+          if (size > 10 || isUnderListPath(info)) {
+            body.forEach((partnerArtist) => {
+              partnerArtist._storyUnavailable = true
+            })
+          }
 
           if (isFieldRequested("edges.isVerifiedRepresentative", info)) {
             await stampVerifiedRepresentatives(

@@ -4,7 +4,7 @@ describe("createArtnetArtwork mutation", () => {
   const query = `
     mutation {
       createArtnetArtwork(
-        input: { artworkID: "artwork-1", artnetArtistID: 42, published: true }
+        input: { artworkID: "artwork-1", published: true }
       ) {
         artnetArtworkOrError {
           ... on CreateArtnetArtworkSuccess {
@@ -37,7 +37,6 @@ describe("createArtnetArtwork mutation", () => {
 
     expect(createArtnetArtworkLoader).toHaveBeenCalledWith({
       artwork_id: "artwork-1",
-      artnet_artist_id: 42,
       published: true,
     })
     expect(data).toEqual({
@@ -48,6 +47,51 @@ describe("createArtnetArtwork mutation", () => {
             availability: "For Sale",
             published: true,
           },
+        },
+      },
+    })
+  })
+
+  it("returns what the push could not send to Artnet", async () => {
+    const skippedQuery = `
+      mutation {
+        createArtnetArtwork(input: { artworkID: "artwork-1" }) {
+          artnetArtworkOrError {
+            ... on CreateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+              skipped {
+                field
+                reason
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const createArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      skipped: [
+        { field: "editions", reason: "Artnet accepts at most 100 editions" },
+      ],
+    })
+
+    const data = await runAuthenticatedQuery(skippedQuery, {
+      createArtnetArtworkLoader,
+    })
+
+    expect(data).toEqual({
+      createArtnetArtwork: {
+        artnetArtworkOrError: {
+          artnetArtwork: { internalID: "artnet-artwork-1" },
+          skipped: [
+            {
+              field: "editions",
+              reason: "Artnet accepts at most 100 editions",
+            },
+          ],
         },
       },
     })

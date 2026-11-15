@@ -1858,6 +1858,49 @@ describe("artworksConnection", () => {
         ])
         expect(artworksConnection.counts.total).toEqual(2)
       })
+
+      it("still uses partnerArtworksAllLoader when searchProfile is sent without a keyword", async () => {
+        const mockPartnerArtworksAllLoader = jest.fn(() =>
+          Promise.resolve({ body: [], headers: { "x-total-count": "0" } })
+        )
+        const mockFilterArtworksLoader = jest.fn()
+        const context = {
+          authenticatedLoaders: {},
+          unauthenticatedLoaders: {
+            filterArtworksLoader: mockFilterArtworksLoader,
+          },
+          isCMSRequest: true,
+          partnerArtworksAllLoader: mockPartnerArtworksAllLoader,
+        }
+
+        for (const searchProfile of ["DEFAULT", "PARTNER_INVENTORY"]) {
+          await runQuery(
+            gql`
+              {
+                artworksConnection(
+                  input: {
+                    partnerID: "partner123"
+                    sort: "-created_at"
+                    includeUnpublished: true
+                    disableNotForSaleSorting: true
+                    medium: "*"
+                    first: 10
+                    searchProfile: ${searchProfile}
+                  }
+                ) {
+                  counts {
+                    total
+                  }
+                }
+              }
+            `,
+            context
+          )
+        }
+
+        expect(mockPartnerArtworksAllLoader).toHaveBeenCalledTimes(2)
+        expect(mockFilterArtworksLoader).not.toHaveBeenCalled()
+      })
     })
 
     describe("complex CMS requests", () => {
@@ -2477,6 +2520,284 @@ describe("artworksConnection", () => {
         { node: { title: "Excellent Artwork" } },
       ])
       expect(artworksConnection.counts.total).toEqual(3)
+    })
+  })
+
+  describe("searchProfile", () => {
+    const filterResults = (id: string) =>
+      Promise.resolve({
+        hits: [{ id }],
+        aggregations: { total: { value: 1 } },
+      })
+
+    let authenticatedFilterArtworksLoader: jest.Mock
+    let unauthenticatedFilterArtworksLoader: jest.Mock
+    let filterArtworksUncachedLoader: jest.Mock
+    let searchProfileContext: any
+
+    beforeEach(() => {
+      authenticatedFilterArtworksLoader = jest.fn(() =>
+        filterResults("authenticated-artwork")
+      )
+      unauthenticatedFilterArtworksLoader = jest.fn(() =>
+        filterResults("public-artwork")
+      )
+      filterArtworksUncachedLoader = jest.fn(() =>
+        filterResults("uncached-artwork")
+      )
+      searchProfileContext = {
+        authenticatedLoaders: {
+          filterArtworksLoader: authenticatedFilterArtworksLoader,
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader: unauthenticatedFilterArtworksLoader,
+        },
+        filterArtworksUncachedLoader,
+      }
+    })
+
+    it("maps PARTNER_INVENTORY to search_profile: partner on the authenticated loader", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            keyword: "AB-123"
+            searchProfile: PARTNER_INVENTORY
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledTimes(1)
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: "partner-id",
+          keyword: "AB-123",
+          search_profile: "partner",
+        })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "authenticated-artwork" } },
+      ])
+    })
+
+    it("accepts searchProfile in `input` on partner.filterArtworksConnection", async () => {
+      const partnerID = "5f80bfefe8d808000ea212c1"
+      const query = gql`
+        {
+          partner(id: "${partnerID}") {
+            filterArtworksConnection(
+              input: {
+                first: 10
+                keyword: "AB-123"
+                includeUnpublished: true
+                searchProfile: PARTNER_INVENTORY
+              }
+            ) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const { partner } = await runQuery(query, {
+        ...searchProfileContext,
+        partnerLoader: jest.fn(() =>
+          Promise.resolve({ id: "gallery-slug", _id: partnerID })
+        ),
+      })
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: partnerID,
+          keyword: "AB-123",
+          include_unpublished: true,
+          search_profile: "partner",
+        })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(partner.filterArtworksConnection.edges).toEqual([
+        { node: { slug: "authenticated-artwork" } },
+      ])
+    })
+
+    it("uses the authenticated loader for PARTNER_INVENTORY on an image search", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            searchProfile: PARTNER_INVENTORY
+            image: { s3Key: "uploads/query.jpg", s3Bucket: "artsy-uploads" }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ search_profile: "partner" })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(filterArtworksUncachedLoader).not.toHaveBeenCalled()
+    })
+
+    it("keeps the partner profile on the authenticated loader when refetched via node", async () => {
+      const connectionQuery = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            searchProfile: PARTNER_INVENTORY
+          ) {
+            id
+          }
+        }
+      `
+      const { artworksConnection } = await runQuery(
+        connectionQuery,
+        searchProfileContext
+      )
+
+      const nodeQuery = gql`
+        {
+          node(id: "${artworksConnection.id}") {
+            ... on FilterArtworksConnection {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const { node } = await runQuery(nodeQuery, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: "partner-id",
+          search_profile: "partner",
+        })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(node.edges).toEqual([{ node: { slug: "authenticated-artwork" } }])
+    })
+
+    it("drops the partner profile and uses the public loader when there is no user", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            searchProfile: PARTNER_INVENTORY
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, {
+        ...searchProfileContext,
+        authenticatedLoaders: {},
+      })
+
+      expect(unauthenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ search_profile: expect.anything() })
+      )
+    })
+
+    it("changes nothing when omitted", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            keyword: "AB-123"
+          ) {
+            id
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(unauthenticatedFilterArtworksLoader).toHaveBeenCalledWith({
+        aggregations: ["total"],
+        keyword: "AB-123",
+        offset: 0,
+        page: 1,
+        partner_id: "partner-id",
+        size: 10,
+      })
+      expect(artworksConnection.id).toEqual(
+        toGlobalId(
+          "filterArtworksConnection",
+          JSON.stringify({
+            aggregations: ["total"],
+            keyword: "AB-123",
+            page: 1,
+            partner_id: "partner-id",
+            size: 10,
+          })
+        )
+      )
+    })
+
+    it("forwards DEFAULT to Gravity on the authenticated loader", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            keyword: "AB-123"
+            searchProfile: DEFAULT
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({ search_profile: "default" })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
     })
   })
 })

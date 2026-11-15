@@ -358,4 +358,47 @@ describe("imageHelper", () => {
       expect(hasMissingImageVersion(image)).toBe(true)
     })
   })
+
+  describe("with artos-viewing-room-cover template", () => {
+    const coverImage = { gemini_template_key: "artos-viewing-room-cover" }
+
+    it("treats a fresh upload as processing", () => {
+      const freshImage = {
+        ...coverImage,
+        image_url: null,
+        image_versions: [],
+        gemini_token_updated_at: new Date().toISOString(),
+      }
+
+      expect(isProcessingImage(freshImage)).toBe(true)
+      expect(hasProcessingFailed(freshImage)).toBe(false)
+    })
+
+    it("treats a cover with its wide version as done", () => {
+      const doneImage = {
+        ...coverImage,
+        image_url: "https://example.com/cover/:version.jpg",
+        image_versions: ["wide"],
+        gemini_token_updated_at: new Date().toISOString(),
+      }
+
+      expect(isProcessingImage(doneImage)).toBe(false)
+      expect(hasProcessingFailed(doneImage)).toBe(false)
+      expect(hasMissingImageVersion(doneImage)).toBe(false)
+    })
+
+    it("treats a stuck upload past the grace period as failed", () => {
+      const failedImage = {
+        ...coverImage,
+        image_url: null,
+        image_versions: [],
+        gemini_token_updated_at: new Date(
+          Date.now() - 60 * 60 * 1000
+        ).toISOString(),
+      }
+
+      expect(isProcessingImage(failedImage)).toBe(false)
+      expect(hasProcessingFailed(failedImage)).toBe(true)
+    })
+  })
 })

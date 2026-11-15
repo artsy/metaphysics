@@ -9,6 +9,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
+import Image, { normalizeImageData } from "./image"
 
 // Single source of truth for the 13 keys Gravity's
 // VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
@@ -90,6 +91,12 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    curatorialText: {
+      type: GraphQLString,
+      description:
+        "Long plain-text curatorial text introducing the works (viewing rooms rebuild). Not shown to visitors yet.",
+      resolve: ({ curatorial_text }) => curatorial_text,
+    },
     showGalleryName: {
       type: GraphQLBoolean,
       description: "Whether the gallery name is shown on the public page.",
@@ -126,6 +133,18 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     passcode: {
       type: GraphQLString,
       description: "Plain-text passcode gating this room, if one is set.",
+    },
+    coverImage: {
+      type: Image.type,
+      description:
+        "Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.",
+      resolve: ({ cover_image }) => {
+        if (!cover_image) return null
+        return {
+          ...normalizeImageData(cover_image, true),
+          gemini_template_key: "artos-viewing-room-cover",
+        }
+      },
     },
     createdAt: date(),
     updatedAt: date(),

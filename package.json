@@ -10,6 +10,8 @@
   },
   "scripts": {
     "ai-agent-chat": "babel-node --extensions '.ts,.js' ./scripts/ai-agent-chat.ts",
+    "eval": "babel-node --extensions '.ts,.js' ./scripts/evals/run.ts",
+    "eval:upload": "babel-node --extensions '.ts,.js' ./scripts/evals/upload-dataset.ts",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:index": "babel index.js -s inline -d build",
     "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore 'src/test,src/integration,src/**/__tests__' -s inline -d build/src",

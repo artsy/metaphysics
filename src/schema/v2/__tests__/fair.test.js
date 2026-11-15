@@ -90,6 +90,36 @@ describe("Fair type", () => {
     expect(result.fair.href).toEqual("/fair/the-armory-show-2017")
   })
 
+  it("resolves representativeArtworks through the artwork-by-id loader", async () => {
+    const repQuery = gql`
+      {
+        fair(id: "the-armory-show-2017") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    `
+
+    const load = jest.fn((id) => Promise.resolve({ _id: id }))
+    const repContext = {
+      fairLoader: () =>
+        Promise.resolve({
+          ...fair,
+          representative_artwork_ids: ["art-1", "art-2"],
+        }),
+      artworkByIDLoader: { load },
+    }
+
+    const result = await runQuery(repQuery, repContext)
+
+    expect(result.fair.representativeArtworks).toEqual([
+      { internalID: "art-1" },
+      { internalID: "art-2" },
+    ])
+    expect(load).toHaveBeenCalledTimes(2)
+  })
+
   it("is_publically_visible returns false when profile is not published", () => {
     const profile = {
       id: "context",

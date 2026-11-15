@@ -97,6 +97,14 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     agreementLoader: gravityLoader((id) => `agreement/${id}`),
+    artistAccentColorOptionsLoader: gravityLoader(
+      "artist_accent_color_options"
+    ),
+    refreshArtistAccentColorOptionsLoader: gravityLoader(
+      "artist_accent_color_options/rebuild",
+      {},
+      { method: "POST" }
+    ),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
@@ -268,6 +276,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deleteArtnetArtworkLoader: gravityLoader(
+      (id) => `artnet_artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    updateArtnetEditionSetLoader: gravityLoader(
+      (id) => `artnet_edition_set/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     artnetImportLoader: gravityLoader((id) => `artnet_import/${id}`),
     updateArtnetImportLoader: gravityLoader(
       (id) => `artnet_import/${id}`,
@@ -404,6 +422,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    // Claims an image the collector uploaded to S3 for them (e.g. one attached
+    // to an AI agent turn); only its owner can then preview it.
+    createImageUploadLoader: gravityLoader(
+      "me/image_uploads",
+      {},
+      { method: "POST" }
+    ),
+    // A short-lived, resized URL for the collector's own upload.
+    imageUploadPreviewLoader: gravityLoader("me/image_uploads/preview_url"),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkEditionSetLoader: gravityLoader(
       (artworkID) => `artwork/${artworkID}/edition_set`,
@@ -1166,6 +1193,37 @@ export default (accessToken, userID, opts) => {
         `partner/${partnerID}/artist/${artistID}/documents`,
       {},
       { headers: true }
+    ),
+    partnerArtistStoriesLoader: gravityLoader("artist_stories"),
+    createArtistStoryLoader: gravityLoader(
+      "artist_story",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistStoryLoader: gravityLoader(
+      (id) => `artist_story/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistStoryLoader: gravityLoader(
+      (id) => `artist_story/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    createArtistStoryVideoLoader: gravityLoader(
+      "artist_story_video",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistStoryVideoLoader: gravityLoader(
+      (id) => `artist_story_video/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistStoryVideoLoader: gravityLoader(
+      (id) => `artist_story_video/${id}`,
+      {},
+      { method: "DELETE" }
     ),
     partnerArtistsAllLoader: gravityLoader(
       (id) => `partner/${id}/partner_artists/all`,
@@ -2046,6 +2104,13 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
 
+    // Replies to a synced email message from its mailbox (201)
+    replyToEmailMessageLoader: gravityLoader(
+      (id) => `partner_email_message/${id}/reply`,
+      {},
+      { method: "POST" }
+    ),
+
     // Mailchimp Campaign Loaders
     mailchimpCampaignsLoader: gravityLoader(
       "mailchimp_campaigns",
@@ -2128,6 +2193,29 @@ export default (accessToken, userID, opts) => {
     ),
 
     crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
+
+    // Email Sender Review Loaders
+    emailSenderReviewsLoader: gravityLoader(
+      "email_sender_reviews",
+      {},
+      { headers: true }
+    ),
+    emailSenderReviewLoader: gravityLoader((id) => `email_sender_review/${id}`),
+    approveEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/approve`,
+      {},
+      { method: "POST" }
+    ),
+    skipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/skip`,
+      {},
+      { method: "POST" }
+    ),
+    unskipEmailSenderReviewLoader: gravityLoader(
+      (id) => `email_sender_review/${id}/unskip`,
+      {},
+      { method: "POST" }
+    ),
 
     // Brand Kit Loaders
     brandKitLoader: gravityLoader("brand_kit"),
@@ -2252,6 +2340,16 @@ export default (accessToken, userID, opts) => {
       (id) => `partner_list/${id}/publication/unpublish`,
       {},
       { method: "POST" }
+    ),
+    updatePartnerListPublicationCoverImageLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/cover_image`,
+      {},
+      { method: "POST" }
+    ),
+    deletePartnerListPublicationCoverImageLoader: gravityLoader(
+      (id) => `partner_list/${id}/publication/cover_image`,
+      {},
+      { method: "DELETE" }
     ),
   }
 }

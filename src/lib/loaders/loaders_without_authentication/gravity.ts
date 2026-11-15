@@ -5,6 +5,7 @@ import gravity from "lib/apis/gravity"
 import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
 import { createBatchSaleArtworkLoader } from "../batchSaleArtworkLoader"
+import { createArtworkByIDLoader } from "../batchArtworkByIDLoader"
 import config from "config"
 import { toQueryString } from "lib/helpers"
 
@@ -39,10 +40,10 @@ export default (opts) => {
     currency: string
   }
 
+  const artworksLoader = gravityLoader("artworks")
+  const artworkByIDLoader = createArtworkByIDLoader(artworksLoader)
+
   return {
-    aiPromptTemplateLoader: gravityUncachedLoader(
-      (id) => `a_i_prompt_template/${id}`
-    ),
     aiPromptTemplatesLoader: gravityUncachedLoader("a_i_prompt_templates", {
       headers: true,
     }),
@@ -60,6 +61,8 @@ export default (opts) => {
       (id) => `artist/${id}/instagram_media`
     ),
     artistLoader: gravityLoader((id) => `artist/${id}`),
+    artistStoriesLoader: gravityLoader("artist_stories"),
+    artistStoryVideosLoader: gravityLoader("artist_story_videos"),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
     artistsByLetterLoader: gravityLoader(
       (letter) => `artists/${letter}`,
@@ -77,7 +80,8 @@ export default (opts) => {
       { artwork_id: string; image_id: string }
     >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
-    artworksLoader: gravityLoader("artworks"),
+    artworksLoader,
+    artworkByIDLoader,
     artworksByImageLoader: gravityLoader(
       "filter/artworks_by_image",
       {},

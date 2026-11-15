@@ -22,6 +22,7 @@ import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
+import { representativeArtworks } from "schema/v2/fields/representativeArtworks"
 import { discoveryCategories } from "lib/discoveryCategories"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
@@ -182,6 +183,7 @@ export const MarketingCollectionType = new GraphQLObjectType<
     } = require("./filterArtworksConnection")
     return {
       ...MarketingCollectionFields,
+      representativeArtworks: representativeArtworks(),
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
       artworksConnection: filterArtworksConnectionWithParams((args) => {

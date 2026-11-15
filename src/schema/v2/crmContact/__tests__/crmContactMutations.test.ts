@@ -52,6 +52,9 @@ describe("createCRMContact", () => {
       phone: undefined,
       categories: ["collector"],
       notes: undefined,
+      budget_min: undefined,
+      budget_max: undefined,
+      budget_currency: undefined,
       assigned_to_user_id: undefined,
       emails: [{ address: "ada@example.com", is_primary: true }],
       locations: [
@@ -118,11 +121,55 @@ describe("updateCRMContact", () => {
       phone: undefined,
       categories: undefined,
       notes: null,
+      budget_min: undefined,
+      budget_max: undefined,
+      budget_currency: undefined,
       assigned_to_user_id: undefined,
     })
     expect(result.updateCRMContact.crmContactOrError.__typename).toEqual(
       "UpdateCRMContactSuccess"
     )
+  })
+})
+
+describe("updateCRMContact with a budget", () => {
+  const mutation = `
+    mutation {
+      updateCRMContact(input: { id: "contact-1", budgetMin: 1000, budgetMax: null, budgetCurrency: "USD" }) {
+        crmContactOrError {
+          __typename
+          ... on UpdateCRMContactSuccess { crmContact { internalID budgetMin budgetMax budgetCurrency } }
+        }
+      }
+    }
+  `
+
+  it("forwards the budget fields, including explicit nulls", async () => {
+    const updateCrmContactLoader = jest.fn().mockResolvedValue({
+      ...contact,
+      budget_min: "1000.0",
+      budget_max: null,
+      budget_currency: "USD",
+    })
+
+    const result = await runAuthenticatedQuery(mutation, {
+      updateCrmContactLoader,
+    })
+
+    expect(updateCrmContactLoader).toHaveBeenCalledWith(
+      "contact-1",
+      expect.objectContaining({
+        budget_min: 1000,
+        budget_max: null,
+        budget_currency: "USD",
+      })
+    )
+    expect(result.updateCRMContact.crmContactOrError.crmContact).toEqual({
+      internalID: "contact-1",
+      budgetMin: 1000,
+      budgetMax: null,
+      budgetCurrency: "USD",
+    })
   })
 })
 

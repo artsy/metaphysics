@@ -7,6 +7,7 @@ import { SaleArtworkType } from "schema/v2/sale_artwork"
 import initials from "schema/v2/fields/initials"
 import cached from "schema/v2/fields/cached"
 import date from "schema/v2/fields/date"
+import { representativeArtworks } from "schema/v2/fields/representativeArtworks"
 import {
   Money,
   resolveMinorAndCurrencyFieldsToMoney,
@@ -106,6 +107,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      representativeArtworks: representativeArtworks(),
       artworksConnection: {
         type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",

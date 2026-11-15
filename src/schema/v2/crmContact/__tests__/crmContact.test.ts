@@ -16,6 +16,9 @@ const gravityContact = {
   archived_at: null,
   categories: ["collector", "buyer"],
   notes: null,
+  budget_min: "1000.0",
+  budget_max: "5000.5",
+  budget_currency: "USD",
   emails: [
     {
       id: "email-1",
@@ -49,6 +52,9 @@ describe("crmContact", () => {
         normalizedPhone
         status
         categories
+        budgetMin
+        budgetMax
+        budgetCurrency
         emails {
           address
           isPrimary
@@ -84,6 +90,9 @@ describe("crmContact", () => {
         normalizedPhone: "+442079460958",
         status: "ACTIVE",
         categories: ["collector", "buyer"],
+        budgetMin: 1000,
+        budgetMax: 5000.5,
+        budgetCurrency: "USD",
         emails: [{ address: "ada@example.com", isPrimary: true }],
         locations: [{ countryCode: "GB", cityName: "London", isPrimary: true }],
       },
@@ -139,6 +148,61 @@ describe("crmContactsConnection", () => {
       size: 1,
       offset: 0,
     })
+  })
+
+  it("passes the assignee filters to the loader", async () => {
+    const assigneeQuery = (args: string) => `
+      {
+        crmContactsConnection(partnerID: "partner-1" ${args} first: 1) {
+          totalCount
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(
+      assigneeQuery('assignedToUserID: "user-1"'),
+      context
+    )
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ assigned_to_user_id: "user-1" })
+    )
+
+    await runAuthenticatedQuery(assigneeQuery("isUnassigned: true"), context)
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ unassigned: true })
+    )
+  })
+
+  it("omits unset, null and false assignee filters from the loader params", async () => {
+    // toHaveBeenCalledWith ignores undefined keys, so check the keys directly
+    const loaderKeys = (callIndex: number) => {
+      return Object.keys(
+        (context.crmContactsLoader as jest.Mock).mock.calls[callIndex][0]
+      )
+    }
+
+    await runAuthenticatedQuery(
+      `{ crmContactsConnection(partnerID: "partner-1", first: 1) { totalCount } }`,
+      context
+    )
+    await runAuthenticatedQuery(
+      `{ crmContactsConnection(partnerID: "partner-1", first: 1, assignedToUserID: null, isUnassigned: false) { totalCount } }`,
+      context
+    )
+    ;[0, 1].forEach((callIndex) => {
+      expect(loaderKeys(callIndex)).not.toContain("assigned_to_user_id")
+      expect(loaderKeys(callIndex)).not.toContain("unassigned")
+    })
+  })
+
+  it("rejects combining assignedToUserID with isUnassigned", async () => {
+    await expect(
+      runAuthenticatedQuery(
+        `{ crmContactsConnection(partnerID: "partner-1", first: 1, assignedToUserID: "user-1", isUnassigned: true) { totalCount } }`,
+        context
+      )
+    ).rejects.toThrow("cannot be combined")
+    expect(context.crmContactsLoader as jest.Mock).not.toHaveBeenCalled()
   })
 
   it("returns a connection of contacts", async () => {

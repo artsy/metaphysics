@@ -32,6 +32,12 @@ import { deleteCityArticleMutation } from "./cityContent/mutations/deleteCityArt
 import { createCityVideoMutation } from "./cityContent/mutations/createCityVideoMutation"
 import { updateCityVideoMutation } from "./cityContent/mutations/updateCityVideoMutation"
 import { deleteCityVideoMutation } from "./cityContent/mutations/deleteCityVideoMutation"
+import { createArtistStoryMutation } from "./artistStory/mutations/createArtistStoryMutation"
+import { createArtistStoryVideoMutation } from "./artistStory/mutations/createArtistStoryVideoMutation"
+import { updateArtistStoryMutation } from "./artistStory/mutations/updateArtistStoryMutation"
+import { updateArtistStoryVideoMutation } from "./artistStory/mutations/updateArtistStoryVideoMutation"
+import { deleteArtistStoryMutation } from "./artistStory/mutations/deleteArtistStoryMutation"
+import { deleteArtistStoryVideoMutation } from "./artistStory/mutations/deleteArtistStoryVideoMutation"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
 import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
@@ -77,6 +83,7 @@ import MatchArtist from "./match/artist"
 import Partner from "schema/v2/partner/partner"
 import Conversation from ".//conversation"
 import { updateArtistMutation } from "./artist/updateArtistMutation"
+import { refreshArtistAccentColorOptionsMutation } from "./artist/refreshArtistAccentColorOptionsMutation"
 import { updateArtistSocialsMutation } from "./artist/updateArtistSocialsMutation"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import SendConversationMessageMutation from "./conversation/send_message_mutation"
@@ -169,7 +176,9 @@ import { ArtnetImport } from "./artnet/artnetImport"
 import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
 import { createArtnetArtworkMutation } from "./artnet/createArtnetArtworkMutation"
 import { updateArtnetArtworkMutation } from "./artnet/updateArtnetArtworkMutation"
+import { deleteArtnetArtworkMutation } from "./artnet/deleteArtnetArtworkMutation"
 import { finalizeArtnetImportMutation } from "./artnet/finalizeArtnetImportMutation"
+import { updateArtnetEditionSetMutation } from "./artnet/updateArtnetEditionSetMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
 import { deleteArtworkMutation } from "./artwork/deleteArtworkMutation"
 import { updateCatalogArtworkMutation } from "./artwork/updateCatalogArtworkMutation"
@@ -272,6 +281,7 @@ import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
 import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
+import { replyToEmailMessageMutation } from "./me/replyToEmailMessageMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
 import { completeInstagramOAuthMutation } from "./me/completeInstagramOAuthMutation"
 import { deleteInstagramAccountMutation } from "./me/deleteInstagramAccountMutation"
@@ -294,6 +304,10 @@ import {
 import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
+  emailSenderReview,
+  emailSenderReviewsConnection,
+} from "./crmContact/emailSenderReview"
+import {
   crmContactEmail,
   crmContactEmailsConnection,
 } from "./crmContact/crmContactEmail"
@@ -307,6 +321,11 @@ import {
   unarchiveCRMContactMutation,
   updateCRMContactMutation,
 } from "./crmContact/crmContactMutations"
+import {
+  approveEmailSenderReviewMutation,
+  skipEmailSenderReviewMutation,
+  unskipEmailSenderReviewMutation,
+} from "./crmContact/emailSenderReviewMutations"
 import {
   createCRMContactEmailMutation,
   deleteCRMContactEmailMutation,
@@ -382,6 +401,8 @@ import { updatePartnerListArtworkPositionMutation } from "./partner/Mutations/Pa
 import { repositionPartnerListArtworksMutation } from "./partner/Mutations/PartnerList/repositionPartnerListArtworksMutation"
 import { publishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/publishPartnerListPublicationMutation"
 import { unpublishPartnerListPublicationMutation } from "./partner/Mutations/PartnerListPublication/unpublishPartnerListPublicationMutation"
+import { updatePartnerListPublicationCoverImageMutation } from "./partner/Mutations/PartnerListPublication/updatePartnerListPublicationCoverImageMutation"
+import { deletePartnerListPublicationCoverImageMutation } from "./partner/Mutations/PartnerListPublication/deletePartnerListPublicationCoverImageMutation"
 import { authenticatePrivateViewingRoomMutation } from "./privateViewingRoom/mutations/authenticatePrivateViewingRoomMutation"
 import { createShippingPresetMutation } from "./ShippingPreset/createShippingPresetMutation"
 import { updateShippingPresetMutation } from "./ShippingPreset/updateShippingPresetMutation"
@@ -503,7 +524,6 @@ import { updatePurchaseMutation } from "./Purchases/updatePurchaseMutation"
 import { deletePurchaseMutation } from "./Purchases/deletePurchaseMutation"
 import { createPurchaseMutation } from "./Purchases/createPurchaseMutation"
 import { bulkAddArtworksToShowMutation } from "./partner/BulkOperation/bulkAddArtworksToShowMutation"
-import { AI } from "./ai"
 import { AIAgentTurn } from "./ai/agent"
 import { createAIAgentFeedbackMutation } from "./ai/agent/createAIAgentFeedbackMutation"
 import { Video } from "./video/video"
@@ -540,7 +560,6 @@ const rootFields = {
   },
   agreement: Agreement,
   admin: AdminField,
-  ai: AI,
   article: Article,
   articles: Articles,
   articlesConnection: ArticlesConnection,
@@ -632,6 +651,8 @@ const rootFields = {
   crmContact,
   crmContactsConnection,
   crmActivitiesConnection,
+  emailSenderReview,
+  emailSenderReviewsConnection,
   crmContactEmail,
   crmContactEmailsConnection,
   crmContactLocation,
@@ -747,6 +768,8 @@ export default new GraphQLSchema({
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
       createAppSecondFactor: createAppSecondFactorMutation,
       createArtist: createArtistMutation,
+      createArtistStory: createArtistStoryMutation,
+      createArtistStoryVideo: createArtistStoryVideoMutation,
       createArtworkImport: CreateArtworkImportMutation,
       createArtworkTemplate: CreateArtworkTemplateMutation,
       createArtworkFromTemplate: CreateArtworkFromTemplateMutation,
@@ -791,9 +814,11 @@ export default new GraphQLSchema({
       authorizeEmailAccount: authorizeEmailAccountMutation,
       completeEmailOAuth: completeEmailOAuthMutation,
       deleteEmailAccount: deleteEmailAccountMutation,
+      refreshArtistAccentColorOptions: refreshArtistAccentColorOptionsMutation,
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
       syncEmailAccount: syncEmailAccountMutation,
+      replyToEmailMessage: replyToEmailMessageMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
       completeInstagramOAuth: completeInstagramOAuthMutation,
       deleteInstagramAccount: deleteInstagramAccountMutation,
@@ -807,6 +832,9 @@ export default new GraphQLSchema({
       updateCRMContact: updateCRMContactMutation,
       archiveCRMContact: archiveCRMContactMutation,
       unarchiveCRMContact: unarchiveCRMContactMutation,
+      approveEmailSenderReview: approveEmailSenderReviewMutation,
+      skipEmailSenderReview: skipEmailSenderReviewMutation,
+      unskipEmailSenderReview: unskipEmailSenderReviewMutation,
       createCRMContactEmail: createCRMContactEmailMutation,
       updateCRMContactEmail: updateCRMContactEmailMutation,
       deleteCRMContactEmail: deleteCRMContactEmailMutation,
@@ -820,6 +848,8 @@ export default new GraphQLSchema({
       deleteBrandKitLogo: deleteBrandKitLogoMutation,
       publishPartnerListPublication: publishPartnerListPublicationMutation,
       unpublishPartnerListPublication: unpublishPartnerListPublicationMutation,
+      updatePartnerListPublicationCoverImage: updatePartnerListPublicationCoverImageMutation,
+      deletePartnerListPublicationCoverImage: deletePartnerListPublicationCoverImageMutation,
       authenticatePrivateViewingRoom: authenticatePrivateViewingRoomMutation,
       createPurchase: createPurchaseMutation,
       createSaleAgreement: CreateSaleAgreementMutation,
@@ -838,6 +868,9 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtnetArtwork: deleteArtnetArtworkMutation,
+      deleteArtistStory: deleteArtistStoryMutation,
+      deleteArtistStoryVideo: deleteArtistStoryVideoMutation,
       deleteNavigationItem: deleteNavigationItemMutation,
       deleteArtwork: deleteArtworkMutation,
       discardNavigationDraft: discardNavigationDraftMutation,
@@ -954,7 +987,10 @@ export default new GraphQLSchema({
       updateAppSecondFactor: updateAppSecondFactorMutation,
       updateArtist: updateArtistMutation,
       updateArtistSocials: updateArtistSocialsMutation,
+      updateArtistStory: updateArtistStoryMutation,
+      updateArtistStoryVideo: updateArtistStoryVideoMutation,
       updateArtnetArtwork: updateArtnetArtworkMutation,
+      updateArtnetEditionSet: updateArtnetEditionSetMutation,
       updateCatalogArtwork: updateCatalogArtworkMutation,
       updateCatalogEditionSet: updateCatalogEditionSetMutation,
       updateCityArticle: updateCityArticleMutation,
