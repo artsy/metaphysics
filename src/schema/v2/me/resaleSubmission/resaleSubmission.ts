@@ -1,6 +1,7 @@
 import {
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -15,6 +16,42 @@ export const ResaleSubmissionChannelEnum = new GraphQLEnumType({
   values: {
     AUCTION: { value: "auction" },
     MARKETPLACE: { value: "marketplace" },
+  },
+})
+
+export const ResaleSubmissionCourierHandoffEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionCourierHandoff",
+  values: {
+    COURIER_PICKUP: { value: "courier_pickup" },
+    NO_PREFERENCE: { value: "no_preference" },
+    SELLER_DROPOFF: { value: "seller_dropoff" },
+  },
+})
+
+export const ResaleSubmissionPackagingEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionPackaging",
+  values: {
+    FRAMED: { value: "framed" },
+    NO_PREFERENCE: { value: "no_preference" },
+    ROLLED: { value: "rolled" },
+  },
+})
+
+export const ResaleSubmissionPackerEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionPacker",
+  values: {
+    COURIER: { value: "courier" },
+    NO_PREFERENCE: { value: "no_preference" },
+    SELLER: { value: "seller" },
+  },
+})
+
+export const ResaleSubmissionRejectionReasonEnum = new GraphQLEnumType({
+  name: "ResaleSubmissionRejectionReason",
+  values: {
+    MEDIUM_NOT_SUPPORTED: { value: "medium_not_supported" },
+    NOT_PURCHASED_ON_ARTSY: { value: "not_purchased_on_artsy" },
+    OUTSIDE_US: { value: "outside_us" },
   },
 })
 
@@ -60,7 +97,29 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
         type: ResaleSubmissionChannelEnum,
         description: "Auction, marketplace, or null if rejected.",
       },
+      courierHandoff: {
+        type: ResaleSubmissionCourierHandoffEnum,
+        description:
+          "The seller’s answer to how the work will get to its buyer.",
+        resolve: ({ courier_handoff }) => courier_handoff,
+      },
       createdAt: date(),
+      missingRequirements: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description:
+          "Answers still needed before the submission can be listed.",
+        resolve: ({ missing_requirements }) => missing_requirements ?? [],
+      },
+      packaging: {
+        type: ResaleSubmissionPackagingEnum,
+        description: "The seller’s answer to how the work will be packed.",
+      },
+      packer: {
+        type: ResaleSubmissionPackerEnum,
+        description: "The seller’s answer to who will pack the work.",
+      },
       priceListed: {
         ...moneyFromMinorField("price_listed_minor"),
         description: "The seller’s asking price.",
@@ -74,6 +133,15 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
         ...moneyFromMinorField("recommended_price_min_minor"),
         description:
           "Lower end of recommended price range, per automated valuation.",
+      },
+      rejectionReasons: {
+        type: new GraphQLNonNull(
+          new GraphQLList(
+            new GraphQLNonNull(ResaleSubmissionRejectionReasonEnum)
+          )
+        ),
+        description: "Why the submission was rejected.",
+        resolve: ({ rejection_reasons }) => rejection_reasons ?? [],
       },
       state: {
         type: new GraphQLNonNull(ResaleSubmissionStateEnum),

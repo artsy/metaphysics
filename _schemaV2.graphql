@@ -36248,6 +36248,11 @@ type ResaleSubmission {
   Auction, marketplace, or null if rejected.
   """
   channel: ResaleSubmissionChannel
+
+  """
+  The seller’s answer to how the work will get to its buyer.
+  """
+  courierHandoff: ResaleSubmissionCourierHandoff
   createdAt(
     format: String
 
@@ -36268,6 +36273,21 @@ type ResaleSubmission {
   internalID: ID!
 
   """
+  Answers still needed before the submission can be listed.
+  """
+  missingRequirements: [String!]!
+
+  """
+  The seller’s answer to how the work will be packed.
+  """
+  packaging: ResaleSubmissionPackaging
+
+  """
+  The seller’s answer to who will pack the work.
+  """
+  packer: ResaleSubmissionPacker
+
+  """
   The seller’s asking price.
   """
   priceListed: Money
@@ -36281,6 +36301,11 @@ type ResaleSubmission {
   Lower end of recommended price range, per automated valuation.
   """
   recommendedPriceMin: Money
+
+  """
+  Why the submission was rejected.
+  """
+  rejectionReasons: [ResaleSubmissionRejectionReason!]!
   state: ResaleSubmissionState!
 
   """
@@ -36300,6 +36325,30 @@ type ResaleSubmission {
 enum ResaleSubmissionChannel {
   AUCTION
   MARKETPLACE
+}
+
+enum ResaleSubmissionCourierHandoff {
+  COURIER_PICKUP
+  NO_PREFERENCE
+  SELLER_DROPOFF
+}
+
+enum ResaleSubmissionPackaging {
+  FRAMED
+  NO_PREFERENCE
+  ROLLED
+}
+
+enum ResaleSubmissionPacker {
+  COURIER
+  NO_PREFERENCE
+  SELLER
+}
+
+enum ResaleSubmissionRejectionReason {
+  MEDIUM_NOT_SUPPORTED
+  NOT_PURCHASED_ON_ARTSY
+  OUTSIDE_US
 }
 
 enum ResaleSubmissionState {

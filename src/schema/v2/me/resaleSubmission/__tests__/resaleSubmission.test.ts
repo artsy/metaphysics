@@ -10,6 +10,7 @@ const query = gql`
         internalID
         state
         channel
+        rejectionReasons
         submittedArtworkID
         priceListed {
           minor
@@ -24,6 +25,10 @@ const query = gql`
           minor
           currencyCode
         }
+        packaging
+        packer
+        courierHandoff
+        missingRequirements
         canceledAt
         createdAt(format: "YYYY-MM-DD")
         updatedAt(format: "YYYY-MM-DD")
@@ -38,10 +43,15 @@ const acceptedSubmission = {
   submitted_artwork_id: "artwork-1",
   state: "accepted",
   channel: "marketplace",
+  rejection_reasons: [],
   price_currency_code: "USD",
   price_listed_minor: 250000,
   recommended_price_min_minor: 200000,
   recommended_price_max_minor: 300000,
+  packaging: "framed",
+  packer: "courier",
+  courier_handoff: "seller_dropoff",
+  missing_requirements: [],
   canceled_at: null,
   created_at: "2026-11-12T10:00:00.000Z",
   updated_at: "2026-11-12T11:00:00.000Z",
@@ -74,6 +84,7 @@ describe("me.resaleSubmission", () => {
       internalID: "submission-1",
       state: "ACCEPTED",
       channel: "MARKETPLACE",
+      rejectionReasons: [],
       submittedArtworkID: "artwork-1",
       priceListed: {
         minor: 250000,
@@ -82,6 +93,10 @@ describe("me.resaleSubmission", () => {
       },
       recommendedPriceMin: { minor: 200000, currencyCode: "USD" },
       recommendedPriceMax: { minor: 300000, currencyCode: "USD" },
+      packaging: "FRAMED",
+      packer: "COURIER",
+      courierHandoff: "SELLER_DROPOFF",
+      missingRequirements: [],
       canceledAt: null,
       createdAt: "2026-11-12",
       updatedAt: "2026-11-12",
@@ -105,12 +120,13 @@ describe("me.resaleSubmission", () => {
     expect(response.me.resaleSubmission.recommendedPriceMax).toBeNull()
   })
 
-  it("returns a rejected submission with no channel", async () => {
+  it("returns a rejected submission with its reasons and no channel", async () => {
     context.meResaleSubmissionLoader = jest.fn(() =>
       Promise.resolve({
         ...acceptedSubmission,
         state: "rejected",
         channel: null,
+        rejection_reasons: ["medium_not_supported", "outside_us"],
       })
     )
 
@@ -118,6 +134,88 @@ describe("me.resaleSubmission", () => {
 
     expect(response.me.resaleSubmission.state).toEqual("REJECTED")
     expect(response.me.resaleSubmission.channel).toBeNull()
+    expect(response.me.resaleSubmission.rejectionReasons).toEqual([
+      "MEDIUM_NOT_SUPPORTED",
+      "OUTSIDE_US",
+    ])
+  })
+
+  it("maps every rejection reason Gravity defines", async () => {
+    context.meResaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...acceptedSubmission,
+        state: "rejected",
+        channel: null,
+        rejection_reasons: [
+          "medium_not_supported",
+          "not_purchased_on_artsy",
+          "outside_us",
+        ],
+      })
+    )
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.resaleSubmission.rejectionReasons).toEqual([
+      "MEDIUM_NOT_SUPPORTED",
+      "NOT_PURCHASED_ON_ARTSY",
+      "OUTSIDE_US",
+    ])
+  })
+
+  it("returns missing requirements so clients can resume a draft", async () => {
+    context.meResaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...acceptedSubmission,
+        price_listed_minor: null,
+        packaging: null,
+        packer: null,
+        courier_handoff: null,
+        missing_requirements: [
+          "price_listed_minor",
+          "packaging",
+          "packer",
+          "courier_handoff",
+        ],
+      })
+    )
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.resaleSubmission.missingRequirements).toEqual([
+      "price_listed_minor",
+      "packaging",
+      "packer",
+      "courier_handoff",
+    ])
+    expect(response.me.resaleSubmission.packaging).toBeNull()
+  })
+
+  it("maps every shipping preference Gravity defines", async () => {
+    const cases = [
+      { field: "packaging", values: ["framed", "rolled", "no_preference"] },
+      { field: "packer", values: ["seller", "courier", "no_preference"] },
+      {
+        field: "courier_handoff",
+        values: ["seller_dropoff", "courier_pickup", "no_preference"],
+      },
+    ]
+
+    for (const { field, values } of cases) {
+      for (const value of values) {
+        context.meResaleSubmissionLoader = jest.fn(() =>
+          Promise.resolve({ ...acceptedSubmission, [field]: value })
+        )
+
+        const response = await runAuthenticatedQuery(query, context)
+        const graphqlField =
+          field === "courier_handoff" ? "courierHandoff" : field
+
+        expect(response.me.resaleSubmission[graphqlField]).toEqual(
+          value.toUpperCase()
+        )
+      }
+    }
   })
 
   it("propagates a Gravity 404", async () => {
