@@ -1130,6 +1130,9 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
 
+    meResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}`
+    ),
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
     modelChangesLoader: gravityLoader("model_changes", {}, { headers: true }),

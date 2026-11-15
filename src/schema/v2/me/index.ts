@@ -36,6 +36,7 @@ import {
 } from "../Alerts"
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
 import { GuidedTourField } from "./guidedTour"
+import { ResaleSubmissionType } from "./resaleSubmission/resaleSubmission"
 import { artworkConnection } from "../artwork"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
@@ -695,6 +696,22 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     newWorksFromGalleriesYouFollowConnection: newWorksFromGalleriesYouFollow,
+    resaleSubmission: {
+      type: ResaleSubmissionType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: async (
+        _parent,
+        { id: submissionID },
+        { meResaleSubmissionLoader }
+      ) => {
+        if (!meResaleSubmissionLoader) return null
+        return meResaleSubmissionLoader(submissionID)
+      },
+    },
     saleRegistrationsConnection: SaleRegistrationConnection,
     secondFactors: {
       type: new GraphQLList(SecondFactorInterface),
@@ -873,6 +890,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "artworkRecommendations",
       "addressConnection",
       "basedOnUserSaves",
+      "resaleSubmission",
     ]
 
     if (xImpersonateUserID) {

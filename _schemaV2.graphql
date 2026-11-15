@@ -25036,6 +25036,7 @@ type Me implements Node {
     @deprecated(
       reason: "These genomic recs are deprecated. Use artworkRecommendations instead."
     )
+  resaleSubmission(id: String!): ResaleSubmission
   saleRegistrationsConnection(
     after: String
     auctionState: AuctionState
@@ -36228,6 +36229,85 @@ type RequestPriceEstimatedMutationFailure {
 
 type RequestPriceEstimatedMutationSuccess {
   submittedPriceEstimateParams: SubmittedPriceEstimateParams
+}
+
+"""
+A collector’s request to resell a work from their My Collection.
+"""
+type ResaleSubmission {
+  canceledAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  Auction, marketplace, or null if rejected.
+  """
+  channel: ResaleSubmissionChannel
+  createdAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+
+  """
+  The seller’s asking price.
+  """
+  priceListed: Money
+
+  """
+  Upper end of recommended price range, per automated valuation.
+  """
+  recommendedPriceMax: Money
+
+  """
+  Lower end of recommended price range, per automated valuation.
+  """
+  recommendedPriceMin: Money
+  state: ResaleSubmissionState!
+
+  """
+  ID of the My Collection artwork being resold.
+  """
+  submittedArtworkID: String!
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+}
+
+enum ResaleSubmissionChannel {
+  AUCTION
+  MARKETPLACE
+}
+
+enum ResaleSubmissionState {
+  ACCEPTED
+  AUCTION_REVIEW
+  CANCELED
+  LISTED
+  REJECTED
 }
 
 type ResizedImageUrl {
