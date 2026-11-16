@@ -124,8 +124,17 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ partner_id }) => partner_id,
     },
     kind: { type: CRMActivityKindEnum },
+    subject: {
+      type: GraphQLString,
+      description: "Subject of a note. Null for activities that are not notes",
+    },
+    description: {
+      type: GraphQLString,
+      description: "Text of a note. Null for activities that are not notes",
+    },
     occurredAt: date(),
     createdAt: date(),
+    updatedAt: date(),
     emailMessage: {
       type: EmailMessageType,
       description: "Null for activities that are not emails",

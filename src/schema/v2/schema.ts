@@ -330,6 +330,11 @@ import {
   unskipEmailSenderReviewMutation,
 } from "./crmContact/emailSenderReviewMutations"
 import {
+  createCRMActivityNoteMutation,
+  deleteCRMActivityNoteMutation,
+  updateCRMActivityNoteMutation,
+} from "./crmContact/crmActivityMutations"
+import {
   createCRMContactEmailMutation,
   deleteCRMContactEmailMutation,
   updateCRMContactEmailMutation,
@@ -839,6 +844,9 @@ export default new GraphQLSchema({
       approveEmailSenderReview: approveEmailSenderReviewMutation,
       skipEmailSenderReview: skipEmailSenderReviewMutation,
       unskipEmailSenderReview: unskipEmailSenderReviewMutation,
+      createCRMActivityNote: createCRMActivityNoteMutation,
+      updateCRMActivityNote: updateCRMActivityNoteMutation,
+      deleteCRMActivityNote: deleteCRMActivityNoteMutation,
       createCRMContactEmail: createCRMContactEmailMutation,
       updateCRMContactEmail: updateCRMContactEmailMutation,
       deleteCRMContactEmail: deleteCRMContactEmailMutation,
