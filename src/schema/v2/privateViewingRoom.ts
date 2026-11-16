@@ -35,6 +35,12 @@ const contentFields = () => ({
     type: BrandKitType,
     resolve: ({ brand_kit }) => brand_kit,
   },
+  coverImageURL: {
+    type: GraphQLString,
+    description:
+      "URL of the room's cover image as of the last publish (viewing rooms rebuild), for the hero banner. Omitted without a cover, and for a gated room until authenticated.",
+    resolve: ({ cover_image_url }) => cover_image_url,
+  },
   artworks: {
     type: new GraphQLList(new GraphQLNonNull(PrivateViewingRoomArtworkType)),
     resolve: ({ artworks }) => artworks,

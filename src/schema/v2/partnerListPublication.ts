@@ -137,7 +137,7 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     coverImage: {
       type: Image.type,
       description:
-        "Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.",
+        "Cover image for the room's hero banner (viewing rooms rebuild), as currently uploaded. Visitors see the one from the last publish, via PrivateViewingRoom.coverImageURL.",
       resolve: ({ cover_image }) => {
         if (!cover_image) return null
         return {
