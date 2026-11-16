@@ -91,6 +91,64 @@ describe("CatalogArtwork.artnetArtwork", () => {
     })
   })
 
+  it("returns where a Delete stands", async () => {
+    const query = gql`
+      {
+        artwork(id: "some-artwork") {
+          catalogArtwork {
+            artnetArtwork {
+              deleteInFlight
+              lastDeleteMessages
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithArtnetArtwork({
+        id: "artnet-artwork-id",
+        delete_in_flight: false,
+        last_delete_messages: ["Unable to read artwork data"],
+      }),
+    })
+
+    expect(data).toEqual({
+      artwork: {
+        catalogArtwork: {
+          artnetArtwork: {
+            deleteInFlight: false,
+            lastDeleteMessages: ["Unable to read artwork data"],
+          },
+        },
+      },
+    })
+  })
+
+  it("reads no Delete when Gravity does not send the Delete state", async () => {
+    const query = gql`
+      {
+        artwork(id: "some-artwork") {
+          catalogArtwork {
+            artnetArtwork {
+              deleteInFlight
+              lastDeleteMessages
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithArtnetArtwork({ id: "artnet-artwork-id" }),
+    })
+
+    expect(data.artwork.catalogArtwork.artnetArtwork).toEqual({
+      deleteInFlight: false,
+      lastDeleteMessages: [],
+    })
+  })
+
   it("returns an empty list when additional_mediums is not present", async () => {
     const query = gql`
       {

@@ -377,4 +377,86 @@ describe("updateArtnetArtwork mutation", () => {
       },
     })
   })
+
+  it("passes image changes to Gravity and returns the image records", async () => {
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+      separate_image_sets: true,
+      artnet_artwork_images: [
+        {
+          id: "image-1",
+          status: "on_artnet",
+          artnet_image_id: "9/a.jpg",
+          additional_image_id: null,
+          image_url: "https://images.example.com/member-images/9/a.jpg",
+        },
+        {
+          id: "image-2",
+          status: "pending_add",
+          artnet_image_id: null,
+          additional_image_id: "artsy-image-1",
+          image_url: null,
+        },
+      ],
+    })
+
+    const data = await runAuthenticatedQuery(
+      `
+        mutation {
+          updateArtnetArtwork(
+            input: {
+              id: "artnet-artwork-1"
+              syncImages: true
+              addImageIDs: ["artsy-image-1"]
+              removeImageIDs: ["image-3"]
+              uploadImageS3Locations: [{ bucket: "uploads", key: "a/b.jpg" }]
+              copyImageIDs: ["image-4"]
+            }
+          ) {
+            artnetArtworkOrError {
+              ... on UpdateArtnetArtworkSuccess {
+                artnetArtwork {
+                  hasSeparateImageSets
+                  images {
+                    internalID
+                    status
+                    imageURL
+                    artsyImageID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      { updateArtnetArtworkLoader }
+    )
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      sync_images: true,
+      add_image_ids: ["artsy-image-1"],
+      remove_image_ids: ["image-3"],
+      upload_locations: [{ bucket: "uploads", key: "a/b.jpg" }],
+      copy_image_ids: ["image-4"],
+    })
+    expect(data.updateArtnetArtwork.artnetArtworkOrError.artnetArtwork).toEqual(
+      {
+        hasSeparateImageSets: true,
+        images: [
+          {
+            internalID: "image-1",
+            status: "ON_ARTNET",
+            imageURL: "https://images.example.com/member-images/9/a.jpg",
+            artsyImageID: null,
+          },
+          {
+            internalID: "image-2",
+            status: "PENDING_ADD",
+            imageURL: null,
+            artsyImageID: "artsy-image-1",
+          },
+        ],
+      }
+    )
+  })
 })

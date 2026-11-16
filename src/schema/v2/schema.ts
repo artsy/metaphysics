@@ -176,6 +176,7 @@ import { ArtnetImport } from "./artnet/artnetImport"
 import { CreateArtnetImportArtistAssignmentMutation } from "./artnet/createArtnetImportArtistAssignmentMutation"
 import { createArtnetArtworkMutation } from "./artnet/createArtnetArtworkMutation"
 import { updateArtnetArtworkMutation } from "./artnet/updateArtnetArtworkMutation"
+import { deleteArtnetArtworkMutation } from "./artnet/deleteArtnetArtworkMutation"
 import { finalizeArtnetImportMutation } from "./artnet/finalizeArtnetImportMutation"
 import { updateArtnetEditionSetMutation } from "./artnet/updateArtnetEditionSetMutation"
 import { createArtworkMutation } from "./artwork/createArtworkMutation"
@@ -867,6 +868,7 @@ export default new GraphQLSchema({
       createViewingRoom: createViewingRoomMutation,
       deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
+      deleteArtnetArtwork: deleteArtnetArtworkMutation,
       deleteArtistStory: deleteArtistStoryMutation,
       deleteArtistStoryVideo: deleteArtistStoryVideoMutation,
       deleteNavigationItem: deleteNavigationItemMutation,

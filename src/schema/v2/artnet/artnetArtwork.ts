@@ -13,6 +13,10 @@ import {
   ArtnetEditionSetGravityResponse,
   ArtnetEditionSetType,
 } from "./artnetEditionSet"
+import {
+  ArtnetArtworkImageGravityResponse,
+  ArtnetArtworkImageType,
+} from "./artnetArtworkImage"
 
 export interface ArtnetArtworkGravityResponse {
   id: string
@@ -27,7 +31,12 @@ export interface ArtnetArtworkGravityResponse {
   price_from_minor: number | null
   price_to_minor: number | null
   published: boolean
+  // Absent from a Gravity that predates deleting, so both are read with defaults.
+  delete_in_flight?: boolean
+  last_delete_messages?: string[]
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
+  artnet_artwork_images: ArtnetArtworkImageGravityResponse[]
+  separate_image_sets: boolean
   created_at: string
   updated_at: string
 }
@@ -93,9 +102,33 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       type: GraphQLBoolean,
       description: "Whether the artwork is published on Artnet.",
     },
+    deleteInFlight: {
+      type: GraphQLBoolean,
+      description:
+        "Whether a Delete pushed to Artnet has not settled yet. Edits are refused while it has not.",
+      resolve: ({ delete_in_flight }) => delete_in_flight ?? false,
+    },
+    lastDeleteMessages: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "What came back for the latest Delete pushed to Artnet: Artnet's messages when it settled the Delete without confirming the artwork is gone (the ArtnetArtwork is then kept), or Gravity's reason if it gave up waiting. Empty while the Delete is pending, or when none was pushed.",
+      resolve: ({ last_delete_messages }) => last_delete_messages ?? [],
+    },
     artnetEditionSets: {
       type: new GraphQLList(ArtnetEditionSetType),
       resolve: ({ artnet_edition_sets }) => artnet_edition_sets ?? [],
+    },
+    images: {
+      type: new GraphQLList(ArtnetArtworkImageType),
+      description:
+        "The images Artnet holds for this artwork, and those sent to it.",
+      resolve: ({ artnet_artwork_images }) => artnet_artwork_images ?? [],
+    },
+    hasSeparateImageSets: {
+      type: GraphQLBoolean,
+      description:
+        "Artnet holds images the Artsy artwork does not. `syncImages` then does nothing, and Artnet's images change only through `addImageIDs`, `removeImageIDs` and `uploadImageS3Locations` on `updateArtnetArtwork`.",
+      resolve: ({ separate_image_sets }) => !!separate_image_sets,
     },
     createdAt: date(),
     updatedAt: date(),
