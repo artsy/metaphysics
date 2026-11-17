@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -9,6 +10,11 @@ import {
 import { ResolverContext } from "types/graphql"
 import { BrandKitType } from "./partner/brandKit"
 import { PrivateViewingRoomArtworkType } from "./privateViewingRoomArtwork"
+import {
+  ViewingRoomArtworkLayoutEnum,
+  ViewingRoomHeroStyleEnum,
+  ViewingRoomTextAlignmentEnum,
+} from "./partnerListPublication"
 
 // Shared by PrivateViewingRoomType and PrivateViewingRoomContentsType — every
 // field Gravity's room_json actually returns, regardless of whether it's
@@ -40,6 +46,30 @@ const contentFields = () => ({
     description:
       "URL of the room's cover image as of the last publish (viewing rooms rebuild), for the hero banner. Omitted without a cover, and for a gated room until authenticated.",
     resolve: ({ cover_image_url }) => cover_image_url,
+  },
+  heroStyle: {
+    type: ViewingRoomHeroStyleEnum,
+    description:
+      "Hero banner style (viewing rooms rebuild). Omitted on a room published before the rebuild, which keeps its original layout, and for a gated room until authenticated.",
+    resolve: ({ hero_style }) => hero_style,
+  },
+  textAlignment: {
+    type: ViewingRoomTextAlignmentEnum,
+    description:
+      "Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.",
+    resolve: ({ text_alignment }) => text_alignment,
+  },
+  artworkLayout: {
+    type: ViewingRoomArtworkLayoutEnum,
+    description:
+      "Artworks as a grid or masonry (viewing rooms rebuild). Omitted like heroStyle.",
+    resolve: ({ artwork_layout }) => artwork_layout,
+  },
+  artworkColumns: {
+    type: GraphQLInt,
+    description:
+      "Number of artwork columns, 2 to 4 (viewing rooms rebuild). Omitted like heroStyle.",
+    resolve: ({ artwork_columns }) => artwork_columns,
   },
   artworks: {
     type: new GraphQLList(new GraphQLNonNull(PrivateViewingRoomArtworkType)),
