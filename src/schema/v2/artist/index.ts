@@ -624,13 +624,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             },
             articles: {
               type: GraphQLInt,
-              resolve: ({ _id }, _options, { articlesLoader }) =>
-                articlesLoader({
-                  artist_id: _id,
-                  published: true,
-                  limit: 0,
-                  count: true,
-                }).then(({ count }) => count),
+              resolve: ({ _id }, _options, { articleCountsLoader }) =>
+                articleCountsLoader({ artistId: _id }),
             },
             ecommerceArtworks: numeral(
               ({ ecommerce_artworks_count }) => ecommerce_artworks_count
