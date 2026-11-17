@@ -122,7 +122,7 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     curatorialText: {
       type: GraphQLString,
       description:
-        "Long plain-text curatorial text introducing the works (viewing rooms rebuild). Not shown to visitors yet.",
+        "Long plain-text curatorial text introducing the works (viewing rooms rebuild).",
       resolve: ({ curatorial_text }) => curatorial_text,
     },
     showGalleryName: {

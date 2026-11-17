@@ -248,4 +248,41 @@ describe("PrivateViewingRoom", () => {
       })
     })
   })
+
+  describe("curatorialText", () => {
+    const curatorialQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          curatorialText
+        }
+      }
+    `
+
+    it("returns the curatorial text, keeping its paragraph breaks", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          curatorial_text: "First paragraph.\n\nSecond paragraph.",
+        }),
+      }
+
+      const result = await runQuery(curatorialQuery, context)
+
+      expect(result.privateViewingRoom.curatorialText).toBe(
+        "First paragraph.\n\nSecond paragraph."
+      )
+    })
+
+    it("is null when the gallery added none", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(curatorialQuery, context)
+
+      expect(result.privateViewingRoom.curatorialText).toBeNull()
+    })
+  })
 })
