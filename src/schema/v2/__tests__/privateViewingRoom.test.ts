@@ -197,4 +197,55 @@ describe("PrivateViewingRoom", () => {
       expect(result.privateViewingRoom.coverImageURL).toBeNull()
     })
   })
+
+  describe("layout", () => {
+    const layoutQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          heroStyle
+          textAlignment
+          artworkLayout
+          artworkColumns
+        }
+      }
+    `
+
+    it("returns the layout of a room published with one", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          hero_style: "full_image",
+          text_alignment: "center",
+          artwork_layout: "masonry",
+          artwork_columns: 4,
+        }),
+      }
+
+      const result = await runQuery(layoutQuery, context)
+
+      expect(result.privateViewingRoom).toEqual({
+        heroStyle: "FULL_IMAGE",
+        textAlignment: "CENTER",
+        artworkLayout: "MASONRY",
+        artworkColumns: 4,
+      })
+    })
+
+    it("is null on a room published before the rebuild", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(layoutQuery, context)
+
+      expect(result.privateViewingRoom).toEqual({
+        heroStyle: null,
+        textAlignment: null,
+        artworkLayout: null,
+        artworkColumns: null,
+      })
+    })
+  })
 })
