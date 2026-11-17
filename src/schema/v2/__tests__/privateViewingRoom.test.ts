@@ -160,4 +160,41 @@ describe("PrivateViewingRoom", () => {
       "Isabel Croxatto Galeria"
     )
   })
+
+  describe("coverImageURL", () => {
+    const coverQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          coverImageURL
+        }
+      }
+    `
+
+    it("returns the cover image from the last publish", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          cover_image_url: "https://example.com/cover-wide.jpg",
+        }),
+      }
+
+      const result = await runQuery(coverQuery, context)
+
+      expect(result.privateViewingRoom.coverImageURL).toBe(
+        "https://example.com/cover-wide.jpg"
+      )
+    })
+
+    it("is null without a cover", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(coverQuery, context)
+
+      expect(result.privateViewingRoom.coverImageURL).toBeNull()
+    })
+  })
 })

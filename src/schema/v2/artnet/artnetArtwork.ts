@@ -17,6 +17,10 @@ import {
   ArtnetArtworkImageGravityResponse,
   ArtnetArtworkImageType,
 } from "./artnetArtworkImage"
+import {
+  ArtnetPushMessagesGravityResponse,
+  ArtnetPushMessagesType,
+} from "./artnetPushMessages"
 
 export interface ArtnetArtworkGravityResponse {
   id: string
@@ -37,6 +41,7 @@ export interface ArtnetArtworkGravityResponse {
   artnet_edition_sets: ArtnetEditionSetGravityResponse[]
   artnet_artwork_images: ArtnetArtworkImageGravityResponse[]
   separate_image_sets: boolean
+  push_messages?: ArtnetPushMessagesGravityResponse | null
   created_at: string
   updated_at: string
 }
@@ -129,6 +134,12 @@ export const ArtnetArtworkType = new GraphQLObjectType<
       description:
         "Artnet holds images the Artsy artwork does not. `syncImages` then does nothing, and Artnet's images change only through `addImageIDs`, `removeImageIDs` and `uploadImageS3Locations` on `updateArtnetArtwork`.",
       resolve: ({ separate_image_sets }) => !!separate_image_sets,
+    },
+    pushMessages: {
+      type: ArtnetPushMessagesType,
+      description:
+        "What the last push of this artwork to Artnet had to say, if anything. Null once a later push settles cleanly — a working push is what clears these, nothing acknowledges them.",
+      resolve: ({ push_messages }) => push_messages ?? null,
     },
     createdAt: date(),
     updatedAt: date(),

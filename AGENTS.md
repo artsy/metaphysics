@@ -87,4 +87,13 @@ outputFields: {
 - Jest for testing with descriptive test names — see [docs/testing.md](docs/testing.md) for query helpers and conventions
 - GraphQL queries use the `gql` tag from lib/gql
 - Organize imports logically (internal vs external)
+- Organize lists (field definitions, enum definitions) alphabetically
+  - When inserting into an existing list, maintain alphabetical order even if the list is imperfectly alphabetized
 - Follow React best practices for component structure
+
+## Typography
+
+- For user-facing strings (or developer-facing documentation) follow standard typographical style
+  - Typographical quotes, e.g “this” and ‘that’ and possessives’ as well
+  - En dashes for numerical ranges, e.g. 0–42
+  - Ellipses, e.g. this…
