@@ -1017,6 +1017,11 @@ export default (accessToken, userID, opts) => {
     ),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meCancelResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}/cancel`,
+      {},
+      { method: "POST" }
+    ),
     meCityShowsLoader: gravityLoader("me/city_shows", {}, { headers: true }),
     meUpdateCollectionsLoader: gravityLoader(
       "me/collections",
@@ -1025,6 +1030,11 @@ export default (accessToken, userID, opts) => {
     ),
     meCollectorProfileLoader: gravityLoader("me/collector_profile"),
     meCreateAlertLoader: gravityLoader("me/alert", {}, { method: "POST" }),
+    meCreateResaleSubmissionLoader: gravityLoader(
+      "me/resale_submission",
+      {},
+      { method: "POST" }
+    ),
     meCreateUserInterestLoader: gravityLoader(
       "me/user_interest",
       {},
@@ -1088,6 +1098,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    meUpdateResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     meUserInterestLoader: gravityLoader((id) => `me/user_interest/${id}`),
     meUserInterestsLoader: gravityLoader(
       "me/user_interests",
@@ -1130,6 +1145,14 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
 
+    meResaleSubmissionLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}`
+    ),
+    meResaleSubmissionsLoader: gravityLoader(
+      "me/resale_submissions",
+      {},
+      { headers: true }
+    ),
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
     modelChangesLoader: gravityLoader("model_changes", {}, { headers: true }),
