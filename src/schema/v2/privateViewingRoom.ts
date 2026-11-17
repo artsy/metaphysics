@@ -33,6 +33,12 @@ const contentFields = () => ({
   description: {
     type: GraphQLString,
   },
+  curatorialText: {
+    type: GraphQLString,
+    description:
+      "Long plain-text curatorial text introducing the works (viewing rooms rebuild). Omitted when the gallery didn't add any, and for a gated room until authenticated.",
+    resolve: ({ curatorial_text }) => curatorial_text,
+  },
   applyBrand: {
     type: GraphQLBoolean,
     resolve: ({ apply_brand }) => apply_brand,
