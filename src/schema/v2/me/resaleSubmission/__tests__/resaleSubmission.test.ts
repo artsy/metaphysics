@@ -34,6 +34,8 @@ const query = gql`
         packaging
         packer
         courierHandoff
+        condition
+        conditionDescription
         missingRequirements
         notes
         canceledAt
@@ -58,6 +60,8 @@ const acceptedSubmission = {
   packaging: "framed",
   packer: "courier",
   courier_handoff: "seller_dropoff",
+  condition: "good",
+  condition_description: null,
   missing_requirements: [],
   notes: "Small tear on the verso",
   canceled_at: null,
@@ -104,6 +108,8 @@ describe("me.resaleSubmission", () => {
       packaging: "FRAMED",
       packer: "COURIER",
       courierHandoff: "SELLER_DROPOFF",
+      condition: "GOOD",
+      conditionDescription: null,
       missingRequirements: [],
       notes: "Small tear on the verso",
       canceledAt: null,

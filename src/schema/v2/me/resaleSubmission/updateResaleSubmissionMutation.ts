@@ -11,6 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { majorToMinor } from "lib/moneyHelpers"
+import { ArtworkConditionEnum } from "schema/v2/artwork/artworkCondition"
 import { ResolverContext } from "types/graphql"
 import {
   ResaleSubmissionCourierHandoffEnum,
@@ -23,6 +24,8 @@ import {
 const MAX_IMAGE_URLS = 10
 
 interface Input {
+  condition?: string | null
+  conditionDescription?: string | null
   courierHandoff?: string | null
   externalImageUrls?: string[] | null
   id: string
@@ -71,8 +74,17 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
 >({
   name: "UpdateResaleSubmission",
   description:
-    "Update the asking price, shipping preferences, condition photos and notes of a resale submission. Omitted or null fields are left unchanged.",
+    "Update the condition, asking price, shipping preferences, condition photos and notes of a resale submission. Omitted or null fields are left unchanged.",
   inputFields: {
+    condition: {
+      type: ArtworkConditionEnum,
+      description: "The work’s condition.",
+    },
+    conditionDescription: {
+      type: GraphQLString,
+      description:
+        "Notes on changes or flaws in the work. An empty string clears them.",
+    },
     courierHandoff: {
       type: ResaleSubmissionCourierHandoffEnum,
       description: "How the work will get to its buyer.",
@@ -113,6 +125,8 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      condition,
+      conditionDescription,
       courierHandoff,
       externalImageUrls,
       id,
@@ -152,6 +166,10 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     if (packer != null) gravityParams.packer = packer
     if (courierHandoff != null) gravityParams.courier_handoff = courierHandoff
     if (notes != null) gravityParams.notes = notes
+    if (condition != null) gravityParams.condition = condition
+    if (conditionDescription != null) {
+      gravityParams.condition_description = conditionDescription
+    }
 
     const imageUrls = (externalImageUrls ?? []).filter(
       (url): url is string => !!url
