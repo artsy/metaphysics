@@ -7,7 +7,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { omitBy, isNil } from "lodash"
+import { chunk, groupBy, isNil, omitBy, uniq } from "lodash"
+import { error } from "lib/loggers"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
@@ -17,11 +18,15 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
+import { ArtworkType } from "../artwork"
 
 export const CRMActivityKindEnum = new GraphQLEnumType({
   name: "CRMActivityKind",
   values: {
+    CALL: { value: "call" },
     EMAIL: { value: "email" },
+    INTEREST: { value: "interest" },
+    MEETING: { value: "meeting" },
     NOTE: { value: "note" },
   },
 })
@@ -111,10 +116,77 @@ export const EmailMessageType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
+// Gravity limits `/artworks/all` pages to 50
+const ARTWORK_PAGE_SIZE = 50
+
+const linkedArtworkIDs = (activity: any): string[] =>
+  (activity.links ?? [])
+    .filter((link) => link.target_type === "artwork")
+    .map((link) => link.target_id)
+
+// Loads the linked artworks of many activities with one partner call per 50
+// artworks, and stashes them on each activity as `_artworks`. Artworks that
+// were deleted are left out.
+const attachLinkedArtworks = async (
+  activities: any[],
+  partnerArtworksAllLoader: ResolverContext["partnerArtworksAllLoader"]
+) => {
+  await Promise.all(
+    Object.entries(groupBy(activities, "partner_id")).map(
+      async ([partnerID, partnerActivities]) => {
+        const artworksByID = new Map<string, any>()
+        const ids = uniq(partnerActivities.flatMap(linkedArtworkIDs))
+
+        if (partnerArtworksAllLoader && ids.length > 0) {
+          try {
+            const pages = await Promise.all(
+              chunk(ids, ARTWORK_PAGE_SIZE).map((artworkIDs) =>
+                partnerArtworksAllLoader(partnerID, {
+                  artwork_id: artworkIDs,
+                  include_non_artsy_listed: true,
+                  size: artworkIDs.length,
+                })
+              )
+            )
+            pages.forEach(({ body }) =>
+              body.forEach((artwork) => artworksByID.set(artwork._id, artwork))
+            )
+          } catch (err) {
+            // The timeline is still useful without the artworks
+            error("Could not load the artworks of CRM activities", err)
+          }
+        }
+
+        partnerActivities.forEach((activity) => {
+          activity._artworks = linkedArtworkIDs(activity)
+            .map((id) => artworksByID.get(id))
+            .filter(Boolean)
+        })
+      }
+    )
+  )
+}
+
 export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
   name: "CRMActivity",
   fields: () => ({
     ...InternalIDFields,
+    artworks: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ArtworkType))
+      ),
+      description:
+        "The artworks this activity is about. Deleted ones are left out",
+      // The connection loads a whole page at once; this fallback covers an
+      // activity returned on its own, such as from a mutation.
+      resolve: async (activity, _args, { partnerArtworksAllLoader }) => {
+        if (!activity._artworks) {
+          await attachLinkedArtworks([activity], partnerArtworksAllLoader)
+        }
+
+        return activity._artworks
+      },
+    },
     createdAt: date(),
     crmContactID: {
       type: new GraphQLNonNull(GraphQLString),
@@ -166,9 +238,14 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
       description: "Defaults to OCCURRED_AT_DESC (newest first)",
     },
   }),
-  // Gravity embeds each email message and its participants in the page, so
+  // Gravity embeds each email message, its participants and the artwork links
+  // in the page, and the linked artworks are loaded for the page in one go, so
   // no per-node loader calls are needed.
-  resolve: async (_root, args, { crmActivitiesLoader }) => {
+  resolve: async (
+    _root,
+    args,
+    { crmActivitiesLoader, partnerArtworksAllLoader }
+  ) => {
     if (!crmActivitiesLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -189,6 +266,8 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
     )
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    await attachLinkedArtworks(body, partnerArtworksAllLoader)
 
     return paginationResolver({ totalCount, offset, page, size, body, args })
   },

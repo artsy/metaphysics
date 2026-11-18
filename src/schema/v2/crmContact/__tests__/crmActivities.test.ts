@@ -160,4 +160,123 @@ describe("crmActivitiesConnection", () => {
       emailMessage: null,
     })
   })
+
+  describe("linked artworks", () => {
+    const artworksQuery = `{
+      crmActivitiesConnection(crmContactID: "contact-1", first: 5) {
+        edges {
+          node {
+            internalID
+            artworks { internalID title }
+          }
+        }
+      }
+    }`
+
+    const activity = (id: string, links: any[]) => ({
+      id,
+      crm_contact_id: "contact-1",
+      partner_id: "partner-1",
+      kind: "interest",
+      links,
+    })
+
+    it("loads the artworks of the whole page with one partner call", async () => {
+      const crmActivitiesLoader = jest.fn().mockResolvedValue({
+        body: [
+          activity("activity-1", [
+            { target_type: "artwork", target_id: "artwork-1" },
+            { target_type: "show", target_id: "show-1" },
+          ]),
+          activity("activity-2", [
+            { target_type: "artwork", target_id: "artwork-2" },
+            { target_type: "artwork", target_id: "artwork-1" },
+          ]),
+          activity("activity-3", []),
+        ],
+        headers: { "x-total-count": "3" },
+      })
+      const partnerArtworksAllLoader = jest.fn().mockResolvedValue({
+        body: [
+          { _id: "artwork-1", id: "one", title: "One" },
+          { _id: "artwork-2", id: "two", title: "Two" },
+        ],
+        headers: {},
+      })
+
+      const result = await runAuthenticatedQuery(artworksQuery, {
+        crmActivitiesLoader,
+        partnerArtworksAllLoader,
+      })
+
+      expect(partnerArtworksAllLoader).toHaveBeenCalledTimes(1)
+      expect(partnerArtworksAllLoader).toHaveBeenCalledWith("partner-1", {
+        artwork_id: ["artwork-1", "artwork-2"],
+        include_non_artsy_listed: true,
+        size: 2,
+      })
+      expect(
+        result.crmActivitiesConnection.edges.map(({ node }) => node.artworks)
+      ).toEqual([
+        [{ internalID: "artwork-1", title: "One" }],
+        [
+          { internalID: "artwork-2", title: "Two" },
+          { internalID: "artwork-1", title: "One" },
+        ],
+        [],
+      ])
+    })
+
+    it("leaves out deleted artworks and does not call Gravity without artwork links", async () => {
+      const crmActivitiesLoader = jest.fn().mockResolvedValue({
+        body: [
+          activity("activity-1", [
+            { target_type: "artwork", target_id: "gone" },
+          ]),
+          activity("activity-2", [
+            { target_type: "show", target_id: "show-1" },
+          ]),
+        ],
+        headers: { "x-total-count": "2" },
+      })
+      const partnerArtworksAllLoader = jest
+        .fn()
+        .mockResolvedValue({ body: [], headers: {} })
+
+      const result = await runAuthenticatedQuery(artworksQuery, {
+        crmActivitiesLoader,
+        partnerArtworksAllLoader,
+      })
+
+      expect(partnerArtworksAllLoader).toHaveBeenCalledTimes(1)
+      expect(partnerArtworksAllLoader).toHaveBeenCalledWith(
+        "partner-1",
+        expect.objectContaining({ artwork_id: ["gone"] })
+      )
+      expect(
+        result.crmActivitiesConnection.edges.map(({ node }) => node.artworks)
+      ).toEqual([[], []])
+    })
+
+    it("returns no artworks when they cannot be loaded", async () => {
+      const crmActivitiesLoader = jest.fn().mockResolvedValue({
+        body: [
+          activity("activity-1", [
+            { target_type: "artwork", target_id: "artwork-1" },
+          ]),
+        ],
+        headers: { "x-total-count": "1" },
+      })
+      const partnerArtworksAllLoader = jest
+        .fn()
+        .mockRejectedValue(new Error("Gravity down"))
+
+      const result = await runAuthenticatedQuery(artworksQuery, {
+        crmActivitiesLoader,
+        partnerArtworksAllLoader,
+      })
+
+      expect(result.crmActivitiesConnection.edges[0].node.artworks).toEqual([])
+    })
+  })
 })
