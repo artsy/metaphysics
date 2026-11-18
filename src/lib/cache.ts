@@ -1,4 +1,5 @@
 import zlib from "zlib"
+import { createHash } from "crypto"
 import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
@@ -29,12 +30,25 @@ const VerboseEvents = [
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
 
+// memcached silently drops keys longer than 250 bytes, so long URLs — batch /
+// id-list loaders like `articles/counts?artist_ids[]=…` — never cache. Hash any
+// key that would exceed the limit. Short keys are returned verbatim (byte-for-
+// byte identical to before), so no existing entry changes and there's no cold
+// cache flush; only previously-uncacheable long keys start caching.
+const MAX_KEY_LENGTH = 250
+
+const keyPrefix = () =>
+  CACHE_COMPRESSION_DISABLED
+    ? CACHE_NAMESPACE + uncompressedKeyPrefix
+    : CACHE_NAMESPACE + cacheVersion
+
 export const cacheKey = (key) => {
-  if (CACHE_COMPRESSION_DISABLED) {
-    return CACHE_NAMESPACE + uncompressedKeyPrefix + key
-  } else {
-    return CACHE_NAMESPACE + cacheVersion + key
+  const prefix = keyPrefix()
+  const fullKey = prefix + key
+  if (fullKey.length <= MAX_KEY_LENGTH) {
+    return fullKey
   }
+  return prefix + "h:" + createHash("md5").update(String(key)).digest("hex")
 }
 
 const deflateP = (dataz) => {
@@ -85,7 +99,23 @@ const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
 
 const statsClient = isTest ? null : createStatsClient()
 
+// Endpoint (path before the query string) for tagging. Low cardinality for the
+// long-key population, which is always query-string batch endpoints.
+const endpointOfKey = (key) => String(key).split("?")[0]
+
+// Count cache operations whose raw key exceeds memcached's limit and so gets
+// hashed — i.e. keys that previously silently missed. `cache.key_hashed` broken
+// down by `endpoint` in Datadog shows which loaders were affected.
+const trackKeyLength = (key) => {
+  if (keyPrefix().length + String(key).length > MAX_KEY_LENGTH) {
+    statsClient?.increment("cache.key_hashed", 1, {
+      endpoint: endpointOfKey(key),
+    })
+  }
+}
+
 function _get<T>(key) {
+  trackKeyLength(key)
   return new Promise<T>((resolve, reject) => {
     let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
       timeoutId = null
@@ -130,6 +160,7 @@ export interface CacheOptions {
 }
 
 function _set(key, data, options: CacheOptions) {
+  trackKeyLength(key)
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
