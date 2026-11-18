@@ -28,10 +28,14 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
   description:
     "Add an activity to a CRM contact's timeline. Email activities can't be created.",
   inputFields: {
-    artworkIDs: {
+    artistIDs: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
-        "Artworks of the partner that the activity is about. Required for INTEREST",
+        "Artists of the partner that the activity is about. An INTEREST needs an artwork or an artist",
+    },
+    artworkIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description: "Artworks of the partner that the activity is about",
     },
     crmContactID: { type: new GraphQLNonNull(GraphQLString) },
     description: {
@@ -55,13 +59,22 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkIDs, crmContactID, description, kind, occurredAt, subject },
+    {
+      artistIDs,
+      artworkIDs,
+      crmContactID,
+      description,
+      kind,
+      occurredAt,
+      subject,
+    },
     { createCrmActivityLoader }
   ) => {
     if (!createCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
       createCrmActivityLoader({
+        artist_ids: artistIDs ?? undefined,
         artwork_ids: artworkIDs ?? undefined,
         crm_contact_id: crmContactID,
         description,
@@ -87,6 +100,11 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
   name: "UpdateCRMActivity",
   description: "Change an activity. Email activities can't be changed.",
   inputFields: {
+    artistIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Replaces the artists the activity is about. An empty list clears them, leaving it out keeps them",
+    },
     artworkIDs: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
@@ -116,13 +134,14 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkIDs, description, id, kind, occurredAt, subject },
+    { artistIDs, artworkIDs, description, id, kind, occurredAt, subject },
     { updateCrmActivityLoader }
   ) => {
     if (!updateCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
       updateCrmActivityLoader(id, {
+        artist_ids: artistIDs ?? undefined,
         artwork_ids: artworkIDs ?? undefined,
         description,
         kind,

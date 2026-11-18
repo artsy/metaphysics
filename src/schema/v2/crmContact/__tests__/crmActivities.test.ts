@@ -227,6 +227,52 @@ describe("crmActivitiesConnection", () => {
       ])
     })
 
+    it("loads the artists of the whole page with one call", async () => {
+      const crmActivitiesLoader = jest.fn().mockResolvedValue({
+        body: [
+          activity("activity-1", [
+            { target_type: "artist", target_id: "artist-1" },
+          ]),
+          activity("activity-2", [
+            { target_type: "artist", target_id: "artist-2" },
+            { target_type: "artist", target_id: "artist-1" },
+          ]),
+        ],
+        headers: { "x-total-count": "2" },
+      })
+      const artistsLoader = jest.fn().mockResolvedValue({
+        body: [
+          { _id: "artist-1", id: "one", name: "One" },
+          { _id: "artist-2", id: "two", name: "Two" },
+        ],
+        headers: {},
+      })
+
+      const result = await runAuthenticatedQuery(
+        `{
+          crmActivitiesConnection(crmContactID: "contact-1", first: 5) {
+            edges { node { artists { internalID name } } }
+          }
+        }`,
+        { crmActivitiesLoader, artistsLoader }
+      )
+
+      expect(artistsLoader).toHaveBeenCalledTimes(1)
+      expect(artistsLoader).toHaveBeenCalledWith({
+        ids: ["artist-1", "artist-2"],
+        size: 2,
+      })
+      expect(
+        result.crmActivitiesConnection.edges.map(({ node }) => node.artists)
+      ).toEqual([
+        [{ internalID: "artist-1", name: "One" }],
+        [
+          { internalID: "artist-2", name: "Two" },
+          { internalID: "artist-1", name: "One" },
+        ],
+      ])
+    })
+
     it("leaves out deleted artworks and does not call Gravity without artwork links", async () => {
       const crmActivitiesLoader = jest.fn().mockResolvedValue({
         body: [

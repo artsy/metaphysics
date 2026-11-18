@@ -8323,6 +8323,11 @@ type BuyersPremium {
 
 type CRMActivity {
   """
+  The artists this activity is about. Deleted ones are left out
+  """
+  artists: [Artist!]!
+
+  """
   The artworks this activity is about. Deleted ones are left out
   """
   artworks: [Artwork!]!
@@ -13935,7 +13940,12 @@ type CreateCRMActivityFailure {
 
 input CreateCRMActivityInput {
   """
-  Artworks of the partner that the activity is about. Required for INTEREST
+  Artists of the partner that the activity is about. An INTEREST needs an artwork or an artist
+  """
+  artistIDs: [String!]
+
+  """
+  Artworks of the partner that the activity is about
   """
   artworkIDs: [String!]
   clientMutationId: String
@@ -40826,6 +40836,11 @@ type UpdateCRMActivityFailure {
 }
 
 input UpdateCRMActivityInput {
+  """
+  Replaces the artists the activity is about. An empty list clears them, leaving it out keeps them
+  """
+  artistIDs: [String!]
+
   """
   Replaces the artworks the activity is about. An empty list clears them, leaving it out keeps them
   """
