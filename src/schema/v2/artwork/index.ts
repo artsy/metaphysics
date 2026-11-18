@@ -83,7 +83,7 @@ import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
 import {
-  ArtworkResaleStatusEnum,
+  ArtworkResaleStatusType,
   ResaleSubmissionType,
   resaleStatusFromLatestSubmission,
 } from "../me/resaleSubmission/resaleSubmission"
@@ -1148,7 +1148,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resaleStatus: {
-        type: ArtworkResaleStatusEnum,
+        type: ArtworkResaleStatusType,
         description:
           "Where this work stands in the viewer’s sell flow. Null when signed out. Only meaningful for the viewer’s My Collection works: any other work reads AVAILABLE.",
         resolve: async ({ _id }, _args, { meLatestResaleSubmissionLoader }) => {

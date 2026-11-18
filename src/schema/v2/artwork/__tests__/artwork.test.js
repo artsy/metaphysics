@@ -2499,7 +2499,10 @@ describe("Artwork type", () => {
     const query = gql`
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          resaleStatus
+          resaleStatus {
+            value
+            displayText
+          }
           resaleSubmission {
             internalID
             state
@@ -2531,15 +2534,15 @@ describe("Artwork type", () => {
     ]
 
     it.each([
-      ["accepted", "IN_PROGRESS"],
-      ["auction_review", "SUBMITTED"],
-      ["canceled", "AVAILABLE"],
-      ["listed", "SUBMITTED"],
-      ["rejected", "MARKED_FOR_FUTURE_SALE"],
-    ])("maps a %s submission to %s", async (state, status) => {
+      ["accepted", "IN_PROGRESS", "In progress"],
+      ["auction_review", "SUBMITTED", "Submitted"],
+      ["canceled", "AVAILABLE", "Available"],
+      ["listed", "SUBMITTED", "Submitted"],
+      ["rejected", "MARKED_FOR_FUTURE_SALE", "Marked for future sale"],
+    ])("maps a %s submission to %s", async (state, value, displayText) => {
       const { result } = runWithSubmissions(submissionWithState(state))
       const { artwork } = await result
-      expect(artwork.resaleStatus).toEqual(status)
+      expect(artwork.resaleStatus).toEqual({ value, displayText })
     })
 
     it("returns the newest submission, from one Gravity call for both fields", async () => {
@@ -2564,7 +2567,7 @@ describe("Artwork type", () => {
       const { result } = runWithSubmissions([])
       const { artwork } = await result
       expect(artwork).toEqual({
-        resaleStatus: "AVAILABLE",
+        resaleStatus: { value: "AVAILABLE", displayText: "Available" },
         resaleSubmission: null,
       })
     })
@@ -2575,7 +2578,9 @@ describe("Artwork type", () => {
         gql`
           {
             artwork(id: "richard-prince-untitled-portrait") {
-              resaleStatus
+              resaleStatus {
+                value
+              }
             }
           }
         `

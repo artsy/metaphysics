@@ -69,7 +69,7 @@ export const ResaleSubmissionStateEnum = new GraphQLEnumType({
 })
 
 export const ArtworkResaleStatusEnum = new GraphQLEnumType({
-  name: "ArtworkResaleStatus",
+  name: "ArtworkResaleStatusEnum",
   values: {
     AVAILABLE: {
       value: "available",
@@ -86,6 +86,30 @@ export const ArtworkResaleStatusEnum = new GraphQLEnumType({
     SUBMITTED: {
       value: "submitted",
       description: "The work is listed or under auction review.",
+    },
+  },
+})
+
+const RESALE_STATUS_DISPLAY_TEXT: Record<string, string> = {
+  available: "Available",
+  in_progress: "In progress",
+  marked_for_future_sale: "Marked for future sale",
+  submitted: "Submitted",
+}
+
+export const ArtworkResaleStatusType = new GraphQLObjectType<
+  string,
+  ResolverContext
+>({
+  name: "ArtworkResaleStatus",
+  fields: {
+    value: {
+      type: new GraphQLNonNull(ArtworkResaleStatusEnum),
+      resolve: (status) => status,
+    },
+    displayText: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: (status) => RESALE_STATUS_DISPLAY_TEXT[status],
     },
   },
 })

@@ -6306,7 +6306,12 @@ type ArtworkPublishedNotificationItem {
   ): ArtworkConnection
 }
 
-enum ArtworkResaleStatus {
+type ArtworkResaleStatus {
+  displayText: String!
+  value: ArtworkResaleStatusEnum!
+}
+
+enum ArtworkResaleStatusEnum {
   """
   The viewer can submit this work for resale.
   """
