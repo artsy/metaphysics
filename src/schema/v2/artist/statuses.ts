@@ -21,16 +21,10 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
     },
     articles: {
       type: GraphQLBoolean,
-      resolve: ({ _id }, _options, { articlesLoader }) =>
-        articlesLoader({
-          artist_id: _id,
-          published: true,
-          in_editorial_feed: true,
-          limit: 0,
-          count: true,
-        }).then(({ count }) => {
-          return count > 0
-        }),
+      resolve: ({ _id }, _options, { articleCountsLoader }) =>
+        articleCountsLoader({ artistId: _id, inEditorialFeed: true }).then(
+          (count) => (count ?? 0) > 0
+        ),
     },
     artworks: {
       type: GraphQLBoolean,
@@ -44,12 +38,10 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
     },
     biography: {
       type: GraphQLBoolean,
-      resolve: ({ _id }, _options, { articlesLoader }) =>
-        articlesLoader({
-          published: true,
-          biography_for_artist_id: _id,
-          limit: 0,
-        }).then(({ count }) => count > 0),
+      resolve: ({ _id }, _options, { articleCountsLoader }) =>
+        articleCountsLoader({ artistId: _id, biography: true }).then(
+          (count) => (count ?? 0) > 0
+        ),
     },
     contemporary: {
       type: GraphQLBoolean,

@@ -17,6 +17,7 @@ describe("Artist type", () => {
     context = {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
+      articleCountsLoader: () => Promise.resolve(22),
       auctionLotsLoader: () => Promise.resolve({ total_count: 123 }),
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
       relatedMainArtistsLoader: () =>

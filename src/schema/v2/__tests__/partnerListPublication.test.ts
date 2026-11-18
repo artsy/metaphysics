@@ -233,6 +233,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
                 internalID
                 published
                 passcodeProtected
+                publicationHref
               }
             }
           }
@@ -249,6 +250,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
             partner_list_publication: {
               published: true,
               passcode_protected: false,
+              slug: "gallery-warm-fields",
             },
           },
           { id: "list-unpublished", partner_list_publication: null },
@@ -272,11 +274,13 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
         internalID: "list-published",
         published: true,
         passcodeProtected: false,
+        publicationHref: "/private-viewing-room/gallery-warm-fields",
       },
       {
         internalID: "list-unpublished",
         published: null,
         passcodeProtected: null,
+        publicationHref: null,
       },
     ])
   })

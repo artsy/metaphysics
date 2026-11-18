@@ -14,6 +14,8 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ResaleSubmissionType } from "./resaleSubmission"
 
+export const MAX_ARTWORK_IDS = 30
+
 interface Input {
   artworkIDs: string[]
 }
@@ -96,6 +98,12 @@ export const createResaleSubmissionsMutation = mutationWithClientMutationId<
 
     if (distinctArtworkIDs.length === 0) {
       throw new Error("artworkIDs can’t be empty")
+    }
+
+    if (distinctArtworkIDs.length > MAX_ARTWORK_IDS) {
+      throw new Error(
+        `Cannot submit more than ${MAX_ARTWORK_IDS} artworks at a time`
+      )
     }
 
     const results = await Promise.all(

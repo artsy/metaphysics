@@ -2,6 +2,7 @@ import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
+import { MAX_ARTWORK_IDS } from "../createResaleSubmissionsMutation"
 
 const FIRST_ID = "5f0000000000000000000001"
 const SECOND_ID = "5f0000000000000000000002"
@@ -231,6 +232,23 @@ describe("createResaleSubmissions", () => {
       await expect(
         runAuthenticatedQuery(mutationWith([]), context)
       ).rejects.toThrow("artworkIDs can’t be empty")
+
+      expect(
+        context.meCreateResaleSubmissionLoader as jest.Mock
+      ).not.toHaveBeenCalled()
+    })
+
+    it("rejects more than the maximum number of artworks without calling Gravity", async () => {
+      const tooManyIDs = Array.from(
+        { length: MAX_ARTWORK_IDS + 1 },
+        (_value, index) => `5f${String(index).padStart(22, "0")}`
+      )
+
+      await expect(
+        runAuthenticatedQuery(mutationWith(tooManyIDs), context)
+      ).rejects.toThrow(
+        `Cannot submit more than ${MAX_ARTWORK_IDS} artworks at a time`
+      )
 
       expect(
         context.meCreateResaleSubmissionLoader as jest.Mock
