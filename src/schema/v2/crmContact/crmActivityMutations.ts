@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { CRMActivityKindEnum, CRMActivityType } from "./crmActivity"
@@ -26,15 +26,25 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
 >({
   name: "CreateCRMActivity",
   description:
-    "Add an activity to a CRM contact's timeline. Only notes can be created for now.",
+    "Add an activity to a CRM contact's timeline. Email activities can't be created.",
   inputFields: {
+    artistIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Artists the partner shows or represents that the activity is about. An INTEREST needs an artwork or an artist",
+    },
+    artworkIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description: "Artworks of the partner that the activity is about",
+    },
     crmContactID: { type: new GraphQLNonNull(GraphQLString) },
     description: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
+      description: "Required for NOTE",
     },
     kind: {
       type: new GraphQLNonNull(CRMActivityKindEnum),
-      description: "Kind of activity. Only NOTE is accepted for now",
+      description: "Kind of activity. EMAIL is not accepted",
     },
     occurredAt: occurredAtField,
     subject: {
@@ -49,13 +59,23 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { crmContactID, description, kind, occurredAt, subject },
+    {
+      artistIDs,
+      artworkIDs,
+      crmContactID,
+      description,
+      kind,
+      occurredAt,
+      subject,
+    },
     { createCrmActivityLoader }
   ) => {
     if (!createCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
       createCrmActivityLoader({
+        artist_ids: artistIDs ?? undefined,
+        artwork_ids: artworkIDs ?? undefined,
         crm_contact_id: crmContactID,
         description,
         kind,
@@ -78,15 +98,28 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdateCRMActivity",
-  description:
-    "Change an activity's subject or description. Email activities can't be changed.",
+  description: "Change an activity. Email activities can't be changed.",
   inputFields: {
+    artistIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Replaces the artists the activity is about. An empty list clears them, leaving it out keeps them",
+    },
+    artworkIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Replaces the artworks the activity is about. An empty list clears them, leaving it out keeps them",
+    },
     description: {
       type: GraphQLString,
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the activity",
+    },
+    kind: {
+      type: CRMActivityKindEnum,
+      description: "Switch between NOTE, CALL, MEETING and INTEREST",
     },
     occurredAt: occurredAtField,
     subject: {
@@ -101,14 +134,17 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { description, id, occurredAt, subject },
+    { artistIDs, artworkIDs, description, id, kind, occurredAt, subject },
     { updateCrmActivityLoader }
   ) => {
     if (!updateCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
       updateCrmActivityLoader(id, {
+        artist_ids: artistIDs ?? undefined,
+        artwork_ids: artworkIDs ?? undefined,
         description,
+        kind,
         occurred_at: occurredAt,
         subject,
       })

@@ -42,6 +42,140 @@ describe("CRM activity mutations", () => {
     })
   })
 
+  it("creates an interest in artworks", async () => {
+    const createCrmActivityLoader = jest
+      .fn()
+      .mockResolvedValue({ ...activity, kind: "interest" })
+
+    const result = await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: INTEREST, artworkIDs: ["artwork-1"] }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { kind } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader }
+    )
+
+    expect(createCrmActivityLoader).toHaveBeenCalledWith({
+      artwork_ids: ["artwork-1"],
+      crm_contact_id: "contact-1",
+      kind: "interest",
+    })
+    expect(result.createCRMActivity.crmActivityOrError).toEqual({
+      crmActivity: { kind: "INTEREST" },
+    })
+  })
+
+  it("creates an interest in an artist", async () => {
+    const createCrmActivityLoader = jest
+      .fn()
+      .mockResolvedValue({ ...activity, kind: "interest" })
+
+    await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: INTEREST, artistIDs: ["artist-1"] }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { kind } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader }
+    )
+
+    expect(createCrmActivityLoader).toHaveBeenCalledWith({
+      artist_ids: ["artist-1"],
+      crm_contact_id: "contact-1",
+      kind: "interest",
+    })
+  })
+
+  it("loads the artworks of a created activity", async () => {
+    const createCrmActivityLoader = jest.fn().mockResolvedValue({
+      ...activity,
+      kind: "interest",
+      links: [{ target_type: "artwork", target_id: "artwork-1" }],
+    })
+    const partnerArtworksAllLoader = jest.fn().mockResolvedValue({
+      body: [{ _id: "artwork-1", id: "one", title: "One" }],
+      headers: {},
+    })
+
+    const result = await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: INTEREST, artworkIDs: ["artwork-1"] }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { artworks { internalID title } } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader, partnerArtworksAllLoader }
+    )
+
+    expect(partnerArtworksAllLoader).toHaveBeenCalledWith("partner-1", {
+      artwork_id: ["artwork-1"],
+      include_non_artsy_listed: true,
+      size: 1,
+    })
+    expect(result.createCRMActivity.crmActivityOrError).toEqual({
+      crmActivity: { artworks: [{ internalID: "artwork-1", title: "One" }] },
+    })
+  })
+
+  it("loads the artists of a created activity", async () => {
+    const createCrmActivityLoader = jest.fn().mockResolvedValue({
+      ...activity,
+      kind: "interest",
+      links: [{ target_type: "artist", target_id: "artist-1" }],
+    })
+    const partnerArtistsAllLoader = jest.fn().mockResolvedValue({
+      body: [{ artist: { _id: "artist-1", id: "one", name: "One" } }],
+      headers: {},
+    })
+
+    const result = await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: INTEREST, artistIDs: ["artist-1"] }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { artists { internalID name } } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader, partnerArtistsAllLoader }
+    )
+
+    expect(partnerArtistsAllLoader).toHaveBeenCalledTimes(1)
+    expect(partnerArtistsAllLoader).toHaveBeenCalledWith("partner-1", {
+      artist_ids: ["artist-1"],
+      size: 1,
+    })
+    expect(result.createCRMActivity.crmActivityOrError).toEqual({
+      crmActivity: { artists: [{ internalID: "artist-1", name: "One" }] },
+    })
+  })
+
+  it("updates the kind and artworks, and clears them with an empty list", async () => {
+    const updateCrmActivityLoader = jest.fn().mockResolvedValue(activity)
+
+    await runAuthenticatedQuery(
+      `mutation {
+        updateCRMActivity(input: { id: "activity-1", kind: MEETING, artworkIDs: [], artistIDs: [] }) {
+          crmActivityOrError {
+            ... on UpdateCRMActivitySuccess { crmActivity { internalID } }
+          }
+        }
+      }`,
+      { updateCrmActivityLoader }
+    )
+
+    expect(updateCrmActivityLoader).toHaveBeenCalledWith("activity-1", {
+      artist_ids: [],
+      artwork_ids: [],
+      kind: "meeting",
+    })
+  })
+
   it("returns a mutation error when Gravity rejects the activity", async () => {
     const createCrmActivityLoader = jest.fn().mockRejectedValue(
       new HTTPError(
