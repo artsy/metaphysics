@@ -18,6 +18,9 @@ const mutationWith = (input: string) => gql`
             packaging
             packer
             courierHandoff
+            conditionPhotos {
+              internalID
+            }
           }
         }
         ... on UpdateResaleSubmissionFailure {
@@ -113,6 +116,7 @@ describe("updateResaleSubmission", () => {
         packaging: "FRAMED",
         packer: "COURIER",
         courierHandoff: "SELLER_DROPOFF",
+        conditionPhotos: [],
       },
     })
   })
@@ -194,6 +198,120 @@ describe("updateResaleSubmission", () => {
       await expect(
         runAuthenticatedQuery(mutationWith(`packer: SELLER`), context)
       ).rejects.toThrow("socket hang up")
+    })
+  })
+
+  describe("externalImageUrls", () => {
+    const reloadedSubmission = {
+      ...updatedSubmission,
+      images: [
+        { id: "image-1", image_url: "https://example.com/1.jpg" },
+        { id: "image-2", image_url: "https://example.com/2.jpg" },
+      ],
+    }
+
+    beforeEach(() => {
+      context.meCreateResaleSubmissionImageLoader = jest.fn(() =>
+        Promise.resolve(updatedSubmission)
+      )
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve(reloadedSubmission)
+      )
+    })
+
+    it("adds each photo, then returns the reloaded submission", async () => {
+      const response = await runAuthenticatedQuery(
+        mutationWith(
+          `externalImageUrls: ["https://bucket.s3.amazonaws.com/1.jpg", "https://bucket.s3.amazonaws.com/2.jpg"]`
+        ),
+        context
+      )
+
+      const createImage = context.meCreateResaleSubmissionImageLoader as jest.Mock
+      expect(createImage.mock.calls).toEqual([
+        [
+          "submission-1",
+          { image_url: "https://bucket.s3.amazonaws.com/1.jpg" },
+        ],
+        [
+          "submission-1",
+          { image_url: "https://bucket.s3.amazonaws.com/2.jpg" },
+        ],
+      ])
+      expect(
+        context.meResaleSubmissionLoader as jest.Mock
+      ).toHaveBeenCalledWith("submission-1")
+      expect(
+        response.updateResaleSubmission.resaleSubmissionOrError
+      ).toMatchObject({
+        __typename: "UpdateResaleSubmissionSuccess",
+        resaleSubmission: {
+          conditionPhotos: [
+            { internalID: "image-1" },
+            { internalID: "image-2" },
+          ],
+        },
+      })
+    })
+
+    it("skips the update when only photos were given", async () => {
+      await runAuthenticatedQuery(
+        mutationWith(
+          `externalImageUrls: ["https://bucket.s3.amazonaws.com/1.jpg"]`
+        ),
+        context
+      )
+
+      expect(
+        context.meUpdateResaleSubmissionLoader as jest.Mock
+      ).not.toHaveBeenCalled()
+    })
+
+    it("updates the other fields before adding photos", async () => {
+      await runAuthenticatedQuery(
+        mutationWith(
+          `packer: SELLER, externalImageUrls: ["https://bucket.s3.amazonaws.com/1.jpg"]`
+        ),
+        context
+      )
+
+      const update = context.meUpdateResaleSubmissionLoader as jest.Mock
+      const createImage = context.meCreateResaleSubmissionImageLoader as jest.Mock
+      expect(update).toHaveBeenCalledWith("submission-1", { packer: "seller" })
+      expect(update.mock.invocationCallOrder[0]).toBeLessThan(
+        createImage.mock.invocationCallOrder[0]
+      )
+    })
+
+    it("returns a failure when Gravity rejects a photo", async () => {
+      context.meCreateResaleSubmissionImageLoader = jest.fn(() =>
+        Promise.reject(
+          new HTTPError("Bad Request", 400, {
+            type: "param_error",
+            message: "Submission already has 10 images",
+          })
+        )
+      )
+
+      const response = await runAuthenticatedQuery(
+        mutationWith(
+          `externalImageUrls: ["https://bucket.s3.amazonaws.com/1.jpg"]`
+        ),
+        context
+      )
+
+      expect(response.updateResaleSubmission.resaleSubmissionOrError).toEqual({
+        __typename: "UpdateResaleSubmissionFailure",
+        mutationError: {
+          type: "param_error",
+          message: "Submission already has 10 images",
+          statusCode: 400,
+          fieldErrors: null,
+        },
+      })
+      expect(
+        context.meResaleSubmissionLoader as jest.Mock
+      ).not.toHaveBeenCalled()
     })
   })
 

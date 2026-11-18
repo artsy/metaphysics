@@ -9,6 +9,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../../artwork"
 import { date } from "../../fields/date"
+import { ImageType, normalizeImageData } from "../../image"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { InternalIDFields } from "../../object_identification"
 
@@ -103,6 +104,14 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
         description:
           "The seller’s answer to how the work will get to its buyer.",
         resolve: ({ courier_handoff }) => courier_handoff,
+      },
+      conditionPhotos: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(ImageType))
+        ),
+        description:
+          "Photos the seller added to show the work’s condition, oldest first.",
+        resolve: ({ images }) => normalizeImageData(images ?? []),
       },
       createdAt: date(),
       missingRequirements: {

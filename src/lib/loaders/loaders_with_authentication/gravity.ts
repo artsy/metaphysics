@@ -1035,6 +1035,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    meCreateResaleSubmissionImageLoader: gravityLoader(
+      (id) => `me/resale_submission/${id}/images`,
+      {},
+      { method: "POST" }
+    ),
     meCreateUserInterestLoader: gravityLoader(
       "me/user_interest",
       {},
@@ -1102,6 +1107,14 @@ export default (accessToken, userID, opts) => {
       (id) => `me/resale_submission/${id}`,
       {},
       { method: "PUT" }
+    ),
+    meDeleteResaleSubmissionImageLoader: gravityLoader<
+      any,
+      { id: string; imageID: string }
+    >(
+      ({ id, imageID }) => `me/resale_submission/${id}/images/${imageID}`,
+      {},
+      { method: "DELETE" }
     ),
     meUserInterestLoader: gravityLoader((id) => `me/user_interest/${id}`),
     meUserInterestsLoader: gravityLoader(

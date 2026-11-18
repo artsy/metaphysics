@@ -1,4 +1,5 @@
 import {
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -20,6 +21,7 @@ import {
 
 interface Input {
   courierHandoff?: string | null
+  externalImageUrls?: string[] | null
   id: string
   packaging?: string | null
   packer?: string | null
@@ -65,11 +67,16 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
 >({
   name: "UpdateResaleSubmission",
   description:
-    "Update the asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.",
+    "Update the asking price, shipping preferences and condition photos of a resale submission. Omitted or null fields are left unchanged.",
   inputFields: {
     courierHandoff: {
       type: ResaleSubmissionCourierHandoffEnum,
       description: "How the work will get to its buyer.",
+    },
+    externalImageUrls: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "S3 URLs of uploaded photos to add as condition photos, in order.",
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -97,10 +104,18 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { courierHandoff, id, packaging, packer, priceListed },
-    { meUpdateResaleSubmissionLoader }
+    { courierHandoff, externalImageUrls, id, packaging, packer, priceListed },
+    {
+      meCreateResaleSubmissionImageLoader,
+      meResaleSubmissionLoader,
+      meUpdateResaleSubmissionLoader,
+    }
   ) => {
-    if (!meUpdateResaleSubmissionLoader) {
+    if (
+      !meCreateResaleSubmissionImageLoader ||
+      !meResaleSubmissionLoader ||
+      !meUpdateResaleSubmissionLoader
+    ) {
       throw new Error("You need to be signed in to perform this action")
     }
 
@@ -121,8 +136,24 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     if (packer != null) gravityParams.packer = packer
     if (courierHandoff != null) gravityParams.courier_handoff = courierHandoff
 
+    const imageUrls = (externalImageUrls ?? []).filter(
+      (url): url is string => !!url
+    )
+
     try {
-      return await meUpdateResaleSubmissionLoader(id, gravityParams)
+      if (imageUrls.length === 0) {
+        return await meUpdateResaleSubmissionLoader(id, gravityParams)
+      }
+
+      if (Object.keys(gravityParams).length > 0) {
+        await meUpdateResaleSubmissionLoader(id, gravityParams)
+      }
+
+      for (const imageUrl of imageUrls) {
+        await meCreateResaleSubmissionImageLoader(id, { image_url: imageUrl })
+      }
+
+      return await meResaleSubmissionLoader(id)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

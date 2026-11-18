@@ -240,6 +240,7 @@ import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { requestConditionReportMutation } from "./me/requestConditionReportMutation"
 import { cancelResaleSubmissionMutation } from "./me/resaleSubmission/cancelResaleSubmissionMutation"
 import { createResaleSubmissionsMutation } from "./me/resaleSubmission/createResaleSubmissionsMutation"
+import { deleteResaleSubmissionImageMutation } from "./me/resaleSubmission/deleteResaleSubmissionImageMutation"
 import { updateResaleSubmissionMutation } from "./me/resaleSubmission/updateResaleSubmissionMutation"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerificationEmailMutation"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
@@ -925,6 +926,7 @@ export default new GraphQLSchema({
       deleteOrderedSetItem: deleteOrderedSetItemMutation,
       deletePage: DeletePageMutation,
       deletePurchase: deletePurchaseMutation,
+      deleteResaleSubmissionImage: deleteResaleSubmissionImageMutation,
       deleteUser: deleteUserMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserAddress: deleteUserAddressMutation,
