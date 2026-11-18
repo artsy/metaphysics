@@ -25,6 +25,7 @@ export const HOME_VIEW_CITY_GUIDE_SLUGS = citiesWithGuides([
   "miami-fl-usa",
   "berlin-germany",
   "paris-france",
+  "seoul-south-korea",
 ] as const)
 
 type HomeViewCityGuideSlug = typeof HOME_VIEW_CITY_GUIDE_SLUGS[number]
@@ -34,11 +35,15 @@ const NEAR_ME_IMAGE_URL =
 
 const CITY_IMAGE_URLS: Record<HomeViewCityGuideSlug, string> = {
   "london-united-kingdom":
-    "https://files.artsy.net/images/city-guide-miami.webp",
-  "new-york-ny-usa": "https://files.artsy.net/images/city-guide-new-york.webp",
+    "https://files.artsy.net/images/city-guide-slawns-studio.webp",
+  "new-york-ny-usa":
+    "https://files.artsy.net/images/city-guide-dc-moore-gallery.webp",
   "miami-fl-usa": "https://files.artsy.net/images/city-guide-miami.webp",
-  "berlin-germany": "https://files.artsy.net/images/city-guide-new-york.webp",
-  "paris-france": "https://files.artsy.net/images/city-guide-miami.webp",
+  "berlin-germany":
+    "https://files.artsy.net/images/city-guide-carlier-gebauer.webp",
+  "paris-france":
+    "https://files.artsy.net/images/city-guide-ketabi-bourdet.webp",
+  "seoul-south-korea": "https://files.artsy.net/images/city-guide-collast.webp",
 }
 
 const OPENING_SOON_DAY_THRESHOLD = 14
@@ -111,14 +116,13 @@ const loadCityCounts = async (
 export const CityGuides: HomeViewSection = {
   id: "home-view-section-city-guides",
   type: HomeViewSectionTypeNames.HomeViewSectionCityGuides,
-  // TODO: replace with a dedicated context module once added to cohesion
-  contextModule: ContextModule.cityGuideCard,
+  contextModule: ContextModule.cityGuidesRail,
   component: {
     title: "Discover the art that makes your city special",
-    description: "Then create your own way to experience it",
+    description: "Then build your custom itinerary",
     behaviors: {
       viewAll: {
-        buttonText: "City Guide",
+        buttonText: "Explore Guides",
         href: "/city-guide",
       },
     },

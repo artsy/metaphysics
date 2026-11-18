@@ -387,3 +387,70 @@ describe("CatalogArtwork.artnetArtwork", () => {
     })
   })
 })
+
+describe("CatalogArtwork.artnetArtwork.pushMessages", () => {
+  const mockArtworkWithPushMessages = (value) => () =>
+    Promise.resolve({
+      id: "some-artwork",
+      _id: "artwork-internal-id",
+      catalog_artwork: {
+        id: "catalog-artwork-id",
+        artnet_artwork: { id: "artnet-artwork-id", push_messages: value },
+      },
+    })
+
+  const query = gql`
+    {
+      artwork(id: "some-artwork") {
+        catalogArtwork {
+          artnetArtwork {
+            pushMessages {
+              messages
+              gaveUp
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const pushMessages = async (value) => {
+    const data = await runQuery(query, {
+      artworkLoader: mockArtworkWithPushMessages(value),
+    })
+    return data.artwork.catalogArtwork.artnetArtwork.pushMessages
+  }
+
+  it("is null for an artwork whose last push went cleanly", async () => {
+    expect(await pushMessages(null)).toBeNull()
+  })
+
+  it("reports what Artnet said about the push", async () => {
+    expect(
+      await pushMessages({
+        messages: ["Image 3 could not be downloaded"],
+        gave_up: false,
+      })
+    ).toEqual({
+      messages: ["Image 3 could not be downloaded"],
+      gaveUp: false,
+    })
+  })
+
+  it("reads an absent message list as empty", async () => {
+    expect(await pushMessages({ messages: null, gave_up: null })).toEqual({
+      messages: [],
+      gaveUp: false,
+    })
+  })
+
+  // gaveUp is the difference between a bad outcome and no outcome.
+  it("reports that the outcome is unknown when Gravity stopped asking", async () => {
+    const result = await pushMessages({
+      messages: ["Artnet did not report an outcome in time"],
+      gave_up: true,
+    })
+
+    expect(result.gaveUp).toBe(true)
+  })
+})

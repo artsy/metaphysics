@@ -33,6 +33,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   addImageIDs?: string[]
   removeImageIDs?: string[]
   uploadImageS3Locations?: { bucket: string; key: string }[]
+  copyImageIDs?: string[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -70,7 +71,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
 >({
   name: "UpdateArtnetArtworkMutation",
   description:
-    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceFromMinor`, `priceToMinor`, `syncOn`, `syncImages`, `addImageIDs`, `removeImageIDs` or `uploadImageS3Locations` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
+    "Updates an ArtnetArtwork and pushes the supported changes to Artnet. At least one of `published`, `availability`, `primaryMedium`, `additionalMediums`, `materials`, `priceFromMinor`, `priceToMinor`, `syncOn`, `syncImages`, `addImageIDs`, `removeImageIDs`, `uploadImageS3Locations` or `copyImageIDs` is required. Requires the `X-Artnet-Token` and `X-Artnet-User-Id` headers.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -135,6 +136,11 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       description:
         "Image files already uploaded to S3, to add to Artnet without adding them to the Artsy artwork.",
     },
+    copyImageIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "IDs of `ArtnetArtworkImage`s to copy onto the Artsy artwork. Nothing is sent to Artnet. Once the artwork has every image Artnet holds, `hasSeparateImageSets` turns false and `syncImages` applies to it.",
+    },
   },
   outputFields: {
     artnetArtworkOrError: {
@@ -159,6 +165,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       addImageIDs,
       removeImageIDs,
       uploadImageS3Locations,
+      copyImageIDs,
     },
     { updateArtnetArtworkLoader }
   ) => {
@@ -185,6 +192,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             addImageIds: addImageIDs,
             removeImageIds: removeImageIDs,
             uploadLocations: uploadImageS3Locations,
+            copyImageIds: copyImageIDs,
           },
           isUndefined
         )

@@ -1,6 +1,7 @@
 import { camelCase } from "lodash"
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -10,6 +11,33 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { date } from "./fields/date"
 import Image, { normalizeImageData } from "./image"
+
+// The viewing room layout (viewing rooms rebuild). Each value is the string
+// Gravity stores. All are empty on a room published before the rebuild, which
+// keeps its original layout.
+export const ViewingRoomHeroStyleEnum = new GraphQLEnumType({
+  name: "ViewingRoomHeroStyle",
+  values: {
+    EDITORIAL: { value: "editorial" },
+    FULL_IMAGE: { value: "full_image" },
+  },
+})
+
+export const ViewingRoomTextAlignmentEnum = new GraphQLEnumType({
+  name: "ViewingRoomTextAlignment",
+  values: {
+    LEFT: { value: "left" },
+    CENTER: { value: "center" },
+  },
+})
+
+export const ViewingRoomArtworkLayoutEnum = new GraphQLEnumType({
+  name: "ViewingRoomArtworkLayout",
+  values: {
+    GRID: { value: "grid" },
+    MASONRY: { value: "masonry" },
+  },
+})
 
 // Single source of truth for the 13 keys Gravity's
 // VALID_ARTWORK_FIELD_VISIBILITY_KEYS allowlist accepts (snake_case, as
@@ -94,13 +122,37 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     curatorialText: {
       type: GraphQLString,
       description:
-        "Long plain-text curatorial text introducing the works (viewing rooms rebuild). Not shown to visitors yet.",
+        "Long plain-text curatorial text introducing the works (viewing rooms rebuild).",
       resolve: ({ curatorial_text }) => curatorial_text,
     },
     showGalleryName: {
       type: GraphQLBoolean,
       description: "Whether the gallery name is shown on the public page.",
       resolve: ({ show_gallery_name }) => show_gallery_name,
+    },
+    heroStyle: {
+      type: ViewingRoomHeroStyleEnum,
+      description:
+        "Hero banner style (viewing rooms rebuild). Null on a room published before the rebuild.",
+      resolve: ({ hero_style }) => hero_style,
+    },
+    textAlignment: {
+      type: ViewingRoomTextAlignmentEnum,
+      description:
+        "Alignment of the heading and text (viewing rooms rebuild). Null on a room published before the rebuild.",
+      resolve: ({ text_alignment }) => text_alignment,
+    },
+    artworkLayout: {
+      type: ViewingRoomArtworkLayoutEnum,
+      description:
+        "Artworks as a grid or masonry (viewing rooms rebuild). Null on a room published before the rebuild.",
+      resolve: ({ artwork_layout }) => artwork_layout,
+    },
+    artworkColumns: {
+      type: GraphQLInt,
+      description:
+        "Number of artwork columns, 2 to 4 (viewing rooms rebuild). Null on a room published before the rebuild.",
+      resolve: ({ artwork_columns }) => artwork_columns,
     },
     artworksCount: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -137,7 +189,7 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     coverImage: {
       type: Image.type,
       description:
-        "Cover image for the room's hero banner (viewing rooms rebuild). Not shown to visitors yet.",
+        "Cover image for the room's hero banner (viewing rooms rebuild), as currently uploaded. Visitors see the one from the last publish, via PrivateViewingRoom.coverImageURL.",
       resolve: ({ cover_image }) => {
         if (!cover_image) return null
         return {

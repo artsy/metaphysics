@@ -268,6 +268,63 @@ describe("PublishPartnerListPublicationMutation", () => {
     ).toEqual({ curatorialText: "First paragraph.\n\nSecond paragraph." })
   })
 
+  it("sends the layout to Gravity in its stored form and returns it", async () => {
+    const withLayout = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            heroStyle: FULL_IMAGE
+            textAlignment: CENTER
+            artworkLayout: MASONRY
+            artworkColumns: 4
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                heroStyle
+                textAlignment
+                artworkLayout
+                artworkColumns
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        hero_style: "full_image",
+        text_alignment: "center",
+        artwork_layout: "masonry",
+        artwork_columns: 4,
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(withLayout, context)
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        hero_style: "full_image",
+        text_alignment: "center",
+        artwork_layout: "masonry",
+        artwork_columns: 4,
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({
+      heroStyle: "FULL_IMAGE",
+      textAlignment: "CENTER",
+      artworkLayout: "MASONRY",
+      artworkColumns: 4,
+    })
+  })
+
   it("accepts location and certificateOfAuthenticity visibility keys", async () => {
     const withNewVisibilityKeys = gql`
       mutation {

@@ -160,4 +160,129 @@ describe("PrivateViewingRoom", () => {
       "Isabel Croxatto Galeria"
     )
   })
+
+  describe("coverImageURL", () => {
+    const coverQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          coverImageURL
+        }
+      }
+    `
+
+    it("returns the cover image from the last publish", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          cover_image_url: "https://example.com/cover-wide.jpg",
+        }),
+      }
+
+      const result = await runQuery(coverQuery, context)
+
+      expect(result.privateViewingRoom.coverImageURL).toBe(
+        "https://example.com/cover-wide.jpg"
+      )
+    })
+
+    it("is null without a cover", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(coverQuery, context)
+
+      expect(result.privateViewingRoom.coverImageURL).toBeNull()
+    })
+  })
+
+  describe("layout", () => {
+    const layoutQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          heroStyle
+          textAlignment
+          artworkLayout
+          artworkColumns
+        }
+      }
+    `
+
+    it("returns the layout of a room published with one", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          hero_style: "full_image",
+          text_alignment: "center",
+          artwork_layout: "masonry",
+          artwork_columns: 4,
+        }),
+      }
+
+      const result = await runQuery(layoutQuery, context)
+
+      expect(result.privateViewingRoom).toEqual({
+        heroStyle: "FULL_IMAGE",
+        textAlignment: "CENTER",
+        artworkLayout: "MASONRY",
+        artworkColumns: 4,
+      })
+    })
+
+    it("is null on a room published before the rebuild", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(layoutQuery, context)
+
+      expect(result.privateViewingRoom).toEqual({
+        heroStyle: null,
+        textAlignment: null,
+        artworkLayout: null,
+        artworkColumns: null,
+      })
+    })
+  })
+
+  describe("curatorialText", () => {
+    const curatorialQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          curatorialText
+        }
+      }
+    `
+
+    it("returns the curatorial text, keeping its paragraph breaks", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          curatorial_text: "First paragraph.\n\nSecond paragraph.",
+        }),
+      }
+
+      const result = await runQuery(curatorialQuery, context)
+
+      expect(result.privateViewingRoom.curatorialText).toBe(
+        "First paragraph.\n\nSecond paragraph."
+      )
+    })
+
+    it("is null when the gallery added none", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false }),
+      }
+
+      const result = await runQuery(curatorialQuery, context)
+
+      expect(result.privateViewingRoom.curatorialText).toBeNull()
+    })
+  })
 })
