@@ -12,7 +12,7 @@ describe("errorHandler", () => {
 
   it("returns a 401 for an IpDenied error", () => {
     errorHandler(
-      new IpDeniedError("denied"),
+      new IpDeniedError("denied", {}),
       jest.fn() as any,
       res,
       jest.fn() as any
