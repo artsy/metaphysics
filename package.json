@@ -43,7 +43,11 @@
   "license": "MIT",
   "resolutions": {
     "qs": "6.16.0",
-    "string-width": "4.2.3"
+    "string-width": "4.2.3",
+    "tar": "7.5.19",
+    "request/form-data": "2.5.4",
+    "superagent/form-data": "2.5.4",
+    "@types/form-data/form-data": "4.0.4"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.134",
@@ -82,7 +86,7 @@
     "debug": "2.6.9",
     "dotenv": "10.0.0",
     "express": "4.20.0",
-    "express-ipfilter": "0.3.1",
+    "express-ipfilter": "1.4.0",
     "express-rate-limit": "3.2.0",
     "google-libphonenumber": "^3.2.25",
     "graphql": "^16.13.2",

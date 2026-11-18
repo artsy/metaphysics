@@ -93,7 +93,7 @@ function bootApp() {
   if (IP_DENYLIST) {
     app.use(
       ipfilter(IP_DENYLIST.split(","), {
-        allowedHeaders: ["x-forwarded-for"],
+        trustProxy: true,
         log: false,
         mode: "deny",
       })
