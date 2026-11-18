@@ -2,6 +2,7 @@ import { camelCase } from "lodash"
 import {
   GraphQLBoolean,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -16,6 +17,9 @@ import { ResolverContext } from "types/graphql"
 import {
   ARTWORK_FIELD_VISIBILITY_KEYS,
   PartnerListPublicationType,
+  ViewingRoomArtworkLayoutEnum,
+  ViewingRoomHeroStyleEnum,
+  ViewingRoomTextAlignmentEnum,
 } from "schema/v2/partnerListPublication"
 
 // Generated from ARTWORK_FIELD_VISIBILITY_KEYS (schema/v2/partnerListPublication.ts) —
@@ -40,6 +44,10 @@ interface PublishPartnerListPublicationMutationInputProps {
   applyBrand?: boolean
   showGalleryName?: boolean
   artworkFieldVisibility?: Record<string, boolean>
+  heroStyle?: string
+  textAlignment?: string
+  artworkLayout?: string
+  artworkColumns?: number
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -112,6 +120,23 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: ArtworkFieldVisibilityInputType,
       description: "Per-field visibility toggles for artworks in the room.",
     },
+    heroStyle: {
+      type: ViewingRoomHeroStyleEnum,
+      description: "Hero banner style (viewing rooms rebuild).",
+    },
+    textAlignment: {
+      type: ViewingRoomTextAlignmentEnum,
+      description: "Alignment of the heading and text (viewing rooms rebuild).",
+    },
+    artworkLayout: {
+      type: ViewingRoomArtworkLayoutEnum,
+      description: "Artworks as a grid or masonry (viewing rooms rebuild).",
+    },
+    artworkColumns: {
+      type: GraphQLInt,
+      description:
+        "Number of artwork columns, 2 to 4 (viewing rooms rebuild). Gravity rejects other values.",
+    },
   },
   outputFields: {
     partnerListPublicationOrError: {
@@ -131,6 +156,10 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       applyBrand,
       showGalleryName,
       artworkFieldVisibility,
+      heroStyle,
+      textAlignment,
+      artworkLayout,
+      artworkColumns,
     },
     { publishPartnerListPublicationLoader }
   ) => {
@@ -154,6 +183,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
     if (showGalleryName !== undefined)
       gravityArgs.show_gallery_name = showGalleryName
+    if (heroStyle !== undefined) gravityArgs.hero_style = heroStyle
+    if (textAlignment !== undefined) gravityArgs.text_alignment = textAlignment
+    if (artworkLayout !== undefined) gravityArgs.artwork_layout = artworkLayout
+    if (artworkColumns !== undefined)
+      gravityArgs.artwork_columns = artworkColumns
     if (artworkFieldVisibility !== undefined) {
       const visibility: Record<string, boolean> = {}
 
