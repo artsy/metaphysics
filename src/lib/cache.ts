@@ -99,18 +99,19 @@ const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
 
 const statsClient = isTest ? null : createStatsClient()
 
-// Endpoint (path before the query string) for tagging. Low cardinality for the
-// long-key population, which is always query-string batch endpoints.
-const endpointOfKey = (key) => String(key).split("?")[0]
+// First path segment only (e.g. `artist`, `sale`, `articles`) — a small,
+// bounded set of loader roots. The rest of the path carries IDs
+// (`artist/<id>`, `sale/<id>/sale_artwork/<id>`) and a client can force a long
+// key with a long id, so tagging the full path would explode Datadog tag
+// cardinality (billed per unique combination, multiplied by `pod_name`).
+const keyRoot = (key) => String(key).split(/[/?]/)[0]
 
 // Count cache operations whose raw key exceeds memcached's limit and so gets
 // hashed — i.e. keys that previously silently missed. `cache.key_hashed` broken
-// down by `endpoint` in Datadog shows which loaders were affected.
+// down by `root` in Datadog shows which loaders were affected.
 const trackKeyLength = (key) => {
   if (keyPrefix().length + String(key).length > MAX_KEY_LENGTH) {
-    statsClient?.increment("cache.key_hashed", 1, {
-      endpoint: endpointOfKey(key),
-    })
+    statsClient?.increment("cache.key_hashed", 1, { root: keyRoot(key) })
   }
 }
 
