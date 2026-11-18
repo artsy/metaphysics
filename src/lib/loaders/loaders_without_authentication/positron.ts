@@ -7,8 +7,9 @@ export default (opts) => {
 
   return {
     articlesLoader: positronLoader("articles"),
+    // skipCache: batched URL rarely repeats and overflows memcached's key limit; we cache per-artist.
     articleCountsLoader: createArticleCountsLoader(
-      positronLoader("articles/counts")
+      positronLoader("articles/counts", {}, { skipCache: true })
     ),
     articleLoader: positronLoader((id) => `articles/${id}`),
     authorsLoader: positronLoader("authors"),
