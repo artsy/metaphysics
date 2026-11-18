@@ -2216,6 +2216,21 @@ export default (accessToken, userID, opts) => {
     ),
 
     crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
+    createCrmActivityLoader: gravityLoader(
+      "crm_activity",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmActivityLoader: gravityLoader(
+      (id) => `crm_activity/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmActivityLoader: gravityLoader(
+      (id) => `crm_activity/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
 
     // Email Sender Review Loaders
     emailSenderReviewsLoader: gravityLoader(
