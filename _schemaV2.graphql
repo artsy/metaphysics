@@ -13949,6 +13949,11 @@ input CreateCRMActivityInput {
   kind: CRMActivityKind!
 
   """
+  ISO 8601 time the activity happened. Defaults to now on create
+  """
+  occurredAt: String
+
+  """
   Short title
   """
   subject: String
@@ -40833,6 +40838,11 @@ input UpdateCRMActivityInput {
   The internal ID of the activity
   """
   id: String!
+
+  """
+  ISO 8601 time the activity happened. Defaults to now on create
+  """
+  occurredAt: String
 
   """
   Short title

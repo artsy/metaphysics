@@ -8,6 +8,11 @@ import {
   withGravityMutationError,
 } from "./mutationHelpers"
 
+const occurredAtField = {
+  type: GraphQLString,
+  description: "ISO 8601 time the activity happened. Defaults to now on create",
+}
+
 const CreateResponseOrErrorType = responseOrErrorType({
   name: "CreateCRMActivity",
   payloadField: "crmActivity",
@@ -32,6 +37,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(CRMActivityKindEnum),
       description: "Kind of activity. Only NOTE is accepted for now",
     },
+    occurredAt: occurredAtField,
     subject: {
       type: GraphQLString,
       description: "Short title",
@@ -45,7 +51,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { crmContactID, description, kind, subject },
+    { crmContactID, description, kind, occurredAt, subject },
     { createCrmActivityLoader }
   ) => {
     if (!createCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
@@ -55,6 +61,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
         crm_contact_id: crmContactID,
         description,
         kind,
+        occurred_at: occurredAt,
         subject,
       })
     )
@@ -84,6 +91,7 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the activity",
     },
+    occurredAt: occurredAtField,
     subject: {
       type: GraphQLString,
       description: "Short title",
@@ -97,13 +105,17 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { description, id, subject },
+    { description, id, occurredAt, subject },
     { updateCrmActivityLoader }
   ) => {
     if (!updateCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      updateCrmActivityLoader(id, { description, subject })
+      updateCrmActivityLoader(id, {
+        description,
+        occurred_at: occurredAt,
+        subject,
+      })
     )
   },
 })

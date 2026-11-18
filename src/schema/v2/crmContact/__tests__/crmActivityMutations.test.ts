@@ -16,7 +16,7 @@ describe("CRM activity mutations", () => {
 
     const result = await runAuthenticatedQuery(
       `mutation {
-        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, subject: "Fair", description: "Met at the fair" }) {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, occurredAt: "2026-01-02T10:00:00Z", subject: "Fair", description: "Met at the fair" }) {
           crmActivityOrError {
             ... on CreateCRMActivitySuccess { crmActivity { internalID kind subject description } }
           }
@@ -29,6 +29,7 @@ describe("CRM activity mutations", () => {
       crm_contact_id: "contact-1",
       description: "Met at the fair",
       kind: "note",
+      occurred_at: "2026-01-02T10:00:00Z",
       subject: "Fair",
     })
     expect(result.createCRMActivity.crmActivityOrError).toEqual({
@@ -78,7 +79,7 @@ describe("CRM activity mutations", () => {
 
     const result = await runAuthenticatedQuery(
       `mutation {
-        updateCRMActivity(input: { id: "activity-1", subject: "Edited subject", description: "Edited" }) {
+        updateCRMActivity(input: { id: "activity-1", occurredAt: "2026-01-03T10:00:00Z", subject: "Edited subject", description: "Edited" }) {
           crmActivityOrError {
             ... on UpdateCRMActivitySuccess { crmActivity { subject description } }
           }
@@ -89,6 +90,7 @@ describe("CRM activity mutations", () => {
 
     expect(updateCrmActivityLoader).toHaveBeenCalledWith("activity-1", {
       description: "Edited",
+      occurred_at: "2026-01-03T10:00:00Z",
       subject: "Edited subject",
     })
     expect(result.updateCRMActivity.crmActivityOrError).toEqual({
