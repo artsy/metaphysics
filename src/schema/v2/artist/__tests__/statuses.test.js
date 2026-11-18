@@ -51,6 +51,28 @@ describe("Artist Statuses", () => {
     })
   })
 
+  it("resolves articles and biography statuses via the batched counts loader", () => {
+    context.articleCountsLoader = ({ biography }) =>
+      Promise.resolve(biography ? 0 : 2)
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          statuses {
+            articles
+            biography
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then((data) => {
+      expect(data.artist.statuses).toEqual({
+        articles: true,
+        biography: false,
+      })
+    })
+  })
+
   it("allows an optional min show count arg for the CV status", () => {
     const query = `
       {
