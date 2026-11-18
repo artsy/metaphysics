@@ -28,6 +28,8 @@ const query = gql`
         packaging
         packer
         courierHandoff
+        condition
+        conditionDescription
         missingRequirements
         canceledAt
         createdAt(format: "YYYY-MM-DD")
@@ -51,6 +53,8 @@ const acceptedSubmission = {
   packaging: "framed",
   packer: "courier",
   courier_handoff: "seller_dropoff",
+  condition: "good",
+  condition_description: null,
   missing_requirements: [],
   canceled_at: null,
   created_at: "2026-11-12T10:00:00.000Z",
@@ -96,6 +100,8 @@ describe("me.resaleSubmission", () => {
       packaging: "FRAMED",
       packer: "COURIER",
       courierHandoff: "SELLER_DROPOFF",
+      condition: "GOOD",
+      conditionDescription: null,
       missingRequirements: [],
       canceledAt: null,
       createdAt: "2026-11-12",

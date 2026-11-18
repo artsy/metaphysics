@@ -10,6 +10,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { majorToMinor } from "lib/moneyHelpers"
+import { ArtworkConditionEnum } from "schema/v2/artwork/artworkCondition"
 import { ResolverContext } from "types/graphql"
 import {
   ResaleSubmissionCourierHandoffEnum,
@@ -19,6 +20,8 @@ import {
 } from "./resaleSubmission"
 
 interface Input {
+  condition?: string | null
+  conditionDescription?: string | null
   courierHandoff?: string | null
   id: string
   packaging?: string | null
@@ -65,8 +68,17 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
 >({
   name: "UpdateResaleSubmission",
   description:
-    "Update the asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.",
+    "Update the condition, asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.",
   inputFields: {
+    condition: {
+      type: ArtworkConditionEnum,
+      description: "The work’s condition.",
+    },
+    conditionDescription: {
+      type: GraphQLString,
+      description:
+        "Notes on changes or flaws in the work. An empty string clears them.",
+    },
     courierHandoff: {
       type: ResaleSubmissionCourierHandoffEnum,
       description: "How the work will get to its buyer.",
@@ -97,7 +109,15 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { courierHandoff, id, packaging, packer, priceListed },
+    {
+      condition,
+      conditionDescription,
+      courierHandoff,
+      id,
+      packaging,
+      packer,
+      priceListed,
+    },
     { meUpdateResaleSubmissionLoader }
   ) => {
     if (!meUpdateResaleSubmissionLoader) {
@@ -120,6 +140,10 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     if (packaging != null) gravityParams.packaging = packaging
     if (packer != null) gravityParams.packer = packer
     if (courierHandoff != null) gravityParams.courier_handoff = courierHandoff
+    if (condition != null) gravityParams.condition = condition
+    if (conditionDescription != null) {
+      gravityParams.condition_description = conditionDescription
+    }
 
     try {
       return await meUpdateResaleSubmissionLoader(id, gravityParams)
