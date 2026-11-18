@@ -36,11 +36,7 @@ const articleCountCacheKey = ({
 
 const MAX_BATCH_SIZE = 100
 
-/**
- * Loads the published article count for one artist, collapsing the per-artist
- * `Artist.counts.articles` fan-out — one Positron call per node of an artist
- * connection — into batched `GET /api/articles/counts` requests.
- */
+// Batches the per-artist article-count fan-out into Positron /counts calls, cached per artist.
 export const createArticleCountsLoader = (
   restLoader: ArticleCountsRESTLoader
 ): ArticleCountsLoader => {
