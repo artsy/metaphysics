@@ -43031,7 +43031,7 @@ input UpdateResaleSubmissionInput {
   courierHandoff: ResaleSubmissionCourierHandoff
 
   """
-  S3 URLs of uploaded photos to add as condition photos, in order.
+  S3 URLs of uploaded photos to add as condition photos, in order, at most 10. Each is added separately: if one fails, the ones before it stay saved, so reload conditionPhotos before retrying.
   """
   externalImageUrls: [String]
 

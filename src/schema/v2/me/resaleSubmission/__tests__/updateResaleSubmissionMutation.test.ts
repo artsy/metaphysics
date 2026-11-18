@@ -283,6 +283,24 @@ describe("updateResaleSubmission", () => {
       )
     })
 
+    it("rejects more than 10 photos without calling Gravity", async () => {
+      const urls = Array.from(
+        { length: 11 },
+        (_, i) => `"https://bucket.s3.amazonaws.com/${i}.jpg"`
+      )
+
+      await expect(
+        runAuthenticatedQuery(
+          mutationWith(`externalImageUrls: [${urls.join(", ")}]`),
+          context
+        )
+      ).rejects.toThrow("at most 10 condition photos")
+
+      expect(
+        context.meCreateResaleSubmissionImageLoader as jest.Mock
+      ).not.toHaveBeenCalled()
+    })
+
     it("returns a failure when Gravity rejects a photo", async () => {
       context.meCreateResaleSubmissionImageLoader = jest.fn(() =>
         Promise.reject(

@@ -19,6 +19,9 @@ import {
   ResaleSubmissionType,
 } from "./resaleSubmission"
 
+// Matches Gravity's limit of 10 condition photos per submission
+const MAX_IMAGE_URLS = 10
+
 interface Input {
   courierHandoff?: string | null
   externalImageUrls?: string[] | null
@@ -75,8 +78,7 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     },
     externalImageUrls: {
       type: new GraphQLList(GraphQLString),
-      description:
-        "S3 URLs of uploaded photos to add as condition photos, in order.",
+      description: `S3 URLs of uploaded photos to add as condition photos, in order, at most ${MAX_IMAGE_URLS}. Each is added separately: if one fails, the ones before it stay saved, so reload conditionPhotos before retrying.`,
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -139,6 +141,12 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     const imageUrls = (externalImageUrls ?? []).filter(
       (url): url is string => !!url
     )
+
+    if (imageUrls.length > MAX_IMAGE_URLS) {
+      throw new Error(
+        `A submission can have at most ${MAX_IMAGE_URLS} condition photos`
+      )
+    }
 
     try {
       if (imageUrls.length === 0) {
