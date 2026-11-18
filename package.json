@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.134",
-    "@artsy/cohesion": "^4.310.0",
+    "@artsy/cohesion": "^4.424.0",
     "@artsy/img": "1.1.3",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",

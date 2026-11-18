@@ -117,14 +117,14 @@ describe("CityGuides", () => {
         "component": {
           "behaviors": {
             "viewAll": {
-              "buttonText": "City Guide",
+              "buttonText": "Explore Cities",
               "href": "/city-guide",
             },
           },
-          "description": "Then create your own way to experience it",
+          "description": "Then build your custom itinerary",
           "title": "Discover the art that makes your city special",
         },
-        "contextModule": "cityGuideCard",
+        "contextModule": "cityGuidesRail",
         "internalID": "home-view-section-city-guides",
       }
     `)
