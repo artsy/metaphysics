@@ -56,7 +56,7 @@
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
     "@artsy/to-title-case": "^1.1.0",
-    "@artsy/xapp": "2.0.0",
+    "@artsy/xapp": "2.0.1",
     "@envelop/disable-introspection": "^9.1.1",
     "@graphql-tools/delegate": "^12.2.0",
     "@graphql-tools/executor-http": "^3.4.1",
