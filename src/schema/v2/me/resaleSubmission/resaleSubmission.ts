@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../../artwork"
 import { date } from "../../fields/date"
@@ -66,6 +67,52 @@ export const ResaleSubmissionStateEnum = new GraphQLEnumType({
     REJECTED: { value: "rejected" },
   },
 })
+
+export const ArtworkResaleStatusEnum = new GraphQLEnumType({
+  name: "ArtworkResaleStatus",
+  values: {
+    AVAILABLE: {
+      value: "available",
+      description: "The viewer can submit this work for resale.",
+    },
+    IN_PROGRESS: {
+      value: "in_progress",
+      description: "Artsy accepted the work; the seller is completing details.",
+    },
+    MARKED_FOR_FUTURE_SALE: {
+      value: "marked_for_future_sale",
+      description: "Artsy rejected the work; the seller may sell it later.",
+    },
+    SUBMITTED: {
+      value: "submitted",
+      description: "The work is listed or under auction review.",
+    },
+  },
+})
+
+const RESALE_STATUS_BY_STATE: Record<string, string> = {
+  accepted: "in_progress",
+  auction_review: "submitted",
+  canceled: "available",
+  listed: "submitted",
+  rejected: "marked_for_future_sale",
+}
+
+export const resaleStatusFromLatestSubmission = (
+  row: { resale_submission: { state: string } | null } | null
+): string | null => {
+  if (!row) return null
+  if (!row.resale_submission) return "available"
+
+  const { state } = row.resale_submission
+  const status = RESALE_STATUS_BY_STATE[state]
+  if (!status) {
+    // Null rather than AVAILABLE, so clients never offer an unknown state for sale.
+    warn(`Unknown resale submission state: ${state}`)
+    return null
+  }
+  return status
+}
 
 const moneyFromMinorField = (
   minorKey: string

@@ -4952,6 +4952,16 @@ type Artwork implements Node & Searchable & Sellable {
   """
   recentSavesCount: Int
   related(size: Int): [Artwork]
+
+  """
+  Where this work stands in the sell flow. Null when signed out or when the work isn’t in the viewer’s My Collection.
+  """
+  resaleStatus: ArtworkResaleStatus
+
+  """
+  The viewer’s newest resale submission for this work. Null when signed out or when the work isn’t in the viewer’s My Collection.
+  """
+  resaleSubmission: ResaleSubmission
   sale: Sale
   saleArtwork(saleID: String = null): SaleArtwork
   saleMessage: String
@@ -6294,6 +6304,28 @@ type ArtworkPublishedNotificationItem {
     first: Int
     last: Int
   ): ArtworkConnection
+}
+
+enum ArtworkResaleStatus {
+  """
+  The viewer can submit this work for resale.
+  """
+  AVAILABLE
+
+  """
+  Artsy accepted the work; the seller is completing details.
+  """
+  IN_PROGRESS
+
+  """
+  Artsy rejected the work; the seller may sell it later.
+  """
+  MARKED_FOR_FUTURE_SALE
+
+  """
+  The work is listed or under auction review.
+  """
+  SUBMITTED
 }
 
 union ArtworkResult = Artwork | ArtworkError

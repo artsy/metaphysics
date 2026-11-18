@@ -83,6 +83,11 @@ import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
 import {
+  ArtworkResaleStatusEnum,
+  ResaleSubmissionType,
+  resaleStatusFromLatestSubmission,
+} from "../me/resaleSubmission/resaleSubmission"
+import {
   PartnerOfferConnectionType,
   PartnerOfferTypeEnumType,
 } from "../partnerOffer"
@@ -1140,6 +1145,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ _id }, {}, { savedArtworkLoader }) => {
           if (!savedArtworkLoader) return false
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
+        },
+      },
+      resaleStatus: {
+        type: ArtworkResaleStatusEnum,
+        description:
+          "Where this work stands in the sell flow. Null when signed out or when the work isn’t in the viewer’s My Collection.",
+        resolve: async ({ _id }, _args, { meLatestResaleSubmissionLoader }) => {
+          if (!meLatestResaleSubmissionLoader) return null
+          const row = await meLatestResaleSubmissionLoader.load(_id)
+          return resaleStatusFromLatestSubmission(row)
+        },
+      },
+      resaleSubmission: {
+        type: ResaleSubmissionType,
+        description:
+          "The viewer’s newest resale submission for this work. Null when signed out or when the work isn’t in the viewer’s My Collection.",
+        resolve: async ({ _id }, _args, { meLatestResaleSubmissionLoader }) => {
+          if (!meLatestResaleSubmissionLoader) return null
+          const row = await meLatestResaleSubmissionLoader.load(_id)
+          return row?.resale_submission ?? null
         },
       },
       isSavedToAnyList: {

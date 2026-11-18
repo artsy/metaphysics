@@ -2,6 +2,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
 import { createBatchItineraryStopMembershipsLoader } from "../batchItineraryStopMembershipsLoader"
+import { createBatchLatestResaleSubmissionLoader } from "../batchLatestResaleSubmissionLoader"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -1147,6 +1148,9 @@ export default (accessToken, userID, opts) => {
 
     meResaleSubmissionLoader: gravityLoader(
       (id) => `me/resale_submission/${id}`
+    ),
+    meLatestResaleSubmissionLoader: createBatchLatestResaleSubmissionLoader(
+      gravityLoader("me/resale_submissions/latest")
     ),
     meResaleSubmissionsLoader: gravityLoader(
       "me/resale_submissions",
