@@ -8,6 +8,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { chunk, groupBy, isNil, omitBy, uniq } from "lodash"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { error } from "lib/loggers"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -120,6 +121,11 @@ export const EmailMessageType = new GraphQLObjectType<any, ResolverContext>({
 // Gravity limits these list endpoints to pages of 50
 const LINKED_PAGE_SIZE = 50
 
+type LinkedLoaders = Pick<
+  ResolverContext,
+  "partnerArtistsForPartnerLoader" | "partnerArtworksAllLoader"
+>
+
 const linkedIDs = ({
   activity,
   targetType,
@@ -131,100 +137,98 @@ const linkedIDs = ({
     .filter((link) => link.target_type === targetType)
     .map((link) => link.target_id)
 
-// Loads the linked artworks and artists of many activities with one call per
-// 50 of each, and stashes them on each activity as `_artworks` and `_artists`.
-// Deleted ones are left out.
-const attachLinkedEntities = async (
-  activities: any[],
-  {
-    partnerArtworksAllLoader,
-    artistsLoader,
-  }: Pick<ResolverContext, "partnerArtworksAllLoader" | "artistsLoader">
-) => {
-  const loadByID = async ({
-    ids,
-    load,
-  }: {
-    ids: string[]
-    load: (ids: string[]) => Promise<{ body: any[] }>
-  }) => {
-    const byID = new Map<string, any>()
-
-    if (ids.length === 0) return byID
-
-    try {
-      const pages = await Promise.all(chunk(ids, LINKED_PAGE_SIZE).map(load))
-      pages.forEach(({ body }) =>
-        body.forEach((entity) => byID.set(entity._id, entity))
-      )
-    } catch (err) {
-      // The timeline is still useful without them
-      error("Could not load the linked entities of CRM activities", err)
-    }
-
-    return byID
-  }
-
-  const artistIDs = uniq(
-    activities.flatMap((activity) =>
-      linkedIDs({ activity, targetType: "artist" })
-    )
-  )
-  const artistsByID = await loadByID({
-    ids: artistIDs,
-    load: (ids) => artistsLoader({ ids, size: ids.length }),
-  })
-
+// Loads what the activities are linked to with one call per partner and 50
+// links, and stashes it on each activity under `field`. Entities that no
+// longer exist are left out, and a failed call leaves the list empty.
+const attachLinked = async ({
+  activities,
+  field,
+  targetType,
+  load,
+}: {
+  activities: any[]
+  field: "_artworks" | "_artists"
+  targetType: "artwork" | "artist"
+  load: (params: { partnerID: string; ids: string[] }) => Promise<any[]>
+}) => {
   await Promise.all(
     Object.entries(groupBy(activities, "partner_id")).map(
       async ([partnerID, partnerActivities]) => {
-        const artworksByID = await loadByID({
-          ids: partnerArtworksAllLoader
-            ? uniq(
-                partnerActivities.flatMap((activity) =>
-                  linkedIDs({ activity, targetType: "artwork" })
-                )
-              )
-            : [],
-          load: (ids) =>
-            partnerArtworksAllLoader!(partnerID, {
-              artwork_id: ids,
-              include_non_artsy_listed: true,
-              size: ids.length,
-            }),
-        })
+        const ids = uniq(
+          partnerActivities.flatMap((activity) =>
+            linkedIDs({ activity, targetType })
+          )
+        )
+        const byID = new Map<string, any>()
+
+        try {
+          const pages = await Promise.all(
+            chunk(ids, LINKED_PAGE_SIZE).map((pageIDs) =>
+              load({ partnerID, ids: pageIDs })
+            )
+          )
+          pages.flat().forEach((entity) => byID.set(entity._id, entity))
+        } catch (err) {
+          // The timeline is still useful without them
+          error(
+            `Could not load the linked ${targetType}s of CRM activities`,
+            err
+          )
+        }
 
         partnerActivities.forEach((activity) => {
-          activity._artworks = linkedIDs({ activity, targetType: "artwork" })
-            .map((id) => artworksByID.get(id))
+          activity[field] = linkedIDs({ activity, targetType })
+            .map((id) => byID.get(id))
             .filter(Boolean)
         })
       }
     )
   )
+}
 
-  activities.forEach((activity) => {
-    activity._artists = linkedIDs({ activity, targetType: "artist" })
-      .map((id) => artistsByID.get(id))
-      .filter(Boolean)
-    activity._linked = Promise.resolve()
+const attachLinkedArtworks = (
+  activities: any[],
+  { partnerArtworksAllLoader }: Pick<LinkedLoaders, "partnerArtworksAllLoader">
+) => {
+  return attachLinked({
+    activities,
+    field: "_artworks",
+    targetType: "artwork",
+    load: async ({ partnerID, ids }) => {
+      if (!partnerArtworksAllLoader) return []
+
+      const { body } = await partnerArtworksAllLoader(partnerID, {
+        artwork_id: ids,
+        include_non_artsy_listed: true,
+        size: ids.length,
+      })
+
+      return body
+    },
   })
 }
 
-// The connection loads a whole page at once; this covers an activity returned
-// on its own, such as from a mutation, with one load for all its fields.
-const ensureLinkedEntities = ({
-  activity,
-  loaders,
-}: {
-  activity: any
-  loaders: Pick<ResolverContext, "partnerArtworksAllLoader" | "artistsLoader">
-}): Promise<void> => {
-  if (!activity._linked) {
-    activity._linked = attachLinkedEntities([activity], loaders)
-  }
+// Goes through the partner's artists, not `artists?ids`, which leaves out
+// artists that are not public, such as ones the partner added itself.
+const attachLinkedArtists = (
+  activities: any[],
+  {
+    partnerArtistsForPartnerLoader,
+  }: Pick<LinkedLoaders, "partnerArtistsForPartnerLoader">
+) => {
+  return attachLinked({
+    activities,
+    field: "_artists",
+    targetType: "artist",
+    load: async ({ partnerID, ids }) => {
+      const { body } = await partnerArtistsForPartnerLoader(partnerID, {
+        artist_ids: ids,
+        size: ids.length,
+      })
 
-  return activity._linked
+      return body.map((partnerArtist) => partnerArtist.artist).filter(Boolean)
+    },
+  })
 }
 
 export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
@@ -235,15 +239,14 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ArtistType))),
       description:
         "The artists this activity is about. Deleted ones are left out",
-      resolve: async (
-        activity,
-        _args,
-        { artistsLoader, partnerArtworksAllLoader }
-      ) => {
-        await ensureLinkedEntities({
-          activity,
-          loaders: { artistsLoader, partnerArtworksAllLoader },
-        })
+      // The connection loads a whole page at once; this covers an activity
+      // returned on its own, such as from a mutation.
+      resolve: async (activity, _args, { partnerArtistsForPartnerLoader }) => {
+        if (!activity._artists) {
+          await attachLinkedArtists([activity], {
+            partnerArtistsForPartnerLoader,
+          })
+        }
 
         return activity._artists
       },
@@ -254,15 +257,10 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
       ),
       description:
         "The artworks this activity is about. Deleted ones are left out",
-      resolve: async (
-        activity,
-        _args,
-        { artistsLoader, partnerArtworksAllLoader }
-      ) => {
-        await ensureLinkedEntities({
-          activity,
-          loaders: { artistsLoader, partnerArtworksAllLoader },
-        })
+      resolve: async (activity, _args, { partnerArtworksAllLoader }) => {
+        if (!activity._artworks) {
+          await attachLinkedArtworks([activity], { partnerArtworksAllLoader })
+        }
 
         return activity._artworks
       },
@@ -324,7 +322,12 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
   resolve: async (
     _root,
     args,
-    { artistsLoader, crmActivitiesLoader, partnerArtworksAllLoader }
+    {
+      crmActivitiesLoader,
+      partnerArtistsForPartnerLoader,
+      partnerArtworksAllLoader,
+    },
+    resolveInfo
   ) => {
     if (!crmActivitiesLoader) return null
 
@@ -347,10 +350,13 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    await attachLinkedEntities(body, {
-      artistsLoader,
-      partnerArtworksAllLoader,
-    })
+    // Only load what the query selects, both at the same time
+    await Promise.all([
+      isFieldRequested("edges.node.artworks", resolveInfo) &&
+        attachLinkedArtworks(body, { partnerArtworksAllLoader }),
+      isFieldRequested("edges.node.artists", resolveInfo) &&
+        attachLinkedArtists(body, { partnerArtistsForPartnerLoader }),
+    ])
 
     return paginationResolver({ totalCount, offset, page, size, body, args })
   },

@@ -123,6 +123,38 @@ describe("CRM activity mutations", () => {
     })
   })
 
+  it("loads the artists of a created activity, once for all its fields", async () => {
+    const createCrmActivityLoader = jest.fn().mockResolvedValue({
+      ...activity,
+      kind: "interest",
+      links: [{ target_type: "artist", target_id: "artist-1" }],
+    })
+    const partnerArtistsForPartnerLoader = jest.fn().mockResolvedValue({
+      body: [{ artist: { _id: "artist-1", id: "one", name: "One" } }],
+      headers: {},
+    })
+
+    const result = await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: INTEREST, artistIDs: ["artist-1"] }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { artists { internalID name } } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader, partnerArtistsForPartnerLoader }
+    )
+
+    expect(partnerArtistsForPartnerLoader).toHaveBeenCalledTimes(1)
+    expect(partnerArtistsForPartnerLoader).toHaveBeenCalledWith("partner-1", {
+      artist_ids: ["artist-1"],
+      size: 1,
+    })
+    expect(result.createCRMActivity.crmActivityOrError).toEqual({
+      crmActivity: { artists: [{ internalID: "artist-1", name: "One" }] },
+    })
+  })
+
   it("updates the kind and artworks, and clears them with an empty list", async () => {
     const updateCrmActivityLoader = jest.fn().mockResolvedValue(activity)
 

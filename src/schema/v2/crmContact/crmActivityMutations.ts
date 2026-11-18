@@ -31,7 +31,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     artistIDs: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
-        "Artists of the partner that the activity is about. An INTEREST needs an artwork or an artist",
+        "Artists the partner shows or represents that the activity is about. An INTEREST needs an artwork or an artist",
     },
     artworkIDs: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
