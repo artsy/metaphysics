@@ -74,6 +74,35 @@ describe("batch latest resale submission", () => {
     expect(fetchSubmissions).toHaveBeenCalledTimes(1)
   })
 
+  it("ignores works it didn't ask for, so they can't end paging early", async () => {
+    const listed = {
+      id: "s-a",
+      submitted_artwork_id: "artwork-a",
+      state: "listed",
+    }
+    const fetchSubmissions = jest
+      .fn()
+      .mockResolvedValueOnce(
+        page(
+          [
+            { id: "s-x", submitted_artwork_id: "artwork-x", state: "listed" },
+            { id: "s-y", submitted_artwork_id: "artwork-y", state: "listed" },
+          ],
+          103
+        )
+      )
+      .mockResolvedValueOnce(page([listed], 103))
+    const loader = createBatchLatestResaleSubmissionLoader(fetchSubmissions)
+
+    const results = await Promise.all([
+      loader.load("artwork-a"),
+      loader.load("artwork-b"),
+    ])
+
+    expect(fetchSubmissions).toHaveBeenCalledTimes(2)
+    expect(results).toEqual([listed, null])
+  })
+
   it("splits batches of more than 50 artworks", async () => {
     const fetchSubmissions = jest.fn().mockResolvedValue(page([]))
     const loader = createBatchLatestResaleSubmissionLoader(fetchSubmissions)

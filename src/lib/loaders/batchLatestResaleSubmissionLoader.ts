@@ -13,26 +13,32 @@ export const createBatchLatestResaleSubmissionLoader = (
 ) =>
   new DataLoader<string, any | null>(
     async (artworkIDs) => {
+      const requestedIDs = new Set(artworkIDs)
       const newestByArtworkID = new Map<string, any>()
 
       // Newest first, so the first row seen for a work is its latest. Page on until every work is seen.
       for (let page = 1; ; page++) {
         const { body, headers } = await fetchResaleSubmissions({
-          artwork_ids: [...artworkIDs],
+          artwork_ids: [...requestedIDs],
           sort: "-created_at",
           size: PAGE_SIZE,
           page,
           total_count: true,
         })
         body.forEach((submission) => {
-          if (!newestByArtworkID.has(submission.submitted_artwork_id)) {
-            newestByArtworkID.set(submission.submitted_artwork_id, submission)
+          const artworkID = submission.submitted_artwork_id
+          // A Gravity without the artwork_ids filter returns every submission, so skip unrequested works
+          if (
+            requestedIDs.has(artworkID) &&
+            !newestByArtworkID.has(artworkID)
+          ) {
+            newestByArtworkID.set(artworkID, submission)
           }
         })
 
         const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
         if (
-          newestByArtworkID.size === artworkIDs.length ||
+          newestByArtworkID.size === requestedIDs.size ||
           page * PAGE_SIZE >= totalCount
         ) {
           break
