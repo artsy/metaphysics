@@ -22,8 +22,11 @@ const mutationWith = (input: string) => gql`
             conditionPhotos {
               internalID
             }
-            condition
-            conditionDescription
+            condition {
+              value
+              displayText
+              description
+            }
           }
         }
         ... on UpdateResaleSubmissionFailure {
@@ -172,8 +175,11 @@ describe("updateResaleSubmission", () => {
         courierHandoff: "SELLER_DROPOFF",
         notes: "Small tear on the verso",
         conditionPhotos: [],
-        condition: "VERY_GOOD",
-        conditionDescription: "Small scratch on the frame",
+        condition: {
+          value: "VERY_GOOD",
+          displayText: "Very good",
+          description: "Small scratch on the frame",
+        },
       },
     })
   })

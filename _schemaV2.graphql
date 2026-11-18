@@ -36943,14 +36943,9 @@ type ResaleSubmission {
   channel: ResaleSubmissionChannel
 
   """
-  The seller’s answer to the work’s condition, or null if not answered yet.
+  The seller’s answer to the work’s condition and their notes on it, in the same shape as Artwork.condition. Null if neither is answered yet.
   """
-  condition: ArtworkConditionEnumType
-
-  """
-  The seller’s notes on changes or flaws in the work.
-  """
-  conditionDescription: String
+  condition: ArtworkCondition
 
   """
   Photos the seller added to show the work’s condition, oldest first.
