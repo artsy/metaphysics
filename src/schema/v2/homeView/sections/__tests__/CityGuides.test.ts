@@ -117,7 +117,7 @@ describe("CityGuides", () => {
         "component": {
           "behaviors": {
             "viewAll": {
-              "buttonText": "Explore Cities",
+              "buttonText": "Explore Guides",
               "href": "/city-guide",
             },
           },

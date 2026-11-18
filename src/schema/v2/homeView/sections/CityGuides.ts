@@ -122,7 +122,7 @@ export const CityGuides: HomeViewSection = {
     description: "Then build your custom itinerary",
     behaviors: {
       viewAll: {
-        buttonText: "Explore Cities",
+        buttonText: "Explore Guides",
         href: "/city-guide",
       },
     },
