@@ -123,7 +123,7 @@ const LINKED_PAGE_SIZE = 50
 
 type LinkedLoaders = Pick<
   ResolverContext,
-  "partnerArtistsForPartnerLoader" | "partnerArtworksAllLoader"
+  "partnerArtistsAllLoader" | "partnerArtworksAllLoader"
 >
 
 const linkedIDs = ({
@@ -212,16 +212,16 @@ const attachLinkedArtworks = (
 // artists that are not public, such as ones the partner added itself.
 const attachLinkedArtists = (
   activities: any[],
-  {
-    partnerArtistsForPartnerLoader,
-  }: Pick<LinkedLoaders, "partnerArtistsForPartnerLoader">
+  { partnerArtistsAllLoader }: Pick<LinkedLoaders, "partnerArtistsAllLoader">
 ) => {
   return attachLinked({
     activities,
     field: "_artists",
     targetType: "artist",
     load: async ({ partnerID, ids }) => {
-      const { body } = await partnerArtistsForPartnerLoader(partnerID, {
+      if (!partnerArtistsAllLoader) return []
+
+      const { body } = await partnerArtistsAllLoader(partnerID, {
         artist_ids: ids,
         size: ids.length,
       })
@@ -241,11 +241,9 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
         "The artists this activity is about. Deleted ones are left out",
       // The connection loads a whole page at once; this covers an activity
       // returned on its own, such as from a mutation.
-      resolve: async (activity, _args, { partnerArtistsForPartnerLoader }) => {
+      resolve: async (activity, _args, { partnerArtistsAllLoader }) => {
         if (!activity._artists) {
-          await attachLinkedArtists([activity], {
-            partnerArtistsForPartnerLoader,
-          })
+          await attachLinkedArtists([activity], { partnerArtistsAllLoader })
         }
 
         return activity._artists
@@ -322,11 +320,7 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
   resolve: async (
     _root,
     args,
-    {
-      crmActivitiesLoader,
-      partnerArtistsForPartnerLoader,
-      partnerArtworksAllLoader,
-    },
+    { crmActivitiesLoader, partnerArtistsAllLoader, partnerArtworksAllLoader },
     resolveInfo
   ) => {
     if (!crmActivitiesLoader) return null
@@ -355,7 +349,7 @@ export const crmActivitiesConnection: GraphQLFieldConfig<
       isFieldRequested("edges.node.artworks", resolveInfo) &&
         attachLinkedArtworks(body, { partnerArtworksAllLoader }),
       isFieldRequested("edges.node.artists", resolveInfo) &&
-        attachLinkedArtists(body, { partnerArtistsForPartnerLoader }),
+        attachLinkedArtists(body, { partnerArtistsAllLoader }),
     ])
 
     return paginationResolver({ totalCount, offset, page, size, body, args })

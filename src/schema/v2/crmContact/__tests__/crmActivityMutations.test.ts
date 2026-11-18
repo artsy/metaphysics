@@ -123,13 +123,13 @@ describe("CRM activity mutations", () => {
     })
   })
 
-  it("loads the artists of a created activity, once for all its fields", async () => {
+  it("loads the artists of a created activity", async () => {
     const createCrmActivityLoader = jest.fn().mockResolvedValue({
       ...activity,
       kind: "interest",
       links: [{ target_type: "artist", target_id: "artist-1" }],
     })
-    const partnerArtistsForPartnerLoader = jest.fn().mockResolvedValue({
+    const partnerArtistsAllLoader = jest.fn().mockResolvedValue({
       body: [{ artist: { _id: "artist-1", id: "one", name: "One" } }],
       headers: {},
     })
@@ -142,11 +142,11 @@ describe("CRM activity mutations", () => {
           }
         }
       }`,
-      { createCrmActivityLoader, partnerArtistsForPartnerLoader }
+      { createCrmActivityLoader, partnerArtistsAllLoader }
     )
 
-    expect(partnerArtistsForPartnerLoader).toHaveBeenCalledTimes(1)
-    expect(partnerArtistsForPartnerLoader).toHaveBeenCalledWith("partner-1", {
+    expect(partnerArtistsAllLoader).toHaveBeenCalledTimes(1)
+    expect(partnerArtistsAllLoader).toHaveBeenCalledWith("partner-1", {
       artist_ids: ["artist-1"],
       size: 1,
     })

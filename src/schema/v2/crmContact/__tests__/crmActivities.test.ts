@@ -244,7 +244,7 @@ describe("crmActivitiesConnection", () => {
     })
 
     it("loads the artists of the whole page with one partner call", async () => {
-      const partnerArtistsForPartnerLoader = partnerArtists([
+      const partnerArtistsAllLoader = partnerArtists([
         { _id: "artist-1", id: "one", name: "One" },
         { _id: "artist-2", id: "two", name: "Two" },
       ])
@@ -259,12 +259,12 @@ describe("crmActivitiesConnection", () => {
               artistLink("artist-1"),
             ]),
           ]),
-          partnerArtistsForPartnerLoader,
+          partnerArtistsAllLoader,
         }
       )
 
-      expect(partnerArtistsForPartnerLoader).toHaveBeenCalledTimes(1)
-      expect(partnerArtistsForPartnerLoader).toHaveBeenCalledWith("partner-1", {
+      expect(partnerArtistsAllLoader).toHaveBeenCalledTimes(1)
+      expect(partnerArtistsAllLoader).toHaveBeenCalledWith("partner-1", {
         artist_ids: ["artist-1", "artist-2"],
         size: 2,
       })
@@ -287,12 +287,10 @@ describe("crmActivitiesConnection", () => {
       const partnerArtworksAllLoader = jest.fn().mockImplementation(() => {
         return artistsCalled.then(() => ({ body: [], headers: {} }))
       })
-      const partnerArtistsForPartnerLoader = jest
-        .fn()
-        .mockImplementation(() => {
-          artistsStarted()
-          return Promise.resolve({ body: [], headers: {} })
-        })
+      const partnerArtistsAllLoader = jest.fn().mockImplementation(() => {
+        artistsStarted()
+        return Promise.resolve({ body: [], headers: {} })
+      })
 
       await runAuthenticatedQuery(
         query("artworks { internalID } artists { internalID }"),
@@ -301,17 +299,17 @@ describe("crmActivitiesConnection", () => {
             activity("activity-1", [artworkLink("a"), artistLink("r")]),
           ]),
           partnerArtworksAllLoader,
-          partnerArtistsForPartnerLoader,
+          partnerArtistsAllLoader,
         }
       )
 
       expect(partnerArtworksAllLoader).toHaveBeenCalledTimes(1)
-      expect(partnerArtistsForPartnerLoader).toHaveBeenCalledTimes(1)
+      expect(partnerArtistsAllLoader).toHaveBeenCalledTimes(1)
     })
 
     it("only loads what the query selects", async () => {
       const partnerArtworksAllLoader = artworks([])
-      const partnerArtistsForPartnerLoader = partnerArtists([])
+      const partnerArtistsAllLoader = partnerArtists([])
       const crmActivitiesLoader = timeline([
         activity("activity-1", [artworkLink("a"), artistLink("r")]),
       ])
@@ -319,11 +317,11 @@ describe("crmActivitiesConnection", () => {
       await runAuthenticatedQuery(query("artworks { internalID }"), {
         crmActivitiesLoader,
         partnerArtworksAllLoader,
-        partnerArtistsForPartnerLoader,
+        partnerArtistsAllLoader,
       })
 
       expect(partnerArtworksAllLoader).toHaveBeenCalledTimes(1)
-      expect(partnerArtistsForPartnerLoader).not.toHaveBeenCalled()
+      expect(partnerArtistsAllLoader).not.toHaveBeenCalled()
 
       jest.clearAllMocks()
       crmActivitiesLoader.mockResolvedValue({
@@ -334,10 +332,10 @@ describe("crmActivitiesConnection", () => {
       await runAuthenticatedQuery(query("artists { internalID }"), {
         crmActivitiesLoader,
         partnerArtworksAllLoader,
-        partnerArtistsForPartnerLoader,
+        partnerArtistsAllLoader,
       })
 
-      expect(partnerArtistsForPartnerLoader).toHaveBeenCalledTimes(1)
+      expect(partnerArtistsAllLoader).toHaveBeenCalledTimes(1)
       expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
 
       jest.clearAllMocks()
@@ -345,16 +343,16 @@ describe("crmActivitiesConnection", () => {
       await runAuthenticatedQuery(query("kind"), {
         crmActivitiesLoader,
         partnerArtworksAllLoader,
-        partnerArtistsForPartnerLoader,
+        partnerArtistsAllLoader,
       })
 
       expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
-      expect(partnerArtistsForPartnerLoader).not.toHaveBeenCalled()
+      expect(partnerArtistsAllLoader).not.toHaveBeenCalled()
     })
 
     it("does not call Gravity for a page without links", async () => {
       const partnerArtworksAllLoader = artworks([])
-      const partnerArtistsForPartnerLoader = partnerArtists([])
+      const partnerArtistsAllLoader = partnerArtists([])
 
       const result = await runAuthenticatedQuery(
         query("artworks { internalID } artists { internalID }"),
@@ -364,12 +362,12 @@ describe("crmActivitiesConnection", () => {
             activity("activity-2", [{ target_type: "show", target_id: "s" }]),
           ]),
           partnerArtworksAllLoader,
-          partnerArtistsForPartnerLoader,
+          partnerArtistsAllLoader,
         }
       )
 
       expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
-      expect(partnerArtistsForPartnerLoader).not.toHaveBeenCalled()
+      expect(partnerArtistsAllLoader).not.toHaveBeenCalled()
       expect(nodes(result)).toEqual([
         { internalID: "activity-1", artworks: [], artists: [] },
         { internalID: "activity-2", artworks: [], artists: [] },
@@ -384,7 +382,7 @@ describe("crmActivitiesConnection", () => {
             activity("activity-1", [artworkLink("gone"), artistLink("gone")]),
           ]),
           partnerArtworksAllLoader: artworks([]),
-          partnerArtistsForPartnerLoader: partnerArtists([]),
+          partnerArtistsAllLoader: partnerArtists([]),
         }
       )
 
@@ -416,7 +414,7 @@ describe("crmActivitiesConnection", () => {
           crmActivitiesLoader: timeline([
             activity("activity-1", [artistLink("artist-1")]),
           ]),
-          partnerArtistsForPartnerLoader: jest
+          partnerArtistsAllLoader: jest
             .fn()
             .mockRejectedValue(new Error("Gravity down")),
         }
