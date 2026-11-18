@@ -2508,24 +2508,26 @@ describe("Artwork type", () => {
       }
     `
 
-    const runWithRows = (rows, artworkQuery = query) => {
-      const fetchLatest = jest.fn().mockResolvedValue(rows)
+    const ARTWORK_ID = "richard-prince-untitled-portrait-database-id"
+
+    const runWithSubmissions = (submissions, artworkQuery = query) => {
+      const fetchSubmissions = jest.fn().mockResolvedValue({
+        body: submissions,
+        headers: { "x-total-count": String(submissions.length) },
+      })
       return {
-        fetchLatest,
+        fetchSubmissions,
         result: runAuthenticatedQuery(artworkQuery, {
           ...context,
           meLatestResaleSubmissionLoader: createBatchLatestResaleSubmissionLoader(
-            fetchLatest
+            fetchSubmissions
           ),
         }),
       }
     }
 
-    const rowWithState = (state) => [
-      {
-        artwork_id: "richard-prince-untitled-portrait-database-id",
-        resale_submission: { id: "submission-1", state },
-      },
+    const submissionWithState = (state) => [
+      { id: "submission-1", submitted_artwork_id: ARTWORK_ID, state },
     ]
 
     it.each([
@@ -2535,31 +2537,31 @@ describe("Artwork type", () => {
       ["listed", "SUBMITTED"],
       ["rejected", "MARKED_FOR_FUTURE_SALE"],
     ])("maps a %s submission to %s", async (state, status) => {
-      const { result } = runWithRows(rowWithState(state))
+      const { result } = runWithSubmissions(submissionWithState(state))
       const { artwork } = await result
       expect(artwork.resaleStatus).toEqual(status)
     })
 
     it("returns the newest submission, from one Gravity call for both fields", async () => {
-      const { fetchLatest, result } = runWithRows(rowWithState("rejected"))
+      const { fetchSubmissions, result } = runWithSubmissions(
+        submissionWithState("rejected")
+      )
       const { artwork } = await result
       expect(artwork.resaleSubmission).toEqual({
         internalID: "submission-1",
         state: "REJECTED",
       })
-      expect(fetchLatest).toHaveBeenCalledTimes(1)
-      expect(fetchLatest).toHaveBeenCalledWith({
-        artwork_id: ["richard-prince-untitled-portrait-database-id"],
-      })
+      expect(fetchSubmissions).toHaveBeenCalledTimes(1)
+      expect(fetchSubmissions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          artwork_id: [ARTWORK_ID],
+          sort: "-created_at",
+        })
+      )
     })
 
-    it("is AVAILABLE with no submission when the viewer owns the work", async () => {
-      const { result } = runWithRows([
-        {
-          artwork_id: "richard-prince-untitled-portrait-database-id",
-          resale_submission: null,
-        },
-      ])
+    it("is AVAILABLE with no submission when the work was never submitted", async () => {
+      const { result } = runWithSubmissions([])
       const { artwork } = await result
       expect(artwork).toEqual({
         resaleStatus: "AVAILABLE",
@@ -2567,15 +2569,9 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns null for both when the work isn’t in the viewer’s My Collection", async () => {
-      const { result } = runWithRows([])
-      const { artwork } = await result
-      expect(artwork).toEqual({ resaleStatus: null, resaleSubmission: null })
-    })
-
     it("returns a null status for an unknown submission state", async () => {
-      const { result } = runWithRows(
-        rowWithState("archived"),
+      const { result } = runWithSubmissions(
+        submissionWithState("archived"),
         gql`
           {
             artwork(id: "richard-prince-untitled-portrait") {

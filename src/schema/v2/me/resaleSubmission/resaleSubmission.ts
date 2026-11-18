@@ -99,12 +99,11 @@ const RESALE_STATUS_BY_STATE: Record<string, string> = {
 }
 
 export const resaleStatusFromLatestSubmission = (
-  row: { resale_submission: { state: string } | null } | null
+  submission: { state: string } | null
 ): string | null => {
-  if (!row) return null
-  if (!row.resale_submission) return "available"
+  if (!submission) return "available"
 
-  const { state } = row.resale_submission
+  const { state } = submission
   const status = RESALE_STATUS_BY_STATE[state]
   if (!status) {
     // Null rather than AVAILABLE, so clients never offer an unknown state for sale.

@@ -1150,21 +1150,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       resaleStatus: {
         type: ArtworkResaleStatusEnum,
         description:
-          "Where this work stands in the sell flow. Null when signed out or when the work isn’t in the viewer’s My Collection.",
+          "Where this work stands in the viewer’s sell flow. Null when signed out. Only meaningful for the viewer’s My Collection works: any other work reads AVAILABLE.",
         resolve: async ({ _id }, _args, { meLatestResaleSubmissionLoader }) => {
           if (!meLatestResaleSubmissionLoader) return null
-          const row = await meLatestResaleSubmissionLoader.load(_id)
-          return resaleStatusFromLatestSubmission(row)
+          const submission = await meLatestResaleSubmissionLoader.load(_id)
+          return resaleStatusFromLatestSubmission(submission)
         },
       },
       resaleSubmission: {
         type: ResaleSubmissionType,
         description:
-          "The viewer’s newest resale submission for this work. Null when signed out or when the work isn’t in the viewer’s My Collection.",
+          "The viewer’s newest resale submission for this work, in any state. Null when signed out or when there is none.",
         resolve: async ({ _id }, _args, { meLatestResaleSubmissionLoader }) => {
           if (!meLatestResaleSubmissionLoader) return null
-          const row = await meLatestResaleSubmissionLoader.load(_id)
-          return row?.resale_submission ?? null
+          return meLatestResaleSubmissionLoader.load(_id)
         },
       },
       isSavedToAnyList: {

@@ -1,22 +1,45 @@
 import DataLoader from "dataloader"
 
-export interface LatestResaleSubmissionRow {
-  artwork_id: string
-  resale_submission: any | null
-}
+type GravityListFetch = (
+  params: Record<string, unknown>
+) => Promise<{ body: any[]; headers: Record<string, string> }>
+
+const PAGE_SIZE = 100
 
 // Built once per request by the authenticated factory, so no viewer's submissions enter a shared cache.
-// No row from Gravity means the work isn't in the viewer's My Collection, so it resolves to null.
+// Resolves to each work's newest submission, or null when it has none.
 export const createBatchLatestResaleSubmissionLoader = (
-  fetchLatest: (params: {
-    artwork_id: string[]
-  }) => Promise<LatestResaleSubmissionRow[]>
+  fetchResaleSubmissions: GravityListFetch
 ) =>
-  new DataLoader<string, LatestResaleSubmissionRow | null>(
+  new DataLoader<string, any | null>(
     async (artworkIDs) => {
-      const rows = await fetchLatest({ artwork_id: [...artworkIDs] })
-      const byArtworkID = new Map(rows.map((row) => [row.artwork_id, row]))
-      return artworkIDs.map((id) => byArtworkID.get(id) ?? null)
+      const newestByArtworkID = new Map<string, any>()
+
+      // Newest first, so the first row seen for a work is its latest. Page on until every work is seen.
+      for (let page = 1; ; page++) {
+        const { body, headers } = await fetchResaleSubmissions({
+          artwork_id: [...artworkIDs],
+          sort: "-created_at",
+          size: PAGE_SIZE,
+          page,
+          total_count: true,
+        })
+        body.forEach((submission) => {
+          if (!newestByArtworkID.has(submission.submitted_artwork_id)) {
+            newestByArtworkID.set(submission.submitted_artwork_id, submission)
+          }
+        })
+
+        const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
+        if (
+          newestByArtworkID.size === artworkIDs.length ||
+          page * PAGE_SIZE >= totalCount
+        ) {
+          break
+        }
+      }
+
+      return artworkIDs.map((id) => newestByArtworkID.get(id) ?? null)
     },
     { maxBatchSize: 50 }
   )

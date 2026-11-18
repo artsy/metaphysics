@@ -1150,7 +1150,7 @@ export default (accessToken, userID, opts) => {
       (id) => `me/resale_submission/${id}`
     ),
     meLatestResaleSubmissionLoader: createBatchLatestResaleSubmissionLoader(
-      gravityLoader("me/resale_submissions/latest")
+      gravityLoader("me/resale_submissions", {}, { headers: true })
     ),
     meResaleSubmissionsLoader: gravityLoader(
       "me/resale_submissions",
