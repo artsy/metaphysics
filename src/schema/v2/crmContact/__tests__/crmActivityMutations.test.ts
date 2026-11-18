@@ -155,7 +155,7 @@ describe("CRM activity mutations", () => {
     })
   })
 
-  it("updates the kind and artworks, and clears them with an empty list", async () => {
+  it("updates the kind and artworks, and clears them with null for an empty list", async () => {
     const updateCrmActivityLoader = jest.fn().mockResolvedValue(activity)
 
     await runAuthenticatedQuery(
@@ -170,8 +170,8 @@ describe("CRM activity mutations", () => {
     )
 
     expect(updateCrmActivityLoader).toHaveBeenCalledWith("activity-1", {
-      artist_ids: [],
-      artwork_ids: [],
+      artist_ids: null,
+      artwork_ids: null,
       kind: "meeting",
     })
   })

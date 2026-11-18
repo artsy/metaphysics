@@ -141,8 +141,9 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
 
     return withGravityMutationError(() =>
       updateCrmActivityLoader(id, {
-        artist_ids: artistIDs ?? undefined,
-        artwork_ids: artworkIDs ?? undefined,
+        // An empty list is lost in the query-string round trip, so send null to clear
+        artist_ids: artistIDs?.length === 0 ? null : artistIDs ?? undefined,
+        artwork_ids: artworkIDs?.length === 0 ? null : artworkIDs ?? undefined,
         description,
         kind,
         occurred_at: occurredAt,
