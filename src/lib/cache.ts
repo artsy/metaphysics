@@ -30,11 +30,7 @@ const VerboseEvents = [
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
 
-// memcached silently drops keys longer than 250 bytes, so long URLs — batch /
-// id-list loaders like `articles/counts?artist_ids[]=…` — never cache. Hash any
-// key that would exceed the limit. Short keys are returned verbatim (byte-for-
-// byte identical to before), so no existing entry changes and there's no cold
-// cache flush; only previously-uncacheable long keys start caching.
+// Hash keys over memcached's 250-byte limit; short keys stay verbatim, so no existing entry changes.
 const MAX_KEY_LENGTH = 250
 
 const keyPrefix = () =>
@@ -99,16 +95,9 @@ const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
 
 const statsClient = isTest ? null : createStatsClient()
 
-// First path segment only (e.g. `artist`, `sale`, `articles`) — a small,
-// bounded set of loader roots. The rest of the path carries IDs
-// (`artist/<id>`, `sale/<id>/sale_artwork/<id>`) and a client can force a long
-// key with a long id, so tagging the full path would explode Datadog tag
-// cardinality (billed per unique combination, multiplied by `pod_name`).
+// First path segment only — a bounded tag value; the full path carries ids that would blow up cardinality.
 const keyRoot = (key) => String(key).split(/[/?]/)[0]
 
-// Count cache operations whose raw key exceeds memcached's limit and so gets
-// hashed — i.e. keys that previously silently missed. `cache.key_hashed` broken
-// down by `root` in Datadog shows which loaders were affected.
 const trackKeyLength = (key) => {
   if (keyPrefix().length + String(key).length > MAX_KEY_LENGTH) {
     statsClient?.increment("cache.key_hashed", 1, { root: keyRoot(key) })

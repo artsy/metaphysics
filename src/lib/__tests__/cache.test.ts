@@ -179,8 +179,7 @@ describe("Cache with compression disabled", () => {
 })
 
 describe("cacheKey", () => {
-  // Derive the active prefix from a short key so assertions don't depend on the
-  // namespace/compression config.
+  // A short key returns the raw prefix, so it's config-agnostic.
   const prefix = cacheKey("")
 
   it("returns short keys verbatim (prefix + key)", () => {
