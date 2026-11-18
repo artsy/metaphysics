@@ -18,7 +18,7 @@ export const createBatchLatestResaleSubmissionLoader = (
       // Newest first, so the first row seen for a work is its latest. Page on until every work is seen.
       for (let page = 1; ; page++) {
         const { body, headers } = await fetchResaleSubmissions({
-          artwork_id: [...artworkIDs],
+          artwork_ids: [...artworkIDs],
           sort: "-created_at",
           size: PAGE_SIZE,
           page,

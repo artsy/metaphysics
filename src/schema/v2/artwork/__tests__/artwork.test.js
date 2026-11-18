@@ -2554,7 +2554,7 @@ describe("Artwork type", () => {
       expect(fetchSubmissions).toHaveBeenCalledTimes(1)
       expect(fetchSubmissions).toHaveBeenCalledWith(
         expect.objectContaining({
-          artwork_id: [ARTWORK_ID],
+          artwork_ids: [ARTWORK_ID],
           sort: "-created_at",
         })
       )

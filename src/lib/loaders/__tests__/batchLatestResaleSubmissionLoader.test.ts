@@ -28,7 +28,7 @@ describe("batch latest resale submission", () => {
 
     expect(fetchSubmissions).toHaveBeenCalledTimes(1)
     expect(fetchSubmissions).toHaveBeenCalledWith({
-      artwork_id: ["artwork-1", "artwork-2"],
+      artwork_ids: ["artwork-1", "artwork-2"],
       sort: "-created_at",
       size: 100,
       page: 1,
@@ -83,7 +83,7 @@ describe("batch latest resale submission", () => {
     )
 
     expect(
-      fetchSubmissions.mock.calls.map(([params]) => params.artwork_id.length)
+      fetchSubmissions.mock.calls.map(([params]) => params.artwork_ids.length)
     ).toEqual([50, 10])
   })
 
