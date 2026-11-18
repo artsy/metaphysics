@@ -29,6 +29,7 @@ interface UpdateArtnetArtworkMutationInputProps {
   priceFromMinor?: number
   priceToMinor?: number | null
   syncOn?: boolean
+  syncCore?: boolean
   syncImages?: boolean
   addImageIDs?: string[]
   removeImageIDs?: string[]
@@ -114,7 +115,12 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
     syncOn: {
       type: GraphQLBoolean,
       description:
-        "Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Set when the edit came from an inventory row rather than the Artnet row.",
+        "Also push the artwork-sourced fields (title, artist, dimensions, description, medium, materials, editions), making Gravity the source of truth for them. The artist is resolved to Artnet's own artist record by best match. Also sends price and availability from the catalog. Set when the edit came from an inventory row rather than the Artnet row.",
+    },
+    syncCore: {
+      type: GraphQLBoolean,
+      description:
+        "Push only title, artist, dimensions and description, plus the editions for their dimensions. Price, availability, medium and materials stay as Artnet has them. Set after an inventory edit when the partner's Auto-Update is off. Ignored when `syncOn` is set.",
     },
     syncImages: {
       type: GraphQLBoolean,
@@ -161,6 +167,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
       priceFromMinor,
       priceToMinor,
       syncOn,
+      syncCore,
       syncImages,
       addImageIDs,
       removeImageIDs,
@@ -188,6 +195,7 @@ export const updateArtnetArtworkMutation = mutationWithClientMutationId<
             priceFromMinor,
             priceToMinor,
             syncOn,
+            syncCore,
             syncImages,
             addImageIds: addImageIDs,
             removeImageIds: removeImageIDs,
