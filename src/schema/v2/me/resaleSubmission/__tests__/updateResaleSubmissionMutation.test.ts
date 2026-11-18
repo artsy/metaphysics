@@ -18,8 +18,11 @@ const mutationWith = (input: string) => gql`
             packaging
             packer
             courierHandoff
-            condition
-            conditionDescription
+            condition {
+              value
+              displayText
+              description
+            }
           }
         }
         ... on UpdateResaleSubmissionFailure {
@@ -144,8 +147,11 @@ describe("updateResaleSubmission", () => {
         packaging: "FRAMED",
         packer: "COURIER",
         courierHandoff: "SELLER_DROPOFF",
-        condition: "VERY_GOOD",
-        conditionDescription: "Small scratch on the frame",
+        condition: {
+          value: "VERY_GOOD",
+          displayText: "Very good",
+          description: "Small scratch on the frame",
+        },
       },
     })
   })
