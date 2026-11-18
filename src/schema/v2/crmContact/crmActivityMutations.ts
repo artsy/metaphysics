@@ -31,7 +31,6 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     crmContactID: { type: new GraphQLNonNull(GraphQLString) },
     description: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Text of the activity",
     },
     kind: {
       type: new GraphQLNonNull(CRMActivityKindEnum),
@@ -40,7 +39,6 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     occurredAt: occurredAtField,
     subject: {
       type: GraphQLString,
-      description: "Short title",
     },
   },
   outputFields: {
@@ -85,7 +83,6 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
   inputFields: {
     description: {
       type: GraphQLString,
-      description: "Text of the activity",
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -94,7 +91,6 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     occurredAt: occurredAtField,
     subject: {
       type: GraphQLString,
-      description: "Short title",
     },
   },
   outputFields: {

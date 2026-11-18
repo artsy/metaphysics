@@ -8331,10 +8331,6 @@ type CRMActivity {
     timezone: String
   ): String
   crmContactID: String!
-
-  """
-  Text of a note. Null for activities that are not notes
-  """
   description: String
 
   """
@@ -8361,10 +8357,6 @@ type CRMActivity {
     timezone: String
   ): String
   partnerID: String!
-
-  """
-  Subject of a note. Null for activities that are not notes
-  """
   subject: String
   updatedAt(
     format: String
@@ -13937,10 +13929,6 @@ type CreateCRMActivityFailure {
 input CreateCRMActivityInput {
   clientMutationId: String
   crmContactID: String!
-
-  """
-  Text of the activity
-  """
   description: String!
 
   """
@@ -13952,10 +13940,6 @@ input CreateCRMActivityInput {
   ISO 8601 time the activity happened. Defaults to now on create
   """
   occurredAt: String
-
-  """
-  Short title
-  """
   subject: String
 }
 
@@ -40828,10 +40812,6 @@ type UpdateCRMActivityFailure {
 
 input UpdateCRMActivityInput {
   clientMutationId: String
-
-  """
-  Text of the activity
-  """
   description: String
 
   """
@@ -40843,10 +40823,6 @@ input UpdateCRMActivityInput {
   ISO 8601 time the activity happened. Defaults to now on create
   """
   occurredAt: String
-
-  """
-  Short title
-  """
   subject: String
 }
 

@@ -122,7 +122,6 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
     },
     description: {
       type: GraphQLString,
-      description: "Text of a note. Null for activities that are not notes",
     },
     emailMessage: {
       type: EmailMessageType,
@@ -137,7 +136,6 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
     },
     subject: {
       type: GraphQLString,
-      description: "Subject of a note. Null for activities that are not notes",
     },
     updatedAt: date(),
   }),
