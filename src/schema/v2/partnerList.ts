@@ -197,6 +197,15 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ partner_list_publication }) =>
           partner_list_publication?.passcode_protected ?? null,
       },
+      publicationHref: {
+        type: GraphQLString,
+        description:
+          "Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.",
+        resolve: ({ partner_list_publication }) => {
+          const slug = partner_list_publication?.slug
+          return slug ? `/private-viewing-room/${slug}` : null
+        },
+      },
       artworksConnection: {
         type: PartnerListArtworkConnection.connectionType,
         args: pageable({}),
