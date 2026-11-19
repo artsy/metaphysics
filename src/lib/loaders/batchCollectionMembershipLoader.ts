@@ -1,10 +1,9 @@
 import DataLoader from "dataloader"
+import { error } from "lib/loggers"
 
-// Request-scoped. Batches `Collection.isSavedArtwork` membership checks across
-// every collection node in a page into one `collections?artwork_id=` call per
-// distinct artwork. Gravity's collections endpoint, given an `artwork_id`,
-// returns only the user's collections that contain that artwork — so a single
-// call answers membership for the whole page instead of one call per list.
+// Batches per-node `Collection.isSavedArtwork` checks into one
+// `collections?artwork_id=` call (which returns only the collections containing
+// the artwork), avoiding a per-list fan-out.
 export const createBatchCollectionMembershipLoader = (
   fetchCollections: (params: {
     artwork_id: string
@@ -22,17 +21,14 @@ export const createBatchCollectionMembershipLoader = (
             artwork_id: artworkID,
             user_id: userID,
             private: true,
-            // Gravity caps page size at 100; a single artwork living in more
-            // than 100 of one user's lists is not a real scenario.
+            // Gravity's max page size; far exceeds any real per-artwork list count.
             size: 100,
           })
 
           return new Set(collections.map((collection) => collection.id))
-        } catch (error) {
-          // Degrade gracefully: a deleted/invalid artwork (Gravity 404) or a
-          // transient failure must not reject here — `isSavedArtwork` is
-          // non-null, so a throw would null the collection node and silently
-          // drop it from the connection.
+        } catch (e) {
+          // Non-null isSavedArtwork: a reject here would null the node and drop it.
+          error(e)
           return new Set<string>()
         }
       })

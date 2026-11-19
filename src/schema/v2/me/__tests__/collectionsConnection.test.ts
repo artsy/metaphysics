@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { createBatchCollectionMembershipLoader } from "lib/loaders/batchCollectionMembershipLoader"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 import { CollectionSorts } from "../collectionsConnection"
@@ -76,13 +77,14 @@ describe("collectionsConnection", () => {
   })
 })
 
-describe("collectionsConnection with isArtworkSaved field", () => {
+describe("collectionsConnection with isSavedArtwork field", () => {
   const query = gql`
     query {
       me {
-        collectionsConnection(first: 1, saves: true, sort: CREATED_AT_DESC) {
+        collectionsConnection(first: 3, sort: CREATED_AT_DESC) {
           edges {
             node {
+              internalID
               isSavedArtwork(artworkID: "artwork-id")
             }
           }
@@ -91,46 +93,48 @@ describe("collectionsConnection with isArtworkSaved field", () => {
     }
   `
 
-  beforeEach(() => {
-    context = {
-      meLoader: jest.fn(() => Promise.resolve(defaultMockUser)),
-      collectionsLoader: jest
-        .fn()
-        .mockResolvedValue(defaultMockGravityCollections),
-    }
+  const pageOfThreeLists = {
+    body: [
+      { id: "list-1", name: "List 1" },
+      { id: "list-2", name: "List 2" },
+      { id: "list-3", name: "List 3" },
+    ],
+    headers: { "x-total-count": "3" },
+  }
+
+  // Wires the real DataLoader-backed loader so the test exercises batching
+  // across nodes, not a stub. `fetchCollections` stands in for the Gravity
+  // `collections?artwork_id=` call and returns the lists containing the artwork.
+  const setupContext = (fetchCollections: jest.Mock) => ({
+    meLoader: jest.fn(() => Promise.resolve(defaultMockUser)),
+    collectionsLoader: jest.fn().mockResolvedValue(pageOfThreeLists),
+    collectionMembershipLoader: createBatchCollectionMembershipLoader(
+      fetchCollections,
+      "user-42"
+    ),
   })
 
-  it("batches membership into one call and returns true when the artwork is included", async () => {
-    // Returns the collections (by id) that contain the artwork.
-    context.collectionMembershipLoader = jest
+  it("resolves membership for the whole page with a single Gravity call", async () => {
+    const fetchCollections = jest
       .fn()
-      .mockResolvedValue(new Set(["123-abc"]))
+      .mockResolvedValue([{ id: "list-1" }, { id: "list-3" }])
+    context = setupContext(fetchCollections)
 
     const response = await runAuthenticatedQuery(query, context)
 
-    expect(
-      context.collectionMembershipLoader as jest.Mock
-    ).toHaveBeenCalledWith("artwork-id")
+    // One call despite three nodes each checking membership — no per-node fan-out.
+    expect(fetchCollections).toHaveBeenCalledTimes(1)
+    expect(fetchCollections).toHaveBeenCalledWith(
+      expect.objectContaining({ artwork_id: "artwork-id" })
+    )
     expect(response).toEqual({
       me: {
         collectionsConnection: {
-          edges: [{ node: { isSavedArtwork: true } }],
-        },
-      },
-    })
-  })
-
-  it("returns false when the artwork is not in the collection", async () => {
-    context.collectionMembershipLoader = jest
-      .fn()
-      .mockResolvedValue(new Set(["some-other-collection"]))
-
-    const response = await runAuthenticatedQuery(query, context)
-
-    expect(response).toEqual({
-      me: {
-        collectionsConnection: {
-          edges: [{ node: { isSavedArtwork: false } }],
+          edges: [
+            { node: { internalID: "list-1", isSavedArtwork: true } },
+            { node: { internalID: "list-2", isSavedArtwork: false } },
+            { node: { internalID: "list-3", isSavedArtwork: true } },
+          ],
         },
       },
     })

@@ -9322,7 +9322,7 @@ type Collection {
   id: ID!
 
   """
-  A representative image for the collection, derived from its default artwork. Avoids a per-list artworks fetch for previews.
+  A representative image for the collection, if one is available.
   """
   image: Image
 

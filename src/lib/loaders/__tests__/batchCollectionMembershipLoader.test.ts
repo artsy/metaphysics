@@ -1,4 +1,10 @@
+import { error } from "lib/loggers"
 import { createBatchCollectionMembershipLoader } from "../batchCollectionMembershipLoader"
+
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  error: jest.fn(),
+}))
 
 describe("createBatchCollectionMembershipLoader", () => {
   it("makes a single Gravity call for many membership checks of the same artwork", async () => {
@@ -30,10 +36,9 @@ describe("createBatchCollectionMembershipLoader", () => {
     })
   })
 
-  it("degrades to an empty set when Gravity rejects", async () => {
-    const fetchCollections = jest
-      .fn()
-      .mockRejectedValue(new Error("Artwork Not Found"))
+  it("degrades to an empty set and logs when Gravity rejects", async () => {
+    const gravityError = new Error("Artwork Not Found")
+    const fetchCollections = jest.fn().mockRejectedValue(gravityError)
     const loader = createBatchCollectionMembershipLoader(
       fetchCollections,
       "user-42"
@@ -42,5 +47,6 @@ describe("createBatchCollectionMembershipLoader", () => {
     const set = await loader("missing-artwork")
 
     expect(set.size).toBe(0)
+    expect(error as jest.Mock).toHaveBeenCalledWith(gravityError)
   })
 })

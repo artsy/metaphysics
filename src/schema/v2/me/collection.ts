@@ -104,7 +104,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     image: {
       type: Image.type,
       description:
-        "A representative image for the collection, derived from its default artwork. Avoids a per-list artworks fetch for previews.",
+        "A representative image for the collection, if one is available.",
       resolve: ({ image_url, image_versions }) => {
         if (!image_url) return null
         return normalizeImageData({ image_url, image_versions })
@@ -143,8 +143,6 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
           throw new Error("You need to be signed in to perform this action")
         }
 
-        // One batched `collections?artwork_id=` call answers membership for
-        // every list in the page, avoiding an N× per-list REST fan-out.
         const collectionIDs = await collectionMembershipLoader(args.artworkID)
 
         return collectionIDs.has(parent.id)
