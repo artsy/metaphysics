@@ -31,6 +31,11 @@ const contentFields = () => ({
   heading: {
     type: GraphQLString,
   },
+  subtitle: {
+    type: GraphQLString,
+    description:
+      "Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.",
+  },
   description: {
     type: GraphQLString,
   },

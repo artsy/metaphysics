@@ -160,6 +160,11 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    subtitle: {
+      type: GraphQLString,
+      description:
+        "Optional subtitle under the heading (viewing rooms rebuild). Null when the gallery didn't add one.",
+    },
     curatorialText: {
       type: GraphQLString,
       description:

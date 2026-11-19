@@ -31926,6 +31926,11 @@ type PartnerListPublication {
   slug: String
 
   """
+  Optional subtitle under the heading (viewing rooms rebuild). Null when the gallery didn't add one.
+  """
+  subtitle: String
+
+  """
   Alignment of the heading and text (viewing rooms rebuild). Null on a room published before the rebuild.
   """
   textAlignment: ViewingRoomTextAlignment
@@ -32986,6 +32991,11 @@ type PrivateViewingRoom {
   showLogo: Boolean
 
   """
+  Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.
+  """
+  subtitle: String
+
+  """
   Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.
   """
   textAlignment: ViewingRoomTextAlignment
@@ -33081,6 +33091,11 @@ type PrivateViewingRoomContents {
   Whether to show the brand kit logo, apart from the gallery name. Null on a room published before the logo had its own setting, which shows the logo in place of the name when the brand is applied. The brand kit also comes with it when only the logo is on; apply its colors and font only when applyBrand is true.
   """
   showLogo: Boolean
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.
@@ -33269,6 +33284,11 @@ input PublishPartnerListPublicationMutationInput {
   Whether to show the gallery's brand kit logo on the public page, apart from the gallery name.
   """
   showLogo: Boolean
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild).

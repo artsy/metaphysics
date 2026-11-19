@@ -53,6 +53,7 @@ interface PublishPartnerListPublicationMutationInputProps {
   passcode?: string
   description?: string
   heading?: string
+  subtitle?: string
   curatorialText?: string
   applyBrand?: boolean
   showGalleryName?: boolean
@@ -118,6 +119,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    subtitle: {
+      type: GraphQLString,
+      description:
+        "Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.",
+    },
     curatorialText: {
       type: GraphQLString,
       description:
@@ -177,6 +183,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       passcode,
       description,
       heading,
+      subtitle,
       curatorialText,
       applyBrand,
       showGalleryName,
@@ -205,6 +212,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     if (passcode !== undefined) gravityArgs.passcode = passcode
     if (description !== undefined) gravityArgs.description = description
     if (heading !== undefined) gravityArgs.heading = heading
+    if (subtitle !== undefined) gravityArgs.subtitle = subtitle
     if (curatorialText !== undefined)
       gravityArgs.curatorial_text = curatorialText
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
