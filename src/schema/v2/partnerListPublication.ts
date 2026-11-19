@@ -130,6 +130,12 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       description: "Whether the gallery name is shown on the public page.",
       resolve: ({ show_gallery_name }) => show_gallery_name,
     },
+    showLogo: {
+      type: GraphQLBoolean,
+      description:
+        "Whether the gallery's brand kit logo is shown on the public page, apart from the gallery name. Null on a room published before the logo had its own setting.",
+      resolve: ({ show_logo }) => show_logo,
+    },
     heroStyle: {
       type: ViewingRoomHeroStyleEnum,
       description:

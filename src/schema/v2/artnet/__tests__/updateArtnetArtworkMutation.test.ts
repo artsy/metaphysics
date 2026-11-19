@@ -251,6 +251,34 @@ describe("updateArtnetArtwork mutation", () => {
     )
   })
 
+  it("passes syncCore through", async () => {
+    const query = `
+      mutation {
+        updateArtnetArtwork(
+          input: { id: "artnet-artwork-1", syncCore: true }
+        ) {
+          artnetArtworkOrError {
+            ... on UpdateArtnetArtworkSuccess {
+              artnetArtwork {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const updateArtnetArtworkLoader = jest.fn().mockResolvedValue({
+      id: "artnet-artwork-1",
+    })
+
+    await runAuthenticatedQuery(query, { updateArtnetArtworkLoader })
+
+    expect(updateArtnetArtworkLoader).toHaveBeenCalledWith("artnet-artwork-1", {
+      sync_core: true,
+    })
+  })
+
   it("refuses a priceToMinor it cannot read rather than clearing the price", async () => {
     const badQuery = `
       mutation {

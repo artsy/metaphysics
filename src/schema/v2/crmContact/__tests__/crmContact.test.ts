@@ -106,7 +106,7 @@ describe("crmContactsConnection", () => {
       crmContactsConnection(
         partnerID: "partner-1"
         status: ARCHIVED
-        category: "collector"
+        categories: ["collector"]
         query: "ada"
         sort: DISPLAY_NAME_DESC
         first: 1
@@ -141,13 +141,32 @@ describe("crmContactsConnection", () => {
     expect(context.crmContactsLoader as jest.Mock).toHaveBeenCalledWith({
       partner_id: "partner-1",
       status: "archived",
-      category: "collector",
+      categories: ["collector"],
       q: "ada",
       sort: "-display_name",
       total_count: true,
       size: 1,
       offset: 0,
     })
+  })
+
+  it("passes several categories to the loader", async () => {
+    await runAuthenticatedQuery(
+      `{
+        crmContactsConnection(
+          partnerID: "partner-1"
+          categories: ["artist", "critic"]
+          first: 1
+        ) {
+          totalCount
+        }
+      }`,
+      context
+    )
+
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenCalledWith(
+      expect.objectContaining({ categories: ["artist", "critic"] })
+    )
   })
 
   it("passes the assignee filters to the loader", async () => {

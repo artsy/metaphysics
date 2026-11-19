@@ -43,6 +43,7 @@ interface PublishPartnerListPublicationMutationInputProps {
   curatorialText?: string
   applyBrand?: boolean
   showGalleryName?: boolean
+  showLogo?: boolean
   artworkFieldVisibility?: Record<string, boolean>
   heroStyle?: string
   textAlignment?: string
@@ -116,6 +117,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: GraphQLBoolean,
       description: "Whether to show the gallery name on the public page.",
     },
+    showLogo: {
+      type: GraphQLBoolean,
+      description:
+        "Whether to show the gallery's brand kit logo on the public page, apart from the gallery name.",
+    },
     artworkFieldVisibility: {
       type: ArtworkFieldVisibilityInputType,
       description: "Per-field visibility toggles for artworks in the room.",
@@ -155,6 +161,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       curatorialText,
       applyBrand,
       showGalleryName,
+      showLogo,
       artworkFieldVisibility,
       heroStyle,
       textAlignment,
@@ -183,6 +190,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
     if (showGalleryName !== undefined)
       gravityArgs.show_gallery_name = showGalleryName
+    if (showLogo !== undefined) gravityArgs.show_logo = showLogo
     if (heroStyle !== undefined) gravityArgs.hero_style = heroStyle
     if (textAlignment !== undefined) gravityArgs.text_alignment = textAlignment
     if (artworkLayout !== undefined) gravityArgs.artwork_layout = artworkLayout

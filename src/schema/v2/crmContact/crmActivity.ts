@@ -33,6 +33,16 @@ export const CRMActivityKindEnum = new GraphQLEnumType({
   },
 })
 
+export const CRMActivityChannelEnum = new GraphQLEnumType({
+  name: "CRMActivityChannel",
+  description: "How the activity happened, apart from its kind",
+  values: {
+    EMAIL: { value: "email" },
+    IN_PERSON: { value: "in_person" },
+    SYSTEM: { value: "system" },
+  },
+})
+
 export const CRMActivitySortEnum = new GraphQLEnumType({
   name: "CRMActivitySort",
   values: {
@@ -263,6 +273,7 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
         return activity._artworks
       },
     },
+    channel: { type: CRMActivityChannelEnum },
     createdAt: date(),
     crmContactID: {
       type: new GraphQLNonNull(GraphQLString),
