@@ -9322,6 +9322,11 @@ type Collection {
   id: ID!
 
   """
+  A representative image for the collection, derived from its default artwork. Avoids a per-list artworks fetch for previews.
+  """
+  image: Image
+
+  """
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!

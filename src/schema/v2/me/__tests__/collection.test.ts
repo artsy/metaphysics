@@ -179,6 +179,50 @@ describe("artworksCount field", () => {
   })
 })
 
+describe("image field", () => {
+  const imageQuery = gql`
+    query {
+      me {
+        collection(id: "123-abc") {
+          image {
+            resized(width: 100) {
+              url
+            }
+          }
+        }
+      }
+    }
+  `
+
+  it("resolves a representative image from the collection payload", async () => {
+    context.collectionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...mockGravityCollection,
+        image_url: "https://d32dm0rphc51dk.cloudfront.net/abc/:version.jpg",
+        image_versions: ["square", "large"],
+      })
+    )
+
+    const response = await runAuthenticatedQuery(imageQuery, context)
+
+    expect(response.me.collection.image.resized.url).toContain("abc")
+  })
+
+  it("returns null when the collection has no image", async () => {
+    context.collectionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...mockGravityCollection,
+        image_url: null,
+        image_versions: [],
+      })
+    )
+
+    const response = await runAuthenticatedQuery(imageQuery, context)
+
+    expect(response.me.collection.image).toBeNull()
+  })
+})
+
 describe("artworksConnection", () => {
   const mockGravityCollectionArtworks = {
     headers: {

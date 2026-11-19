@@ -14,6 +14,7 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { paginationResolver } from "../fields/pagination"
+import Image, { normalizeImageData } from "../image"
 import { InternalIDFields } from "../object_identification"
 import CollectionArtworkSorts from "../sorts/collection_sorts"
 
@@ -99,6 +100,15 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description:
         "True if this is the default collection for this user, i.e. the default Saved Artwork collection.",
+    },
+    image: {
+      type: Image.type,
+      description:
+        "A representative image for the collection, derived from its default artwork. Avoids a per-list artworks fetch for previews.",
+      resolve: ({ image_url, image_versions }) => {
+        if (!image_url) return null
+        return normalizeImageData({ image_url, image_versions })
+      },
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
