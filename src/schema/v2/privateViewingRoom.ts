@@ -43,6 +43,12 @@ const contentFields = () => ({
     type: GraphQLBoolean,
     resolve: ({ apply_brand }) => apply_brand,
   },
+  showLogo: {
+    type: GraphQLBoolean,
+    description:
+      "Whether to show the brand kit logo, apart from the gallery name. Null on a room published before the logo had its own setting, which shows the logo in place of the name when the brand is applied. The brand kit also comes with it when only the logo is on; apply its colors and font only when applyBrand is true.",
+    resolve: ({ show_logo }) => show_logo,
+  },
   brandKit: {
     type: BrandKitType,
     resolve: ({ brand_kit }) => brand_kit,

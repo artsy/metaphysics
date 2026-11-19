@@ -285,4 +285,44 @@ describe("PrivateViewingRoom", () => {
       expect(result.privateViewingRoom.curatorialText).toBeNull()
     })
   })
+
+  describe("showLogo", () => {
+    const logoQuery = gql`
+      {
+        privateViewingRoom(slug: "some-gallery-for-anna") {
+          applyBrand
+          showLogo
+        }
+      }
+    `
+
+    it("returns the logo setting apart from applying the brand", async () => {
+      const context = {
+        privateViewingRoomLoader: jest.fn().mockResolvedValue({
+          passcode_required: false,
+          apply_brand: false,
+          show_logo: true,
+        }),
+      }
+
+      const result = await runQuery(logoQuery, context)
+
+      expect(result.privateViewingRoom).toEqual({
+        applyBrand: false,
+        showLogo: true,
+      })
+    })
+
+    it("is null on a room published before the logo had its own setting", async () => {
+      const context = {
+        privateViewingRoomLoader: jest
+          .fn()
+          .mockResolvedValue({ passcode_required: false, apply_brand: true }),
+      }
+
+      const result = await runQuery(logoQuery, context)
+
+      expect(result.privateViewingRoom.showLogo).toBeNull()
+    })
+  })
 })

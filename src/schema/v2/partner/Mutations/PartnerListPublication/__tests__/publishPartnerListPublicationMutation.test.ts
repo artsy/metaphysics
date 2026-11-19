@@ -325,6 +325,50 @@ describe("PublishPartnerListPublicationMutation", () => {
     })
   })
 
+  it("sends showLogo to Gravity and returns it", async () => {
+    const withLogo = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            showLogo: true
+            showGalleryName: true
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                showLogo
+                showGalleryName
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        show_logo: true,
+        show_gallery_name: true,
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(withLogo, context)
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        show_logo: true,
+        show_gallery_name: true,
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({ showLogo: true, showGalleryName: true })
+  })
+
   it("accepts location and certificateOfAuthenticity visibility keys", async () => {
     const withNewVisibilityKeys = gql`
       mutation {
