@@ -31697,9 +31697,14 @@ type PartnerList {
   publication: PartnerListPublication
 
   """
-  Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.
+  Public-facing path of this list's private viewing room (/private-viewing-room/<room>), from the same inline key as published. Null if no publication exists yet.
   """
   publicationHref: String
+
+  """
+  Public-facing path of this list's private viewing room with the gallery in it (/private-viewing-room/<gallery>/<room>). Null if no publication exists yet, or until Gravity sends it.
+  """
+  publicationPath: String
 
   """
   Whether this list's private viewing room publication is live. Null if no publication exists yet.
@@ -31881,7 +31886,7 @@ type PartnerListPublication {
   heroStyle: ViewingRoomHeroStyle
 
   """
-  Public-facing path for this private viewing room, with the gallery in it (/private-viewing-room/<gallery>/<room>).
+  Public-facing path for this private viewing room: /private-viewing-room/<room>.
   """
   href: String
 
@@ -31909,6 +31914,11 @@ type PartnerListPublication {
   """
   passcode: String
   passcodeProtected: Boolean
+
+  """
+  Public-facing path with the gallery in it: /private-viewing-room/<gallery>/<room>. Null until Gravity sends it.
+  """
+  path: String
   published: Boolean
   publishedAt(
     format: String

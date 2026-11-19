@@ -200,14 +200,18 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
       publicationHref: {
         type: GraphQLString,
         description:
-          "Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.",
+          "Public-facing path of this list's private viewing room (/private-viewing-room/<room>), from the same inline key as published. Null if no publication exists yet.",
         resolve: ({ partner_list_publication }) => {
-          if (partner_list_publication?.path)
-            return partner_list_publication.path
-
           const slug = partner_list_publication?.slug
           return slug ? `/private-viewing-room/${slug}` : null
         },
+      },
+      publicationPath: {
+        type: GraphQLString,
+        description:
+          "Public-facing path of this list's private viewing room with the gallery in it (/private-viewing-room/<gallery>/<room>). Null if no publication exists yet, or until Gravity sends it.",
+        resolve: ({ partner_list_publication }) =>
+          partner_list_publication?.path ?? null,
       },
       artworksConnection: {
         type: PartnerListArtworkConnection.connectionType,

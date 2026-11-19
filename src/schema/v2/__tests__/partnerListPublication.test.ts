@@ -222,13 +222,14 @@ describe("PartnerList.publication", () => {
   })
 })
 
-describe("PartnerListPublication.href", () => {
+describe("PartnerListPublication.href and .path", () => {
   const query = gql`
     {
       partner(id: "gallery-1") {
         partnerList(id: "list-abc") {
           publication {
             href
+            path
           }
         }
       }
@@ -243,23 +244,27 @@ describe("PartnerListPublication.href", () => {
     }
 
     const result = await runAuthenticatedQuery(query, context)
-    return result.partner.partnerList.publication.href
+    return result.partner.partnerList.publication
   }
 
-  it("is the path Gravity builds, with the gallery in it", async () => {
+  it("keeps href as the link with the room's address alone, and gives the link with the gallery as path", async () => {
     expect(
       await run({
         id: "pub-1",
         slug: "for-anna",
         path: "/private-viewing-room/some-gallery/for-anna",
       })
-    ).toBe("/private-viewing-room/some-gallery/for-anna")
+    ).toEqual({
+      href: "/private-viewing-room/for-anna",
+      path: "/private-viewing-room/some-gallery/for-anna",
+    })
   })
 
-  it("falls back to the slug alone while Gravity sends no path", async () => {
-    expect(await run({ id: "pub-1", slug: "for-anna" })).toBe(
-      "/private-viewing-room/for-anna"
-    )
+  it("has no path until Gravity sends one", async () => {
+    expect(await run({ id: "pub-1", slug: "for-anna" })).toEqual({
+      href: "/private-viewing-room/for-anna",
+      path: null,
+    })
   })
 })
 
@@ -275,6 +280,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
                 published
                 passcodeProtected
                 publicationHref
+                publicationPath
               }
             }
           }
@@ -316,13 +322,15 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
         internalID: "list-published",
         published: true,
         passcodeProtected: false,
-        publicationHref: "/private-viewing-room/gallery/gallery-warm-fields",
+        publicationHref: "/private-viewing-room/gallery-warm-fields",
+        publicationPath: "/private-viewing-room/gallery/gallery-warm-fields",
       },
       {
         internalID: "list-unpublished",
         published: null,
         passcodeProtected: null,
         publicationHref: null,
+        publicationPath: null,
       },
     ])
   })
