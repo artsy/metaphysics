@@ -100,48 +100,37 @@ describe("collectionsConnection with isArtworkSaved field", () => {
     }
   })
 
-  it("should return true if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 1,
-      },
-    })
+  it("batches membership into one call and returns true when the artwork is included", async () => {
+    // Returns the collections (by id) that contain the artwork.
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["123-abc"]))
 
     const response = await runAuthenticatedQuery(query, context)
 
+    expect(
+      context.collectionMembershipLoader as jest.Mock
+    ).toHaveBeenCalledWith("artwork-id")
     expect(response).toEqual({
       me: {
         collectionsConnection: {
-          edges: [
-            {
-              node: {
-                isSavedArtwork: true,
-              },
-            },
-          ],
+          edges: [{ node: { isSavedArtwork: true } }],
         },
       },
     })
   })
 
-  it("should return false if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 0,
-      },
-    })
+  it("returns false when the artwork is not in the collection", async () => {
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["some-other-collection"]))
+
     const response = await runAuthenticatedQuery(query, context)
 
     expect(response).toEqual({
       me: {
         collectionsConnection: {
-          edges: [
-            {
-              node: {
-                isSavedArtwork: false,
-              },
-            },
-          ],
+          edges: [{ node: { isSavedArtwork: false } }],
         },
       },
     })

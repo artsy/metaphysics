@@ -98,11 +98,9 @@ describe("isSavedArtwork field", () => {
   })
 
   it("should return true if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 1,
-      },
-    })
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["123-abc"]))
 
     const response = await runAuthenticatedQuery(query, context)
 
@@ -115,12 +113,11 @@ describe("isSavedArtwork field", () => {
     })
   })
 
-  it("should return false if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 0,
-      },
-    })
+  it("should return false if artwork is not included in the collection", async () => {
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["some-other-collection"]))
+
     const response = await runAuthenticatedQuery(query, context)
 
     expect(response).toEqual({

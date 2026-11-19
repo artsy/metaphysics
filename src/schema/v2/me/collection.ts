@@ -127,22 +127,17 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resolve: async (parent, args, context) => {
-        const { collectionArtworksLoader } = context
+        const { collectionMembershipLoader } = context
 
-        if (!collectionArtworksLoader) {
+        if (!collectionMembershipLoader) {
           throw new Error("You need to be signed in to perform this action")
         }
 
-        const { headers } = await collectionArtworksLoader(parent.id, {
-          artworks: [args.artworkID],
-          user_id: context.userID,
-          private: true,
-          size: 0,
-          total_count: true,
-        })
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+        // One batched `collections?artwork_id=` call answers membership for
+        // every list in the page, avoiding an N× per-list REST fan-out.
+        const collectionIDs = await collectionMembershipLoader(args.artworkID)
 
-        return totalCount > 0
+        return collectionIDs.has(parent.id)
       },
     },
     shareableWithPartners: {
