@@ -165,11 +165,6 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Only contacts with any of these categories. Case-insensitive.",
     },
-    category: {
-      type: GraphQLString,
-      description:
-        "Only contacts with this category. Case-insensitive, one value only.",
-    },
     query: {
       type: GraphQLString,
       description:
@@ -208,7 +203,6 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
           partner_id: args.partnerID,
           status: args.status,
           categories: args.categories?.length ? args.categories : undefined,
-          category: args.category,
           q: args.query,
           assigned_to_user_id: args.assignedToUserID,
           unassigned: args.isUnassigned || undefined,

@@ -106,7 +106,7 @@ describe("crmContactsConnection", () => {
       crmContactsConnection(
         partnerID: "partner-1"
         status: ARCHIVED
-        category: "collector"
+        categories: ["collector"]
         query: "ada"
         sort: DISPLAY_NAME_DESC
         first: 1
@@ -141,7 +141,7 @@ describe("crmContactsConnection", () => {
     expect(context.crmContactsLoader as jest.Mock).toHaveBeenCalledWith({
       partner_id: "partner-1",
       status: "archived",
-      category: "collector",
+      categories: ["collector"],
       q: "ada",
       sort: "-display_name",
       total_count: true,
