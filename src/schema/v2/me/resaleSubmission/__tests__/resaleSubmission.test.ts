@@ -28,6 +28,11 @@ const query = gql`
         packaging
         packer
         courierHandoff
+        condition {
+          value
+          displayText
+          description
+        }
         missingRequirements
         canceledAt
         createdAt(format: "YYYY-MM-DD")
@@ -51,6 +56,8 @@ const acceptedSubmission = {
   packaging: "framed",
   packer: "courier",
   courier_handoff: "seller_dropoff",
+  condition: "good",
+  condition_description: null,
   missing_requirements: [],
   canceled_at: null,
   created_at: "2026-11-12T10:00:00.000Z",
@@ -96,11 +103,26 @@ describe("me.resaleSubmission", () => {
       packaging: "FRAMED",
       packer: "COURIER",
       courierHandoff: "SELLER_DROPOFF",
+      condition: { value: "GOOD", displayText: "Good", description: null },
       missingRequirements: [],
       canceledAt: null,
       createdAt: "2026-11-12",
       updatedAt: "2026-11-12",
     })
+  })
+
+  it("returns a null condition when the seller hasn’t answered it", async () => {
+    context.meResaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...acceptedSubmission,
+        condition: null,
+        condition_description: null,
+      })
+    )
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.resaleSubmission.condition).toBeNull()
   })
 
   it("returns null money fields when prices are unset", async () => {

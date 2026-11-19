@@ -28144,7 +28144,7 @@ type Mutation {
   updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
 
   """
-  Update the asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.
+  Update the condition, asking price and shipping preferences of a resale submission. Omitted or null fields are left unchanged.
   """
   updateResaleSubmission(
     input: UpdateResaleSubmissionInput!
@@ -36682,6 +36682,11 @@ type ResaleSubmission {
   channel: ResaleSubmissionChannel
 
   """
+  The seller’s answer to the work’s condition and their notes on it, in the same shape as Artwork.condition. Null if neither is answered yet.
+  """
+  condition: ArtworkCondition
+
+  """
   The seller’s answer to how the work will get to its buyer.
   """
   courierHandoff: ResaleSubmissionCourierHandoff
@@ -43002,6 +43007,16 @@ type UpdateResaleSubmissionFailure {
 
 input UpdateResaleSubmissionInput {
   clientMutationId: String
+
+  """
+  The work’s condition.
+  """
+  condition: ArtworkConditionEnumType
+
+  """
+  Notes on changes or flaws in the work. An empty string clears them.
+  """
+  conditionDescription: String
 
   """
   How the work will get to its buyer.

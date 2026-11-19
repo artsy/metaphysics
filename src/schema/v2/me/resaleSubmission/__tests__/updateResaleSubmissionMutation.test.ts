@@ -18,6 +18,11 @@ const mutationWith = (input: string) => gql`
             packaging
             packer
             courierHandoff
+            condition {
+              value
+              displayText
+              description
+            }
           }
         }
         ... on UpdateResaleSubmissionFailure {
@@ -48,6 +53,8 @@ const updatedSubmission = {
   packaging: "framed",
   packer: "courier",
   courier_handoff: "seller_dropoff",
+  condition: "very_good",
+  condition_description: "Small scratch on the frame",
   missing_requirements: [],
 }
 
@@ -78,6 +85,33 @@ describe("updateResaleSubmission", () => {
       packer: "courier",
       courier_handoff: "seller_dropoff",
     })
+  })
+
+  it("sends the condition and its description to Gravity", async () => {
+    await runAuthenticatedQuery(
+      mutationWith(
+        `condition: VERY_GOOD, conditionDescription: "Small scratch on the frame"`
+      ),
+      context
+    )
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", {
+      condition: "very_good",
+      condition_description: "Small scratch on the frame",
+    })
+  })
+
+  it("sends an empty description so it can be cleared", async () => {
+    await runAuthenticatedQuery(
+      mutationWith(`conditionDescription: ""`),
+      context
+    )
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", { condition_description: "" })
   })
 
   it("only sends the fields that were given", async () => {
@@ -113,6 +147,11 @@ describe("updateResaleSubmission", () => {
         packaging: "FRAMED",
         packer: "COURIER",
         courierHandoff: "SELLER_DROPOFF",
+        condition: {
+          value: "VERY_GOOD",
+          displayText: "Very good",
+          description: "Small scratch on the frame",
+        },
       },
     })
   })

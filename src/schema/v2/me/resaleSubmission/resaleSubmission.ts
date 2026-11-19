@@ -8,6 +8,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../../artwork"
+import { ArtworkConditionType } from "../../artwork/artworkCondition"
 import { date } from "../../fields/date"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "../../fields/money"
 import { InternalIDFields } from "../../object_identification"
@@ -120,6 +121,15 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
       packer: {
         type: ResaleSubmissionPackerEnum,
         description: "The seller’s answer to who will pack the work.",
+      },
+      condition: {
+        type: ArtworkConditionType,
+        description:
+          "The seller’s answer to the work’s condition and their notes on it, in the same shape as Artwork.condition. Null if neither is answered yet.",
+        resolve: (submission) =>
+          submission.condition || submission.condition_description
+            ? submission
+            : null,
       },
       priceListed: {
         ...moneyFromMinorField("price_listed_minor"),
