@@ -31861,6 +31861,11 @@ type PartnerListPublication {
   description: String
 
   """
+  Where each element of the room is aligned (viewing rooms rebuild). Null on a room published before the elements could be aligned one by one, which falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
+
+  """
   Optional heading shown on the published room.
   """
   heading: String
@@ -32955,6 +32960,11 @@ type PrivateViewingRoom {
   description: String
 
   """
+  Where each element of the room is aligned (viewing rooms rebuild). Omitted like heroStyle; a room without it falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
+
+  """
   The gallery's name, omitted when the gallery has chosen to hide it (show_gallery_name).
   """
   galleryName: String
@@ -33050,6 +33060,11 @@ type PrivateViewingRoomContents {
   """
   curatorialText: String
   description: String
+
+  """
+  Where each element of the room is aligned (viewing rooms rebuild). Omitted like heroStyle; a room without it falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
 
   """
   The gallery's name, omitted when the gallery has chosen to hide it (show_gallery_name).
@@ -33219,6 +33234,11 @@ input PublishPartnerListPublicationMutationInput {
   Plain-text description shown on the published room.
   """
   description: String
+
+  """
+  Where each element of the room is aligned, one by one (viewing rooms rebuild).
+  """
+  elementAlignments: ViewingRoomElementAlignmentsInput
 
   """
   Optional heading shown on the published room.
@@ -46830,6 +46850,36 @@ type ViewingRoomEdge {
   The item at the end of the edge
   """
   node: ViewingRoom
+}
+
+enum ViewingRoomElementAlignment {
+  CENTER
+  LEFT
+  RIGHT
+}
+
+"""
+Where each element of the room is aligned. Null for an element the gallery hasn't aligned.
+"""
+type ViewingRoomElementAlignments {
+  artworks: ViewingRoomElementAlignment
+  curatorialText: ViewingRoomElementAlignment
+  description: ViewingRoomElementAlignment
+  galleryName: ViewingRoomElementAlignment
+  heading: ViewingRoomElementAlignment
+  subtitle: ViewingRoomElementAlignment
+}
+
+"""
+Where each element of the room is aligned.
+"""
+input ViewingRoomElementAlignmentsInput {
+  artworks: ViewingRoomElementAlignment
+  curatorialText: ViewingRoomElementAlignment
+  description: ViewingRoomElementAlignment
+  galleryName: ViewingRoomElementAlignment
+  heading: ViewingRoomElementAlignment
+  subtitle: ViewingRoomElementAlignment
 }
 
 enum ViewingRoomHeroStyle {
