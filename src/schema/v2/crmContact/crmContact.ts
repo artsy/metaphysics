@@ -160,6 +160,11 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Defaults to ACTIVE. There is no way to list both statuses in one request.",
     },
+    categories: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description:
+        "Only contacts with any of these categories. Case-insensitive.",
+    },
     category: {
       type: GraphQLString,
       description:
@@ -202,6 +207,7 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
         {
           partner_id: args.partnerID,
           status: args.status,
+          categories: args.categories?.length ? args.categories : undefined,
           category: args.category,
           q: args.query,
           assigned_to_user_id: args.assignedToUserID,
