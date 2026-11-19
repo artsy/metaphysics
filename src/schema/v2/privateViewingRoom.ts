@@ -147,20 +147,46 @@ export const PrivateViewingRoomContentsType = new GraphQLObjectType<
   fields: contentFields,
 })
 
+// A room is addressed by its gallery and slug, or (for rooms shared before the
+// gallery was part of the link) by its slug alone. This is what follows
+// `private_viewing_room/` in Gravity's public endpoint.
+export const getPrivateViewingRoomAddress = ({
+  gallerySlug,
+  slug,
+}: {
+  gallerySlug?: string | null
+  slug: string
+}) => {
+  if (!gallerySlug) return encodeURIComponent(slug)
+
+  return `${encodeURIComponent(gallerySlug)}/${encodeURIComponent(slug)}`
+}
+
 export const PrivateViewingRoom: GraphQLFieldConfig<void, ResolverContext> = {
   type: PrivateViewingRoomType,
   description:
     "Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.",
   args: {
+    gallerySlug: {
+      type: GraphQLString,
+      description:
+        "The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.",
+    },
     slug: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: async (_root, { slug }, { privateViewingRoomLoader }) => {
+  resolve: async (
+    _root,
+    { gallerySlug, slug },
+    { privateViewingRoomLoader }
+  ) => {
     if (!privateViewingRoomLoader) return null
 
     try {
-      return await privateViewingRoomLoader(slug)
+      return await privateViewingRoomLoader(
+        getPrivateViewingRoomAddress({ gallerySlug, slug })
+      )
     } catch (error) {
       // A public, slug-addressed lookup: an unknown or unpublished room
       // should read as "doesn't exist" to the front end, not as a GraphQL

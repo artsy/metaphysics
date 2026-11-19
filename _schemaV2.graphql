@@ -7062,6 +7062,11 @@ input AuthenticatePrivateViewingRoomMutationInput {
   clientMutationId: String
 
   """
+  The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+  """
+  gallerySlug: String
+
+  """
   The room's passcode.
   """
   passcode: String!
@@ -31876,7 +31881,7 @@ type PartnerListPublication {
   heroStyle: ViewingRoomHeroStyle
 
   """
-  Public-facing path for this private viewing room.
+  Public-facing path for this private viewing room, with the gallery in it (/private-viewing-room/<gallery>/<room>).
   """
   href: String
 
@@ -35467,7 +35472,13 @@ type Query {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(slug: String!): PrivateViewingRoom
+  privateViewingRoom(
+    """
+    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+    """
+    gallerySlug: String
+    slug: String!
+  ): PrivateViewingRoom
 
   """
   A Profile
@@ -46297,7 +46308,13 @@ type Viewer {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(slug: String!): PrivateViewingRoom
+  privateViewingRoom(
+    """
+    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+    """
+    gallerySlug: String
+    slug: String!
+  ): PrivateViewingRoom
 
   """
   A Profile

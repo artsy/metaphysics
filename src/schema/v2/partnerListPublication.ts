@@ -223,8 +223,15 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     },
     href: {
       type: GraphQLString,
-      description: "Public-facing path for this private viewing room.",
-      resolve: ({ slug }) => (slug ? `/private-viewing-room/${slug}` : null),
+      description:
+        "Public-facing path for this private viewing room, with the gallery in it (/private-viewing-room/<gallery>/<room>).",
+      resolve: ({ path, slug }) => {
+        if (path) return path
+
+        // Gravity has no gallery slug to put in the path (it only happens
+        // while it isn't deployed with `path` yet).
+        return slug ? `/private-viewing-room/${slug}` : null
+      },
     },
     artworkFieldVisibility: {
       type: ArtworkFieldVisibilityType,

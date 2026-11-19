@@ -222,6 +222,47 @@ describe("PartnerList.publication", () => {
   })
 })
 
+describe("PartnerListPublication.href", () => {
+  const query = gql`
+    {
+      partner(id: "gallery-1") {
+        partnerList(id: "list-abc") {
+          publication {
+            href
+          }
+        }
+      }
+    }
+  `
+
+  const run = async (publication: Record<string, unknown>) => {
+    const context = {
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListLoader: jest.fn().mockResolvedValue({ id: "list-abc" }),
+      partnerListPublicationLoader: jest.fn().mockResolvedValue(publication),
+    }
+
+    const result = await runAuthenticatedQuery(query, context)
+    return result.partner.partnerList.publication.href
+  }
+
+  it("is the path Gravity builds, with the gallery in it", async () => {
+    expect(
+      await run({
+        id: "pub-1",
+        slug: "for-anna",
+        path: "/private-viewing-room/some-gallery/for-anna",
+      })
+    ).toBe("/private-viewing-room/some-gallery/for-anna")
+  })
+
+  it("falls back to the slug alone while Gravity sends no path", async () => {
+    expect(await run({ id: "pub-1", slug: "for-anna" })).toBe(
+      "/private-viewing-room/for-anna"
+    )
+  })
+})
+
 describe("PartnerList.published / PartnerList.passcodeProtected", () => {
   it("reads inline from partner_list_publication on partnerListsConnection, with no per-node Gravity call", async () => {
     const query = gql`
@@ -251,6 +292,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
               published: true,
               passcode_protected: false,
               slug: "gallery-warm-fields",
+              path: "/private-viewing-room/gallery/gallery-warm-fields",
             },
           },
           { id: "list-unpublished", partner_list_publication: null },
@@ -274,7 +316,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
         internalID: "list-published",
         published: true,
         passcodeProtected: false,
-        publicationHref: "/private-viewing-room/gallery-warm-fields",
+        publicationHref: "/private-viewing-room/gallery/gallery-warm-fields",
       },
       {
         internalID: "list-unpublished",

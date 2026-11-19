@@ -202,6 +202,9 @@ export const PartnerListType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.",
         resolve: ({ partner_list_publication }) => {
+          if (partner_list_publication?.path)
+            return partner_list_publication.path
+
           const slug = partner_list_publication?.slug
           return slug ? `/private-viewing-room/${slug}` : null
         },
