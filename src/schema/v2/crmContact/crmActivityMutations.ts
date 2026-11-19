@@ -1,7 +1,11 @@
 import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { CRMActivityKindEnum, CRMActivityType } from "./crmActivity"
+import {
+  CRMActivityChannelEnum,
+  CRMActivityKindEnum,
+  CRMActivityType,
+} from "./crmActivity"
 import {
   NOT_SIGNED_IN,
   responseOrErrorType,
@@ -37,6 +41,10 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: "Artworks of the partner that the activity is about",
     },
+    channel: {
+      type: CRMActivityChannelEnum,
+      description: "How the activity happened. Defaults to SYSTEM",
+    },
     crmContactID: { type: new GraphQLNonNull(GraphQLString) },
     description: {
       type: GraphQLString,
@@ -62,6 +70,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     {
       artistIDs,
       artworkIDs,
+      channel,
       crmContactID,
       description,
       kind,
@@ -76,6 +85,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
       createCrmActivityLoader({
         artist_ids: artistIDs ?? undefined,
         artwork_ids: artworkIDs ?? undefined,
+        channel,
         crm_contact_id: crmContactID,
         description,
         kind,
@@ -110,6 +120,10 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
       description:
         "Replaces the artworks the activity is about. An empty list clears them, leaving it out keeps them",
     },
+    channel: {
+      type: CRMActivityChannelEnum,
+      description: "How the activity happened",
+    },
     description: {
       type: GraphQLString,
     },
@@ -134,7 +148,16 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artistIDs, artworkIDs, description, id, kind, occurredAt, subject },
+    {
+      artistIDs,
+      artworkIDs,
+      channel,
+      description,
+      id,
+      kind,
+      occurredAt,
+      subject,
+    },
     { updateCrmActivityLoader }
   ) => {
     if (!updateCrmActivityLoader) throw new Error(NOT_SIGNED_IN)
@@ -144,6 +167,7 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
         // An empty list is lost in the query-string round trip, so send null to clear
         artist_ids: artistIDs?.length === 0 ? null : artistIDs ?? undefined,
         artwork_ids: artworkIDs?.length === 0 ? null : artworkIDs ?? undefined,
+        channel,
         description,
         kind,
         occurred_at: occurredAt,

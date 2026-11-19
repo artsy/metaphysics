@@ -5,6 +5,7 @@ const activity = {
   id: "activity-1",
   crm_contact_id: "contact-1",
   partner_id: "partner-1",
+  channel: "in_person",
   kind: "note",
   subject: "Fair",
   description: "Met at the fair",
@@ -16,9 +17,9 @@ describe("CRM activity mutations", () => {
 
     const result = await runAuthenticatedQuery(
       `mutation {
-        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, occurredAt: "2026-01-02T10:00:00Z", subject: "Fair", description: "Met at the fair" }) {
+        createCRMActivity(input: { crmContactID: "contact-1", channel: IN_PERSON, kind: NOTE, occurredAt: "2026-01-02T10:00:00Z", subject: "Fair", description: "Met at the fair" }) {
           crmActivityOrError {
-            ... on CreateCRMActivitySuccess { crmActivity { internalID kind subject description } }
+            ... on CreateCRMActivitySuccess { crmActivity { internalID channel kind subject description } }
           }
         }
       }`,
@@ -26,6 +27,7 @@ describe("CRM activity mutations", () => {
     )
 
     expect(createCrmActivityLoader).toHaveBeenCalledWith({
+      channel: "in_person",
       crm_contact_id: "contact-1",
       description: "Met at the fair",
       kind: "note",
@@ -35,6 +37,7 @@ describe("CRM activity mutations", () => {
     expect(result.createCRMActivity.crmActivityOrError).toEqual({
       crmActivity: {
         internalID: "activity-1",
+        channel: "IN_PERSON",
         kind: "NOTE",
         subject: "Fair",
         description: "Met at the fair",
@@ -160,7 +163,7 @@ describe("CRM activity mutations", () => {
 
     await runAuthenticatedQuery(
       `mutation {
-        updateCRMActivity(input: { id: "activity-1", kind: MEETING, artworkIDs: [], artistIDs: [] }) {
+        updateCRMActivity(input: { id: "activity-1", channel: EMAIL, kind: MEETING, artworkIDs: [], artistIDs: [] }) {
           crmActivityOrError {
             ... on UpdateCRMActivitySuccess { crmActivity { internalID } }
           }
@@ -172,6 +175,7 @@ describe("CRM activity mutations", () => {
     expect(updateCrmActivityLoader).toHaveBeenCalledWith("activity-1", {
       artist_ids: null,
       artwork_ids: null,
+      channel: "email",
       kind: "meeting",
     })
   })
