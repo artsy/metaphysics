@@ -51,6 +51,7 @@ const ElementAlignmentsInputType = new GraphQLInputObjectType({
 interface PublishPartnerListPublicationMutationInputProps {
   partnerListID: string
   passcode?: string
+  slug?: string
   description?: string
   heading?: string
   subtitle?: string
@@ -110,6 +111,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: GraphQLString,
       description:
         "Passcode to gate the room. Pass an empty string to clear a previously set passcode.",
+    },
+    slug: {
+      type: GraphQLString,
+      description:
+        "The room's web address: lowercase words joined by hyphens. Blank keeps the current one. The old address keeps working after a change.",
     },
     description: {
       type: GraphQLString,
@@ -181,6 +187,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     {
       partnerListID,
       passcode,
+      slug,
       description,
       heading,
       subtitle,
@@ -210,6 +217,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     // treats `nil` (via `new_passcode.presence`) as "clear it" — so an empty
     // string here and an explicit `null` arrive at the same place.
     if (passcode !== undefined) gravityArgs.passcode = passcode
+    if (slug !== undefined) gravityArgs.slug = slug
     if (description !== undefined) gravityArgs.description = description
     if (heading !== undefined) gravityArgs.heading = heading
     if (subtitle !== undefined) gravityArgs.subtitle = subtitle

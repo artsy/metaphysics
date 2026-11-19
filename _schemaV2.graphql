@@ -33286,6 +33286,11 @@ input PublishPartnerListPublicationMutationInput {
   showLogo: Boolean
 
   """
+  The room's web address: lowercase words joined by hyphens. Blank keeps the current one. The old address keeps working after a change.
+  """
+  slug: String
+
+  """
   Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.
   """
   subtitle: String
