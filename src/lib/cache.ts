@@ -1,4 +1,5 @@
 import zlib from "zlib"
+import { createHash } from "crypto"
 import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
@@ -29,12 +30,21 @@ const VerboseEvents = [
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
 
+// Hash keys over memcached's 250-byte limit; short keys stay verbatim, so no existing entry changes.
+const MAX_KEY_LENGTH = 250
+
+const keyPrefix = () =>
+  CACHE_COMPRESSION_DISABLED
+    ? CACHE_NAMESPACE + uncompressedKeyPrefix
+    : CACHE_NAMESPACE + cacheVersion
+
 export const cacheKey = (key) => {
-  if (CACHE_COMPRESSION_DISABLED) {
-    return CACHE_NAMESPACE + uncompressedKeyPrefix + key
-  } else {
-    return CACHE_NAMESPACE + cacheVersion + key
+  const prefix = keyPrefix()
+  const fullKey = prefix + key
+  if (fullKey.length <= MAX_KEY_LENGTH) {
+    return fullKey
   }
+  return prefix + "h:" + createHash("md5").update(String(key)).digest("hex")
 }
 
 const deflateP = (dataz) => {
@@ -85,7 +95,17 @@ const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
 
 const statsClient = isTest ? null : createStatsClient()
 
+// First path segment only — a bounded tag value; the full path carries ids that would blow up cardinality.
+const keyRoot = (key) => String(key).split(/[/?]/)[0]
+
+const trackKeyLength = (key) => {
+  if (keyPrefix().length + String(key).length > MAX_KEY_LENGTH) {
+    statsClient?.increment("cache.key_hashed", 1, { root: keyRoot(key) })
+  }
+}
+
 function _get<T>(key) {
+  trackKeyLength(key)
   return new Promise<T>((resolve, reject) => {
     let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
       timeoutId = null
@@ -130,6 +150,7 @@ export interface CacheOptions {
 }
 
 function _set(key, data, options: CacheOptions) {
+  trackKeyLength(key)
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {

@@ -177,3 +177,36 @@ describe("Cache with compression disabled", () => {
     })
   })
 })
+
+describe("cacheKey", () => {
+  // A short key returns the raw prefix, so it's config-agnostic.
+  const prefix = cacheKey("")
+
+  it("returns short keys verbatim (prefix + key)", () => {
+    expect(cacheKey("artists/andy-warhol")).toBe(prefix + "artists/andy-warhol")
+  })
+
+  it("hashes keys that would exceed memcached's 250-byte limit", () => {
+    const longKey =
+      "articles/counts?" +
+      Array.from(
+        { length: 50 },
+        (_x, i) => `artist_ids[]=${i}${"a".repeat(23)}`
+      ).join("&")
+
+    const result = cacheKey(longKey)
+
+    expect(longKey.length).toBeGreaterThan(250)
+    expect(result.length).toBeLessThanOrEqual(250)
+    expect(result.startsWith(prefix + "h:")).toBe(true)
+    expect(result.slice((prefix + "h:").length)).toMatch(/^[0-9a-f]{32}$/)
+  })
+
+  it("is deterministic and collision-free for long keys", () => {
+    const a = "x".repeat(400)
+    const b = "y".repeat(400)
+
+    expect(cacheKey(a)).toBe(cacheKey(a))
+    expect(cacheKey(a)).not.toBe(cacheKey(b))
+  })
+})
