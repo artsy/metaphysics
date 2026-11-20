@@ -4,6 +4,7 @@ orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
   node: circleci/node@7.2.1
+  defectdojo: artsy/defectdojo@volatile
 
 executors:
   node-executor:
@@ -260,3 +261,13 @@ workflows:
               only: /^review-app-.*/
           requires:
             - create_or_update_review_app
+
+  # SAST (Semgrep + OSV) only, scoped to wip/* branches for the pilot. Findings
+  # never gate the build; the orb stores reports as artifacts and dry-runs the
+  # DefectDojo import unless a context supplies a reachable URL and token.
+  security-poc:
+    jobs:
+      - defectdojo/sast:
+          filters:
+            branches:
+              only: /^wip\/.*/
