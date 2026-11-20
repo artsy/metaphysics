@@ -36760,6 +36760,11 @@ type ResaleSubmission {
   state: ResaleSubmissionState!
 
   """
+  A simple user-facing message to indicate the status of this submission, derived from current state.
+  """
+  statusMessage: String!
+
+  """
   The My Collection artwork being resold.
   """
   submittedArtwork: Artwork

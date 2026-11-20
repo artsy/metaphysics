@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../../artwork"
 import { date } from "../../fields/date"
@@ -66,6 +67,14 @@ export const ResaleSubmissionStateEnum = new GraphQLEnumType({
     REJECTED: { value: "rejected" },
   },
 })
+
+const STATUS_MESSAGES: Record<string, string> = {
+  accepted: "In progress",
+  auction_review: "Submitted",
+  canceled: "Canceled",
+  listed: "Submitted",
+  rejected: "Previously rejected",
+}
 
 const moneyFromMinorField = (
   minorKey: string
@@ -146,6 +155,21 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
       },
       state: {
         type: new GraphQLNonNull(ResaleSubmissionStateEnum),
+      },
+      statusMessage: {
+        type: new GraphQLNonNull(GraphQLString),
+        description:
+          "A simple user-facing message to indicate the status of this submission, derived from current state.",
+        resolve: ({ state }) => {
+          const message = STATUS_MESSAGES[state]
+
+          if (!message) {
+            warn(`Unknown resale submission state: ${state}`)
+            return ""
+          }
+
+          return message
+        },
       },
       submittedArtwork: {
         type: ArtworkType,

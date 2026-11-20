@@ -1,7 +1,13 @@
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
+
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  warn: jest.fn(),
+}))
 
 const query = gql`
   query {
@@ -230,6 +236,47 @@ describe("me.resaleSubmission", () => {
     const response = await runQuery(query, {})
 
     expect(response.me).toBeNull()
+  })
+
+  describe("statusMessage", () => {
+    const statusQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            statusMessage
+          }
+        }
+      }
+    `
+
+    it.each([
+      ["accepted", "In progress"],
+      ["auction_review", "Submitted"],
+      ["canceled", "Canceled"],
+      ["listed", "Submitted"],
+      ["rejected", "Previously rejected"],
+    ])("describes a %s submission as “%s”", async (state, message) => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({ ...acceptedSubmission, state })
+      )
+
+      const response = await runAuthenticatedQuery(statusQuery, context)
+
+      expect(response.me.resaleSubmission.statusMessage).toEqual(message)
+    })
+
+    it("returns an empty message and logs a warning for an unknown state", async () => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({ ...acceptedSubmission, state: "mystery" })
+      )
+
+      const response = await runAuthenticatedQuery(statusQuery, context)
+
+      expect(response.me.resaleSubmission.statusMessage).toEqual("")
+      expect(warn).toHaveBeenCalledWith(
+        "Unknown resale submission state: mystery"
+      )
+    })
   })
 
   describe("submittedArtwork", () => {
