@@ -9322,11 +9322,6 @@ type Collection {
   id: ID!
 
   """
-  A representative image for the collection, if one is available.
-  """
-  image: Image
-
-  """
   A type-specific ID likely used as a database ID.
   """
   internalID: ID!
@@ -9341,6 +9336,11 @@ type Collection {
   """
   name: String!
   private: Boolean!
+
+  """
+  Representative artworks (ordered), resolved from their ids.
+  """
+  representativeArtworks: [Artwork!]
 
   """
   True if this collection represents artworks explicitly saved by the user, false otherwise.

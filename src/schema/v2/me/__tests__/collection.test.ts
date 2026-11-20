@@ -179,47 +179,57 @@ describe("artworksCount field", () => {
   })
 })
 
-describe("image field", () => {
-  const imageQuery = gql`
+describe("representativeArtworks field", () => {
+  const representativeArtworksQuery = gql`
     query {
       me {
         collection(id: "123-abc") {
-          image {
-            resized(width: 100) {
-              url
-            }
+          representativeArtworks {
+            internalID
           }
         }
       }
     }
   `
 
-  it("resolves a representative image from the collection payload", async () => {
+  it("resolves the collection's representative_artwork_ids via a batched loader", async () => {
     context.collectionLoader = jest.fn(() =>
       Promise.resolve({
         ...mockGravityCollection,
-        image_url: "https://d32dm0rphc51dk.cloudfront.net/abc/:version.jpg",
-        image_versions: ["square", "large"],
+        representative_artwork_ids: ["artwork-1", "artwork-2"],
       })
     )
+    context.artworkByIDLoader = {
+      load: jest.fn((id) => Promise.resolve({ _id: id })),
+    } as any
 
-    const response = await runAuthenticatedQuery(imageQuery, context)
+    const response = await runAuthenticatedQuery(
+      representativeArtworksQuery,
+      context
+    )
 
-    expect(response.me.collection.image.resized.url).toContain("abc")
+    expect(context.artworkByIDLoader?.load).toHaveBeenCalledWith("artwork-1")
+    expect(context.artworkByIDLoader?.load).toHaveBeenCalledWith("artwork-2")
+    expect(response.me.collection.representativeArtworks).toEqual([
+      { internalID: "artwork-1" },
+      { internalID: "artwork-2" },
+    ])
   })
 
-  it("returns null when the collection has no image", async () => {
+  it("returns an empty list when there are no representative artworks", async () => {
     context.collectionLoader = jest.fn(() =>
       Promise.resolve({
         ...mockGravityCollection,
-        image_url: null,
-        image_versions: [],
+        representative_artwork_ids: [],
       })
     )
 
-    const response = await runAuthenticatedQuery(imageQuery, context)
+    const response = await runAuthenticatedQuery(
+      representativeArtworksQuery,
+      context
+    )
 
-    expect(response.me.collection.image).toBeNull()
+    expect(response.me.collection.representativeArtworks).toEqual([])
   })
 })
 
