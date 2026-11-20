@@ -150,19 +150,13 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
       submittedArtwork: {
         type: ArtworkType,
         description: "The My Collection artwork being resold.",
-        resolve: async (
-          { submitted_artwork_id },
-          _args,
-          { meMyCollectionArtworksLoader }
-        ) => {
-          if (!meMyCollectionArtworksLoader) return null
-
-          const { body } = await meMyCollectionArtworksLoader({
-            artworks: [submitted_artwork_id],
-            size: 1,
-          })
-
-          return body[0] ?? null
+        resolve: async ({ submitted_artwork_id }, _args, { artworkLoader }) => {
+          try {
+            return await artworkLoader(submitted_artwork_id)
+          } catch (error) {
+            if (error.statusCode === 404) return null
+            throw error
+          }
         },
       },
       submittedArtworkID: {
