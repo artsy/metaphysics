@@ -1,0 +1,179 @@
+/* eslint-disable promise/always-return */
+import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
+import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
+
+import cache from "lib/cache"
+import { StaticPathLoader } from "../api/loader_interface"
+import { LoaderFactory } from "../index"
+
+describe("API loaders", () => {
+  let api: jest.Mock
+  let apiLoader: LoaderFactory
+  let loader: StaticPathLoader<any>
+
+  beforeEach(() => {
+    api = jest.fn((path, accessToken, options) =>
+      Promise.resolve({ body: { path, accessToken, options } })
+    )
+  })
+
+  const sharedExamples = () => {
+    describe("concerning path", () => {
+      it("generates path specific loaders", () => {
+        return loader().then(({ path }) => {
+          expect(path).toEqual("some/path?")
+        })
+      })
+
+      it("yields a given ID to the loader", () => {
+        const dynamicLoader = apiLoader((id) => `some/path/with/id/${id}`)
+        return dynamicLoader("42").then(({ path }) => {
+          expect(path).toEqual("some/path/with/id/42?")
+        })
+      })
+
+      it("appends params to the path", () => {
+        return loader({ some: "param" }).then(({ path }) => {
+          expect(path).toEqual("some/path?some=param")
+        })
+      })
+
+      it("sets default params and merges with specific params", () => {
+        loader = apiLoader("some/path", { defaultParam: "value" })
+        return loader({ some: "param" }).then(({ path }) => {
+          expect(path).toEqual("some/path?defaultParam=value&some=param")
+        })
+      })
+    })
+
+    it("caches the response for the lifetime of the loader", () => {
+      return Promise.all([loader(), loader()]).then((responses) => {
+        expect(responses.map(({ path }) => path)).toEqual([
+          "some/path?",
+          "some/path?",
+        ])
+        expect(api.mock.calls.length).toEqual(1)
+      })
+    })
+
+    it("does not coalesce identical calls for non-GET methods", () => {
+      const postLoader = apiLoader(
+        "some/post/no-coalesce/path",
+        {},
+        { method: "POST" }
+      )
+      const callsBefore = api.mock.calls.length
+      return Promise.all([
+        postLoader({ same: "payload" }),
+        postLoader({ same: "payload" }),
+      ]).then(() => {
+        expect(api.mock.calls.length - callsBefore).toEqual(2)
+      })
+    })
+
+    it("passes options for the api function on", () => {
+      // Needs to be a new path so that it hasn’t been cached in memcache yet
+      loader = apiLoader("some/post/path", {}, { method: "POST" })
+      return loader().then(({ options }) =>
+        expect(options.method).toEqual("POST")
+      )
+    })
+  }
+
+  describe("without authentication", () => {
+    beforeEach(() => {
+      apiLoader = apiLoaderWithoutAuthenticationFactory(api, "test_name", {
+        requestIDs: { requestID: "1234", xForwardedFor: "42.42.42.42" },
+        userAgent: "catty browser",
+        method: "GET",
+      })
+      loader = apiLoader("some/path")
+    })
+
+    sharedExamples()
+
+    it("does not try to pass an access token", () => {
+      return loader().then(({ accessToken }) => {
+        expect(accessToken).toEqual(null)
+      })
+    })
+
+    it("caches the response in memcache", () => {
+      const spy = jest.spyOn(cache, "set")
+      return cache
+        .get("some/unauthenticated/memcached/path?")
+        .then(() => {
+          throw new Error("Did not expect to be cached yet")
+        })
+        .catch(() => {
+          loader = apiLoader("some/unauthenticated/memcached/path")
+          return loader().then(() => {
+            expect(spy).toHaveBeenCalled()
+          })
+        })
+    })
+
+    it("doesnt cache the response in memcache for non GETs", () => {
+      loader = apiLoader("some/gravity/post/path", {}, { method: "POST" })
+      return loader().then(() => {
+        return cache
+          .get("some/gravity/post/path?")
+          .then(() => {
+            throw new Error("Did not expect response to be cached")
+          })
+          .catch(() => {
+            // swallow the error, because this is the expected code-path
+            expect(true).toBe(true)
+          })
+      })
+    })
+
+    it("doesnt read or write memcache with skipCache", async () => {
+      const getSpy = jest.spyOn(cache, "get")
+      const setSpy = jest.spyOn(cache, "set")
+      getSpy.mockClear()
+      setSpy.mockClear()
+
+      loader = apiLoader("some/per-user/path", {}, { skipCache: true })
+      await loader()
+
+      expect(getSpy).not.toHaveBeenCalled()
+      expect(setSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("with authentication", () => {
+    beforeEach(() => {
+      apiLoader = apiLoaderWithAuthenticationFactory(api, "test_name", {
+        userAgent: "catty browser",
+        requestIDs: {
+          requestID: 1234,
+        },
+      })(() => Promise.resolve("secret-token"))
+      loader = apiLoader("some/path")
+    })
+
+    sharedExamples()
+
+    it("does pass an access token", () => {
+      return loader().then(({ accessToken }) => {
+        expect(accessToken).toEqual("secret-token")
+      })
+    })
+
+    it("does NOT cache the response in memcache", () => {
+      loader = apiLoader("some/authenticated/memcached/path")
+      return loader().then(() => {
+        return cache
+          .get("some/authenticated/memcached/path?")
+          .then(() => {
+            throw new Error("Did not expect response to be cached")
+          })
+          .catch(() => {
+            // swallow the error, because this is the expected code-path
+            expect(true).toBe(true)
+          })
+      })
+    })
+  })
+})
