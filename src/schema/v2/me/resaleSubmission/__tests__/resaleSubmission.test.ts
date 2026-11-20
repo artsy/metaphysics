@@ -291,4 +291,77 @@ describe("me.resaleSubmission", () => {
       ).rejects.toThrow()
     })
   })
+
+  describe("conditionPhotos", () => {
+    const photosQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            conditionPhotos {
+              internalID
+              imageURL
+              url(version: "large")
+              width
+              height
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the submission’s photos as images, oldest first", async () => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({
+          ...acceptedSubmission,
+          images: [
+            {
+              id: "image-1",
+              image_url: "https://d32dm0rphc51dk.cloudfront.net/a/:version.jpg",
+              image_urls: {
+                large: "https://d32dm0rphc51dk.cloudfront.net/a/large.jpg",
+              },
+              image_versions: ["large"],
+              original_height: 800,
+              original_width: 600,
+            },
+            {
+              id: "image-2",
+              image_url: "https://d32dm0rphc51dk.cloudfront.net/b/:version.jpg",
+              image_urls: {
+                large: "https://d32dm0rphc51dk.cloudfront.net/b/large.jpg",
+              },
+              image_versions: ["large"],
+              original_height: 400,
+              original_width: 300,
+            },
+          ],
+        })
+      )
+
+      const response = await runAuthenticatedQuery(photosQuery, context)
+
+      expect(response.me.resaleSubmission.conditionPhotos).toEqual([
+        {
+          internalID: "image-1",
+          imageURL: "https://d32dm0rphc51dk.cloudfront.net/a/:version.jpg",
+          url: "https://d32dm0rphc51dk.cloudfront.net/a/large.jpg",
+          width: 600,
+          height: 800,
+        },
+        {
+          internalID: "image-2",
+          imageURL: "https://d32dm0rphc51dk.cloudfront.net/b/:version.jpg",
+          url: "https://d32dm0rphc51dk.cloudfront.net/b/large.jpg",
+          width: 300,
+          height: 400,
+        },
+      ])
+    })
+
+    it("returns an empty list when Gravity sends no images", async () => {
+      const response = await runAuthenticatedQuery(photosQuery, context)
+
+      expect(response.me.resaleSubmission.conditionPhotos).toEqual([])
+    })
+  })
 })
