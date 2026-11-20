@@ -9,6 +9,8 @@ interface Input {
   email: string
   name: string
   phone?: string
+  phoneCountryCode?: string
+  phoneNumber?: string
   adminNote?: string
 }
 
@@ -18,6 +20,8 @@ interface GravityInput {
   email: string
   name: string
   phone?: string
+  phone_country_code?: string
+  phone_number?: string
 }
 
 interface GravityError {
@@ -38,6 +42,8 @@ export const updateUserMutation = mutationWithClientMutationId<
     email: { type: GraphQLString },
     name: { type: GraphQLString },
     phone: { type: GraphQLString },
+    phoneCountryCode: { type: GraphQLString },
+    phoneNumber: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
   },
   outputFields: {},
