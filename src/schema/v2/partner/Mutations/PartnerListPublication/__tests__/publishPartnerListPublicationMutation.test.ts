@@ -325,6 +325,140 @@ describe("PublishPartnerListPublicationMutation", () => {
     })
   })
 
+  it("sends the web address to Gravity and returns the room's path there", async () => {
+    const withSlug = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: { partnerListID: "list-abc", slug: "warm-fields" }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                slug
+                href
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest
+        .fn()
+        .mockResolvedValue({ id: "pub-1", slug: "warm-fields" }),
+    }
+
+    const result = await runAuthenticatedQuery(withSlug, context)
+
+    expect(
+      context.publishPartnerListPublicationLoader
+    ).toHaveBeenCalledWith("list-abc", { slug: "warm-fields" })
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({
+      slug: "warm-fields",
+      href: "/private-viewing-room/warm-fields",
+    })
+  })
+
+  it("sends the subtitle to Gravity and returns it", async () => {
+    const withSubtitle = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: { partnerListID: "list-abc", subtitle: "Recent paintings" }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                subtitle
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest
+        .fn()
+        .mockResolvedValue({ id: "pub-1", subtitle: "Recent paintings" }),
+    }
+
+    const result = await runAuthenticatedQuery(withSubtitle, context)
+
+    expect(
+      context.publishPartnerListPublicationLoader
+    ).toHaveBeenCalledWith("list-abc", { subtitle: "Recent paintings" })
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({ subtitle: "Recent paintings" })
+  })
+
+  it("sends each element's alignment to Gravity and returns them", async () => {
+    const withAlignments = gql`
+      mutation {
+        publishPartnerListPublication(
+          input: {
+            partnerListID: "list-abc"
+            elementAlignments: {
+              galleryName: LEFT
+              heading: CENTER
+              curatorialText: RIGHT
+            }
+          }
+        ) {
+          partnerListPublicationOrError {
+            ... on PublishPartnerListPublicationSuccess {
+              partnerListPublication {
+                elementAlignments {
+                  galleryName
+                  heading
+                  subtitle
+                  curatorialText
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      publishPartnerListPublicationLoader: jest.fn().mockResolvedValue({
+        id: "pub-1",
+        element_alignments: {
+          gallery_name: "left",
+          heading: "center",
+          curatorial_text: "right",
+        },
+      }),
+    }
+
+    const result = await runAuthenticatedQuery(withAlignments, context)
+
+    expect(context.publishPartnerListPublicationLoader).toHaveBeenCalledWith(
+      "list-abc",
+      {
+        element_alignments: {
+          gallery_name: "left",
+          heading: "center",
+          curatorial_text: "right",
+        },
+      }
+    )
+    expect(
+      result.publishPartnerListPublication.partnerListPublicationOrError
+        .partnerListPublication
+    ).toEqual({
+      elementAlignments: {
+        galleryName: "LEFT",
+        heading: "CENTER",
+        subtitle: null,
+        curatorialText: "RIGHT",
+      },
+    })
+  })
+
   it("sends showLogo to Gravity and returns it", async () => {
     const withLogo = gql`
       mutation {

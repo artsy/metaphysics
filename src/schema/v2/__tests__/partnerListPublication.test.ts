@@ -222,6 +222,52 @@ describe("PartnerList.publication", () => {
   })
 })
 
+describe("PartnerListPublication.href and .path", () => {
+  const query = gql`
+    {
+      partner(id: "gallery-1") {
+        partnerList(id: "list-abc") {
+          publication {
+            href
+            path
+          }
+        }
+      }
+    }
+  `
+
+  const run = async (publication: Record<string, unknown>) => {
+    const context = {
+      partnerLoader: jest.fn().mockResolvedValue({ id: "gallery-1" }),
+      partnerListLoader: jest.fn().mockResolvedValue({ id: "list-abc" }),
+      partnerListPublicationLoader: jest.fn().mockResolvedValue(publication),
+    }
+
+    const result = await runAuthenticatedQuery(query, context)
+    return result.partner.partnerList.publication
+  }
+
+  it("keeps href as the link with the room's address alone, and gives the link with the gallery as path", async () => {
+    expect(
+      await run({
+        id: "pub-1",
+        slug: "for-anna",
+        path: "/private-viewing-room/some-gallery/for-anna",
+      })
+    ).toEqual({
+      href: "/private-viewing-room/for-anna",
+      path: "/private-viewing-room/some-gallery/for-anna",
+    })
+  })
+
+  it("has no path until Gravity sends one", async () => {
+    expect(await run({ id: "pub-1", slug: "for-anna" })).toEqual({
+      href: "/private-viewing-room/for-anna",
+      path: null,
+    })
+  })
+})
+
 describe("PartnerList.published / PartnerList.passcodeProtected", () => {
   it("reads inline from partner_list_publication on partnerListsConnection, with no per-node Gravity call", async () => {
     const query = gql`
@@ -234,6 +280,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
                 published
                 passcodeProtected
                 publicationHref
+                publicationPath
               }
             }
           }
@@ -251,6 +298,7 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
               published: true,
               passcode_protected: false,
               slug: "gallery-warm-fields",
+              path: "/private-viewing-room/gallery/gallery-warm-fields",
             },
           },
           { id: "list-unpublished", partner_list_publication: null },
@@ -275,12 +323,14 @@ describe("PartnerList.published / PartnerList.passcodeProtected", () => {
         published: true,
         passcodeProtected: false,
         publicationHref: "/private-viewing-room/gallery-warm-fields",
+        publicationPath: "/private-viewing-room/gallery/gallery-warm-fields",
       },
       {
         internalID: "list-unpublished",
         published: null,
         passcodeProtected: null,
         publicationHref: null,
+        publicationPath: null,
       },
     ])
   })

@@ -7062,6 +7062,11 @@ input AuthenticatePrivateViewingRoomMutationInput {
   clientMutationId: String
 
   """
+  The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+  """
+  gallerySlug: String
+
+  """
   The room's passcode.
   """
   passcode: String!
@@ -31749,9 +31754,14 @@ type PartnerList {
   publication: PartnerListPublication
 
   """
-  Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.
+  Public-facing path of this list's private viewing room (/private-viewing-room/<room>), from the same inline key as published. Null if no publication exists yet.
   """
   publicationHref: String
+
+  """
+  Public-facing path of this list's private viewing room with the gallery in it (/private-viewing-room/<gallery>/<room>). Null if no publication exists yet, or until Gravity sends it.
+  """
+  publicationPath: String
 
   """
   Whether this list's private viewing room publication is live. Null if no publication exists yet.
@@ -31918,6 +31928,11 @@ type PartnerListPublication {
   description: String
 
   """
+  Where each element of the room is aligned (viewing rooms rebuild). Null on a room published before the elements could be aligned one by one, which falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
+
+  """
   Optional heading shown on the published room.
   """
   heading: String
@@ -31928,7 +31943,7 @@ type PartnerListPublication {
   heroStyle: ViewingRoomHeroStyle
 
   """
-  Public-facing path for this private viewing room.
+  Public-facing path for this private viewing room: /private-viewing-room/<room>.
   """
   href: String
 
@@ -31956,6 +31971,11 @@ type PartnerListPublication {
   """
   passcode: String
   passcodeProtected: Boolean
+
+  """
+  Public-facing path with the gallery in it: /private-viewing-room/<gallery>/<room>. Null until Gravity sends it.
+  """
+  path: String
   published: Boolean
   publishedAt(
     format: String
@@ -31976,6 +31996,11 @@ type PartnerListPublication {
   """
   showLogo: Boolean
   slug: String
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Null when the gallery didn't add one.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild). Null on a room published before the rebuild.
@@ -33012,6 +33037,11 @@ type PrivateViewingRoom {
   description: String
 
   """
+  Where each element of the room is aligned (viewing rooms rebuild). Omitted like heroStyle; a room without it falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
+
+  """
   The gallery's name, omitted when the gallery has chosen to hide it (show_gallery_name).
   """
   galleryName: String
@@ -33031,6 +33061,11 @@ type PrivateViewingRoom {
   Whether to show the brand kit logo, apart from the gallery name. Null on a room published before the logo had its own setting, which shows the logo in place of the name when the brand is applied. The brand kit also comes with it when only the logo is on; apply its colors and font only when applyBrand is true.
   """
   showLogo: Boolean
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.
@@ -33109,6 +33144,11 @@ type PrivateViewingRoomContents {
   description: String
 
   """
+  Where each element of the room is aligned (viewing rooms rebuild). Omitted like heroStyle; a room without it falls back to textAlignment for its text.
+  """
+  elementAlignments: ViewingRoomElementAlignments
+
+  """
   The gallery's name, omitted when the gallery has chosen to hide it (show_gallery_name).
   """
   galleryName: String
@@ -33123,6 +33163,11 @@ type PrivateViewingRoomContents {
   Whether to show the brand kit logo, apart from the gallery name. Null on a room published before the logo had its own setting, which shows the logo in place of the name when the brand is applied. The brand kit also comes with it when only the logo is on; apply its colors and font only when applyBrand is true.
   """
   showLogo: Boolean
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.
@@ -33278,6 +33323,11 @@ input PublishPartnerListPublicationMutationInput {
   description: String
 
   """
+  Where each element of the room is aligned, one by one (viewing rooms rebuild).
+  """
+  elementAlignments: ViewingRoomElementAlignmentsInput
+
+  """
   Optional heading shown on the published room.
   """
   heading: String
@@ -33306,6 +33356,16 @@ input PublishPartnerListPublicationMutationInput {
   Whether to show the gallery's brand kit logo on the public page, apart from the gallery name.
   """
   showLogo: Boolean
+
+  """
+  The room's web address: lowercase words joined by hyphens. Blank keeps the current one. The old address keeps working after a change.
+  """
+  slug: String
+
+  """
+  Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.
+  """
+  subtitle: String
 
   """
   Alignment of the heading and text (viewing rooms rebuild).
@@ -35479,7 +35539,13 @@ type Query {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(slug: String!): PrivateViewingRoom
+  privateViewingRoom(
+    """
+    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+    """
+    gallerySlug: String
+    slug: String!
+  ): PrivateViewingRoom
 
   """
   A Profile
@@ -46324,7 +46390,13 @@ type Viewer {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(slug: String!): PrivateViewingRoom
+  privateViewingRoom(
+    """
+    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
+    """
+    gallerySlug: String
+    slug: String!
+  ): PrivateViewingRoom
 
   """
   A Profile
@@ -46902,6 +46974,36 @@ type ViewingRoomEdge {
   The item at the end of the edge
   """
   node: ViewingRoom
+}
+
+enum ViewingRoomElementAlignment {
+  CENTER
+  LEFT
+  RIGHT
+}
+
+"""
+Where each element of the room is aligned. Null for an element the gallery hasn't aligned.
+"""
+type ViewingRoomElementAlignments {
+  artworks: ViewingRoomElementAlignment
+  curatorialText: ViewingRoomElementAlignment
+  description: ViewingRoomElementAlignment
+  galleryName: ViewingRoomElementAlignment
+  heading: ViewingRoomElementAlignment
+  subtitle: ViewingRoomElementAlignment
+}
+
+"""
+Where each element of the room is aligned.
+"""
+input ViewingRoomElementAlignmentsInput {
+  artworks: ViewingRoomElementAlignment
+  curatorialText: ViewingRoomElementAlignment
+  description: ViewingRoomElementAlignment
+  galleryName: ViewingRoomElementAlignment
+  heading: ViewingRoomElementAlignment
+  subtitle: ViewingRoomElementAlignment
 }
 
 enum ViewingRoomHeroStyle {
