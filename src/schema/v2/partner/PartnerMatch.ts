@@ -62,7 +62,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     searchProfile: {
       type: ArtworkSearchProfileType,
       description:
-        "Which search behaviour to use. `PARTNER_INVENTORY` matches title, artist, medium type and full or partial inventory ID.",
+        "Which search behaviour to use. `PARTNER_INVENTORY` and `PARTNER_CMS` match title, artist, medium and full or partial inventory ID. `PARTNER_INVENTORY` matches the catalog medium, and `PARTNER_CMS` the medium type.",
     },
   }),
   resolve: async (

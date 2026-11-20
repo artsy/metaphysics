@@ -2523,6 +2523,95 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe("catalogArtworkAvailability", () => {
+    const filterResults = (id: string) =>
+      Promise.resolve({
+        hits: [{ id }],
+        aggregations: { total: { value: 1 } },
+      })
+    const partnerID = "5f80bfefe8d808000ea212c1"
+
+    let authenticatedFilterArtworksLoader: jest.Mock
+    let unauthenticatedFilterArtworksLoader: jest.Mock
+    let partnerArtworksAllLoader: jest.Mock
+    let context: any
+
+    beforeEach(() => {
+      authenticatedFilterArtworksLoader = jest.fn(() =>
+        filterResults("authenticated-artwork")
+      )
+      unauthenticatedFilterArtworksLoader = jest.fn(() =>
+        filterResults("public-artwork")
+      )
+      partnerArtworksAllLoader = jest.fn()
+      context = {
+        authenticatedLoaders: {
+          filterArtworksLoader: authenticatedFilterArtworksLoader,
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader: unauthenticatedFilterArtworksLoader,
+        },
+        isCMSRequest: true,
+        partnerArtworksAllLoader,
+        partnerLoader: jest.fn(() =>
+          Promise.resolve({ id: "gallery-slug", _id: partnerID })
+        ),
+      }
+    })
+
+    const query = gql`
+      {
+        partner(id: "${partnerID}") {
+          filterArtworksConnection(
+            input: {
+              first: 10
+              sort: "-created_at"
+              includeUnpublished: true
+              disableNotForSaleSorting: true
+              catalogArtworkAvailability: "sold"
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("maps to catalog_artwork_availability on the authenticated loader, instead of the partner artworks loader", async () => {
+      const { partner } = await runQuery(query, context)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: partnerID,
+          include_unpublished: true,
+          catalog_artwork_availability: "sold",
+        })
+      )
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({ availability: expect.anything() })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
+      expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
+      expect(partner.filterArtworksConnection.edges).toEqual([
+        { node: { slug: "authenticated-artwork" } },
+      ])
+    })
+
+    it("drops it and uses the public loader when there is no user", async () => {
+      await runQuery(query, { ...context, authenticatedLoaders: {} })
+
+      expect(unauthenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          catalog_artwork_availability: expect.anything(),
+        })
+      )
+    })
+  })
+
   describe("searchProfile", () => {
     const filterResults = (id: string) =>
       Promise.resolve({
@@ -2589,6 +2678,36 @@ describe("artworksConnection", () => {
       expect(artworksConnection.edges).toEqual([
         { node: { slug: "authenticated-artwork" } },
       ])
+    })
+
+    it("maps PARTNER_CMS to search_profile: partner_cms on the authenticated loader", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 10
+            partnerID: "partner-id"
+            keyword: "Sculpture"
+            searchProfile: PARTNER_CMS
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      await runQuery(query, searchProfileContext)
+
+      expect(authenticatedFilterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          partner_id: "partner-id",
+          keyword: "Sculpture",
+          search_profile: "partner_cms",
+        })
+      )
+      expect(unauthenticatedFilterArtworksLoader).not.toHaveBeenCalled()
     })
 
     it("accepts searchProfile in `input` on partner.filterArtworksConnection", async () => {

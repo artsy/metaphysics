@@ -156,6 +156,11 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   availability: {
     type: GraphQLString,
   },
+  catalogArtworkAvailability: {
+    type: GraphQLString,
+    description:
+      "Filter by catalog availability: each edition set's, or the catalog artwork's, falling back to `availability`. Needs partner access, and is ignored otherwise.",
+  },
   categories: {
     type: new GraphQLList(GraphQLString),
   },
@@ -304,7 +309,7 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   searchProfile: {
     type: ArtworkSearchProfileType,
     description:
-      "Which search behaviour to use. `PARTNER_INVENTORY` needs `partnerID` and partner access, and is ignored otherwise.",
+      "Which search behaviour to use. `PARTNER_INVENTORY` and `PARTNER_CMS` need `partnerID` and partner access, and are ignored otherwise.",
   },
   showID: {
     type: GraphQLString,
@@ -565,6 +570,7 @@ const convertFilterArgs = ({
   artworkIDs,
   atAuction,
   attributionClass,
+  catalogArtworkAvailability,
   certificateOfAuthenticity,
   completenessTier,
   curatorsPick,
@@ -620,6 +626,7 @@ const convertFilterArgs = ({
     artsy_listing: artsyListing,
     at_auction: atAuction,
     attribution_class: attributionClass,
+    catalog_artwork_availability: catalogArtworkAvailability,
     certificate_of_authenticity: certificateOfAuthenticity,
     completeness_tier: completenessTier,
     curators_pick: curatorsPick,
@@ -820,6 +827,7 @@ const filterArtworksConnectionTypeFactory = (
 
     const requestedAuthorizedFilters = !!(
       gravityOptions.include_unpublished ||
+      gravityOptions.catalog_artwork_availability ||
       gravityOptions.search_profile ||
       include_artworks_by_followed_artists ||
       visibility_level ||
@@ -845,6 +853,7 @@ const filterArtworksConnectionTypeFactory = (
 
         delete gravityOptions.include_artworks_by_followed_artists
         delete gravityOptions.include_unpublished
+        delete gravityOptions.catalog_artwork_availability
         delete gravityOptions.search_profile
         delete gravityOptions.visibility_level
         delete gravityOptions.include_json
