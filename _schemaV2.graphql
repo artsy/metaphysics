@@ -4336,6 +4336,10 @@ type ArtsyShippingOptInResponse {
 }
 
 type Artwork implements Node & Searchable & Sellable {
+  """
+  The current user’s active resale submission for this artwork, if there is one.
+  """
+  activeResaleSubmission: ResaleSubmission
   additionalInformation(format: Format): String
   artaShippingEnabled: Boolean
     @deprecated(
