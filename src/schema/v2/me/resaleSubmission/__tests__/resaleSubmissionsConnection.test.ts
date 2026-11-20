@@ -154,14 +154,8 @@ describe("me.resaleSubmissionsConnection", () => {
   })
 
   it("resolves the nested artwork for each submission", async () => {
-    context.meMyCollectionArtworksLoader = jest.fn(({ artworks }: any) =>
-      Promise.resolve({
-        body: artworks.map((id: string) => ({
-          _id: id,
-          title: `Title of ${id}`,
-        })),
-        headers: {},
-      })
+    context.artworkLoader = jest.fn((id: string) =>
+      Promise.resolve({ _id: id, title: `Title of ${id}` })
     )
 
     const artworkQuery = gql`

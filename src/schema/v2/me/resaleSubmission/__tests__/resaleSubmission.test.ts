@@ -1,7 +1,13 @@
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
+
+jest.mock("lib/loggers", () => ({
+  ...jest.requireActual("lib/loggers"),
+  warn: jest.fn(),
+}))
 
 const query = gql`
   query {
@@ -232,6 +238,47 @@ describe("me.resaleSubmission", () => {
     expect(response.me).toBeNull()
   })
 
+  describe("statusMessage", () => {
+    const statusQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            statusMessage
+          }
+        }
+      }
+    `
+
+    it.each([
+      ["accepted", "In progress"],
+      ["auction_review", "Submitted"],
+      ["canceled", "Canceled"],
+      ["listed", "Submitted"],
+      ["rejected", "Previously rejected"],
+    ])("describes a %s submission as “%s”", async (state, message) => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({ ...acceptedSubmission, state })
+      )
+
+      const response = await runAuthenticatedQuery(statusQuery, context)
+
+      expect(response.me.resaleSubmission.statusMessage).toEqual(message)
+    })
+
+    it("returns an empty message and logs a warning for an unknown state", async () => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({ ...acceptedSubmission, state: "mystery" })
+      )
+
+      const response = await runAuthenticatedQuery(statusQuery, context)
+
+      expect(response.me.resaleSubmission.statusMessage).toEqual("")
+      expect(warn).toHaveBeenCalledWith(
+        "Unknown resale submission state: mystery"
+      )
+    })
+  })
+
   describe("submittedArtwork", () => {
     const artworkQuery = gql`
       query {
@@ -248,29 +295,30 @@ describe("me.resaleSubmission", () => {
     `
 
     beforeEach(() => {
-      context.meMyCollectionArtworksLoader = jest.fn(() =>
+      context.artworkLoader = jest.fn(() =>
         Promise.resolve({
-          body: [{ _id: "artwork-1", id: "an-artwork", title: "Untitled" }],
-          headers: {},
+          _id: "artwork-1",
+          id: "an-artwork",
+          title: "Untitled",
         })
       )
     })
 
-    it("returns the submitted artwork from My Collection", async () => {
+    it("loads the submitted artwork by its ID", async () => {
       const response = await runAuthenticatedQuery(artworkQuery, context)
 
-      expect(
-        context.meMyCollectionArtworksLoader as jest.Mock
-      ).toHaveBeenCalledWith({ artworks: ["artwork-1"], size: 1 })
+      expect(context.artworkLoader as jest.Mock).toHaveBeenCalledWith(
+        "artwork-1"
+      )
       expect(response.me.resaleSubmission).toEqual({
         submittedArtworkID: "artwork-1",
         submittedArtwork: { internalID: "artwork-1", title: "Untitled" },
       })
     })
 
-    it("returns null when the artwork is no longer in My Collection", async () => {
-      context.meMyCollectionArtworksLoader = jest.fn(() =>
-        Promise.resolve({ body: [], headers: {} })
+    it("returns null when Gravity cannot find the artwork for this user", async () => {
+      context.artworkLoader = jest.fn(() =>
+        Promise.reject(new HTTPError("Artwork Not Found", 404))
       )
 
       const response = await runAuthenticatedQuery(artworkQuery, context)
@@ -281,14 +329,87 @@ describe("me.resaleSubmission", () => {
       expect(response.me.resaleSubmission.submittedArtwork).toBeNull()
     })
 
-    it("surfaces artwork loading errors", async () => {
-      context.meMyCollectionArtworksLoader = jest.fn(() =>
+    it("surfaces other artwork loading errors", async () => {
+      context.artworkLoader = jest.fn(() =>
         Promise.reject(new HTTPError("Server Error", 500))
       )
 
       await expect(
         runAuthenticatedQuery(artworkQuery, context)
       ).rejects.toThrow()
+    })
+  })
+
+  describe("conditionPhotos", () => {
+    const photosQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            conditionPhotos {
+              internalID
+              imageURL
+              url(version: "large")
+              width
+              height
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the submission’s photos as images, oldest first", async () => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({
+          ...acceptedSubmission,
+          images: [
+            {
+              id: "image-1",
+              image_url: "https://d32dm0rphc51dk.cloudfront.net/a/:version.jpg",
+              image_urls: {
+                large: "https://d32dm0rphc51dk.cloudfront.net/a/large.jpg",
+              },
+              image_versions: ["large"],
+              original_height: 800,
+              original_width: 600,
+            },
+            {
+              id: "image-2",
+              image_url: "https://d32dm0rphc51dk.cloudfront.net/b/:version.jpg",
+              image_urls: {
+                large: "https://d32dm0rphc51dk.cloudfront.net/b/large.jpg",
+              },
+              image_versions: ["large"],
+              original_height: 400,
+              original_width: 300,
+            },
+          ],
+        })
+      )
+
+      const response = await runAuthenticatedQuery(photosQuery, context)
+
+      expect(response.me.resaleSubmission.conditionPhotos).toEqual([
+        {
+          internalID: "image-1",
+          imageURL: "https://d32dm0rphc51dk.cloudfront.net/a/:version.jpg",
+          url: "https://d32dm0rphc51dk.cloudfront.net/a/large.jpg",
+          width: 600,
+          height: 800,
+        },
+        {
+          internalID: "image-2",
+          imageURL: "https://d32dm0rphc51dk.cloudfront.net/b/:version.jpg",
+          url: "https://d32dm0rphc51dk.cloudfront.net/b/large.jpg",
+          width: 300,
+          height: 400,
+        },
+      ])
+    })
+
+    it("returns an empty list when Gravity sends no images", async () => {
+      const response = await runAuthenticatedQuery(photosQuery, context)
+
+      expect(response.me.resaleSubmission.conditionPhotos).toEqual([])
     })
   })
 })

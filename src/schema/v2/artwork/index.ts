@@ -115,6 +115,7 @@ import {
   isTwoDimensional,
 } from "./utilities"
 import { CatalogArtworkType } from "../catalogArtwork"
+import { ResaleSubmissionType } from "../me/resaleSubmission/resaleSubmission"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -275,6 +276,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      activeResaleSubmission: {
+        type: ResaleSubmissionType,
+        description:
+          "The current user’s active resale submission for this artwork, if there is one.",
+        resolve: async ({ _id }, _args, { meResaleSubmissionsLoader }) => {
+          if (!meResaleSubmissionsLoader) return null
+
+          const { body } = await meResaleSubmissionsLoader({
+            active: true,
+            submitted_artwork_ids: [_id],
+          })
+          return _.first(body) ?? null
+        },
+      },
       additionalInformation: markdown(
         ({ additional_information }) => additional_information
       ),
