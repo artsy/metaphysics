@@ -97,7 +97,9 @@ describe("QuickLinks", () => {
 
   beforeEach(() => {
     Object.assign(mockFeaturedCityGuide, NOT_FEATURED_WINDOW)
-    mockIsFeatureFlagEnabled.mockImplementation(() => false)
+    mockIsFeatureFlagEnabled.mockImplementation(
+      (flag) => flag === "onyx_ai_agent-turn"
+    )
     // Setup the mock resolver responses
     mockMyBidsResolve.mockResolvedValue({ active: [] })
     mockUserPricePreferenceResolve.mockResolvedValue(null)
@@ -261,6 +263,20 @@ describe("QuickLinks", () => {
         href: "/art-assistant",
         icon: "SparklesMessageIcon",
         ownerType: "artAssistant",
+      })
+    })
+
+    describe("When the onyx_ai_agent-turn flag is off for the user", () => {
+      it("is not returned", async () => {
+        mockIsFeatureFlagEnabled.mockImplementation(() => false)
+
+        const { homeView } = await runAuthenticatedQuery(query, {})
+
+        const artAssistantLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "Art Assistant"
+        )
+
+        expect(artAssistantLink).toBeUndefined()
       })
     })
 
