@@ -297,6 +297,11 @@ export const CRMActivityType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     updatedAt: date(),
+    userID: {
+      type: GraphQLString,
+      description: "The user who added this activity",
+      resolve: ({ user_id }) => user_id,
+    },
   }),
 })
 
