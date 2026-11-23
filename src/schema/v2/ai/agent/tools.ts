@@ -575,14 +575,14 @@ export function guardRepeatedResults(
   return async (input) => {
     const result = await run(input)
     if (!result.ok) return result
-    return addsNothingNew(result.content, seen)
+    return addsNothingNew(input, result.content, seen)
       ? { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
       : result
   }
 }
 
 interface SeenResults {
-  /** Every result's raw content. */
+  /** Every query with its result, so only the same search counts as a re-run. */
   results: Set<string>
   /** Every value, keyed by the entity it belongs to: `a1.medium:Oil`. */
   values: Set<string>
@@ -592,7 +592,7 @@ interface SeenResults {
 
 /**
  * True when a result adds nothing to what this turn already returned:
- * - the same result again;
+ * - the same search returning the same result again;
  * - no fields at all, like `{ __typename }` (an empty search such as
  *   `{ edges: [] }` has fields, so "no match" still reaches the model);
  * - only facts already returned about the same entities, in lists already
@@ -603,9 +603,16 @@ interface SeenResults {
  * different work is new. Lists are compared whole, so a narrowing search that
  * drops a work is new: which works came back is the information.
  */
-function addsNothingNew(content: string, seen: SeenResults): boolean {
-  const sameAsBefore = seen.results.has(content)
-  seen.results.add(content)
+function addsNothingNew(
+  input: unknown,
+  content: string,
+  seen: SeenResults
+): boolean {
+  // Query and result together: two different searches that both find
+  // nothing return identical content, but the second one is a new attempt.
+  const run = `${JSON.stringify(input)}\n${content}`
+  const sameAsBefore = seen.results.has(run)
+  seen.results.add(run)
 
   const flat = flattenResult(content)
   if (!flat) return sameAsBefore // Not JSON, e.g. truncated: exact match only.
@@ -627,9 +634,9 @@ const entityKeyOf = (object: Record<string, unknown>): string | undefined => {
 }
 
 /**
- * Flattens a result into entity-keyed `entity.field:value` pairs and, for
- * every array of entities, its ids in order. `__typename` is ignored. Null
- * when the content isn't JSON.
+ * Flattens a result into entity-keyed `entity.field:value` pairs (nulls and
+ * empty lists included) and, for every array of entities, its ids in order.
+ * `__typename` is ignored. Null when the content isn't JSON.
  */
 function flattenResult(
   content: string
@@ -656,7 +663,11 @@ function flattenResult(
         const node = (item as any)?.node ?? item
         return node && typeof node === "object" ? entityKeyOf(node) : undefined
       })
-      if (ids.some(Boolean)) lists.push(`${field}:${ids.join(",")}`)
+      // Keyed by the parent entity (or, at the top, the root field), so two
+      // different connections that return the same ids don't share a list.
+      if (ids.some(Boolean)) lists.push(`${entity}.${field}:${ids.join(",")}`)
+      // An empty list is an answer ("no shows"), so it counts as a value.
+      if (value.length === 0) values.push(`${entity}.${field}:[]`)
       value.forEach((item) => walk(item, field, entity))
     } else if (value !== null && typeof value === "object") {
       const object = value as Record<string, unknown>
@@ -665,9 +676,11 @@ function flattenResult(
       for (const [childField, child] of Object.entries(object)) {
         if (childField === "__typename") continue
         fieldCount++
-        walk(child, childField, key ?? entity)
+        // Top-level fields stand in for an entity, e.g. `artworksConnection`.
+        walk(child, childField, key ?? (entity || childField))
       }
-    } else if (value !== null && value !== undefined) {
+    } else if (value !== undefined) {
+      // null included: "no price" is an answer, not an absence of one.
       values.push(`${entity}.${field}:${String(value)}`)
     }
   }

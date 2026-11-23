@@ -1827,6 +1827,71 @@ describe("guardRepeatedResults", () => {
     expect(await run({})).toEqual(repeated)
   })
 
+  it("passes a lookup that finds a known work's field is not set", async () => {
+    const lookup = JSON.stringify({
+      artwork: { internalID: "a1", price: null, saleMessage: null },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("passes a lookup that finds a known work has an empty list", async () => {
+    const lookup = JSON.stringify({ artwork: { internalID: "a1", shows: [] } })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("still flags the same not-set lookup run twice", async () => {
+    const lookup = JSON.stringify({
+      artwork: { internalID: "a1", price: null },
+    })
+    const run = guarded(
+      { ok: true, content: lookup },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("lets a broadened search through when both find nothing", async () => {
+    const empty = JSON.stringify({ artworksConnection: { edges: [] } })
+    const run = guarded(
+      { ok: true, content: empty },
+      { ok: true, content: empty }
+    )
+    await run({
+      query:
+        '{ artworksConnection(priceRange: "*-5000") { edges { node { internalID } } } }',
+    })
+    expect(
+      (
+        await run({
+          query: "{ artworksConnection { edges { node { internalID } } } }",
+        })
+      ).repeated
+    ).toBeUndefined()
+  })
+
+  it("lets a second lookup of a missing work through", async () => {
+    const missing = JSON.stringify({ artwork: null })
+    const run = guarded(
+      { ok: true, content: missing },
+      { ok: true, content: missing }
+    )
+    await run({ query: '{ artwork(id: "wrong-slug") { title } }' })
+    expect(
+      (await run({ query: '{ artwork(id: "other-slug") { title } }' })).repeated
+    ).toBeUndefined()
+  })
+
   it("lets a first search that finds nothing through", async () => {
     const empty = JSON.stringify({ matchConnection: { edges: [] } })
     const run = guarded({ ok: true, content: empty })

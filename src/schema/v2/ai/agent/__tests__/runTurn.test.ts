@@ -2559,6 +2559,27 @@ describe("buildPrepareStep", () => {
     )
   })
 
+  it("forces an answer when any of a step's parallel results repeated", () => {
+    // The new result from the other call is already in the messages, so the
+    // forced answer can still use it.
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [
+        {
+          toolResults: [
+            { output: { ok: true, content: "{}" } },
+            { output: { ok: true, content: "…", repeated: true } },
+          ],
+        },
+      ],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toEqual("none")
+  })
+
   it("never forces the first step, which has no previous step", () => {
     const prepare = buildPrepareStep(25)
     const result: any = prepare({
