@@ -2559,6 +2559,18 @@ describe("buildPrepareStep", () => {
     )
   })
 
+  it("never forces the first step, which has no previous step", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 0,
+      steps: [],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toBeUndefined()
+  })
+
   it("lets the turn keep searching while results are new", () => {
     const prepare = buildPrepareStep(25)
     const result: any = prepare({

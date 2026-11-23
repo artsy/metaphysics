@@ -566,16 +566,28 @@ export const REPEATED_RESULT_NOTE =
 export function guardRepeatedResults(
   run: (input: unknown) => Promise<AIAgentToolRunResult>
 ): (input: unknown) => Promise<AIAgentToolRunResult> {
-  const seenResults = new Set<string>()
-  const seenValues = new Set<string>()
+  const seen: SeenResults = {
+    results: new Set(),
+    values: new Set(),
+    lists: new Set(),
+  }
 
   return async (input) => {
     const result = await run(input)
     if (!result.ok) return result
-    return addsNothingNew(result.content, seenResults, seenValues)
+    return addsNothingNew(result.content, seen)
       ? { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
       : result
   }
+}
+
+interface SeenResults {
+  /** Every result's raw content. */
+  results: Set<string>
+  /** Every value, keyed by the entity it belongs to: `a1.medium:Oil`. */
+  values: Set<string>
+  /** Every list of entities a connection returned, as ids in order. */
+  lists: Set<string>
 }
 
 /**
@@ -583,34 +595,50 @@ export function guardRepeatedResults(
  * - the same result again;
  * - no fields at all, like `{ __typename }` (an empty search such as
  *   `{ edges: [] }` has fields, so "no match" still reaches the model);
- * - only entities already returned, like `artwork(id:) { internalID }` for a
- *   work from an earlier search. Only results that name an entity count, so
- *   two different searches that both find nothing (`total:0`) still pass.
+ * - only facts already returned about the same entities, in lists already
+ *   returned -- like `artwork(id:) { internalID }` for a work from an earlier
+ *   search, or the same search re-run asking for less.
+ *
+ * Values are keyed by their entity, so the same medium or sale status on a
+ * different work is new. Lists are compared whole, so a narrowing search that
+ * drops a work is new: which works came back is the information.
  */
-function addsNothingNew(
-  content: string,
-  seenResults: Set<string>,
-  seenValues: Set<string>
-): boolean {
-  const sameAsBefore = seenResults.has(content)
-  seenResults.add(content)
+function addsNothingNew(content: string, seen: SeenResults): boolean {
+  const sameAsBefore = seen.results.has(content)
+  seen.results.add(content)
 
   const flat = flattenResult(content)
   if (!flat) return sameAsBefore // Not JSON, e.g. truncated: exact match only.
 
   const noData = flat.fieldCount === 0
-  const onlyKnownEntities =
-    flat.values.some((value) => /^(internalID|slug):/.test(value)) &&
-    flat.values.every((value) => seenValues.has(value))
-  flat.values.forEach((value) => seenValues.add(value))
+  const onlyKnownFacts =
+    flat.namesEntities &&
+    flat.values.every((value) => seen.values.has(value)) &&
+    flat.lists.every((list) => seen.lists.has(list))
+  flat.values.forEach((value) => seen.values.add(value))
+  flat.lists.forEach((list) => seen.lists.add(list))
 
-  return sameAsBefore || noData || onlyKnownEntities
+  return sameAsBefore || noData || onlyKnownFacts
 }
 
-/** A result's `field:value` pairs and field count, ignoring `__typename`. */
+const entityKeyOf = (object: Record<string, unknown>): string | undefined => {
+  const id = object.internalID ?? object.slug
+  return typeof id === "string" ? id : undefined
+}
+
+/**
+ * Flattens a result into entity-keyed `entity.field:value` pairs and, for
+ * every array of entities, its ids in order. `__typename` is ignored. Null
+ * when the content isn't JSON.
+ */
 function flattenResult(
   content: string
-): { values: string[]; fieldCount: number } | null {
+): {
+  values: string[]
+  lists: string[]
+  fieldCount: number
+  namesEntities: boolean
+} | null {
   let data: unknown
   try {
     data = JSON.parse(content)
@@ -618,22 +646,33 @@ function flattenResult(
     return null
   }
   const values: string[] = []
+  const lists: string[] = []
   let fieldCount = 0
-  const walk = (value: unknown, field: string) => {
+  let namesEntities = false
+
+  const walk = (value: unknown, field: string, entity: string) => {
     if (Array.isArray(value)) {
-      value.forEach((item) => walk(item, field))
+      const ids = value.map((item) => {
+        const node = (item as any)?.node ?? item
+        return node && typeof node === "object" ? entityKeyOf(node) : undefined
+      })
+      if (ids.some(Boolean)) lists.push(`${field}:${ids.join(",")}`)
+      value.forEach((item) => walk(item, field, entity))
     } else if (value !== null && typeof value === "object") {
-      for (const [key, child] of Object.entries(value)) {
-        if (key === "__typename") continue
+      const object = value as Record<string, unknown>
+      const key = entityKeyOf(object)
+      if (key) namesEntities = true
+      for (const [childField, child] of Object.entries(object)) {
+        if (childField === "__typename") continue
         fieldCount++
-        walk(child, key)
+        walk(child, childField, key ?? entity)
       }
     } else if (value !== null && value !== undefined) {
-      values.push(`${field}:${String(value)}`)
+      values.push(`${entity}.${field}:${String(value)}`)
     }
   }
-  walk(data, "")
-  return { values, fieldCount }
+  walk(data, "", "")
+  return { values, lists, fieldCount, namesEntities }
 }
 
 /**

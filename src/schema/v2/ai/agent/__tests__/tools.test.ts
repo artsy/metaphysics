@@ -1772,6 +1772,61 @@ describe("guardRepeatedResults", () => {
     expect((await run({})).repeated).toBeUndefined()
   })
 
+  it("passes a lookup of a new work whose values match another work's", async () => {
+    const first = JSON.stringify({
+      artworksConnection: {
+        edges: [
+          {
+            node: {
+              internalID: "a1",
+              medium: "Oil on canvas",
+              isForSale: true,
+            },
+          },
+          { node: { internalID: "b1", title: "Other" } },
+        ],
+      },
+    })
+    const lookup = JSON.stringify({
+      artwork: { internalID: "b1", medium: "Oil on canvas", isForSale: true },
+    })
+    const run = guarded(
+      { ok: true, content: first },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("passes a narrowing search that drops a work", async () => {
+    const search = (ids: string[]) =>
+      JSON.stringify({
+        artworksConnection: {
+          edges: ids.map((id) => ({ node: { internalID: id, title: id } })),
+        },
+      })
+    const run = guarded(
+      { ok: true, content: search(["a1", "a2", "a3"]) },
+      { ok: true, content: search(["a1", "a2"]) }
+    )
+    await run({})
+    expect((await run({})).repeated).toBeUndefined()
+  })
+
+  it("flags the same search re-run asking for less", async () => {
+    const ids = JSON.stringify({
+      artworksConnection: {
+        edges: [{ node: { internalID: "a1" } }, { node: { internalID: "a2" } }],
+      },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: ids }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
   it("lets a first search that finds nothing through", async () => {
     const empty = JSON.stringify({ matchConnection: { edges: [] } })
     const run = guarded({ ok: true, content: empty })
