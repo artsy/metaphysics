@@ -466,11 +466,15 @@ describe("conversation orders connections", () => {
     )
   })
 
-  it("does not send a state filter when none is given", async () => {
+  it.each([
+    ["omitted", ""],
+    ["empty", ", buyerState: []"],
+    ["only null", ", buyerState: [null]"],
+  ])("does not send a state filter when buyerState is %s", async (_, arg) => {
     const query = gql`
       {
         conversation(id: "conversation-1") {
-          collectorOrdersConnection(first: 5, buyerState: []) {
+          collectorOrdersConnection(first: 5${arg}) {
             totalCount
           }
         }

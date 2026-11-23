@@ -950,6 +950,8 @@ const fetchConversationOrders = async (
 /** Exchange REST takes states as a comma-separated list */
 const stateFilter = (
   param: "buyer_state" | "seller_state",
-  states?: string[] | null
-): Record<string, string> =>
-  states && states.length > 0 ? { [param]: states.join(",") } : {}
+  states?: Array<string | null> | null
+): Record<string, string> => {
+  const values = (states ?? []).filter(Boolean)
+  return values.length > 0 ? { [param]: values.join(",") } : {}
+}
