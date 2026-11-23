@@ -3,6 +3,7 @@ import type {
   LanguageModel,
   ModelMessage,
   PrepareStepFunction,
+  StepResult,
   StreamTextOnStepFinishCallback,
   ToolSet,
 } from "ai"
@@ -971,8 +972,13 @@ function buildMessages(
  * tools stay in the request, so the cached prefix still matches. The note
  * after the breakpoint stops the answer promising a search that never comes.
  */
-const prepareStep: PrepareStepFunction = ({ messages, stepNumber }) => {
-  const isLastStep = stepNumber >= config.AI_AGENT_MAX_ITERATIONS - 1
+export const buildPrepareStep = (
+  maxIterations: number
+): PrepareStepFunction => ({ messages, stepNumber, steps }) => {
+  // A repeated result means the model has stopped finding anything new (see
+  // guardRepeatedResults): answer now rather than spend the rest of the steps
+  // -- or the turn timeout, which ends the turn with no answer at all.
+  const isLastStep = stepNumber >= maxIterations - 1 || repeatedLastStep(steps)
   if (messages.length === 0) return isLastStep ? { toolChoice: "none" } : {}
   const last = messages.length - 1
   const cached = [
@@ -982,6 +988,13 @@ const prepareStep: PrepareStepFunction = ({ messages, stepNumber }) => {
   return isLastStep
     ? { toolChoice: "none", messages: [...cached, LAST_STEP_NOTE] }
     : { messages: cached }
+}
+
+function repeatedLastStep(steps: ReadonlyArray<StepResult<ToolSet>>) {
+  const previous = steps[steps.length - 1]
+  return (previous?.toolResults ?? []).some(
+    (result) => (result.output as AIAgentToolRunResult | undefined)?.repeated
+  )
 }
 
 const LAST_STEP_NOTE: ModelMessage = {
@@ -1018,6 +1031,8 @@ export interface RunTurnOptions {
   disableTracing?: boolean
   /** Per-step usage, timing and tool results, for scoring. */
   onStepFinish?: StreamTextOnStepFinishCallback<ToolSet>
+  /** Replaces AI_AGENT_MAX_ITERATIONS, so variants can differ in step cap. */
+  maxIterations?: number
 }
 
 /**
@@ -1140,6 +1155,8 @@ export async function* runTurn(
 
     // Sentry, or Phoenix through LiteLLM, never both.
     const tracer = trace || options.disableTracing ? undefined : agentTracer()
+    const maxIterations =
+      options.maxIterations ?? config.AI_AGENT_MAX_ITERATIONS
 
     const result = streamText({
       model,
@@ -1157,9 +1174,9 @@ export async function* runTurn(
       },
       messages,
       tools,
-      prepareStep,
+      prepareStep: buildPrepareStep(maxIterations),
       onStepFinish: options.onStepFinish,
-      stopWhen: stepCountIs(config.AI_AGENT_MAX_ITERATIONS),
+      stopWhen: stepCountIs(maxIterations),
       maxOutputTokens: MAX_TOKENS,
       abortSignal: abortController.signal,
       output: Output.object({
@@ -1336,9 +1353,7 @@ export async function* runTurn(
           if (!finalOutput?.message) {
             logError(
               `[aiAgentTurn] no answer: finishReason=${part.finishReason} toolCalls=${toolCallCount}` +
-                (hitCap
-                  ? ` (hit AI_AGENT_MAX_ITERATIONS=${config.AI_AGENT_MAX_ITERATIONS})`
-                  : "")
+                (hitCap ? ` (hit the step cap of ${maxIterations})` : "")
             )
           }
           const section = finalOutput?.section

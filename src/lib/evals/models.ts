@@ -2,32 +2,39 @@ import type { LanguageModel } from "ai"
 import { anthropicProvider, litellmProvider } from "lib/apis/anthropic"
 
 /**
- * A variant is what one experiment varies: a model, and optionally a prompt.
- * Written `label=provider:model[@prompt-file]`, e.g.
+ * A variant is what one experiment varies: a model, and optionally a prompt
+ * and a step cap. Written `label=provider:model[#steps=N][@prompt-file]`, e.g.
  *   sonnet-5=litellm:claude-sonnet-5
  *   new-prompt=litellm:claude-sonnet-5@prompts/candidate.md
+ *   prod-cap=litellm:claude-sonnet-5-5#steps=25
  */
 export interface EvalVariant {
   label: string
   provider: "anthropic" | "litellm"
   model: string
   promptFile?: string
+  /**
+   * Replaces AI_AGENT_MAX_ITERATIONS. Set it to production's cap: a lower one
+   * hides loops (the Sonnet 5.5 search loop passed evals capped at 6).
+   */
+  maxIterations?: number
 }
 
-const VARIANT = /^([\w.-]+)=(anthropic|litellm):([\w.-]+)(?:@(.+))?$/
+const VARIANT = /^([\w.-]+)=(anthropic|litellm):([\w.-]+)(?:#steps=([1-9]\d*))?(?:@([^#]+))?$/
 
 export function parseVariant(spec: string): EvalVariant {
   const match = VARIANT.exec(spec.trim())
   if (!match) {
     throw new Error(
-      `Bad --variant "${spec}": expected label=anthropic|litellm:model[@prompt-file]`
+      `Bad --variant "${spec}": expected label=anthropic|litellm:model[#steps=N][@prompt-file]`
     )
   }
-  const [, label, provider, model, promptFile] = match
+  const [, label, provider, model, steps, promptFile] = match
   return {
     label,
     provider: provider as EvalVariant["provider"],
     model,
+    ...(steps ? { maxIterations: Number(steps) } : {}),
     ...(promptFile ? { promptFile } : {}),
   }
 }
