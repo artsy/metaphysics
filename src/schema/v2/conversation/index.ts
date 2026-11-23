@@ -289,6 +289,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       MeOrdersConnectionType,
       fetchOrdersConnection,
     } = require("../order/types/OrderType")
+    const {
+      OrderBuyerStateEnum,
+      OrderSellerStateEnum,
+    } = require("../order/types/sharedOrderTypes")
 
     return {
       id: GlobalIDField,
@@ -827,6 +831,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
+          buyerState: {
+            type: new GraphQLList(OrderBuyerStateEnum),
+            description: "Filter by buyer states",
+          },
         }),
         resolve: async (conversation, args, context, _info) => {
           const { meOrdersLoader } = context
@@ -836,7 +844,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             fetchOrdersConnection,
             meOrdersLoader,
             conversation,
-            args
+            args,
+            stateFilter("buyer_state", args.buyerState)
           )
         },
       },
@@ -847,6 +856,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
+          sellerState: {
+            type: new GraphQLList(OrderSellerStateEnum),
+            description: "Filter by seller states",
+          },
         }),
         resolve: async (conversation, args, context, _info) => {
           const { partnerOrdersLoader } = context
@@ -871,7 +884,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             fetchOrdersConnection,
             partnerOrdersLoaderForPartner,
             conversation,
-            args
+            args,
+            stateFilter("seller_state", args.sellerState)
           )
         },
       },
@@ -902,7 +916,8 @@ const fetchConversationOrders = async (
   fetchOrdersConnection,
   loader,
   conversation,
-  args
+  args,
+  additionalParams: Record<string, string> = {}
 ) => {
   // Get artwork IDs from conversation items
   const artworkIds: string[] = []
@@ -928,5 +943,13 @@ const fetchConversationOrders = async (
 
   return fetchOrdersConnection(loader, args, {
     artwork_id: artworkIds[0], // Use first artwork ID for filtering
+    ...additionalParams,
   })
 }
+
+/** Exchange REST takes states as a comma-separated list */
+const stateFilter = (
+  param: "buyer_state" | "seller_state",
+  states?: string[] | null
+): Record<string, string> =>
+  states && states.length > 0 ? { [param]: states.join(",") } : {}

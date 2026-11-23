@@ -416,6 +416,73 @@ describe("conversation orders connections", () => {
     )
   })
 
+  it("passes buyerState to the loader for collectorOrdersConnection", async () => {
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          collectorOrdersConnection(
+            first: 5
+            buyerState: [SUBMITTED, APPROVED]
+          ) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    expect(context.meOrdersLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artwork_id: "artwork-1",
+        buyer_state: "SUBMITTED,APPROVED",
+      })
+    )
+  })
+
+  it("passes sellerState to the loader for partnerOrdersConnection", async () => {
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          partnerOrdersConnection(
+            first: 5
+            sellerState: [ORDER_RECEIVED, COMPLETED]
+          ) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    expect(context.partnerOrdersLoader).toHaveBeenCalledWith(
+      "partner-id",
+      expect.objectContaining({
+        artwork_id: "artwork-1",
+        buyer_id: "buyer-1",
+        seller_state: "ORDER_RECEIVED,COMPLETED",
+      })
+    )
+  })
+
+  it("does not send a state filter when none is given", async () => {
+    const query = gql`
+      {
+        conversation(id: "conversation-1") {
+          collectorOrdersConnection(first: 5, buyerState: []) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    await runQuery(query, context)
+
+    const params = context.meOrdersLoader.mock.calls[0][0]
+    expect(params).not.toHaveProperty("buyer_state")
+  })
+
   it("works when from_type is Partner for partnerOrdersConnection", async () => {
     const contextWithPartnerAsBuyer = {
       conversationLoader: () => {
