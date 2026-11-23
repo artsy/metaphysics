@@ -65,6 +65,15 @@ export interface OrderJSON {
   available_shipping_countries: string[]
   awaiting_response_from: "buyer" | "seller" | null
   bank_account_id?: string
+  // Buyer-only. Exchange's `buyer_offer_action_type` for offer orders
+  buyer_action?:
+    | "OFFER_ACCEPTED"
+    | "OFFER_ACCEPTED_CONFIRM_NEEDED"
+    | "OFFER_RECEIVED"
+    | "OFFER_RECEIVED_CONFIRM_NEEDED"
+    | "PAYMENT_FAILED"
+    | "PROVISIONAL_OFFER_ACCEPTED"
+    | null
   buyer_id: string
   buyer_phone_number?: string
   buyer_phone_number_country_code?: string
@@ -92,8 +101,6 @@ export interface OrderJSON {
   id: string
   impulse_conversation_id?: string
   items_total_cents?: number
-  // Buyer-only. Not yet returned by all Exchange deployments.
-  last_transaction_failed?: boolean
   line_items: Array<{
     artwork_id: string
     artwork_version_id: string
@@ -125,8 +132,6 @@ export interface OrderJSON {
   shipping_region?: string
   shipping_total_cents?: number
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
-  // Raw Exchange order state, e.g. "submitted", "approved"
-  state?: string
   tax_total_cents?: number
   total_list_price_cents?: number
   transaction_fee_cents?: number

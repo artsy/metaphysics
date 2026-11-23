@@ -193,10 +193,13 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
         // offers. Only offers resolved standalone (e.g. offer mutation
         // payloads) fall back to fetching the order.
         let submittedOffers = offer._submittedOffers
+        let selectedFulfillmentOptionType = offer._selectedFulfillmentOptionType
         if (!submittedOffers) {
           if (!order_id || !meOrderLoader) return null
           const order = await meOrderLoader(order_id)
           submittedOffers = order?.submitted_offers ?? []
+          selectedFulfillmentOptionType =
+            order?.selected_fulfillment_option?.type
         }
 
         const respondsTo = submittedOffers?.find(
@@ -206,7 +209,7 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
 
         return {
           ...respondsTo,
-          _selectedFulfillmentOptionType: offer._selectedFulfillmentOptionType,
+          _selectedFulfillmentOptionType: selectedFulfillmentOptionType,
           _submittedOffers: submittedOffers,
         }
       },

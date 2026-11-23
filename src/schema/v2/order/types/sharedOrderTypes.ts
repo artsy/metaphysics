@@ -91,14 +91,9 @@ export const OrderBuyerActionEnum = new GraphQLEnumType({
   description:
     "Type of action the buyer needs to perform in response to the last submitted offer",
   values: {
-    PAYMENT_FAILED: {
-      value: "PAYMENT_FAILED",
-      description: "Buyer's payment failed",
-    },
-    OFFER_RECEIVED_CONFIRM_NEEDED: {
-      value: "OFFER_RECEIVED_CONFIRM_NEEDED",
-      description:
-        "Buyer received a counter, offer needs to confirm tax and shipping",
+    OFFER_ACCEPTED: {
+      value: "OFFER_ACCEPTED",
+      description: "Buyer's offer is accepted and final",
     },
     OFFER_ACCEPTED_CONFIRM_NEEDED: {
       value: "OFFER_ACCEPTED_CONFIRM_NEEDED",
@@ -108,9 +103,14 @@ export const OrderBuyerActionEnum = new GraphQLEnumType({
       value: "OFFER_RECEIVED",
       description: "Buyer received a counter offer",
     },
-    OFFER_ACCEPTED: {
-      value: "OFFER_ACCEPTED",
-      description: "Buyer's offer is accepted and final",
+    OFFER_RECEIVED_CONFIRM_NEEDED: {
+      value: "OFFER_RECEIVED_CONFIRM_NEEDED",
+      description:
+        "Buyer received a counter, offer needs to confirm tax and shipping",
+    },
+    PAYMENT_FAILED: {
+      value: "PAYMENT_FAILED",
+      description: "Buyer's payment failed",
     },
     PROVISIONAL_OFFER_ACCEPTED: {
       value: "PROVISIONAL_OFFER_ACCEPTED",

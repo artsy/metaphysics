@@ -53,7 +53,6 @@ import {
   BankAccountBalanceCheckType,
   resolveBankAccountBalanceCheck,
 } from "./BankAccountBalanceCheck"
-import { resolveBuyerAction } from "../utils/buyerAction"
 
 const FulfillmentDetailsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FulfillmentDetails",
@@ -244,7 +243,7 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       type: OrderBuyerActionEnum,
       description:
         "Type of action the buyer needs to perform in response to the last submitted offer. Only present for offer orders fetched as the buyer.",
-      resolve: (order) => resolveBuyerAction(order),
+      resolve: ({ buyer_action }) => buyer_action ?? null,
     },
     buyerPhoneNumber: {
       type: GraphQLString,

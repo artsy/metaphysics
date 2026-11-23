@@ -436,8 +436,8 @@ describe("Me", () => {
 
       beforeEach(() => {
         orderJson.mode = "offer"
-        orderJson.state = "submitted"
         orderJson.buyer_state = "offer_received"
+        orderJson.buyer_action = "OFFER_RECEIVED_CONFIRM_NEEDED"
         orderJson.submitted_offers = [sellerCounter, buyerOffer]
         orderJson.last_submitted_offer = sellerCounter
       })
@@ -467,20 +467,8 @@ describe("Me", () => {
         expect(meOrderLoader).toHaveBeenCalledTimes(1)
       })
 
-      it("returns PAYMENT_FAILED when last_transaction_failed is true", async () => {
-        orderJson.last_transaction_failed = true
-        context = {
-          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
-          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
-        }
-
-        const result = await runAuthenticatedQuery(query, context)
-
-        expect(result.me.order.buyerAction).toEqual("PAYMENT_FAILED")
-      })
-
-      it("returns null buyerAction for buy mode orders", async () => {
-        orderJson.mode = "buy"
+      it("returns null buyerAction when Exchange doesn't send one", async () => {
+        delete orderJson.buyer_action
         context = {
           meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
           meOrderLoader: jest.fn().mockResolvedValue(orderJson),
