@@ -148,11 +148,8 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
       condition: {
         type: ArtworkConditionType,
         description:
-          "The seller’s answer to the work’s condition and their notes on it, in the same shape as Artwork.condition. Null if neither is answered yet.",
-        resolve: (submission) =>
-          submission.condition || submission.condition_description
-            ? submission
-            : null,
+          "The seller’s answer to the work’s condition, in the same shape as Artwork.condition. Null until answered.",
+        resolve: (submission) => (submission.condition ? submission : null),
       },
       priceListed: {
         ...moneyFromMinorField("price_listed_minor"),

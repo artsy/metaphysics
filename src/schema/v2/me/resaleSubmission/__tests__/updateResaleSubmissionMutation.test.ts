@@ -59,7 +59,6 @@ const updatedSubmission = {
   courier_handoff: "seller_dropoff",
   notes: "Small tear on the verso",
   condition: "very_good",
-  condition_description: "Small scratch on the frame",
   missing_requirements: [],
 }
 
@@ -111,31 +110,12 @@ describe("updateResaleSubmission", () => {
     ).toHaveBeenCalledWith("submission-1", { notes: "" })
   })
 
-  it("sends the condition and its description to Gravity", async () => {
-    await runAuthenticatedQuery(
-      mutationWith(
-        `condition: VERY_GOOD, conditionDescription: "Small scratch on the frame"`
-      ),
-      context
-    )
+  it("sends the condition to Gravity", async () => {
+    await runAuthenticatedQuery(mutationWith(`condition: VERY_GOOD`), context)
 
     expect(
       context.meUpdateResaleSubmissionLoader as jest.Mock
-    ).toHaveBeenCalledWith("submission-1", {
-      condition: "very_good",
-      condition_description: "Small scratch on the frame",
-    })
-  })
-
-  it("sends an empty description so it can be cleared", async () => {
-    await runAuthenticatedQuery(
-      mutationWith(`conditionDescription: ""`),
-      context
-    )
-
-    expect(
-      context.meUpdateResaleSubmissionLoader as jest.Mock
-    ).toHaveBeenCalledWith("submission-1", { condition_description: "" })
+    ).toHaveBeenCalledWith("submission-1", { condition: "very_good" })
   })
 
   it("only sends the fields that were given", async () => {
@@ -178,7 +158,7 @@ describe("updateResaleSubmission", () => {
         condition: {
           value: "VERY_GOOD",
           displayText: "Very good",
-          description: "Small scratch on the frame",
+          description: null,
         },
       },
     })

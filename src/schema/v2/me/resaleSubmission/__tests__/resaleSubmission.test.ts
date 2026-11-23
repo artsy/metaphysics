@@ -64,7 +64,6 @@ const acceptedSubmission = {
   packer: "courier",
   courier_handoff: "seller_dropoff",
   condition: "good",
-  condition_description: null,
   missing_requirements: [],
   notes: "Small tear on the verso",
   canceled_at: null,
@@ -135,7 +134,6 @@ describe("me.resaleSubmission", () => {
       Promise.resolve({
         ...acceptedSubmission,
         condition: null,
-        condition_description: null,
       })
     )
 
