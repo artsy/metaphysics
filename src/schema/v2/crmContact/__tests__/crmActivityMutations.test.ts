@@ -45,6 +45,92 @@ describe("CRM activity mutations", () => {
     })
   })
 
+  it("sends the user who added the activity on create, and null to leave it unset", async () => {
+    const createCrmActivityLoader = jest
+      .fn()
+      .mockResolvedValue({ ...activity, user_id: "user-1" })
+
+    const result = await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, description: "Hi", userID: "user-1" }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { userID } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader }
+    )
+
+    expect(createCrmActivityLoader).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "user-1" })
+    )
+    expect(result.createCRMActivity.crmActivityOrError).toEqual({
+      crmActivity: { userID: "user-1" },
+    })
+
+    await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, description: "Hi", userID: null }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { internalID } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader }
+    )
+
+    expect(createCrmActivityLoader).toHaveBeenLastCalledWith(
+      expect.objectContaining({ user_id: null })
+    )
+  })
+
+  it("leaves user_id out of a create that does not send it", async () => {
+    const createCrmActivityLoader = jest.fn().mockResolvedValue(activity)
+
+    await runAuthenticatedQuery(
+      `mutation {
+        createCRMActivity(input: { crmContactID: "contact-1", kind: NOTE, description: "Hi" }) {
+          crmActivityOrError {
+            ... on CreateCRMActivitySuccess { crmActivity { internalID } }
+          }
+        }
+      }`,
+      { createCrmActivityLoader }
+    )
+
+    expect(createCrmActivityLoader.mock.calls[0][0].user_id).toBeUndefined()
+  })
+
+  it("changes the user on update, clears it with null, and keeps it when left out", async () => {
+    const updateCrmActivityLoader = jest.fn().mockResolvedValue(activity)
+    const run = (input: string) =>
+      runAuthenticatedQuery(
+        `mutation {
+          updateCRMActivity(input: { id: "activity-1", ${input} }) {
+            crmActivityOrError {
+              ... on UpdateCRMActivitySuccess { crmActivity { internalID } }
+            }
+          }
+        }`,
+        { updateCrmActivityLoader }
+      )
+
+    await run('userID: "user-2"')
+    expect(updateCrmActivityLoader).toHaveBeenLastCalledWith(
+      "activity-1",
+      expect.objectContaining({ user_id: "user-2" })
+    )
+
+    await run("userID: null")
+    expect(updateCrmActivityLoader).toHaveBeenLastCalledWith(
+      "activity-1",
+      expect.objectContaining({ user_id: null })
+    )
+
+    await run('subject: "Edited"')
+    expect(updateCrmActivityLoader.mock.calls[2][1].user_id).toBeUndefined()
+  })
+
   it("creates an interest in artworks", async () => {
     const createCrmActivityLoader = jest
       .fn()
