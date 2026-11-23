@@ -83,13 +83,6 @@ export const QUICK_LINKS: Array<NavigationPill> = [
     minimumEigenVersion: { major: 8, minor: 67, patch: 0 }, // same constraint as InfiniteDiscovery section
   },
   {
-    title: "Art Assistant",
-    href: "/art-assistant",
-    ownerType: OwnerType.artAssistant,
-    icon: "SparklesMessageIcon",
-    minimumEigenVersion: { major: 9, minor: 20, patch: 0 }, // SparklesMessageIcon added to palette-mobile in 9.20.0
-  },
-  {
     title: "Auctions",
     href: "/auctions",
     ownerType: OwnerType.auctions,
@@ -98,6 +91,13 @@ export const QUICK_LINKS: Array<NavigationPill> = [
   /*
    * see below for optional Your Bids link inserted here
    */
+  {
+    title: "Art Assistant",
+    href: "/art-assistant",
+    ownerType: OwnerType.artAssistant,
+    icon: "SparklesMessageIcon",
+    minimumEigenVersion: { major: 9, minor: 18, patch: 0 }, // Art Assistant shipped in 9.18.0; older icon-less builds degrade to text
+  },
   {
     title: "New This Week",
     href: "/collection/new-this-week",

@@ -121,16 +121,16 @@ describe("QuickLinks", () => {
             "title": "Discover Daily",
           },
           {
-            "href": "/art-assistant",
-            "icon": "SparklesMessageIcon",
-            "ownerType": "artAssistant",
-            "title": "Art Assistant",
-          },
-          {
             "href": "/auctions",
             "icon": "GavelIcon",
             "ownerType": "auctions",
             "title": "Auctions",
+          },
+          {
+            "href": "/art-assistant",
+            "icon": "SparklesMessageIcon",
+            "ownerType": "artAssistant",
+            "title": "Art Assistant",
           },
           {
             "href": "/collection/new-this-week",
@@ -243,13 +243,13 @@ describe("QuickLinks", () => {
   })
 
   describe("The art assistant pill", () => {
-    it("appears directly after Discover Daily", async () => {
+    it("appears directly after Auctions", async () => {
       const { homeView } = await runAuthenticatedQuery(query, {})
 
       const titles = homeView.section.navigationPills.map((pill) => pill.title)
-      const discoverIndex = titles.indexOf("Discover Daily")
+      const auctionsIndex = titles.indexOf("Auctions")
 
-      expect(titles[discoverIndex + 1]).toEqual("Art Assistant")
+      expect(titles[auctionsIndex + 1]).toEqual("Art Assistant")
     })
 
     it("links to the art assistant with the artAssistant owner type", async () => {
@@ -283,7 +283,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is below the minimum version", () => {
       it("is not returned", async () => {
         const { homeView } = await runAuthenticatedQuery(query, {
-          userAgent: "Artsy-Mobile/9.19.0 Eigen/9.19.0",
+          userAgent: "Artsy-Mobile/9.17.0 Eigen/9.17.0",
         })
 
         const artAssistantLink = homeView.section.navigationPills.find(
@@ -297,7 +297,7 @@ describe("QuickLinks", () => {
     describe("When Eigen is at or above the minimum version", () => {
       it("is returned", async () => {
         const { homeView } = await runAuthenticatedQuery(query, {
-          userAgent: "Artsy-Mobile/9.20.0 Eigen/9.20.0",
+          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
         })
 
         const artAssistantLink = homeView.section.navigationPills.find(
