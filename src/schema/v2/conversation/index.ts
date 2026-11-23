@@ -829,12 +829,12 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "A connection of orders for artworks in this conversation from the collector's perspective.",
         args: pageable({
-          page: { type: GraphQLInt },
-          size: { type: GraphQLInt },
           buyerState: {
             type: new GraphQLList(OrderBuyerStateEnum),
             description: "Filter by buyer states",
           },
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
         }),
         resolve: async (conversation, args, context, _info) => {
           const { meOrdersLoader } = context
@@ -855,11 +855,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           "A connection of orders for artworks in this conversation from the partner's perspective.",
         args: pageable({
           page: { type: GraphQLInt },
-          size: { type: GraphQLInt },
           sellerState: {
             type: new GraphQLList(OrderSellerStateEnum),
             description: "Filter by seller states",
           },
+          size: { type: GraphQLInt },
         }),
         resolve: async (conversation, args, context, _info) => {
           const { partnerOrdersLoader } = context
