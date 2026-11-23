@@ -2,6 +2,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 import factories from "../api"
 import { searchLoader } from "../searchLoader"
 import { createBatchItineraryStopMembershipsLoader } from "../batchItineraryStopMembershipsLoader"
+import { createBatchCollectionMembershipLoader } from "../batchCollectionMembershipLoader"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -244,6 +245,10 @@ export default (accessToken, userID, opts) => {
       user_id: userID,
     }),
     collectionsLoader: gravityLoader("collections", {}, { headers: true }),
+    collectionMembershipLoader: createBatchCollectionMembershipLoader(
+      gravityLoader("collections"),
+      userID
+    ),
     collectorProfilesLoader: gravityLoader(
       "collector_profiles",
       {},

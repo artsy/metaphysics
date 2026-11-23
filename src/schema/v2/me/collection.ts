@@ -14,6 +14,7 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { paginationResolver } from "../fields/pagination"
+import { representativeArtworks } from "../fields/representativeArtworks"
 import { InternalIDFields } from "../object_identification"
 import CollectionArtworkSorts from "../sorts/collection_sorts"
 
@@ -113,6 +114,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         return name
       },
     },
+    representativeArtworks: representativeArtworks(),
     saves: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description:
@@ -127,22 +129,15 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resolve: async (parent, args, context) => {
-        const { collectionArtworksLoader } = context
+        const { collectionMembershipLoader } = context
 
-        if (!collectionArtworksLoader) {
+        if (!collectionMembershipLoader) {
           throw new Error("You need to be signed in to perform this action")
         }
 
-        const { headers } = await collectionArtworksLoader(parent.id, {
-          artworks: [args.artworkID],
-          user_id: context.userID,
-          private: true,
-          size: 0,
-          total_count: true,
-        })
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+        const collectionIDs = await collectionMembershipLoader(args.artworkID)
 
-        return totalCount > 0
+        return collectionIDs.has(parent.id)
       },
     },
     shareableWithPartners: {
