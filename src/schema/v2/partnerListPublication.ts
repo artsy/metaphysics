@@ -223,15 +223,8 @@ export const PartnerListPublicationType = new GraphQLObjectType<
     },
     href: {
       type: GraphQLString,
-      description:
-        "Public-facing path for this private viewing room: /private-viewing-room/<room>.",
+      description: "Public-facing path for this private viewing room.",
       resolve: ({ slug }) => (slug ? `/private-viewing-room/${slug}` : null),
-    },
-    path: {
-      type: GraphQLString,
-      description:
-        "Public-facing path with the gallery in it: /private-viewing-room/<gallery>/<room>. Null until Gravity sends it.",
-      resolve: ({ path }) => path ?? null,
     },
     artworkFieldVisibility: {
       type: ArtworkFieldVisibilityType,

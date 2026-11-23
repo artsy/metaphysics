@@ -325,43 +325,6 @@ describe("PublishPartnerListPublicationMutation", () => {
     })
   })
 
-  it("sends the web address to Gravity and returns the room's path there", async () => {
-    const withSlug = gql`
-      mutation {
-        publishPartnerListPublication(
-          input: { partnerListID: "list-abc", slug: "warm-fields" }
-        ) {
-          partnerListPublicationOrError {
-            ... on PublishPartnerListPublicationSuccess {
-              partnerListPublication {
-                slug
-                href
-              }
-            }
-          }
-        }
-      }
-    `
-    const context = {
-      publishPartnerListPublicationLoader: jest
-        .fn()
-        .mockResolvedValue({ id: "pub-1", slug: "warm-fields" }),
-    }
-
-    const result = await runAuthenticatedQuery(withSlug, context)
-
-    expect(
-      context.publishPartnerListPublicationLoader
-    ).toHaveBeenCalledWith("list-abc", { slug: "warm-fields" })
-    expect(
-      result.publishPartnerListPublication.partnerListPublicationOrError
-        .partnerListPublication
-    ).toEqual({
-      slug: "warm-fields",
-      href: "/private-viewing-room/warm-fields",
-    })
-  })
-
   it("sends the subtitle to Gravity and returns it", async () => {
     const withSubtitle = gql`
       mutation {

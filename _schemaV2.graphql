@@ -7062,11 +7062,6 @@ input AuthenticatePrivateViewingRoomMutationInput {
   clientMutationId: String
 
   """
-  The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
-  """
-  gallerySlug: String
-
-  """
   The room's passcode.
   """
   passcode: String!
@@ -31697,14 +31692,9 @@ type PartnerList {
   publication: PartnerListPublication
 
   """
-  Public-facing path of this list's private viewing room (/private-viewing-room/<room>), from the same inline key as published. Null if no publication exists yet.
+  Public-facing path of this list's private viewing room, from the same inline key as published. Null if no publication exists yet.
   """
   publicationHref: String
-
-  """
-  Public-facing path of this list's private viewing room with the gallery in it (/private-viewing-room/<gallery>/<room>). Null if no publication exists yet, or until Gravity sends it.
-  """
-  publicationPath: String
 
   """
   Whether this list's private viewing room publication is live. Null if no publication exists yet.
@@ -31886,7 +31876,7 @@ type PartnerListPublication {
   heroStyle: ViewingRoomHeroStyle
 
   """
-  Public-facing path for this private viewing room: /private-viewing-room/<room>.
+  Public-facing path for this private viewing room.
   """
   href: String
 
@@ -31914,11 +31904,6 @@ type PartnerListPublication {
   """
   passcode: String
   passcodeProtected: Boolean
-
-  """
-  Public-facing path with the gallery in it: /private-viewing-room/<gallery>/<room>. Null until Gravity sends it.
-  """
-  path: String
   published: Boolean
   publishedAt(
     format: String
@@ -33299,11 +33284,6 @@ input PublishPartnerListPublicationMutationInput {
   Whether to show the gallery's brand kit logo on the public page, apart from the gallery name.
   """
   showLogo: Boolean
-
-  """
-  The room's web address: lowercase words joined by hyphens. Blank keeps the current one. The old address keeps working after a change.
-  """
-  slug: String
 
   """
   Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.
@@ -35482,13 +35462,7 @@ type Query {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(
-    """
-    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
-    """
-    gallerySlug: String
-    slug: String!
-  ): PrivateViewingRoom
+  privateViewingRoom(slug: String!): PrivateViewingRoom
 
   """
   A Profile
@@ -46318,13 +46292,7 @@ type Viewer {
   """
   Find a private viewing room by slug. Returns null for an unknown/unpublished slug. Returns whether a passcode is required; for a gated room only the gallery name and brand kit are returned, and heading, description and artworks are omitted until authenticated via the authenticatePrivateViewingRoom mutation.
   """
-  privateViewingRoom(
-    """
-    The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.
-    """
-    gallerySlug: String
-    slug: String!
-  ): PrivateViewingRoom
+  privateViewingRoom(slug: String!): PrivateViewingRoom
 
   """
   A Profile

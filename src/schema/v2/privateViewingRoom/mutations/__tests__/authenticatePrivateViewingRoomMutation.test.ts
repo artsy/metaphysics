@@ -27,37 +27,6 @@ describe("AuthenticatePrivateViewingRoomMutation", () => {
     }
   `
 
-  it("unlocks a room by its gallery and slug", async () => {
-    const context = {
-      authenticatePrivateViewingRoomLoader: jest
-        .fn()
-        .mockResolvedValue({ gallery_name: "Some Gallery", artworks: [] }),
-    }
-
-    await runQuery(
-      gql`
-        mutation {
-          authenticatePrivateViewingRoom(
-            input: {
-              gallerySlug: "some-gallery"
-              slug: "for-anna"
-              passcode: "letmein"
-            }
-          ) {
-            privateViewingRoomOrError {
-              __typename
-            }
-          }
-        }
-      `,
-      context
-    )
-
-    expect(
-      context.authenticatePrivateViewingRoomLoader
-    ).toHaveBeenCalledWith("some-gallery/for-anna", { passcode: "letmein" })
-  })
-
   it("returns the room contents on a correct passcode", async () => {
     const context = {
       // Gravity's authenticate endpoint reuses room_json as-is and never

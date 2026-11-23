@@ -119,43 +119,6 @@ describe("PrivateViewingRoom", () => {
     expect(result.privateViewingRoom.galleryName).toBeNull()
   })
 
-  it("looks the room up by its gallery and slug", async () => {
-    const context = {
-      privateViewingRoomLoader: jest
-        .fn()
-        .mockResolvedValue({ passcode_required: false, artworks: [] }),
-    }
-
-    await runQuery(
-      gql`
-        {
-          privateViewingRoom(gallerySlug: "some-gallery", slug: "for-anna") {
-            passcodeRequired
-          }
-        }
-      `,
-      context
-    )
-
-    expect(context.privateViewingRoomLoader).toHaveBeenCalledWith(
-      "some-gallery/for-anna"
-    )
-  })
-
-  it("looks a room shared before the gallery was in the link up by its slug alone", async () => {
-    const context = {
-      privateViewingRoomLoader: jest
-        .fn()
-        .mockResolvedValue({ passcode_required: false, artworks: [] }),
-    }
-
-    await runQuery(query, context)
-
-    expect(context.privateViewingRoomLoader).toHaveBeenCalledWith(
-      "some-gallery-for-anna"
-    )
-  })
-
   it("returns null for an unknown or unpublished slug instead of a GraphQL error", async () => {
     const context = {
       privateViewingRoomLoader: jest

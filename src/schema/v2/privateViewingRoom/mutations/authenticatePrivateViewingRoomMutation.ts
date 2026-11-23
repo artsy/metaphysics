@@ -10,13 +10,9 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import {
-  getPrivateViewingRoomAddress,
-  PrivateViewingRoomContentsType,
-} from "schema/v2/privateViewingRoom"
+import { PrivateViewingRoomContentsType } from "schema/v2/privateViewingRoom"
 
 interface AuthenticatePrivateViewingRoomMutationInputProps {
-  gallerySlug?: string
   slug: string
   passcode: string
 }
@@ -57,11 +53,6 @@ export const authenticatePrivateViewingRoomMutation = mutationWithClientMutation
   description:
     "Authenticates against a passcode-protected private viewing room, returning its contents on success.",
   inputFields: {
-    gallerySlug: {
-      type: GraphQLString,
-      description:
-        "The gallery's slug, the first part of the room's link. Omit it for a room shared before the gallery was part of the link.",
-    },
     slug: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug of the private viewing room.",
@@ -80,14 +71,11 @@ export const authenticatePrivateViewingRoomMutation = mutationWithClientMutation
     },
   },
   mutateAndGetPayload: async (
-    { gallerySlug, slug, passcode },
+    { slug, passcode },
     { authenticatePrivateViewingRoomLoader }
   ) => {
     try {
-      return await authenticatePrivateViewingRoomLoader(
-        getPrivateViewingRoomAddress({ gallerySlug, slug }),
-        { passcode }
-      )
+      return await authenticatePrivateViewingRoomLoader(slug, { passcode })
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
