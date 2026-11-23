@@ -18,7 +18,9 @@ import {
   ARTWORK_FIELD_VISIBILITY_KEYS,
   PartnerListPublicationType,
   ViewingRoomArtworkLayoutEnum,
+  ViewingRoomElementAlignmentEnum,
   ViewingRoomHeroStyleEnum,
+  VIEWING_ROOM_ALIGNED_ELEMENTS,
   ViewingRoomTextAlignmentEnum,
 } from "schema/v2/partnerListPublication"
 
@@ -35,11 +37,23 @@ const ArtworkFieldVisibilityInputType = new GraphQLInputObjectType({
   ),
 })
 
+const ElementAlignmentsInputType = new GraphQLInputObjectType({
+  name: "ViewingRoomElementAlignmentsInput",
+  description: "Where each element of the room is aligned.",
+  fields: Object.fromEntries(
+    VIEWING_ROOM_ALIGNED_ELEMENTS.map((element) => [
+      camelCase(element),
+      { type: ViewingRoomElementAlignmentEnum },
+    ])
+  ),
+})
+
 interface PublishPartnerListPublicationMutationInputProps {
   partnerListID: string
   passcode?: string
   description?: string
   heading?: string
+  subtitle?: string
   curatorialText?: string
   applyBrand?: boolean
   showGalleryName?: boolean
@@ -47,6 +61,7 @@ interface PublishPartnerListPublicationMutationInputProps {
   artworkFieldVisibility?: Record<string, boolean>
   heroStyle?: string
   textAlignment?: string
+  elementAlignments?: Record<string, string>
   artworkLayout?: string
   artworkColumns?: number
 }
@@ -104,6 +119,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    subtitle: {
+      type: GraphQLString,
+      description:
+        "Optional subtitle under the heading (viewing rooms rebuild). Blank hides it.",
+    },
     curatorialText: {
       type: GraphQLString,
       description:
@@ -134,6 +154,11 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       type: ViewingRoomTextAlignmentEnum,
       description: "Alignment of the heading and text (viewing rooms rebuild).",
     },
+    elementAlignments: {
+      type: ElementAlignmentsInputType,
+      description:
+        "Where each element of the room is aligned, one by one (viewing rooms rebuild).",
+    },
     artworkLayout: {
       type: ViewingRoomArtworkLayoutEnum,
       description: "Artworks as a grid or masonry (viewing rooms rebuild).",
@@ -158,6 +183,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       passcode,
       description,
       heading,
+      subtitle,
       curatorialText,
       applyBrand,
       showGalleryName,
@@ -165,6 +191,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
       artworkFieldVisibility,
       heroStyle,
       textAlignment,
+      elementAlignments,
       artworkLayout,
       artworkColumns,
     },
@@ -185,6 +212,7 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     if (passcode !== undefined) gravityArgs.passcode = passcode
     if (description !== undefined) gravityArgs.description = description
     if (heading !== undefined) gravityArgs.heading = heading
+    if (subtitle !== undefined) gravityArgs.subtitle = subtitle
     if (curatorialText !== undefined)
       gravityArgs.curatorial_text = curatorialText
     if (applyBrand !== undefined) gravityArgs.apply_brand = applyBrand
@@ -193,6 +221,15 @@ export const publishPartnerListPublicationMutation = mutationWithClientMutationI
     if (showLogo !== undefined) gravityArgs.show_logo = showLogo
     if (heroStyle !== undefined) gravityArgs.hero_style = heroStyle
     if (textAlignment !== undefined) gravityArgs.text_alignment = textAlignment
+    if (elementAlignments !== undefined) {
+      // Keyed camelCase on the way in, like artworkFieldVisibility below.
+      const alignments: Record<string, string> = {}
+      VIEWING_ROOM_ALIGNED_ELEMENTS.forEach((element) => {
+        const value = elementAlignments[camelCase(element)]
+        if (value !== undefined && value !== null) alignments[element] = value
+      })
+      gravityArgs.element_alignments = alignments
+    }
     if (artworkLayout !== undefined) gravityArgs.artwork_layout = artworkLayout
     if (artworkColumns !== undefined)
       gravityArgs.artwork_columns = artworkColumns

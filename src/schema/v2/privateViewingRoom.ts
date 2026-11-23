@@ -13,6 +13,7 @@ import { PrivateViewingRoomArtworkType } from "./privateViewingRoomArtwork"
 import {
   ViewingRoomArtworkLayoutEnum,
   ViewingRoomHeroStyleEnum,
+  ViewingRoomElementAlignmentsType,
   ViewingRoomTextAlignmentEnum,
 } from "./partnerListPublication"
 
@@ -29,6 +30,11 @@ const contentFields = () => ({
   },
   heading: {
     type: GraphQLString,
+  },
+  subtitle: {
+    type: GraphQLString,
+    description:
+      "Optional subtitle under the heading (viewing rooms rebuild). Omitted when the gallery didn't add one, and for a gated room until authenticated.",
   },
   description: {
     type: GraphQLString,
@@ -70,6 +76,12 @@ const contentFields = () => ({
     description:
       "Alignment of the heading and text (viewing rooms rebuild). Omitted like heroStyle.",
     resolve: ({ text_alignment }) => text_alignment,
+  },
+  elementAlignments: {
+    type: ViewingRoomElementAlignmentsType,
+    description:
+      "Where each element of the room is aligned (viewing rooms rebuild). Omitted like heroStyle; a room without it falls back to textAlignment for its text.",
+    resolve: ({ element_alignments }) => element_alignments,
   },
   artworkLayout: {
     type: ViewingRoomArtworkLayoutEnum,
