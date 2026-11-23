@@ -58,6 +58,11 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
     subject: {
       type: GraphQLString,
     },
+    userID: {
+      type: GraphQLString,
+      description:
+        "The user who added the activity, who must belong to the activity's partner. Defaults to the current user, null leaves it unset",
+    },
   },
   outputFields: {
     crmActivityOrError: {
@@ -76,6 +81,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
       kind,
       occurredAt,
       subject,
+      userID,
     },
     { createCrmActivityLoader }
   ) => {
@@ -91,6 +97,7 @@ export const createCRMActivityMutation = mutationWithClientMutationId<
         kind,
         occurred_at: occurredAt,
         subject,
+        user_id: userID,
       })
     )
   },
@@ -139,6 +146,11 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
     subject: {
       type: GraphQLString,
     },
+    userID: {
+      type: GraphQLString,
+      description:
+        "The user who added the activity, who must belong to the activity's partner. Null clears it, leaving it out keeps it",
+    },
   },
   outputFields: {
     crmActivityOrError: {
@@ -157,6 +169,7 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
       kind,
       occurredAt,
       subject,
+      userID,
     },
     { updateCrmActivityLoader }
   ) => {
@@ -172,6 +185,7 @@ export const updateCRMActivityMutation = mutationWithClientMutationId<
         kind,
         occurred_at: occurredAt,
         subject,
+        user_id: userID,
       })
     )
   },

@@ -10,6 +10,7 @@ import {
   isLeafType,
   Kind,
   parse,
+  print,
   specifiedRules,
   TypeInfo,
   validate,
@@ -540,6 +541,178 @@ function substituteImageHandles(
 export interface AIAgentToolRunResult {
   ok: boolean
   content: string
+  /**
+   * The query succeeded but returned nothing this turn didn't already have.
+   * The model gets REPEATED_RESULT_NOTE instead of the data, and runTurn's
+   * prepareStep makes the next step the final answer.
+   */
+  repeated?: boolean
+}
+
+/**
+ * Sonnet 5.5 can stall once it has enough results: instead of answering, it
+ * re-runs a search, pings `{ __typename }`, or looks up works it already has
+ * one id at a time -- until the step cap or the turn timeout, which ends the
+ * turn with no answer. This is what it gets instead of such a result.
+ */
+export const REPEATED_RESULT_NOTE =
+  "This returned nothing you didn't already have from earlier searches in " +
+  "this answer. Don't search for it again: write your answer now from what " +
+  "you've found."
+
+/**
+ * Wraps query_artsy for one turn, replacing a successful result that adds
+ * nothing new with REPEATED_RESULT_NOTE. Failures pass through untouched.
+ */
+export function guardRepeatedResults(
+  run: (input: unknown) => Promise<AIAgentToolRunResult>
+): (input: unknown) => Promise<AIAgentToolRunResult> {
+  const seen: SeenResults = {
+    results: new Set(),
+    values: new Set(),
+    lists: new Set(),
+  }
+
+  return async (input) => {
+    const result = await run(input)
+    if (!result.ok) return result
+    return addsNothingNew(input, result.content, seen)
+      ? { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
+      : result
+  }
+}
+
+interface SeenResults {
+  /** Every query with its result, so only the same search counts as a re-run. */
+  results: Set<string>
+  /** Every value, keyed by the entity it belongs to: `a1.medium:Oil`. */
+  values: Set<string>
+  /** Every list of entities a connection returned, as ids in order. */
+  lists: Set<string>
+}
+
+/**
+ * True when a result adds nothing to what this turn already returned:
+ * - the same search returning the same result again;
+ * - no fields at all, like `{ __typename }` (an empty search such as
+ *   `{ edges: [] }` has fields, so "no match" still reaches the model);
+ * - only facts already returned about the same entities, in lists already
+ *   returned -- like `artwork(id:) { internalID }` for a work from an earlier
+ *   search, or the same search re-run asking for less.
+ *
+ * Values are keyed by their entity, so the same medium or sale status on a
+ * different work is new. Lists are compared whole, so a narrowing search that
+ * drops a work is new: which works came back is the information.
+ */
+function addsNothingNew(
+  input: unknown,
+  content: string,
+  seen: SeenResults
+): boolean {
+  // Query and result together: two different searches that both find
+  // nothing return identical content, but the second one is a new attempt.
+  const run = `${JSON.stringify(input)}\n${content}`
+  const sameAsBefore = seen.results.has(run)
+  seen.results.add(run)
+
+  const flat = flattenResult(content)
+  // A list only counts as seen for the same search arguments: adding a
+  // filter that keeps every work ("both are under $5,000") is new.
+  const args = searchArguments(input)
+  const lists = flat?.lists.map((list) => `${args}|${list}`) ?? []
+  if (!flat) return sameAsBefore // Not JSON, e.g. truncated: exact match only.
+
+  const noData = flat.fieldCount === 0
+  const onlyKnownFacts =
+    flat.namesEntities &&
+    flat.values.every((value) => seen.values.has(value)) &&
+    lists.every((list) => seen.lists.has(list))
+  flat.values.forEach((value) => seen.values.add(value))
+  lists.forEach((list) => seen.lists.add(list))
+
+  return sameAsBefore || noData || onlyKnownFacts
+}
+
+/** Every field argument in the query, plus its variables, sorted. */
+function searchArguments(input: unknown): string {
+  const { query, variables } = (input ?? {}) as {
+    query?: unknown
+    variables?: unknown
+  }
+  if (typeof query !== "string") return ""
+  const args: string[] = []
+  try {
+    visit(parse(query), {
+      Field(node) {
+        node.arguments?.forEach((arg) =>
+          args.push(`${node.name.value}.${print(arg)}`)
+        )
+      },
+    })
+  } catch {
+    return query // Unparseable queries fail before reaching the guard anyway.
+  }
+  return `${args.sort().join(",")}|${JSON.stringify(variables ?? null)}`
+}
+
+const entityKeyOf = (object: Record<string, unknown>): string | undefined => {
+  const id = object.internalID ?? object.slug
+  return typeof id === "string" ? id : undefined
+}
+
+/**
+ * Flattens a result into entity-keyed `entity.field:value` pairs (nulls and
+ * empty lists included) and, for every array of entities, its ids in order.
+ * `__typename` is ignored. Null when the content isn't JSON.
+ */
+function flattenResult(
+  content: string
+): {
+  values: string[]
+  lists: string[]
+  fieldCount: number
+  namesEntities: boolean
+} | null {
+  let data: unknown
+  try {
+    data = JSON.parse(content)
+  } catch {
+    return null
+  }
+  const values: string[] = []
+  const lists: string[] = []
+  let fieldCount = 0
+  let namesEntities = false
+
+  const walk = (value: unknown, field: string, entity: string) => {
+    if (Array.isArray(value)) {
+      const ids = value.map((item) => {
+        const node = (item as any)?.node ?? item
+        return node && typeof node === "object" ? entityKeyOf(node) : undefined
+      })
+      // Keyed by the parent entity (or, at the top, the root field), so two
+      // different connections that return the same ids don't share a list.
+      if (ids.some(Boolean)) lists.push(`${entity}.${field}:${ids.join(",")}`)
+      // An empty list is an answer ("no shows"), so it counts as a value.
+      if (value.length === 0) values.push(`${entity}.${field}:[]`)
+      value.forEach((item) => walk(item, field, entity))
+    } else if (value !== null && typeof value === "object") {
+      const object = value as Record<string, unknown>
+      const key = entityKeyOf(object)
+      if (key) namesEntities = true
+      for (const [childField, child] of Object.entries(object)) {
+        if (childField === "__typename") continue
+        fieldCount++
+        // Top-level fields stand in for an entity, e.g. `artworksConnection`.
+        walk(child, childField, key ?? (entity || childField))
+      }
+    } else if (value !== undefined) {
+      // null included: "no price" is an answer, not an absence of one.
+      values.push(`${entity}.${field}:${String(value)}`)
+    }
+  }
+  walk(data, "", "")
+  return { values, lists, fieldCount, namesEntities }
 }
 
 /**
@@ -668,6 +841,10 @@ export function buildAgentTools(
   // A conversation without images gets byte-identical tool definitions to
   // one from before images existed, so its cached prompt prefix still hits.
   const hasImages = imageHandles.size > 0
+  // One per turn: buildAgentTools runs once per request.
+  const runQueryArtsy = guardRepeatedResults((input) =>
+    runQueryArtsyTool(input, schema, context, imageHandles)
+  )
 
   return {
     query_artsy: tool({
@@ -733,8 +910,7 @@ export function buildAgentTools(
         required: ["query"],
         additionalProperties: false,
       } as JSONSchema7),
-      execute: (input: unknown) =>
-        runQueryArtsyTool(input, schema, context, imageHandles),
+      execute: runQueryArtsy,
     }),
     ...(hasImages &&
       viewImageOptions && {

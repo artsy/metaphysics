@@ -51,7 +51,7 @@ function usage(message?: string): never {
     [
       "Usage: yarn eval (--dataset <phoenix name> | --file <jsonl>) --variant <spec> [--variant <spec> ...]",
       "",
-      "  --variant label=anthropic|litellm:model[@prompt-file]   first one is the baseline",
+      "  --variant label=anthropic|litellm:model[#steps=N][@prompt-file]   first one is the baseline",
       "  --repetitions N        runs per case per variant (default 3)",
       "  --limit N              first N cases only",
       "  --case ID              only this case (repeatable; caseId or Phoenix example ID)",
@@ -420,6 +420,7 @@ async function main() {
         output = await runCase(testCase, {
           model: languageModelFor(variant),
           systemPromptTemplate: prompts.get(variant.label),
+          maxIterations: variant.maxIterations,
           now,
           schema,
           user,

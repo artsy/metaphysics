@@ -93,7 +93,7 @@ jest.mock("lib/loggers", () => ({
 
 import { LITELLM_AGENT_MODEL } from "lib/apis/anthropic"
 import { warn } from "lib/loggers"
-import { runTurn } from "../runTurn"
+import { buildPrepareStep, runTurn } from "../runTurn"
 import { imageHandleFor } from "../images"
 
 const FAKE_USAGE = {
@@ -2533,5 +2533,74 @@ describe("runTurn with view_image", () => {
       (tool: any) => tool.name
     )
     expect(toolNames).toEqual(["query_artsy"])
+  })
+})
+
+describe("buildPrepareStep", () => {
+  const messages = [{ role: "user" as const, content: "Find Warhol" }]
+  const stepWith = (output: {
+    ok: boolean
+    content: string
+    repeated?: boolean
+  }) => ({ toolResults: [{ output }] } as any)
+
+  it("forces an answer on the step after a repeated result", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [stepWith({ ok: true, content: "…", repeated: true })],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toEqual("none")
+    expect(JSON.stringify(result.messages.at(-1))).toContain(
+      "That was the last search"
+    )
+  })
+
+  it("forces an answer when any of a step's parallel results repeated", () => {
+    // The new result from the other call is already in the messages, so the
+    // forced answer can still use it.
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [
+        {
+          toolResults: [
+            { output: { ok: true, content: "{}" } },
+            { output: { ok: true, content: "…", repeated: true } },
+          ],
+        },
+      ],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toEqual("none")
+  })
+
+  it("never forces the first step, which has no previous step", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 0,
+      steps: [],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toBeUndefined()
+  })
+
+  it("lets the turn keep searching while results are new", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [stepWith({ ok: true, content: "{}" })],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toBeUndefined()
   })
 })

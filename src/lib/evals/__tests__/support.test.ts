@@ -14,6 +14,16 @@ jest.mock("lib/apis/anthropic", () => ({
 }))
 
 describe("parseVariant", () => {
+  it("reads a step cap before the prompt file", () => {
+    expect(parseVariant("x=litellm:m#steps=25@p.md")).toEqual({
+      label: "x",
+      provider: "litellm",
+      model: "m",
+      maxIterations: 25,
+      promptFile: "p.md",
+    })
+  })
+
   it("reads label, provider, model and an optional prompt file", () => {
     expect(parseVariant("base=anthropic:claude-sonnet-5")).toEqual({
       label: "base",
@@ -32,6 +42,11 @@ describe("parseVariant", () => {
 
   it("rejects anything else", () => {
     expect(() => parseVariant("claude-sonnet-5")).toThrow(/Bad --variant/)
+    expect(() => parseVariant("x=litellm:m#steps=0")).toThrow(/Bad --variant/)
+    // The step cap goes before the prompt file, not after it.
+    expect(() => parseVariant("x=litellm:m@p.md#steps=25")).toThrow(
+      /Bad --variant/
+    )
     expect(() => parseVariant("x=openai:gpt")).toThrow(/Bad --variant/)
   })
 })

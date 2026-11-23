@@ -6,8 +6,10 @@ import {
   buildViewImageTool,
   describeAgentToolCall,
   describeToolCall,
+  guardRepeatedResults,
   IMAGE_INPUT_TYPE_NAME,
   narrowSchemaFor,
+  REPEATED_RESULT_NOTE,
   runQueryArtsyTool,
   summarizeToolCall,
 } from "../tools"
@@ -1700,5 +1702,232 @@ describe("view_image", () => {
       summary: "Looking at your image…",
       debugSummary: 'view_image(image: "image_1")',
     })
+  })
+})
+
+describe("guardRepeatedResults", () => {
+  const SEARCH = JSON.stringify({
+    artworksConnection: {
+      counts: { total: 2 },
+      edges: [
+        { node: { internalID: "a1", slug: "work-one", title: "One" } },
+        { node: { internalID: "a2", slug: "work-two", title: "Two" } },
+      ],
+    },
+  })
+  const repeated = { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
+
+  // Each call returns the next queued result, whatever the input.
+  const guarded = (...results: Array<{ ok: boolean; content: string }>) => {
+    const queue = [...results]
+    return guardRepeatedResults(async () => queue.shift()!)
+  }
+
+  it("passes a first result through and flags the same data again", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: SEARCH }
+    )
+    expect(await run({})).toEqual({ ok: true, content: SEARCH })
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("flags a result with no data, even the first time", async () => {
+    const run = guarded({
+      ok: true,
+      content: JSON.stringify({ __typename: "Query" }),
+    })
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("flags a lookup that only echoes back an entity it already returned", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: JSON.stringify({ artwork: { internalID: "a2" } }) }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("passes a lookup that adds something new about a known entity", async () => {
+    const detail = JSON.stringify({
+      artwork: { internalID: "a2", medium: "Oil on canvas" },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: detail }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: detail })
+  })
+
+  it("lets two different searches that both find nothing through", async () => {
+    const empty = (key: string) =>
+      JSON.stringify({ [key]: { counts: { total: 0 }, edges: [] } })
+    const run = guarded(
+      { ok: true, content: empty("artworksConnection") },
+      { ok: true, content: empty("artistsConnection") }
+    )
+    expect((await run({})).repeated).toBeUndefined()
+    expect((await run({})).repeated).toBeUndefined()
+  })
+
+  it("passes a lookup of a new work whose values match another work's", async () => {
+    const first = JSON.stringify({
+      artworksConnection: {
+        edges: [
+          {
+            node: {
+              internalID: "a1",
+              medium: "Oil on canvas",
+              isForSale: true,
+            },
+          },
+          { node: { internalID: "b1", title: "Other" } },
+        ],
+      },
+    })
+    const lookup = JSON.stringify({
+      artwork: { internalID: "b1", medium: "Oil on canvas", isForSale: true },
+    })
+    const run = guarded(
+      { ok: true, content: first },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("passes a narrowing search that drops a work", async () => {
+    const search = (ids: string[]) =>
+      JSON.stringify({
+        artworksConnection: {
+          edges: ids.map((id) => ({ node: { internalID: id, title: id } })),
+        },
+      })
+    const run = guarded(
+      { ok: true, content: search(["a1", "a2", "a3"]) },
+      { ok: true, content: search(["a1", "a2"]) }
+    )
+    await run({})
+    expect((await run({})).repeated).toBeUndefined()
+  })
+
+  it("flags the same search re-run asking for less", async () => {
+    const ids = JSON.stringify({
+      artworksConnection: {
+        edges: [{ node: { internalID: "a1" } }, { node: { internalID: "a2" } }],
+      },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: ids }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("passes a lookup that finds a known work's field is not set", async () => {
+    const lookup = JSON.stringify({
+      artwork: { internalID: "a1", price: null, saleMessage: null },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("passes a lookup that finds a known work has an empty list", async () => {
+    const lookup = JSON.stringify({ artwork: { internalID: "a1", shows: [] } })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: lookup })
+  })
+
+  it("still flags the same not-set lookup run twice", async () => {
+    const lookup = JSON.stringify({
+      artwork: { internalID: "a1", price: null },
+    })
+    const run = guarded(
+      { ok: true, content: lookup },
+      { ok: true, content: lookup }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("lets a broadened search through when both find nothing", async () => {
+    const empty = JSON.stringify({ artworksConnection: { edges: [] } })
+    const run = guarded(
+      { ok: true, content: empty },
+      { ok: true, content: empty }
+    )
+    await run({
+      query:
+        '{ artworksConnection(priceRange: "*-5000") { edges { node { internalID } } } }',
+    })
+    expect(
+      (
+        await run({
+          query: "{ artworksConnection { edges { node { internalID } } } }",
+        })
+      ).repeated
+    ).toBeUndefined()
+  })
+
+  it("lets a second lookup of a missing work through", async () => {
+    const missing = JSON.stringify({ artwork: null })
+    const run = guarded(
+      { ok: true, content: missing },
+      { ok: true, content: missing }
+    )
+    await run({ query: '{ artwork(id: "wrong-slug") { title } }' })
+    expect(
+      (await run({ query: '{ artwork(id: "other-slug") { title } }' })).repeated
+    ).toBeUndefined()
+  })
+
+  it("lets a filter through that keeps every work", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: SEARCH }
+    )
+    await run({
+      query:
+        '{ artworksConnection(artistID: "x") { edges { node { internalID slug title } } } }',
+    })
+    expect(
+      (
+        await run({
+          query:
+            '{ artworksConnection(artistID: "x", priceRange: "*-5000") { edges { node { internalID slug title } } } }',
+        })
+      ).repeated
+    ).toBeUndefined()
+  })
+
+  it("lets a first search that finds nothing through", async () => {
+    const empty = JSON.stringify({ matchConnection: { edges: [] } })
+    const run = guarded({ ok: true, content: empty })
+    expect(await run({})).toEqual({ ok: true, content: empty })
+  })
+
+  it("passes failures through untouched, even when repeated", async () => {
+    const failure = { ok: false, content: "Invalid GraphQL syntax" }
+    const run = guarded(failure, failure)
+    expect(await run({})).toEqual(failure)
+    expect(await run({})).toEqual(failure)
+  })
+
+  it("keeps state per guard, so separate turns don't share it", async () => {
+    const first = guarded({ ok: true, content: SEARCH })
+    const second = guarded({ ok: true, content: SEARCH })
+    await first({})
+    expect(await second({})).toEqual({ ok: true, content: SEARCH })
   })
 })

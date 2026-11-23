@@ -98,11 +98,9 @@ describe("isSavedArtwork field", () => {
   })
 
   it("should return true if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 1,
-      },
-    })
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["123-abc"]))
 
     const response = await runAuthenticatedQuery(query, context)
 
@@ -115,12 +113,11 @@ describe("isSavedArtwork field", () => {
     })
   })
 
-  it("should return false if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
-      headers: {
-        "x-total-count": 0,
-      },
-    })
+  it("should return false if artwork is not included in the collection", async () => {
+    context.collectionMembershipLoader = jest
+      .fn()
+      .mockResolvedValue(new Set(["some-other-collection"]))
+
     const response = await runAuthenticatedQuery(query, context)
 
     expect(response).toEqual({
@@ -179,6 +176,60 @@ describe("artworksCount field", () => {
     expect(response.me.collection.artworksCount).toBe(
       mockGravityCollection.artworks_count
     )
+  })
+})
+
+describe("representativeArtworks field", () => {
+  const representativeArtworksQuery = gql`
+    query {
+      me {
+        collection(id: "123-abc") {
+          representativeArtworks {
+            internalID
+          }
+        }
+      }
+    }
+  `
+
+  it("resolves the collection's representative_artwork_ids via a batched loader", async () => {
+    context.collectionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...mockGravityCollection,
+        representative_artwork_ids: ["artwork-1", "artwork-2"],
+      })
+    )
+    context.artworkByIDLoader = {
+      load: jest.fn((id) => Promise.resolve({ _id: id })),
+    } as any
+
+    const response = await runAuthenticatedQuery(
+      representativeArtworksQuery,
+      context
+    )
+
+    expect(context.artworkByIDLoader?.load).toHaveBeenCalledWith("artwork-1")
+    expect(context.artworkByIDLoader?.load).toHaveBeenCalledWith("artwork-2")
+    expect(response.me.collection.representativeArtworks).toEqual([
+      { internalID: "artwork-1" },
+      { internalID: "artwork-2" },
+    ])
+  })
+
+  it("returns an empty list when there are no representative artworks", async () => {
+    context.collectionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...mockGravityCollection,
+        representative_artwork_ids: [],
+      })
+    )
+
+    const response = await runAuthenticatedQuery(
+      representativeArtworksQuery,
+      context
+    )
+
+    expect(response.me.collection.representativeArtworks).toEqual([])
   })
 })
 

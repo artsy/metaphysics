@@ -31,6 +31,47 @@ export const ViewingRoomTextAlignmentEnum = new GraphQLEnumType({
   },
 })
 
+// Each element of the page is aligned on its own (viewing rooms rebuild).
+// `ViewingRoomTextAlignment` above is the older single value for the text.
+export const ViewingRoomElementAlignmentEnum = new GraphQLEnumType({
+  name: "ViewingRoomElementAlignment",
+  values: {
+    LEFT: { value: "left" },
+    CENTER: { value: "center" },
+    RIGHT: { value: "right" },
+  },
+})
+
+// The Gravity key of each aligned element, with its GraphQL field.
+export const VIEWING_ROOM_ALIGNED_ELEMENTS = [
+  "gallery_name",
+  "heading",
+  "subtitle",
+  "description",
+  "curatorial_text",
+  "artworks",
+] as const
+
+export const ViewingRoomElementAlignmentsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ViewingRoomElementAlignments",
+  description:
+    "Where each element of the room is aligned. Null for an element the gallery hasn't aligned.",
+  fields: () =>
+    Object.fromEntries(
+      VIEWING_ROOM_ALIGNED_ELEMENTS.map((element) => [
+        camelCase(element),
+        {
+          type: ViewingRoomElementAlignmentEnum,
+          resolve: (alignments: Record<string, string>) =>
+            alignments[element] ?? null,
+        },
+      ])
+    ),
+})
+
 export const ViewingRoomArtworkLayoutEnum = new GraphQLEnumType({
   name: "ViewingRoomArtworkLayout",
   values: {
@@ -119,6 +160,11 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       type: GraphQLString,
       description: "Optional heading shown on the published room.",
     },
+    subtitle: {
+      type: GraphQLString,
+      description:
+        "Optional subtitle under the heading (viewing rooms rebuild). Null when the gallery didn't add one.",
+    },
     curatorialText: {
       type: GraphQLString,
       description:
@@ -147,6 +193,12 @@ export const PartnerListPublicationType = new GraphQLObjectType<
       description:
         "Alignment of the heading and text (viewing rooms rebuild). Null on a room published before the rebuild.",
       resolve: ({ text_alignment }) => text_alignment,
+    },
+    elementAlignments: {
+      type: ViewingRoomElementAlignmentsType,
+      description:
+        "Where each element of the room is aligned (viewing rooms rebuild). Null on a room published before the elements could be aligned one by one, which falls back to textAlignment for its text.",
+      resolve: ({ element_alignments }) => element_alignments,
     },
     artworkLayout: {
       type: ViewingRoomArtworkLayoutEnum,
