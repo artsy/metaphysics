@@ -540,6 +540,100 @@ function substituteImageHandles(
 export interface AIAgentToolRunResult {
   ok: boolean
   content: string
+  /**
+   * The query succeeded but returned nothing this turn didn't already have.
+   * The model gets REPEATED_RESULT_NOTE instead of the data, and runTurn's
+   * prepareStep makes the next step the final answer.
+   */
+  repeated?: boolean
+}
+
+/**
+ * Sonnet 5.5 can stall once it has enough results: instead of answering, it
+ * re-runs a search, pings `{ __typename }`, or looks up works it already has
+ * one id at a time -- until the step cap or the turn timeout, which ends the
+ * turn with no answer. This is what it gets instead of such a result.
+ */
+export const REPEATED_RESULT_NOTE =
+  "This returned nothing you didn't already have from earlier searches in " +
+  "this answer. Don't search for it again: write your answer now from what " +
+  "you've found."
+
+/**
+ * Wraps query_artsy for one turn, replacing a successful result that adds
+ * nothing new with REPEATED_RESULT_NOTE. Failures pass through untouched.
+ */
+export function guardRepeatedResults(
+  run: (input: unknown) => Promise<AIAgentToolRunResult>
+): (input: unknown) => Promise<AIAgentToolRunResult> {
+  const seenResults = new Set<string>()
+  const seenValues = new Set<string>()
+
+  return async (input) => {
+    const result = await run(input)
+    if (!result.ok) return result
+    return addsNothingNew(result.content, seenResults, seenValues)
+      ? { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
+      : result
+  }
+}
+
+/**
+ * True when a result adds nothing to what this turn already returned:
+ * - the same result again;
+ * - no fields at all, like `{ __typename }` (an empty search such as
+ *   `{ edges: [] }` has fields, so "no match" still reaches the model);
+ * - only entities already returned, like `artwork(id:) { internalID }` for a
+ *   work from an earlier search. Only results that name an entity count, so
+ *   two different searches that both find nothing (`total:0`) still pass.
+ */
+function addsNothingNew(
+  content: string,
+  seenResults: Set<string>,
+  seenValues: Set<string>
+): boolean {
+  const sameAsBefore = seenResults.has(content)
+  seenResults.add(content)
+
+  const flat = flattenResult(content)
+  if (!flat) return sameAsBefore // Not JSON, e.g. truncated: exact match only.
+
+  const noData = flat.fieldCount === 0
+  const onlyKnownEntities =
+    flat.values.some((value) => /^(internalID|slug):/.test(value)) &&
+    flat.values.every((value) => seenValues.has(value))
+  flat.values.forEach((value) => seenValues.add(value))
+
+  return sameAsBefore || noData || onlyKnownEntities
+}
+
+/** A result's `field:value` pairs and field count, ignoring `__typename`. */
+function flattenResult(
+  content: string
+): { values: string[]; fieldCount: number } | null {
+  let data: unknown
+  try {
+    data = JSON.parse(content)
+  } catch {
+    return null
+  }
+  const values: string[] = []
+  let fieldCount = 0
+  const walk = (value: unknown, field: string) => {
+    if (Array.isArray(value)) {
+      value.forEach((item) => walk(item, field))
+    } else if (value !== null && typeof value === "object") {
+      for (const [key, child] of Object.entries(value)) {
+        if (key === "__typename") continue
+        fieldCount++
+        walk(child, key)
+      }
+    } else if (value !== null && value !== undefined) {
+      values.push(`${field}:${String(value)}`)
+    }
+  }
+  walk(data, "")
+  return { values, fieldCount }
 }
 
 /**
@@ -668,6 +762,10 @@ export function buildAgentTools(
   // A conversation without images gets byte-identical tool definitions to
   // one from before images existed, so its cached prompt prefix still hits.
   const hasImages = imageHandles.size > 0
+  // One per turn: buildAgentTools runs once per request.
+  const runQueryArtsy = guardRepeatedResults((input) =>
+    runQueryArtsyTool(input, schema, context, imageHandles)
+  )
 
   return {
     query_artsy: tool({
@@ -733,8 +831,7 @@ export function buildAgentTools(
         required: ["query"],
         additionalProperties: false,
       } as JSONSchema7),
-      execute: (input: unknown) =>
-        runQueryArtsyTool(input, schema, context, imageHandles),
+      execute: runQueryArtsy,
     }),
     ...(hasImages &&
       viewImageOptions && {

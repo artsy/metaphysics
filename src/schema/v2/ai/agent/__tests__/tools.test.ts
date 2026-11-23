@@ -6,8 +6,10 @@ import {
   buildViewImageTool,
   describeAgentToolCall,
   describeToolCall,
+  guardRepeatedResults,
   IMAGE_INPUT_TYPE_NAME,
   narrowSchemaFor,
+  REPEATED_RESULT_NOTE,
   runQueryArtsyTool,
   summarizeToolCall,
 } from "../tools"
@@ -1700,5 +1702,93 @@ describe("view_image", () => {
       summary: "Looking at your image…",
       debugSummary: 'view_image(image: "image_1")',
     })
+  })
+})
+
+describe("guardRepeatedResults", () => {
+  const SEARCH = JSON.stringify({
+    artworksConnection: {
+      counts: { total: 2 },
+      edges: [
+        { node: { internalID: "a1", slug: "work-one", title: "One" } },
+        { node: { internalID: "a2", slug: "work-two", title: "Two" } },
+      ],
+    },
+  })
+  const repeated = { ok: true, content: REPEATED_RESULT_NOTE, repeated: true }
+
+  // Each call returns the next queued result, whatever the input.
+  const guarded = (...results: Array<{ ok: boolean; content: string }>) => {
+    const queue = [...results]
+    return guardRepeatedResults(async () => queue.shift()!)
+  }
+
+  it("passes a first result through and flags the same data again", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: SEARCH }
+    )
+    expect(await run({})).toEqual({ ok: true, content: SEARCH })
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("flags a result with no data, even the first time", async () => {
+    const run = guarded({
+      ok: true,
+      content: JSON.stringify({ __typename: "Query" }),
+    })
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("flags a lookup that only echoes back an entity it already returned", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: JSON.stringify({ artwork: { internalID: "a2" } }) }
+    )
+    await run({})
+    expect(await run({})).toEqual(repeated)
+  })
+
+  it("passes a lookup that adds something new about a known entity", async () => {
+    const detail = JSON.stringify({
+      artwork: { internalID: "a2", medium: "Oil on canvas" },
+    })
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: detail }
+    )
+    await run({})
+    expect(await run({})).toEqual({ ok: true, content: detail })
+  })
+
+  it("lets two different searches that both find nothing through", async () => {
+    const empty = (key: string) =>
+      JSON.stringify({ [key]: { counts: { total: 0 }, edges: [] } })
+    const run = guarded(
+      { ok: true, content: empty("artworksConnection") },
+      { ok: true, content: empty("artistsConnection") }
+    )
+    expect((await run({})).repeated).toBeUndefined()
+    expect((await run({})).repeated).toBeUndefined()
+  })
+
+  it("lets a first search that finds nothing through", async () => {
+    const empty = JSON.stringify({ matchConnection: { edges: [] } })
+    const run = guarded({ ok: true, content: empty })
+    expect(await run({})).toEqual({ ok: true, content: empty })
+  })
+
+  it("passes failures through untouched, even when repeated", async () => {
+    const failure = { ok: false, content: "Invalid GraphQL syntax" }
+    const run = guarded(failure, failure)
+    expect(await run({})).toEqual(failure)
+    expect(await run({})).toEqual(failure)
+  })
+
+  it("keeps state per guard, so separate turns don't share it", async () => {
+    const first = guarded({ ok: true, content: SEARCH })
+    const second = guarded({ ok: true, content: SEARCH })
+    await first({})
+    expect(await second({})).toEqual({ ok: true, content: SEARCH })
   })
 })

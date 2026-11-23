@@ -127,9 +127,12 @@ export async function runCase(
     now,
     schema,
     user,
+    maxIterations,
   }: {
     model: LanguageModel
     systemPromptTemplate?: string
+    /** Replaces AI_AGENT_MAX_ITERATIONS. */
+    maxIterations?: number
     now: Date
     schema: GraphQLSchema
     user: EvalUser
@@ -160,6 +163,7 @@ export async function runCase(
       now,
       skipRateLimit: true,
       disableTracing: true,
+      maxIterations,
       onStepFinish: (step) => {
         const finishedAt = Date.now()
         // Model time plus that step's tool calls, which run before it ends.

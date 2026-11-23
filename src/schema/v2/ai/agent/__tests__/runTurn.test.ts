@@ -93,7 +93,7 @@ jest.mock("lib/loggers", () => ({
 
 import { LITELLM_AGENT_MODEL } from "lib/apis/anthropic"
 import { warn } from "lib/loggers"
-import { runTurn } from "../runTurn"
+import { buildPrepareStep, runTurn } from "../runTurn"
 import { imageHandleFor } from "../images"
 
 const FAKE_USAGE = {
@@ -2533,5 +2533,41 @@ describe("runTurn with view_image", () => {
       (tool: any) => tool.name
     )
     expect(toolNames).toEqual(["query_artsy"])
+  })
+})
+
+describe("buildPrepareStep", () => {
+  const messages = [{ role: "user" as const, content: "Find Warhol" }]
+  const stepWith = (output: {
+    ok: boolean
+    content: string
+    repeated?: boolean
+  }) => ({ toolResults: [{ output }] } as any)
+
+  it("forces an answer on the step after a repeated result", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [stepWith({ ok: true, content: "…", repeated: true })],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toEqual("none")
+    expect(JSON.stringify(result.messages.at(-1))).toContain(
+      "That was the last search"
+    )
+  })
+
+  it("lets the turn keep searching while results are new", () => {
+    const prepare = buildPrepareStep(25)
+    const result: any = prepare({
+      messages,
+      stepNumber: 3,
+      steps: [stepWith({ ok: true, content: "{}" })],
+      model: {} as any,
+      experimental_context: undefined,
+    } as any)
+    expect(result.toolChoice).toBeUndefined()
   })
 })
