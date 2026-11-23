@@ -86,6 +86,39 @@ export const OrderCreditCardWalletTypeEnum = new GraphQLEnumType({
   },
 })
 
+export const OrderBuyerActionEnum = new GraphQLEnumType({
+  name: "OrderBuyerActionEnum",
+  description:
+    "Type of action the buyer needs to perform in response to the last submitted offer",
+  values: {
+    PAYMENT_FAILED: {
+      value: "PAYMENT_FAILED",
+      description: "Buyer's payment failed",
+    },
+    OFFER_RECEIVED_CONFIRM_NEEDED: {
+      value: "OFFER_RECEIVED_CONFIRM_NEEDED",
+      description:
+        "Buyer received a counter, offer needs to confirm tax and shipping",
+    },
+    OFFER_ACCEPTED_CONFIRM_NEEDED: {
+      value: "OFFER_ACCEPTED_CONFIRM_NEEDED",
+      description: "Buyer's offer accepted, needs to confirm tax and shipping",
+    },
+    OFFER_RECEIVED: {
+      value: "OFFER_RECEIVED",
+      description: "Buyer received a counter offer",
+    },
+    OFFER_ACCEPTED: {
+      value: "OFFER_ACCEPTED",
+      description: "Buyer's offer is accepted and final",
+    },
+    PROVISIONAL_OFFER_ACCEPTED: {
+      value: "PROVISIONAL_OFFER_ACCEPTED",
+      description: "Provisional offer is accepted and tax/shipping confirmed",
+    },
+  },
+})
+
 export const OrderBuyerStateEnum = new GraphQLEnumType({
   name: "OrderBuyerStateEnum",
   values: {

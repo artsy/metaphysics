@@ -383,6 +383,127 @@ describe("Me", () => {
       })
     })
 
+    describe("buyerAction and offer negotiation fields", () => {
+      const query = gql`
+        query {
+          me {
+            order(id: "order-id") {
+              buyerAction
+              lastSubmittedOffer {
+                internalID
+                definesTotal
+                offerAmountChanged
+                respondsTo {
+                  internalID
+                  fromParticipant
+                  respondsTo {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const buyerOffer = {
+        id: "offer-1",
+        order_id: "order-id",
+        amount_cents: 400000,
+        buyer_total_cents: null,
+        currency_code: "USD",
+        from_participant: "buyer",
+        note: null,
+        shipping_total_cents: null,
+        tax_total_cents: null,
+        created_at: "2026-01-01T00:00:00Z",
+        defines_total: false,
+        offer_amount_changed: false,
+        responds_to_id: null,
+      }
+      const sellerCounter = {
+        ...buyerOffer,
+        id: "offer-2",
+        amount_cents: 450000,
+        from_participant: "seller",
+        shipping_total_cents: 2000,
+        tax_total_cents: 0,
+        created_at: "2026-01-02T00:00:00Z",
+        defines_total: true,
+        offer_amount_changed: true,
+        responds_to_id: "offer-1",
+      }
+
+      beforeEach(() => {
+        orderJson.mode = "offer"
+        orderJson.state = "submitted"
+        orderJson.buyer_state = "offer_received"
+        orderJson.submitted_offers = [sellerCounter, buyerOffer]
+        orderJson.last_submitted_offer = sellerCounter
+      })
+
+      it("resolves buyerAction and offer fields from the order JSON without extra loader calls", async () => {
+        const meOrderLoader = jest.fn().mockResolvedValue(orderJson)
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader,
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order).toEqual({
+          buyerAction: "OFFER_RECEIVED_CONFIRM_NEEDED",
+          lastSubmittedOffer: {
+            internalID: "offer-2",
+            definesTotal: true,
+            offerAmountChanged: true,
+            respondsTo: {
+              internalID: "offer-1",
+              fromParticipant: "BUYER",
+              respondsTo: null,
+            },
+          },
+        })
+        expect(meOrderLoader).toHaveBeenCalledTimes(1)
+      })
+
+      it("returns PAYMENT_FAILED when last_transaction_failed is true", async () => {
+        orderJson.last_transaction_failed = true
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerAction).toEqual("PAYMENT_FAILED")
+      })
+
+      it("returns null buyerAction for buy mode orders", async () => {
+        orderJson.mode = "buy"
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.buyerAction).toBeNull()
+      })
+
+      it("returns null for respondsTo when the responded-to offer is not among submitted offers", async () => {
+        orderJson.submitted_offers = [sellerCounter]
+        context = {
+          meLoader: jest.fn().mockResolvedValue({ id: "me-id" }),
+          meOrderLoader: jest.fn().mockResolvedValue(orderJson),
+        }
+
+        const result = await runAuthenticatedQuery(query, context)
+
+        expect(result.me.order.lastSubmittedOffer.respondsTo).toBeNull()
+      })
+    })
+
     describe("artworkOrEditionSet", () => {
       const query = gql`
         query {

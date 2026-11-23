@@ -54,6 +54,9 @@ interface OfferJSON {
   shipping_total_cents: number | null
   tax_total_cents: number | null
   created_at: string
+  defines_total?: boolean
+  offer_amount_changed?: boolean
+  responds_to_id?: string | null
 }
 
 export interface OrderJSON {
@@ -89,6 +92,8 @@ export interface OrderJSON {
   id: string
   impulse_conversation_id?: string
   items_total_cents?: number
+  // Buyer-only. Not yet returned by all Exchange deployments.
+  last_transaction_failed?: boolean
   line_items: Array<{
     artwork_id: string
     artwork_version_id: string
@@ -120,6 +125,8 @@ export interface OrderJSON {
   shipping_region?: string
   shipping_total_cents?: number
   source: "artwork_page" | "inquiry" | "private_sale" | "partner_offer"
+  // Raw Exchange order state, e.g. "submitted", "approved"
+  state?: string
   tax_total_cents?: number
   total_list_price_cents?: number
   transaction_fee_cents?: number
