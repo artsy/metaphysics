@@ -63,6 +63,13 @@ export const QUICK_LINKS: Array<NavigationPill> = [
     minimumEigenVersion: { major: 8, minor: 67, patch: 0 }, // same constraint as InfiniteDiscovery section
   },
   {
+    title: "Art Assistant",
+    href: "/art-assistant",
+    ownerType: OwnerType.artAssistant,
+    icon: "SparklesMessageIcon",
+    minimumEigenVersion: { major: 9, minor: 20, patch: 0 }, // SparklesMessageIcon added to palette-mobile in 9.20.0
+  },
+  {
     title: "Auctions",
     href: "/auctions",
     ownerType: OwnerType.auctions,
