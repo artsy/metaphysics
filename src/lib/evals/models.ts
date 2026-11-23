@@ -20,7 +20,7 @@ export interface EvalVariant {
   maxIterations?: number
 }
 
-const VARIANT = /^([\w.-]+)=(anthropic|litellm):([\w.-]+)(?:#steps=([1-9]\d*))?(?:@(.+))?$/
+const VARIANT = /^([\w.-]+)=(anthropic|litellm):([\w.-]+)(?:#steps=([1-9]\d*))?(?:@([^#]+))?$/
 
 export function parseVariant(spec: string): EvalVariant {
   const match = VARIANT.exec(spec.trim())

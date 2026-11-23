@@ -43,6 +43,10 @@ describe("parseVariant", () => {
   it("rejects anything else", () => {
     expect(() => parseVariant("claude-sonnet-5")).toThrow(/Bad --variant/)
     expect(() => parseVariant("x=litellm:m#steps=0")).toThrow(/Bad --variant/)
+    // The step cap goes before the prompt file, not after it.
+    expect(() => parseVariant("x=litellm:m@p.md#steps=25")).toThrow(
+      /Bad --variant/
+    )
     expect(() => parseVariant("x=openai:gpt")).toThrow(/Bad --variant/)
   })
 })

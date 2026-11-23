@@ -10,6 +10,7 @@ import {
   isLeafType,
   Kind,
   parse,
+  print,
   specifiedRules,
   TypeInfo,
   validate,
@@ -615,17 +616,43 @@ function addsNothingNew(
   seen.results.add(run)
 
   const flat = flattenResult(content)
+  // A list only counts as seen for the same search arguments: adding a
+  // filter that keeps every work ("both are under $5,000") is new.
+  const args = searchArguments(input)
+  const lists = flat?.lists.map((list) => `${args}|${list}`) ?? []
   if (!flat) return sameAsBefore // Not JSON, e.g. truncated: exact match only.
 
   const noData = flat.fieldCount === 0
   const onlyKnownFacts =
     flat.namesEntities &&
     flat.values.every((value) => seen.values.has(value)) &&
-    flat.lists.every((list) => seen.lists.has(list))
+    lists.every((list) => seen.lists.has(list))
   flat.values.forEach((value) => seen.values.add(value))
-  flat.lists.forEach((list) => seen.lists.add(list))
+  lists.forEach((list) => seen.lists.add(list))
 
   return sameAsBefore || noData || onlyKnownFacts
+}
+
+/** Every field argument in the query, plus its variables, sorted. */
+function searchArguments(input: unknown): string {
+  const { query, variables } = (input ?? {}) as {
+    query?: unknown
+    variables?: unknown
+  }
+  if (typeof query !== "string") return ""
+  const args: string[] = []
+  try {
+    visit(parse(query), {
+      Field(node) {
+        node.arguments?.forEach((arg) =>
+          args.push(`${node.name.value}.${print(arg)}`)
+        )
+      },
+    })
+  } catch {
+    return query // Unparseable queries fail before reaching the guard anyway.
+  }
+  return `${args.sort().join(",")}|${JSON.stringify(variables ?? null)}`
 }
 
 const entityKeyOf = (object: Record<string, unknown>): string | undefined => {

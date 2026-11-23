@@ -1892,6 +1892,25 @@ describe("guardRepeatedResults", () => {
     ).toBeUndefined()
   })
 
+  it("lets a filter through that keeps every work", async () => {
+    const run = guarded(
+      { ok: true, content: SEARCH },
+      { ok: true, content: SEARCH }
+    )
+    await run({
+      query:
+        '{ artworksConnection(artistID: "x") { edges { node { internalID slug title } } } }',
+    })
+    expect(
+      (
+        await run({
+          query:
+            '{ artworksConnection(artistID: "x", priceRange: "*-5000") { edges { node { internalID slug title } } } }',
+        })
+      ).repeated
+    ).toBeUndefined()
+  })
+
   it("lets a first search that finds nothing through", async () => {
     const empty = JSON.stringify({ matchConnection: { edges: [] } })
     const run = guarded({ ok: true, content: empty })
