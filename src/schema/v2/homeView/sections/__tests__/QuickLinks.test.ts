@@ -97,7 +97,9 @@ describe("QuickLinks", () => {
 
   beforeEach(() => {
     Object.assign(mockFeaturedCityGuide, NOT_FEATURED_WINDOW)
-    mockIsFeatureFlagEnabled.mockImplementation(() => false)
+    mockIsFeatureFlagEnabled.mockImplementation(
+      (flag) => flag === "onyx_ai_agent-turn"
+    )
     // Setup the mock resolver responses
     mockMyBidsResolve.mockResolvedValue({ active: [] })
     mockUserPricePreferenceResolve.mockResolvedValue(null)
@@ -123,6 +125,12 @@ describe("QuickLinks", () => {
             "icon": "GavelIcon",
             "ownerType": "auctions",
             "title": "Auctions",
+          },
+          {
+            "href": "/art-assistant",
+            "icon": "SparklesMessageIcon",
+            "ownerType": "artAssistant",
+            "title": "Art Assistant",
           },
           {
             "href": "/collection/new-this-week",
@@ -230,6 +238,87 @@ describe("QuickLinks", () => {
         )
 
         expect(discoverDailyLink).toBeDefined()
+      })
+    })
+  })
+
+  describe("The art assistant pill", () => {
+    it("appears directly after Auctions", async () => {
+      const { homeView } = await runAuthenticatedQuery(query, {})
+
+      const titles = homeView.section.navigationPills.map((pill) => pill.title)
+      const auctionsIndex = titles.indexOf("Auctions")
+
+      expect(titles[auctionsIndex + 1]).toEqual("Art Assistant")
+    })
+
+    it("links to the art assistant with the artAssistant owner type", async () => {
+      const { homeView } = await runAuthenticatedQuery(query, {})
+
+      const artAssistantLink = homeView.section.navigationPills.find(
+        (pill) => pill.title === "Art Assistant"
+      )
+
+      expect(artAssistantLink).toMatchObject({
+        href: "/art-assistant",
+        icon: "SparklesMessageIcon",
+        ownerType: "artAssistant",
+      })
+    })
+
+    describe("When the onyx_ai_agent-turn flag is off for the user", () => {
+      it("is not returned", async () => {
+        mockIsFeatureFlagEnabled.mockImplementation(() => false)
+
+        const { homeView } = await runAuthenticatedQuery(query, {})
+
+        const artAssistantLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "Art Assistant"
+        )
+
+        expect(artAssistantLink).toBeUndefined()
+      })
+    })
+
+    describe("When Eigen is below the minimum version", () => {
+      it("is not returned", async () => {
+        const { homeView } = await runAuthenticatedQuery(query, {
+          userAgent: "Artsy-Mobile/9.17.0 Eigen/9.17.0",
+        })
+
+        const artAssistantLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "Art Assistant"
+        )
+
+        expect(artAssistantLink).toBeUndefined()
+      })
+    })
+
+    describe("When Eigen is at or above the minimum version", () => {
+      it("is returned", async () => {
+        const { homeView } = await runAuthenticatedQuery(query, {
+          userAgent: "Artsy-Mobile/9.18.0 Eigen/9.18.0",
+        })
+
+        const artAssistantLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "Art Assistant"
+        )
+
+        expect(artAssistantLink).toBeDefined()
+      })
+    })
+
+    describe("When the request is not from Eigen", () => {
+      it("is returned", async () => {
+        const { homeView } = await runAuthenticatedQuery(query, {
+          userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ...",
+        })
+
+        const artAssistantLink = homeView.section.navigationPills.find(
+          (pill) => pill.title === "Art Assistant"
+        )
+
+        expect(artAssistantLink).toBeDefined()
       })
     })
   })

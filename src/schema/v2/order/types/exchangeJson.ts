@@ -54,6 +54,9 @@ interface OfferJSON {
   shipping_total_cents: number | null
   tax_total_cents: number | null
   created_at: string
+  defines_total?: boolean
+  offer_amount_changed?: boolean
+  responds_to_id?: string | null
 }
 
 export interface OrderJSON {
@@ -62,6 +65,15 @@ export interface OrderJSON {
   available_shipping_countries: string[]
   awaiting_response_from: "buyer" | "seller" | null
   bank_account_id?: string
+  // Buyer-only. Exchange's `buyer_offer_action_type` for offer orders
+  buyer_action?:
+    | "OFFER_ACCEPTED"
+    | "OFFER_ACCEPTED_CONFIRM_NEEDED"
+    | "OFFER_RECEIVED"
+    | "OFFER_RECEIVED_CONFIRM_NEEDED"
+    | "PAYMENT_FAILED"
+    | "PROVISIONAL_OFFER_ACCEPTED"
+    | null
   buyer_id: string
   buyer_phone_number?: string
   buyer_phone_number_country_code?: string

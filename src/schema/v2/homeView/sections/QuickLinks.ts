@@ -3,6 +3,7 @@ import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import type { NavigationPill } from "../sectionTypes/NavigationPills"
 import { ResolverContext } from "types/graphql"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 import { priceBucketBasedOnPricePreference } from "../helpers/priceBucketBasedOnPricePreference"
 import { resolveFeaturedCityGuidePill } from "../helpers/resolveFeaturedCityGuidePill"
@@ -15,6 +16,7 @@ export const QuickLinks: HomeViewSection = {
   requiresAuthentication: true,
   resolver: async (_parent, _args, context, _info) => {
     let links = getDisplayableQuickLinks(context)
+    links = filterOutArtAssistantPillWhenDisabled(links, context)
     links = await maybeInsertArtworksWithinPriceBudgetLink(links, context)
     links = await maybeInsertYourBidsLink(links, context)
 
@@ -31,6 +33,24 @@ export const QuickLinks: HomeViewSection = {
 
     return links
   },
+}
+
+const ART_ASSISTANT_PILL_HREF = "/art-assistant"
+
+/**
+ * The Art Assistant backend (AIAgentTurn) is gated on `onyx_ai_agent-turn`, so
+ * hide the pill from users outside that rollout — otherwise it opens a feature
+ * they can't use.
+ */
+function filterOutArtAssistantPillWhenDisabled(
+  links: NavigationPill[],
+  context: ResolverContext
+) {
+  if (isFeatureFlagEnabled("onyx_ai_agent-turn", { userId: context.userID })) {
+    return links
+  }
+
+  return links.filter((link) => link.href !== ART_ASSISTANT_PILL_HREF)
 }
 
 const CITY_GUIDE_PILL_MINIMUM_EIGEN_VERSION = { major: 9, minor: 19, patch: 0 }
@@ -71,6 +91,13 @@ export const QUICK_LINKS: Array<NavigationPill> = [
   /*
    * see below for optional Your Bids link inserted here
    */
+  {
+    title: "Art Assistant",
+    href: "/art-assistant",
+    ownerType: OwnerType.artAssistant,
+    icon: "SparklesMessageIcon",
+    minimumEigenVersion: { major: 9, minor: 18, patch: 0 }, // Art Assistant shipped in 9.18.0; older icon-less builds degrade to text
+  },
   {
     title: "New This Week",
     href: "/collection/new-this-week",

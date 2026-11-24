@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -37,7 +38,13 @@ export type OfferJSON = {
   shipping_total_cents: number | null
   tax_total_cents: number | null
   created_at: string
+  defines_total?: boolean
+  offer_amount_changed?: boolean
+  responds_to_id?: string | null
   _selectedFulfillmentOptionType?: string
+  // Sibling submitted offers from the parent order, stashed by the order's
+  // offer resolvers so `respondsTo` can resolve without extra loader calls.
+  _submittedOffers?: OfferJSON[]
 }
 
 export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
@@ -67,6 +74,12 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       },
     },
     createdAt: date(({ created_at }) => created_at),
+    definesTotal: {
+      type: GraphQLBoolean,
+      description:
+        "Whether this offer defines the total (amount, shipping and tax) for the first time in the negotiation",
+      resolve: ({ defines_total }) => defines_total ?? null,
+    },
     fromParticipant: {
       type: new GraphQLNonNull(FromParticipantEnum),
       description: "Who the offer is from",
@@ -85,6 +98,12 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       type: GraphQLString,
       description: "Optional note for the offer",
       resolve: ({ note }) => note,
+    },
+    offerAmountChanged: {
+      type: GraphQLBoolean,
+      description:
+        "Whether this offer's amount differs from the offer it responds to",
+      resolve: ({ offer_amount_changed }) => offer_amount_changed ?? null,
     },
     buyerTotal: {
       type: Money,
@@ -161,6 +180,39 @@ export const OfferType = new GraphQLObjectType<OfferJSON, ResolverContext>({
       type: PricingBreakdownLinesType,
       description: "Pricing breakdown lines",
       resolve: resolveOfferPricingBreakdownLines,
+    },
+    respondsTo: {
+      type: OfferType,
+      description:
+        "The offer this offer responds to (i.e. the offer being countered), if any",
+      resolve: async (offer, _args, { meOrderLoader }) => {
+        const { responds_to_id, order_id } = offer
+        if (!responds_to_id) return null
+
+        // Offers resolved through an order carry their sibling submitted
+        // offers. Only offers resolved standalone (e.g. offer mutation
+        // payloads) fall back to fetching the order.
+        let submittedOffers = offer._submittedOffers
+        let selectedFulfillmentOptionType = offer._selectedFulfillmentOptionType
+        if (!submittedOffers) {
+          if (!order_id || !meOrderLoader) return null
+          const order = await meOrderLoader(order_id)
+          submittedOffers = order?.submitted_offers ?? []
+          selectedFulfillmentOptionType =
+            order?.selected_fulfillment_option?.type
+        }
+
+        const respondsTo = submittedOffers?.find(
+          ({ id }) => id === responds_to_id
+        )
+        if (!respondsTo) return null
+
+        return {
+          ...respondsTo,
+          _selectedFulfillmentOptionType: selectedFulfillmentOptionType,
+          _submittedOffers: submittedOffers,
+        }
+      },
     },
   }),
 })

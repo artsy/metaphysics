@@ -40,6 +40,7 @@ import { OfferType } from "./OfferType"
 import {
   FulfillmentOptionJSONWithCurrencyCode,
   FulfillmentOptionType,
+  OrderBuyerActionEnum,
   OrderBuyerStateEnum,
   OrderSellerStateEnum,
   OrderCreditCardWalletTypeEnum,
@@ -237,6 +238,12 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       ),
       resolve: ({ available_shipping_countries }) =>
         available_shipping_countries,
+    },
+    buyerAction: {
+      type: OrderBuyerActionEnum,
+      description:
+        "Type of action the buyer needs to perform in response to the last submitted offer. Only present for offer orders fetched as the buyer.",
+      resolve: ({ buyer_action }) => buyer_action ?? null,
     },
     buyerPhoneNumber: {
       type: GraphQLString,
@@ -570,34 +577,27 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
     submittedOffers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OfferType))),
       description: "List of submitted offers for this order",
-      resolve: ({ submitted_offers, selected_fulfillment_option }) => {
-        if (!submitted_offers) return []
-        return submitted_offers.map((offer) => ({
-          ...offer,
-          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
-        }))
+      resolve: (order) => {
+        if (!order.submitted_offers) return []
+        return order.submitted_offers.map((offer) =>
+          presentOrderOffer(offer, order)
+        )
       },
     },
     pendingOffer: {
       type: OfferType,
       description: "The pending offer for this order",
-      resolve: ({ pending_offer, selected_fulfillment_option }) => {
-        if (!pending_offer) return null
-        return {
-          ...pending_offer,
-          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
-        }
+      resolve: (order) => {
+        if (!order.pending_offer) return null
+        return presentOrderOffer(order.pending_offer, order)
       },
     },
     lastSubmittedOffer: {
       type: OfferType,
       description: "The last offer for this order",
-      resolve: ({ last_submitted_offer, selected_fulfillment_option }) => {
-        if (!last_submitted_offer) return null
-        return {
-          ...last_submitted_offer,
-          _selectedFulfillmentOptionType: selected_fulfillment_option?.type,
-        }
+      resolve: (order) => {
+        if (!order.last_submitted_offer) return null
+        return presentOrderOffer(order.last_submitted_offer, order)
       },
     },
     bankAccountBalanceCheck: {
@@ -607,6 +607,19 @@ export const OrderType = new GraphQLObjectType<OrderJSON, ResolverContext>({
       resolve: resolveBankAccountBalanceCheck,
     },
   }),
+})
+
+/**
+ * Decorates an offer from the order JSON with order-level data its field
+ * resolvers need, so they don't have to call a loader.
+ */
+const presentOrderOffer = (
+  offer: NonNullable<OrderJSON["last_submitted_offer"]>,
+  order: OrderJSON
+) => ({
+  ...offer,
+  _selectedFulfillmentOptionType: order.selected_fulfillment_option?.type,
+  _submittedOffers: order.submitted_offers ?? [],
 })
 
 const resolveSource = ({ source }) => {
