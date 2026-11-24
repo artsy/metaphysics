@@ -126,7 +126,7 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
     lists: {
       type: new GraphQLList(new GraphQLNonNull(CRMContactListType)),
       description:
-        "The lists the contact is in, by name. Embedded lists only carry internalID and name.",
+        "The lists the contact is in, by name. Gravity embeds them in every contact response; they only carry internalID and name.",
       resolve: ({ lists }) => lists ?? [],
     },
     createdAt: date(),
