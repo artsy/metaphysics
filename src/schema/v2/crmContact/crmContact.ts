@@ -21,6 +21,7 @@ import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
 import { CRMContactEmailType } from "./crmContactEmail"
 import { CRMContactLocationType } from "./crmContactLocation"
+import { CRMContactAddressType } from "./crmContactAddress"
 
 export const CRMContactTypeEnum = new GraphQLEnumType({
   name: "CRMContactType",
@@ -121,6 +122,11 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
     locations: {
       type: new GraphQLList(new GraphQLNonNull(CRMContactLocationType)),
       resolve: ({ locations }) => locations ?? [],
+    },
+    addresses: {
+      type: new GraphQLList(new GraphQLNonNull(CRMContactAddressType)),
+      description: "At most one per address type",
+      resolve: ({ addresses }) => addresses ?? [],
     },
     createdAt: date(),
     updatedAt: date(),
