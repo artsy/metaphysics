@@ -221,4 +221,68 @@ describe("CRM contact list mutations", () => {
       context.removeCrmContactsFromListLoader
     ).toHaveBeenCalledWith("list-1", { crm_contact_ids: ["c-2"] })
   })
+
+  it.each([
+    [
+      "updateCRMContactList",
+      "updateCrmContactListLoader",
+      `id: "list-1", name: "VIP"`,
+    ],
+    ["deleteCRMContactList", "deleteCrmContactListLoader", `id: "list-1"`],
+    [
+      "addCRMContactsToList",
+      "addCrmContactsToListLoader",
+      `id: "list-1", contactIDs: ["c-1"]`,
+    ],
+    [
+      "removeCRMContactsFromList",
+      "removeCrmContactsFromListLoader",
+      `id: "list-1", contactIDs: ["c-1"]`,
+    ],
+  ])(
+    "%s returns a failure when Gravity rejects it",
+    async (field, loader, input) => {
+      const typeName = field.charAt(0).toUpperCase() + field.slice(1)
+      const context = {
+        [loader]: jest
+          .fn()
+          .mockRejectedValue(
+            new HTTPError("Gravity error", 404, { error: "Not Found" } as any)
+          ),
+      }
+
+      const result = await runAuthenticatedQuery(
+        `mutation {
+        ${field}(input: { ${input} }) {
+          crmContactListOrError {
+            __typename
+            ... on ${typeName}Failure { mutationError { statusCode } }
+          }
+        }
+      }`,
+        context
+      )
+
+      expect(result[field].crmContactListOrError).toEqual({
+        __typename: `${typeName}Failure`,
+        mutationError: { statusCode: 404 },
+      })
+    }
+  )
+
+  it("rejects adding or removing an empty list of contacts", async () => {
+    const addCrmContactsToListLoader = jest.fn()
+
+    await expect(
+      runAuthenticatedQuery(
+        `mutation {
+          addCRMContactsToList(input: { id: "list-1", contactIDs: [] }) {
+            clientMutationId
+          }
+        }`,
+        { addCrmContactsToListLoader }
+      )
+    ).rejects.toThrow("contactIDs must include at least one ID")
+    expect(addCrmContactsToListLoader).not.toHaveBeenCalled()
+  })
 })

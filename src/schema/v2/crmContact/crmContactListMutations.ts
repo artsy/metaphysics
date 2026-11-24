@@ -1,4 +1,9 @@
-import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLError,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { CRMContactListType } from "./crmContactList"
@@ -7,6 +12,8 @@ import {
   responseOrErrorType,
   withGravityMutationError,
 } from "./mutationHelpers"
+
+const NO_CONTACT_IDS = "contactIDs must include at least one ID"
 
 const contactIDsField = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
@@ -144,6 +151,7 @@ export const addCRMContactsToListMutation = mutationWithClientMutationId<
     { addCrmContactsToListLoader }
   ) => {
     if (!addCrmContactsToListLoader) throw new Error(NOT_SIGNED_IN)
+    if (contactIDs.length === 0) throw new GraphQLError(NO_CONTACT_IDS)
 
     return withGravityMutationError(() =>
       addCrmContactsToListLoader(id, { crm_contact_ids: contactIDs })
@@ -175,6 +183,7 @@ export const removeCRMContactsFromListMutation = mutationWithClientMutationId<
     { removeCrmContactsFromListLoader }
   ) => {
     if (!removeCrmContactsFromListLoader) throw new Error(NOT_SIGNED_IN)
+    if (contactIDs.length === 0) throw new GraphQLError(NO_CONTACT_IDS)
 
     return withGravityMutationError(() =>
       removeCrmContactsFromListLoader(id, { crm_contact_ids: contactIDs })
