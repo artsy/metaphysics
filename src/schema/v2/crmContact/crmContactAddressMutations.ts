@@ -66,12 +66,12 @@ export const saveCRMContactAddressMutation = mutationWithClientMutationId<
       postalCode,
       country,
     },
-    { createCrmContactAddressLoader }
+    { saveCrmContactAddressLoader }
   ) => {
-    if (!createCrmContactAddressLoader) throw new Error(NOT_SIGNED_IN)
+    if (!saveCrmContactAddressLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      createCrmContactAddressLoader({
+      saveCrmContactAddressLoader({
         crm_contact_id: crmContactID,
         address_type: addressType,
         address_line_1: addressLine1,

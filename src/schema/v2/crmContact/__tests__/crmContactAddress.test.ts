@@ -93,7 +93,7 @@ describe("CRM contact addresses", () => {
 
 describe("CRM contact address mutations", () => {
   it("saves an address", async () => {
-    const createCrmContactAddressLoader = jest.fn().mockResolvedValue(address)
+    const saveCrmContactAddressLoader = jest.fn().mockResolvedValue(address)
 
     const result = await runAuthenticatedQuery(
       `mutation {
@@ -106,10 +106,10 @@ describe("CRM contact address mutations", () => {
           }
         }
       }`,
-      { createCrmContactAddressLoader }
+      { saveCrmContactAddressLoader }
     )
 
-    expect(createCrmContactAddressLoader).toHaveBeenCalledWith({
+    expect(saveCrmContactAddressLoader).toHaveBeenCalledWith({
       crm_contact_id: "contact-1",
       address_type: "shipping",
       address_line_1: "401 Broadway",
@@ -167,7 +167,7 @@ describe("CRM contact address mutations", () => {
   })
 
   it("returns Gravity validation errors as a failure", async () => {
-    const createCrmContactAddressLoader = jest.fn().mockRejectedValue(
+    const saveCrmContactAddressLoader = jest.fn().mockRejectedValue(
       new HTTPError("Bad Request", 400, {
         type: "error",
         message: "Country is invalid",
@@ -185,7 +185,7 @@ describe("CRM contact address mutations", () => {
           }
         }
       }`,
-      { createCrmContactAddressLoader }
+      { saveCrmContactAddressLoader }
     )
 
     expect(

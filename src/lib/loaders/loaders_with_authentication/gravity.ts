@@ -2238,7 +2238,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     crmContactAddressLoader: gravityLoader((id) => `crm_contact_address/${id}`),
-    createCrmContactAddressLoader: gravityLoader(
+    saveCrmContactAddressLoader: gravityLoader(
       "crm_contact_address",
       {},
       { method: "POST" }
