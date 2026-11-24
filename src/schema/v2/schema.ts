@@ -306,6 +306,17 @@ import {
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
 import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import {
+  crmContactList,
+  crmContactListsConnection,
+} from "./crmContact/crmContactList"
+import {
+  addCRMContactsToListMutation,
+  createCRMContactListMutation,
+  deleteCRMContactListMutation,
+  removeCRMContactsFromListMutation,
+  updateCRMContactListMutation,
+} from "./crmContact/crmContactListMutations"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
   emailSenderReview,
@@ -664,6 +675,8 @@ const rootFields = {
   emailSenderReviewsConnection,
   crmContactEmail,
   crmContactEmailsConnection,
+  crmContactList,
+  crmContactListsConnection,
   crmContactLocation,
   crmContactLocationsConnection,
   me: Me,
@@ -842,6 +855,11 @@ export default new GraphQLSchema({
       updateCRMContact: updateCRMContactMutation,
       archiveCRMContact: archiveCRMContactMutation,
       unarchiveCRMContact: unarchiveCRMContactMutation,
+      createCRMContactList: createCRMContactListMutation,
+      updateCRMContactList: updateCRMContactListMutation,
+      deleteCRMContactList: deleteCRMContactListMutation,
+      addCRMContactsToList: addCRMContactsToListMutation,
+      removeCRMContactsFromList: removeCRMContactsFromListMutation,
       approveEmailSenderReview: approveEmailSenderReviewMutation,
       skipEmailSenderReview: skipEmailSenderReviewMutation,
       unskipEmailSenderReview: unskipEmailSenderReviewMutation,

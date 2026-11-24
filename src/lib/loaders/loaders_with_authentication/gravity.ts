@@ -2188,6 +2188,37 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    crmContactListsLoader: gravityLoader(
+      "crm_contact_lists",
+      {},
+      { headers: true }
+    ),
+    crmContactListLoader: gravityLoader((id) => `crm_contact_list/${id}`),
+    createCrmContactListLoader: gravityLoader(
+      "crm_contact_list",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    addCrmContactsToListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}/contacts`,
+      {},
+      { method: "POST" }
+    ),
+    removeCrmContactsFromListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}/contacts`,
+      {},
+      { method: "DELETE" }
+    ),
     crmContactEmailsLoader: gravityLoader(
       "crm_contact_emails",
       {},

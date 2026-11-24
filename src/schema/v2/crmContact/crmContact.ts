@@ -21,6 +21,7 @@ import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
 import { CRMContactEmailType } from "./crmContactEmail"
 import { CRMContactLocationType } from "./crmContactLocation"
+import { CRMContactListType } from "./crmContactList"
 
 export const CRMContactTypeEnum = new GraphQLEnumType({
   name: "CRMContactType",
@@ -122,6 +123,12 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(new GraphQLNonNull(CRMContactLocationType)),
       resolve: ({ locations }) => locations ?? [],
     },
+    lists: {
+      type: new GraphQLList(new GraphQLNonNull(CRMContactListType)),
+      description:
+        "The lists the contact is in, by name. Embedded lists only carry internalID and name.",
+      resolve: ({ lists }) => lists ?? [],
+    },
     createdAt: date(),
     updatedAt: date(),
   }),
@@ -180,6 +187,18 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Only contacts with no assignee. Cannot be combined with assignedToUserID.",
     },
+    listID: {
+      type: GraphQLString,
+      description: "Only contacts in this CRM contact list",
+    },
+    listIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description: "Only contacts in any of these CRM contact lists",
+    },
+    excludeListIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description: "Only contacts in none of these CRM contact lists",
+    },
     sort: {
       type: CRMContactSortEnum,
       description: "Defaults to DISPLAY_NAME_ASC",
@@ -206,6 +225,11 @@ export const crmContactsConnection: GraphQLFieldConfig<any, ResolverContext> = {
           q: args.query,
           assigned_to_user_id: args.assignedToUserID,
           unassigned: args.isUnassigned || undefined,
+          list_id: args.listID,
+          list_ids: args.listIDs?.length ? args.listIDs : undefined,
+          exclude_list_ids: args.excludeListIDs?.length
+            ? args.excludeListIDs
+            : undefined,
           sort: args.sort,
           total_count: true,
           size,
