@@ -31,6 +31,7 @@ const query = gql`
           minor
           currencyCode
         }
+        recommendedPriceRangeDisplay
         packaging
         packer
         courierHandoff
@@ -99,6 +100,7 @@ describe("me.resaleSubmission", () => {
       },
       recommendedPriceMin: { minor: 200000, currencyCode: "USD" },
       recommendedPriceMax: { minor: 300000, currencyCode: "USD" },
+      recommendedPriceRangeDisplay: "US$2,000–US$3,000",
       packaging: "FRAMED",
       packer: "COURIER",
       courierHandoff: "SELLER_DROPOFF",
@@ -124,6 +126,36 @@ describe("me.resaleSubmission", () => {
     expect(response.me.resaleSubmission.priceListed).toBeNull()
     expect(response.me.resaleSubmission.recommendedPriceMin).toBeNull()
     expect(response.me.resaleSubmission.recommendedPriceMax).toBeNull()
+    expect(response.me.resaleSubmission.recommendedPriceRangeDisplay).toBeNull()
+  })
+
+  it("leaves out the price range when only one end is set", async () => {
+    context.meResaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...acceptedSubmission,
+        recommended_price_max_minor: null,
+      })
+    )
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.resaleSubmission.recommendedPriceRangeDisplay).toBeNull()
+  })
+
+  it("shows one price when both ends of the range match", async () => {
+    context.meResaleSubmissionLoader = jest.fn(() =>
+      Promise.resolve({
+        ...acceptedSubmission,
+        recommended_price_min_minor: 300000,
+        recommended_price_max_minor: 300000,
+      })
+    )
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.resaleSubmission.recommendedPriceRangeDisplay).toBe(
+      "US$3,000"
+    )
   })
 
   it("returns a rejected submission with its reasons and no channel", async () => {

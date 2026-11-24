@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { warn } from "lib/loggers"
+import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../../artwork"
 import { date } from "../../fields/date"
@@ -152,6 +153,21 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
         ...moneyFromMinorField("recommended_price_min_minor"),
         description:
           "Lower end of recommended price range, per automated valuation.",
+      },
+      recommendedPriceRangeDisplay: {
+        type: GraphQLString,
+        description:
+          "The recommended price range, ready to display, like “US$2,800–US$3,600”. Null unless both ends are set.",
+        resolve: ({
+          recommended_price_min_minor: min,
+          recommended_price_max_minor: max,
+          price_currency_code: currency,
+        }) => {
+          if (min == null || max == null || currency == null) return null
+          if (min === max) return priceDisplayText(min, currency, "")
+
+          return priceRangeDisplayText(min, max, currency, "")
+        },
       },
       rejectionReasons: {
         type: new GraphQLNonNull(

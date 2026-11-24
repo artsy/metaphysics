@@ -37001,6 +37001,11 @@ type ResaleSubmission {
   recommendedPriceMin: Money
 
   """
+  The recommended price range, ready to display, like “US$2,800–US$3,600”. Null unless both ends are set.
+  """
+  recommendedPriceRangeDisplay: String
+
+  """
   Why the submission was rejected.
   """
   rejectionReasons: [ResaleSubmissionRejectionReason!]!
