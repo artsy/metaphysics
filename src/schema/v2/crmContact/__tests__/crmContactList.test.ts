@@ -270,19 +270,22 @@ describe("CRM contact list mutations", () => {
     }
   )
 
-  it("rejects adding or removing an empty list of contacts", async () => {
-    const addCrmContactsToListLoader = jest.fn()
+  it.each([
+    ["addCRMContactsToList", "addCrmContactsToListLoader"],
+    ["removeCRMContactsFromList", "removeCrmContactsFromListLoader"],
+  ])("%s rejects an empty list of contacts", async (field, loader) => {
+    const loaderMock = jest.fn()
 
     await expect(
       runAuthenticatedQuery(
         `mutation {
-          addCRMContactsToList(input: { id: "list-1", contactIDs: [] }) {
+          ${field}(input: { id: "list-1", contactIDs: [] }) {
             clientMutationId
           }
         }`,
-        { addCrmContactsToListLoader }
+        { [loader]: loaderMock }
       )
     ).rejects.toThrow("contactIDs must include at least one ID")
-    expect(addCrmContactsToListLoader).not.toHaveBeenCalled()
+    expect(loaderMock).not.toHaveBeenCalled()
   })
 })
