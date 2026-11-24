@@ -34,6 +34,23 @@ describe("crmContactList", () => {
   })
 })
 
+describe("crmContactList when missing", () => {
+  it("returns null for a 404", async () => {
+    const crmContactListLoader = jest
+      .fn()
+      .mockRejectedValue(new HTTPError("Not Found", 404))
+
+    const {
+      crmContactList,
+    } = await runAuthenticatedQuery(
+      `{ crmContactList(id: "gone") { internalID } }`,
+      { crmContactListLoader }
+    )
+
+    expect(crmContactList).toBeNull()
+  })
+})
+
 describe("crmContactListsConnection", () => {
   it("passes the partner and sort to Gravity and paginates", async () => {
     const crmContactListsLoader = jest.fn().mockResolvedValue({

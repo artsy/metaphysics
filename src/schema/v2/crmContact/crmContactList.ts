@@ -63,7 +63,7 @@ export const CRMContactListConnectionType = connectionWithCursorInfo({
 
 export const crmContactList: GraphQLFieldConfig<any, ResolverContext> = {
   type: CRMContactListType,
-  description: "A CRM contact list of a partner",
+  description: "A CRM contact list of a partner. Null when it doesn’t exist.",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -72,7 +72,14 @@ export const crmContactList: GraphQLFieldConfig<any, ResolverContext> = {
   },
   resolve: async (_root, { id }, { crmContactListLoader }) => {
     if (!crmContactListLoader) return null
-    return crmContactListLoader(id)
+
+    try {
+      return await crmContactListLoader(id)
+    } catch (error) {
+      // A deleted or foreign list is reported as missing.
+      if (error?.statusCode === 404) return null
+      throw error
+    }
   },
 }
 

@@ -34658,7 +34658,7 @@ type Query {
   ): CRMContactEmailConnection
 
   """
-  A CRM contact list of a partner
+  A CRM contact list of a partner. Null when it doesn’t exist.
   """
   crmContactList(
     """
@@ -45685,7 +45685,7 @@ type Viewer {
   ): CRMContactEmailConnection
 
   """
-  A CRM contact list of a partner
+  A CRM contact list of a partner. Null when it doesn’t exist.
   """
   crmContactList(
     """
