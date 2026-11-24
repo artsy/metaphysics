@@ -7,30 +7,188 @@ focus_areas:
     ID field conventions: Use `internalID` for database IDs in query responses, not `id`.
     The `id` field is specifically for Relay global IDs and bears no relationship to database IDs.
     Field arguments can use `id` (e.g., `artist(id: "andy-warhol")`), accepting slug or internalID.
+    Spread `InternalIDFields` or `IDFields` from src/schema/v2/object_identification.ts
+    instead of hand-writing these fields.
+
+    ✗ FLAG: adding `id` to a type that was stitched or exposed without it. Relay clients
+    cache by `id`, so a new `id` that is not a global ID breaks their store.
+    ✗ FLAG: arguments that end in `Id` instead of `ID` (`contactId` → `contactID`).
   - |
-    Error handling: Ensure backend service errors are properly transformed into GraphQL
-    error unions (Success/Failure pattern).
+    Match the upstream contract: Gravity, Exchange and the other services own the data.
+    Every new field, argument, enum value and type must match what the upstream endpoint
+    actually accepts and returns. Upstream source is not available to this review, so
+    check against existing loaders, fixtures and resolvers here, and raise unconfirmed
+    mismatches as ⚪ q: rather than blocking.
+
+    ✗ FLAG: a field read from a key the upstream JSON does not return, or a param the
+    endpoint ignores (`artists` where Gravity expects `artist_ids`).
+    ✗ FLAG: a GraphQL type that disagrees with upstream (Float in Gravity, String here;
+    `cents` passed where the endpoint takes `_minor`).
+    ✗ FLAG: a closed GraphQL enum mapped from an open-ended upstream string (order
+    states, courier codes, shipping quote types). An unlisted value fails serialization
+    and errors the whole field. Ask for an `OTHER` value or a String.
+    ✗ FLAG: case-sensitive comparisons on upstream state strings whose casing varies.
+    ✓ DO NOT FLAG: undefined keys in Gravity params. The loaders drop them.
   - |
-    Null/undefined handling: Check that resolvers handle cases where related resources
-    fail to load gracefully, rather than blowing up the entire response.
+    Upstream failures and nullability: a resolver that awaits a loader can fail.
+    A non-null field whose loader rejects nulls the nearest nullable parent, so a single
+    403 can wipe out `me` or drop a node from a connection.
+
+    ✗ FLAG: a non-null field (`GraphQLNonNull`) whose resolver awaits a loader without
+    catching, unless losing the parent is the intended behaviour.
+    ✗ FLAG: a catch that turns every error (403, 404, timeout, bug) into the same `null`
+    with no logging. Treat 404 as "missing" and let the rest surface or report.
+    ✗ FLAG: a union `resolveType` or `isTypeOf` that cannot handle a value it has not seen
+    (a new search entity type), or that checks a flag the resolver set itself rather than
+    the upstream payload.
+    ✓ DO NOT FLAG: `??` or null guards on plain field reads. GraphQL already returns null,
+    and a parent that guards its child makes a second guard redundant.
+  - |
+    Mutations: new mutations follow the `...OrError` pattern. The payload has a
+    `...OrError` union of a Success type and a Failure type built with
+    `formatGravityError` from src/lib/gravityErrorHandler.ts, and resolveType checks
+    `_type === "GravityMutationError"`. Model it on an existing mutation such as
+    src/schema/v2/createPartnerOfferMutation.ts.
+
+    ✗ FLAG: a mutation that catches a Gravity error but never returns the Failure type,
+    so "Not authorized" and validation messages never reach the client.
+    ✗ FLAG: an update mutation that cannot tell "omitted" from `null`. Omitted leaves a
+    value alone; `null` unsets it. Check which one the input produces.
+    ✗ FLAG: a destructive or irreversible action folded into a general update mutation.
+    It gets its own mutation.
+    ✓ DO NOT FLAG: the snake_case mapping of camelCase inputs into Gravity params. It is
+    the house idiom (see update_me_mutation.ts).
+  - |
+    Per-request cost: Metaphysics multiplies upstream calls. AGENTS.md covers N+1 inside
+    connections; apply it. Also:
+
+    ✗ FLAG: mapping over a single-item endpoint for a list of IDs. Ask whether Gravity
+    supports multiple IDs, or use a batch loader.
+    ✗ FLAG: fetching a whole list endpoint and filtering in memory when a single-item
+    loader exists.
+    ✗ FLAG: new work in src/index.ts or middleware that runs on every request but only
+    one resolver needs.
+    ✗ FLAG: an authenticated loader where the data is not personal. The unauthenticated
+    loader is cached; the authenticated one is not.
+    ✗ FLAG: home view sections, rules or the mixer gaining an upstream call. It runs on
+    every home view request for every user.
+    ✗ FLAG: paths a client can nest (`artworksConnection → artist → artworksConnection`)
+    where per-level caps on `first` still multiply into hundreds of Gravity calls.
+    ✓ DO NOT FLAG: choosing between authenticated and unauthenticated loaders inside a
+    resolver based on whether the user is logged in. That is accepted.
+  - |
+    Pagination: connections follow docs/pagination.md. Use `paginationResolver`,
+    `createPageCursors` and `emptyConnection` from src/schema/v2/fields/pagination.ts,
+    `pageable()` for arguments, and pass `total_count: true` with `{ headers: true }` to
+    read the count from Gravity's headers.
+
+    ✗ FLAG: a connection that loads everything and slices it in memory, or that never
+    passes `size`/`page` upstream (Gravity defaults to 10 records).
+    ✗ FLAG: a new connection type that duplicates an existing one (`FairConnection`).
+    ✓ DO NOT FLAG: a plain list for a short fixed collection or a search-style result that
+    does not need paging.
+  - |
+    Schema design and breaking changes: Force, Eigen, Volt and other clients depend on
+    this schema. `_schemaV2.graphql` shows the public API change; read it.
+
+    ✗ FLAG: renaming or removing a field, argument or input type, changing a field's type
+    or output format, or adding `GraphQLNonNull` to an argument, without evidence that no
+    client uses it. Prefer adding a new field and marking the old one with `deprecate()`
+    from src/lib/deprecation.ts.
+    ✗ FLAG: free-form strings or arrays of display text where an enum or a structured type
+    fits; parallel booleans where one enum (`presentation: GRID`) would do; internal
+    fields such as ranking weights.
+    ✗ FLAG: a new field that overlaps an existing one (`shippingInfo` vs `shippingOrigin`)
+    without deprecating or merging.
+    ✗ FLAG: amounts returned as raw minor units instead of the `Money` helpers in
+    src/schema/v2/fields/money.ts.
+    🔵 nit: fields whose meaning or format is not obvious (dates, units, enum semantics)
+    should carry a `description`.
+    ✓ DO NOT FLAG: tightening output nullability, or removing an argument no client uses.
+  - |
+    Logic placement: Gravity owns business rules, validation and authorization. When a
+    PR adds a business rule, validation, user-facing authorization copy or an LLM prompt
+    to Metaphysics for a domain Gravity owns, raise it as a ⚪ q: asking whether it should
+    live upstream so the two cannot drift. Do not block on it; stopgaps are accepted.
+    ✓ DO NOT FLAG: missing validation that Gravity or Exchange already does.
+    ✗ FLAG: baking one client's display condition into a shared field
+    (`artworksForUser` also feeds marketing emails). Put it behind an argument or on the
+    client.
+  - |
+    Access and data exposure: Metaphysics forwards the user's token, so upstream enforces
+    access. It can still widen what reaches upstream.
+
+    ✗ FLAG: a resolver that falls back to an unauthenticated or admin path when the user
+    lacks access, or that passes flags such as `include_unpublished` that upstream gates
+    to admins.
+    ✗ FLAG: tokens or secrets sent as query params (they land in logs). Send them as
+    headers, the way src/lib/apis/gravity.ts sends the access token.
+    ✗ FLAG: code paths that skip the server's error handling (`graphqlErrorHandler` in
+    src/index.ts) and return raw upstream errors with hostnames to a client or a model.
+    ✗ FLAG: env checks that try to tell staging from production with `PRODUCTION_ENV`.
+    It is true on both.
+  - |
+    Home view: new sections and cards need a `minimumEigenVersion` when older Eigen
+    versions cannot render them. New section options also go into
+    src/schema/v2/homeView/sections/_ExampleSection.ts. Sections that need a logged-in
+    user must not be reachable from a public section or group.
+
+    ✗ FLAG: hand-written app version checks where `minimumEigenVersion` does the job.
+    ✗ FLAG: `enabledImpressionsTracking: true` without a reason. The events are chatty.
+    ✓ DO NOT FLAG: a feature-flag check inside a section the framework already gates on
+    that flag.
+  - |
+    Reuse before adding: point to an existing helper or type when the PR rebuilds one.
+    Common ones: `markdown` field (src/schema/v2/fields/markdown.ts), `date` helpers,
+    `filterArtworksConnection`, shared `ErrorType`s, `HomeViewCard`. Question a new
+    dependency added for a one-line helper.
+  - |
+    Tests use Jest mocks (`jest.fn().mockResolvedValue`) and the `runQuery` helper from
+    src/schema/v2/test/utils.ts. A test must assert that mocked upstream values appear in
+    the GraphQL response and should cover the Gravity error path for new mutations.
+
+    ✗ FLAG: new Sinon usage, or tests that only assert something did not happen.
+    ✓ DO NOT FLAG: no test for adding a same-named loader to loaders_with_authentication.
+  - |
+    Naming (🔵 nit only): booleans start with `is`/`has`; enum values are UPPER_CASE and
+    match upstream keys; mutation files are named `createXMutation.ts` after their export;
+    use `Update…` not `Edit…`; follow sibling mutation names; names describe the data, not
+    the UI; private keys stashed on resolver objects use a `__` prefix.
 
 ignore_paths:
   - "**/*.generated.ts"
   - "**/schema.graphql"
   - "**/__generated__/**"
+  - "**/__snapshots__/**"
   - "**/data/**/*.json"
+  - "src/data/*.graphql"
 
 context: |
   Metaphysics is Artsy's GraphQL API gateway that aggregates data from multiple
   backend services (Gravity, Exchange, Convection, etc.) into a unified API.
-  It is a passthrough layer - authorization is handled by backend services, not here.
+  Backend services own authorization and business rules; Metaphysics forwards the
+  user's token and shapes the response.
 
   Key patterns:
-  - DataLoader for request-level batching and deduplication
+  - DataLoader for request-level batching and deduplication. Unauthenticated GET
+    loaders are cached; authenticated ones are not.
   - Memcached for response caching with configurable TTL
   - Error unions (Success/Failure) for mutation responses
+  - `_schemaV2.graphql` is regenerated by the pre-commit hook. Read it to see the
+    public API change, but review the resolver source, not the dump.
+  - src/data/*.graphql are vendored upstream schemas; do not review them.
 
-  See CLAUDE.md for additional coding conventions.
+  See AGENTS.md for coding conventions, including the N+1 rule for connections.
+  Prettier, ESLint and `yarn type-check` run in CI. Do not comment on formatting or
+  on errors the type checker would catch.
+
+  Besides bugs you can show, these are 🔴 blocking here: broken client contracts,
+  non-null fields that can null their parent, upstream fan-out that grows with page
+  size or nesting, and data exposure. Naming, descriptions and comments that restate
+  the code are 🔵 nits.
+
+  Leftovers from the unstitching migration (duplicate `Errors` types,
+  `Gravity`-prefixed shim types) are expected; do not flag them as duplication.
 
 # Repos the experimental AI review can read for context (artsy/duchamp#128).
 related_repos:
