@@ -20,10 +20,10 @@ export const CRMContactAddressTypeEnum = new GraphQLEnumType({
   name: "CRMContactAddressType",
   description: "A contact has at most one address of each type",
   values: {
-    SHIPPING: { value: "shipping" },
     BILLING: { value: "billing" },
     HOME: { value: "home" },
     OTHER: { value: "other" },
+    SHIPPING: { value: "shipping" },
   },
 })
 

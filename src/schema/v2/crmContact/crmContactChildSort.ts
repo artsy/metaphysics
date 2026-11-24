@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-// Shared by the email and location connections of a CRM contact
+// Shared by the email, location and address connections of a CRM contact
 export const CRMContactChildSortEnum = new GraphQLEnumType({
   name: "CRMContactChildSort",
   values: {
