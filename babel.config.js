@@ -17,7 +17,7 @@ module.exports = {
       "module-resolver",
       {
         extensions: [".js", ".jsx", ".ts", ".tsx"],
-        root: ["./src"],
+        root: ["./src2"],
       },
     ],
   ],

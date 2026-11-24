@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
+    "baseUrl": "./src2",
     "checkJs": false,
     "lib": ["es2019"],
     "module": "commonjs",
@@ -17,6 +17,6 @@
     "target": "es2019",
     "useUnknownInCatchVariables": false
   },
-  "include": ["index.js", "src/**/*"],
+  "include": ["index.js", "src2/**/*"],
   "exclude": ["build", "node_modules", "**/node_modules/*", "dangerfile.ts"]
 }

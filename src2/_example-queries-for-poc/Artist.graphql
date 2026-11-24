@@ -1,0 +1,23 @@
+query Artist {
+  artist(id: "andy-warhol") {
+    internalID
+    slug
+    displayName
+    displayLabel
+    birthday
+    deathday
+    artistSeriesConnection(first: 10) {
+      totalCount
+      edges {
+        node {
+          slug
+          title
+          published
+          artists {
+            slug
+          }
+        }
+      }
+    }
+  }
+}

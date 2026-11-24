@@ -1,0 +1,29 @@
+import { convectionLoaders } from "./convection"
+import deltaLoaders from "./delta"
+import diffusionLoaders from "./diffusion"
+import galaxyLoaders from "./galaxy"
+import geminiLoaders from "./gemini"
+import geodataLoaders from "./geodata"
+import gravityLoaders from "./gravity"
+import positronLoaders from "./positron"
+import ipbaseLoaders from "./ipbase"
+import vortexLoaders from "./vortex"
+import { impulseLoadersWithAppToken } from "./impulse"
+
+export const createLoadersWithoutAuthentication = (opts) => ({
+  ...convectionLoaders(opts),
+  ...deltaLoaders(opts),
+  ...diffusionLoaders(opts),
+  ...galaxyLoaders(opts),
+  ...geminiLoaders(),
+  ...gravityLoaders(opts),
+  ...positronLoaders(opts),
+  ...geodataLoaders(opts),
+  ...ipbaseLoaders(opts),
+  ...vortexLoaders(opts),
+  ...impulseLoadersWithAppToken(opts),
+})
+
+export type LoadersWithoutAuthentication = ReturnType<
+  typeof createLoadersWithoutAuthentication
+>

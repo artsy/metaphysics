@@ -1,0 +1,160 @@
+import { delegateToSchema } from "lib/stitching/lib/delegateToSchema"
+import { GraphQLSchema, OperationTypeNode } from "graphql"
+import gql from "lib/gql"
+import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
+
+export const causalityStitchingEnvironment = ({
+  causalitySchema,
+  localSchema,
+}: {
+  causalitySchema: GraphQLSchema
+  localSchema: GraphQLSchema
+}) => {
+  return {
+    extensionSchema: gql`
+      extend type AuctionsLotState {
+        "current high bid recognized on the live auction floor"
+        floorSellingPrice: Money
+        "current high bid"
+        sellingPrice: Money
+        onlineAskingPrice: Money
+      }
+
+      extend type Lot {
+        lot: AuctionsLotState
+      }
+
+      extend type Me {
+        auctionsLotStandingConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): AuctionsLotStandingConnection!
+      }
+
+      extend type AuctionsLotStanding {
+        saleArtwork: SaleArtwork
+      }
+    `,
+
+    resolvers: {
+      AuctionsLotStanding: {
+        saleArtwork: {
+          selectionSet: `{
+            lotState {
+              internalID
+            }
+          }`,
+          resolve: (parent, _args, context, info) => {
+            return delegateToSchema({
+              schema: localSchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "saleArtwork",
+              args: { id: parent.lotState.internalID },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      AuctionsLotState: {
+        floorSellingPrice: {
+          selectionSet: `{ internalID floorSellingPriceCents }`,
+          resolve: resolveLotCentsFieldToMoney("floorSellingPriceCents"),
+        },
+        sellingPrice: {
+          selectionSet: `{ internalID sellingPriceCents }`,
+          resolve: resolveLotCentsFieldToMoney("sellingPriceCents"),
+        },
+        onlineAskingPrice: {
+          selectionSet: `{ internalID onlineAskingPriceCents }`,
+          resolve: resolveLotCentsFieldToMoney("onlineAskingPriceCents"),
+        },
+      },
+      Lot: {
+        lot: {
+          selectionSet: `{
+            saleArtwork {
+              internalID
+            }
+          }`,
+
+          resolve: (parent, _args, context, info) => {
+            return delegateToSchema({
+              schema: causalitySchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "_unused_auctionsLot",
+              args: { id: parent.saleArtwork.internalID },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Me: {
+        auctionsLotStandingConnection: {
+          // The required query to get access to the object, e.g. we have to
+          // request `id` on a Me in order to access the user's lot standings
+          selectionSet: `{ internalID }`,
+          // The function to handle getting the lot standings correctly, we
+          // use the root query `_unused_auctionsLotStandingConnection` to grab
+          // the data from the local causality schema. Unlike graphql-tools v5,
+          // v10 builds the delegated field's arguments from `args` alone —
+          // outer field args (eg first, after, last, before) are no longer
+          // forwarded automatically, so spread them in alongside the userId.
+          // `await`/async (was a `.then(...)` chain): in
+          // `@graphql-tools/delegate` v10 `delegateToSchema` returns
+          // `MaybePromise<unknown>` — synchronous executions return the value
+          // directly, blowing up `.then` with "is not a function".
+          resolve: async (parent, args, context, info) => {
+            const lotStandingsConnection = await delegateToSchema({
+              schema: causalitySchema,
+              operation: OperationTypeNode.QUERY,
+              fieldName: "_unused_auctionsLotStandingConnection",
+              args: {
+                ...args,
+                userId: parent.internalID,
+              },
+              context,
+              info,
+            })
+            const promisedSaleArtworks = lotStandingsConnection.edges.map(
+              ({ node: { lot } }) => {
+                return context
+                  .saleArtworkRootLoader(lot.internalID)
+                  .catch(() => null)
+              }
+            )
+
+            const availableSaleArtworks = (
+              await Promise.all(promisedSaleArtworks)
+            ).filter((sa) => sa !== null)
+
+            // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
+            const availableEdges = lotStandingsConnection.edges.reduce(
+              (acc: any, edge: any) => {
+                const saleArtwork = availableSaleArtworks.find(
+                  (sa: any) => sa._id === edge.node.lot.internalID
+                )
+                if (saleArtwork) {
+                  return [
+                    ...acc,
+                    { ...edge, node: { ...edge.node, saleArtwork } },
+                  ]
+                } else {
+                  return acc
+                }
+              },
+              []
+            )
+            return {
+              ...lotStandingsConnection,
+              edges: availableEdges,
+            }
+          },
+        },
+      },
+    },
+  }
+}

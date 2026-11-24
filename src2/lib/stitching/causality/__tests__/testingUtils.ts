@@ -1,0 +1,90 @@
+import { executableCausalitySchema } from "../schema"
+
+import {
+  getFieldsForTypeFromSchema,
+  getRootFieldsFromSchema,
+  getTypesFromSchema,
+} from "lib/stitching/lib/getTypesFromSchema"
+import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "../v2/stitching"
+
+import { stitchSchemas } from "@graphql-tools/stitch"
+import { GraphQLSchema } from "graphql"
+import localSchema from "schema/v2/schema"
+
+/**
+ * Common helpers for use in our tests
+ */
+export async function useCausalityStitching() {
+  const schema = await getCausalityMergedSchema()
+  const getFields = async (type) =>
+    await getFieldsForTypeFromSchema(type, schema)
+  const rootFields = await getRootFieldsFromSchema(schema)
+  const { resolvers } = await getCausalityStitchedSchema()
+  const types = await getTypesFromSchema(schema)
+
+  return {
+    getFields,
+    rootFields,
+    resolvers,
+    schema,
+    types,
+  }
+}
+
+/**
+ * The following is used for internal setup, initializing causality's schema /
+ * stitching environment and then caching the results.
+ */
+
+let cachedSchema: GraphQLSchema
+let stitchedSchema: ReturnType<typeof causalityStitchingEnvironmentV2>
+let mergedSchema: GraphQLSchema
+
+/**
+ * Gets a cached copy of the transformed causality schema
+ */
+const getCausalityTransformedSchema = async () => {
+  if (!cachedSchema) {
+    /* eslint-disable require-atomic-updates */
+    cachedSchema = await executableCausalitySchema()
+  }
+  return cachedSchema
+}
+
+/**
+ * Gets a cached copy of the stitched schema, independent of being merged into
+ * the local schema
+ */
+const getCausalityStitchedSchema = async () => {
+  if (!stitchedSchema) {
+    const causalitySchema = await getCausalityTransformedSchema()
+    // @ts-ignore require-atomic-updates
+    stitchedSchema = causalityStitchingEnvironmentV2({
+      localSchema,
+      causalitySchema,
+    })
+  }
+  return stitchedSchema
+}
+
+/**
+ * Gets a cached fully setup schema with causality and the localSchema
+ */
+const getCausalityMergedSchema = async () => {
+  if (!stitchedSchema) {
+    const cachedSchema = await getCausalityTransformedSchema()
+    const { extensionSchema, resolvers } = await getCausalityStitchedSchema()
+
+    // The order should only matter in that extension schemas come after the
+    // objects that they are expected to build upon
+    mergedSchema = stitchSchemas({
+      subschemas: [localSchema, cachedSchema],
+      typeDefs: extensionSchema ? [extensionSchema] : undefined,
+      resolvers: resolvers,
+    })
+
+    const anyMergedSchema = mergedSchema as any
+    anyMergedSchema.__allowedLegacyNames = ["__id"]
+  }
+  return mergedSchema
+}
