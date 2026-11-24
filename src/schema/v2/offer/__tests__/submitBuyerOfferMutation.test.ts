@@ -106,4 +106,70 @@ describe("submitBuyerOfferMutation", () => {
       },
     })
   })
+
+  describe("respondsTo on a standalone offer", () => {
+    const respondsToMutation = `
+      mutation {
+        submitBuyerOffer(input: { orderID: "order-id", offerID: "offer-id" }) {
+          offerOrError {
+            ...on OfferMutationSuccess {
+              offer {
+                internalID
+                respondsTo {
+                  internalID
+                  fromParticipant
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("falls back to loading the order to find the responded-to offer", async () => {
+      context.meOfferSubmitLoader = jest.fn().mockResolvedValue({
+        id: "offer-id",
+        order_id: "order-id",
+        amount_cents: 85000,
+        currency_code: "USD",
+        from_participant: "buyer",
+        created_at: "2024-01-01T00:00:00.000Z",
+        responds_to_id: "seller-offer-id",
+      })
+      context.meOrderLoader = jest.fn().mockResolvedValue({
+        id: "order-id",
+        submitted_offers: [
+          {
+            id: "seller-offer-id",
+            order_id: "order-id",
+            amount_cents: 90000,
+            currency_code: "USD",
+            from_participant: "seller",
+            created_at: "2023-12-31T00:00:00.000Z",
+            responds_to_id: null,
+          },
+        ],
+      })
+
+      const result = await runAuthenticatedQuery(respondsToMutation, context)
+
+      expect(result.submitBuyerOffer.offerOrError.offer).toEqual({
+        internalID: "offer-id",
+        respondsTo: {
+          internalID: "seller-offer-id",
+          fromParticipant: "SELLER",
+        },
+      })
+      expect(context.meOrderLoader).toHaveBeenCalledWith("order-id")
+    })
+
+    it("returns null without loading the order when the offer responds to nothing", async () => {
+      context.meOrderLoader = jest.fn()
+
+      const result = await runAuthenticatedQuery(respondsToMutation, context)
+
+      expect(result.submitBuyerOffer.offerOrError.offer.respondsTo).toBeNull()
+      expect(context.meOrderLoader).not.toHaveBeenCalled()
+    })
+  })
 })
