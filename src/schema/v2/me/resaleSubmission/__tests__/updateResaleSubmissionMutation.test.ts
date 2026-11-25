@@ -18,8 +18,14 @@ const mutationWith = (input: string) => gql`
             packaging
             packer
             courierHandoff
+            notes
             conditionPhotos {
               internalID
+            }
+            condition {
+              value
+              displayText
+              description
             }
           }
         }
@@ -51,6 +57,8 @@ const updatedSubmission = {
   packaging: "framed",
   packer: "courier",
   courier_handoff: "seller_dropoff",
+  notes: "Small tear on the verso",
+  condition: "very_good",
   missing_requirements: [],
 }
 
@@ -83,6 +91,33 @@ describe("updateResaleSubmission", () => {
     })
   })
 
+  it("sends the notes to Gravity", async () => {
+    await runAuthenticatedQuery(
+      mutationWith(`notes: "Small tear on the verso"`),
+      context
+    )
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", { notes: "Small tear on the verso" })
+  })
+
+  it("sends an empty string so that Gravity clears the notes", async () => {
+    await runAuthenticatedQuery(mutationWith(`notes: ""`), context)
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", { notes: "" })
+  })
+
+  it("sends the condition to Gravity", async () => {
+    await runAuthenticatedQuery(mutationWith(`condition: VERY_GOOD`), context)
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", { condition: "very_good" })
+  })
+
   it("only sends the fields that were given", async () => {
     await runAuthenticatedQuery(mutationWith(`packer: SELLER`), context)
 
@@ -93,7 +128,9 @@ describe("updateResaleSubmission", () => {
 
   it("does not send fields that are explicitly null", async () => {
     await runAuthenticatedQuery(
-      mutationWith(`priceListed: null, packaging: null, packer: SELLER`),
+      mutationWith(
+        `priceListed: null, packaging: null, notes: null, packer: SELLER`
+      ),
       context
     )
 
@@ -116,7 +153,13 @@ describe("updateResaleSubmission", () => {
         packaging: "FRAMED",
         packer: "COURIER",
         courierHandoff: "SELLER_DROPOFF",
+        notes: "Small tear on the verso",
         conditionPhotos: [],
+        condition: {
+          value: "VERY_GOOD",
+          displayText: "Very good",
+          description: null,
+        },
       },
     })
   })

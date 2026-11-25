@@ -327,6 +327,15 @@ import {
   crmContactEmailsConnection,
 } from "./crmContact/crmContactEmail"
 import {
+  crmContactAddress,
+  crmContactAddressesConnection,
+} from "./crmContact/crmContactAddress"
+import {
+  saveCRMContactAddressMutation,
+  deleteCRMContactAddressMutation,
+  updateCRMContactAddressMutation,
+} from "./crmContact/crmContactAddressMutations"
+import {
   crmContactLocation,
   crmContactLocationsConnection,
 } from "./crmContact/crmContactLocation"
@@ -679,6 +688,8 @@ const rootFields = {
   crmContactListsConnection,
   crmContactLocation,
   crmContactLocationsConnection,
+  crmContactAddress,
+  crmContactAddressesConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -872,6 +883,9 @@ export default new GraphQLSchema({
       createCRMContactLocation: createCRMContactLocationMutation,
       updateCRMContactLocation: updateCRMContactLocationMutation,
       deleteCRMContactLocation: deleteCRMContactLocationMutation,
+      saveCRMContactAddress: saveCRMContactAddressMutation,
+      updateCRMContactAddress: updateCRMContactAddressMutation,
+      deleteCRMContactAddress: deleteCRMContactAddressMutation,
       createBrandKit: createBrandKitMutation,
       updateBrandKit: updateBrandKitMutation,
       deleteBrandKit: deleteBrandKitMutation,

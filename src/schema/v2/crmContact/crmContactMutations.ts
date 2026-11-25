@@ -9,6 +9,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { CRMContactType, CRMContactTypeEnum } from "./crmContact"
+import { CRMContactAddressTypeEnum } from "./crmContactAddress"
 import {
   NOT_SIGNED_IN,
   responseOrErrorType,
@@ -41,6 +42,22 @@ const CRMContactLocationInputType = new GraphQLInputObjectType({
       type: GraphQLBoolean,
       description:
         "At most one location may be primary. The first one is primary by default.",
+    },
+  },
+})
+
+const CRMContactAddressInputType = new GraphQLInputObjectType({
+  name: "CRMContactAddressInput",
+  fields: {
+    addressType: { type: new GraphQLNonNull(CRMContactAddressTypeEnum) },
+    addressLine1: { type: new GraphQLNonNull(GraphQLString) },
+    addressLine2: { type: GraphQLString },
+    city: { type: new GraphQLNonNull(GraphQLString) },
+    region: { type: GraphQLString, description: "State or region" },
+    postalCode: { type: new GraphQLNonNull(GraphQLString) },
+    country: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ISO 3166-1 alpha-2 country code",
     },
   },
 })
@@ -101,11 +118,15 @@ export const createCRMContactMutation = mutationWithClientMutationId<
 >({
   name: "CreateCRMContact",
   description:
-    "Create a CRM contact. It needs at least one of firstName, lastName, company or an email. Creation is all-or-nothing: a failing email or location creates nothing.",
+    "Create a CRM contact. It needs at least one of firstName, lastName, company or an email. Creation is all-or-nothing: a failing email, location or address creates nothing.",
   inputFields: {
     partnerID: { type: new GraphQLNonNull(GraphQLString) },
     contactType: { type: new GraphQLNonNull(CRMContactTypeEnum) },
     ...contactFields,
+    addresses: {
+      type: new GraphQLList(new GraphQLNonNull(CRMContactAddressInputType)),
+      description: "At most one per address type",
+    },
     emails: {
       type: new GraphQLList(new GraphQLNonNull(CRMContactEmailInputType)),
     },
@@ -137,6 +158,15 @@ export const createCRMContactMutation = mutationWithClientMutationId<
           city_name: location.cityName,
           is_primary: location.isPrimary,
         })),
+        addresses: input.addresses?.map((address) => ({
+          address_type: address.addressType,
+          address_line_1: address.addressLine1,
+          address_line_2: address.addressLine2,
+          city: address.city,
+          region: address.region,
+          postal_code: address.postalCode,
+          country: address.country,
+        })),
       })
     )
   },
@@ -155,7 +185,7 @@ export const updateCRMContactMutation = mutationWithClientMutationId<
 >({
   name: "UpdateCRMContact",
   description:
-    "Update a CRM contact's own fields. Emails and locations have their own mutations, and a contact can't change partner.",
+    "Update a CRM contact's own fields. Emails, locations and addresses have their own mutations, and a contact can't change partner.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),

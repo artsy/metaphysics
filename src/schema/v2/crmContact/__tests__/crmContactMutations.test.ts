@@ -63,6 +63,43 @@ describe("createCRMContact", () => {
     })
   })
 
+  it("passes nested addresses to Gravity", async () => {
+    const createCrmContactLoader = jest.fn().mockResolvedValue(contact)
+
+    await runAuthenticatedQuery(
+      `mutation {
+        createCRMContact(input: {
+          partnerID: "partner-1"
+          contactType: PERSON
+          firstName: "Ada"
+          addresses: [{
+            addressType: BILLING, addressLine1: "1 Main St", city: "London",
+            postalCode: "N1 9GU", country: "GB"
+          }]
+        }) {
+          crmContactOrError { __typename }
+        }
+      }`,
+      { createCrmContactLoader }
+    )
+
+    expect(createCrmContactLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        addresses: [
+          {
+            address_type: "billing",
+            address_line_1: "1 Main St",
+            address_line_2: undefined,
+            city: "London",
+            region: undefined,
+            postal_code: "N1 9GU",
+            country: "GB",
+          },
+        ],
+      })
+    )
+  })
+
   it("returns the created contact", async () => {
     const result = await runAuthenticatedQuery(mutation, {
       createCrmContactLoader: jest.fn().mockResolvedValue(contact),
