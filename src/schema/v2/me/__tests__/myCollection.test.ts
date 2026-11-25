@@ -194,6 +194,53 @@ describe("me.myCollection", () => {
     })
   })
 
+  it("passes excludeArtworksWithActiveResaleSubmissions through to Gravity", async () => {
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(
+            first: 10
+            excludeArtworksWithActiveResaleSubmissions: true
+          ) {
+            edges {
+              node {
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const mockMeMyCollectionArtworksLoader = jest
+      .fn()
+      .mockResolvedValue(mockCollectionArtworksResponse)
+
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+
+      meMyCollectionArtworksLoader: mockMeMyCollectionArtworksLoader,
+      marketPriceInsightsBatchLoader: jest
+        .fn()
+        .mockResolvedValue(mockVortexResponse),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
+        }),
+    }
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(mockMeMyCollectionArtworksLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exclude_artworks_with_active_resale_submissions: true,
+      })
+    )
+  })
+
   it("returns artworks without consignment submission data since Convection is disabled", async () => {
     const query = gql`
       {
