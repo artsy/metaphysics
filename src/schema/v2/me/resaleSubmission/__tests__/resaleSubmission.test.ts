@@ -312,6 +312,38 @@ describe("me.resaleSubmission", () => {
     })
   })
 
+  describe("isCancelable and isEditable", () => {
+    const capabilitiesQuery = gql`
+      query {
+        me {
+          resaleSubmission(id: "submission-1") {
+            isCancelable
+            isEditable
+          }
+        }
+      }
+    `
+
+    it.each([
+      ["accepted", true],
+      ["auction_review", false],
+      ["canceled", false],
+      ["listed", false],
+      ["rejected", false],
+    ])("returns %s as %s", async (state, expected) => {
+      context.meResaleSubmissionLoader = jest.fn(() =>
+        Promise.resolve({ ...acceptedSubmission, state })
+      )
+
+      const response = await runAuthenticatedQuery(capabilitiesQuery, context)
+
+      expect(response.me.resaleSubmission).toEqual({
+        isCancelable: expected,
+        isEditable: expected,
+      })
+    })
+  })
+
   describe("submittedArtwork", () => {
     const artworkQuery = gql`
       query {
