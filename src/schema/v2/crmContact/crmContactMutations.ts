@@ -62,6 +62,20 @@ const CRMContactAddressInputType = new GraphQLInputObjectType({
   },
 })
 
+const CRMContactCustomFieldInputType = new GraphQLInputObjectType({
+  name: "CRMContactCustomFieldInput",
+  fields: {
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Up to 40 characters, unique per contact",
+    },
+    value: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Up to 500 characters",
+    },
+  },
+})
+
 // Fields shared by create and update. Gravity ignores anything left out, so
 // only what the client sent is forwarded.
 const contactFields = {
@@ -77,6 +91,11 @@ const contactFields = {
     type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     description:
       "Replaces the whole list on update. Unknown values are rejected.",
+  },
+  customFields: {
+    type: new GraphQLList(new GraphQLNonNull(CRMContactCustomFieldInputType)),
+    description:
+      "Replaces all custom fields, in order. An empty list or null clears them. At most 30.",
   },
   notes: { type: GraphQLString },
   budgetMin: { type: GraphQLFloat },
@@ -98,6 +117,8 @@ const toGravityContactParams = (input: any) => ({
   company: input.company,
   phone: input.phone,
   categories: input.categories,
+  // Loaders drop empty arrays from the request, so send null to clear.
+  custom_fields: input.customFields?.length === 0 ? null : input.customFields,
   notes: input.notes,
   budget_min: input.budgetMin,
   budget_max: input.budgetMax,

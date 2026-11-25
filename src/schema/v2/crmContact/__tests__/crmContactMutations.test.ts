@@ -247,6 +247,77 @@ describe("updateCRMContact with an empty categories list", () => {
   })
 })
 
+describe("updateCRMContact with custom fields", () => {
+  const mutation = (customFields: string) => `
+    mutation {
+      updateCRMContact(input: { id: "contact-1", customFields: ${customFields} }) {
+        crmContactOrError {
+          __typename
+          ... on UpdateCRMContactSuccess { crmContact { customFields { name value } } }
+        }
+      }
+    }
+  `
+
+  it("forwards the fields in order and returns them", async () => {
+    const customFields = [
+      { name: "Interests", value: "Sculpture" },
+      { name: "Fair", value: "Frieze" },
+    ]
+    const updateCrmContactLoader = jest
+      .fn()
+      .mockResolvedValue({ ...contact, custom_fields: customFields })
+
+    const result = await runAuthenticatedQuery(
+      mutation(
+        `[{ name: "Interests", value: "Sculpture" }, { name: "Fair", value: "Frieze" }]`
+      ),
+      { updateCrmContactLoader }
+    )
+
+    expect(updateCrmContactLoader).toHaveBeenCalledWith(
+      "contact-1",
+      expect.objectContaining({ custom_fields: customFields })
+    )
+    expect(
+      result.updateCRMContact.crmContactOrError.crmContact.customFields
+    ).toEqual(customFields)
+  })
+
+  it("survives the request round trip as a list of pairs", async () => {
+    const updateCrmContactLoader = jest.fn().mockResolvedValue(contact)
+
+    await runAuthenticatedQuery(
+      mutation(`[{ name: "Interests", value: "Painting, Sculpture" }]`),
+      { updateCrmContactLoader }
+    )
+
+    const [, params] = updateCrmContactLoader.mock.calls[0]
+    const { body } = constructUrlAndParams(
+      "PUT",
+      `crm_contact/contact-1?${toQueryString(params)}`
+    )
+
+    expect(body).toHaveProperty("custom_fields", [
+      { name: "Interests", value: "Painting, Sculpture" },
+    ])
+  })
+
+  it("sends null for an empty list so that the fields are cleared", async () => {
+    const updateCrmContactLoader = jest.fn().mockResolvedValue(contact)
+
+    await runAuthenticatedQuery(mutation("[]"), { updateCrmContactLoader })
+
+    const [, params] = updateCrmContactLoader.mock.calls[0]
+    expect(params).toHaveProperty("custom_fields", null)
+    const { body } = constructUrlAndParams(
+      "PUT",
+      `crm_contact/contact-1?${toQueryString(params)}`
+    )
+    expect(body).toHaveProperty("custom_fields", null)
+  })
+})
+
 describe("archiveCRMContact and unarchiveCRMContact", () => {
   it("archives a contact", async () => {
     const archiveCrmContactLoader = jest

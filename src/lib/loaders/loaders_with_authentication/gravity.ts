@@ -2168,6 +2168,9 @@ export default (accessToken, userID, opts) => {
     // CRM Contact Loaders
     crmContactsLoader: gravityLoader("crm_contacts", {}, { headers: true }),
     crmContactLoader: gravityLoader((id) => `crm_contact/${id}`),
+    crmContactCustomFieldNamesLoader: gravityLoader(
+      "crm_contacts/custom_field_names"
+    ),
     createCrmContactLoader: gravityLoader(
       "crm_contact",
       {},

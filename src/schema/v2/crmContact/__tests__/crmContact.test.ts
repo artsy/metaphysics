@@ -19,6 +19,10 @@ const gravityContact = {
   budget_min: "1000.0",
   budget_max: "5000.5",
   budget_currency: "USD",
+  custom_fields: [
+    { name: "Interests", value: "Painting, Sculpture" },
+    { name: "Fair", value: "Frieze" },
+  ],
   emails: [
     {
       id: "email-1",
@@ -55,6 +59,10 @@ describe("crmContact", () => {
         budgetMin
         budgetMax
         budgetCurrency
+        customFields {
+          name
+          value
+        }
         emails {
           address
           isPrimary
@@ -93,9 +101,63 @@ describe("crmContact", () => {
         budgetMin: 1000,
         budgetMax: 5000.5,
         budgetCurrency: "USD",
+        customFields: [
+          { name: "Interests", value: "Painting, Sculpture" },
+          { name: "Fair", value: "Frieze" },
+        ],
         emails: [{ address: "ada@example.com", isPrimary: true }],
         locations: [{ countryCode: "GB", cityName: "London", isPrimary: true }],
       },
+    })
+  })
+})
+
+describe("crmContact custom fields", () => {
+  it("defaults to an empty list when Gravity leaves them out", async () => {
+    const { custom_fields: _omitted, ...withoutCustomFields } = gravityContact
+    const crmContactLoader = jest.fn().mockResolvedValue(withoutCustomFields)
+
+    const result = await runAuthenticatedQuery(
+      `{ crmContact(id: "contact-1") { customFields { name } } }`,
+      { crmContactLoader }
+    )
+
+    expect(result.crmContact.customFields).toEqual([])
+  })
+})
+
+describe("crmContactCustomFieldNames", () => {
+  it("passes the partner, term and size to the loader", async () => {
+    const crmContactCustomFieldNamesLoader = jest
+      .fn()
+      .mockResolvedValue(["Interests", "Frame preference"])
+
+    const result = await runAuthenticatedQuery(
+      `{ crmContactCustomFieldNames(partnerID: "partner-1", term: "fr", size: 10) }`,
+      { crmContactCustomFieldNamesLoader }
+    )
+
+    expect(crmContactCustomFieldNamesLoader).toHaveBeenCalledWith({
+      partner_id: "partner-1",
+      size: 10,
+      term: "fr",
+    })
+    expect(result.crmContactCustomFieldNames).toEqual([
+      "Interests",
+      "Frame preference",
+    ])
+  })
+
+  it("omits unset arguments", async () => {
+    const crmContactCustomFieldNamesLoader = jest.fn().mockResolvedValue([])
+
+    await runAuthenticatedQuery(
+      `{ crmContactCustomFieldNames(partnerID: "partner-1") }`,
+      { crmContactCustomFieldNamesLoader }
+    )
+
+    expect(crmContactCustomFieldNamesLoader).toHaveBeenCalledWith({
+      partner_id: "partner-1",
     })
   })
 })
