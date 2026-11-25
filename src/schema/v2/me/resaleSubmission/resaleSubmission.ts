@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLList,
@@ -124,6 +125,19 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
         resolve: ({ images }) => normalizeImageData(images ?? []),
       },
       createdAt: date(),
+      // Both mirror Gravity's rules: `cancel` fires only from accepted, and listing details
+      // can't change once the submission leaves accepted. Update these if those rules change.
+      isCancelable: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Whether the seller can cancel this submission.",
+        resolve: ({ state }) => state === "accepted",
+      },
+      isEditable: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "Whether the seller can still change this submission’s details and photos.",
+        resolve: ({ state }) => state === "accepted",
+      },
       missingRequirements: {
         type: new GraphQLNonNull(
           new GraphQLList(new GraphQLNonNull(GraphQLString))
