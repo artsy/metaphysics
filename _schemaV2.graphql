@@ -8574,7 +8574,7 @@ type CRMContact {
   lastName: String
 
   """
-  The lists the contact is in, by name. Gravity embeds them in every contact response; they only carry internalID and name.
+  Lists the contact is in. Only internalID and name are set.
   """
   lists: [CRMContactList!]
   locations: [CRMContactLocation!]
