@@ -2232,6 +2232,27 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    crmContactAddressesLoader: gravityLoader(
+      "crm_contact_addresses",
+      {},
+      { headers: true }
+    ),
+    crmContactAddressLoader: gravityLoader((id) => `crm_contact_address/${id}`),
+    saveCrmContactAddressLoader: gravityLoader(
+      "crm_contact_address",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactAddressLoader: gravityLoader(
+      (id) => `crm_contact_address/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactAddressLoader: gravityLoader(
+      (id) => `crm_contact_address/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
 
     crmActivitiesLoader: gravityLoader("crm_activities", {}, { headers: true }),
     createCrmActivityLoader: gravityLoader(
