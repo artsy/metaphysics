@@ -131,6 +131,11 @@ export const ResaleSubmissionType = new GraphQLObjectType<any, ResolverContext>(
           "Answers still needed before the submission can be listed.",
         resolve: ({ missing_requirements }) => missing_requirements ?? [],
       },
+      notes: {
+        type: GraphQLString,
+        description:
+          "The seller’s free-text notes about the work: condition, history, provenance or anything else. Null until given.",
+      },
       packaging: {
         type: ResaleSubmissionPackagingEnum,
         description: "The seller’s answer to how the work will be packed.",
