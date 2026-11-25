@@ -189,20 +189,16 @@ export const crmContactCustomFieldNames: GraphQLFieldConfig<
       type: GraphQLInt,
       description: "Maximum number of names, 1–500. Defaults to 100.",
     },
-    term: {
-      type: GraphQLString,
-      description: "Only names containing this text, ignoring case",
-    },
   },
   resolve: async (
     _root,
-    { partnerID, size, term },
+    { partnerID, size },
     { crmContactCustomFieldNamesLoader }
   ) => {
     if (!crmContactCustomFieldNamesLoader) return null
 
     return crmContactCustomFieldNamesLoader(
-      omitBy({ partner_id: partnerID, size, term }, isNil)
+      omitBy({ partner_id: partnerID, size }, isNil)
     )
   },
 }

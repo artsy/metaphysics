@@ -34650,11 +34650,6 @@ type Query {
     Maximum number of names, 1–500. Defaults to 100.
     """
     size: Int
-
-    """
-    Only names containing this text, ignoring case
-    """
-    term: String
   ): [String!]
 
   """
@@ -45739,11 +45734,6 @@ type Viewer {
     Maximum number of names, 1–500. Defaults to 100.
     """
     size: Int
-
-    """
-    Only names containing this text, ignoring case
-    """
-    term: String
   ): [String!]
 
   """

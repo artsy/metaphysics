@@ -111,14 +111,19 @@ const contactFields = {
   },
 }
 
+// Loaders serialize the request as a query string first, which drops empty
+// arrays. Send null so that an empty list actually clears the field.
+const emptyToNull = <T>(list?: T[] | null) => {
+  return list?.length === 0 ? null : list
+}
+
 const toGravityContactParams = (input: any) => ({
   first_name: input.firstName,
   last_name: input.lastName,
   company: input.company,
   phone: input.phone,
-  categories: input.categories,
-  // Loaders drop empty arrays from the request, so send null to clear.
-  custom_fields: input.customFields?.length === 0 ? null : input.customFields,
+  categories: emptyToNull(input.categories),
+  custom_fields: emptyToNull(input.customFields),
   notes: input.notes,
   budget_min: input.budgetMin,
   budget_max: input.budgetMax,
@@ -229,9 +234,6 @@ export const updateCRMContactMutation = mutationWithClientMutationId<
       updateCrmContactLoader(input.id, {
         contact_type: input.contactType,
         ...toGravityContactParams(input),
-        // The request is serialized as a query string first, which drops empty
-        // arrays. Send null so that an empty list actually clears categories.
-        categories: input.categories?.length === 0 ? null : input.categories,
       })
     )
   },

@@ -127,20 +127,19 @@ describe("crmContact custom fields", () => {
 })
 
 describe("crmContactCustomFieldNames", () => {
-  it("passes the partner, term and size to the loader", async () => {
+  it("passes the partner and size to the loader", async () => {
     const crmContactCustomFieldNamesLoader = jest
       .fn()
       .mockResolvedValue(["Interests", "Frame preference"])
 
     const result = await runAuthenticatedQuery(
-      `{ crmContactCustomFieldNames(partnerID: "partner-1", term: "fr", size: 10) }`,
+      `{ crmContactCustomFieldNames(partnerID: "partner-1", size: 10) }`,
       { crmContactCustomFieldNamesLoader }
     )
 
     expect(crmContactCustomFieldNamesLoader).toHaveBeenCalledWith({
       partner_id: "partner-1",
       size: 10,
-      term: "fr",
     })
     expect(result.crmContactCustomFieldNames).toEqual([
       "Interests",
