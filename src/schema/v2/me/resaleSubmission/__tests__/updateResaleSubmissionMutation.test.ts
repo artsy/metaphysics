@@ -22,6 +22,11 @@ const mutationWith = (input: string) => gql`
             conditionPhotos {
               internalID
             }
+            condition {
+              value
+              displayText
+              description
+            }
           }
         }
         ... on UpdateResaleSubmissionFailure {
@@ -53,6 +58,7 @@ const updatedSubmission = {
   packer: "courier",
   courier_handoff: "seller_dropoff",
   notes: "Small tear on the verso",
+  condition: "very_good",
   missing_requirements: [],
 }
 
@@ -104,6 +110,14 @@ describe("updateResaleSubmission", () => {
     ).toHaveBeenCalledWith("submission-1", { notes: "" })
   })
 
+  it("sends the condition to Gravity", async () => {
+    await runAuthenticatedQuery(mutationWith(`condition: VERY_GOOD`), context)
+
+    expect(
+      context.meUpdateResaleSubmissionLoader as jest.Mock
+    ).toHaveBeenCalledWith("submission-1", { condition: "very_good" })
+  })
+
   it("only sends the fields that were given", async () => {
     await runAuthenticatedQuery(mutationWith(`packer: SELLER`), context)
 
@@ -141,6 +155,11 @@ describe("updateResaleSubmission", () => {
         courierHandoff: "SELLER_DROPOFF",
         notes: "Small tear on the verso",
         conditionPhotos: [],
+        condition: {
+          value: "VERY_GOOD",
+          displayText: "Very good",
+          description: null,
+        },
       },
     })
   })
