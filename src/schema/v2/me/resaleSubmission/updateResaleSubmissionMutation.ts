@@ -26,6 +26,7 @@ interface Input {
   courierHandoff?: string | null
   externalImageUrls?: string[] | null
   id: string
+  notes?: string | null
   packaging?: string | null
   packer?: string | null
   priceListed?: string | null
@@ -70,7 +71,7 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
 >({
   name: "UpdateResaleSubmission",
   description:
-    "Update the asking price, shipping preferences and condition photos of a resale submission. Omitted or null fields are left unchanged.",
+    "Update the asking price, shipping preferences, condition photos and notes of a resale submission. Omitted or null fields are left unchanged.",
   inputFields: {
     courierHandoff: {
       type: ResaleSubmissionCourierHandoffEnum,
@@ -83,6 +84,11 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the resale submission to update.",
+    },
+    notes: {
+      type: GraphQLString,
+      description:
+        "Free-text notes about the work. Send an empty string to clear them.",
     },
     packaging: {
       type: ResaleSubmissionPackagingEnum,
@@ -106,7 +112,15 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { courierHandoff, externalImageUrls, id, packaging, packer, priceListed },
+    {
+      courierHandoff,
+      externalImageUrls,
+      id,
+      notes,
+      packaging,
+      packer,
+      priceListed,
+    },
     {
       meCreateResaleSubmissionImageLoader,
       meResaleSubmissionLoader,
@@ -137,6 +151,7 @@ export const updateResaleSubmissionMutation = mutationWithClientMutationId<
     if (packaging != null) gravityParams.packaging = packaging
     if (packer != null) gravityParams.packer = packer
     if (courierHandoff != null) gravityParams.courier_handoff = courierHandoff
+    if (notes != null) gravityParams.notes = notes
 
     const imageUrls = (externalImageUrls ?? []).filter(
       (url): url is string => !!url
