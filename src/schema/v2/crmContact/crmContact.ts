@@ -111,9 +111,7 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
         "Any of collector, artist, enthusiast, advisor, critic, curator, journalist, gallery, institution, museum, buyer, government",
     },
     customFields: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(CRMContactCustomFieldType))
-      ),
+      type: new GraphQLList(new GraphQLNonNull(CRMContactCustomFieldType)),
       description: "Free-form name and value pairs, in the order entered",
       resolve: ({ custom_fields }) => custom_fields ?? [],
     },

@@ -8523,7 +8523,7 @@ type CRMContact {
   """
   Free-form name and value pairs, in the order entered
   """
-  customFields: [CRMContactCustomField!]!
+  customFields: [CRMContactCustomField!]
 
   """
   Computed by Gravity from the name, company or email

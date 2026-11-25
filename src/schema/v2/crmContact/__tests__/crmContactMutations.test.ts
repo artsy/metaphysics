@@ -63,6 +63,32 @@ describe("createCRMContact", () => {
     })
   })
 
+  it("passes custom fields and sends empty lists as null", async () => {
+    const createCrmContactLoader = jest.fn().mockResolvedValue(contact)
+
+    await runAuthenticatedQuery(
+      `mutation {
+        createCRMContact(input: {
+          partnerID: "partner-1"
+          contactType: PERSON
+          firstName: "Ada"
+          categories: []
+          customFields: [{ name: "Interests", value: "Sculpture" }]
+        }) {
+          crmContactOrError { __typename }
+        }
+      }`,
+      { createCrmContactLoader }
+    )
+
+    expect(createCrmContactLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categories: null,
+        custom_fields: [{ name: "Interests", value: "Sculpture" }],
+      })
+    )
+  })
+
   it("passes nested addresses to Gravity", async () => {
     const createCrmContactLoader = jest.fn().mockResolvedValue(contact)
 
