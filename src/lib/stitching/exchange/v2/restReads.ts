@@ -79,8 +79,6 @@ const party = (id?: string, type?: string) => {
     : { __typename: "CommercePartner", id, type }
 }
 
-const OPPOSITE_PARTICIPANT = { BUYER: "SELLER", SELLER: "BUYER" }
-
 type OffersById = Map<string, RestRecord>
 
 const offerFromRest = (
@@ -109,21 +107,15 @@ const offerFromRest = (
     internalID: offer.id,
     note: offer.note,
     offerAmountChanged: offer.offer_amount_changed,
-    // REST only gives `responds_to_id`. Look the offer up among the order's
-    // offers; if it isn't there, fall back to the other participant.
+    // REST only gives `responds_to_id`; look the offer up among the order's
+    // offers. Null if it isn't there, rather than a partial offer that would
+    // fail on non-null fields.
     respondsTo: () => {
       const id = offer.responds_to_id
-      if (!id) return null
+      if (!id || !offersById.has(id)) return null
 
-      if (!respondsTo) {
-        respondsTo = offersById.has(id)
-          ? offerFromRest(offersById.get(id), offersById)
-          : {
-              id,
-              internalID: id,
-              fromParticipant: OPPOSITE_PARTICIPANT[fromParticipant ?? ""],
-            }
-      }
+      if (!respondsTo)
+        respondsTo = offerFromRest(offersById.get(id), offersById)
       return respondsTo
     },
     shippingTotalCents: offer.shipping_total_cents,

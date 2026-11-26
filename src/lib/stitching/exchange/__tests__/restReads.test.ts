@@ -135,7 +135,7 @@ const history = [
   {
     type: "offer_submitted",
     created_at: "2026-11-02T10:00:00Z",
-    // Not among the order's submitted offers, so `respondsTo` falls back
+    // Not among the order's offers, so `respondsTo` is null
     offer: { ...sellerCounter, id: "offer-3", responds_to_id: "unknown" },
   },
 ]
@@ -544,7 +544,7 @@ describe("Exchange REST reads", () => {
             definesTotal: true,
             fromParticipant: "SELLER",
             offerAmountChanged: true,
-            respondsTo: { fromParticipant: "BUYER" },
+            respondsTo: null,
           },
         },
       ])
