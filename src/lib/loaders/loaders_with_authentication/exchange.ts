@@ -177,7 +177,8 @@ export const exchangeLoaders = (accessToken, opts) => {
     any,
     { offerId: string; action: string }
   >(
-    ({ offerId, action }) => `seller/offers/${offerId}/${action}`,
+    ({ offerId, action }) =>
+      `seller/offers/${encodeURIComponent(offerId)}/${action}`,
     {},
     {
       method: "POST",
@@ -190,7 +191,8 @@ export const exchangeLoaders = (accessToken, opts) => {
     any,
     { orderId: string; action: string }
   >(
-    ({ orderId, action }) => `seller/orders/${orderId}/${action}`,
+    ({ orderId, action }) =>
+      `seller/orders/${encodeURIComponent(orderId)}/${action}`,
     {},
     {
       method: "POST",

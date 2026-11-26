@@ -22,6 +22,7 @@ jest.mock("lib/stitching/lib/delegateToSchema", () => {
 const buyOrder = {
   id: "buy-order-id",
   code: "B123",
+  payment_set: true,
   mode: "buy",
   created_at: "2026-11-01T10:00:00Z",
   currency_code: "USD",
@@ -155,6 +156,7 @@ const orderConnectionQuery = gql`
             internalID
             code
             mode
+            paymentSet
             state
             stateReason
             stateUpdatedAt
@@ -363,6 +365,7 @@ describe("Exchange REST reads", () => {
           internalID: "buy-order-id",
           code: "B123",
           mode: "BUY",
+          paymentSet: true,
           state: "SUBMITTED",
           stateReason: null,
           stateUpdatedAt: "2026-11-02T05:00:00-05:00",
@@ -400,6 +403,7 @@ describe("Exchange REST reads", () => {
           internalID: "offer-order-id",
           code: "O456",
           mode: "OFFER",
+          paymentSet: true,
           state: "IN_REVIEW",
           stateReason: null,
           stateUpdatedAt: "2026-11-02T05:00:00-05:00",
