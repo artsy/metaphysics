@@ -31,8 +31,6 @@ export const exchangeLoaders = (accessToken, opts) => {
 
   const meOrderLoader = exchangeLoader((id) => `me/orders/${id}`)
 
-  const meOrderHistoryLoader = exchangeLoader((id) => `me/orders/${id}/history`)
-
   const meOrdersLoader = exchangeLoader("me/orders", {}, { headers: true })
 
   const meOrderUpdateLoader = exchangeLoader(
@@ -173,7 +171,6 @@ export const exchangeLoaders = (accessToken, opts) => {
   return {
     exchangeTokenLoader,
     meOrderBankAccountBalanceCheckLoader,
-    meOrderHistoryLoader,
     meOrderLoader,
     meOrdersLoader,
     meOrderUpdateLoader,

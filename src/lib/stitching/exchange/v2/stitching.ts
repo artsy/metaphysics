@@ -232,11 +232,14 @@ export const exchangeStitchingEnvironment = ({
       }
     }`,
     resolve: async (parent, _args, context, info) => {
+      const userID = parent.buyer?.id
+      if (!userID) return null
+
       return await delegateToSchema({
         schema: localSchema,
         operation: OperationTypeNode.QUERY,
         fieldName: "collectorProfile",
-        args: { userID: parent.buyer.id },
+        args: { userID },
         context,
         info,
       })
@@ -432,13 +435,15 @@ export const exchangeStitchingEnvironment = ({
             if (
               canServeOrderConnectionFromRest(
                 { sellerId, ...requestArgs },
-                context
+                context,
+                info
               )
             ) {
               return orderConnectionFromRest({
                 args: requestArgs,
                 context,
                 conversationId,
+                info,
               })
             }
 

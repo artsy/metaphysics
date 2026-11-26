@@ -1,13 +1,22 @@
 import config from "config"
+import {
+  getNamedType,
+  GraphQLNamedType,
+  GraphQLResolveInfo,
+  isInterfaceType,
+  isObjectType,
+  Kind,
+  SelectionSetNode,
+} from "graphql"
 import { date } from "schema/v2/fields/date"
 import { computeTotalPages } from "schema/v2/fields/pagination"
 
 /**
  * Serves stitched Exchange reads from Exchange REST, shaped like the
  * `Commerce*` types. Results are plain objects resolved by graphql-js' default
- * resolver, which calls function-valued properties with the field args: dates
- * are functions so `format`/`timezone` work, and `orderHistory` is a function
- * so its REST call only fires when selected.
+ * resolver, which calls function-valued properties with the field args, so
+ * dates are functions and `format`/`timezone` work. A query that selects any
+ * field not in `REST_FIELDS` is delegated to Exchange GraphQL instead.
  */
 
 // Exchange GraphQL caps every connection at 20 nodes (`default_max_page_size`).
@@ -16,7 +25,6 @@ const EXCHANGE_MAX_PAGE_SIZE = 20
 type RestRecord = Record<string, any>
 
 type RestContext = {
-  meOrderHistoryLoader?: (id: string) => Promise<RestRecord[]>
   meOrdersLoader?: (
     params: Record<string, unknown>
   ) => Promise<{ body: RestRecord[]; headers: Record<string, string> }>
@@ -201,11 +209,17 @@ const eventFromRest = (event: RestRecord, offersById: OffersById) => {
   }
 }
 
-const orderFromRest = (order: RestRecord, context: RestContext) => {
+const orderFromRest = (order: RestRecord) => {
   const mode = upcase(order.mode)
   const orderId = order.id
+  // Only present when requested with `history=true`
+  const history: RestRecord[] = order.history ?? []
   const offersById: OffersById = new Map()
-  ;[...(order.submitted_offers ?? []), order.last_submitted_offer]
+  ;[
+    ...(order.submitted_offers ?? []),
+    order.last_submitted_offer,
+    ...history.map((event) => event.offer),
+  ]
     .filter(Boolean)
     .forEach((offer) => offersById.set(offer.id, offer))
 
@@ -240,27 +254,7 @@ const orderFromRest = (order: RestRecord, context: RestContext) => {
     lastOffer: offerFromRest(order.last_submitted_offer, offersById),
     lineItems: connection((order.line_items ?? []).map(lineItemFromRest)),
     mode,
-    // One REST call per order (no batch endpoint), only when selected. The
-    // loader dedupes repeat calls within a request.
-    orderHistory: async () => {
-      if (!context.meOrderHistoryLoader) return []
-
-      try {
-        const events = (await context.meOrderHistoryLoader(orderId)) ?? []
-        events.forEach((event) => {
-          if (event.offer) offersById.set(event.offer.id, event.offer)
-        })
-        return events.map((event) => eventFromRest(event, offersById))
-      } catch (error) {
-        if (error?.statusCode !== 404) {
-          console.error(
-            "[lib/stitching/exchange/v2/restReads] orderHistory error:",
-            error
-          )
-        }
-        return []
-      }
-    },
+    orderHistory: history.map((event) => eventFromRest(event, offersById)),
     paymentMethod: paymentMethodEnum(order.payment_method),
     requestedFulfillment: requestedFulfillmentFromRest(order),
     seller,
@@ -280,6 +274,230 @@ const orderFromRest = (order: RestRecord, context: RestContext) => {
   }
 }
 
+const ORDER_FIELDS = [
+  "__typename",
+  "availablePaymentMethods",
+  "awaitingResponseFrom",
+  "bankAccountId",
+  "buyer",
+  "buyerAction",
+  "buyerDetails",
+  "buyerPhoneNumber",
+  "buyerPhoneNumberCountryCode",
+  "buyerProfile",
+  "buyerTotal",
+  "buyerTotalCents",
+  "code",
+  "conversation",
+  "createdAt",
+  "creditCard",
+  "creditCardId",
+  "creditCardWalletType",
+  "currencyCode",
+  "displayState",
+  "id",
+  "impulseConversationId",
+  "internalID",
+  "isInquiryOrder",
+  "itemsTotal",
+  "itemsTotalCents",
+  "lastOffer",
+  "lineItems",
+  "mode",
+  "orderHistory",
+  "paymentMethod",
+  "paymentMethodDetails",
+  "requestedFulfillment",
+  "seller",
+  "sellerDetails",
+  "shippingRadius",
+  "shippingTotal",
+  "shippingTotalCents",
+  "source",
+  "state",
+  "stateExpiresAt",
+  "stateReason",
+  "stateUpdatedAt",
+  "stripeConfirmationToken",
+  "taxTotal",
+  "taxTotalCents",
+  "totalListPrice",
+  "totalListPriceCents",
+  "updatedAt",
+]
+
+const SHIPPING_ADDRESS_FIELDS = [
+  "__typename",
+  "addressLine1",
+  "addressLine2",
+  "city",
+  "country",
+  "name",
+  "phoneNumber",
+  "postalCode",
+  "region",
+]
+
+const PAGE_INFO_FIELDS = [
+  "__typename",
+  "endCursor",
+  "hasNextPage",
+  "hasPreviousPage",
+  "startCursor",
+]
+
+/**
+ * Fields the mappers above set (or that stitching extension resolvers compute
+ * from them), per `Commerce*` type. Keep in sync when mapping a new field.
+ * Fields returning MP types (`creditCard`, `artwork`…) are resolved by MP from
+ * the ids set here, so their selections aren't checked.
+ */
+const REST_FIELDS: Record<string, Set<string>> = Object.fromEntries(
+  Object.entries({
+    CommerceBuyOrder: ORDER_FIELDS,
+    CommerceLineItem: [
+      "__typename",
+      "artwork",
+      "artworkId",
+      "artworkOrEditionSet",
+      "artworkVersion",
+      "artworkVersionId",
+      "editionSetId",
+      "id",
+      "internalID",
+      "listPrice",
+      "listPriceCents",
+      "partnerOfferId",
+      "priceCents",
+      "quantity",
+      "selectedShippingQuote",
+      "shippingTotal",
+      "shippingTotalCents",
+    ],
+    CommerceLineItemConnection: ["__typename", "edges", "nodes", "pageInfo"],
+    CommerceLineItemEdge: ["__typename", "cursor", "node"],
+    CommerceOffer: [
+      "__typename",
+      "amount",
+      "amountCents",
+      "buyerTotal",
+      "buyerTotalCents",
+      "createdAt",
+      "creatorId",
+      "currencyCode",
+      "definesTotal",
+      "from",
+      "fromDetails",
+      "fromParticipant",
+      "hasDefiniteTotal",
+      "id",
+      "internalID",
+      "note",
+      "offerAmountChanged",
+      "respondsTo",
+      "shippingTotal",
+      "shippingTotalCents",
+      "submittedAt",
+      "taxTotal",
+      "taxTotalCents",
+    ],
+    CommerceOfferOrder: ORDER_FIELDS,
+    CommerceOfferSubmittedEvent: ["__typename", "createdAt", "offer"],
+    CommerceOrder: ORDER_FIELDS,
+    CommerceOrderConnectionWithTotalCount: [
+      "__typename",
+      "edges",
+      "nodes",
+      "pageInfo",
+      "totalCount",
+      "totalPages",
+    ],
+    CommerceOrderEdge: ["__typename", "cursor", "node"],
+    CommerceOrderEventUnion: ["__typename"],
+    CommerceOrderPartyUnion: ["__typename"],
+    CommerceOrderStateChangedEvent: [
+      "__typename",
+      "createdAt",
+      "orderUpdateState",
+      "state",
+      "stateReason",
+    ],
+    CommercePageInfo: PAGE_INFO_FIELDS,
+    CommercePartner: ["__typename", "id", "type"],
+    CommercePickup: ["__typename", "fulfillmentType", "phoneNumber"],
+    CommerceRequestedFulfillmentUnion: ["__typename"],
+    CommerceShip: SHIPPING_ADDRESS_FIELDS,
+    CommerceShipArta: SHIPPING_ADDRESS_FIELDS,
+    CommerceShippingQuote: [
+      "__typename",
+      "displayName",
+      "id",
+      "isSelected",
+      "priceCents",
+      "tier",
+      "typeName",
+    ],
+    CommerceUser: ["__typename", "id"],
+  }).map(([type, fields]) => [type, new Set(fields)])
+)
+
+/**
+ * Walks the `orderConnection` selection (including fragments). Returns the
+ * selected `Type.field` coordinates, or null when a selected field isn't in
+ * `REST_FIELDS`.
+ */
+const selectedRestFields = (info?: GraphQLResolveInfo) => {
+  if (!info?.fieldNodes || !info.schema) return null
+
+  const selected = new Set<string>()
+
+  const walk = (
+    selectionSet: SelectionSetNode | undefined,
+    type: GraphQLNamedType
+  ): boolean =>
+    (selectionSet?.selections ?? []).every((selection) => {
+      if (selection.kind === Kind.INLINE_FRAGMENT) {
+        const fragmentType = selection.typeCondition
+          ? info.schema.getType(selection.typeCondition.name.value)
+          : type
+        return !!fragmentType && walk(selection.selectionSet, fragmentType)
+      }
+
+      if (selection.kind === Kind.FRAGMENT_SPREAD) {
+        const fragment = info.fragments[selection.name.value]
+        const fragmentType =
+          fragment && info.schema.getType(fragment.typeCondition.name.value)
+        return !!fragmentType && walk(fragment.selectionSet, fragmentType)
+      }
+
+      const fieldName = selection.name.value
+      if (!REST_FIELDS[type.name]?.has(fieldName)) return false
+      selected.add(`${type.name}.${fieldName}`)
+
+      const field =
+        (isObjectType(type) || isInterfaceType(type)) &&
+        type.getFields()[fieldName]
+      if (!field) return true
+
+      // MP types are resolved by MP from the ids set by the mappers
+      const fieldType = getNamedType(field.type)
+      if (!fieldType.name.startsWith("Commerce")) return true
+
+      return walk(selection.selectionSet, fieldType)
+    })
+
+  const rootType = getNamedType(info.returnType)
+  const servable = info.fieldNodes.every((node) =>
+    walk(node.selectionSet, rootType)
+  )
+  return servable ? selected : null
+}
+
+const selectsOrderHistory = (selected: Set<string>) =>
+  ["CommerceBuyOrder", "CommerceOfferOrder", "CommerceOrder"].some((type) =>
+    selected.has(`${type}.orderHistory`)
+  )
+
 type OrderConnectionArgs = {
   after?: string
   before?: string
@@ -292,12 +510,13 @@ type OrderConnectionArgs = {
 }
 
 /**
- * Seller views, cursor pagination and invalid arg combinations stay on
- * Exchange GraphQL.
+ * Seller views, cursor pagination, invalid arg combinations and selections of
+ * fields REST doesn't map stay on Exchange GraphQL.
  */
 export const canServeOrderConnectionFromRest = (
   args: OrderConnectionArgs,
-  context: RestContext
+  context: RestContext,
+  info?: GraphQLResolveInfo
 ) =>
   config.EXCHANGE_REST_READS &&
   Boolean(context.meOrdersLoader) &&
@@ -305,22 +524,26 @@ export const canServeOrderConnectionFromRest = (
   args.participantType !== "SELLER" &&
   !args.after &&
   !args.before &&
-  !(args.state && args.states)
+  !(args.state && args.states) &&
+  selectedRestFields(info) !== null
 
 export const orderConnectionFromRest = async ({
   args,
   context,
   conversationId,
+  info,
 }: {
   args: OrderConnectionArgs
   context: RestContext
   conversationId: string
+  info: GraphQLResolveInfo
 }) => {
   const { first, last } = args
   const isLast = typeof last === "number" && typeof first !== "number"
   const requested = isLast ? last : first ?? EXCHANGE_MAX_PAGE_SIZE
   const size = Math.max(0, Math.min(requested, EXCHANGE_MAX_PAGE_SIZE))
   const states = args.states ?? (args.state ? [args.state] : undefined)
+  const selected = selectedRestFields(info) ?? new Set<string>()
 
   let response
   try {
@@ -328,6 +551,7 @@ export const orderConnectionFromRest = async ({
       // Opt-in order fields: `display_state`, line item
       // `selected_shipping_quote`…
       details: true,
+      ...(selectsOrderHistory(selected) ? { history: true } : {}),
       impulse_conversation_id: conversationId,
       page: 1,
       // `last: n` is the first n in the reverse order, reversed back below
@@ -346,15 +570,12 @@ export const orderConnectionFromRest = async ({
   const hasMore = totalCount > orders.length
 
   return {
-    ...connection(
-      orders.map((order) => orderFromRest(order, context)),
-      {
-        // 1-based position of the first returned order in the full list
-        startPosition: isLast ? Math.max(totalCount - orders.length, 0) + 1 : 1,
-        hasNextPage: !isLast && hasMore,
-        hasPreviousPage: isLast && hasMore,
-      }
-    ),
+    ...connection(orders.map(orderFromRest), {
+      // 1-based position of the first returned order in the full list
+      startPosition: isLast ? Math.max(totalCount - orders.length, 0) + 1 : 1,
+      hasNextPage: !isLast && hasMore,
+      hasPreviousPage: isLast && hasMore,
+    }),
     pageCursors: null,
     totalCount,
     totalPages: size > 0 ? computeTotalPages(totalCount, size, null) : 0,

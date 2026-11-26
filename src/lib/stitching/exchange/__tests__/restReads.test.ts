@@ -6,6 +6,19 @@ import {
   getExchangeStitchedSchema,
 } from "./testingUtils"
 
+// Lets a test see when `orderConnection` falls back to Exchange GraphQL,
+// without sending the delegated query anywhere.
+const mockDelegateToExchange = jest.fn()
+jest.mock("lib/stitching/lib/delegateToSchema", () => {
+  const actual = jest.requireActual("lib/stitching/lib/delegateToSchema")
+  return {
+    delegateToSchema: (options) =>
+      options.fieldName === "commerceOrders" && !options.info?.mergeInfo
+        ? mockDelegateToExchange(options)
+        : actual.delegateToSchema(options),
+  }
+})
+
 const buyOrder = {
   id: "buy-order-id",
   code: "B123",
@@ -60,9 +73,11 @@ const buyOrder = {
 const buyerOffer = {
   id: "offer-1",
   amount_cents: 80000,
+  creator_id: "creator-id",
   currency_code: "USD",
   created_at: "2026-11-01T10:00:00Z",
   defines_total: false,
+  has_definite_total: false,
   from_id: "user-id",
   from_participant: "buyer",
   from_type: "user",
@@ -74,9 +89,11 @@ const buyerOffer = {
 const sellerCounter = {
   id: "offer-2",
   amount_cents: 90000,
+  creator_id: "creator-id",
   currency_code: "USD",
   created_at: "2026-11-02T10:00:00Z",
   defines_total: true,
+  has_definite_total: true,
   from_id: "partner-id",
   from_participant: "seller",
   from_type: "gallery",
@@ -178,6 +195,8 @@ const orderConnectionQuery = gql`
               buyerAction
               lastOffer {
                 amount(precision: 2)
+                creatorId
+                hasDefiniteTotal
                 fromParticipant
                 offerAmountChanged
                 from {
@@ -265,7 +284,6 @@ describe("Exchange REST reads", () => {
       body: [buyOrder, offerOrder],
       headers: { "x-total-count": "3" },
     }),
-    meOrderHistoryLoader: jest.fn().mockResolvedValue(history),
     ...overrides,
   })
 
@@ -331,7 +349,6 @@ describe("Exchange REST reads", () => {
 
       expect(result.errors).toBeUndefined()
       expectRestCall(context, { state: "SUBMITTED,APPROVED" })
-      expect(context.meOrderHistoryLoader).not.toHaveBeenCalled()
       expect(context.creditCardLoader).toHaveBeenCalledTimes(1)
 
       const connection = (result.data as any)._do_not_use_conversation
@@ -409,6 +426,8 @@ describe("Exchange REST reads", () => {
           buyerAction: "OFFER_RECEIVED",
           lastOffer: {
             amount: "$900.00",
+            creatorId: "creator-id",
+            hasDefiniteTotal: true,
             fromParticipant: "SELLER",
             offerAmountChanged: true,
             from: { __typename: "CommercePartner" },
@@ -483,10 +502,10 @@ describe("Exchange REST reads", () => {
       ).toEqual({ totalPages: 1 })
     })
 
-    it("loads order history from Exchange REST when selected", async () => {
+    it("embeds order history in the list call when selected", async () => {
       const context = buildContext({
         meOrdersLoader: jest.fn().mockResolvedValue({
-          body: [offerOrder],
+          body: [{ ...offerOrder, history }],
           headers: { "x-total-count": "1" },
         }),
       })
@@ -494,9 +513,7 @@ describe("Exchange REST reads", () => {
       const result = await runQuery(historyQuery, context)
 
       expect(result.errors).toBeUndefined()
-      expect(context.meOrderHistoryLoader).toHaveBeenCalledWith(
-        "offer-order-id"
-      )
+      expectRestCall(context, { history: true })
       expect(
         (result.data as any)._do_not_use_conversation.orderConnection.edges[0]
           .node.orderHistory
@@ -533,13 +550,8 @@ describe("Exchange REST reads", () => {
       ])
     })
 
-    it("returns an empty history when the history call fails", async () => {
-      const consoleError = jest.spyOn(console, "error").mockImplementation()
-      const context = buildContext({
-        meOrderHistoryLoader: jest
-          .fn()
-          .mockRejectedValue(new Error("Exchange is down")),
-      })
+    it("returns an empty history when the order has none", async () => {
+      const context = buildContext()
 
       const result = await runQuery(historyQuery, context)
 
@@ -551,9 +563,156 @@ describe("Exchange REST reads", () => {
         { internalID: "buy-order-id", orderHistory: [] },
         { internalID: "offer-order-id", orderHistory: [] },
       ])
-      expect(consoleError).toHaveBeenCalled()
-      consoleError.mockRestore()
     })
+
+    it("only requests history when it is selected", async () => {
+      const context = buildContext()
+
+      await runQuery(orderConnectionQuery, context)
+
+      expect(context.meOrdersLoader.mock.calls[0][0]).not.toHaveProperty(
+        "history"
+      )
+    })
+
+    describe("with fields REST doesn't map", () => {
+      beforeEach(() => {
+        mockDelegateToExchange.mockReset().mockResolvedValue(null)
+      })
+
+      // True when the query went to Exchange GraphQL and not to REST
+      const isDelegated = async (source: string) => {
+        const context = buildContext()
+        const result = await runQuery(source, context)
+
+        return (
+          !result.errors &&
+          context.meOrdersLoader.mock.calls.length === 0 &&
+          mockDelegateToExchange.mock.calls.some(
+            ([options]) => options.fieldName === "commerceOrders"
+          )
+        )
+      }
+
+      it("delegates when an unmapped order field is selected", async () => {
+        expect(
+          await isDelegated(gql`
+            {
+              _do_not_use_conversation(id: "conversation-id") {
+                orderConnection(first: 10) {
+                  edges {
+                    node {
+                      internalID
+                      paymentSet
+                    }
+                  }
+                }
+              }
+            }
+          `)
+        ).toBe(true)
+      })
+
+      it("delegates when an unmapped offer field is selected in an inline fragment", async () => {
+        expect(
+          await isDelegated(gql`
+            {
+              _do_not_use_conversation(id: "conversation-id") {
+                orderConnection(first: 10) {
+                  edges {
+                    node {
+                      ... on CommerceOfferOrder {
+                        lastOffer {
+                          order {
+                            internalID
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `)
+        ).toBe(true)
+      })
+
+      it("delegates when an unmapped field is selected in a fragment spread", async () => {
+        expect(
+          await isDelegated(gql`
+            {
+              _do_not_use_conversation(id: "conversation-id") {
+                orderConnection(first: 10) {
+                  edges {
+                    node {
+                      ...OrderFields
+                    }
+                  }
+                }
+              }
+            }
+
+            fragment OrderFields on CommerceOrder {
+              internalID
+              requireIdentityVerification
+            }
+          `)
+        ).toBe(true)
+      })
+
+      it("stays on REST for mapped fields in fragments", async () => {
+        const context = buildContext()
+
+        const result = await runQuery(
+          gql`
+            {
+              _do_not_use_conversation(id: "conversation-id") {
+                orderConnection(first: 10) {
+                  edges {
+                    node {
+                      ...OrderFields
+                    }
+                  }
+                }
+              }
+            }
+
+            fragment OrderFields on CommerceOrder {
+              internalID
+              ... on CommerceOfferOrder {
+                lastOffer {
+                  ...OfferFields
+                }
+              }
+            }
+
+            fragment OfferFields on CommerceOffer {
+              fromParticipant
+            }
+          `,
+          context
+        )
+
+        expect(result.errors).toBeUndefined()
+        expect(context.meOrdersLoader).toHaveBeenCalled()
+        expect(mockDelegateToExchange).not.toHaveBeenCalled()
+      })
+    })
+  })
+
+  it("returns a null buyerProfile when the order has no buyer", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const delegateToSchema = jest.fn()
+
+    const result = await resolvers.CommerceBuyOrder.buyerProfile.resolve(
+      { buyer: null },
+      {},
+      {},
+      { mergeInfo: { delegateToSchema } }
+    )
+
+    expect(result).toBeNull()
+    expect(delegateToSchema).not.toHaveBeenCalled()
   })
 
   describe("CollectorResume.buyerActivity", () => {
