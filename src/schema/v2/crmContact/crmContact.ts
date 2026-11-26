@@ -7,6 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLFloat,
+  GraphQLInt,
   GraphQLString,
 } from "graphql"
 import { omitBy, isNil } from "lodash"
@@ -44,6 +45,18 @@ export const CRMContactSortEnum = new GraphQLEnumType({
   values: {
     DISPLAY_NAME_ASC: { value: "display_name" },
     DISPLAY_NAME_DESC: { value: "-display_name" },
+  },
+})
+
+export const CRMContactCustomFieldType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "CRMContactCustomField",
+  description: "A free-form name and value pair the gallery defines",
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    value: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -96,6 +109,11 @@ export const CRMContactType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description:
         "Any of collector, artist, enthusiast, advisor, critic, curator, journalist, gallery, institution, museum, buyer, government",
+    },
+    customFields: {
+      type: new GraphQLList(new GraphQLNonNull(CRMContactCustomFieldType)),
+      description: "Free-form name and value pairs, in the order entered",
+      resolve: ({ custom_fields }) => custom_fields ?? [],
     },
     notes: { type: GraphQLString },
     budgetMin: {
@@ -150,6 +168,36 @@ export const crmContact: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (_root, { id }, { crmContactLoader }) => {
     if (!crmContactLoader) return null
     return crmContactLoader(id)
+  },
+}
+
+export const crmContactCustomFieldNames: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+  description:
+    "Custom field names a partner’s contacts use, most used first. Names differing only in case are merged.",
+  args: {
+    partnerID: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The partner ID to list names for",
+    },
+    size: {
+      type: GraphQLInt,
+      description: "Maximum number of names, 1–500. Defaults to 100.",
+    },
+  },
+  resolve: async (
+    _root,
+    { partnerID, size },
+    { crmContactCustomFieldNamesLoader }
+  ) => {
+    if (!crmContactCustomFieldNamesLoader) return null
+
+    return crmContactCustomFieldNamesLoader(
+      omitBy({ partner_id: partnerID, size }, isNil)
+    )
   },
 }
 
