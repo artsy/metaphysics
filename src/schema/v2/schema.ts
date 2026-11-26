@@ -305,7 +305,11 @@ import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
-import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import {
+  crmContact,
+  crmContactCustomFieldNames,
+  crmContactsConnection,
+} from "./crmContact/crmContact"
 import {
   crmContactList,
   crmContactListsConnection,
@@ -678,6 +682,7 @@ const rootFields = {
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   crmContact,
+  crmContactCustomFieldNames,
   crmContactsConnection,
   crmActivitiesConnection,
   emailSenderReview,

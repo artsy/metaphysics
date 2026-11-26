@@ -155,6 +155,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     { headers: true }
   )
 
+  const partnerBuyerActivityLoader = exchangeLoader<
+    any,
+    { partnerId: string; buyerId: string }
+  >(
+    ({ partnerId, buyerId }) =>
+      `partners/${partnerId}/buyers/${buyerId}/activity`
+  )
+
   const partnerOrderLoader = exchangeLoader<
     any,
     { partnerId: string; orderId: string }
@@ -178,6 +186,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOfferRejectLoader,
     meOfferSubmitLoader,
     stripeConfirmationTokenLoader,
+    partnerBuyerActivityLoader,
     partnerOrdersLoader,
     partnerOrderLoader,
   }

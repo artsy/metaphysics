@@ -8556,6 +8556,11 @@ type CRMContact {
   ): String
 
   """
+  Free-form name and value pairs, in the order entered
+  """
+  customFields: [CRMContactCustomField!]
+
+  """
   Computed by Gravity from the name, company or email
   """
   displayName: String
@@ -8727,6 +8732,26 @@ type CRMContactConnection {
   """
   pageInfo: PageInfo!
   totalCount: Int
+}
+
+"""
+A free-form name and value pair the gallery defines
+"""
+type CRMContactCustomField {
+  name: String!
+  value: String!
+}
+
+input CRMContactCustomFieldInput {
+  """
+  Up to 40 characters, unique per contact
+  """
+  name: String!
+
+  """
+  Up to 500 characters
+  """
+  value: String!
 }
 
 """
@@ -14348,6 +14373,11 @@ input CreateCRMContactInput {
   clientMutationId: String
   company: String
   contactType: CRMContactType!
+
+  """
+  Replaces all custom fields, in order. An empty list or null clears them. At most 30.
+  """
+  customFields: [CRMContactCustomFieldInput!]
   emails: [CRMContactEmailInput!]
   firstName: String
   lastName: String
@@ -25527,6 +25557,11 @@ type Me implements Node {
     before: String
 
     """
+    Exclude artworks that have an active (not canceled or rejected) resale submission.
+    """
+    excludeArtworksWithActiveResaleSubmissions: Boolean
+
+    """
     Exclude artworks that have been purchased on Artsy and automatically added to the collection.
     """
     excludePurchasedArtworks: Boolean = false
@@ -34824,6 +34859,21 @@ type Query {
   ): CRMContactAddressConnection
 
   """
+  Custom field names a partner’s contacts use, most used first. Names differing only in case are merged.
+  """
+  crmContactCustomFieldNames(
+    """
+    The partner ID to list names for
+    """
+    partnerID: String!
+
+    """
+    Maximum number of names, 1–500. Defaults to 100.
+    """
+    size: Int
+  ): [String!]
+
+  """
   An email address of a CRM contact
   """
   crmContactEmail(
@@ -41868,6 +41918,11 @@ input UpdateCRMContactInput {
   clientMutationId: String
   company: String
   contactType: CRMContactType
+
+  """
+  Replaces all custom fields, in order. An empty list or null clears them. At most 30.
+  """
+  customFields: [CRMContactCustomFieldInput!]
   firstName: String
 
   """
@@ -46002,6 +46057,21 @@ type Viewer {
     """
     sort: CRMContactChildSort
   ): CRMContactAddressConnection
+
+  """
+  Custom field names a partner’s contacts use, most used first. Names differing only in case are merged.
+  """
+  crmContactCustomFieldNames(
+    """
+    The partner ID to list names for
+    """
+    partnerID: String!
+
+    """
+    Maximum number of names, 1–500. Defaults to 100.
+    """
+    size: Int
+  ): [String!]
 
   """
   An email address of a CRM contact
