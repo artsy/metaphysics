@@ -48,6 +48,7 @@ import { PartnerType } from "schema/v2/partner/partner"
 import ArtistArtworksFilters from "./artwork_filters"
 import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
+import { VANGUARD_ARTICLE_SLUGS } from "./helpers"
 import ArtistHighlights from "./highlights"
 import { ArtistInsights } from "./insights"
 import { InstagramMedia } from "./artistInstagramMedia"
@@ -1110,6 +1111,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       statuses: ArtistStatuses,
       targetSupply: ArtistTargetSupply,
+      vanguardArticle: {
+        type: Article.type,
+        resolve: ({ id }, _options, { articleLoader }) => {
+          const slug = VANGUARD_ARTICLE_SLUGS[id]
+          if (!slug) return null
+
+          return articleLoader(slug).catch(() => null)
+        },
+      },
       vanguardYear: {
         type: GraphQLString,
         resolve: ({ vanguard_year }) => vanguard_year,
