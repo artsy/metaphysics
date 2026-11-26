@@ -305,7 +305,11 @@ import {
   mailchimpCampaign,
   mailchimpCampaignsConnection,
 } from "./mailchimpCampaign"
-import { crmContact, crmContactsConnection } from "./crmContact/crmContact"
+import {
+  crmContact,
+  crmContactCustomFieldNames,
+  crmContactsConnection,
+} from "./crmContact/crmContact"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
   emailSenderReview,
@@ -315,6 +319,15 @@ import {
   crmContactEmail,
   crmContactEmailsConnection,
 } from "./crmContact/crmContactEmail"
+import {
+  crmContactAddress,
+  crmContactAddressesConnection,
+} from "./crmContact/crmContactAddress"
+import {
+  saveCRMContactAddressMutation,
+  deleteCRMContactAddressMutation,
+  updateCRMContactAddressMutation,
+} from "./crmContact/crmContactAddressMutations"
 import {
   crmContactLocation,
   crmContactLocationsConnection,
@@ -658,6 +671,7 @@ const rootFields = {
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   crmContact,
+  crmContactCustomFieldNames,
   crmContactsConnection,
   crmActivitiesConnection,
   emailSenderReview,
@@ -666,6 +680,8 @@ const rootFields = {
   crmContactEmailsConnection,
   crmContactLocation,
   crmContactLocationsConnection,
+  crmContactAddress,
+  crmContactAddressesConnection,
   me: Me,
   modelChangesConnection,
   node: ObjectIdentification.NodeField,
@@ -854,6 +870,9 @@ export default new GraphQLSchema({
       createCRMContactLocation: createCRMContactLocationMutation,
       updateCRMContactLocation: updateCRMContactLocationMutation,
       deleteCRMContactLocation: deleteCRMContactLocationMutation,
+      saveCRMContactAddress: saveCRMContactAddressMutation,
+      updateCRMContactAddress: updateCRMContactAddressMutation,
+      deleteCRMContactAddress: deleteCRMContactAddressMutation,
       createBrandKit: createBrandKitMutation,
       updateBrandKit: updateBrandKitMutation,
       deleteBrandKit: deleteBrandKitMutation,

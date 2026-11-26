@@ -42,6 +42,8 @@ const {
   ENABLE_SALE_ARTWORK_REQUEST_BATCHING,
   EXCHANGE_API_BASE,
   EXCHANGE_APP_ID,
+  EXCHANGE_REST_READS,
+  EXCHANGE_REST_WRITES,
   FORCE_URL,
   GALAXY_API_BASE,
   GALAXY_TOKEN,
@@ -226,6 +228,8 @@ export default {
   SENTRY_PRIVATE_DSN,
   EXCHANGE_API_BASE,
   EXCHANGE_APP_ID,
+  EXCHANGE_REST_READS: EXCHANGE_REST_READS === "true",
+  EXCHANGE_REST_WRITES: EXCHANGE_REST_WRITES === "true",
   // Mirrors Gravity's own allowlist, so the AI agent rejects an unsupported
   // bucket before spending a model call on it.
   SEARCH_ARTWORK_IMAGE_BUCKETS: (SEARCH_ARTWORK_IMAGE_BUCKETS || "")

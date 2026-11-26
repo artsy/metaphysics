@@ -12,6 +12,18 @@ import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import config from "config"
+import {
+  buyerActivityFromRest,
+  canServeBuyerActivityFromRest,
+  canServeOrderConnectionFromRest,
+  orderConnectionFromRest,
+} from "./restReads"
+import {
+  canServeMutationFromRest,
+  mutationFromRest,
+  REST_MUTATION_NAMES,
+} from "./restWrites"
 
 const orderTotals = [
   "itemsTotal",
@@ -226,16 +238,46 @@ export const exchangeStitchingEnvironment = ({
       }
     }`,
     resolve: async (parent, _args, context, info) => {
+      const userID = parent.buyer?.id
+      if (!userID) return null
+
       return await delegateToSchema({
         schema: localSchema,
         operation: OperationTypeNode.QUERY,
         fieldName: "collectorProfile",
-        args: { userID: parent.buyer.id },
+        args: { userID },
         context,
         info,
       })
     },
   }
+
+  // Exchange root mutations that can be served from Exchange REST, otherwise
+  // delegated to Exchange GraphQL. Only added with the flag on, so with it off
+  // the stitched root fields are untouched.
+  const restMutationResolvers = Object.fromEntries(
+    REST_MUTATION_NAMES.filter((name) => name.startsWith("commerce")).map(
+      (fieldName) => [
+        fieldName,
+        {
+          resolve: (_source, args, context, info) => {
+            if (canServeMutationFromRest(fieldName, context, info)) {
+              return mutationFromRest(fieldName, args.input, context)
+            }
+
+            return delegateToSchema({
+              schema: exchangeSchema,
+              operation: OperationTypeNode.MUTATION,
+              fieldName,
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      ]
+    )
+  )
 
   // Used to convert an array of `key: resolvers` to a single obj
   const reduceToResolvers = (arr) => arr.reduce((a, b) => ({ ...a, ...b }))
@@ -359,6 +401,7 @@ export const exchangeStitchingEnvironment = ({
       CollectorResume: {
         buyerActivity: {
           selectionSet: `{
+            partnerId
             userId
             purchases {
               totalAuctionCount
@@ -371,18 +414,19 @@ export const exchangeStitchingEnvironment = ({
                 (parent?.purchases?.totalAuctionCount ?? 0) +
                 (parent?.purchases?.totalPrivateSaleCount ?? 0)
 
-              const exchangeArgs = {
-                buyerId: parent.userId,
-              }
-
-              const bnmoPurchases = await delegateToSchema({
-                schema: exchangeSchema,
-                operation: OperationTypeNode.QUERY,
-                fieldName: "commerceBuyerActivity",
-                args: exchangeArgs,
-                context,
-                info,
-              })
+              const bnmoPurchases = canServeBuyerActivityFromRest(
+                parent,
+                context
+              )
+                ? await buyerActivityFromRest(parent, context)
+                : await delegateToSchema({
+                    schema: exchangeSchema,
+                    operation: OperationTypeNode.QUERY,
+                    fieldName: "commerceBuyerActivity",
+                    args: { buyerId: parent.userId },
+                    context,
+                    info,
+                  })
 
               return {
                 totalPurchases: bnmoPurchases.totalPurchases + nonBnmoPurchases,
@@ -421,6 +465,21 @@ export const exchangeStitchingEnvironment = ({
             context,
             info
           ) => {
+            if (
+              canServeOrderConnectionFromRest(
+                { sellerId, ...requestArgs },
+                context,
+                info
+              )
+            ) {
+              return orderConnectionFromRest({
+                args: requestArgs,
+                context,
+                conversationId,
+                info,
+              })
+            }
+
             const viewerKey = sellerId
               ? { sellerId: sellerId }
               : { buyerId: context.userID }
@@ -613,6 +672,7 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
+        ...(config.EXCHANGE_REST_WRITES ? restMutationResolvers : {}),
         createInquiryOrder: {
           resolve: async (_source, args, context, info) => {
             const {
@@ -632,43 +692,53 @@ export const exchangeStitchingEnvironment = ({
               )
             }
 
-            const orderResult = await delegateToSchema({
-              schema: exchangeSchema,
-              operation: OperationTypeNode.MUTATION,
-              fieldName: "commerceCreateInquiryOrderWithArtwork",
-              args,
+            const orderResult = canServeMutationFromRest(
+              "createInquiryOrder",
               context,
-              info,
-              transforms: [
-                // add orderOrError.order.internalID to the Order selectionSet
-                new WrapQuery(
-                  [
-                    "commerceCreateInquiryOrderWithArtwork",
-                    "orderOrError",
-                    "order",
-                  ],
-                  (selectionSet: SelectionSetNode) => {
-                    const newSelections = [
-                      ...selectionSet.selections,
-                      {
-                        kind: Kind.FIELD,
-                        name: {
-                          kind: Kind.NAME,
-                          value: "internalID",
-                        },
+              info
+            )
+              ? await mutationFromRest(
+                  "createInquiryOrder",
+                  args.input,
+                  context
+                )
+              : await delegateToSchema({
+                  schema: exchangeSchema,
+                  operation: OperationTypeNode.MUTATION,
+                  fieldName: "commerceCreateInquiryOrderWithArtwork",
+                  args,
+                  context,
+                  info,
+                  transforms: [
+                    // add orderOrError.order.internalID to the Order selectionSet
+                    new WrapQuery(
+                      [
+                        "commerceCreateInquiryOrderWithArtwork",
+                        "orderOrError",
+                        "order",
+                      ],
+                      (selectionSet: SelectionSetNode) => {
+                        const newSelections = [
+                          ...selectionSet.selections,
+                          {
+                            kind: Kind.FIELD,
+                            name: {
+                              kind: Kind.NAME,
+                              value: "internalID",
+                            },
+                          },
+                        ]
+                        return {
+                          ...selectionSet,
+                          selections: newSelections,
+                        } as SelectionSetNode
                       },
-                    ]
-                    return {
-                      ...selectionSet,
-                      selections: newSelections,
-                    } as SelectionSetNode
-                  },
-                  (result) => {
-                    return result
-                  }
-                ),
-              ],
-            })
+                      (result) => {
+                        return result
+                      }
+                    ),
+                  ],
+                })
 
             const { orderOrError } = orderResult
 
@@ -712,43 +782,53 @@ export const exchangeStitchingEnvironment = ({
               )
             }
 
-            const offerResult = await delegateToSchema({
-              schema: exchangeSchema,
-              operation: OperationTypeNode.MUTATION,
-              fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
-              args,
+            const offerResult = canServeMutationFromRest(
+              "createInquiryOfferOrder",
               context,
-              info,
-              transforms: [
-                // add orderOrError.order.internalID to the Order selectionSet
-                new WrapQuery(
-                  [
-                    "commerceCreateInquiryOfferOrderWithArtwork",
-                    "orderOrError",
-                    "order",
-                  ],
-                  (selectionSet: SelectionSetNode) => {
-                    const newSelections = [
-                      ...selectionSet.selections,
-                      {
-                        kind: Kind.FIELD,
-                        name: {
-                          kind: Kind.NAME,
-                          value: "internalID",
-                        },
+              info
+            )
+              ? await mutationFromRest(
+                  "createInquiryOfferOrder",
+                  args.input,
+                  context
+                )
+              : await delegateToSchema({
+                  schema: exchangeSchema,
+                  operation: OperationTypeNode.MUTATION,
+                  fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
+                  args,
+                  context,
+                  info,
+                  transforms: [
+                    // add orderOrError.order.internalID to the Order selectionSet
+                    new WrapQuery(
+                      [
+                        "commerceCreateInquiryOfferOrderWithArtwork",
+                        "orderOrError",
+                        "order",
+                      ],
+                      (selectionSet: SelectionSetNode) => {
+                        const newSelections = [
+                          ...selectionSet.selections,
+                          {
+                            kind: Kind.FIELD,
+                            name: {
+                              kind: Kind.NAME,
+                              value: "internalID",
+                            },
+                          },
+                        ]
+                        return {
+                          ...selectionSet,
+                          selections: newSelections,
+                        } as SelectionSetNode
                       },
-                    ]
-                    return {
-                      ...selectionSet,
-                      selections: newSelections,
-                    } as SelectionSetNode
-                  },
-                  (result) => {
-                    return result
-                  }
-                ),
-              ],
-            })
+                      (result) => {
+                        return result
+                      }
+                    ),
+                  ],
+                })
 
             const { orderOrError } = offerResult
 

@@ -2167,6 +2167,9 @@ export default (accessToken, userID, opts) => {
 
     // CRM Contact Loaders
     crmContactsLoader: gravityLoader("crm_contacts", {}, { headers: true }),
+    crmContactCustomFieldNamesLoader: gravityLoader(
+      "crm_contacts/custom_field_names"
+    ),
     crmContactLoader: gravityLoader((id) => `crm_contact/${id}`),
     createCrmContactLoader: gravityLoader(
       "crm_contact",
@@ -2229,6 +2232,27 @@ export default (accessToken, userID, opts) => {
     ),
     deleteCrmContactLocationLoader: gravityLoader(
       (id) => `crm_contact_location/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    crmContactAddressesLoader: gravityLoader(
+      "crm_contact_addresses",
+      {},
+      { headers: true }
+    ),
+    crmContactAddressLoader: gravityLoader((id) => `crm_contact_address/${id}`),
+    saveCrmContactAddressLoader: gravityLoader(
+      "crm_contact_address",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactAddressLoader: gravityLoader(
+      (id) => `crm_contact_address/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactAddressLoader: gravityLoader(
+      (id) => `crm_contact_address/${id}`,
       {},
       { method: "DELETE" }
     ),

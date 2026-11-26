@@ -70,6 +70,11 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       description: "Filter by artist IDs",
     },
 
+    excludeArtworksWithActiveResaleSubmissions: {
+      type: GraphQLBoolean,
+      description:
+        "Exclude artworks that have an active (not canceled or rejected) resale submission.",
+    },
     excludePurchasedArtworks: {
       type: GraphQLBoolean,
       defaultValue: false,

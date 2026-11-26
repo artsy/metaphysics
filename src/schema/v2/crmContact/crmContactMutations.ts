@@ -9,6 +9,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { CRMContactType, CRMContactTypeEnum } from "./crmContact"
+import { CRMContactAddressTypeEnum } from "./crmContactAddress"
 import {
   NOT_SIGNED_IN,
   responseOrErrorType,
@@ -45,6 +46,36 @@ const CRMContactLocationInputType = new GraphQLInputObjectType({
   },
 })
 
+const CRMContactAddressInputType = new GraphQLInputObjectType({
+  name: "CRMContactAddressInput",
+  fields: {
+    addressType: { type: new GraphQLNonNull(CRMContactAddressTypeEnum) },
+    addressLine1: { type: new GraphQLNonNull(GraphQLString) },
+    addressLine2: { type: GraphQLString },
+    city: { type: new GraphQLNonNull(GraphQLString) },
+    region: { type: GraphQLString, description: "State or region" },
+    postalCode: { type: new GraphQLNonNull(GraphQLString) },
+    country: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ISO 3166-1 alpha-2 country code",
+    },
+  },
+})
+
+const CRMContactCustomFieldInputType = new GraphQLInputObjectType({
+  name: "CRMContactCustomFieldInput",
+  fields: {
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Up to 40 characters, unique per contact",
+    },
+    value: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Up to 500 characters",
+    },
+  },
+})
+
 // Fields shared by create and update. Gravity ignores anything left out, so
 // only what the client sent is forwarded.
 const contactFields = {
@@ -61,6 +92,11 @@ const contactFields = {
     description:
       "Replaces the whole list on update. Unknown values are rejected.",
   },
+  customFields: {
+    type: new GraphQLList(new GraphQLNonNull(CRMContactCustomFieldInputType)),
+    description:
+      "Replaces all custom fields, in order. An empty list or null clears them. At most 30.",
+  },
   notes: { type: GraphQLString },
   budgetMin: { type: GraphQLFloat },
   budgetMax: { type: GraphQLFloat },
@@ -75,12 +111,19 @@ const contactFields = {
   },
 }
 
+// Loaders serialize the request as a query string first, which drops empty
+// arrays. Send null so that an empty list actually clears the field.
+const emptyToNull = <T>(list?: T[] | null) => {
+  return list?.length === 0 ? null : list
+}
+
 const toGravityContactParams = (input: any) => ({
   first_name: input.firstName,
   last_name: input.lastName,
   company: input.company,
   phone: input.phone,
-  categories: input.categories,
+  categories: emptyToNull(input.categories),
+  custom_fields: emptyToNull(input.customFields),
   notes: input.notes,
   budget_min: input.budgetMin,
   budget_max: input.budgetMax,
@@ -101,11 +144,15 @@ export const createCRMContactMutation = mutationWithClientMutationId<
 >({
   name: "CreateCRMContact",
   description:
-    "Create a CRM contact. It needs at least one of firstName, lastName, company or an email. Creation is all-or-nothing: a failing email or location creates nothing.",
+    "Create a CRM contact. It needs at least one of firstName, lastName, company or an email. Creation is all-or-nothing: a failing email, location or address creates nothing.",
   inputFields: {
     partnerID: { type: new GraphQLNonNull(GraphQLString) },
     contactType: { type: new GraphQLNonNull(CRMContactTypeEnum) },
     ...contactFields,
+    addresses: {
+      type: new GraphQLList(new GraphQLNonNull(CRMContactAddressInputType)),
+      description: "At most one per address type",
+    },
     emails: {
       type: new GraphQLList(new GraphQLNonNull(CRMContactEmailInputType)),
     },
@@ -137,6 +184,15 @@ export const createCRMContactMutation = mutationWithClientMutationId<
           city_name: location.cityName,
           is_primary: location.isPrimary,
         })),
+        addresses: input.addresses?.map((address) => ({
+          address_type: address.addressType,
+          address_line_1: address.addressLine1,
+          address_line_2: address.addressLine2,
+          city: address.city,
+          region: address.region,
+          postal_code: address.postalCode,
+          country: address.country,
+        })),
       })
     )
   },
@@ -155,7 +211,7 @@ export const updateCRMContactMutation = mutationWithClientMutationId<
 >({
   name: "UpdateCRMContact",
   description:
-    "Update a CRM contact's own fields. Emails and locations have their own mutations, and a contact can't change partner.",
+    "Update a CRM contact's own fields. Emails, locations and addresses have their own mutations, and a contact can't change partner.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -178,9 +234,6 @@ export const updateCRMContactMutation = mutationWithClientMutationId<
       updateCrmContactLoader(input.id, {
         contact_type: input.contactType,
         ...toGravityContactParams(input),
-        // The request is serialized as a query string first, which drops empty
-        // arrays. Send null so that an empty list actually clears categories.
-        categories: input.categories?.length === 0 ? null : input.categories,
       })
     )
   },

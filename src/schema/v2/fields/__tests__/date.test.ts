@@ -41,4 +41,17 @@ describe("dateField", () => {
       )
     ).toBeNull()
   })
+
+  it("calls a resolver function value instead of returning it", () => {
+    // Objects mapped from Exchange REST store dates as resolver functions
+    const resolver = jest.fn().mockReturnValue("2026-11-23T10:06:47Z")
+    const args = { format: undefined, timezone: undefined }
+    const context = { defaultTimezone: undefined } as any
+    const info = { fieldName: "createdAt" } as any
+
+    expect(
+      dateField.resolve!({ createdAt: resolver }, args, context, info)
+    ).toBe("2026-11-23T10:06:47Z")
+    expect(resolver).toHaveBeenCalledWith(args, context, info)
+  })
 })
