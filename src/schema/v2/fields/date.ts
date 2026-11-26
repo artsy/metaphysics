@@ -41,15 +41,19 @@ export const date = <T>(
           'A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones',
       },
     },
-    resolve: (
-      obj,
-      { format, timezone },
-      { defaultTimezone },
-      { fieldName }
-    ) => {
-      const value: Value = fn
+    resolve: (obj, args, context, info) => {
+      const { format, timezone } = args
+      const { defaultTimezone } = context
+      const { fieldName } = info
+      const value: Value | ((...resolverArgs: unknown[]) => unknown) = fn
         ? fn(obj)
         : obj[snakeCase(fieldName)] ?? obj[fieldName]
+
+      // Objects mapped from Exchange REST carry their dates as resolver
+      // functions (restReads.ts `dateValue`), which already format.
+      if (typeof value === "function") {
+        return value(args, context, info)
+      }
 
       if (!value) {
         return null
