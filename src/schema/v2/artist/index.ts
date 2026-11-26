@@ -1112,19 +1112,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       statuses: ArtistStatuses,
       targetSupply: ArtistTargetSupply,
       vanguardArticle: {
-        type: new GraphQLObjectType<{ slug: string }, ResolverContext>({
-          name: "ArtistVanguardArticle",
-          fields: {
-            href: {
-              type: new GraphQLNonNull(GraphQLString),
-              resolve: ({ slug }) => `/article/${slug}`,
-            },
-            slug: { type: new GraphQLNonNull(GraphQLString) },
-          },
-        }),
-        resolve: ({ id }) => {
+        type: Article.type,
+        resolve: ({ id }, _options, { articleLoader }) => {
           const slug = VANGUARD_ARTICLE_SLUGS[id]
-          return slug ? { slug } : null
+          if (!slug) return null
+
+          return articleLoader(slug).catch(() => null)
         },
       },
       vanguardYear: {
