@@ -142,12 +142,12 @@ describe("CRM contact list mutations", () => {
     }
   `
 
-  it("creates a list with contacts", async () => {
+  it("creates a list", async () => {
     const createCrmContactListLoader = jest.fn().mockResolvedValue(gravityList)
 
     const { createCRMContactList } = await runAuthenticatedQuery(
       `mutation {
-        createCRMContactList(input: { partnerID: "partner-1", name: "VIP", description: "Top", contactIDs: ["c-1"] }) {
+        createCRMContactList(input: { partnerID: "partner-1", name: "VIP", description: "Top" }) {
           ${listFields}
         }
       }`,
@@ -158,7 +158,6 @@ describe("CRM contact list mutations", () => {
       partner_id: "partner-1",
       name: "VIP",
       description: "Top",
-      crm_contact_ids: ["c-1"],
     })
     expect(createCRMContactList.crmContactListOrError).toEqual({
       __typename: "CreateCRMContactListSuccess",
@@ -191,20 +190,20 @@ describe("CRM contact list mutations", () => {
     ).toEqual(400)
   })
 
-  it("updates, deletes, adds and removes contacts", async () => {
+  it("updates, deletes, adds and removes a contact", async () => {
     const context = {
       updateCrmContactListLoader: jest.fn().mockResolvedValue(gravityList),
       deleteCrmContactListLoader: jest.fn().mockResolvedValue(gravityList),
-      addCrmContactsToListLoader: jest.fn().mockResolvedValue(gravityList),
-      removeCrmContactsFromListLoader: jest.fn().mockResolvedValue(gravityList),
+      addCrmContactToListLoader: jest.fn().mockResolvedValue(gravityList),
+      removeCrmContactFromListLoader: jest.fn().mockResolvedValue(gravityList),
     }
 
     await runAuthenticatedQuery(
       `mutation {
         updateCRMContactList(input: { id: "list-1", name: "Top" }) { clientMutationId }
         deleteCRMContactList(input: { id: "list-1" }) { clientMutationId }
-        addCRMContactsToList(input: { id: "list-1", contactIDs: ["c-1"] }) { clientMutationId }
-        removeCRMContactsFromList(input: { id: "list-1", contactIDs: ["c-2"] }) { clientMutationId }
+        addCRMContactToList(input: { id: "list-1", contactID: "c-1" }) { clientMutationId }
+        removeCRMContactFromList(input: { id: "list-1", contactID: "c-2" }) { clientMutationId }
       }`,
       context
     )
@@ -214,12 +213,12 @@ describe("CRM contact list mutations", () => {
       description: undefined,
     })
     expect(context.deleteCrmContactListLoader).toHaveBeenCalledWith("list-1")
-    expect(context.addCrmContactsToListLoader).toHaveBeenCalledWith("list-1", {
-      crm_contact_ids: ["c-1"],
+    expect(context.addCrmContactToListLoader).toHaveBeenCalledWith("list-1", {
+      crm_contact_id: "c-1",
     })
     expect(
-      context.removeCrmContactsFromListLoader
-    ).toHaveBeenCalledWith("list-1", { crm_contact_ids: ["c-2"] })
+      context.removeCrmContactFromListLoader
+    ).toHaveBeenCalledWith("list-1", { crm_contact_id: "c-2" })
   })
 
   it.each([
@@ -230,14 +229,14 @@ describe("CRM contact list mutations", () => {
     ],
     ["deleteCRMContactList", "deleteCrmContactListLoader", `id: "list-1"`],
     [
-      "addCRMContactsToList",
-      "addCrmContactsToListLoader",
-      `id: "list-1", contactIDs: ["c-1"]`,
+      "addCRMContactToList",
+      "addCrmContactToListLoader",
+      `id: "list-1", contactID: "c-1"`,
     ],
     [
-      "removeCRMContactsFromList",
-      "removeCrmContactsFromListLoader",
-      `id: "list-1", contactIDs: ["c-1"]`,
+      "removeCRMContactFromList",
+      "removeCrmContactFromListLoader",
+      `id: "list-1", contactID: "c-1"`,
     ],
   ])(
     "%s returns a failure when Gravity rejects it",
@@ -269,23 +268,4 @@ describe("CRM contact list mutations", () => {
       })
     }
   )
-
-  it.each([
-    ["addCRMContactsToList", "addCrmContactsToListLoader"],
-    ["removeCRMContactsFromList", "removeCrmContactsFromListLoader"],
-  ])("%s rejects an empty list of contacts", async (field, loader) => {
-    const loaderMock = jest.fn()
-
-    await expect(
-      runAuthenticatedQuery(
-        `mutation {
-          ${field}(input: { id: "list-1", contactIDs: [] }) {
-            clientMutationId
-          }
-        }`,
-        { [loader]: loaderMock }
-      )
-    ).rejects.toThrow("contactIDs must include at least one ID")
-    expect(loaderMock).not.toHaveBeenCalled()
-  })
 })

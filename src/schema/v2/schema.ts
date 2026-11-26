@@ -315,10 +315,10 @@ import {
   crmContactListsConnection,
 } from "./crmContact/crmContactList"
 import {
-  addCRMContactsToListMutation,
+  addCRMContactToListMutation,
   createCRMContactListMutation,
   deleteCRMContactListMutation,
-  removeCRMContactsFromListMutation,
+  removeCRMContactFromListMutation,
   updateCRMContactListMutation,
 } from "./crmContact/crmContactListMutations"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
@@ -874,8 +874,8 @@ export default new GraphQLSchema({
       createCRMContactList: createCRMContactListMutation,
       updateCRMContactList: updateCRMContactListMutation,
       deleteCRMContactList: deleteCRMContactListMutation,
-      addCRMContactsToList: addCRMContactsToListMutation,
-      removeCRMContactsFromList: removeCRMContactsFromListMutation,
+      addCRMContactToList: addCRMContactToListMutation,
+      removeCRMContactFromList: removeCRMContactFromListMutation,
       approveEmailSenderReview: approveEmailSenderReviewMutation,
       skipEmailSenderReview: skipEmailSenderReviewMutation,
       unskipEmailSenderReview: unskipEmailSenderReviewMutation,

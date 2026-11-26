@@ -2212,12 +2212,12 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    addCrmContactsToListLoader: gravityLoader(
+    addCrmContactToListLoader: gravityLoader(
       (id) => `crm_contact_list/${id}/contacts`,
       {},
       { method: "POST" }
     ),
-    removeCrmContactsFromListLoader: gravityLoader(
+    removeCrmContactFromListLoader: gravityLoader(
       (id) => `crm_contact_list/${id}/contacts`,
       {},
       { method: "DELETE" }

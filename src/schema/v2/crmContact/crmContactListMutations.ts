@@ -1,9 +1,4 @@
-import {
-  GraphQLError,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { CRMContactListType } from "./crmContactList"
@@ -13,11 +8,9 @@ import {
   withGravityMutationError,
 } from "./mutationHelpers"
 
-const NO_CONTACT_IDS = "contactIDs must include at least one ID"
-
-const contactIDsField = {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-  description: "CRM contact IDs. IDs of other partners’ contacts are ignored.",
+const contactIDField = {
+  type: new GraphQLNonNull(GraphQLString),
+  description: "CRM contact ID. Contacts of other partners are not found.",
 }
 
 const listOrErrorField = (name: string, description: string) => ({
@@ -39,15 +32,11 @@ export const createCRMContactListMutation = mutationWithClientMutationId<
 >({
   name: "CreateCRMContactList",
   description:
-    "Create a CRM contact list, optionally with its first contacts. The name must be unique within the partner, ignoring case.",
+    "Create a CRM contact list. The name must be unique within the partner, ignoring case.",
   inputFields: {
     partnerID: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
-    contactIDs: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
-      description: "Contacts to add to the new list",
-    },
   },
   outputFields: listOrErrorField(
     "CreateCRMContactList",
@@ -61,9 +50,6 @@ export const createCRMContactListMutation = mutationWithClientMutationId<
         partner_id: input.partnerID,
         name: input.name,
         description: input.description,
-        crm_contact_ids: input.contactIDs?.length
-          ? input.contactIDs
-          : undefined,
       })
     )
   },
@@ -127,66 +113,64 @@ export const deleteCRMContactListMutation = mutationWithClientMutationId<
   },
 })
 
-export const addCRMContactsToListMutation = mutationWithClientMutationId<
+export const addCRMContactToListMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "AddCRMContactsToList",
+  name: "AddCRMContactToList",
   description:
-    "Add contacts to a CRM contact list. Contacts already in it are skipped.",
+    "Add a contact to a CRM contact list. Adding a contact already in it changes nothing.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the list",
     },
-    contactIDs: contactIDsField,
+    contactID: contactIDField,
   },
   outputFields: listOrErrorField(
-    "AddCRMContactsToList",
+    "AddCRMContactToList",
     "On success: the updated list"
   ),
   mutateAndGetPayload: async (
-    { id, contactIDs },
-    { addCrmContactsToListLoader }
+    { id, contactID },
+    { addCrmContactToListLoader }
   ) => {
-    if (!addCrmContactsToListLoader) throw new Error(NOT_SIGNED_IN)
-    if (contactIDs.length === 0) throw new GraphQLError(NO_CONTACT_IDS)
+    if (!addCrmContactToListLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      addCrmContactsToListLoader(id, { crm_contact_ids: contactIDs })
+      addCrmContactToListLoader(id, { crm_contact_id: contactID })
     )
   },
 })
 
-export const removeCRMContactsFromListMutation = mutationWithClientMutationId<
+export const removeCRMContactFromListMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "RemoveCRMContactsFromList",
+  name: "RemoveCRMContactFromList",
   description:
-    "Remove contacts from a CRM contact list. The contacts are not deleted.",
+    "Remove a contact from a CRM contact list. The contact is not deleted.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The internal ID of the list",
     },
-    contactIDs: contactIDsField,
+    contactID: contactIDField,
   },
   outputFields: listOrErrorField(
-    "RemoveCRMContactsFromList",
+    "RemoveCRMContactFromList",
     "On success: the updated list"
   ),
   mutateAndGetPayload: async (
-    { id, contactIDs },
-    { removeCrmContactsFromListLoader }
+    { id, contactID },
+    { removeCrmContactFromListLoader }
   ) => {
-    if (!removeCrmContactsFromListLoader) throw new Error(NOT_SIGNED_IN)
-    if (contactIDs.length === 0) throw new GraphQLError(NO_CONTACT_IDS)
+    if (!removeCrmContactFromListLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      removeCrmContactsFromListLoader(id, { crm_contact_ids: contactIDs })
+      removeCrmContactFromListLoader(id, { crm_contact_id: contactID })
     )
   },
 })
