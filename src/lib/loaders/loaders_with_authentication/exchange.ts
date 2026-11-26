@@ -31,6 +31,8 @@ export const exchangeLoaders = (accessToken, opts) => {
 
   const meOrderLoader = exchangeLoader((id) => `me/orders/${id}`)
 
+  const meOrderHistoryLoader = exchangeLoader((id) => `me/orders/${id}/history`)
+
   const meOrdersLoader = exchangeLoader("me/orders", {}, { headers: true })
 
   const meOrderUpdateLoader = exchangeLoader(
@@ -155,6 +157,14 @@ export const exchangeLoaders = (accessToken, opts) => {
     { headers: true }
   )
 
+  const partnerBuyerActivityLoader = exchangeLoader<
+    any,
+    { partnerId: string; buyerId: string }
+  >(
+    ({ partnerId, buyerId }) =>
+      `partners/${partnerId}/buyers/${buyerId}/activity`
+  )
+
   const partnerOrderLoader = exchangeLoader<
     any,
     { partnerId: string; orderId: string }
@@ -163,6 +173,7 @@ export const exchangeLoaders = (accessToken, opts) => {
   return {
     exchangeTokenLoader,
     meOrderBankAccountBalanceCheckLoader,
+    meOrderHistoryLoader,
     meOrderLoader,
     meOrdersLoader,
     meOrderUpdateLoader,
@@ -178,6 +189,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     meOfferRejectLoader,
     meOfferSubmitLoader,
     stripeConfirmationTokenLoader,
+    partnerBuyerActivityLoader,
     partnerOrdersLoader,
     partnerOrderLoader,
   }

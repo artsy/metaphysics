@@ -12,6 +12,12 @@ import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import {
+  buyerActivityFromRest,
+  canServeBuyerActivityFromRest,
+  canServeOrderConnectionFromRest,
+  orderConnectionFromRest,
+} from "./restReads"
 
 const orderTotals = [
   "itemsTotal",
@@ -359,6 +365,7 @@ export const exchangeStitchingEnvironment = ({
       CollectorResume: {
         buyerActivity: {
           selectionSet: `{
+            partnerId
             userId
             purchases {
               totalAuctionCount
@@ -371,18 +378,19 @@ export const exchangeStitchingEnvironment = ({
                 (parent?.purchases?.totalAuctionCount ?? 0) +
                 (parent?.purchases?.totalPrivateSaleCount ?? 0)
 
-              const exchangeArgs = {
-                buyerId: parent.userId,
-              }
-
-              const bnmoPurchases = await delegateToSchema({
-                schema: exchangeSchema,
-                operation: OperationTypeNode.QUERY,
-                fieldName: "commerceBuyerActivity",
-                args: exchangeArgs,
-                context,
-                info,
-              })
+              const bnmoPurchases = canServeBuyerActivityFromRest(
+                parent,
+                context
+              )
+                ? await buyerActivityFromRest(parent, context)
+                : await delegateToSchema({
+                    schema: exchangeSchema,
+                    operation: OperationTypeNode.QUERY,
+                    fieldName: "commerceBuyerActivity",
+                    args: { buyerId: parent.userId },
+                    context,
+                    info,
+                  })
 
               return {
                 totalPurchases: bnmoPurchases.totalPurchases + nonBnmoPurchases,
@@ -421,6 +429,19 @@ export const exchangeStitchingEnvironment = ({
             context,
             info
           ) => {
+            if (
+              canServeOrderConnectionFromRest(
+                { sellerId, ...requestArgs },
+                context
+              )
+            ) {
+              return orderConnectionFromRest({
+                args: requestArgs,
+                context,
+                conversationId,
+              })
+            }
+
             const viewerKey = sellerId
               ? { sellerId: sellerId }
               : { buyerId: context.userID }
