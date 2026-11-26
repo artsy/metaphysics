@@ -2132,8 +2132,19 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    // Latest backfill run of an account (404 when none was requested)
+    emailBackfillRunLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/backfill`
+    ),
     refreshEmailAccountWatchLoader: gravityLoader(
       (id) => `partner_email_account/${id}/refresh_watch`,
+      {},
+      { method: "POST" }
+    ),
+
+    // Queues a backfill from a date (202); returns the run
+    requestEmailBackfillLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/backfill`,
       {},
       { method: "POST" }
     ),
