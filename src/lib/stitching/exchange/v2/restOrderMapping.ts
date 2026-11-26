@@ -27,8 +27,14 @@ const upcase = (value?: string | null) => value?.toUpperCase()
 
 // Same resolver the stitched DateTime transform uses on the GraphQL path
 const rawDateField = date<string | null | undefined>((raw) => raw)
+
+// Exchange REST sends milliseconds ("…:45.222Z"); Exchange GraphQL sends whole
+// seconds ("…:45Z"). Drop the fraction so unformatted dates match exactly.
+const toGraphQLDateTime = (raw?: string | null) =>
+  raw?.replace(/\.\d+(?=Z$|[+-]\d{2}:?\d{2}$)/, "")
+
 const dateValue = (raw?: string | null) => (args, context, info) =>
-  rawDateField.resolve!(raw, args, context, info)
+  rawDateField.resolve!(toGraphQLDateTime(raw), args, context, info)
 
 // "credit card" → CREDIT_CARD, "wire_transfer" → WIRE_TRANSFER
 const paymentMethodEnum = (value?: string | null) =>

@@ -127,7 +127,7 @@ const history = [
   },
   {
     type: "order_state_changed",
-    created_at: "2026-11-01T10:00:01Z",
+    created_at: "2026-11-01T10:00:01.123Z",
     state: "submitted",
     state_reason: null,
     order_update_state: "offer_submitted",
@@ -548,6 +548,25 @@ describe("Exchange REST reads", () => {
           },
         },
       ])
+    })
+
+    it("returns unformatted dates in whole seconds, like Exchange GraphQL", async () => {
+      const context = buildContext({
+        defaultTimezone: undefined,
+        meOrdersLoader: jest.fn().mockResolvedValue({
+          body: [{ ...offerOrder, history }],
+          headers: { "x-total-count": "1" },
+        }),
+      })
+
+      const result = await runQuery(historyQuery, context)
+
+      expect(result.errors).toBeUndefined()
+      const [
+        ,
+        stateChanged,
+      ] = (result.data as any)._do_not_use_conversation.orderConnection.edges[0].node.orderHistory
+      expect(stateChanged.createdAt).toEqual("2026-11-01T10:00:01Z")
     })
 
     it("returns an empty history when the order has none", async () => {
