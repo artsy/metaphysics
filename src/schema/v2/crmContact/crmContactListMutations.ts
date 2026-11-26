@@ -139,7 +139,7 @@ export const addCRMContactToListMutation = mutationWithClientMutationId<
     if (!addCrmContactToListLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      addCrmContactToListLoader(id, { crm_contact_id: contactID })
+      addCrmContactToListLoader({ listId: id, contactId: contactID })
     )
   },
 })
@@ -170,7 +170,7 @@ export const removeCRMContactFromListMutation = mutationWithClientMutationId<
     if (!removeCrmContactFromListLoader) throw new Error(NOT_SIGNED_IN)
 
     return withGravityMutationError(() =>
-      removeCrmContactFromListLoader(id, { crm_contact_id: contactID })
+      removeCrmContactFromListLoader({ listId: id, contactId: contactID })
     )
   },
 })

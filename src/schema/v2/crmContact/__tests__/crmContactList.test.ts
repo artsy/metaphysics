@@ -213,12 +213,14 @@ describe("CRM contact list mutations", () => {
       description: undefined,
     })
     expect(context.deleteCrmContactListLoader).toHaveBeenCalledWith("list-1")
-    expect(context.addCrmContactToListLoader).toHaveBeenCalledWith("list-1", {
-      crm_contact_id: "c-1",
+    expect(context.addCrmContactToListLoader).toHaveBeenCalledWith({
+      listId: "list-1",
+      contactId: "c-1",
     })
-    expect(
-      context.removeCrmContactFromListLoader
-    ).toHaveBeenCalledWith("list-1", { crm_contact_id: "c-2" })
+    expect(context.removeCrmContactFromListLoader).toHaveBeenCalledWith({
+      listId: "list-1",
+      contactId: "c-2",
+    })
   })
 
   it.each([
