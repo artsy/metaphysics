@@ -31,6 +31,9 @@ export interface APIOptions {
   headers?: boolean
   appToken?: string
 
+  /** Exchange only: send the request ID, client IP and session ID headers. */
+  forwardRequestIDs?: boolean
+
   /** This only applies to caching loaders */
   requestThrottleMs?: number
 
