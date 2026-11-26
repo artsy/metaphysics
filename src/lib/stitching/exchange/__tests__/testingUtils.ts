@@ -31,7 +31,7 @@ export const getExchangeStitchedSchema = async () => {
 
 /** Gets a cached fully setup schema with exchange and the localSchema set up */
 export const getExchangeMergedSchema = async () => {
-  if (!stitchedSchema) {
+  if (!mergedSchema) {
     const cachedSchema = await getExchangeTransformedSchema()
     const { extensionSchema, resolvers } = await getExchangeStitchedSchema()
 
