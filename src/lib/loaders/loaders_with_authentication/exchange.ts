@@ -173,6 +173,22 @@ export const exchangeLoaders = (accessToken, opts) => {
       `partners/${partnerId}/buyers/${buyerId}/activity`
   )
 
+  // Offer-keyed buyer actions (counter, submit, accept, reject), like the
+  // seller routes below: the stitched buyer mutations only get an offer id
+  const buyerOfferActionLoader = exchangeLoader<
+    any,
+    { offerId: string; action: string }
+  >(
+    ({ offerId, action }) =>
+      `buyer/offers/${encodeURIComponent(offerId)}/${action}`,
+    {},
+    {
+      method: "POST",
+      // Same client headers as the Exchange GraphQL link
+      forwardRequestIDs: true,
+    }
+  )
+
   const sellerOfferActionLoader = exchangeLoader<
     any,
     { offerId: string; action: string }
@@ -207,6 +223,7 @@ export const exchangeLoaders = (accessToken, opts) => {
   >(({ partnerId, orderId }) => `partners/${partnerId}/orders/${orderId}`)
 
   return {
+    buyerOfferActionLoader,
     exchangeTokenLoader,
     meOrderBankAccountBalanceCheckLoader,
     meOrderCreateLoader,
