@@ -603,7 +603,7 @@ describe("Exchange REST reads", () => {
                   edges {
                     node {
                       internalID
-                      paymentSet
+                      commissionRate
                     }
                   }
                 }

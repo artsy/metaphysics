@@ -33,6 +33,16 @@ export const exchangeLoaders = (accessToken, opts) => {
 
   const meOrdersLoader = exchangeLoader("me/orders", {}, { headers: true })
 
+  const meOrderCreateLoader = exchangeLoader(
+    "me/orders",
+    {},
+    {
+      method: "POST",
+      // Same client headers as the Exchange GraphQL link
+      forwardRequestIDs: true,
+    }
+  )
+
   const meOrderUpdateLoader = exchangeLoader(
     (id) => `me/orders/${id}`,
     {},
@@ -163,6 +173,32 @@ export const exchangeLoaders = (accessToken, opts) => {
       `partners/${partnerId}/buyers/${buyerId}/activity`
   )
 
+  const sellerOfferActionLoader = exchangeLoader<
+    any,
+    { offerId: string; action: string }
+  >(
+    ({ offerId, action }) => `seller/offers/${offerId}/${action}`,
+    {},
+    {
+      method: "POST",
+      // Same client headers as the Exchange GraphQL link
+      forwardRequestIDs: true,
+    }
+  )
+
+  const sellerOrderActionLoader = exchangeLoader<
+    any,
+    { orderId: string; action: string }
+  >(
+    ({ orderId, action }) => `seller/orders/${orderId}/${action}`,
+    {},
+    {
+      method: "POST",
+      // Same client headers as the Exchange GraphQL link
+      forwardRequestIDs: true,
+    }
+  )
+
   const partnerOrderLoader = exchangeLoader<
     any,
     { partnerId: string; orderId: string }
@@ -171,6 +207,7 @@ export const exchangeLoaders = (accessToken, opts) => {
   return {
     exchangeTokenLoader,
     meOrderBankAccountBalanceCheckLoader,
+    meOrderCreateLoader,
     meOrderLoader,
     meOrdersLoader,
     meOrderUpdateLoader,
@@ -189,5 +226,7 @@ export const exchangeLoaders = (accessToken, opts) => {
     partnerBuyerActivityLoader,
     partnerOrdersLoader,
     partnerOrderLoader,
+    sellerOfferActionLoader,
+    sellerOrderActionLoader,
   }
 }
