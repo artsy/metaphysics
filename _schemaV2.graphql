@@ -2865,6 +2865,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   sortableID: String
   statuses: ArtistStatuses
   targetSupply: ArtistTargetSupply!
+  vanguardArticle: ArtistVanguardArticle
   vanguardYear: String
   verifiedRepresentatives: [VerifiedRepresentative!]!
   years: String
@@ -3863,6 +3864,11 @@ enum ArtistTargetSupplyType {
   CURATED_EMERGING
   HIGHEST_HQDLS
   HIGH_HQDLS
+}
+
+type ArtistVanguardArticle {
+  href: String!
+  slug: String!
 }
 
 """
