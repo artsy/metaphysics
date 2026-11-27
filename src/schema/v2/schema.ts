@@ -298,6 +298,11 @@ import { completeMailchimpOAuthMutation } from "./me/completeMailchimpOAuthMutat
 import { deleteMailchimpAccountMutation } from "./me/deleteMailchimpAccountMutation"
 import { createMailchimpCampaignMutation } from "./createMailchimpCampaignMutation"
 import { createBrandKitMutation } from "./partner/Mutations/createBrandKitMutation"
+import { createPartnerPermissionGrantMutation } from "./partner/Mutations/createPartnerPermissionGrantMutation"
+import { deletePartnerPermissionGrantMutation } from "./partner/Mutations/deletePartnerPermissionGrantMutation"
+import { enableArtOSForPartnerMutation } from "./partner/Mutations/enableArtOSForPartnerMutation"
+import { updatePartnerPermissionGrantMutation } from "./partner/Mutations/updatePartnerPermissionGrantMutation"
+import { PartnerPermissionPresetsField } from "./partner/partnerPermissionGrant"
 import { updateBrandKitMutation } from "./partner/Mutations/updateBrandKitMutation"
 import { deleteBrandKitMutation } from "./partner/Mutations/deleteBrandKitMutation"
 import { updateBrandKitLogoMutation } from "./partner/Mutations/updateBrandKitLogoMutation"
@@ -715,6 +720,7 @@ const rootFields = {
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
   partnerCategory: PartnerCategory,
+  partnerPermissionPresets: PartnerPermissionPresetsField,
   partnersConnection: PartnersConnection,
   partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
   partnerUserNote: PartnerUserNote,
@@ -843,6 +849,7 @@ export default new GraphQLSchema({
       createNavigationItem: createNavigationItemMutation,
       createOrderedSet: createOrderedSetMutation,
       createPartnerContact: CreatePartnerContactMutation,
+      createPartnerPermissionGrant: createPartnerPermissionGrantMutation,
       createPartnerUserNote: CreatePartnerUserNoteMutation,
       createPartnerLocation: CreatePartnerLocationMutation,
       createPartnerLocationDaySchedules: CreatePartnerLocationDaySchedulesMutation,
@@ -956,6 +963,7 @@ export default new GraphQLSchema({
       deletePartnerList: deletePartnerListMutation,
       deletePartnerArtist: deletePartnerArtistMutation,
       deletePartnerContact: DeletePartnerContactMutation,
+      deletePartnerPermissionGrant: deletePartnerPermissionGrantMutation,
       deletePartnerUserNote: DeletePartnerUserNoteMutation,
       deletePartnerArtistDocument: deletePartnerArtistDocumentMutation,
       deletePartnerLocation: DeletePartnerLocationMutation,
@@ -987,6 +995,7 @@ export default new GraphQLSchema({
       dismissPartnerListSyncConfirmation: dismissPartnerListSyncConfirmationMutation,
       dislikeArtwork: dislikeArtworkMutation,
       dismissTask: dismissTaskMutation,
+      enableArtOSForPartner: enableArtOSForPartnerMutation,
       enableSecondFactor: enableSecondFactorMutation,
       endSale: endSaleMutation,
       finalizeArtnetImport: finalizeArtnetImportMutation,
@@ -1089,6 +1098,7 @@ export default new GraphQLSchema({
       updatePage: UpdatePageMutation,
       updatePurchase: updatePurchaseMutation,
       updatePartnerContact: UpdatePartnerContactMutation,
+      updatePartnerPermissionGrant: updatePartnerPermissionGrantMutation,
       updatePartnerUserNote: UpdatePartnerUserNoteMutation,
       updatePartnerLocation: UpdatePartnerLocationMutation,
       updatePartnerProfileImage: UpdatePartnerProfileImageMutation,

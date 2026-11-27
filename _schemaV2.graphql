@@ -1878,6 +1878,25 @@ type ArchiveCRMContactSuccess {
   crmContact: CRMContact
 }
 
+type ArtOSPartnerEnablement {
+  createdGrantsCount: Int!
+  skippedUsersCount: Int!
+}
+
+enum ArtOSPermissionSource {
+  GRANT
+  ROLE
+}
+
+type ArtOSPermissions {
+  permissions: [String!]!
+
+  """
+  Where the access comes from: a grant, or the artos_support role. Null when there is none.
+  """
+  source: ArtOSPermissionSource
+}
+
 type Article implements Node {
   """
   Maps to the "Primary Author" field in Positron. Ultimately this is only supposed to control the article slug
@@ -15462,6 +15481,43 @@ type CreatePartnerLocationSuccess {
   location: Location
 }
 
+type CreatePartnerPermissionGrantFailure {
+  mutationError: GravityMutationError
+}
+
+input CreatePartnerPermissionGrantInput {
+  clientMutationId: String
+  partnerID: String!
+
+  """
+  Permission keys to grant instead of a preset.
+  """
+  permissions: [String!]
+
+  """
+  Preset to grant, such as viewer, editor or owner.
+  """
+  presetKey: String
+  userID: String!
+}
+
+type CreatePartnerPermissionGrantPayload {
+  clientMutationId: String
+
+  """
+  On success: the new grant
+  """
+  partnerPermissionGrantOrError: CreatePartnerPermissionGrantResponseOrError
+}
+
+union CreatePartnerPermissionGrantResponseOrError =
+    CreatePartnerPermissionGrantFailure
+  | CreatePartnerPermissionGrantSuccess
+
+type CreatePartnerPermissionGrantSuccess {
+  partnerPermissionGrant: PartnerPermissionGrant
+}
+
 type CreatePartnerShowDocumentFailure {
   mutationError: GravityMutationError
 }
@@ -17259,6 +17315,32 @@ type DeletePartnerLocationSuccess {
   location: Location
 }
 
+type DeletePartnerPermissionGrantFailure {
+  mutationError: GravityMutationError
+}
+
+input DeletePartnerPermissionGrantInput {
+  clientMutationId: String
+  grantID: String!
+}
+
+type DeletePartnerPermissionGrantPayload {
+  clientMutationId: String
+
+  """
+  On success: the removed grant
+  """
+  partnerPermissionGrantOrError: DeletePartnerPermissionGrantResponseOrError
+}
+
+union DeletePartnerPermissionGrantResponseOrError =
+    DeletePartnerPermissionGrantFailure
+  | DeletePartnerPermissionGrantSuccess
+
+type DeletePartnerPermissionGrantSuccess {
+  partnerPermissionGrant: PartnerPermissionGrant
+}
+
 type DeletePartnerShowDocumentFailure {
   mutationError: GravityMutationError
 }
@@ -18814,6 +18896,32 @@ enum EmailSenderReviewStatus {
   APPROVED
   PENDING
   SKIPPED
+}
+
+type EnableArtOSForPartnerFailure {
+  mutationError: GravityMutationError
+}
+
+input EnableArtOSForPartnerInput {
+  clientMutationId: String
+  partnerID: String!
+}
+
+type EnableArtOSForPartnerPayload {
+  clientMutationId: String
+
+  """
+  On success: how many grants were created and users skipped
+  """
+  enablementOrError: EnableArtOSForPartnerResponseOrError
+}
+
+union EnableArtOSForPartnerResponseOrError =
+    EnableArtOSForPartnerFailure
+  | EnableArtOSForPartnerSuccess
+
+type EnableArtOSForPartnerSuccess {
+  enablement: ArtOSPartnerEnablement
 }
 
 input EnableSecondFactorInput {
@@ -25137,6 +25245,16 @@ type Me implements Node {
   ): ArtistConnection
 
   """
+  Partners the current user holds an ArtOS grant for, for choosing a partner without CMS access.
+  """
+  artosPartners: [Partner!]!
+
+  """
+  What the current user can do in ArtOS for a partner.
+  """
+  artosPermissions(partnerID: String!): ArtOSPermissions
+
+  """
   A list of the current user’s inquiry requests
   """
   artworkInquiriesConnection(
@@ -27354,6 +27472,13 @@ type Mutation {
   ): createPartnerOfferMutationPayload
 
   """
+  Give a user access to a partner in ArtOS, with a preset or a list of permissions.
+  """
+  createPartnerPermissionGrant(
+    input: CreatePartnerPermissionGrantInput!
+  ): CreatePartnerPermissionGrantPayload
+
+  """
   Creates a partner show.
   """
   createPartnerShow(
@@ -27747,6 +27872,13 @@ type Mutation {
   ): DeletePartnerLocationMutationPayload
 
   """
+  Remove a user's ArtOS access to a partner.
+  """
+  deletePartnerPermissionGrant(
+    input: DeletePartnerPermissionGrantInput!
+  ): DeletePartnerPermissionGrantPayload
+
+  """
   Deletes a partner show.
   """
   deletePartnerShow(
@@ -27904,6 +28036,13 @@ type Mutation {
   duplicateCatalogArtwork(
     input: DuplicateCatalogArtworkMutationInput!
   ): DuplicateCatalogArtworkMutationPayload
+
+  """
+  Give every user with CMS access to a partner the editor preset in ArtOS. Requires the artos_support role.
+  """
+  enableArtOSForPartner(
+    input: EnableArtOSForPartnerInput!
+  ): EnableArtOSForPartnerPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
 
   """
@@ -28727,6 +28866,13 @@ type Mutation {
   updatePartnerLocation(
     input: UpdatePartnerLocationInput!
   ): UpdatePartnerLocationPayload
+
+  """
+  Change what a user can do for a partner in ArtOS.
+  """
+  updatePartnerPermissionGrant(
+    input: UpdatePartnerPermissionGrantInput!
+  ): UpdatePartnerPermissionGrantPayload
 
   """
   Updates the icon or cover image for a partner's profile page
@@ -31030,6 +31176,16 @@ type Partner implements Node {
   ): PartnerListConnection
   partnerPageEligible: Boolean
   partnerType: String
+
+  """
+  Who can use ArtOS for this partner, and what they can do.
+  """
+  permissionGrantsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PartnerPermissionGrantConnection
   profile: Profile
   profileArtistsLayout: String
   profileBannerDisplay: String
@@ -32983,6 +33139,110 @@ enum PartnerOrdersSortEnum {
   STATE_EXPIRES_AT_DESC
   STATE_UPDATED_AT_ASC
   STATE_UPDATED_AT_DESC
+}
+
+"""
+What one user can do in ArtOS for one partner.
+"""
+type PartnerPermissionGrant {
+  createdAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+
+  """
+  The permissions the grant allows, with its preset resolved.
+  """
+  effectivePermissions: [String!]!
+  grantedBy: PartnerPermissionGrantUser
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  partnerID: String!
+
+  """
+  The grant's own permissions, when it has no preset.
+  """
+  permissions: [String!]
+  preset: PartnerPermissionPreset
+  presetKey: String
+  updatedAt(
+    format: String
+
+    """
+    A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    """
+    timezone: String
+  ): String
+  user: PartnerPermissionGrantUser
+}
+
+"""
+A connection to a list of items.
+"""
+type PartnerPermissionGrantConnection {
+  """
+  A list of edges.
+  """
+  edges: [PartnerPermissionGrantEdge]
+  pageCursors: PageCursors!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+"""
+An edge in a connection.
+"""
+type PartnerPermissionGrantEdge {
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge
+  """
+  node: PartnerPermissionGrant
+}
+
+type PartnerPermissionGrantUser {
+  email: String
+
+  """
+  A globally unique ID.
+  """
+  id: ID!
+
+  """
+  A type-specific ID likely used as a database ID.
+  """
+  internalID: ID!
+  name: String
+}
+
+"""
+A named set of partner permissions, such as viewer or owner.
+"""
+type PartnerPermissionPreset {
+  description: String
+  displayName: String!
+  key: String!
+  permissions: [String!]!
 }
 
 """
@@ -36139,6 +36399,11 @@ type Query {
   All available partner conversion template names
   """
   partnerConversionTemplates: [String!]
+
+  """
+  The presets that can be granted on a partner. Requires access to the partner's grants.
+  """
+  partnerPermissionPresets(partnerID: String!): [PartnerPermissionPreset!]!
 
   """
   Retrieve all partner show documents for a given partner and show
@@ -43711,6 +43976,42 @@ type UpdatePartnerMutationPayload {
   partnerOrError: UpdatePartnerResponseOrError
 }
 
+type UpdatePartnerPermissionGrantFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdatePartnerPermissionGrantInput {
+  clientMutationId: String
+  grantID: String!
+
+  """
+  Permission keys to grant instead of a preset.
+  """
+  permissions: [String!]
+
+  """
+  Preset to grant, such as viewer, editor or owner.
+  """
+  presetKey: String
+}
+
+type UpdatePartnerPermissionGrantPayload {
+  clientMutationId: String
+
+  """
+  On success: the updated grant
+  """
+  partnerPermissionGrantOrError: UpdatePartnerPermissionGrantResponseOrError
+}
+
+union UpdatePartnerPermissionGrantResponseOrError =
+    UpdatePartnerPermissionGrantFailure
+  | UpdatePartnerPermissionGrantSuccess
+
+type UpdatePartnerPermissionGrantSuccess {
+  partnerPermissionGrant: PartnerPermissionGrant
+}
+
 type UpdatePartnerProfileImageFailure {
   mutationError: GravityMutationError
 }
@@ -47388,6 +47689,11 @@ type Viewer {
   All available partner conversion template names
   """
   partnerConversionTemplates: [String!]
+
+  """
+  The presets that can be granted on a partner. Requires access to the partner's grants.
+  """
+  partnerPermissionPresets(partnerID: String!): [PartnerPermissionPreset!]!
 
   """
   Retrieve all partner show documents for a given partner and show

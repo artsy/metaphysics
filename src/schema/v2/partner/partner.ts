@@ -22,6 +22,7 @@ import {
   isUnderListPath,
 } from "lib/helpers"
 import cached from "schema/v2/fields/cached"
+import { PartnerPermissionGrantsConnectionField } from "schema/v2/partner/partnerPermissionGrant"
 import initials from "schema/v2/fields/initials"
 import Profile from "schema/v2/profile"
 import { locationsConnection, LocationType } from "schema/v2/location"
@@ -1689,6 +1690,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      permissionGrantsConnection: PartnerPermissionGrantsConnectionField,
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

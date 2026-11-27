@@ -391,6 +391,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    enableArtOSForPartnerLoader: gravityLoader(
+      "artos_enablement",
+      {},
+      { method: "POST" }
+    ),
     enableSecondFactorLoader: gravityLoader(
       (id) => `me/second_factors/${id}/enable`,
       {},
@@ -540,6 +545,11 @@ export default (accessToken, userID, opts) => {
     ),
     createPartnerLocationLoader: gravityLoader(
       (id) => `partner/${id}/location`,
+      {},
+      { method: "POST" }
+    ),
+    createPartnerPermissionGrantLoader: gravityLoader(
+      "partner_permission_grant",
       {},
       { method: "POST" }
     ),
@@ -693,6 +703,11 @@ export default (accessToken, userID, opts) => {
     >(
       ({ partnerId, locationId }) =>
         `partner/${partnerId}/location/${locationId}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deletePartnerPermissionGrantLoader: gravityLoader(
+      (id) => `partner_permission_grant/${id}`,
       {},
       { method: "DELETE" }
     ),
@@ -1085,6 +1100,10 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    mePartnerPermissionGrantsLoader: gravityLoader(
+      "me/partner_permission_grants"
+    ),
+    mePartnerPermissionsLoader: gravityLoader("me/partner_permissions"),
     mePingLoader: gravityLoader("me/ping"),
     meGuidedTourLoader: gravityLoader("me/guided_tour"),
     recordGuidedTourEventLoader: gravityLoader(
@@ -1435,6 +1454,12 @@ export default (accessToken, userID, opts) => {
     ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
     partnerOfferEligibilityLoader: gravityLoader("partner_offers/eligibility"),
+    partnerPermissionGrantsLoader: gravityLoader(
+      "partner_permission_grants",
+      {},
+      { headers: true }
+    ),
+    partnerPermissionPresetsLoader: gravityLoader("partner_permission_presets"),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
       {},
@@ -1852,6 +1877,11 @@ export default (accessToken, userID, opts) => {
     >(
       ({ partnerId, locationId }) =>
         `partner/${partnerId}/location/${locationId}`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerPermissionGrantLoader: gravityLoader(
+      (id) => `partner_permission_grant/${id}`,
       {},
       { method: "PUT" }
     ),
