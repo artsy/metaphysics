@@ -61,6 +61,7 @@ import { ArtistRecommendations } from "./artistRecommendations"
 import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auctionResultsByFollowedArtists"
+import { ArtOSPartnersField, ArtOSPermissionsField } from "./artosPermissions"
 import { authentications } from "./authentications"
 import { emailAccounts } from "./emailAccount"
 import { instagramAccounts } from "./instagramAccount"
@@ -221,6 +222,8 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     addressConnection: UserAddressesConnection,
     artistRecommendations: ArtistRecommendations,
+    artosPartners: ArtOSPartnersField,
+    artosPermissions: ArtOSPermissionsField,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
