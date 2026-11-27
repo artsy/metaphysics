@@ -44,6 +44,8 @@ export const CRMContactStatusEnum = new GraphQLEnumType({
 export const CRMContactSortEnum = new GraphQLEnumType({
   name: "CRMContactSort",
   values: {
+    CREATED_AT_ASC: { value: "created_at" },
+    CREATED_AT_DESC: { value: "-created_at" },
     DISPLAY_NAME_ASC: { value: "display_name" },
     DISPLAY_NAME_DESC: { value: "-display_name" },
   },
