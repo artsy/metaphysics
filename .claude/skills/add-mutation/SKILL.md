@@ -5,7 +5,14 @@ description: Template and checklist for adding a GraphQL mutation to Metaphysics
 
 # Add a mutation
 
-Reference implementation: `src/schema/v2/me/requestEmailBackfillMutation.ts` and its test in `src/schema/v2/me/__tests__/requestEmailBackfillMutation.test.ts`. Copy the shape of the closest existing mutation for the same service before writing anything new.
+`docs/` has no guide for mutations, so the code is the source of truth. Reference implementation: `src/schema/v2/me/requestEmailBackfillMutation.ts` and its test in `src/schema/v2/me/__tests__/requestEmailBackfillMutation.test.ts`. Open both before you start. If they differ from the template below, follow the files and update this skill in the same PR.
+
+For the steps that do have docs, read them first and treat them as the source of truth:
+
+- Loaders: [docs/dataloaders.md](../../../docs/dataloaders.md)
+- A new upstream service: [docs/adding_a_new_rest_microservice.md](../../../docs/adding_a_new_rest_microservice.md)
+- Tests: [docs/testing.md](../../../docs/testing.md)
+- Schema dump: [docs/automated-schema-updates.md](../../../docs/automated-schema-updates.md)
 
 ## 1. Loader
 
@@ -102,7 +109,7 @@ Import the mutation in `src/schema/v2/schema.ts` and add it to the mutation fiel
 
 ## 4. Tests
 
-Put tests in `__tests__/<name>Mutation.test.ts`. Stub only the loader the mutation uses. Cover three cases:
+Put tests in `__tests__/<name>Mutation.test.ts` and use the helpers from `docs/testing.md`. Cover three cases:
 
 1. **Success:** assert the loader was called with the right ID and snake_case body, and check the `… on <Name>Success` result.
 2. **Upstream failure:** reject with `new HTTPError("http://artsy.net - {}", 4xx, { type: "error", message: "…", detail: {} })` and check `mutationError.message` on the Failure branch.

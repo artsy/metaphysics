@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/schema/v2/`: types, root fields and mutations. Register new root fields and mutations in `src/schema/v2/schema.ts`.
 - `src/lib/loaders/loaders_with_authentication/` and `loaders_without_authentication/`: one file per upstream service. Public loaders are memcached.
 - `src/lib/stitching/`: schemas stitched from GraphQL services (Exchange, Causality and others).
-- `_schemaV2.graphql`: the dumped schema. Introspection is off locally, so read field names here.
+- `_schemaV2.graphql`: the dumped schema. Read field names here when introspection is off (see “Introspection Setup” in the README).
 
 Read the matching doc before working in an area:
 
@@ -20,7 +20,9 @@ Read the matching doc before working in an area:
 - New connection: [docs/pagination.md](docs/pagination.md)
 - New service: [docs/adding_a_new_rest_microservice.md](docs/adding_a_new_rest_microservice.md) or [docs/adding_a_new_graphql_microservice.md](docs/adding_a_new_graphql_microservice.md)
 - Home view sections: [docs/adding_a_new_home_view_section.md](docs/adding_a_new_home_view_section.md)
+- Feature flags: [docs/feature-flags.md](docs/feature-flags.md)
 - Tests: [docs/testing.md](docs/testing.md)
+- Schema dump and distribution: [docs/automated-schema-updates.md](docs/automated-schema-updates.md)
 
 ## Schema changes
 

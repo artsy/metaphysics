@@ -7,20 +7,22 @@ description: Verify a Metaphysics change against the locally running server with
 
 Unit tests mock the loaders. A live check proves the change works against a real upstream (usually staging Gravity).
 
+The README is the source of truth for local setup. Read its “Development”, “Setting up your local GraphiQL” and “Introspection Setup” sections first: they cover the port, where to get the `x-access-token` and `x-user-id` headers, and when introspection is on. This skill adds only how an agent should run the check.
+
 ## Rules
 
 - The developer runs the server. Never start, stop or restart it. If it doesn't answer, say so and stop.
 - The server serves whatever branch the main checkout has checked out. Confirm with `git branch --show-current` before you trust a result.
 - Never print, log or commit the access token. Redact it in any transcript.
-- Introspection is off on the local server. Find field and argument names in `_schemaV2.graphql`, and run `yarn dump:local` first if you changed the schema.
+- If introspection is off (see the README), find field and argument names in `_schemaV2.graphql`. Run `yarn dump:local` first if you changed the schema.
 
 ## Setup
 
 Read these from the environment, or ask the developer for them:
 
-- `METAPHYSICS_URL`: defaults to `http://localhost:${PORT:-3000}/v2`. Many developers run on 5001.
-- `METAPHYSICS_TOKEN`: a staging user access token, sent as `X-ACCESS-TOKEN`.
-- `METAPHYSICS_USER_ID`: needed for `me`-scoped fields, sent as `X-USER-ID`.
+- `METAPHYSICS_URL`: the local endpoint from the README, with `/v2` on the end.
+- `METAPHYSICS_TOKEN`: the `x-access-token` value from the README.
+- `METAPHYSICS_USER_ID`: the `x-user-id` value from the README, needed for `me`-scoped fields.
 
 ```sh
 curl -s "$METAPHYSICS_URL" \

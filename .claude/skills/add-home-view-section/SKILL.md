@@ -13,6 +13,7 @@ Read [docs/adding_a_new_home_view_section.md](../../../docs/adding_a_new_home_vi
 
 - An A/B test of sections: [docs/adding_a_new_home_view_experiment.md](../../../docs/adding_a_new_home_view_experiment.md)
 - Reordering sections by rule: [docs/home_view_mixer.md](../../../docs/home_view_mixer.md)
+- Rolling out behind a flag: [docs/feature-flags.md](../../../docs/feature-flags.md)
 
 Then read the two annotated templates the doc points to, because their comments describe every field:
 
