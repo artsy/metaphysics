@@ -326,6 +326,9 @@ export const orderFromRest = (order: RestRecord) => {
     lastTransactionFailureCode: order.last_transaction_failure_code,
     lineItems: connection((order.line_items ?? []).map(lineItemFromRest)),
     mode,
+    // Only in buyer offer action responses; can be the pending (unsubmitted)
+    // offer, whose `respondsTo` is a submitted offer
+    myLastOffer: offerFromRest(order.my_last_offer, offersById),
     // Newest first, like Exchange GraphQL's `offers`
     offers: ({ fromId, fromType, ...args }: OffersArgs = {}) =>
       listConnection(
@@ -372,6 +375,8 @@ export const orderFromRest = (order: RestRecord) => {
 export type RestProfile = {
   details: boolean
   history: boolean
+  // `my_last_offer`, only in buyer offer action responses
+  myLastOffer?: boolean
   party: "buyer" | "seller"
 }
 
@@ -606,6 +611,7 @@ const toSets = (fields: Record<string, string[]>): RestFields =>
 export const restFieldsFor = ({
   details,
   history,
+  myLastOffer,
   party,
 }: RestProfile): RestFields => {
   const orderFields = [
@@ -613,6 +619,7 @@ export const restFieldsFor = ({
     ...(party === "buyer" ? BUYER_ORDER_FIELDS : SELLER_ORDER_FIELDS),
     ...(details ? DETAILS_ORDER_FIELDS : []),
     ...(history ? ["orderHistory"] : []),
+    ...(myLastOffer ? ["myLastOffer"] : []),
   ]
 
   return toSets({
@@ -642,7 +649,14 @@ export const mutationRestFields = (payloadTypes: string[]): RestFields =>
     CommerceOrderWithMutationSuccess: ["__typename", "order"],
   })
 
-// Union members REST never returns, so their selections never resolve
+/** SCA: the `orderOrError` member for a payment that needs the buyer's action. */
+export const REQUIRES_ACTION_REST_FIELDS: RestFields = toSets({
+  CommerceOrderActionData: ["__typename", "clientSecret"],
+  CommerceOrderRequiresAction: ["__typename", "actionData"],
+})
+
+// Union members a mutation never returns unless `fields` lists them, so their
+// selections never resolve
 const NEVER_RETURNED_TYPES = new Set(["CommerceOrderRequiresAction"])
 
 /**
@@ -657,6 +671,9 @@ export const selectedRestFields = (
 
   const selected = new Set<string>()
 
+  const neverReturned = (type?: GraphQLNamedType | null) =>
+    !!type && NEVER_RETURNED_TYPES.has(type.name) && !fields[type.name]
+
   const walk = (
     selectionSet: SelectionSetNode | undefined,
     type: GraphQLNamedType
@@ -666,8 +683,7 @@ export const selectedRestFields = (
         const fragmentType = selection.typeCondition
           ? info.schema.getType(selection.typeCondition.name.value)
           : type
-        if (fragmentType && NEVER_RETURNED_TYPES.has(fragmentType.name))
-          return true
+        if (neverReturned(fragmentType)) return true
         return !!fragmentType && walk(selection.selectionSet, fragmentType)
       }
 
@@ -675,8 +691,7 @@ export const selectedRestFields = (
         const fragment = info.fragments[selection.name.value]
         const fragmentType =
           fragment && info.schema.getType(fragment.typeCondition.name.value)
-        if (fragmentType && NEVER_RETURNED_TYPES.has(fragmentType.name))
-          return true
+        if (neverReturned(fragmentType)) return true
         return !!fragmentType && walk(fragment.selectionSet, fragmentType)
       }
 

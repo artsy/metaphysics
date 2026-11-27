@@ -101,3 +101,19 @@ export const emailAccounts: GraphQLFieldConfig<any, ResolverContext> = {
     return body
   },
 }
+
+export const supportEmailAccounts: GraphQLFieldConfig<any, ResolverContext> = {
+  type: new GraphQLList(new GraphQLNonNull(EmailAccountType)),
+  description:
+    "The email accounts connected by a user, with limited fields. For Artsy staff with the artos_support role; each access is logged.",
+  args: {
+    userId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The internal ID of the user who connected the accounts",
+    },
+  },
+  resolve: async (_root, { userId }, { supportEmailAccountsLoader }) => {
+    if (!supportEmailAccountsLoader) return []
+    return await supportEmailAccountsLoader({ user_id: userId })
+  },
+}

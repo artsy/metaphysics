@@ -29,6 +29,11 @@ describe("Exchange loaders and request ID headers", () => {
   })
 
   it.each([
+    [
+      "buyerOfferActionLoader",
+      (loaders) =>
+        loaders.buyerOfferActionLoader({ offerId: "o", action: "accept" }),
+    ],
     ["meOrderCreateLoader", (loaders) => loaders.meOrderCreateLoader({})],
     [
       "sellerOrderActionLoader",

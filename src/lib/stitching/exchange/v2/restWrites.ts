@@ -5,6 +5,7 @@ import { isNil, omitBy } from "lodash"
 import {
   mutationRestFields,
   orderFromRest,
+  REQUIRES_ACTION_REST_FIELDS,
   RestProfile,
   RestRecord,
   restFieldsFor,
@@ -21,6 +22,7 @@ import {
 type Loader = (key: any, params?: Record<string, unknown>) => Promise<any>
 
 type RestContext = {
+  buyerOfferActionLoader?: Loader
   meOrderCreateLoader?: Loader
   sellerOfferActionLoader?: Loader
   sellerOrderActionLoader?: Loader
@@ -33,6 +35,8 @@ type RestMutation = {
   loader: keyof RestContext
   payloadType: string
   profile: RestProfile
+  // The payment can need the buyer's action (SCA): `CommerceOrderRequiresAction`
+  requiresAction?: boolean
 }
 
 const compact = (params: Record<string, unknown>) => omitBy(params, isNil)
@@ -41,6 +45,15 @@ const compact = (params: Record<string, unknown>) => omitBy(params, isNil)
 const CREATED_ORDER: RestProfile = {
   details: false,
   history: false,
+  party: "buyer",
+}
+
+// Buyer offer routes always return the buyer order with details and
+// `my_last_offer`
+const BUYER_ORDER: RestProfile = {
+  details: true,
+  history: false,
+  myLastOffer: true,
   party: "buyer",
 }
 
@@ -108,11 +121,42 @@ const sellerOfferAction = (
   profile: SELLER_ORDER,
 })
 
+const buyerOfferAction = (
+  action: string,
+  payloadType: string,
+  params: (input: Input) => Record<string, unknown> = () => ({})
+) => ({
+  call: (input: Input, { buyerOfferActionLoader }: Required<RestContext>) =>
+    buyerOfferActionLoader(
+      { offerId: input.offerId, action },
+      compact(params(input))
+    ),
+  loader: "buyerOfferActionLoader" as const,
+  payloadType,
+  profile: BUYER_ORDER,
+})
+
 const REST_MUTATIONS: Record<string, RestMutation> = {
   commerceApproveOrder: sellerOrderAction(
     "approve",
     "CommerceApproveOrderPayload",
     (input) => ({ shipping_contact: shippingContact(input) })
+  ),
+  commerceBuyerAcceptOffer: {
+    ...buyerOfferAction("accept", "CommerceBuyerAcceptOfferPayload"),
+    requiresAction: true,
+  },
+  // Creates the buyer's pending counteroffer, submitted with
+  // `commerceSubmitPendingOffer`
+  commerceBuyerCounterOffer: buyerOfferAction(
+    "counter",
+    "CommerceBuyerCounterOfferPayload",
+    (input) => ({ amount_cents: input.amountCents, note: input.note })
+  ),
+  commerceBuyerRejectOffer: buyerOfferAction(
+    "reject",
+    "CommerceBuyerRejectOfferPayload",
+    (input) => ({ reject_reason: input.rejectReason?.toLowerCase() })
   ),
   commerceConfirmPickup: sellerOrderAction(
     "confirm_pickup",
@@ -168,6 +212,10 @@ const REST_MUTATIONS: Record<string, RestMutation> = {
     "CommerceSellerRejectOfferPayload",
     (input) => ({ reject_reason: input.rejectReason?.toLowerCase() })
   ),
+  commerceSubmitPendingOffer: buyerOfferAction(
+    "submit",
+    "CommerceSubmitPendingOfferPayload"
+  ),
   // MP extensions: the Impulse checks and link stay in stitching.ts
   createInquiryOfferOrder: createOrder(
     "offer",
@@ -195,7 +243,11 @@ export const canServeMutationFromRest = (
     return false
   }
 
-  const fields = { ...restFieldsFor(mutation.profile), ...MUTATION_FIELDS }
+  const fields = {
+    ...restFieldsFor(mutation.profile),
+    ...MUTATION_FIELDS,
+    ...(mutation.requiresAction ? REQUIRES_ACTION_REST_FIELDS : {}),
+  }
   return selectedRestFields(info, fields) !== null
 }
 
@@ -205,22 +257,32 @@ const failure = (type: string, code: string, data: unknown) => ({
   error: { code, data: JSON.stringify(data ?? null), type },
 })
 
-const isSellerAction = (mutation: RestMutation) =>
-  mutation.profile.party === "seller"
-
 /**
+ * - 422 `payment_requires_action` from a route that charges the buyer: the
+ *   `CommerceOrderRequiresAction` GraphQL returns, for the client to run SCA
  * - 422: the application error Exchange GraphQL returns as a failure
- * - 404 from a seller route: the order or offer isn't the seller's, which
- *   GraphQL also returns as a `not_found` failure
+ * - 404 from an offer or order action: the order or offer isn't the user's,
+ *   which GraphQL also returns as a `not_found` failure
  * - anything else throws, like an unexpected GraphQL error
  */
 const orderOrErrorFromRestError = (error, mutation: RestMutation) => {
   const body = safeJsonParse<RestRecord>(error?.body) ?? error?.body
 
+  if (
+    error?.statusCode === 422 &&
+    mutation.requiresAction &&
+    body?.code === "payment_requires_action" &&
+    body.action_data?.client_secret
+  ) {
+    return {
+      __typename: "CommerceOrderRequiresAction",
+      actionData: { clientSecret: body.action_data.client_secret },
+    }
+  }
   if (error?.statusCode === 422 && body?.code) {
     return failure(body.type ?? "validation", body.code, body.data)
   }
-  if (error?.statusCode === 404 && isSellerAction(mutation)) {
+  if (error?.statusCode === 404 && mutation.loader !== "meOrderCreateLoader") {
     return failure("validation", "not_found", null)
   }
   throw error

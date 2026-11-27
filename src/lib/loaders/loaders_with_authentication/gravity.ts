@@ -2041,6 +2041,8 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    // Artsy staff (artos_support) only: a user's email accounts, :short fields
+    supportEmailAccountsLoader: gravityLoader("support/partner_email_accounts"),
     // Returns { authorization_url } — OAuth initiation step
     initiateInstagramOAuthLoader: gravityLoader(
       "instagram_account/authorize",
@@ -2132,8 +2134,19 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    // Latest backfill run of an account (404 when none was requested)
+    emailBackfillRunLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/backfill`
+    ),
     refreshEmailAccountWatchLoader: gravityLoader(
       (id) => `partner_email_account/${id}/refresh_watch`,
+      {},
+      { method: "POST" }
+    ),
+
+    // Queues a backfill from a date (202); returns the run
+    requestEmailBackfillLoader: gravityLoader(
+      (id) => `partner_email_account/${id}/backfill`,
       {},
       { method: "POST" }
     ),
@@ -2190,6 +2203,45 @@ export default (accessToken, userID, opts) => {
       (id) => `crm_contact/${id}/unarchive`,
       {},
       { method: "POST" }
+    ),
+    crmContactListsLoader: gravityLoader(
+      "crm_contact_lists",
+      {},
+      { headers: true }
+    ),
+    crmContactListLoader: gravityLoader((id) => `crm_contact_list/${id}`),
+    createCrmContactListLoader: gravityLoader(
+      "crm_contact_list",
+      {},
+      { method: "POST" }
+    ),
+    updateCrmContactListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteCrmContactListLoader: gravityLoader(
+      (id) => `crm_contact_list/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    addCrmContactToListLoader: gravityLoader<
+      any,
+      { listId: string; contactId: string }
+    >(
+      ({ listId, contactId }) =>
+        `crm_contact_list/${listId}/crm_contact/${contactId}`,
+      {},
+      { method: "POST" }
+    ),
+    removeCrmContactFromListLoader: gravityLoader<
+      any,
+      { listId: string; contactId: string }
+    >(
+      ({ listId, contactId }) =>
+        `crm_contact_list/${listId}/crm_contact/${contactId}`,
+      {},
+      { method: "DELETE" }
     ),
     crmContactEmailsLoader: gravityLoader(
       "crm_contact_emails",
