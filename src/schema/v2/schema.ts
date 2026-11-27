@@ -284,6 +284,8 @@ import { completeEmailOAuthMutation } from "./me/completeEmailOAuthMutation"
 import { deleteEmailAccountMutation } from "./me/deleteEmailAccountMutation"
 import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchMutation"
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
+import { requestEmailBackfillMutation } from "./me/requestEmailBackfillMutation"
+import { emailBackfillRun } from "./me/emailBackfillRun"
 import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
 import { replyToEmailMessageMutation } from "./me/replyToEmailMessageMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
@@ -310,6 +312,17 @@ import {
   crmContactCustomFieldNames,
   crmContactsConnection,
 } from "./crmContact/crmContact"
+import {
+  crmContactList,
+  crmContactListsConnection,
+} from "./crmContact/crmContactList"
+import {
+  addCRMContactToListMutation,
+  createCRMContactListMutation,
+  deleteCRMContactListMutation,
+  removeCRMContactFromListMutation,
+  updateCRMContactListMutation,
+} from "./crmContact/crmContactListMutations"
 import { crmActivitiesConnection } from "./crmContact/crmActivity"
 import {
   emailSenderReview,
@@ -668,6 +681,7 @@ const rootFields = {
   marketingCategories: MarketingCategories,
   instagramPost,
   instagramPostsConnection,
+  emailBackfillRun: emailBackfillRun,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   crmContact,
@@ -678,6 +692,8 @@ const rootFields = {
   emailSenderReviewsConnection,
   crmContactEmail,
   crmContactEmailsConnection,
+  crmContactList,
+  crmContactListsConnection,
   crmContactLocation,
   crmContactLocationsConnection,
   crmContactAddress,
@@ -843,6 +859,7 @@ export default new GraphQLSchema({
       refreshArtistAccentColorOptions: refreshArtistAccentColorOptionsMutation,
       refreshEmailAccountWatch: refreshEmailAccountWatchMutation,
       updateEmailAccount: updateEmailAccountMutation,
+      requestEmailBackfill: requestEmailBackfillMutation,
       syncEmailAccount: syncEmailAccountMutation,
       replyToEmailMessage: replyToEmailMessageMutation,
       authorizeInstagramAccount: authorizeInstagramAccountMutation,
@@ -858,6 +875,11 @@ export default new GraphQLSchema({
       updateCRMContact: updateCRMContactMutation,
       archiveCRMContact: archiveCRMContactMutation,
       unarchiveCRMContact: unarchiveCRMContactMutation,
+      createCRMContactList: createCRMContactListMutation,
+      updateCRMContactList: updateCRMContactListMutation,
+      deleteCRMContactList: deleteCRMContactListMutation,
+      addCRMContactToList: addCRMContactToListMutation,
+      removeCRMContactFromList: removeCRMContactFromListMutation,
       approveEmailSenderReview: approveEmailSenderReviewMutation,
       skipEmailSenderReview: skipEmailSenderReviewMutation,
       unskipEmailSenderReview: unskipEmailSenderReviewMutation,
