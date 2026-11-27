@@ -211,6 +211,25 @@ describe("crmContactsConnection", () => {
     })
   })
 
+  it("maps the creation date sort to the loader", async () => {
+    await runAuthenticatedQuery(
+      `{
+        crmContactsConnection(
+          partnerID: "partner-1"
+          sort: CREATED_AT_DESC
+          first: 1
+        ) {
+          totalCount
+        }
+      }`,
+      context
+    )
+
+    expect(context.crmContactsLoader as jest.Mock).toHaveBeenCalledWith(
+      expect.objectContaining({ sort: "-created_at" })
+    )
+  })
+
   it("passes several categories to the loader", async () => {
     await runAuthenticatedQuery(
       `{
