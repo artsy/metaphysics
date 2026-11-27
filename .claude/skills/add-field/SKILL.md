@@ -23,7 +23,7 @@ Find the closest existing field or mutation in `src/schema/v2/` and copy its sha
 - Keep field lists and enum values alphabetical.
 - Give every field a `description`.
 - Connections: follow `docs/pagination.md` (`paginationResolver`, `pageable` args, `totalCount`).
-- Mutations: return `<Name>Success | <Name>Failure` as `<Name>ResponseOrError`, and name the output field after what it returns (`artworkOrError`, not `responseOrError`).
+- Mutations: use the `add-mutation` skill.
 - Non-null fields backed by a loader must not throw. Degrade instead, or GraphQL drops the parent node.
 - Register new root fields or mutations in `src/schema/v2/schema.ts`, alphabetically.
 
