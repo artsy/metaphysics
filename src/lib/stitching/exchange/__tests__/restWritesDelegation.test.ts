@@ -126,11 +126,8 @@ describe("Exchange root mutations in the production schema", () => {
               ... on CommerceOrderWithMutationSuccess {
                 order {
                   internalID
-                  ... on CommerceOfferOrder {
-                    myLastOffer {
-                      internalID
-                    }
-                  }
+                  # Seller-only: not in the buyer order JSON
+                  commissionFeeCents
                 }
               }
               ... on CommerceOrderRequiresAction {

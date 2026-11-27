@@ -979,6 +979,24 @@ describe("Exchange REST writes", () => {
       })
     })
 
+    it("delegates when myLastOffer is selected, which seller routes lack", async () => {
+      const context = buildContext()
+
+      await runMutation(
+        sellerMutation(
+          "commerceSellerCounterOffer",
+          `{ offerId: "offer-1", amountCents: 90000 }`,
+          "... on CommerceOfferOrder { myLastOffer { internalID } }"
+        ),
+        context
+      )
+
+      expect(context.sellerOfferActionLoader).not.toHaveBeenCalled()
+      expect(mockDelegateToExchange).toHaveBeenCalledWith(
+        expect.objectContaining({ fieldName: "commerceSellerCounterOffer" })
+      )
+    })
+
     it("delegates when a field the seller order lacks is selected", async () => {
       const context = buildContext()
 
@@ -1101,10 +1119,25 @@ describe("Exchange REST writes", () => {
       })
     })
 
-    it("delegates Force's counteroffer, which selects myLastOffer", async () => {
-      const context = buildContext()
+    it("serves Force's counteroffer, with myLastOffer from my_last_offer", async () => {
+      // The buyer's pending counteroffer: not submitted, so not in
+      // `submitted_offers`
+      const pendingCounter = {
+        ...buyerOffer,
+        id: "offer-3",
+        amount_cents: 85000,
+        created_at: "2026-11-03T10:00:00Z",
+        note: "Meet halfway?",
+        responds_to_id: "offer-2",
+        submitted_at: null,
+      }
+      const context = buildContext({
+        buyerOfferActionLoader: jest
+          .fn()
+          .mockResolvedValue({ ...buyerOrder, my_last_offer: pendingCounter }),
+      })
 
-      await runMutation(
+      const result = await runMutation(
         gql`
           mutation RespondCounterOfferMutation(
             $input: CommerceBuyerCounterOfferInput!
@@ -1118,6 +1151,12 @@ describe("Exchange REST writes", () => {
                       myLastOffer {
                         createdAt
                         id
+                        internalID
+                        note
+                        submittedAt
+                        respondsTo {
+                          internalID
+                        }
                       }
                     }
                   }
@@ -1127,13 +1166,34 @@ describe("Exchange REST writes", () => {
           }
         `,
         context,
-        { input: { offerId: "offer-2", amountCents: 85000 } }
+        {
+          input: {
+            offerId: "offer-2",
+            amountCents: 85000,
+            note: "Meet halfway?",
+          },
+        }
       )
 
-      expect(context.buyerOfferActionLoader).not.toHaveBeenCalled()
-      expect(mockDelegateToExchange).toHaveBeenCalledWith(
-        expect.objectContaining({ fieldName: "commerceBuyerCounterOffer" })
+      expect(result.errors).toBeUndefined()
+      expect(context.buyerOfferActionLoader).toHaveBeenCalledWith(
+        { offerId: "offer-2", action: "counter" },
+        { amount_cents: 85000, note: "Meet halfway?" }
       )
+      expect(mockDelegateToExchange).not.toHaveBeenCalled()
+      expect(orderOrError(result, "commerceBuyerCounterOffer")).toEqual({
+        order: {
+          internalID: "order-id",
+          myLastOffer: {
+            createdAt: "2026-11-03T05:00:00-05:00",
+            id: "offer-3",
+            internalID: "offer-3",
+            note: "Meet halfway?",
+            submittedAt: null,
+            respondsTo: { internalID: "offer-2" },
+          },
+        },
+      })
     })
 
     it("returns the requires-action member when the payment needs SCA", async () => {

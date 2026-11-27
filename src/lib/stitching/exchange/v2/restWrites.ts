@@ -48,10 +48,12 @@ const CREATED_ORDER: RestProfile = {
   party: "buyer",
 }
 
-// Buyer offer routes always return the buyer order with details
+// Buyer offer routes always return the buyer order with details and
+// `my_last_offer`
 const BUYER_ORDER: RestProfile = {
   details: true,
   history: false,
+  myLastOffer: true,
   party: "buyer",
 }
 
