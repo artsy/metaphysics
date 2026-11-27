@@ -326,6 +326,9 @@ export const orderFromRest = (order: RestRecord) => {
     lastTransactionFailureCode: order.last_transaction_failure_code,
     lineItems: connection((order.line_items ?? []).map(lineItemFromRest)),
     mode,
+    // Only in buyer offer action responses; can be the pending (unsubmitted)
+    // offer, whose `respondsTo` is a submitted offer
+    myLastOffer: offerFromRest(order.my_last_offer, offersById),
     // Newest first, like Exchange GraphQL's `offers`
     offers: ({ fromId, fromType, ...args }: OffersArgs = {}) =>
       listConnection(
@@ -372,6 +375,8 @@ export const orderFromRest = (order: RestRecord) => {
 export type RestProfile = {
   details: boolean
   history: boolean
+  // `my_last_offer`, only in buyer offer action responses
+  myLastOffer?: boolean
   party: "buyer" | "seller"
 }
 
@@ -606,6 +611,7 @@ const toSets = (fields: Record<string, string[]>): RestFields =>
 export const restFieldsFor = ({
   details,
   history,
+  myLastOffer,
   party,
 }: RestProfile): RestFields => {
   const orderFields = [
@@ -613,6 +619,7 @@ export const restFieldsFor = ({
     ...(party === "buyer" ? BUYER_ORDER_FIELDS : SELLER_ORDER_FIELDS),
     ...(details ? DETAILS_ORDER_FIELDS : []),
     ...(history ? ["orderHistory"] : []),
+    ...(myLastOffer ? ["myLastOffer"] : []),
   ]
 
   return toSets({
