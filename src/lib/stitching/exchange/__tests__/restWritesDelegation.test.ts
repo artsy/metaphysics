@@ -116,6 +116,35 @@ describe("Exchange root mutations in the production schema", () => {
       {},
       { input: { offerId: "offer-1", amountCents: 100, note: "Hi" } },
     ],
+    [
+      "a buyer offer mutation with an unmapped field and the SCA member",
+      gql`
+        mutation($input: CommerceBuyerAcceptOfferInput!) {
+          commerceBuyerAcceptOffer(input: $input) {
+            orderOrError {
+              __typename
+              ... on CommerceOrderWithMutationSuccess {
+                order {
+                  internalID
+                  ... on CommerceOfferOrder {
+                    myLastOffer {
+                      internalID
+                    }
+                  }
+                }
+              }
+              ... on CommerceOrderRequiresAction {
+                actionData {
+                  clientSecret
+                }
+              }
+            }
+          }
+        }
+      `,
+      { buyerOfferActionLoader: jest.fn() },
+      { input: { offerId: "offer-1" } },
+    ],
   ])(
     "sends Exchange GraphQL the same mutation for %s when the flag is on",
     async (_case, source, context, variables) => {

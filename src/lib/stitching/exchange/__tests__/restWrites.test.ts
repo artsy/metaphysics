@@ -163,6 +163,111 @@ const createdOrder = {
   last_submitted_offer: null,
 }
 
+// `OrderPresenter` JSON for the buyer, with details, after the buyer accepted
+// the seller's counteroffer
+const buyerOrder = {
+  ...createdOrder,
+  id: "order-id",
+  code: "O123",
+  mode: "offer",
+  state: "approved",
+  submitted_offers: [sellerCounter, buyerOffer],
+  last_submitted_offer: sellerCounter,
+  awaiting_response_from: null,
+  display_state: "processing",
+  last_transaction_failed: false,
+  pending_offer: null,
+}
+
+// Force's buyer offer mutations (src/Apps/Order/Routes), as compiled by Relay
+const FORCE_BUYER_ACCEPT_OFFER = gql`
+  mutation AcceptOfferMutation($input: CommerceBuyerAcceptOfferInput!) {
+    commerceBuyerAcceptOffer(input: $input) {
+      orderOrError {
+        __typename
+        ... on CommerceOrderWithMutationSuccess {
+          __typename
+          order {
+            __typename
+            internalID
+            ... on CommerceOfferOrder {
+              awaitingResponseFrom
+            }
+            id
+          }
+        }
+        ... on CommerceOrderWithMutationFailure {
+          error {
+            type
+            code
+            data
+          }
+        }
+        ... on CommerceOrderRequiresAction {
+          actionData {
+            clientSecret
+          }
+        }
+      }
+    }
+  }
+`
+
+const FORCE_BUYER_REJECT_OFFER = gql`
+  mutation RejectOfferMutation($input: CommerceBuyerRejectOfferInput!) {
+    commerceBuyerRejectOffer(input: $input) {
+      orderOrError {
+        __typename
+        ... on CommerceOrderWithMutationSuccess {
+          __typename
+          order {
+            __typename
+            internalID
+            ... on CommerceOfferOrder {
+              awaitingResponseFrom
+            }
+            id
+          }
+        }
+        ... on CommerceOrderWithMutationFailure {
+          error {
+            type
+            code
+            data
+          }
+        }
+      }
+    }
+  }
+`
+
+const FORCE_SUBMIT_PENDING_OFFER = gql`
+  mutation CounterSubmitMutation($input: CommerceSubmitPendingOfferInput!) {
+    commerceSubmitPendingOffer(input: $input) {
+      orderOrError {
+        __typename
+        ... on CommerceOrderWithMutationSuccess {
+          order {
+            __typename
+            state
+            ... on CommerceOfferOrder {
+              awaitingResponseFrom
+            }
+            id
+          }
+        }
+        ... on CommerceOrderWithMutationFailure {
+          error {
+            type
+            code
+            data
+          }
+        }
+      }
+    }
+  }
+`
+
 const ORDER_OR_ERROR = `
   orderOrError {
     __typename
@@ -342,14 +447,15 @@ describe("Exchange REST writes", () => {
     userID: "user-id",
     conversationLoader: jest.fn().mockResolvedValue({ id: "conversation-id" }),
     conversationCreateConversationOrderLoader: jest.fn().mockResolvedValue({}),
+    buyerOfferActionLoader: jest.fn().mockResolvedValue(buyerOrder),
     meOrderCreateLoader: jest.fn().mockResolvedValue(createdOrder),
     sellerOfferActionLoader: jest.fn().mockResolvedValue(sellerOrder),
     sellerOrderActionLoader: jest.fn().mockResolvedValue(sellerOrder),
     ...overrides,
   })
 
-  const runMutation = (source: string, context) =>
-    graphql({ schema, source, contextValue: context })
+  const runMutation = (source: string, context, variableValues = {}) =>
+    graphql({ schema, source, contextValue: context, variableValues })
 
   const createMutation = (field: string, input: string) => gql`
     mutation {
@@ -890,6 +996,262 @@ describe("Exchange REST writes", () => {
       expect(mockDelegateToExchange).toHaveBeenCalledWith(
         expect.objectContaining({ fieldName: "commerceConfirmPickup" })
       )
+    })
+  })
+
+  describe("buyer offer actions", () => {
+    const unprocessable = (body: Record<string, unknown>) =>
+      jest
+        .fn()
+        .mockRejectedValue(
+          new HTTPError("Unprocessable", 422, JSON.stringify(body))
+        )
+
+    it.each([
+      [
+        "commerceBuyerAcceptOffer",
+        FORCE_BUYER_ACCEPT_OFFER,
+        { offerId: "offer-2" },
+        "accept",
+        {},
+      ],
+      [
+        "commerceBuyerRejectOffer",
+        FORCE_BUYER_REJECT_OFFER,
+        { offerId: "offer-2", rejectReason: "BUYER_REJECTED" },
+        "reject",
+        { reject_reason: "buyer_rejected" },
+      ],
+    ])(
+      "%s posts Force's mutation to Exchange REST",
+      async (field, source, input, action, params) => {
+        const context = buildContext()
+
+        const result = await runMutation(source, context, { input })
+
+        expect(result.errors).toBeUndefined()
+        expect(context.buyerOfferActionLoader).toHaveBeenCalledWith(
+          { offerId: "offer-2", action },
+          params
+        )
+        expect(mockDelegateToExchange).not.toHaveBeenCalled()
+        expect(orderOrError(result, field)).toEqual({
+          __typename: "CommerceOrderWithMutationSuccess",
+          order: {
+            __typename: "CommerceOfferOrder",
+            internalID: "order-id",
+            awaitingResponseFrom: null,
+            id: "order-id",
+          },
+        })
+      }
+    )
+
+    it("commerceSubmitPendingOffer posts Force's mutation to Exchange REST", async () => {
+      const context = buildContext({
+        buyerOfferActionLoader: jest.fn().mockResolvedValue({
+          ...buyerOrder,
+          state: "submitted",
+          awaiting_response_from: "seller",
+        }),
+      })
+
+      const result = await runMutation(FORCE_SUBMIT_PENDING_OFFER, context, {
+        input: { offerId: "offer-3" },
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(context.buyerOfferActionLoader).toHaveBeenCalledWith(
+        { offerId: "offer-3", action: "submit" },
+        {}
+      )
+      expect(mockDelegateToExchange).not.toHaveBeenCalled()
+      expect(orderOrError(result, "commerceSubmitPendingOffer")).toEqual({
+        __typename: "CommerceOrderWithMutationSuccess",
+        order: {
+          __typename: "CommerceOfferOrder",
+          state: "SUBMITTED",
+          awaitingResponseFrom: "SELLER",
+          id: "order-id",
+        },
+      })
+    })
+
+    it("commerceBuyerCounterOffer posts the counteroffer to Exchange REST", async () => {
+      const context = buildContext()
+
+      const result = await runMutation(
+        sellerMutation(
+          "commerceBuyerCounterOffer",
+          `{ offerId: "offer-2", amountCents: 85000, note: "Meet halfway?" }`,
+          "internalID displayState"
+        ),
+        context
+      )
+
+      expect(result.errors).toBeUndefined()
+      expect(context.buyerOfferActionLoader).toHaveBeenCalledWith(
+        { offerId: "offer-2", action: "counter" },
+        { amount_cents: 85000, note: "Meet halfway?" }
+      )
+      expect(mockDelegateToExchange).not.toHaveBeenCalled()
+      expect(orderOrError(result, "commerceBuyerCounterOffer")).toEqual({
+        __typename: "CommerceOrderWithMutationSuccess",
+        order: { internalID: "order-id", displayState: "PROCESSING" },
+      })
+    })
+
+    it("delegates Force's counteroffer, which selects myLastOffer", async () => {
+      const context = buildContext()
+
+      await runMutation(
+        gql`
+          mutation RespondCounterOfferMutation(
+            $input: CommerceBuyerCounterOfferInput!
+          ) {
+            commerceBuyerCounterOffer(input: $input) {
+              orderOrError {
+                ... on CommerceOrderWithMutationSuccess {
+                  order {
+                    internalID
+                    ... on CommerceOfferOrder {
+                      myLastOffer {
+                        createdAt
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+        context,
+        { input: { offerId: "offer-2", amountCents: 85000 } }
+      )
+
+      expect(context.buyerOfferActionLoader).not.toHaveBeenCalled()
+      expect(mockDelegateToExchange).toHaveBeenCalledWith(
+        expect.objectContaining({ fieldName: "commerceBuyerCounterOffer" })
+      )
+    })
+
+    it("returns the requires-action member when the payment needs SCA", async () => {
+      const context = buildContext({
+        buyerOfferActionLoader: unprocessable({
+          type: "processing",
+          code: "payment_requires_action",
+          action_data: { client_secret: "pi_secret" },
+        }),
+      })
+
+      const result = await runMutation(FORCE_BUYER_ACCEPT_OFFER, context, {
+        input: { offerId: "offer-2" },
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(orderOrError(result, "commerceBuyerAcceptOffer")).toEqual({
+        __typename: "CommerceOrderRequiresAction",
+        actionData: { clientSecret: "pi_secret" },
+      })
+    })
+
+    it("returns a failure with the processing error's data for a 422", async () => {
+      const context = buildContext({
+        buyerOfferActionLoader: unprocessable({
+          type: "processing",
+          code: "capture_failed",
+          message: "capture_failed",
+          data: { decline_code: "insufficient_funds" },
+        }),
+      })
+
+      const result = await runMutation(FORCE_BUYER_ACCEPT_OFFER, context, {
+        input: { offerId: "offer-2" },
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(orderOrError(result, "commerceBuyerAcceptOffer")).toEqual({
+        __typename: "CommerceOrderWithMutationFailure",
+        error: {
+          type: "processing",
+          code: "capture_failed",
+          data: '{"decline_code":"insufficient_funds"}',
+        },
+      })
+    })
+
+    it("only returns the requires-action member from accept", async () => {
+      const context = buildContext({
+        buyerOfferActionLoader: unprocessable({
+          type: "processing",
+          code: "payment_requires_action",
+          action_data: { client_secret: "pi_secret" },
+        }),
+      })
+
+      const result = await runMutation(FORCE_SUBMIT_PENDING_OFFER, context, {
+        input: { offerId: "offer-3" },
+      })
+
+      expect(orderOrError(result, "commerceSubmitPendingOffer")).toEqual({
+        __typename: "CommerceOrderWithMutationFailure",
+        error: {
+          type: "processing",
+          code: "payment_requires_action",
+          data: "null",
+        },
+      })
+    })
+
+    it("returns a not_found failure for a 404", async () => {
+      const context = buildContext({
+        buyerOfferActionLoader: jest
+          .fn()
+          .mockRejectedValue(
+            new HTTPError("Not Found", 404, { errors: ["Not found"] })
+          ),
+      })
+
+      const result = await runMutation(FORCE_BUYER_REJECT_OFFER, context, {
+        input: { offerId: "offer-2" },
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(orderOrError(result, "commerceBuyerRejectOffer")).toEqual({
+        __typename: "CommerceOrderWithMutationFailure",
+        error: { type: "validation", code: "not_found", data: "null" },
+      })
+    })
+
+    it("still ignores requires-action selections on mutations that can't return it", async () => {
+      const context = buildContext()
+
+      const result = await runMutation(
+        gql`
+          mutation {
+            commerceSellerAcceptOffer(input: { offerId: "offer-1" }) {
+              orderOrError {
+                ... on CommerceOrderWithMutationSuccess {
+                  order {
+                    internalID
+                  }
+                }
+                ... on CommerceOrderRequiresAction {
+                  actionData {
+                    clientSecret
+                  }
+                }
+              }
+            }
+          }
+        `,
+        context
+      )
+
+      expect(result.errors).toBeUndefined()
+      expect(context.sellerOfferActionLoader).toHaveBeenCalled()
+      expect(mockDelegateToExchange).not.toHaveBeenCalled()
     })
   })
 })
