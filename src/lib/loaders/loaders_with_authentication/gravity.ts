@@ -2041,6 +2041,8 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    // Artsy staff (artos_support) only: a user's email accounts, :short fields
+    supportEmailAccountsLoader: gravityLoader("support/partner_email_accounts"),
     // Returns { authorization_url } — OAuth initiation step
     initiateInstagramOAuthLoader: gravityLoader(
       "instagram_account/authorize",

@@ -286,6 +286,7 @@ import { refreshEmailAccountWatchMutation } from "./me/refreshEmailAccountWatchM
 import { updateEmailAccountMutation } from "./me/updateEmailAccountMutation"
 import { requestEmailBackfillMutation } from "./me/requestEmailBackfillMutation"
 import { emailBackfillRun } from "./me/emailBackfillRun"
+import { supportEmailAccounts } from "./me/emailAccount"
 import { syncEmailAccountMutation } from "./me/syncEmailAccountMutation"
 import { replyToEmailMessageMutation } from "./me/replyToEmailMessageMutation"
 import { authorizeInstagramAccountMutation } from "./me/authorizeInstagramAccountMutation"
@@ -682,6 +683,7 @@ const rootFields = {
   instagramPost,
   instagramPostsConnection,
   emailBackfillRun: emailBackfillRun,
+  supportEmailAccounts: supportEmailAccounts,
   mailchimpCampaign: mailchimpCampaign,
   mailchimpCampaignsConnection,
   crmContact,
