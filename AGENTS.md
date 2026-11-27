@@ -7,6 +7,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - In almost all instances where a query returns data from the DB, we do not use an `id` field but rather an `internalID` field. `id` fields are specifically for Relay and bear no relationship to database IDs.
 - Field _arguments_ do frequently use `id` however (eg, `artist(id: "andy-warhol") { ... }`), and the values passed to them can typically be `slug` or `internalID`.
 
+## Code map
+
+- `src/schema/v2/`: types, root fields and mutations. Register new root fields and mutations in `src/schema/v2/schema.ts`.
+- `src/lib/loaders/loaders_with_authentication/` and `loaders_without_authentication/`: one file per upstream service. Public loaders are memcached.
+- `src/lib/stitching/`: schemas stitched from GraphQL services (Exchange, Causality and others).
+- `_schemaV2.graphql`: the dumped schema. Read field names here when introspection is off (see “Introspection Setup” in the README).
+
+Read the matching doc before working in an area:
+
+- New loader or upstream call: [docs/dataloaders.md](docs/dataloaders.md)
+- New connection: [docs/pagination.md](docs/pagination.md)
+- New service: [docs/adding_a_new_rest_microservice.md](docs/adding_a_new_rest_microservice.md) or [docs/adding_a_new_graphql_microservice.md](docs/adding_a_new_graphql_microservice.md)
+- Home view sections: [docs/adding_a_new_home_view_section.md](docs/adding_a_new_home_view_section.md)
+- Feature flags: [docs/feature-flags.md](docs/feature-flags.md)
+- Tests: [docs/testing.md](docs/testing.md)
+- Schema dump and distribution: [docs/automated-schema-updates.md](docs/automated-schema-updates.md)
+
+## Schema changes
+
+Any change to the v2 schema needs `yarn dump:local` and a committed `_schemaV2.graphql`. CI fails on drift (`ensure-schema-update`). The husky pre-commit hook runs the dump for you, so don't commit with `--no-verify`.
+
 ## Performance: avoid per-node loader calls in connections (N+1)
 
 Metaphysics fields often resolve by calling a REST loader (Gravity, Exchange, etc.). When such a field lives on a type that is returned by a connection, the resolver runs once **per node**, so a `first: 10` page fires 10 upstream REST calls and the fan-out scales with page size. This has caused real incidents: a per-node loader call in conversation message resolvers turned 40k `conversationsConnection` queries into 800k Exchange REST calls.
